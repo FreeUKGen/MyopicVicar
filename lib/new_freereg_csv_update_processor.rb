@@ -77,16 +77,13 @@ class NewFreeregCsvUpdateProcessor
         @project.total_data_errors = @project.total_data_errors + @data_errors if @data_errors.present?
         @project.total_files += 1
       else
-        @csvfile.clean_up_physical_files_after_failure(@csvfile.total_records)
-        @csvfile.communicate_failure_to_member(@project, @csvfile.total_records)
+        @csvfile.clean_up_physical_files_after_failure(@records_processed)
+        @csvfile.communicate_failure_to_member(@project,@records_processed)
         #@project.communicate_to_managers(@csvfile.total_records)
         @project.total_files += 1
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
       sleep(100) if Rails.env.production?
-    end
-    at_exit do
-      # p "goodbye"
     end
   end
 
@@ -328,30 +325,30 @@ class CsvFile < CsvFiles
       return [@success,"Data not processed #{@records_processed}. <br>"] unless @success
 
       @success, message = self.clean_up_supporting_information(project)
-      #p "finished clean up"
+      # p "finished clean up"
       records = @total_records
       time = ((Time.new.to_i - @file_start.to_i) * 1000) / records unless records.zero?
       project.write_messages_to_all("Created  #{@total_records} entries at an average time of #{time}ms per record at #{Time.new}. <br>", true)
       return [@success, "clean up failed #{message}. <br>"] unless @success
 
       @success, message = self.communicate_file_processing_results(project)
-      #p "finished com"
+      # p "finished com"
+      # p @success
       return [@success, "communication failed #{message}. <br>"] unless @success
 
     rescue => e
       p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}"
       p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.backtrace.inspect}"
-      error_message = "#{@userid}\t#{@file_name} *We were unable to process the file. Please contact your coordinator or the System Administrator with this message*. <br>"
+      error_message = " We were unable to complete the file #{@userid}\t#{@file_name}. because #{e.message} Please contact your coordinator or the System Administrator with this message. #{e.backtrace.inspect}<br>"
       project.write_messages_to_all(error_message, true)
       project.write_messages_to_all("Rescued from crash #{e.message}", true)
       project.write_log_file("#{e.message}")
       project.write_log_file("#{e.backtrace.inspect}")
       @success = false
-      @total_records = e.message
-      @total_data_errors = nil
-    ensure
-      [@success, @total_records, @total_data_errors]
+      @records_processed = e.message
+      @data_errors = nil
     end
+    [@success, @records_processed, @data_errors]
   end
 
   def change_location_for_existing_entry_and_record(existing_record, data_record, project, freereg1_csv_file)
@@ -542,7 +539,7 @@ class CsvFile < CsvFiles
   end
 
   def communicate_file_processing_results(project)
-    #p "communicating success"
+    #  p "communicating success"
     file = project.member_message_file
     file.close
     UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
