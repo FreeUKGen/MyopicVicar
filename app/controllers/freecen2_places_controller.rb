@@ -80,6 +80,9 @@ class Freecen2PlacesController < ApplicationController
           @county = session[:county]
           places_counties_and_countries
           @place_name = @place.place_name if @place.present?
+          @place.alternate_freecen2_place_names.build
+          @place.alternate_freecen2_place_names.build
+          @place.alternate_freecen2_place_names.build
 
           get_sources
 
@@ -244,10 +247,7 @@ class Freecen2PlacesController < ApplicationController
     @counties -= Freecen::UNNEEDED_COUNTIES
     @counties << 'London (City)' if %w[system_administrator].include?(@user.person_role)
 
-    @sources = []
-    Freecen2PlaceSource.all.order_by(source: 1).each do |source|
-      @sources << source.source
-    end
+    get_sources
   end
 
   def places_counties_and_countries

@@ -393,17 +393,19 @@ class Freecen2Place
     alternate_names_set = SortedSet.new
     entries = 0
     dup_place_set = SortedSet.new
-    alternate_freecen2_place_names_attributes.each do |_key, value|
-      next unless value[:alternate_name].present? && value[:_destroy] == '0'
+    unless alternate_freecen2_place_names_attributes.blank?
+      alternate_freecen2_place_names_attributes.each do |_key, value|
+        next unless value[:alternate_name].present? && value[:_destroy] == '0'
 
-      alternate_names_set << Freecen2Place.standard_place(value[:alternate_name])
-      entries += 1
-      unless  Freecen2Place.where(:place_name=> this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-        if Freecen2Place.where(:chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-          dup_place_set << value[:alternate_name]
-        end
-        if Freecen2Place.where(:place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-          dup_place_set << value[:alternate_name]
+        alternate_names_set << Freecen2Place.standard_place(value[:alternate_name])
+        entries += 1
+        unless  Freecen2Place.where(:place_name=> this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+          if Freecen2Place.where(:chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+            dup_place_set << value[:alternate_name]
+          end
+          if Freecen2Place.where(:place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+            dup_place_set << value[:alternate_name]
+          end
         end
       end
     end
@@ -438,6 +440,7 @@ class Freecen2Place
     return [false, error_message, nil] unless error_message == 'None'
 
     place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], :place_name => param[:freecen2_place][:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
+    alternate_place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(param[:freecen2_place][:place_name])).all
 
     case
     when place.length > 1
@@ -455,7 +458,23 @@ class Freecen2Place
         return false, "There is an active place with that name", place
       end
     when place.length == 0
-      return true, 'Proceed', place
+      case
+      when alternate_place.length > 1
+        return false, "Many active places with that name as an alternate name already exist", place
+      when alternate_place.length == 1
+        alternate_place = alternate_place.first
+        if alternate_place.disabled == 'true'
+          if alternate_place.error_flag == "Place name is not approved"
+            return false, "There is a disabled place with an unapproved name (with that name as an alternative name) that already exists", place
+          else
+            return false, "There is a disabled place with that as an alternative name", place
+          end
+        else
+          return false, "There is an active place with that name as an alternative name", place
+        end
+      when alternate_place.length == 0
+        return true, 'Proceed', place
+      end
     end
   end
 
