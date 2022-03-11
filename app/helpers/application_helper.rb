@@ -756,7 +756,7 @@ module ApplicationHelper
     when "freereg"
       path = '/cms/help/frequently-asked-questions-researchers?'
     when "freecen"
-      path = new_contact_path
+      path = '/contacts/new'
     end
     path
   end
