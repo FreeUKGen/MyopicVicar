@@ -236,6 +236,15 @@ class Freecen2Place
       result
     end
 
+    def invalid_url?(url)
+      if url =~ /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/ix
+        result = false
+      else
+        result = true
+      end
+      result
+    end
+
     def standard_place(place)
       return place if place.blank?
 
@@ -387,6 +396,8 @@ class Freecen2Place
     return [false, "There is no place name entered", nil] if param[:freecen2_place][:place_name].blank?
 
     return [false, "The source of your information is required", nil] if param[:freecen2_place][:source].blank?
+
+    return [false, "The a valid Website for Place is required when source is Other", nil] if param[:freecen2_place][:source] == 'Other' && Freecen2Place.invalid_url?(param[:freecen2_place][:genuki_url])
 
     place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], :place_name => param[:freecen2_place][:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
 

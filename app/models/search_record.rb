@@ -400,6 +400,9 @@ class SearchRecord
         elsif search_fields.include?('chapman_code')
           candidates = CEN_CHAPMAN_INDEXES.keys
           index_component = CEN_CHAPMAN_INDEXES
+        elsif search_fields.include?('birth_chapman_code')
+          candidates = CEN_CHAPMAN_INDEXES.keys
+          index_component = CEN_CHAPMAN_INDEXES
         else
           candidates = CEN_BASIC_INDEXES.keys
           index_component = CEN_BASIC_INDEXES
@@ -427,7 +430,8 @@ class SearchRecord
       best_score = -1
       fields.each do |field|
         if search_fields.any? { |param| param == field }
-          best_score = best_score + 1
+          increment = field == 'birth_chapman_code' ? 2 : 1
+          best_score += increment
         else
           return best_score
           # bail since search field hasn't been found

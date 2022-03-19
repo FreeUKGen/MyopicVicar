@@ -80,6 +80,9 @@ class Freecen2PlacesController < ApplicationController
           @county = session[:county]
           places_counties_and_countries
           @place_name = @place.place_name if @place.present?
+
+          get_sources
+
           render :new
         end
       end
@@ -127,19 +130,18 @@ class Freecen2PlacesController < ApplicationController
     @county = @place.county
     @chapman_code = @place.chapman_code
     if @chapman_code == 'LND'
-      message = 'Only system administrators can edit LND'
+      message = 'Only system administrators and data administrator can edit LND'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
-      %w[system_administrator].include?(@user.person_role)
+      %w[system_administrator data_manager].include?(@user.person_role)
     end
     @place_name = @place.place_name
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
 
-    @reasons = []
-    PlaceEditReason.all.order_by(reason: 1).each do |reason|
-      @reasons << reason.reason
-    end
+    get_reasons
+    get_sources
+
   end
 
   def for_search_form
@@ -160,6 +162,8 @@ class Freecen2PlacesController < ApplicationController
       end
     end
   end
+
+
 
   def index
     get_user_info_from_userid
@@ -193,6 +197,23 @@ class Freecen2PlacesController < ApplicationController
     session[:type] = 'place_index'
   end
 
+  def get_reasons
+    @reasons = []
+    PlaceEditReason.all.order_by(reason: 1).each do |reason|
+      @reasons << reason.reason
+    end
+  end
+
+  def get_sources
+    sources_array = Freecen2PlaceSource.all.map { |rec| [rec.source, rec.source.downcase] }
+    sources_array_sorted = sources_array.sort_by { |entry| entry[1] }
+    @sources = []
+    sources_array_sorted.each do |entry|
+      @sources << entry[0]
+    end
+
+  end
+
   def load(place_id)
     @place = Freecen2Place.find_by(id: place_id)
     return if @place.blank?
@@ -222,7 +243,12 @@ class Freecen2PlacesController < ApplicationController
     @county = session[:county]
     @counties = ChapmanCode.keys.sort
     @counties -= Freecen::UNNEEDED_COUNTIES
-    @counties << 'London (City)' if %w[system_administrator].include?(@user.person_role)
+    @counties << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role)
+
+    @sources = []
+    Freecen2PlaceSource.all.order_by(source: 1).each do |source|
+      @sources << source.source
+    end
   end
 
   def places_counties_and_countries
@@ -282,9 +308,9 @@ class Freecen2PlacesController < ApplicationController
     search_county = session[:search_names][:search_county]
     @advanced_search = session[:search_names][:advanced_search]
     if @advanced_search.present?
-      redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') unless search_place.match(/^[A-Za-z ]+$/)
+      redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') && return unless search_place.match(/^[A-Za-z ]+$/)
       if @advanced_search != "soundex"
-        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') unless Freecen2Place.standard_place(search_place).length >=3
+        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless Freecen2Place.standard_place(search_place).length >=3
       end
     end
     case @advanced_search
@@ -349,6 +375,16 @@ class Freecen2PlacesController < ApplicationController
 
       if params[:freecen2_place][:source].blank?
         flash[:notice] = 'The source field cannot be empty'
+        get_reasons
+        get_sources
+        render action: 'edit'
+        return
+      end
+
+      if Freecen2Place.invalid_url?(params[:freecen2_place][:genuki_url])
+        flash[:notice] = 'The valid Website for Place Source is required'
+        get_reasons
+        get_sources
         render action: 'edit'
         return
       end

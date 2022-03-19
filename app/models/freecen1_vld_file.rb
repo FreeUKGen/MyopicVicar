@@ -4,7 +4,6 @@ class Freecen1VldFile
   require 'chapman_code'
   require 'freecen_constants'
 
-
   field :file_name, type: String
   field :dir_name, type: String
   field :census_type, type: String
@@ -340,7 +339,6 @@ class Freecen1VldFile
     if rec['deleted_flag'].present?
       rec['uninhabited_flag'] = 'x'
       rec['notes'] = rec['notes'].present? ? 'Deleted flag set on VLD; ' + rec['notes'] : 'Deleted flag set on VLD; '
-      p rec
     end
     census_fields.each do |field|
       case field

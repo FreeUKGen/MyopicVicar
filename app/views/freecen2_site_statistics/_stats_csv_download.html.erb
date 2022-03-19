@@ -4,31 +4,46 @@
   <%= form_for(:csvdownload, url: export_csv_freecen2_site_statistics_path, method: :get, data: { confirm: "You sure you want to download a CSV file?"}) do |f| %>
     <fieldset class="inputs">
       <legend>Download CSV File</legend>
-      <p >You can download a Comma-Separated Values file with counts of total individuals for each county at the specified end date and individuals added between the specified start and end dates. Use the dropdowns to select from the dates for which these statistics are available. <br>
-        <b>Note:</b> The file will be named FreeCen_Stats_YYYYMMDD_YYYYMMDD.csv (where YYYYMMDD are your Start and End Dates)</p>
+      <p>There are two Comma Separated Values (CSV) report types available for download.
+        <b>Individuals Report</b> - which gives counts of individuals for each county at the specified end date and individuals added between the specified start and end dates.
+        <b>Pieces Report</b> - which gives details of New Pieces Online (by county) between the specified start and end dates.<br>
+      </p>
+      <p>Please select the Report Type, use the Start and End Date dropdowns to specify your dates and then click the <b>Download CSV File</b> button.</p>
       <ol class="grid">
-        <li class="grid__item one-third palm-one-whole" 
-    <%= f.label :period_from, "Start Date: " %>
-    <%= f.select :period_from, @period_start_dates %>
-      </li>
-          <li class="grid__item one-third palm-one-whole" 
-    <%= f.label :period_to, "End Date: " %>
-    <%= f.select :period_to, @period_end_dates %>
-       </li>
-            <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
-          </fieldset>
-        <% end %>
-      </div>
-      <script>
-        function hideDiv() {
-          var div = document.getElementById("csvdownload");
-          var btn = document.getElementById("downloadbutton");
-          if (div.style.display === "none") {
-            div.style.display = "block";
-            btn.innerHTML = "Hide CSV File Download"
-          } else {
-            div.style.display = "none";
-            btn.innerHTML = "Show CSV File Download"
-          }
-        }
-      </script>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="rb_individuals">
+          <%= f.radio_button :report_type, 'individuals',:checked=>true %> <b>Individuals Report</b>
+        </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="rb_pieces">
+          <%= f.radio_button :report_type, 'pieces' %> <b>Pieces Report</b>
+        </li>
+        <li class="grid__item one-fifth lap-one-fifth palm-one-whole" id="start_date">
+          <%= f.label :period_from, "Start Date: " %>
+          <%= f.select :period_from, @period_start_dates %>
+        </li>
+        <li class="grid__item one-fifth lap-one-fifth palm-one-whole" id="end_date">
+          <%= f.label :period_to, "End Date: " %>
+          <%= f.select :period_to, @period_end_dates %>
+        </li>
+        <li class="grid__item one-fifth lap-one-fifth palm-one-whole" id="b_submit"><br>
+          <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
+        </li>
+      </ol>
+      <p class="text--center">
+        <br>
+        <small><b>Note:</b> The CSV file will be named FreeCen_xxxxx_YYYYMMDD_YYYYMMDD.csv (where xxxxx is Stats or Pieces respectively and YYYYMMDD are your Start and End Dates)</small></p>
+    </fieldset>
+  <% end %>
+</div>
+<script>
+  function hideDiv() {
+    var div = document.getElementById("csvdownload");
+    var btn = document.getElementById("downloadbutton");
+    if (div.style.display === "none") {
+      div.style.display = "block";
+      btn.innerHTML = "Hide CSV File Download"
+    } else {
+      div.style.display = "none";
+      btn.innerHTML = "Show CSV File Download"
+    }
+  }
+</script>

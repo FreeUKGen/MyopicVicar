@@ -1,0 +1,21 @@
+<% if @source.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@source.errors.count, "error") %> prohibited this source from being saved:</h2>
+    <ul>
+      <% @source.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<div>
+  <%= simple_form_for @source do |f| %>
+    <%= f.input :source, :input_html => {:class => " simple_form_bgcolour ",  :size => 30 }  %>
+    <%= f.button :submit , 'Submit', :button_html => {:class => "btn   btn--small" } %>
+  <% end %>
+</div>

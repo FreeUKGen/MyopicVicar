@@ -7,11 +7,12 @@
 <div class="grid">
   <section class="island  ">
     <div class="grid__item one-whole" >
+      <h4 class=" text--center">Static statistics</h3>
       <table  class="table--bordered   table--data">
         <tr>
           <th class="t40 caps">Statistic</th>
-          <th class="t30 caps">All Members</th>
-          <th class="t30 caps">Transcribers</th>
+          <th class="t20 caps">All Members</th>
+          <th class="t20 caps">Transcribers</th>
         </tr>
         <tr>
           <td style="font-weight: bold;">Total numbers</td>
@@ -53,36 +54,77 @@
         <% unless appname_downcase == 'freecen' %>
           <tr>
             <td style="font-weight: bold;">Total number of Records opened by Transcribers</td>
+            <td>--</td>
             <td ><%= @total_records_transcribers %></td>
           </tr>
           <tr>
             <td style="font-weight: bold;">Percentage of total records opened by Transcribers </td>
+            <td>--</td>
             <td ><%= @percentage_total_records_by_transcribers.to_i %> % </td>
           </tr>
           <tr>
             <td style="font-weight: bold;">Total number of transcribers who have accepted New Transcription Agreement, but have no records </td>
-            <td ><%= @total_transcribers_accepted_agreement_no_records %></td>
+            <td>--</td>
+            <td><%= @total_transcribers_accepted_agreement_no_records %></td>
           </tr>
         <% end%>
         <tr>
           <td style="font-weight: bold;">Percentage of all users who accepted New Transcription Agreement </td>
           <td ><%= @percentage_all_users_who_accepted_transcription_agreement.to_i %> % </td>
+          <td>--</td>
         </tr>
         <tr>
           <td style="font-weight: bold;">Percentage of (existing) users who accepted New Transcription Agreement </td>
           <td ><%= @percentage_existing_users_who_accepted_transcription_agreement.to_i %> % </td>
+          <td>--</td>
         </tr>
         <tr>
           <td style="font-weight: bold;">Percentage of active (existing) users who accepted New Transcription Agreement </td>
           <td ><%= @percentage_active_existing_users_who_accepted_transcription_agreement.to_i %> % </td>
+          <td>--</td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">New Registrations (last 30 days) </td>
-          <td ><%= @new_users_last_30_days %></td>
+          <% if appname_downcase == 'freereg'%>
+            <td style="font-weight: bold;">Image groups available for allocation</td>
+            <td ><%= @images_groups_unallocated %></td>
+            <td>--</td>
+          <% end %>
+        </tr>
+      </table>
+    </div>
+  </section>
+</div>
+<div class="grid">
+  <section class="island  ">
+    <div class="grid__item one-whole" >
+      <h4 class=" text--center">Variable statistics </h3>
+      <div class="container push--bottom">
+        <div class="desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole">
+          <%= form_tag transcriber_statistics_userid_details_path, method: :get, id: 'timeline_form' do %>
+            <div class="grid">
+              <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+                <%= label_tag 'timeline', 'Timeline in months', class: 'clear--left' %>
+                <%= select_tag(:timeline, options_for_select([1, 3, 6, 12, 36, 60], selected: @timeline), {:prompt => "Months", id: 'months', tabindex: "0"}) %>
+              </div>
+              <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+                <%= button_tag 'Update', class: "btn btn--small push--top"%>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <table  class="table--bordered   table--data">
+        <tr>
+          <th class="t40 caps">Statistic</th>
+          <th class="t20 caps">Transcribers</th>
         </tr>
         <tr>
-          <td style="font-weight: bold;">New Registrations (last 90 days) </td>
-          <td ><%= @new_users_last_90_days %></td>
+          <td style="font-weight: bold;">Number of transcribers uploaded file recently</td>
+          <td><%= @number_of_transcribers_recently_uploaded_file %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">New Registrations recently </td>
+          <td ><%= @new_users %></td>
         </tr>
       </table>
     </div>

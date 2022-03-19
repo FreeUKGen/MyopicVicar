@@ -78,6 +78,17 @@ class UseridDetail
   #after_update :update_refinery
   before_destroy :delete_refinery_user_and_userid_folder
 
+  @current_year = DateTime.now.year
+  @old_date = "2017/10/17"
+  @new_date = DateTime.new(@current_year, 01, 01)
+  @users_count = UseridDetail.count
+
+  scope :users_marked_active, ->{ where(active: true) }
+  scope :users_accepted_new_transcription_agreement, ->{ where(new_transcription_agreement: "Accepted") }
+  scope :new_users, ->{ where(sign_up_date: {'$gte': @new_date }) }
+  scope :old_users, ->{ where(sign_up_date: {'$lt': @new_date }) }
+  scope :user_role_transcriber, -> { where(person_role: 'transcriber') }
+
   class << self
     def syndicate(syndicate)
       where(:syndicate => syndicate)
@@ -685,6 +696,66 @@ class UseridDetail
   def incomplete_transcribers_registrations_count
     @users = UseridDetail.where(person_role: "transcriber")
     return filter_users.count
+  end
+
+  def self.return_percentage_all_existing_users_accepted_transcriber_agreement
+    total_existing_users = old_users.count.to_f
+    total_existing_users_accepted = old_users.users_accepted_new_transcription_agreement.count.to_f
+    if total_existing_users == 0 || total_existing_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
+    end
+  end
+
+  def self.return_percentage_all_existing_active_users_accepted_transcriber_agreement
+    total_existing_active_users = users_marked_active.old_users.count.to_f
+    total_existing_active_users_accepted = users_marked_active.old_users.users_accepted_new_transcription_agreement.count.to_f
+    if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
+      return 0
+    else
+      return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
+    end
+  end
+
+  def self.number_of_transcribers_uploaded_file_recently(month)
+    user_role_transcriber.where(last_upload: {'$gt': month.months.ago}).count
+  end
+
+  def self.return_percentage_all_users_accepted_transcriber_agreement
+    total_users = @users_count.to_f
+    total_users_accepted = users_accepted_new_transcription_agreement.count.to_f
+    if total_users == 0 || total_users_accepted == 0
+      return 0
+    else
+      return ((total_users_accepted / total_users) * 100).round(2)
+    end
+  end
+
+  def self.return_percentage_total_records_by_transcribers
+    total_records_all = return_total_records.to_f
+    total_records_open_transcribers = return_total_transcriber_records.to_f
+    if total_records_all == 0 || total_records_open_transcribers == 0
+      return 0
+    else
+      return (total_records_open_transcribers / total_records_all) * 100
+    end
+  end
+
+  def self.return_total_transcriber_records
+    total_records = 0
+    UseridDetail.where(person_role: 'transcriber', new_transcription_agreement: 'Accepted', number_of_records: { '$ne': 0 }).each do |count|
+      total_records += count.number_of_records
+    end
+    total_records
+  end
+
+  def self.return_total_records
+    total_records = 0
+    UseridDetail.where(number_of_records: { '$ne': 0 }).each do |count|
+      total_records += count.number_of_records
+    end
+    total_records
   end
 
   private

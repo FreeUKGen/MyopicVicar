@@ -21,7 +21,7 @@
           <label class="ttip" for="last_name" tabindex="0">
             Surname
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname, you <em>must</em> enter a County, Forename, and Place</span>
+            <span class="ttip__text"><small>Use upper- or lower-case. If you do not enter a surname, you <em>must</em> enter a County, Forename, and Place</small></span>
           </label>
           <% if @search_query.last_name.nil? %>
             <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
@@ -33,7 +33,7 @@
           <label class="ttip" for="first_name" tabindex="0">
             Forename(s)
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of name will be included automatically</span>
+            <span class="ttip__text"><small>Optional. Use upper- or lower-case. Abbreviations and Latin versions of name will be included automatically</small></span>
           </label>
           <% if @search_query.first_name.nil? %>
             <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional">
@@ -45,7 +45,7 @@
           <label class="ttip" for="start_year" tabindex="0">
             Birth year from
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional, YYYY. The first year you want to include</span>
+            <span class="ttip__text"><small>Optional, YYYY. The first year you want to include</small></span>
           </label>
           <% if @search_query.start_year.nil? %>
             <input id="start_year" name="search_query[start_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional">
@@ -57,7 +57,7 @@
           <label class="ttip" for="end_year" tabindex="0">
             Birth year to
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional, YYYY. The last year you want to include</span>
+            <span class="ttip__text"><small>Optional, YYYY. The last year you want to include</small></span>
           </label>
           <% if @search_query.end_year.nil? %>
             <input id="end_year" name="search_query[end_year]" type="text" length="4" size="4" class="text-input" placeholder="YYYY Optional">
@@ -70,7 +70,7 @@
             <%= f.check_box :fuzzy, {}, "true", "false" %>
             Name Soundex
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
+            <span class="ttip__text"><small>Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</small></span>
           <% end %><br>
         </li>
         <li class="grid__item three-eighths lap-three-quarters palm-one-whole" id="search_query_birth_chapman_codes_input">
@@ -78,7 +78,7 @@
           <label class="label ttip" for="search_query_birth_chapman_codes" tabindex="0">
             Birth County
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">If you select more than one county, <em>all</em> places within those counties will be searched</span>
+            <span class="ttip__text"><small>These are grouped into sections for England, Ireland, Islands, Scotland, Wales and a Special category (including overseas, out of county, ships and military). If you select more than one county, <em>all</em> places within those counties will be searched</small></span>
             <small class="additional">Select one to three (hold Ctrl for multiple)</small>
           </label>
           <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.codes_for_cen_county)%>
@@ -102,7 +102,7 @@
           <label class="label ttip" for="search_query_chapman_codes" tabindex="0">
             Census County
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Only counties with data are included. If you select more than one county, <em>all</em> places within those counties will be searched</span>
+            <span class="ttip__text"><small>These are grouped into sections for England, Ireland, Islands, Scotland, Wales and a Special category. Only counties with data are included. If you select more than one county, <em>all</em> places within those counties will be searched</small></span>
             <small class="additional">Select one to three (hold Ctrl for multiple)</small>
           </label>
           <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.codes_for_cen_county_search) %>
@@ -116,7 +116,7 @@
           <label class="label ttip" for="earch_query_freecen2_place_ids" tabindex="0">
             Census Place
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">This box fills only when a <em>single</em> county is selected. Select one place, or leave blank for <em>all</em> the places in a county. See also the &ldquo;Nearby Places&rdquo; option, below</span>
+            <span class="ttip__text"><small>This box fills only when a <em>single</em> county is selected. Select one place, or leave blank for <em>all</em> the places in a county. See also the &ldquo;Nearby Places&rdquo; option, below</small></span>
             <small class="additional">Select nothing or one place</small>
           </label>
           <select id="search_query_freecen2_place_ids" name="search_query[freecen2_place_ids][]" class="select" size="4">
@@ -127,7 +127,7 @@
           <label class="label ttip" for="search_query_record_type" tabindex="0">
             Census year
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">The specific census year to search. Leave blank to search all.</span>
+            <span class="ttip__text"><small>The specific census year to search. Leave blank to search all.</small></span>
             <small class="additional">Leave blank to search all</small>
           </label>
           <select id="search_query_record_type" name="search_query[record_type]" class="select" size="4" style="max-width: 10rem;">
@@ -160,7 +160,7 @@
               <label class="label ttip" for="search_query_marital_status" tabindex="0">
                 Marital Status
                 <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-                <span class="ttip__text">Select the marital status you wish to view. Available from 1851 onwards.</span>
+                <span class="ttip__text"><small>Select the marital status you wish to view. Available from 1851 onwards.</small></span>
                 <small class="additional">Leave blank to select all</small>
               </label>
               <select id="search_query_marital_status" name="search_query[marital_status]" class="select" size="4" style="max-width: 10rem;">
@@ -178,7 +178,7 @@
               <label class="label ttip" for="search_query_sex" tabindex="0">
                 Sex
                 <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-                <span class="ttip__text">Select the sex of the person you wish to view.</span>
+                <span class="ttip__text"><small>Select the sex of the person you wish to view.</small></span>
                 <small class="additional">Leave blank to select both</small>
               </label>
               <select id="search_query_sex" name="search_query[sex]" class="select" size="4" style="max-width: 10rem;">
@@ -196,7 +196,7 @@
               <label class="ttip" for="occupation" tabindex="0">
                 Occupation
                 <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-                <span class="ttip__text">Selection will be based on the appearance of these characters at the start of any word in the occupation field. Case irrelevant.</span><small class="additional">Leave blank for all occupations</small>
+                <span class="ttip__text"><small>Selection will be based on the appearance of these characters at the start of any word in the occupation field. Case irrelevant.</small></span><small class="additional">Leave blank for all occupations</small>
               </label>
               <% if @search_query.occupation.nil? %>
                 <input id="occupation" name="search_query[occupation]" type="text" class="text-input" placeholder="Optional">
@@ -209,7 +209,7 @@
                 <%= f.check_box :disabled, {}, "true", "false" %>
                 Disabled
                 <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-                <span class="ttip__text">Restricts the selection to those who are declared disabled. Available from 1851 onwards.</span>
+                <span class="ttip__text"><small>Restricts the selection to those who are declared disabled. Available from 1851 onwards.</small></span>
               <% end %>
             </li>
             <%= f.action :submit,
