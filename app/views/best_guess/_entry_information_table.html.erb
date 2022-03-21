@@ -26,7 +26,7 @@
       </th>
       <td>
         <% if record.district_linkable? %>
-          <%= link_to "#{record.district_name_display_format}", "http://www.ukbmd.org.uk/reg/districts/#{record.define_url_distict}.html", target: "_blank" %><br>
+          <%= link_to "#{record.display_district_name}", "http://www.ukbmd.org.uk/reg/districts/#{record.define_url_distict}.html", target: "_blank" %><br>
           <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
         <% else %>
           <%= record.display_district_name %>
