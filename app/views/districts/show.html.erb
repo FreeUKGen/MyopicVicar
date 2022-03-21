@@ -2,12 +2,12 @@
 <%= link_to "Back to selection".html_safe, district_alphabet_selection_path(@district.DistrictName.first), class: " btn   btn--small" %>
 <div class="grid">
   <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
-    <h1 class="beta push-half--top flush--bottom">District Information: <%= "#{@district.DistrictName}"%></h1>
+    <h1 class="beta push-half--top flush--bottom">District Information: <%= "#{@district.district_name_display_format}"%></h1>
     <hr>
     <section>
       <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
         <table class="table--bordered table--data">
-          <caption class="accessibility"> Information about <%= "#{@district.DistrictName} District"%>  </caption>
+          <caption class="accessibility"> Information about <%= "#{@district.district_name_display_format} District"%>  </caption>
           <tbody>
             <tr>
               <th rowspan="6">Volume</th>
