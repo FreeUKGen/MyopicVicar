@@ -1,5 +1,5 @@
 <table class="table--bordered table--data">
-  <caption class="accessibility">Entry Information of <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
+  <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
   <tbody>
     <% record_type = RecordType::display_name(record.RecordTypeID)%>
     <tr>
@@ -26,10 +26,10 @@
       </th>
       <td>
         <% if record.district_linkable? %>
-          <%= link_to "#{record.District}", "http://www.ukbmd.org.uk/reg/districts/#{record.define_url_distict}.html", target: "_blank" %><br>
+          <%= link_to "#{record.district_name_display_format}", "http://www.ukbmd.org.uk/reg/districts/#{record.define_url_distict}.html", target: "_blank" %><br>
           <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
         <% else %>
-          <%= record.District %>
+          <%= record.display_district_name %>
         <% end %>
         <% if record.District.blank? %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>

@@ -39,6 +39,17 @@ class District < FreebmdDbBase
     district_name
   end
 
+  def district_name_display_format
+    district_name = format_district_name
+    district_suffix = '1'
+    district_name = district_name.gsub(/&/,"and")
+    district_name = district_name.gsub(/upon/,"on") if self.InfoBookmark == "upon"
+    district_name = district_name.gsub(/ [A-Za-z]*$/,"") if self.InfoBookmark == "trnc"
+    district_name = district_name.gsub(/ [A-Za-z]*$/,district_suffix) if self.InfoBookmark.match?(/sfx[0-9]/)
+    district_name = self.InfoBookmark unless self.InfoBookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
+    district_name
+  end
+
   def district_friendly_url
     particles = []
     # first the primary names

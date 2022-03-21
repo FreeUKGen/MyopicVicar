@@ -361,6 +361,10 @@ class BestGuess < FreebmdDbBase
     get_district.ukbmd_url_distict
   end
 
+  def display_district_name
+    get_district.district_name_display_format
+  end
+
   def event_quarter
     quarter = self[:QuarterNumber]
     quarter >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(quarter) : QuarterDetails.quarter_human(quarter)
