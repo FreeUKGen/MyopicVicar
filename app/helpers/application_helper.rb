@@ -737,7 +737,7 @@ module ApplicationHelper
       cookiePolicy: '/cms/about/cookie-policy',
       privacyNotice: 'https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view?usp=sharing',
       termAndConditions: '/cms/terms-and-conditions',
-      contactUs: '/cms/help/frequently-asked-questions-researchers?',
+      contactUs: contact_us_path,
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
@@ -749,6 +749,16 @@ module ApplicationHelper
       freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
     }
+  end
+
+  def contact_us_path
+    case appname_downcase
+    when "freereg"
+      path = '/cms/help/frequently-asked-questions-researchers?'
+    when "freecen"
+      path = '/contacts/new'
+    end
+    path
   end
 
   def fullwidth_adsense_freereg
