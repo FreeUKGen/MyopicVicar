@@ -130,9 +130,9 @@ class Freecen2PlacesController < ApplicationController
     @county = @place.county
     @chapman_code = @place.chapman_code
     if @chapman_code == 'LND'
-      message = 'Only system administrators can edit LND'
+      message = 'Only system administrators and data administrator can edit LND'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
-      %w[system_administrator].include?(@user.person_role)
+      %w[system_administrator data_manager].include?(@user.person_role)
     end
     @place_name = @place.place_name
     @place.alternate_freecen2_place_names.build
@@ -243,7 +243,7 @@ class Freecen2PlacesController < ApplicationController
     @county = session[:county]
     @counties = ChapmanCode.keys.sort
     @counties -= Freecen::UNNEEDED_COUNTIES
-    @counties << 'London (City)' if %w[system_administrator].include?(@user.person_role)
+    @counties << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role)
 
     @sources = []
     Freecen2PlaceSource.all.order_by(source: 1).each do |source|
