@@ -1,15 +1,21 @@
-<h2 style="text-align: center">Names from <%= @place_description %> <br>
-  in <%= @county_description %> in <%= @year %>
-  <span class="accessibility">List Names currently in the Database for a place with option to view forenames or surnames</span></h2>
-<div  style="text-align: center">
-  <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
+
+<div>
+   <h1 class="title text--center">Database Records as of <%= @interval_end.strftime('%d %b %Y')%> </h1>
+  <h2 class="accessibility">List Names currently in the Database for <%= @place_description %> with option to view forenames or surnames</h2>
+<p class="additional"><b>Navigate to other Records pages: </b><a data-method="get" href="/freecen2_contents?locale=en">Back to Totals for All Counties</a> /
   <% if params[:new_records] == 'All' %>
-    <%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %><br>
-  <% else %>
-    <%= county_index_link(@county_description, @place_description) %>
-    <%= link_to 'Back to Records for ' + @place_description, freecen2_contents_place_index_path(:county_description => @county_description, :place_description => @place_description), class: "btn btn--small", method: :get %>
-  <% end %><br>
-  <p><small>Note: You may find it useful to use your browser find option to search for critical parts of names</small></p>
+  <a data-method="get" href="/freecen2_contents/new_records_index?locale=en&amp;new_records=All">Back to Recent Additions</a>
+   <% else %>
+   <% if @place_description == 'all'%>
+      <a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@county_description%>">Back to Records for <%= @county_description %></a>
+    <% else %>
+      <a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@county_description%>">Choose another Place in <%= @county_description %></a>
+    <% end %> /
+  <a data-method="get" href="/freecen2_contents/place_index?local=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>">Back to Records for <%= @place_description %></a>
+  <% end %>
+  </p>
+  <h2 class="gamma text--center">Names from <%= @place_description %> in <%= @county_description %> in <%= @year %></h2>
+  <p><small class="additional read-length">Note: You may find it useful to use your browser find option to search for critical parts of names</small></p>
 </div>
 <div class="island island--bordered text--center">
   <%= form_with url: freecen2_contents_place_names_path do |f| %>
@@ -20,40 +26,36 @@
         <% else %>
           <h3 style="text-align: center"> Total <%= @name_type %> : <%= @last_names_cnt %></h3>
         <% end %>
-        <h4> Switch Name Type To : </h4>
+        <h4> Switch Name Type To :
         <% if @name_type == 'Surnames' %>
-          <%= link_to 'Forenames', freecen2_contents_place_names_path(:county_description => @county_description, :place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => 'Forenames'), :class => "btn btn--small", :method => :get%>
+           <td> <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%= @year%>&amp;name_type=Forenames">Forenames</a></td>
         <% else %>
-          <%= link_to 'Surnames', freecen2_contents_place_names_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => 'Surnames'), :class => "btn btn--small", :method => :get%>
-        <% end %>
+        <td> <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%= @year%>&amp;name_type=Surnames">Surnames</a></td>
+        <% end %></h4>
       </li>
     </nl>
   <% end%>
-  <p>
     <% if @first_names_cnt >0 || @last_names_cnt > 0 %>
-      <p>
-        <h4> Show <%= @name_type %> starting with : </h4>
-      </p>
+        <h4> Show <%= @name_type %> starting with :
     <% end %>
     <% if @first_letter != 'All' %>
-      <%= link_to 'Any',freecen2_contents_place_names_path(:county_description => @county_description, :place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => @name_type, :first_letter => 'All'), :class => "btn btn--small", :method => :get%>
+      <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%=@year%>&amp;name_type=<%= @name_type%>&amp;first_letter=All">Any Letter</a><br> or starting with:
     <% end %>
     <% ("A".."Z").each do |letter| %>
       <% if @unique_names[letter].count > 0 %>
-        <%= link_to letter, freecen2_contents_place_names_path(:county_description => @county_description,:place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => @name_type, :first_letter => letter), :class => "btn btn--small", :method => :get%>
+        <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%=@year%>&amp;name_type=<%=@name_type%>&amp;first_letter=<%=letter%>"><%=letter%></a>
       <% end %>
-    <% end %>
-  </p>
+    <% end %> </h4>
   <p>
     <% if @remainder.count > 0 %>
-      <%= link_to 'Additional Names', freecen2_contents_place_names_path(:county_description => @county_description, :place_description => @place_description, :place_id => @place_id, :census_year => @year, :name_type => @name_type, :first_letter => 'Remainder'), :class => "btn btn--small", :method => :get%>
+      <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%=@year%>&amp;name_type=<%=@name_type%>&amp;first_letter=Remainder">Additional Names</a>
     <% end%>
   </p>
 </div>
 <div class="island  island--light text--center">
   <% if @first_letter != 'All' %>
     <% if @first_letter != 'Remainder' %>
-      <div style="text-align: center">
+      <div>
         <h4><%= @name_type %> Starting with <%= @first_letter%> : <%= @unique_names[@first_letter].count%></h4>
       </div>
     <% else %>
@@ -62,7 +64,7 @@
       </div>
     <% end %>
   <% else %>
-    <div style="text-align: center">
+    <div>
       <h4>All <%= @name_type %></h4>
     </div>
   <% end %>
