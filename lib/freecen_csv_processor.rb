@@ -762,7 +762,7 @@ class CsvRecords < CsvFile
   end
 
   def process_header_fields
-    # p "Getting header
+    # p 'Getting header'
     reduction = 0
     n = 0
     @project.write_messages_to_all("Error: line #{n} is empty", true) if @array_of_lines[n][0..24].all?(&:blank?)
@@ -772,6 +772,11 @@ class CsvRecords < CsvFile
     return [false, n] if @array_of_lines[n].length > 50
 
     success, message, @csvfile.field_specification, @csvfile.traditional, @csvfile.header_line = line_one(@array_of_lines[n])
+
+    unless success
+      @project.write_messages_to_all(message, true)
+      return [false, '']
+    end
 
     file = FreecenCsvFile.find_by(userid: @csvfile.userid, file_name: @csvfile.file_name)
     if file.present? && @csvfile.traditional < file.traditional
@@ -801,7 +806,7 @@ class CsvRecords < CsvFile
       traditional = extract_traditonal_headers(line)
       success, message, field_specification = extract_field_headers(line, traditional)
     else
-      message = 'INFO: line 1 Column field specification is missing.<br>'
+      message = 'ERROR: There is a problem with the Header line - a column field name is missing.<br>'
       success = false
     end
     [success, message, field_specification, traditional, line]
