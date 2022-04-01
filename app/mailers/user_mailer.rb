@@ -2,12 +2,12 @@
 # This file is in desperate need of refactoring
 ##############################################
 class UserMailer < ActionMailer::Base
-  reg_website = MyopicVicar::Application.config.website == 'https://test3.freereg.org.uk' ? 'Test' : ''
-  cen_website = MyopicVicar::Application.config.website == 'https://test3.freecen.org.uk' ? 'Test' : ''
+  reg_website = MyopicVicar::Application.config.website == 'https://www.freereg.org.uk' ? '' : 'Test'
+  cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
   if MyopicVicar::Application.config.template_set == 'freereg'
     default from: "#{reg_website} FreeREG Servant <freereg-processing@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{cen_website} FreeCEN Servant <freecen-contacts@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN Servant <freecen-processing@freecen.org.uk>"
   end
 
   def appname

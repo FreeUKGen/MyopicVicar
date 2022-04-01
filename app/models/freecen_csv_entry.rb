@@ -905,6 +905,8 @@ class FreecenCsvEntry
           record[:error_messages] += messagea
         elsif messagea == 'blank' && record[:year] == '1841'
 
+        elsif messagea == 'blank' && record[:uninhabited_flag] == 'x'
+
         elsif messagea == 'blank'
           messagea = "ERROR: line #{num} Schedule number is blank and not a page transition.<br>"
           message += messagea
