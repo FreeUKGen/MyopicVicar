@@ -39,9 +39,9 @@ module Freecen2ContentsHelper
 
   def locate_place_link(place_id)
     place = Freecen2Place.find_by(id: place_id)
-    zoom=10
-    title='Show on Map - opens in new tab'
-    text='Show on Map'
+    zoom = 10
+    title = 'Show on Map - opens in new tab'
+    text = 'Show on Map'
     lat = place.latitude
     long = place.longitude
     if lat.present? && long.present?
