@@ -140,7 +140,7 @@ class SearchQuery
   field :runtime, type: Integer
   field :runtime_additional, type: Integer
   field :runtime_ucf, type: Integer
-  field :order_field, type: String, default: SearchOrder::DATE
+  field :order_field, type: String, default: SearchOrder::BMD_DATE
   validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
   field :order_asc, type: Boolean, default: true
   field :region, type: String # bot honeypot
@@ -1087,7 +1087,7 @@ class SearchQuery
           results.sort! { |x, y| (y[:RecordTypeID] || '') <=> (x[:RecordTypeID] || '') }
         end
        when SearchOrder::BMD_DATE
-        if self.order_asc
+        unless self.order_asc
           results.sort! do |x, y|
            compare_name_bmd(y, x, 'QuarterNumber', ['Surname', 'GivenName', 'DistrictName'])
           end
