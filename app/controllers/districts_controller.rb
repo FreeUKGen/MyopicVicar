@@ -11,12 +11,12 @@ class DistrictsController < ApplicationController
 		birth_uniq_name = DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 1).first
 		marriage_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 3).first
 		death_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 2).first
-		@birth_uniq_surname_count = birth_uniq_name.unique_surnames.count
-		@birth_uniq_forename_count = birth_uniq_name.unique_forenames.count
-		@marriage_uniq_surname_count = marriage_uniq_name.unique_surnames.count
-		@marriage_uniq_forename_count = marriage_uniq_name.unique_forenames.count
-		@death_uniq_surname_count = death_uniq_name.unique_surnames.count
-		@death_uniq_forename_count = death_uniq_name.unique_forenames.count
+		@birth_uniq_surname_count = birth_uniq_name.present? ? birth_uniq_name.unique_surnames.count : "none"
+		@birth_uniq_forename_count = birth_uniq_name.present? ? birth_uniq_name.unique_forenames.count : "none"
+		@marriage_uniq_surname_count = marriage_uniq_name.present? ? marriage_uniq_name.unique_surnames.count : "none"
+		@marriage_uniq_forename_count = marriage_uniq_name.present? ? marriage_uniq_name.unique_forenames.count : "none"
+		@death_uniq_surname_count = death_uniq_name.present? ? death_uniq_name.unique_surnames.count : "none"
+		@death_uniq_forename_count = death_uniq_name.present? ? death_uniq_name.unique_forenames.count : "none"
 	end
 
 	def unique_district_names
