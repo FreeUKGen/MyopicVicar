@@ -560,12 +560,6 @@ namespace :build do
         #set the processor running flag
         @locking_file = File.new(rake_lock_file, 'w')
         p "FREEREG:CSV_PROCESSING: Created rake lock file #{rake_lock_file} and processing files"
-        if File.exist?(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
-          p 'FREEREG:CSV_PROCESSING: Removing Initiation lock'
-          x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
-          x.close
-          FileUtils.rm_f(x)
-        end
         while PhysicalFile.waiting.exists?
           NewFreeregCsvUpdateProcessor.activate_project(args.search_record, args.type, args.force, args.range)
           sleep(300)
@@ -574,6 +568,12 @@ namespace :build do
         if @locking_file.present?
           @locking_file.close
           FileUtils.rm_f(@locking_file)
+        end
+        if File.exist?(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+          p 'FREEREG:CSV_PROCESSING: Removing Initiation lock'
+          x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+          x.close
+          FileUtils.rm_f(x)
         end
       end
     rescue Exception => msg
@@ -585,6 +585,12 @@ namespace :build do
       if @locking_file.present?
         @locking_file.close
         FileUtils.rm_f(@locking_file)
+      end
+      if File.exist?(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+        p 'FREEREG:CSV_PROCESSING: Removing Initiation lock'
+        x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+        x.close
+        FileUtils.rm_f(x)
       end
     end
   end

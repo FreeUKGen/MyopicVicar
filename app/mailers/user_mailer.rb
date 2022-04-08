@@ -334,10 +334,9 @@ class UserMailer < ActionMailer::Base
     reg = regmanager_email_lookup
     sb = sbmanager_email_lookup
     vino = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>'
-    kirk = 'Captain Kirk <kirk.dawson@freeukgenealogy.org.uk>'
     ccs = []
     ccs << reg
-    ccs << kirk
+    ccs << vino
     mail(to: sb, cc: ccs, subject: " There are #{batches} processor files waiting to be processed. This exceeds the limit of #{limit}")
   end
 
