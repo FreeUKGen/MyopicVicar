@@ -329,6 +329,19 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def report_processor_limit_exceeded(batches, limit)
+    @appname = appname
+    reg = regmanager_email_lookup
+    sb = sbmanager_email_lookup
+    vino = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>'
+    kirk = 'Captain Kirk <kirk.dawson@freeukgenealogy.org.uk>'
+    ccs = []
+    ccs << reg
+    ccs << kirk
+    mail(to: sb, cc: ccs, subject: " There are #{batches} processor files waiting to be processed. This exceeds the limit of #{limit}")
+  end
+
+
   def report_to_data_manger_of_large_file(file_name, userid)
     @appname = appname
     @file = file_name
@@ -340,7 +353,7 @@ class UserMailer < ActionMailer::Base
         syndicate_coordinator = syndicate.syndicate_coordinator
         sc = UseridDetail.where(userid: syndicate_coordinator, email_address_valid: true).first
         if sc.present?
-          @sc_email_with_name =  sc.email_address
+          @sc_email_with_name = sc.email_address
         else
           p 'FREREG_PROCESSING: There was no syndicate coordinator'
         end
@@ -557,28 +570,30 @@ class UserMailer < ActionMailer::Base
 
   def regmanager_email_lookup
     regmanager = UseridDetail.userid('REGManger').first
-    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>"
+    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
+    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
     [regmanager, friendly_email]
   end
 
+  def sbmanager_email_lookup
+    sbmanager = UseridDetail.userid('SBManger').first
+    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sbmanager.blank?
+    friendly_email = "#{sbmanager.person_forename} #{sbmanager.person_surname} <#{sbmanager.email_address}>" if sbmanager.present?
+    [sbmanager, friendly_email]
+  end
 
   def cenmanager_email_lookup
     regmanager = UseridDetail.userid('CENManger').first
-    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>"
+    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
+    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
     [regmanager, friendly_email]
   end
 
-
   def sndmanager_email_lookup
-    sndmanger = UseridDetail.userid('SNDManager').first
-    if sndmanger.present?
-      friendly_email = "#{sndmanger.person_forename} #{sndmanger.person_surname} <#{sndmanger.email_address}>"
-      [sndmanger, friendly_email]
-
-    else
-      sndmanger = UseridDetail.userid('vinodhini')
-      [sndmanger, "Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>"]
-    end
+    sndmanager = UseridDetail.userid('SNDManager').first
+    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sndmanager.blank?
+    friendly_email = "#{sndmanager.person_forename} #{sndmanager.person_surname} <#{sndmanager.email_address}>" if sndmanager.present?
+    [sndmanager, friendly_email]
   end
 
   def extract_chapman_code_from_file_name(file_name)
