@@ -568,21 +568,21 @@ class UserMailer < ActionMailer::Base
   end
 
   def regmanager_email_lookup
-    regmanager = UseridDetail.userid('REGManger').first
+    regmanager = UseridDetail.userid('REGManager').first
     friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
     friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
     [regmanager, friendly_email]
   end
 
   def sbmanager_email_lookup
-    sbmanager = UseridDetail.userid('SBManger').first
+    sbmanager = UseridDetail.userid('SBManager').first
     friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sbmanager.blank?
     friendly_email = "#{sbmanager.person_forename} #{sbmanager.person_surname} <#{sbmanager.email_address}>" if sbmanager.present?
     [sbmanager, friendly_email]
   end
 
   def cenmanager_email_lookup
-    regmanager = UseridDetail.userid('CENManger').first
+    regmanager = UseridDetail.userid('CENManager').first
     friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
     friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
     [regmanager, friendly_email]
