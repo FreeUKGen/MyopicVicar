@@ -1,6 +1,6 @@
 <div>
-<h1 class="title text--center">Database Records as of <%= @interval_end.strftime('%d %b %Y')%> </h1>
-<h2 class="accessibility">Database Records for <%= @place_description %> in <%= @county_description %></h2>
+  <h1 class="title text--center">Database Records as of <%= @interval_end.strftime('%d %b %Y')%> </h1>
+  <h2 class="accessibility">Database Records for <%= @place_description %> in <%= @county_description %></h2>
   <p class="additional"><b>Navigate to other Records pages: </b><a data-method="get" href="/freecen2_contents?locale=en">Back to Totals for All Counties</a> /
     <% if @place_description == 'all'%>
       <a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@county_description%>">Back to Records for <%= @county_description %></a>
@@ -13,7 +13,7 @@
 <h2 class="gamma text--center">Totals for for <%= @place_description %> in <%= @county_description %></h2>
 <div>
   <p><small class="additional read-length">Where applicable you can use the Detail links to view a list of Pieces (including Civil Parish names) and a list of Names currently in the Database.<br>
-    Note: A * next to the number of Pieces Online indicates that only part of one or more pieces is currently online.</small></p>
+      Note: A * next to the number of Pieces Online indicates that only part of one or more pieces is currently online.</small></p>
 </div>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width " >
@@ -63,8 +63,10 @@
           <% end %>
         </tr>
       <% end %>
+    </tbody>
+    <tfooter>
       <tr>
-        <td scope="row">Totals</td>
+        <th scope="row">Total</th>
         <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][@key_place][:total][:records_online], :delimiter => ',') %></td>
         <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][@key_place][:total][:piece_ids], @freecen2_contents.records[@chapman_code][@key_place][:total][:pieces_online]) %>
         <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][@key_place][:total][:pieces], :delimiter => ',') %></td>
@@ -75,6 +77,6 @@
           <td> N/A </td>
         <% end %>
       </tr>
-    </tbody>
+    </tfooter>
   </table>
 </div>
