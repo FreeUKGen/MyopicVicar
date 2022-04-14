@@ -64,7 +64,7 @@
           <tbody>
             <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
               <tr>
-                <td scope="row"><%= census %></td>
+                <th scope="row"><%= census %></th>
                 <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][census][:piece_ids], @freecen2_contents.records[@chapman_code][census][:pieces_online]) %>
                 <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][census][:pieces], :delimiter => ',') %></td>
                 <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][census][:pieces_online], @freecen2_contents.records[@chapman_code][census][:pieces]) %>
@@ -78,9 +78,9 @@
               </tr>
             <% end %>
           </tbody>
-          <tfooter>
+          <tfoot>
             <tr>
-              <th scope="row">Total</td>
+              <th scope="row">Total</th>
               <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][:total][:piece_ids], @freecen2_contents.records[@chapman_code][:total][:pieces_online]) %>
               <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][:total][:pieces], :delimiter => ',') %></td>
               <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][:total][:pieces_online], @freecen2_contents.records[@chapman_code][:total][:pieces]) %>
@@ -88,7 +88,7 @@
               <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][:total][:added_pieces_online], :delimiter => ',') %></td>
               <td> N/A </td>
             </tr>
-          </tfooter>
+          </tfoot>
         </table>
       </div>
     </div>

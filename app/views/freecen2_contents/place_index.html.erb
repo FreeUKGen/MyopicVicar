@@ -18,7 +18,7 @@
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width " >
     <caption class="accessibility">Database totals for <% @place_description %> by census year</caption>
-    <thead >
+    <thead>
       <tr>
         <th scope="col" class='sticky-header'>Year</th>
         <th scope="col" class='sticky-header'>Records Online</th>
@@ -37,7 +37,7 @@
     <tbody>
       <% Freecen::CENSUS_YEARS_ARRAY.each do |census| %>
         <tr>
-          <td scope="row"><%= census %></td>
+          <th scope="row"><%= census %></th>
           <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][@key_place][census][:records_online], :delimiter => ',') %></td>
           <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][@key_place][census][:piece_ids], @freecen2_contents.records[@chapman_code][@key_place][census][:pieces_online]) %>
           <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][@key_place][census][:pieces], :delimiter => ',') %></td>
@@ -64,7 +64,7 @@
         </tr>
       <% end %>
     </tbody>
-    <tfooter>
+    <tfoot>
       <tr>
         <th scope="row">Total</th>
         <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][@key_place][:total][:records_online], :delimiter => ',') %></td>
@@ -77,6 +77,6 @@
           <td> N/A </td>
         <% end %>
       </tr>
-    </tfooter>
+    </tfoot>
   </table>
 </div>
