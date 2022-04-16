@@ -1,12 +1,12 @@
- <%= render 'flash_notice' %>
-<h1 class="title text--center">Database Records as of <%= @interval_end.strftime('%d %b %Y')%> </h1>
+<%= render 'flash_notice' %>
+<%= render 'records_header' %>
 <div class="grid">
   <div class="grid__item one-third palm-one-whole" >
     <h2 class="accessibility">Totals for a county or place</h2>
     <%= simple_form_for :view_county_records,  method: :get do |c| %>
       <fieldset class="inputs" >
         <legend>Counties and Places</legend>
-        <div class="push-half--bottom">
+        <div class="landmark">
           <p class="push-half--bottom">
             <small class="additional">Select a county to view its Database totals:</small>
           </p>
@@ -21,7 +21,9 @@
             <% end %>
           </select>
           <%= c.submit 'View County Records',  :class => "btn   btn--small" %>
-          <p class="push--top push-half--bottom">
+        </div>
+        <div class="push--bottom">
+          <p class="push-half--bottom">
             <small class="additional">Select a Place to view its Database totals and get links to lists of Names currently in the Database.<br>
               Note: the years that have Pieces online are listed after the Place name.</small>
           </p>

@@ -1,5 +1,5 @@
+<%= render 'records_header' %>
 <div>
-  <h1 class="title text--center">Database Records as of <%= @interval_end.strftime('%d %b %Y')%> </h1>
   <h2 class="accessibility">Database Records for <%= @place_description %> in <%= @county_description %></h2>
   <p class="additional"><b>Navigate to other Records pages: </b><a data-method="get" href="/freecen2_contents?locale=en">Back to Totals for All Counties</a> /
     <% if @place_description == 'all'%>
