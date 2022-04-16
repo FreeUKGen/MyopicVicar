@@ -86,6 +86,8 @@ class Freecen2PiecesController < ApplicationController
     session[:freecen2_piece] = @freecen2_piece.name
     @chapman_code = session[:chapman_code]
     @freecen2_place = @freecen2_piece.freecen2_place
+    @records = (@freecen2_place.present? && SearchRecord.where(freecen2_place_id: @freecen2_place.id).count.positive?) ? true : false
+
     @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
     @freecen2_pieces = @freecen2_piece.piece_names
     @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
@@ -324,7 +326,7 @@ class Freecen2PiecesController < ApplicationController
       params[:freecen2_piece].delete :type
       @freecen2_piece.update(freecen2_piece_params)
       if @freecen2_piece.errors.any?
-        flash[:notice] = "The update of the civil parish failed #{@freecen2_piece.errors.full_messages}."
+        flash[:notice] = "The update of the piece failed #{@freecen2_piece.errors.full_messages}."
         redirect_back(fallback_location: edit_freecen2_piece_path(@freecen2_piece, type: @type)) && return
       else
         flash[:notice] = 'Update was successful'

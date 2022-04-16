@@ -72,3 +72,6 @@ num = FreecenCsvEntry.collection.update_many({ freecen_csv_file_id: freecen_file
 rsync -avz kirkdawson@mongo5.freeukgen.org.uk:/home/kirkdawson/feedbacks.json /home/kirkdawson/
 
  rs.secondaryOk()
+
+ /home/apache/hosts/freecen2/production
+ /home/apache/hosts/freereg2/production
