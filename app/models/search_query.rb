@@ -1465,6 +1465,14 @@ class SearchQuery
     query.present? ? query : {}
   end
 
+  def search_form_validation
+    if self.min_age_at_death > self.max_age_at_death
+      errors.add(:max_age_at_death, "Max Age at Death should be greater than Min Age at Death") unless first_name.present?
+    end
+    if self.last_name.include?''
+    end
+  end
+
   def wildcard_field_validation
     case wildcard_field
     when Constant::NAME[0]
