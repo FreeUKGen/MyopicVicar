@@ -1,5 +1,20 @@
 require 'text'
 module SearchQueriesHelper
+  ID_HASH = {
+      #field: id
+      first_name: 'firstname',
+      last_name: 'last_name',
+      start_quarter: 'from_quarter',
+      start_year: 'from_year',
+      end_quarter: 'to_quarter',
+      end_year: 'end_year',
+      min_age_at_death: 'search_query_min_age_at_death',
+      max_age_at_death: 'search_query_max_age_at_death',
+      age_at_death: 'search_query_age_at_death',
+      dob_at_death: 'search_query_dob_at_death',
+      min_dob_at_death: 'search_query_min_dob_at_death',
+      max_dob_at_death: 'search_query_max_dob_at_death'
+    }
 
   def results_search_form_link
     link_to "New Search", new_search_query_path, class: "btn  btn--small "
@@ -252,5 +267,9 @@ module SearchQueriesHelper
     display_map["Partial search on"] = search_query.wildcard_field if search_query.wildcard_field.present?
     display_map["Partial search type"] = search_query.wildcard_option if search_query.wildcard_option.present?
     display_map
+  end
+
+  def error_field_label_id
+
   end
 end

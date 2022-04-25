@@ -101,15 +101,15 @@ class SearchQuery
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
 
-  field :first_name, type: String # , :required => false
-  field :last_name, type: String # , :required => false
+  field :first_name, type: String# , :required => false
+  field :last_name, type: String# , :required => false
   field :spouse_first_name, type: String # , :required => false
   field :spouses_mother_surname, type: String
   field :mother_last_name, type: String # , :required => false
   field :age_at_death, type: String # , :required => false
-  field :min_age_at_death, type: Integer # , :required => false
+  field :min_age_at_death, type: Integer# ,  :required => false
   field :max_age_at_death, type: Integer # , :required => false
-  field :min_dob_at_death, type: String # , :required => false
+  field :min_dob_at_death, type: String# , :required => false
   field :max_dob_at_death, type: String # , :required => false
   field :dob_at_death, type: String # , :required => false
   field :match_recorded_ages_or_dates, type: Boolean#, default: false # , :required => false
@@ -172,20 +172,20 @@ class SearchQuery
   embeds_one :search_result
 
   validate :name_not_blank unless MyopicVicar::Application.config.template_set == 'freebmd'
-  validate :date_range_is_valid
+  #validate :date_range_is_valid
   validate :radius_is_valid
   validate :county_is_valid
   validate :wildcard_is_appropriate
   validate :wildcard_field_validation
   validate :wildcard_field_value_validation
   validate :other_partial_option_validation
-  #validates_presence_of :last_name || :spouses_mother_surname, allow_blank: true if :spouse_first_name.present?
-  #validates_presence_of :last_name, allow_blank: true if :age_at_death
-  #validates_presence_of :last_name, allow_blank: true if :min_age_at_death.present?
-  #validates_presence_of :last_name, allow_blank: true if :max_age_at_death.present?
-  #validates_presence_of :last_name, allow_blank: true if :min_dob_at_death.present?
-  #validates_presence_of :last_name, allow_blank: true if :max_dob_at_death.present?
-  #validates_presence_of :last_name, allow_blank: true if :dob_at_death.present?
+  validates_absence_of :fuzzy, if: Proc.new{|u| has_wildcard?(u.last_name) if u.last_name.present?}, message: "You cannot use both Phonetic search surnames and surname wildcards in a search."
+  validates_numericality_of :start_year, less_than_or_equal_to: :end_year, message: "From Quarter/Year must precede To Quarter/Year."
+  validates_inclusion_of :min_age_at_death, in: 0..199, if: Proc.new{|u| u.min_age_at_death.present?}, message: "Invalid Min Age. Please provide a value between 0 to 199"
+  validates_inclusion_of :max_age_at_death, in: 0..199, if: Proc.new{|u| u.max_age_at_death.present?}, message: "Invalid Max Age. Please provide a value between 0 to 199"
+  validates_presence_of :max_age_at_death, if: Proc.new{|u| u.min_age_at_death.present?}, message: "Max Age field is empty, it is required for Age Range(Age at Death) search."
+  validates_numericality_of :max_age_at_death,  greater_than_or_equal_to: :min_age_at_death, if: Proc.new{|u| u.min_age_at_death.present?}, message: "Invalid Age range(Age at Death). Max Age must be greater than or equal to Min Age."
+  validates_numericality_of :max_dob_at_death,  greater_than_or_equal_to: :min_dob_at_death, if: Proc.new{|u| u.min_dob_at_death.present?}, message: "Invalid Year of Birth range. Max Year of birth must be greater than or equal to Min Year of Birth."
   # probably not necessary in FreeCEN
   #  validate :all_counties_have_both_surname_and_firstname
 
@@ -404,15 +404,7 @@ class SearchQuery
   end
 
   def date_range_is_valid
-    if start_year.present? && !start_year.to_i.bson_int32?
-      errors.add(:start_year, 'The start year is an invalid integer')
-    elsif end_year.present? && !end_year.to_i.bson_int32?
-      errors.add(:end_year, 'The end year is an invalid integer')
-    elsif start_year.present? && end_year.blank?
-      errors.add(:end_year, 'You have specified a start year but no end year')
-    elsif end_year.present? && start_year.blank?
-      errors.add(:start_year, 'You have specified an end year but no start year')
-    elsif start_year.present? && end_year.present? && start_year.to_i > end_year.to_i
+    if start_year.present? && end_year.present? && start_year.to_i > end_year.to_i
       errors.add(:end_year, 'First year must precede last year.')
     end
   end
@@ -1164,8 +1156,10 @@ class SearchQuery
   def wildcard_is_appropriate
     # allow promiscuous wildcards if place is defined
     if query_contains_wildcard?
-      if fuzzy && ((first_name && (first_name.match(WILDCARD) && !second_name_wildcard)) || (last_name && last_name.match(WILDCARD)))
-        errors.add(:last_name, 'You cannot use both wildcards and soundex in a search')
+      unless freebmd_app?
+        if fuzzy && ((first_name && (first_name.match(WILDCARD) && !second_name_wildcard)) || (last_name && last_name.match(WILDCARD)))
+          errors.add(:last_name, 'You cannot use both Phonetic search surnames and wildcards in a search.')
+        end
       end
       if place_search? || self.districts.present?
         if last_name && last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
@@ -1288,7 +1282,6 @@ class SearchQuery
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-    #raise records.explain.inspect
     records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
     records = records.where(search_conditions)
     records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
@@ -1466,10 +1459,25 @@ class SearchQuery
   end
 
   def search_form_validation
-    if self.min_age_at_death > self.max_age_at_death
-      errors.add(:max_age_at_death, "Max Age at Death should be greater than Min Age at Death") unless first_name.present?
+    
+
+  end
+
+  def max_age_at_death_greater_than_min_age_at_death
+    if self.min_age_at_death.to_i > self.max_age_at_death.to_i
+      errors.add(:max_age_at_death, "Max Age at Death should be greater than Min Age at Death")
     end
-    if self.last_name.include?''
+  end
+
+  def max_dob_at_death_greater_than_min_dob_at_death
+    if  self.min_dob_at_death > self.max_dob_at_death
+      errors.add(:max_dob_at_death, "Max Age at Death should be greater than Min Age at Death") 
+    end
+  end
+
+  def absence_of_fuzzy_when_wildcard
+    if has_wildcard?(self.last_name) && fuzzy.present?
+      errors.add(:fuzzy, "Phonetic Search on surnames can not be used with wildcard")
     end
   end
 

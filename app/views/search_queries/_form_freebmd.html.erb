@@ -3,16 +3,23 @@
         <%= flash[:notice] %> <% flash[:notice] = nil %><br>
     </div>
 <% end %>
+
 <% if @search_query.present? && (@search_query.errors.present? || @search_query.errors.any?) %>
-    <h2 class="gamma text--center">Following Error(s) prohibited this search from being processed:</h2>
-    
-    <ul class="validation-list">
-        <% @search_query.errors.messages.each do |key, msg| %>
-            <li class="validation-list__error text--center"><%= msg[0] %></li>
-        <% end %>
-    </ul>
+    <fieldset class="input">
+        <legend>Error List</legend>
+        <h2 class="gamma">Following <%= pluralize(@search_query.errors.count, 'error') %> prohibited this search from being processed:</h2>
+        <ol class="validation-list">
+            <%# raise @search_query.errors.inspect %>
+            <% @search_query.errors.messages.each do |key, msg| %>
+                <% msg.each do |m| %>
+                    <li>
+                        <label for="<%=SearchQueriesHelper::ID_HASH[key]%>" class="validation-list__error"><%= m %></label>
+                    </li>
+                <% end %>
+            <% end %>
+        </ol>
+    </fieldset>
 <% end %>
-<ul id="errors" class="validation-list text--center"></ul>
     <div class="bmd_search_form">
         <%= semantic_form_for(@search_query) do |f| %>
         <fieldset class="input">
@@ -160,7 +167,7 @@
                     <div id="death_age_and_dob">
                         <div id="death_age">
                             <label class="accessibility" for="search_query_age_at_death">Age at death</label>
-                            <%= number_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), within: 0..199, placeholder: 'Enter Age', class: 'text-input flush--bottom', tabindex: "0" %>
+                            <%= number_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), placeholder: 'Enter Age', class: 'text-input flush--bottom', tabindex: "0" %>
                         </div>
                         <div id="death_age_range">
                             <div class="grid">
@@ -176,17 +183,17 @@
                         </div>
                         <div id="death_dob">
                             <label class="accessibility" for="search_query_dob_at_death">Birth Year</label>
-                            <%= number_field_tag 'search_query[dob_at_death]', set_value(@search_query.dob_at_death), { min: 1000, max: 3000, placeholder: 'YYYY', class: 'text-input', tabindex: "0" } %>
+                            <%= number_field_tag 'search_query[dob_at_death]', set_value(@search_query.dob_at_death), { placeholder: 'YYYY', class: 'text-input', tabindex: "0" } %>
                         </div>
                         <div id="death_dob_range">
                             <div class="grid">
                                 <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                     <label class="accessibility" for="search_query_min_dob_at_death">Start Birth Year</label>
-                                    <%= number_field_tag 'search_query[min_dob_at_death]', set_value(@search_query.min_dob_at_death), { min: 1000, max: 3000, class: 'text-input', placeholder: 'start year', tabindex: "0" } %>
+                                    <%= number_field_tag 'search_query[min_dob_at_death]', set_value(@search_query.min_dob_at_death), { class: 'text-input', placeholder: 'start year', tabindex: "0" } %>
                                 </div>
                                 <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                     <label class="accessibility" for="search_query_max_dob_at_death">Finish Birth Year</label>
-                                    <%= number_field_tag 'search_query[max_dob_at_death]', set_value(@search_query.max_dob_at_death), { min: 1000, max: 3000, class: 'text-input', placeholder: 'end year', tabindex: "0" } %>
+                                    <%= number_field_tag 'search_query[max_dob_at_death]', set_value(@search_query.max_dob_at_death), { class: 'text-input', placeholder: 'end year', tabindex: "0" } %>
                                 </div>
                                 
                             </div>
@@ -638,7 +645,7 @@
                 } else {
                     $('#search_query_max_dob_at_death')[0].setCustomValidity('');
                 }
-            };*/
+            };
 
             jQuery.validator.addMethod("validateAgeAtDeathRange", function() {
                 var min_age_value = $('#search_query_min_age_at_death').val();
@@ -682,7 +689,7 @@
                 },
                 errorLabelContainer: "#errors", 
                 wrapper: "li"
-            });
+            });*/
 
             /*$('#search_form_submit').click( function() {
                 var l = Ladda.create(document.querySelector('.ladda-button'));
