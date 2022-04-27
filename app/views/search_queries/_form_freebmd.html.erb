@@ -307,8 +307,34 @@
             <!--button class="floating_action_buttons" id="small_screen_search_button"><%= app_icons[:search].html_safe%></button-->
     <% end %>
 </div>
+<div class="bmd_search_form icon__honeycomb--top-right donation_dialog">
+        <p>Thank you for using our website.</p>
+        <p>Free UK Genealogy is a Registered charity, and our sole purpose is to provide free access to family history.</p>
+        <p>Give a one-off or regular donation</p>
+          <ul>
+            <li>a</li>
+            <li>b</li>
+            <li>c</li>
+          </ul>
+          <p><strong>Please help us to keep history free.</strong></p>
+          <button>hi</button>
+          <button>bye</button>
+    </div>
 <%# end %>
 <style>
+    .donation_dialog{
+        width: 70% !important;
+    background-color: #555;
+     color: #fff;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 10000;
+    top: 10%;
+    left: 15%;
+    right: auto;
+    margin-left: -80px;
+    }
     #spouse_or_mother_surname_div, #age_at_death_or_date_of_birth_div, #spouse_firstnames_div {
         display: none;
     }
