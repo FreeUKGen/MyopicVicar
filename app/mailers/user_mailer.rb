@@ -331,8 +331,8 @@ class UserMailer < ActionMailer::Base
 
   def report_processor_limit_exceeded(batches, limit)
     @appname = appname
-    reg = regmanager_email_lookup
-    sb = sbmanager_email_lookup
+    _rrem, reg = regmanager_email_lookup
+    _nn, sb = sbmanager_email_lookup
     vino = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>'
     ccs = []
     ccs << reg
