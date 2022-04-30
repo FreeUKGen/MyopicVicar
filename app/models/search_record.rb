@@ -69,7 +69,7 @@ class SearchRecord
   embeds_many :search_names, :class_name => 'SearchName'
 
   # derived search fields
-  field :location_names, type: Array, default: []
+  field :location_names, type: Array, default: [] # note used by freecen2; look up the place instead
   field :search_soundex, type: Array, default: []
 
   CEN_CHAPMAN_INDEXES = {

@@ -54,7 +54,7 @@ module UseridRole
                          'Roadmap', 'FreeUKGenealogy  Policies'],
       'documentation_coordinator' => ['CSV Batches', 'Communicate', 'Display Userids', 'Feedback', 'Gazetteer', 'Manage Syndicates',
                                       'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
-      'engagement_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Feedback', 'Message System',
+      'engagement_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Manage Userids', 'Manage Counties', 'Manage Syndicates', 'Feedback', 'Message System',
                                    'Search Statistics', 'Search Performance', 'Site Statistics', 'County Coordinators', 'Country Coordinators',
                                    'Syndicate Coordinators', 'Profile', 'RefineryCMS', 'Roadmap', 'Gazetteer', 'System Documentation',
                                    'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],

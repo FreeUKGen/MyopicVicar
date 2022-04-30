@@ -62,8 +62,8 @@ module DateParser
       vy = $1.gsub(/\_/, '5')
     end
 
-    if vy.match(/(\d\d\d\d)?/)
-      vy = $1.gsub(/\?/, '')
+    if vy.match(/\?/)
+      vy = vy.gsub(/\?/, '')
     end
 
     # handle split years

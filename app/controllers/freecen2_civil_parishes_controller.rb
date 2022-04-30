@@ -89,6 +89,7 @@ class Freecen2CivilParishesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No civil parish found') && return if @freecen2_civil_parish.blank?
 
     @freecen2_place = @freecen2_civil_parish.freecen2_place
+    @records = (@freecen2_place.present? && SearchRecord.where(freecen2_place_id: @freecen2_place.id).count.positive?) ? true : false
     @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
     @piece = @freecen2_civil_parish.freecen2_piece
     @chapman_code = @freecen2_civil_parish.chapman_code
