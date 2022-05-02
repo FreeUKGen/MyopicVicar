@@ -1,15 +1,16 @@
-<%= render 'records_header' %>
-<div>
-  <h2 class="accessibility">Database Records for <%= @place_description %> in <%= @county_description %></h2>
-  <p class="additional"><b>Navigate to other Records pages: </b><a data-method="get" href="/freecen2_contents?locale=en">Back to Totals for All Counties</a> /
+<h1 class="beta text--center">Database Records for <%= @place_description %> in <%= @county_description %> as of <%= @interval_end.strftime('%d')%>&nbsp;<%= @interval_end.strftime('%b')%>&nbsp;<%= @interval_end.strftime('%Y')%></h1>
+<h2 class="accessibility">Database Records for <%= @place_description %> in <%= @county_description %></h2>
+<nav aria-label="Records options">
+  <ul class="nav nav--banner">
+    <li><a data-method="get" href="/freecen2_contents?locale=en">Choose Another County</a> | </li>
     <% if @place_description == 'all'%>
-      <a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@county_description%>">Back to Records for <%= @county_description %></a>
+      <li><a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@county_description%>">Back to Records for <%= @county_description %></a> | </li>
     <% else %>
-      <a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@county_description%>">Choose another Place in <%= @county_description %></a>
-    <% end %> /
-    <%= locate_place_link(@place_id) %>
-  </p>
-</div>
+      <li><a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@county_description%>">Choose another Place in <%= @county_description %></a> | </li>
+    <% end %>
+    <%= locate_place_link(@place_id,'N') %>
+  </ul>
+</nav>
 <h2 class="gamma text--center">Totals for for <%= @place_description %> in <%= @county_description %></h2>
 <div>
   <p><small class="additional read-length">Where applicable you can use the Detail links to view a list of Pieces (including Civil Parish names) and a list of Names currently in the Database.<br>

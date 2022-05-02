@@ -1,21 +1,22 @@
-<%= render 'records_header' %>
-<div>
-  <h2 class="accessibility">List Names currently in the Database for <%= @place_description %> with option to view forenames or surnames</h2>
-<p class="additional"><b>Navigate to other Records pages: </b><a data-method="get" href="/freecen2_contents?locale=en">Back to Totals for All Counties</a> /
-  <% if params[:new_records] == 'All' %>
-  <a data-method="get" href="/freecen2_contents/new_records_index?locale=en&amp;new_records=All">Back to Recent Additions</a>
-   <% else %>
-   <% if @place_description == 'all'%>
-      <a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@county_description%>">Back to Records for <%= @county_description %></a>
+<h1 class="beta text--center">Names recorded in the Database for <%= @place_description %> in <%=@county_description%> in <%= @year %> as of <%= @interval_end.strftime('%d')%>&nbsp;<%= @interval_end.strftime('%b')%>&nbsp;<%= @interval_end.strftime('%Y')%></h1>
+<nav aria-label="Records options">
+  <ul class="nav nav--banner">
+    <li><a data-method="get" href="/freecen2_contents?locale=en">Choose Another County</a></li>
+    <% if params[:new_records] == 'All' %>
+      <li> | <a data-method="get" href="/freecen2_contents/new_records_index?locale=en&amp;new_records=All">Back to Recent Additions</a></li>
     <% else %>
-      <a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@county_description%>">Choose another Place in <%= @county_description %></a>
-    <% end %> /
-  <a data-method="get" href="/freecen2_contents/place_index?local=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>">Back to Records for <%= @place_description %></a>
-  <% end %>
-  </p>
-  <h2 class="gamma text--center">Names from <%= @place_description %> in <%= @county_description %> in <%= @year %></h2>
-  <p><small class="additional read-length">Note: You may find it useful to use your browser find option to search for critical parts of names</small></p>
-</div>
+      <% if @place_description == 'all' %>
+           <li> | <a data-method="get" href="/freecen2_contents/county_index?locale=en&amp;county_description=<% @county_description %>">Back to Records for <%=@county_description %></a></li>
+      <% else %>
+           <li> | <a data-method="get" href="/freecen2_contents/county_index?locale=en&amp;county_description=<% @county_description %>">Choose another Place in <%= @county_description %></a></li>
+           <li> | <a data-method="get" href="/freecen2_contents/place_index?locale=en&amp;county_description=<% @county_description %>&amp;place_description=<% @place_description %>">Back to Records for <%= @place_description %></a></li>
+      <% end %>
+    <% end %>
+    </ul>
+</nav>
+<h2 class="accessibility">Lists Names currently in the Database for <%= @place_description %> with option to view forenames or surnames</h2>
+<h2 class="gamma text--center">Names from <%= @place_description %> in <%= @county_description %> in <%= @year %></h2>
+<p><small class="additional read-length">Note: You may find it useful to use your browser find option to search for critical parts of names</small></p>
 <div class="island island--bordered text--center">
   <%= form_with url: freecen2_contents_place_names_path do |f| %>
     <nl>

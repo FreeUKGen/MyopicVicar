@@ -37,7 +37,7 @@ module Freecen2ContentsHelper
     return has_names
   end
 
-  def locate_place_link(place_id)
+  def locate_place_link(place_id,in_table)
     place = Freecen2Place.find_by(id: place_id)
     zoom = 10
     title = 'Show on Map - opens in new tab'
@@ -45,9 +45,17 @@ module Freecen2ContentsHelper
     lat = place.latitude
     long = place.longitude
     if lat.present? && long.present?
-      return raw '<a href="https://google.com/maps/place/'+(lat.to_f.to_s)+','+(long.to_f.to_s)+'/@'+(lat.to_f.to_s)+','+(long.to_f.to_s)+','+(zoom.to_i.to_s)+'z" target="_blank" title="'+(title.to_s)+'">'+(text.to_s)+'</a>'
+      if in_table == 'N'
+        return raw '<li><a href="https://google.com/maps/place/'+(lat.to_f.to_s)+','+(long.to_f.to_s)+'/@'+(lat.to_f.to_s)+','+(long.to_f.to_s)+','+(zoom.to_i.to_s)+'z" target="_blank" title="'+(title.to_s)+'">'+(text.to_s)+'</a></li>'
+      else
+        return raw '<a href="https://google.com/maps/place/'+(lat.to_f.to_s)+','+(long.to_f.to_s)+'/@'+(lat.to_f.to_s)+','+(long.to_f.to_s)+','+(zoom.to_i.to_s)+'z" target="_blank" title="'+(title.to_s)+'">'+(text.to_s)+'</a>'
+      end
     else
-      return raw '(Show on Map not available)'
+      if in_table == 'N'
+        return raw '<li>(Show on Map not available)</li>'
+      else
+        return raw '(Show on Map not available)'
+      end
     end
   end
 

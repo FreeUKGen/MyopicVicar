@@ -1,7 +1,9 @@
-<%= render 'records_header' %>
-<div>
-  <p class="additional"><b>Navigate to other Records pages: </b><a data-method="get" href="/freecen2_contents?locale=en">Back to Totals for All Counties</a></p>
-</div>
+<h1 class="beta text--center">Database Records for <%= @county_description %> as of <%= @interval_end.strftime('%d')%>&nbsp;<%= @interval_end.strftime('%b')%>&nbsp;<%= @interval_end.strftime('%Y')%></h1>
+<nav aria-label="Records options">
+    <ul class="nav nav--banner">
+      <li><a data-method="get" href="/freecen2_contents?locale=en">Choose Another County</a></li>
+    </ul>
+</nav>
 <div class="grid">
   <div class="grid__item one-third palm-one-whole" >
     <h2 class="accessibility">Database Record totals for <%= @county_description %></h2>
@@ -91,7 +93,6 @@
       </table>
     </div>
   </div>
-</div>
 </div>
 <script>
   function replace_chars(str) {
