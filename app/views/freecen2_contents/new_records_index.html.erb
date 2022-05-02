@@ -46,9 +46,9 @@
             <td><%= entry[4] %></td>
             <td><%= entry[5] %></td>
             <td><%= locate_place_link(entry[3],'Y') %></td>
-            <td> <a data-method="get"data-method="get" href="/freecen2_contents/display_pieces_by_status?locale=en&amp;county_description=<%= entry[0]%>&amp;place_description=<%= entry[1]%>&amp;place_id=<%= entry[3]%>&amp;census_year=<%= entry[4]%>&amp;order=status"&amp;new_records=All">Pieces</a></td>
+            <td> <a data-method="get"data-method="get" href="/freecen2_contents/display_pieces_by_status?locale=en&amp;county_description=<%= entry[0]%>&amp;place_description=<%= entry[1]%>&amp;place_id=<%= entry[3]%>&amp;census_year=<%= entry[4]%>&amp;order=status"&amp;new_records=All">Pieces<span class="accessibility"> in <%= entry[1]%> in <%= entry[4]%></span></a></td>
             <% if names_exist_for_place_year(entry[3], entry[4]) == true %>
-              <td> <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%= entry[0]%>&amp;place_description=<%=entry[1]%>&amp;place_id=<%= entry[3]%>&amp;census_year=<%= entry[4]%>&amp;new_records=All">Names</a></td>
+              <td> <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%= entry[0]%>&amp;place_description=<%=entry[1]%>&amp;place_id=<%= entry[3]%>&amp;census_year=<%= entry[4]%>&amp;new_records=All">Names<span class="accessibility"> in <%= entry[1]%> in <%= entry[4]%></span></a></td>
             <% else %>
               <td> N/A </td>
             <% end %>

@@ -40,14 +40,15 @@ module Freecen2ContentsHelper
   def locate_place_link(place_id,in_table)
     place = Freecen2Place.find_by(id: place_id)
     zoom = 10
-    title = 'Show on Map - opens in new tab'
-    text = 'Show on Map'
+    title = 'Show ' + place.place_name + ' on Map - opens in new tab'
     lat = place.latitude
     long = place.longitude
     if lat.present? && long.present?
       if in_table == 'N'
+        text = 'Show on Map'
         return raw '<li><a href="https://google.com/maps/place/'+(lat.to_f.to_s)+','+(long.to_f.to_s)+'/@'+(lat.to_f.to_s)+','+(long.to_f.to_s)+','+(zoom.to_i.to_s)+'z" target="_blank" title="'+(title.to_s)+'">'+(text.to_s)+'</a></li>'
       else
+        text = 'Show <span class="accessibility">' + place.place_name + '</span> on Map'
         return raw '<a href="https://google.com/maps/place/'+(lat.to_f.to_s)+','+(long.to_f.to_s)+'/@'+(lat.to_f.to_s)+','+(long.to_f.to_s)+','+(zoom.to_i.to_s)+'z" target="_blank" title="'+(title.to_s)+'">'+(text.to_s)+'</a>'
       end
     else

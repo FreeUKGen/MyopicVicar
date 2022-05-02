@@ -6,10 +6,10 @@
 </nav>
 <div class="grid">
   <div class="grid__item one-third palm-one-whole" >
-    <h2 class="accessibility">Database Record totals for <%= @county_description %></h2>
+    <h2 class="accessibility">Choose a Place in <%= @county_description %></h2>
     <%= simple_form_for :view_place_recs, method: :get do |p| %>
       <fieldset class="inputs">
-        <legend>Places in <%= @county_description %></legend>
+        <legend>Places</legend>
         <div class="push--bottom">
           <p class="push-half--bottom">
             <small class="additional">Select a Place to view its Database totals and get links to lists of Names currently in the Database.<br>
@@ -38,11 +38,11 @@
   </div>
   <div class="grid__item two-thirds palm-one-whole">
     <h2 class="gamma text--center">Totals for All Places in <%= @county_description %></h2>
-    <p><small class="additional read-length">Where applicable you can use the Detail links to view a list of Pieces (including Civil Parish names).<br>
-        Note: A * next to the number of Pieces Online indicates that only part of one or more pieces is currently online.</small></p>
+    <p><small class="additional read-length">You can use the Detail links to view a list of Pieces (including Civil Parish names), where available.<br>
+        Note: a * next to the number of Pieces Online means that only part of one or more pieces is currently online.</small></p>
     <div class='scrollable'>
       <table  class="table--bordered table--data table--striped " >
-        <caption class="accessibility">Database totals by census year</caption>
+        <caption class="accessibility">Database totals for <%= @county_description %> by census year</caption>
         <thead >
           <tr>
             <th scope="col" class='sticky-header'>Year</th>
@@ -72,7 +72,7 @@
               <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][census][:records_online], :delimiter => ',') %></td>
               <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][census][:added_pieces_online], :delimiter => ',') %></td>
               <% if @freecen2_contents.records[@chapman_code][census][:pieces] > 0 %>
-                <td> <a data-method="get"data-method="get" href="/freecen2_contents/display_pieces_by_status?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=all&amp;place_id=''&amp;census_year=<%=census%>&amp;order=status">Pieces</a></td>
+                <td> <a data-method="get"data-method="get" href="/freecen2_contents/display_pieces_by_status?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=all&amp;place_id=''&amp;census_year=<%=census%>&amp;order=status">Pieces <span class="accessibility">in <%= census %></span></a></td>
               <% else %>
                 <td> N/A </td>
               <% end %>
