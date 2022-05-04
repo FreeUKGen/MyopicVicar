@@ -10,6 +10,22 @@ $(document).ready(function() {
     }
   };
 
+  if (getCookie('cookiesDirective') === null) {
+    setCookie('donate_cta_flag', 0,1);
+  }
+
+  document.getElementById('close_donate_cta_pop_up').onclick = function close_donate_cta() {
+    setCookie('donate_cta_flag', 1,365);
+    $("#donate_cta_pop_up").hide();
+    document.getElementById("overlay").style.display = "none";
+  }
+
+if ((getCookie('donate_cta_flag') == 0) || (getCookie('donate_cta_flag') === null)) {
+  $("#donate_cta_pop_up").show();
+} else {
+  $("#donate_cta_pop_up").hide();
+  document.getElementById("overlay").style.display = "none";
+};
   // Switch Cookie checkbox value
   var toggleCookieCheckbox = function() {
     if (getCookie('userAcceptance') == 1) {

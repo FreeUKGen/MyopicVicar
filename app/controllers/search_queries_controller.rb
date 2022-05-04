@@ -126,6 +126,7 @@ class SearchQueriesController < ApplicationController
     old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
     @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
     @chapman_codes = ChapmanCode::CODES
+    @reminder_to_donate = ReminderToDonate.new
   end
 
   def remember
