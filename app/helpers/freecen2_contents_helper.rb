@@ -59,7 +59,9 @@ module Freecen2ContentsHelper
         elsif piece.freecen_csv_files.present?
           csv_files = piece.freecen_csv_files
           csv_files.each do |csv_file|
-            record_count += csv_file.freecen_csv_entries.count
+            if csv_file.incorporated == true
+              record_count += csv_file.freecen_csv_entries.count
+            end
           end
         end
       end
