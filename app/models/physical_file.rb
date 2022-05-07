@@ -158,6 +158,40 @@ class PhysicalFile
     [success, message]
   end
 
+  def add_file_change_of_owner(batch, type_of_processing)
+    success = true
+    if batch == "base" || batch == "reprocessing" && MyopicVicar::Application.config.template_set == 'freereg'
+      self.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => true, :waiting_date => Time.now)
+    else
+      p "#{batch} - processing type = #{type_of_processing}"
+    end
+    case MyopicVicar::Application.config.template_set
+    when 'freereg'
+      rake_lock_file = Rails.root.join('tmp', 'processing_rake_lock_file.txt')
+      if File.exist?(rake_lock_file)
+        logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
+        message = "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
+      else
+        logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
+        pid1 = spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+        message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
+      end
+    when 'freecen'
+      rake_lock_file = Rails.root.join('tmp', 'freecen_processing_rake_lock_file.txt')
+      if File.exist?(rake_lock_file)
+        logger.warn("FREECEN:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
+        message = "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
+      else
+
+        logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
+        pid1 = spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{File.join(userid, file_name)}\",\"Traditional\",\"#{type_of_processing}\"]")
+        message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
+        logger.warn("FREECEN:CSV_PROCESSING: #{pid1}")
+      end
+    end
+    [success, message]
+  end
+
   def file_and_entries_delete
     file = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
     file.remove_from_ucf_list if file.present?
