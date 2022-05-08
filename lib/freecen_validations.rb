@@ -487,6 +487,8 @@ module FreecenValidations
 
         return [false, 'unusual use of Scholar'] if age.slice(-1).downcase == 'y' && (age[0...-1].to_i < 2 || age[0...-1].to_i > 17) && field.downcase =~ /(scholar)/
 
+        return [false, 'unusual use of Scholar'] if %w[m w d].include?(age.slice(-1).downcase) && field.downcase =~ /(scholar)/
+
       end
 
       return [false, '?'] if field[-1] == '?'
