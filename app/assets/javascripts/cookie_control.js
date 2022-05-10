@@ -25,7 +25,9 @@ if ((getCookie('donate_cta_flag') == 0) || (getCookie('donate_cta_flag') === nul
 };
 
 document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
-  $("#reminder_form").show();
+  $("#reminder_to_donate_form").show();
+  $("#donate_cta_pop_up").hide();
+  $("#overlay_2").show();
   $("#reminder_form_controller").hide();
   var element = document.getElementById("donate_box");
   var elem = document.getElementById("other_links")

@@ -55,14 +55,11 @@
               </ul>
         </div-->
     </div>
-    <!--div class="grid">
-        <div class="text--center" id="donate_box">
-            <center>
-                <p><strong>Please help us to keep history free.</strong></p>
-                <a href="https://donate.kindlink.com/free-uk-genealogy/3553" class="freeREG" id="donate" target="_blank"><%= DonateIconHelper::DONATE_ICON.html_safe %></a>
-            </center>
-        </div>
-        <%= form_tag reminder_to_donate_index_path(@reminder_to_donate), method: :post, id: 'reminder_to_donate_form' do %>
+</div>
+<!--div id="overlay_2"></div-->
+<div class="grid" id="reminder_to_donate_form">
+    <div class="container hard--left">
+        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
             <%# raise @reminder_to_donate.errors.inspect %>
             <% if @reminder_to_donate.present? && (@reminder_to_donate.errors.present? || @reminder_to_donate.errors.any?) %>
                 <div role="alert">
@@ -79,27 +76,30 @@
                     </fieldset>
                 </div>
             <% end %>
-            <div class="grid__item desk-one-half lap-one-half palm-one-whole" id="reminder_form">
+            <%= form_tag reminder_to_donate_index_path(@reminder_to_donate), method: :post, id: '' do %>
+            <%= button_tag type: 'button', class:"float--right btn btn--small", id: "close_reminder_form" do %>
+                <i class="fa fa-times"  tabindex="0"></i>
+            <% end %>
+            <div class="grid__item desk-one-whole lap-one-whole palm-one-whole" id="">
                 <fieldset class="input" id="remind_me_later_form">
-                    <legend>Remind me later form</legend>
-                    <div class="grid__item desk-one-half lap-one-whole palm-one-whole">
+                    <legend>Remind me later form:</legend>
+                    <h3>Send me Reminder</h6>
+                    <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                        <%= label_tag 'name', 'Name'%>
+                        <%= text_field_tag 'reminder_to_donate[name]' %>
+                    </div>
+                    <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                         <%= label_tag 'email', 'Email Address'%>
                         <%= email_field_tag 'reminder_to_donate[email]' %>
                     </div>
-                    <div class="grid__item desk-one-half lap-one-whole palm-one-whole">
-                        <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top float--right' , id: '', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
+                    <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center">
+                        <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top' , id: '', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
                     </div>
                 </fieldset>
             </div>
         <% end %>
-    </div-->
-    <!--div class="text--center" id="other_links">
-        <div class="" >
-            <p><strong>Please help us to keep history free.</strong></p>
-            <%#= link_to "Find out more |", 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free', class: "" %> <span id="reminder_form_controller"><strong>Remind me later |</strong></span><span id="close_donate_cta_pop_up"><strong> Close</strong></span>
         </div>
-    </div-->
-
+    </div>
 </div>
 
 <style>
@@ -177,8 +177,85 @@
             right: auto;
             margin-left: -80px;
         }
+
     }
-    
+
+    @media only screen and (min-width: 1024px) {
+        #reminder_to_donate_form {
+            width: 30%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            background-color: #edfbfb;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 100000;
+            top: 10%;
+            left: 40%;
+            right: auto;
+            margin-left: -80px;
+            display: none;
+        }
+    }
+
+    @media only screen and (max-width: 1024px) {
+        #reminder_to_donate_form {
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            background-color: #edfbfb;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 100000;
+            top: 10%;
+            left: 40%;
+            right: auto;
+            margin-left: -80px;
+            display: none;
+        }
+    }
+
+    @media only screen and (max-width: 720px) {
+        #reminder_to_donate_form {
+            width: 80%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            background-color: #edfbfb;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 100000;
+            top: 10%;
+            left: 20%;
+            right: auto;
+            margin-left: -80px;
+            display: none;
+        }
+    }
+
+    @media only screen and (max-width: 570px) {
+        #reminder_to_donate_form {
+            width: 90%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            background-color: #edfbfb;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 100000;
+            top: 5%;
+            left: 20%;
+            right: auto;
+            margin-left: -75px;
+            display: none;
+        }
+    }
+
+    #reminder_to_donate_form:hover {
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
     #reminder_form_controller, #close_donate_cta_pop_up {
         color: #C84182;
         cursor: pointer;
@@ -187,9 +264,9 @@
         display: none;
     }
 
-    #reminder_form{
+    /*#reminder_form{
         display: none;
-    }
+    }*/
 
     #overlay {
       position: fixed;
@@ -202,6 +279,19 @@
       bottom: 0;
       background-color: rgba(0,0,0,0.5);
       z-index: 2;
+      cursor: pointer;
+    }
+     #overlay_2 {
+      position: fixed;
+      dispaly: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 400000;
       cursor: pointer;
     }
     .donate_cta__header__nav{
@@ -233,3 +323,12 @@
     }
 
 </style>
+<script>
+  //js code to close search criteria
+  $('#close_reminder_form').click(
+    function() {
+     $('#reminder_to_donate_form').hide();
+     document.getElementById("overlay").style.display = "none";
+  });
+
+</script>
