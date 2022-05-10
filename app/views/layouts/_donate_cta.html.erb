@@ -130,17 +130,53 @@
         }
     }
 
-    .donation_dialog{
-        width: 70% !important;
-        background-color: #edfbfb;
-        border-radius: 6px;
-        padding: 8px 0;
-        position: absolute;
-        z-index: 10000;
-        top: 7%;
-        left: 20%;
-        right: auto;
-        margin-left: -80px;
+    @media only screen and (max-width: 570px) {
+        #honeycomb {
+            display: none !important;
+        }
+         div#thank_you::before {
+            background: url("/honeycomb.png");
+            background-repeat: no-repeat;
+            background-size: cover !important;
+            position: absolute;
+            top: 7%;
+            right: 0px;
+            bottom: 0px;
+            left: 0px;
+            z-index: -1;
+            content: "";
+            opacity: 20%;
+            height: 55%;
+
+        }
+
+        .donation_dialog{
+            width: 80% !important;
+            background-color: #edfbfb;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 10000;
+            top: 5%;
+            left: 25%;
+            right: auto;
+            margin-left: -80px;
+        }
+    }
+
+    @media only screen and (min-width: 570px) {
+        .donation_dialog{
+            width: 70% !important;
+            background-color: #edfbfb;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 10000;
+            top: 7%;
+            left: 20%;
+            right: auto;
+            margin-left: -80px;
+        }
     }
     
     #reminder_form_controller, #close_donate_cta_pop_up {
