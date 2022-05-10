@@ -307,149 +307,19 @@
             <!--button class="floating_action_buttons" id="small_screen_search_button"><%= app_icons[:search].html_safe%></button-->
     <% end %>
 </div>
-<div id="overlay"></div>
-<%# raise params.inspect %>
-<div class="bmd_search_form donation_dialog" id="donate_cta_pop_up">
-    <div class="grid">
-        <div class="grid__item desk-one-half lap-one-half palm-one-whole float--right" style= "max-height: 310px;">
-            <%= image_tag("png/honeycomb.png", alt: "honeycomb")%>
-        </div>
-        <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-            <h3>Thank you for using our website.</h3>
-            <p>Free UK Genealogy is a Registered charity, and our sole purpose is to provide free access to family history.</p>
-            <p>Give a one-off or regular donation</p>
-              <ul>
-                <li>a</li>
-                <li>b</li>
-                <li>c</li>
-              </ul>
-        </div>
-    </div>
-    <div class="grid">
-        <div class="text--center" id="donate_box">
-            <center>
-                <p><strong>Please help us to keep history free.</strong></p>
-                <a href="https://donate.kindlink.com/free-uk-genealogy/3553" class="freeREG" id="donate" target="_blank"><%= DonateIconHelper::DONATE_ICON.html_safe %></a>
-            </center>
-        </div>
-        <%= form_tag reminder_to_donate_index_path(@reminder_to_donate), method: :post, id: 'reminder_to_donate_form' do %>
-            <%# raise @reminder_to_donate.errors.inspect %>
-            <% if @reminder_to_donate.present? && (@reminder_to_donate.errors.present? || @reminder_to_donate.errors.any?) %>
-                <div role="alert">
-                    <fieldset class="input">
-                        <legend>Error List</legend>
-                        <h2 class="gamma">Following <%= pluralize(@reminder_to_donate.errors.count, 'error') %> prevented the form from submitting.</h2>
-                        <ol class="validation-list">
-                            <% @reminder_to_donate.errors.messages.each do |key, msg| %>
-                                <li>
-                                    <%= msg[0] %>
-                                </li>
-                            <% end %>
-                        </ol>
-                    </fieldset>
-                </div>
-            <% end %>
-            <div class="grid__item desk-one-half lap-one-half palm-one-whole" id="reminder_form">
-                <fieldset class="input" id="remind_me_later_form">
-                    <legend>Remind me later form</legend>
-                    <div class="grid__item desk-one-half lap-one-whole palm-one-whole">
-                        <%= label_tag 'email', 'Email Address'%>
-                        <%= email_field_tag 'reminder_to_donate[email]' %>
-                    </div>
-                    <div class="grid__item desk-one-half lap-one-whole palm-one-whole">
-                        <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top float--right' , id: '', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
-                    </div>
-                </fieldset>
-            </div>
-        <% end %>
-    </div>
-    <div class="text--center" id="other_links">
-        <div class="" >
-            <!--p><strong>Please help us to keep history free.</strong></p-->
-            <%= link_to "Find out more |", 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free', class: "" %> <span id="reminder_form_controller"><strong>Remind me later |</strong></span><span id="close_donate_cta_pop_up"><strong> Close</strong></span>
-        </div>
-    </div>
-        
-        <!--div class="grid__item desk-one-half lap-one-half palm-one-whole text--right" id="reminder_form_controller">
-            <strong>Remind me later</strong>
-                <%#= link_to "Remind me later", '', class: "push--top", onclick: "show_remind_me_later_form()" %>
-            <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-                <%#= link_to "Close", '', class:" float--right" %>
-            </div>
-        </div-->
-        <!--div class="grid" id="reminder_forms">
-        <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-            <fieldset class="input" id="remind_me_later_form">
-                <legend>Remind me later form</legend>
-                <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-                    <%= label_tag 'email', 'Email Address'%>
-                    <%= email_field_tag 'email' %>
-                </div>
-                <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-                    <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top float--right' , id: '', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
-                </div>
-            </fieldset>
-        </div>
-        <div class="grid__item desk-one-half lap-one-half palm-one-whole text--right push--top">
-            <%#= link_to "More Info", 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free', class: "" %> | <%#= link_to "Close", 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free', class: "" %>
-        </div>
-    </div-->
-    <%#= form_tag reminder_path(@reminder), method: :get, id: 'reminder_form' do %>
-        <div class="grid">
-            <div class="float--right push-half--top">
-                
-            </div>
-        </div>
-    <%# end %>
-</div>
+<%=  render "layouts/donate_cta" %>
+
 
 <%# end %>
 <style>
-    .donation_dialog{
-    width: 70% !important;
-    background-color: #edfbfb;
-    border-radius: 6px;
-    padding: 8px 0;
-    position: absolute;
-    z-index: 10000;
-    top: 10%;
-    left: 15%;
-    right: auto;
-    margin-left: -80px;
+    #search_query_chapman_codes optgroup option:hover {
+        position: relative;
     }
     #spouse_or_mother_surname_div, #age_at_death_or_date_of_birth_div, #spouse_firstnames_div {
         display: none;
     }
     #search_query_chapman_code {
         overflow-x: scroll;
-    }
-    #reminder_form_controller, #close_donate_cta_pop_up {
-        color: #C84182;
-        cursor: pointer;
-    }
-    #donate_cta_pop_up {
-        display: none;
-    }
-
-    #reminder_form{
-        display: none;
-    }
-
-    #overlay {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 2;
-  cursor: pointer;
-}
-
-    #search_query_chapman_codes optgroup option:hover {
-        position: relative;
     }
         /*animation: slide 10s linear infinite;
 }
@@ -465,19 +335,6 @@
 
     
 </style>
-    <script type="text/javascript">
-        document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
-                $("#reminder_form").show();
-                $("#reminder_form_controller").hide();
-                var element = document.getElementById("donate_box");
-                var elem = document.getElementById("other_links")
-                element.className = "grid__item desk-one-half lap-one-half palm-one-whole";
-                element.classList.remove('text--center');
-                elem.classList.remove('text--center');
-                elem.className = "float--right";
-        }
-        
-    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
     <script type="text/javascript">
