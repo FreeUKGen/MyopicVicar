@@ -30,11 +30,11 @@
                       <h3>Send me Reminder</h3>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                           <%= label_tag 'name', 'Name'%>
-                          <%= text_field_tag 'reminder_to_donate[name]' %>
+                          <%= text_field_tag 'reminder_to_donate[name]', tabindex: "0" %>
                       </div>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                           <%= label_tag 'email', 'Email Address'%>
-                          <%= email_field_tag 'reminder_to_donate[email]' %>
+                          <%= email_field_tag 'reminder_to_donate[email]', tabindex: "0" %>
                       </div>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                           <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top' , id: '', data: {style: "zoom-out", color: appname_downcase, size: "s", "spinner-color" => "#ffffff"} %>

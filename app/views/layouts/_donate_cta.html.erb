@@ -10,53 +10,45 @@
             </div>
         </aside>
         <div class="grid__item desk-one-half lap-one-whole palm-one-whole" id="thank_you">
-            <div class="push--left">
-              <h3>Thank you for using <%= "Free#{appname_downcase[4,4].upcase}"%></h3>
-              <p>Free UK Genealogy is a Registered charity, and our sole purpose is to provide free access to family history. We believe that you shouldn't have to pay for access to your family history, and that providing free access is the best way to preserve this rich source of information for future generation.</p>
-              <p>We have big plans for more transcription projects, but we need your donations</p>
+            <div class="push--left" id="main_box">
+                <div class="grid__item desk-one-half lap-one-half palm-one-whole push-half--top">
+                  <span class="weight--semibold">Thank you for using</span><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                </div>
+                <div class="grid__item desk-one-half lap-one-half palm-one-whole hard--left">
+                  <%= image_tag("png/#{appname_downcase}_logo.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                </div>
+                <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                    <p>Free UK Genealogy is a Registered charity, and our sole purpose is to provide free access to family history. We believe that you shouldn't have to pay for access to your family history, and that providing free access is the best way to preserve this rich source of information for future generation.</p>
+                    <p>We have big plans for more transcription projects, but we need your donations</p>
+                </div>
             </div>
         </div>
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center" id="donate_request">
             <p><strong>Please help us to keep history free.</strong></p>
               <div class="grid__item desk-one-half lap-one-half palm-one-whole text--right">
-                <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" class="freeREG btn btn--small soft--sides" target="_blank">Read More</a>
+                <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" class="freeREG btn btn--small soft--sides" target="_blank" tabindex="0">Read More</a>
               </div>
               <div class="grid__item desk-one-half lap-one-half palm-one-whole text--left">
-                <a href="https://donate.kindlink.com/free-uk-genealogy/5007" class="freeREG btn btn--small " id="donate" target="_blank">Make a donation</a>
+                <!--a href="https://donate.kindlink.com/free-uk-genealogy/#{}" class="freeREG btn btn--small " id="donate" target="_blank" tabindex="0">Make a donation</a-->
+                <%= link_to "Make a Donation", "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}", class: "freeREG btn btn--small ", id:"donate", target:"_blank", tabindex: "0" %>
               </div>
         </div>
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center">
-          <span id="reminder_form_controller" class="push--right"><small>Maybe later</small></span>
-          <span id="close_donate_cta_pop_up" class="push--left"><small>Close</small></span>
+          <span id="reminder_form_controller" class="push--right" tabindex="0">
+                <small class="push-half--right">Maybe later</small>
+                <small><i class="fa fa-clock"></i></small>
+          </span>
+          <span id="close_donate_cta_pop_up" class="push--left" tabindex="0">
+            <small class="push-half--right">Close</small>
+            <small><i class="fa fa-times"></i></small>
+          </span>
         </div>
-        <!--div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center">
-            <div class="grid__item desk-one-quarter lap-one-half palm-one-whole">
-                <span id="reminder_form_controller"><small>Maybe later</small></span>
-            </div>
-            <div class="grid__item desk-one-quarter lap-one-half palm-one-whole">
-                
-            </div>
-        </div-->
     </div>
 
     
     <div class="grid push-half--top">
-        <!--div class="grid__item desk-one-half lap-one-half palm-one-whole float--right" style= "max-height: 310px;">
-            <%#= image_tag("png/honeycomb.png", alt: "honeycomb")%>
-        </div-->
-        <!--div class="grid__item desk-one-half lap-one-half palm-one-whole">
-            <h3>Thank you for using our website.</h3>
-            <p>Free UK Genealogy is a Registered charity, and our sole purpose is to provide free access to family history.</p>
-            <p>Give a one-off or regular donation</p>
-              <ul>
-                <li>a</li>
-                <li>b</li>
-                <li>c</li>
-              </ul>
-        </div-->
     </div>
 </div>
-<!--div id="overlay_2"></div-->
 <%= render "reminder_to_donate/form"%>
 
 <style>
@@ -84,7 +76,14 @@
             opacity: 20%;
             height: 55%;
 
+
         }
+
+        #main_box {
+            padding: 5px 25px 0px 0px;
+        }
+
+
     }
 
     @media only screen and (max-width: 570px) {
