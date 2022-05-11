@@ -1,4 +1,5 @@
-class ReminderToDonateController < ActionController::Base
+class ReminderToDonateController < ApplicationController
+  skip_before_action :require_login
 	def new
     @reminder_to_donate = ReminderToDonate.new
   end
@@ -7,10 +8,11 @@ class ReminderToDonateController < ActionController::Base
   	@reminder_to_donate = ReminderToDonate.new(reminder_to_donate_params.delete_if { |_k, v| v.blank? })
   	if @reminder_to_donate.save
   		flash[:notice] = 'saved'
+      redirect_to new_search_query_path
   	else
-  		flash[:notice] = 'failed'
+      render :new
   	end
-  	redirect_to new_search_query_path
+  	
   end
 
   private

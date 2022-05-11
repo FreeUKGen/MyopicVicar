@@ -1,13 +1,16 @@
 class ReminderToDonate
   include Mongoid::Document
   include Mongoid::Timestamps
+  require 'app'
   
   field :name, type: String
   field :email, type: String
-
-
-  index({ email_address: 1 })
-  validates_presence_of :email, message: "Please provide your email address.", on: :create
-  validates_presence_of :name, message: "Please provide your name.", on: :create
-  validates_format_of :email, with: Devise::email_regexp, message: "Please provide proper email", on: :create
+  #attr_accessor :name, :email
+  validate :reminder_form
+  validates :email, format: { with: Devise::email_regexp, message: "Please provide a valid email address." }#, , on: :create
+  
+  def reminder_form
+    self.errors.add(:name, "Please provide your name.") if self.name.blank?
+    self.errors.add(:email, "Please provide a valid email address.") if self.email.blank?
+  end
 end
