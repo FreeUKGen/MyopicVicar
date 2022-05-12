@@ -1,0 +1,47 @@
+<div class="grid" id="reminder_to_donate_form">
+    <div class="container hard--left">
+        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+            <%# raise ReminderToDonate.where(id: "627bd417dd4bf39f33970207").first.errors.inspect %>
+            <%# raise model_name.inspect %>
+            <% if @reminder_to_donate.present? && (@reminder_to_donate.errors.present? || @reminder_to_donate.errors.any?) %>
+                <div role="alert">
+                    <fieldset class="input">
+                        <legend>Error List</legend>
+                        <h2 class="gamma">Please fix the following error and resubmit</h2>
+                        <ol class="validation-list">
+                            <% @reminder_to_donate.errors.messages.each do |key, msg| %>
+                                <li>
+                                    <%= msg[0] %>
+                                </li>
+                            <% end %>
+                        </ol>
+                    </fieldset>
+                </div>
+            <% end %>
+            <%=  form_tag(reminder_to_donate_index_path(@reminder_to_donate), method: :post) do %>
+            	<% if current_page?('/') %>
+                <%= button_tag type: 'button', class:"float--right btn btn--small", id: "close_reminder_form" do %>
+                    <i class="fa fa-times"  tabindex="0"></i>
+                    <% end %>
+               <% end %>
+              <div class="grid__item desk-one-whole lap-one-whole palm-one-whole" id="">
+                  <fieldset class="input" id="remind_me_later_form">
+                      <legend>Remind me later form:</legend>
+                      <h3>Send me Reminder</h3>
+                      <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                          <%= label_tag 'name', 'Name'%>
+                          <%= text_field_tag 'reminder_to_donate[name]', tabindex: "0" %>
+                      </div>
+                      <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                          <%= label_tag 'email', 'Email Address'%>
+                          <%= email_field_tag 'reminder_to_donate[email]', tabindex: "0" %>
+                      </div>
+                      <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                          <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top' , id: '', data: {style: "zoom-out", color: appname_downcase, size: "s", "spinner-color" => "#ffffff"} %>
+                      </div>
+                  </fieldset>
+              </div>
+            <% end %>
+        </div>
+    </div>
+</div>

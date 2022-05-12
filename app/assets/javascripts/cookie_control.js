@@ -19,6 +19,32 @@ $(document).ready(function() {
     };
   };
 
+  if ((getCookie('donate_cta_flag') == 0) || (getCookie('donate_cta_flag') === null)) {
+  document.getElementById("overlay").style.display = "block";
+  $("#donate_cta_pop_up").show();
+  document.getElementById('close_donate_cta_pop_up').onclick = function close_donate_cta() {
+    setCookie('donate_cta_flag', 0,365);
+    $("#donate_cta_pop_up").hide();
+    document.getElementById("overlay").style.display = "none";
+  }
+} else {
+  document.getElementById("overlay").style.display = "none";
+  $("#donate_cta_pop_up").hide();
+};
+
+document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
+  $("#reminder_to_donate_form").show();
+  $("#donate_cta_pop_up").hide();
+  $("#overlay_2").show();
+  $("#reminder_form_controller").hide();
+  var element = document.getElementById("donate_box");
+  var elem = document.getElementById("other_links")
+  element.className = "grid__item desk-one-half lap-one-half palm-one-whole";
+  element.classList.remove('text--center');
+  elem.classList.remove('text--center');
+  elem.className = "float--right";
+}
+
   // Switch Adsense checkbox value
   var toggleAdsenseCheckbox = function() {
     if (getCookie('userAdPersonalization') == 1) {
