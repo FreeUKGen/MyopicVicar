@@ -1,6 +1,6 @@
 <div class="grid" id="reminder_to_donate_form">
     <div class="container hard--left">
-        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole ">
+        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole " style="width:95%">
             <% if @reminder_to_donate.present? && (@reminder_to_donate.errors.present? || @reminder_to_donate.errors.any?) %>
                 <div role="alert">
                     <fieldset class="input">
@@ -16,23 +16,25 @@
                     </fieldset>
                 </div>
             <% end %>
-            <%=  form_tag(reminder_to_donate_index_path(@reminder_to_donate), method: :post) do %>
-            	<% if current_page?('/') %>
-                    <%= button_tag type: 'button', class:"float--right btn btn--small", id: "close_reminder_form" do %>
+            <% if current_page?('/') %>
+                <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--right" style="height:30px">
+                    <%= button_tag type: 'button', class:"btn btn--small push--bottom", id: "close_reminder_form" do %>
                     <i class="fa fa-times"  tabindex="0"></i>
                     <% end %>
+                </div>
                <% end %>
-              <div class="grid__item desk-one-whole lap-one-whole palm-one-whole float--none" id="">
+            <%=  form_tag(reminder_to_donate_index_path(@reminder_to_donate), method: :post) do %>
+              <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left" id="">
                   <fieldset class="input" id="remind_me_later_form">
                       <legend>Remind me later form:</legend>
                       <h3>Send me Reminder</h3>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                           <%= label_tag 'name', 'Name'%>
-                          <%= text_field_tag 'reminder_to_donate[name]', nil, tabindex: "0" %>
+                          <%= text_field_tag 'reminder_to_donate[name]', nil, tabindex: "0", class: "text-input" %>
                       </div>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                           <%= label_tag 'email', 'Email Address'%>
-                          <%= email_field_tag 'reminder_to_donate[email]', nil, tabindex: "0" %>
+                          <%= email_field_tag 'reminder_to_donate[email]', nil, tabindex: "0", class: "text-input" %>
                       </div>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                           <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top' , id: '', data: {style: "zoom-out", color: appname_downcase, size: "s", "spinner-color" => "#ffffff"} %>

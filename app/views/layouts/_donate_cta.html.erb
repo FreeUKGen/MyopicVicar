@@ -6,44 +6,36 @@
     <div class="grid">
         <div class="grid__item desk-two-thirds lap-one-whole palm-one-whole" id="thank_you">
             <div class="push--left" id="main_box">
-                <div class="grid__item desk-one-third lap-three-quarters palm-one-whole thank_you_text_div">
+                <!--div class="grid__item desk-one-third lap-three-quarters palm-one-whole thank_you_text_div">
                   <span class="weight--light" id="nandri_font">Thank you for using </span><%#= "Free#{appname_downcase[4,4].upcase}"%>
-                </div>
-                <div class="grid__item desk-one-third lap-one-quarter palm-one-whole hard--left logo_div push-half--bottom">
-                  <%= image_tag("png/#{appname_downcase}_logo.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                </div-->
+                <div class="grid__item desk-one-half lap-one-half palm-one-whole logo_div push-half--bottom">
+                  <%#= image_tag("png/#{appname_downcase}_logo.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                  <%= image_tag("png/TYFR.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
                 </div>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-                    <p>We are a registerd charity: we need your support.</p>
-                    <p>Our sole purpose is to provide free access to family history for everyone, forever.</p>
-
-                    <p>Your donations enable us to support our volunteer transcribers to produce high-quality transcriptions to grow your family tree.</p>
+                    <p>We are a registerd charity: we need your support.
+                    Our sole purpose is to provide free access to family history for everyone, forever.
+                    Your donations enable us to support our volunteer transcribers to produce high-quality transcriptions to grow your family tree.</p>
                     <!--p>Help us to keep your family history free</p-->
                 </div>
-                                <!--div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-                    <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-                        <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" class="freeREG btn btn--small" target="_blank" tabindex="0">Read More</a>
-                    </div>
-                    <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-                        <%#= link_to "Make a Donation", "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}", class: "freeREG btn btn--small ", id:"donate", target:"_blank", tabindex: "0" %>
-                    </div>
-               </div-->
             </div>
         </div>
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
             <div class="grid__item desk-two-thirds lap-one-whole palm-one-whole" >
                 <div class="push--left" id="request_box">
                    <p>Help us to keep your family history free</p>
-                    <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-                        <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-                            <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" class="freeREG btn btn--small" target="_blank" tabindex="0">Read More</a>
+                    <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left">
+                        <div class="grid__item desk-one-half lap-one-half palm-one-whole hard--left" id="read_more_div">
+                            <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" class="text--center btn btn--small" target="_blank" tabindex="0" id="read_more">Read More</a>
                         </div>
-                        <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-                            <%= link_to "Make a Donation", "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}", class: "freeREG btn btn--small ", id:"donate", target:"_blank", tabindex: "0" %>
+                        <div class="grid__item desk-one-half lap-one-half palm-one-whole" id="donate_div">
+                            <%= link_to "Donate now", "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}", class: "freeREG btn btn--small ", id:"donate", target:"_blank", tabindex: "0" %>
                         </div>
                     </div>
                 </div>
            </div>
-           <aside class="grid__item desk-one-third lap-one-whole palm-one-whole float--right">
+           <aside class="grid__item desk-one-third lap-one-whole palm-one-whole float--right" id="fundraising_box">
                 <%= image_tag("png/fr.png", alt: "Fundraising", class: "", id:"fundraising")%>
             </aside>
         </div>
@@ -57,6 +49,9 @@
             <small class="push-half--right">Close</small>
           </span>
         </div>
+        <aside class="grid__item lap-one-whole palm-one-whole " id="fundraising_box_2">
+                <%= image_tag("png/fr.png", alt: "Fundraising", class: "", id:"fundraising")%>
+        </aside>
         <!--aside class="grid__item desk-one-third lap-one-whole palm-one-whole">
                 <%= image_tag("png/fr.png", alt: "honeycomb", class: "")%>
         </aside-->
@@ -68,10 +63,40 @@
     #nandri_font {
         font-family: 'MuseoModerno', cursive;
     }
+
+    #fundraising_box_2 {
+        display: none;
+    }
+
+    #read_more {
+        width: 70%;
+        color: #222222;
+        background-color: white;
+        font-weight: bold;
+        border-color: grey;
+    }
+
+    #donate {
+        width: 70%;
+        background-color: #c84182;
+        border-color:  #c84182;
+    }
+    
     
     @media only screen and (max-width: 570px) {
         #donate_request > .text--right, #donate_request > .text--left {
             text-align: center !important;
+        }
+        #fundraising_box {
+            display: none;
+        }
+
+        #fundraising_box_2 {
+            display: block;
+            text-align: center;
+        }
+        #donate_div {
+            padding-left: 0px !important;
         }
     }
 
@@ -100,6 +125,18 @@
             padding: 5px 25px 0px 0px;
         }
 
+        #fundraising {
+            width: 50%;
+        }
+
+        #fundraising_box {
+            display: none;
+        }
+
+        #fundraising_box_2 {
+            display: block;
+            text-align: center;
+        }
 
     }
 
@@ -118,8 +155,8 @@
             z-index: -1;
             content: "";
             opacity: 70%;
-            height: 70%;
-            width: 85%;
+            height: 55%;
+            width: 65%;
 
 
         }
@@ -128,6 +165,10 @@
             width: 100%;
         }
 
+        #fundraising {
+            height: 95px;
+            padding-top: 30px;
+        }
        
 
     }
@@ -210,7 +251,7 @@
             transition: 0.3s;
             background-color: #edfbfb;
             border-radius: 6px;
-            padding: 8px 0;
+            padding: 18px 0;
             position: absolute;
             z-index: 100000;
             top: 10%;
@@ -228,7 +269,7 @@
             transition: 0.3s;
             background-color: #edfbfb;
             border-radius: 6px;
-            padding: 8px 0;
+            padding: 18px 0;
             position: absolute;
             z-index: 100000;
             top: 10%;
@@ -246,7 +287,7 @@
             transition: 0.3s;
             background-color: #edfbfb;
             border-radius: 6px;
-            padding: 8px 0;
+            padding: 18px 0;
             position: absolute;
             z-index: 100000;
             top: 10%;
