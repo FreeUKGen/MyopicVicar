@@ -1,6 +1,6 @@
 <div class="grid" id="reminder_to_donate_form">
     <div class="container hard--left">
-        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole ">
             <% if @reminder_to_donate.present? && (@reminder_to_donate.errors.present? || @reminder_to_donate.errors.any?) %>
                 <div role="alert">
                     <fieldset class="input">
@@ -18,11 +18,11 @@
             <% end %>
             <%=  form_tag(reminder_to_donate_index_path(@reminder_to_donate), method: :post) do %>
             	<% if current_page?('/') %>
-                <%= button_tag type: 'button', class:"float--right btn btn--small", id: "close_reminder_form" do %>
+                    <%= button_tag type: 'button', class:"float--right btn btn--small", id: "close_reminder_form" do %>
                     <i class="fa fa-times"  tabindex="0"></i>
                     <% end %>
                <% end %>
-              <div class="grid__item desk-one-whole lap-one-whole palm-one-whole" id="">
+              <div class="grid__item desk-one-whole lap-one-whole palm-one-whole float--none" id="">
                   <fieldset class="input" id="remind_me_later_form">
                       <legend>Remind me later form:</legend>
                       <h3>Send me Reminder</h3>
