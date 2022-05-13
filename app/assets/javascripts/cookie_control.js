@@ -36,6 +36,7 @@ var close_donate_cta = function(){
 }
 
 document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
+  setCookie('donate_cta_flag', 1,365);
   $("#reminder_to_donate_form").show();
   $("#donate_cta_pop_up").hide();
   $("#reminder_form_controller").hide();

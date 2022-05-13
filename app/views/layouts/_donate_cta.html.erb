@@ -28,7 +28,7 @@
                             <a href="https://www.freeukgenealogy.org.uk/why-donate" class="text--center btn btn--small" target="_blank" tabindex="0" id="read_more">Read More</a>
                         </div>
                         <div class="grid__item desk-one-half lap-one-half palm-one-whole" id="donate_div">
-                            <%= link_to "Donate now", "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}", class: "freeREG btn btn--small ", id:"donate", target:"_blank", tabindex: "0" %>
+                            <%= link_to "DONATE NOW", "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}", class: "freeREG btn btn--small weight--semibold", id:"donate", target:"_blank", tabindex: "0" %>
                         </div>
                     </div>
                 </div>
@@ -40,11 +40,11 @@
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center push--bottom">
           <span id="reminder_form_controller" class="push--right" tabindex="0">
                 <small><i class="fa fa-clock push-half--right"></i></small>
-                <small class="push-half--right"><strong>REMIND ME LATER</strong></small>
+                <small class="push-half--right">Remind me later</small>
           </span>
           <span id="close_donate_cta_pop_up" class="push--left" tabindex="0">
             <small><i class="fa fa-times push-half--right "></i></small>
-            <small class="push-half--right"><strong>CLOSE</strong></small>
+            <small class="push-half--right">Close</small>
           </span>
         </div>
         <aside class="grid__item lap-one-whole palm-one-whole " id="fundraising_box_2">
@@ -76,12 +76,19 @@
         background-color: white;
         font-weight: bold;
         border-color: grey;
+        padding:  5px;
+    }
+
+    #read_more:hover, #read_more:focus {
+        border: 2px dashed grey;
+        font-weight: 600;
     }
 
     #donate {
         width: 70%;
         background-color: #c84182;
         border-color:  #c84182;
+        padding:  5px;
     }
     
     
