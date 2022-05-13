@@ -19,14 +19,20 @@ $(document).ready(function() {
     };
   };
 
+  //turn off donate cta
+var close_donate_cta = function(){
+  setCookie('donate_cta_flag', 0,365);
+    $("#donate_cta_pop_up").hide();
+    document.getElementById("overlay").style.display = "none";
+
+};
+
   if ((getCookie('donate_cta_flag') == 0) || (getCookie('donate_cta_flag') === null)) {
   document.getElementById("overlay").style.display = "block";
   $("#donate_cta_pop_up").show();
-  document.getElementById('close_donate_cta_pop_up').onclick = function close_donate_cta() {
-    setCookie('donate_cta_flag', 0,365);
-    $("#donate_cta_pop_up").hide();
-    document.getElementById("overlay").style.display = "none";
-  }
+  document.getElementById('close_donate_cta_pop_up').onclick = close_donate_cta;
+  document.getElementById('donate').onclick = close_donate_cta;
+  document.getElementById('read_more').onclick = close_donate_cta;
 } else {
   document.getElementById("overlay").style.display = "none";
   $("#donate_cta_pop_up").hide();
@@ -44,6 +50,7 @@ document.getElementById('reminder_form_controller').onclick = function show_remi
   elem.classList.remove('text--center');
   elem.className = "float--right";
 }
+
 
   // Switch Adsense checkbox value
   var toggleAdsenseCheckbox = function() {
