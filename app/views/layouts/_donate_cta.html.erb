@@ -13,10 +13,10 @@
                   <%#= image_tag("png/#{appname_downcase}_logo.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
                   <%= image_tag("png/TYFR.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
                 </div>
-                <div class="grid__item desk-seven-eighths lap-one-whole palm-one-whole">
-                    <p>We are a registerd charity: we need your support.
-                    Our sole purpose is to provide free access to family history for everyone, forever.
-                    Your donations enable us to support our volunteer transcribers to produce high-quality transcriptions to grow your family tree.</p>
+                <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                    <p id="charity_text"><strong>We're a registered charity: we need your support.</strong></p>
+                    <p>Our sole purpose is to provide free access to family history <strong>for everyone, forever.</strong>
+                    Your donations enable us to support our volunteer transcribers to produce <br>high-quality transcriptions to grow your family tree.</p>
                     <!--p>Help us to keep your family history free</p-->
                 </div>
             </div>
@@ -24,10 +24,10 @@
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
             <div class="grid__item desk-two-thirds lap-one-whole palm-one-whole" >
                 <div class="push--left" id="request_box">
-                   <p>Help us to keep your family history free</p>
+                   <p><strong>Help us keep your family history free.</strong></p>
                     <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left">
                         <div class="grid__item desk-one-half lap-one-half palm-one-whole hard--left" id="read_more_div">
-                            <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free" class="text--center btn btn--small" target="_blank" tabindex="0" id="read_more">Read More</a>
+                            <a href="https://www.freeukgenealogy.org.uk/why-donate" class="text--center btn btn--small" target="_blank" tabindex="0" id="read_more">Read More</a>
                         </div>
                         <div class="grid__item desk-one-half lap-one-half palm-one-whole" id="donate_div">
                             <%= link_to "Donate now", "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}", class: "freeREG btn btn--small ", id:"donate", target:"_blank", tabindex: "0" %>
@@ -62,6 +62,10 @@
 <style>
     #nandri_font {
         font-family: 'MuseoModerno', cursive;
+    }
+
+    #charity_text {
+        color: #00857e;
     }
 
     #fundraising_box_2 {
@@ -156,7 +160,7 @@
             content: "";
             opacity: 70%;
             height: 55%;
-            width: 65%;
+            width: 60%;
 
 
         }
