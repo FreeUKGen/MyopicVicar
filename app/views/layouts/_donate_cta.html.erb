@@ -9,7 +9,7 @@
                 <!--div class="grid__item desk-one-third lap-three-quarters palm-one-whole thank_you_text_div">
                   <span class="weight--light" id="nandri_font">Thank you for using </span><%#= "Free#{appname_downcase[4,4].upcase}"%>
                 </div-->
-                <div class="grid__item desk-one-half lap-one-half palm-one-whole logo_div push-half--bottom">
+                <div class="grid__item desk-one-half lap-one-half palm-one-whole logo_div push-half--bottom push--top">
                   <%#= image_tag("png/#{appname_downcase}_logo.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
                   <%= image_tag("png/ty_#{appname_downcase}.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
                 </div>
@@ -173,7 +173,9 @@
             padding-top: 30px;
             float: right;
         }
-       
+        #donate_div{
+            padding-left: 0px !important;
+        }
 
     }
 
