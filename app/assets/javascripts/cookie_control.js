@@ -31,7 +31,7 @@ var close_donate_cta = function(){
   document.getElementById("overlay").style.display = "block";
   $("#donate_cta_pop_up").show();
   document.getElementById('close_donate_cta_pop_up').onclick = close_donate_cta;
-  document.getElementById('donate').onclick = close_donate_cta;
+  document.getElementById('donate_now_button').onclick = close_donate_cta;
   document.getElementById('read_more').onclick = close_donate_cta;
 }
 
