@@ -21,7 +21,7 @@ $(document).ready(function() {
 
   //turn off donate cta
 var close_donate_cta = function(){
-  setCookie('donate_cta_flag', 0,365);
+  setCookie('donate_cta_flag', 1,365);
     $("#donate_cta_pop_up").hide();
     document.getElementById("overlay").style.display = "none";
 
@@ -33,15 +33,11 @@ var close_donate_cta = function(){
   document.getElementById('close_donate_cta_pop_up').onclick = close_donate_cta;
   document.getElementById('donate').onclick = close_donate_cta;
   document.getElementById('read_more').onclick = close_donate_cta;
-} else {
-  document.getElementById("overlay").style.display = "none";
-  $("#donate_cta_pop_up").hide();
-};
+}
 
 document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
   $("#reminder_to_donate_form").show();
   $("#donate_cta_pop_up").hide();
-  $("#overlay_2").show();
   $("#reminder_form_controller").hide();
   var element = document.getElementById("donate_box");
   var elem = document.getElementById("other_links")

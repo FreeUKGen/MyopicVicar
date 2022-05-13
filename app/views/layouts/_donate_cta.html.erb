@@ -10,8 +10,7 @@
                   <span class="weight--light" id="nandri_font">Thank you for using </span><%#= "Free#{appname_downcase[4,4].upcase}"%>
                 </div-->
                 <div class="grid__item desk-one-half lap-one-half palm-one-whole logo_div push-half--bottom push--top">
-                  <%#= image_tag("png/#{appname_downcase}_logo.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
-                  <%= image_tag("png/ty_#{appname_downcase}.png", alt: "#{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                  <%= image_tag("png/ty_#{appname_downcase}.png", alt: "Thank you for using #{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
                 </div>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                     <p id="charity_text" class="weight--semibold">We're a registered charity: we need your support.</p>
@@ -51,14 +50,14 @@
         <aside class="grid__item lap-one-whole palm-one-whole " id="fundraising_box_2">
                 <%= image_tag("png/fr.png", alt: "Fundraising", class: "", id:"fundraising")%>
         </aside>
-        <!--aside class="grid__item desk-one-third lap-one-whole palm-one-whole">
-                <%= image_tag("png/fr.png", alt: "honeycomb", class: "")%>
-        </aside-->
     </div>
 </div>
 <%= render "reminder_to_donate/form"%>
 
 <style>
+    #overlay {
+        display: none;
+    }
     #nandri_font {
         font-family: 'MuseoModerno', cursive;
     }
@@ -354,13 +353,8 @@
         display: none;
     }
 
-    /*#reminder_form{
-        display: none;
-    }*/
-
     #overlay {
       position: fixed;
-      dispaly: none;
       width: 100%;
       height: 100%;
       top: 0;
@@ -371,19 +365,7 @@
       z-index: 2;
       cursor: pointer;
     }
-     #overlay_2 {
-      position: fixed;
-      dispaly: none;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0,0,0,0.5);
-      z-index: 400000;
-      cursor: pointer;
-    }
+
     .donate_cta__header__nav{
         background: #00857e;
         overflow: hidden;
