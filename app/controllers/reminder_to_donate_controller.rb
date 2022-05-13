@@ -7,7 +7,6 @@ class ReminderToDonateController < ApplicationController
   def create
   	@reminder_to_donate = ReminderToDonate.new(reminder_to_donate_params.delete_if { |_k, v| v.blank? })
   	if @reminder_to_donate.save
-  		flash[:notice] = 'saved'
       redirect_to new_search_query_path
   	else
       render :new
