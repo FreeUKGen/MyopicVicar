@@ -80,6 +80,9 @@ class Freecen2PlacesController < ApplicationController
           @county = session[:county]
           places_counties_and_countries
           @place_name = @place.place_name if @place.present?
+          @place.alternate_freecen2_place_names.build
+          @place.alternate_freecen2_place_names.build
+          @place.alternate_freecen2_place_names.build
 
           get_sources
 
@@ -211,7 +214,6 @@ class Freecen2PlacesController < ApplicationController
     sources_array_sorted.each do |entry|
       @sources << entry[0]
     end
-
   end
 
   def load(place_id)
@@ -245,10 +247,7 @@ class Freecen2PlacesController < ApplicationController
     @counties -= Freecen::UNNEEDED_COUNTIES
     @counties << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role)
 
-    @sources = []
-    Freecen2PlaceSource.all.order_by(source: 1).each do |source|
-      @sources << source.source
-    end
+    get_sources
   end
 
   def places_counties_and_countries
@@ -385,6 +384,18 @@ class Freecen2PlacesController < ApplicationController
         flash[:notice] = 'The valid Website for Place Source is required'
         get_reasons
         get_sources
+        render action: 'edit'
+        return
+      end
+
+      error_message = @place.check_alternate_names(params[:freecen2_place][:alternate_freecen2_place_names_attributes], @place.chapman_code, params[:freecen2_place][:place_name])
+      unless error_message == 'None'
+        flash[:notice] = error_message
+        get_reasons
+        get_sources
+        @place.alternate_freecen2_place_names.build
+        @place.alternate_freecen2_place_names.build
+        @place.alternate_freecen2_place_names.build
         render action: 'edit'
         return
       end
