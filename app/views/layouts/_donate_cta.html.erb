@@ -4,7 +4,7 @@
         <p id="top_banner_text"><%= "Support our Free UK Genealogy Volunteers".upcase %></p>
     </div>
     <div class="grid">
-        <div class="grid__item desk-two-thirds lap-one-whole palm-one-whole" id="thank_you">
+        <div class="grid__item desk-wide-one-half desk-two-thirds lap-one-whole palm-one-whole" id="thank_you">
             <div class="push--left" id="main_box">
                 <!--div class="grid__item desk-one-third lap-three-quarters palm-one-whole thank_you_text_div">
                   <span class="weight--light" id="nandri_font">Thank you for using </span><%#= "Free#{appname_downcase[4,4].upcase}"%>
@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-            <div class="grid__item desk-two-thirds lap-one-whole palm-one-whole" >
+            <div class="grid__item desk-wide-three-quarters desk-two-thirds lap-one-whole palm-one-whole" >
                 <div class="push--left" id="request_box">
                    <p><strong>Help us keep your family history free.</strong></p>
                     <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left">
@@ -32,7 +32,7 @@
                     </div>
                 </div>
            </div>
-           <aside class="grid__item desk-one-third lap-one-whole palm-one-whole float--right" id="fundraising_box">
+           <aside class="grid__item desk-wide-one-quarter desk-one-third lap-one-whole palm-one-whole float--right" id="fundraising_box">
                 <%= image_tag("png/fr.png", alt: "Fundraising", class: "", id:"fundraising")%>
             </aside>
         </div>
@@ -93,6 +93,24 @@
     #donate_now_button:hover, #donate_now_button:focus {
         background-color: white;
         color: #c84182;
+    }
+
+    .donation_dialog {
+        left: 0 !important;
+        right: 0;
+        margin: 0 auto;
+        position: absolute;
+        background-color: white;
+        border-radius: 6px;
+        padding: 8px 0;
+        z-index: 10000;
+    }
+
+    @media only screen and (min-width: 1300px) {
+        .donation_dialog {
+            width: 70%;
+            max-width: 800px;
+        }
     }
     
     
@@ -175,14 +193,13 @@
         }
 
         #fundraising {
-            width: 70%;
-        }
-
-        #fundraising {
+            width: 80%;
+            max-width: 300px;
             height: 110px;
             padding-top: 30px;
             float: right;
         }
+
         #donate_div{
             padding-left: 0px !important;
         }
@@ -232,30 +249,15 @@
 
         .donation_dialog{
             width: 80% !important;
-            background-color: white;
-            border-radius: 6px;
-            padding: 8px 0;
-            position: absolute;
-            z-index: 10000;
             top: 5%;
-            left: 32%;
-            right: auto;
-            margin-left: -80px;
         }
     }
 
     @media only screen and (min-width: 570px) {
         .donation_dialog{
             width: 70% !important;
-            background-color: white;
-            border-radius: 6px;
-            padding: 8px 0;
-            position: absolute;
-            z-index: 10000;
             top: 7%;
-            left: 22%;
-            right: auto;
-            margin-left: -80px;
+            
         }
 
     }
