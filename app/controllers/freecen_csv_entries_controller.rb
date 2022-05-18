@@ -159,7 +159,6 @@ class FreecenCsvEntriesController < ApplicationController
     get_user_info_from_userid
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
-    p "AV edit PARAMS: #{params.inspect}"
   end
 
   def index
