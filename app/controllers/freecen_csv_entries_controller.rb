@@ -140,6 +140,7 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
     redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
 
+    @file_validation = @freecen_csv_file.validation
     display_info
     @year, piece, @census_fields = Freecen2Piece.extract_year_and_piece(@piece.number, @chapman_code)
     @data_transition = @freecen_csv_entry.data_transition
@@ -158,6 +159,7 @@ class FreecenCsvEntriesController < ApplicationController
     get_user_info_from_userid
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
+    p "AV edit PARAMS: #{params.inspect}"
   end
 
   def index
@@ -260,11 +262,10 @@ class FreecenCsvEntriesController < ApplicationController
       message = 'The entry was incorrectly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
     @warnings, @errors = @freecen_csv_entry.are_there_messages
     params[:freecen_csv_entry][:verbatim_birth_place] = FreecenCsvEntry.mystrip(params[:freecen_csv_entry][:verbatim_birth_place])
-    @freecen_csv_entry.validate_on_line_edit_of_fields(params[:freecen_csv_entry]) unless params[:freecen_csv_entry][:record_valid] == 'true'
+    @freecen_csv_entry.validate_on_line_edit_of_fields(params[:freecen_csv_entry]) unless params[:freecen_csv_entry][:record_valid] == 'true' || params[:commit] == 'Override warnings'
 
     if @freecen_csv_entry.errors.any?
       redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
@@ -273,11 +274,19 @@ class FreecenCsvEntriesController < ApplicationController
       session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.propagate_note?(params[:freecen_csv_entry])
       params[:freecen_csv_entry][:warning_messages] = '' if params[:freecen_csv_entry][:record_valid] == 'true'
       @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
+      if params[:commit] == 'Override warnings'
+        @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
+        @freecen_csv_entry.remove_flags if @freecen_csv_entry.flag
+      end
       @freecen_csv_entry.reload
       @warnings_now, @errors_now = @freecen_csv_entry.are_there_messages
       @freecen_csv_entry.check_valid
       @freecen_csv_file.update_messages_and_lock(@warnings, @errors, @warnings_now, @errors_now)
-      flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
+      if params[:commit] == 'Override warnings'
+        flash[:notice] = 'The override of warning messages (and any changes in entry contents) was successful, the file is now locked against replacement until it has been downloaded.'
+      else
+        flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
+      end
       redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     end
   end
