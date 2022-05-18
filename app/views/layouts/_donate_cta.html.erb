@@ -6,10 +6,7 @@
     <div class="grid">
         <div class="grid__item desk-wide-one-half desk-two-thirds lap-one-whole palm-one-whole" id="thank_you">
             <div class="push--left" id="main_box">
-                <!--div class="grid__item desk-one-third lap-three-quarters palm-one-whole thank_you_text_div">
-                  <span class="weight--light" id="nandri_font">Thank you for using </span><%#= "Free#{appname_downcase[4,4].upcase}"%>
-                </div-->
-                <div class="grid__item desk-one-half lap-one-half palm-one-whole logo_div push-half--bottom push--top">
+                <div class="grid__item desk-three-quarters lap-one-whole palm-one-whole logo_div push-half--bottom push--top">
                   <%= image_tag("png/ty_#{appname_downcase}.png", alt: "Thank you for using #{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
                 </div>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
@@ -256,7 +253,7 @@
     @media only screen and (min-width: 570px) {
         .donation_dialog{
             width: 70% !important;
-            top: 7%;
+            top: 35%;
             
         }
 
@@ -318,10 +315,10 @@
             width: 60%;
             margin-top: -3px;
         }
-        .logo_div {
+        /*.logo_div {
             width: 40%;
             margin-top: -5px;
-        }
+        }*/
 
     }
 
@@ -375,7 +372,7 @@
       right: 0;
       bottom: 0;
       background-color: rgba(0,0,0,0.5);
-      z-index: 2;
+      z-index: 2000;
       cursor: pointer;
     }
 

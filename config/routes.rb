@@ -17,6 +17,7 @@ MyopicVicar::Application.routes.draw do
 
 
   root :to => 'search_queries#new'
+  resources :reminder_to_donate
 
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
@@ -74,7 +75,7 @@ MyopicVicar::Application.routes.draw do
   resources :freecen_dwellings
 
   resources :freecen_individuals
-  resources :reminder_to_donate
+  
 
   get 'freecen2_site_statistics/grand_totals', to: 'freecen2_site_statistics#grand_totals', as: :grand_totals_freecen2_site_statistics
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
