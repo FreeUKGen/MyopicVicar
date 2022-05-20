@@ -172,6 +172,8 @@ class Freecen2ContentsController < ApplicationController
     @place = Freecen2Place.find_by(chapman_code: @chapman_code, place_name: @place_description)
     if @place.present?
       @place_unique_names = Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place.id)
+      redirect_back(fallback_location: freecen2_contents_path, notice: 'Names not found') && return if @place_unique_names.blank?
+
       @first_names = @place_unique_names.unique_forenames[@year]
       @last_names = @place_unique_names.unique_surnames[@year]
       @first_names_cnt = @first_names.count
