@@ -66,6 +66,8 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def piece_index_setup(order_by_for_total, order_by_for_year)
+    redirect_to(freecen2_contents_path, notice: 'Record not found') && return if @freecen2_contents.blank?
+
     redirect_to(freecen2_contents_path, notice: 'Census Year not found') && return if !params[:census_year].presence || params[:census_year].blank?
 
     redirect_to(freecen2_contents_path, notice: 'Place not found') && return if !params[:place_description].presence || params[:place_description].blank?
