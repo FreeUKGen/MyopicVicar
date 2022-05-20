@@ -271,6 +271,10 @@ class Freecen2ContentsController < ApplicationController
     place_name = place_with_dates.split('=')[0]
   end
 
+  def show
+    redirect_to(freecen2_contents_path, notice: 'No such record') && return
+  end
+
   private
 
   def freecen2_content_params
