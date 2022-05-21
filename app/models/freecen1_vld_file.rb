@@ -610,7 +610,8 @@ class Freecen1VldFile
 
   def compute_notes(rec)
     if rec['notes'].present? && rec['unoccupied_notes'].present?
-      line = (rec['notes'] + rec['unoccupied_notes']) unless rec['notes'] == rec['unoccupied_notes']
+      line = rec['notes'] == rec['unoccupied_notes']  ?  rec['notes'] : (rec['notes'] + rec['unoccupied_notes'])
+      # line = (rec['notes'] + rec['unoccupied_notes']) unless rec['notes'] == rec['unoccupied_notes']
     elsif rec['notes'].present? && rec['unoccupied_notes'].blank?
       line = rec['notes']
     elsif rec['unoccupied_notes'].present?
