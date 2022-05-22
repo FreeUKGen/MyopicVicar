@@ -697,15 +697,15 @@ module ApplicationHelper
   end
 
   def html_options_freereg_icon
-    { class: 'icon__freereg', rel: 'noreferrer' }
+    { class: 'icon__freereg' }
   end
 
   def html_options_freecen_icon
-    { class: 'icon__freecen', rel: 'noreferrer' }
+    { class: 'icon__freecen' }
   end
 
   def html_options_freebmd_icon
-    { class: 'icon__freebmd', rel: 'noreferrer' }
+    { class: 'icon__freebmd' }
   end
 
   def html_options_freeukgen_icon
