@@ -356,16 +356,28 @@ module ApplicationHelper
     dist
   end
 
+  def project_name
+    "Free" + appname[4,3]
+  end
+
+  def project_description
+    {
+      freereg: "UK Parish Register Records",
+      freecen: "UK Census Records (England, Scotland, Wales)",
+      freebmd: "UK Birth, Marriage, and Death Records (England, Scotland, Wales)"
+    }
+  end
+
   def title(title = nil)
     if title.present?
       content_for :title, title
     elsif content_for?(:title)
-      title = content_for(:title) +  ' | ' + 'FreeREG'
+      title = content_for(:title) +  ' | ' + project_name.upcase
 
     elsif  page_title.present?
-      title = page_title + ' | '  + 'FreeREG'
+      title = page_title + ' | '  + project_name.upcase
     else
-      title = 'FreeREG | UK Parish Register Records'
+      title = "#{project_name.upcase} | #{project_description[appname_downcase]}"
     end
   end
   def display_number(num)
