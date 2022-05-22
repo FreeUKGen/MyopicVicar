@@ -12,7 +12,7 @@
   </div>
 </div>
 <% if appname.downcase == 'freecen'%>
-  <p class = "text--center strong">Space for Advertisement</p>
+  
 <% end %>
 <div class="c-subfooter-2 icon__honeycomb--bottom-left  island  flush--bottom">
   <nav class="container  text--center">
@@ -21,3 +21,7 @@
 </div>
 <%= render 'layouts/basic_footer' %>
 </footer>
+
+<script>
+  $(".google-auto-placed").prepend('<p class = "text--center strong">Space for Advertisement</p>')
+</script>
