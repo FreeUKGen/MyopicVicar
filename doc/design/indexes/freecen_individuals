@@ -58,6 +58,13 @@ db.runCommand(
                 },
                 "name" : "freecen_piece_id_1",
                 "background" : true
+        },
+        {
+                "key" : {
+                        "freecen1_vld_entry_id" : 1
+                },
+                "name" : "freecen1_vld_entry_id_1",
+                "background" : true
         }
             ]
   }

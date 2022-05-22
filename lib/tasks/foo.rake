@@ -7,7 +7,7 @@ namespace :foo do
 
 
   task :check_incorporated_records_exists, [:limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'check_incorporated_records_exists'
     puts 'check incorporated records exist'
     CheckIncorporatedRecordsExists.process
@@ -15,7 +15,7 @@ namespace :foo do
   end
 
   task :add_freereg1_csv_file_id_to_search_record, [:limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'add_freereg1_csv_file_id_to_search_record'
     puts 'Add Freereg1 Csv FileId To Search Record'
     AddFreereg1CsvFileIdToSearchRecord.process(args.limit)
@@ -23,14 +23,14 @@ namespace :foo do
   end
 
   task :move_civil_parishes_to_another_county, [:limit, :file_name] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'move_civil_parishes_to_another_county'
     puts "Move Civil Parishes To Another County"
     MoveCivilParishesToAnotherCounty.process(args.limit, args.file_name)
     puts "Task complete."
   end
   task :edit_freecen2_name, [:type, :chapman_code, :limit, :fix] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'edit_freecen2_name'
     puts "Editing Freecen2 collection names"
     EditFreecen2Name.process(args.type, args.chapman_code, args.limit, args.fix)
@@ -62,7 +62,7 @@ namespace :foo do
   end
 
   task :freecen2_pieces_refresh_civil_parish_list, [:limit, :fix] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'freecen2_pieces_refresh_civil_parish_list'
     puts "Refreshing civil parish list"
     Freecen2PiecesRefreshCivilParishList.process(args.limit, args.fix)
@@ -70,7 +70,7 @@ namespace :foo do
   end
 
   task :correct_tna_duplicate_districts, [:limit, :year, :chapman_code] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'correct_tna_duplicate_districts'
     puts "Correcting #{args.limit} TNA Duplicate Districts for #{args.year} in #{args.chapman_code}"
     CorrectTnaDuplicateDistricts.process(args.limit, args.year, args.chapman_code)
@@ -78,7 +78,7 @@ namespace :foo do
   end
 
   task :add_standard, [:limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'add_standard_name_to_name'
     puts "Standard names #{args.limit} "
     AddStandarNameToName.process(args.limit)
@@ -86,7 +86,7 @@ namespace :foo do
   end
 
   task :correct_tna_link, [:limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'correct_tna_link'
     puts "Correcting TNA links for 1841 and limit #{args.limit} "
     CorrectTnaLink.process(args.limit)
@@ -94,14 +94,14 @@ namespace :foo do
   end
 
   task :delete_incorrect_tna_district, [:district] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'delete_incorrect_tna_district'
     puts "Deleting Civil Parishes, Pieces and the District #{args.district} "
     DeleteIncorrectTnaDistrict.process(args.district)
     puts "Task complete."
   end
   task :delete_incorrect_chapman_district, [:chapman, :year] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'delete_incorrect_chapman_district'
     puts "Deleting Civil Parishes, Pieces and the District #{args.chapman} year #{args.year}"
     DeleteIncorrectChapmanDistrict.process(args.chapman, args.year)
@@ -109,7 +109,7 @@ namespace :foo do
   end
 
   task :upload_place_dump_from_csv_file_to_freecen2_place_collection, [:file, :limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'upload_place_dump_from_csv_file_to_freecen2_place_collection'
     puts "upload_place_dump_from_csv_file_to_freecen2_place_collection started with #{args.file} and limit #{args.limit} "
     UploadPlaceDumpFromCsvFileToFreecen2PlaceCollection.process(args.file, args.limit)
@@ -118,7 +118,7 @@ namespace :foo do
 
 
   task :dump_place_as_csv_file, [:file, :chapman_code, :limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'dump_place_as_csv_file'
     puts "dump_place_as_csv_file started with #{args.file} and limit #{args.limit} for #{args.chapman_code}"
     DumpPlaceAsCsvFile.process(args.file, args.limit, args.chapman_code)
@@ -126,7 +126,7 @@ namespace :foo do
   end
 
   task :download_place_as_csv_file, [:file, :chapman_code, :limit]  => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'download_place_as_csv_file'
     puts "download_place_as_csv_file started with #{args.file} and limit #{args.limit} for #{args.chapman_code}"
     DownloadPlaceAsCsvFile.process(args.file, args.limit, args.chapman_code)
@@ -134,7 +134,7 @@ namespace :foo do
   end
 
   task :download_freecen2_place_as_csv_file, [:file, :chapman_code, :limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'download_freecen2_place_as_csv_file'
     puts "download_freecen2_place_as_csv_file started with #{args.file} and limit #{args.limit} for #{args.chapman_code}"
     DownloadFreecen2PlaceAsCsvFile.process(args.file, args.limit, args.chapman_code)
@@ -150,7 +150,7 @@ namespace :foo do
   end
 
   task :update_freecen2_place_from_csv_file, [:file, :limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'update_freecen2_place_from_csv_file'
     puts "update_freecen2_place_from_csv_file started with #{args.file} and limit #{args.limit} "
     UpdateFreecen2PlaceFromCsvFile.process(args.file, args.limit)
@@ -158,7 +158,7 @@ namespace :foo do
   end
 
   task :delete_freecen2_place_from_csv_file, [:file, :limit] => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'delete_freecen2_place_from_csv_file'
     puts "delete_freecen2_place_from_csv_file started with #{args.file} and limit #{args.limit} "
     DeleteFreecen2PlaceFromCsvFile.process(args.file, args.limit)
@@ -398,7 +398,7 @@ namespace :foo do
 
 
   task :create_syndicate_docs, [:type]  => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'create_syndicate_docs'
     range = "syndicate_coordinators.csv"
     puts "Creating Syndicate Docs"
@@ -409,7 +409,7 @@ namespace :foo do
 
 
   task :create_county_docs, [:type]  => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'create_county_docs'
     range = "county_coordinators.csv"
     puts "Creating County Docs"
@@ -419,7 +419,7 @@ namespace :foo do
   end
 
   task :create_country_docs, [:type]  => [:environment] do |t, args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'create_country_docs'
     range = "country_coordinators.csv"
     puts "Creating Country Docs"
@@ -429,7 +429,7 @@ namespace :foo do
   end
 
   task :update_freereg_with_new_syndicate  => [:environment] do |t,args|
-    # This takes reads a csv file of syndicate coordinators and creates the syndicates collection
+
     require 'update_freereg_syndicate'
     puts "Updating Freereg Files with updated syndicate"
     UpdateFreeregSyndicate.process( )

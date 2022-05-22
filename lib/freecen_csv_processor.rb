@@ -41,7 +41,7 @@ class FreecenCsvProcessor
 
   #:message_file is the log file where system and processing messages are written
   attr_accessor :freecen_files_directory, :create_search_records, :type_of_project, :force_rebuild, :info_messages, :no_pob_warnings,
-    :file_range, :message_file, :member_message_file, :project_start_time, :total_records, :total_files, :total_data_errors, :flexible
+    :file_range, :message_file, :member_message_file, :project_start_time, :total_records, :total_files, :total_data_errors, :flexible, :line_num
 
   def initialize(arg1, arg2, arg3, arg4, arg5, arg6)
     @create_search_records = arg1
@@ -60,6 +60,7 @@ class FreecenCsvProcessor
     @no_pob_warnings = @type_of_processing == 'No POB Warnings' ? true : false
     @error_messages_only = @type_of_processing == 'Error' ? true : false
     EmailVeracity::Config[:skip_lookup] = true
+    @line_num = 0
   end
 
   def self.activate_project(create_search_records, type, force, range, type_of_field, type_of_processing)
@@ -159,22 +160,35 @@ class FreecenCsvProcessor
   end
 
   def write_member_message_file(message)
+    message = pob_message(message) if message.present?
     member_message_file.puts message if write_member_message?(message)
   end
 
   def write_member_message?(message)
-    return false if message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
-
-    return false if pob_message?(message)
+    return false if message.blank? || message == '' || (@error_messages_only && (message[0...5] == 'Info:' || message[0...8] == 'Warning:'))
 
     true
   end
 
-  def pob_message?(message)
-    birth = @no_pob_warnings && message.include?('Warning:') && message.include?('Birth') ? true : false
-    birth
-  end
+  def pob_message(message)
+    message_parts = message.split('<br>')
+    if message_parts.length == 1
+      new_message = "#{message_parts[0]}<br>" unless @no_pob_warnings && message_parts[0].include?('Warning:') && message_parts[0].include?('Birth')
+    else
+      message_parts.each do |part|
+        next if @error_messages_only && part.include?('Warning:') && part.include?('Birth')
 
+        next if @no_pob_warnings && part.include?('Warning:') && part.include?('Birth')
+
+        if new_message.blank?
+          new_message = "#{part}<br>"
+        else
+          new_message += "#{part}<br>"
+        end
+      end
+    end
+    new_message
+  end
 
   def write_messages_to_all(message, no_member_message)
     # avoids sending the message to the member if no_member_message is false
@@ -328,7 +342,7 @@ class CsvFile < CsvFiles
     @file_start = Time.new
     p "FREECEN:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
     @project.write_log_file("******************************************************************* <br>")
-    @project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
+    @project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}.<br>", true)
     success, message = ensure_processable? unless @project.force_rebuild
     # p "finished file checking #{message}. <br>"
     return [false, message] unless success
@@ -1011,7 +1025,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_ecclesiastical_parish
-    unless ChapmanCode::CODES['Ireland'].values.member?(@csvfile.chapman_code) || (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841')
+    unless ChapmanCode::CODES['Ireland'].values.member?(@csvfile.chapman_code) || (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841') || (ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841')
       message, @csvfile.ecclesiastical_parish = FreecenCsvEntry.validate_ecclesiastical_parish(@data_record, @csvfile.ecclesiastical_parish)
       @project.write_messages_to_all(message, true) unless message == ''
     end
@@ -1023,7 +1037,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_ward
-    unless ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && %w[1841 1851].include?(@csvfile.year)
+    unless ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && %w[1841 1851].include?(@csvfile.year) || (ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841')
       message, @csvfile.ward = FreecenCsvEntry.validate_ward(@data_record, @csvfile.ward)
       @project.write_messages_to_all(message, true) unless message == ''
     end

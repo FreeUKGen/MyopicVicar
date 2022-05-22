@@ -236,6 +236,15 @@ class Freecen2Place
       result
     end
 
+    def invalid_url?(url)
+      if url =~ /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/ix
+        result = false
+      else
+        result = true
+      end
+      result
+    end
+
     def standard_place(place)
       return place if place.blank?
 
@@ -380,6 +389,43 @@ class Freecen2Place
     [true, '']
   end
 
+  def check_alternate_names(alternate_freecen2_place_names_attributes, chapman_code, this_place_name)
+    alternate_names_set = SortedSet.new
+    entries = 0
+    dup_place_set = SortedSet.new
+    unless alternate_freecen2_place_names_attributes.blank?
+      alternate_freecen2_place_names_attributes.each do |_key, value|
+        next unless value[:alternate_name].present? && value[:_destroy] == '0'
+
+        alternate_names_set << Freecen2Place.standard_place(value[:alternate_name])
+        entries += 1
+        unless  Freecen2Place.where(:place_name=> this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+          if Freecen2Place.where(:chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+            dup_place_set << value[:alternate_name]
+          end
+          if Freecen2Place.where(:place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+            dup_place_set << value[:alternate_name]
+          end
+        end
+      end
+    end
+    err_msg = 'None'
+    if entries != alternate_names_set.length || dup_place_set.length.positive?
+      if dup_place_set.length.positive?
+        dups = '('
+        dup_place_set.each do |entry|
+          dups += "#{entry},"
+        end
+        display_dups = "#{dups[0...-1]})"
+        dup_place_set.length > 1 ? display_exist = 'already exist' : display_exist = 'already exists'
+        err_msg = "Other Names for Place cannot be duplicated - #{display_dups} #{display_exist}"
+      else
+        err_msg = 'Other Names for Place cannot be duplicated'
+      end
+    end
+    err_msg
+  end
+
   def check_and_set(param)
     #use the lat/lon if present if not calculate from the grid reference
     return [false, "There is no county selected",nil] if param[:freecen2_place][:chapman_code].blank?
@@ -388,7 +434,13 @@ class Freecen2Place
 
     return [false, "The source of your information is required", nil] if param[:freecen2_place][:source].blank?
 
+    return [false, "The a valid Website for Place is required when source is Other", nil] if param[:freecen2_place][:source] == 'Other' && Freecen2Place.invalid_url?(param[:freecen2_place][:genuki_url])
+
+    error_message = check_alternate_names(param[:freecen2_place][:alternate_freecen2_place_names_attributes], param[:freecen2_place][:chapman_code], param[:freecen2_place][:place_name])
+    return [false, error_message, nil] unless error_message == 'None'
+
     place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], :place_name => param[:freecen2_place][:place_name]).all #, :disabled.ne => 'true', :error_flag.ne => "Place name is not approved" ).first
+    alternate_place = Freecen2Place.where(:chapman_code => param[:freecen2_place][:chapman_code], 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(param[:freecen2_place][:place_name])).all
 
     case
     when place.length > 1
@@ -406,7 +458,23 @@ class Freecen2Place
         return false, "There is an active place with that name", place
       end
     when place.length == 0
-      return true, 'Proceed', place
+      case
+      when alternate_place.length > 1
+        return false, "Many active places with that name as an alternate name already exist", place
+      when alternate_place.length == 1
+        alternate_place = alternate_place.first
+        if alternate_place.disabled == 'true'
+          if alternate_place.error_flag == "Place name is not approved"
+            return false, "There is a disabled place with an unapproved name (with that name as an alternative name) that already exists", place
+          else
+            return false, "There is a disabled place with that as an alternative name", place
+          end
+        else
+          return false, "There is an active place with that name as an alternative name", place
+        end
+      when alternate_place.length == 0
+        return true, 'Proceed', place
+      end
     end
   end
 

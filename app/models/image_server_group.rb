@@ -433,4 +433,8 @@ class ImageServerGroup
     self.update_attribute(:number_of_images, number_of_images)
     [process, message]
   end
+
+  def self.unallocated_groups_count
+    where('summary.status'=>{'$in'=>['u']}).count
+  end
 end

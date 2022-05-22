@@ -1,0 +1,28 @@
+<h2 style="text-align: center">Totals for the FreeCEN2 Database on <%= @interval_end.strftime('%d/%b/%Y')  %></h2>
+<table style="margin-left:25%" class="table--bordered t50 table--data table--striped " >
+  <thead >
+    <tr >
+      <th >Year</th>
+      <th >Online Pieces</th>
+      <th >Total Pieces</th>
+      <th >Individuals</th>
+      <th >Dwellings</th>
+    </tr>
+  </thead>
+  <% Freecen::CENSUS_YEARS_ARRAY.each.each do |year| %>
+    <tr >
+      <td> <%= year %></td>
+      <td> <%= number_with_delimiter(@freecen2_contents.records[:total][year][:pieces_online]) %></td>
+      <td> <%= number_with_delimiter(@freecen2_contents.records[:total][year][:pieces])%></td>
+      <td> <%= number_with_delimiter(@freecen2_site_statistics.records[:total][year][:search_records]) %></td>
+      <td> <%= number_with_delimiter(@freecen2_site_statistics.records[:total][year][:dwellings]) %></td>
+    </tr>
+  <% end%>
+  <tr >
+    <td> Total</td>
+    <td> <%= number_with_delimiter(@freecen2_contents.records[:total][:total][:pieces_online]) %></td>
+    <td> <%= number_with_delimiter(@freecen2_contents.records[:total][:total][:pieces])%></td>
+    <td> <%= number_with_delimiter(@freecen2_site_statistics.records[:total][:total][:search_records]) %></td>
+    <td> <%= number_with_delimiter(@freecen2_site_statistics.records[:total][:total][:dwellings]) %></td>
+  </tr>
+</table>

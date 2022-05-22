@@ -55,7 +55,8 @@ class Freecen2Piece
   field :num_dwellings, type: Integer, default: 0
   field :status_date, type: DateTime
 
-  field :vld_files, type: Array, default: []
+  field :vld_files, type: Array, default: [] # used for Scotland pieces where there can be multiple files for a single piece
+  field :shared_vld_file, type: String # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
 
   belongs_to :freecen2_district, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
@@ -160,31 +161,33 @@ class Freecen2Piece
 
     def before_county_year_totals(chapman_code, time)
       last_id = BSON::ObjectId.from_time(time)
+      piece_ids = {}
       totals_pieces = {}
       totals_pieces_online = {}
       totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
 
-        #totals_pieces[year] = Freecen2Piece.where(_id: { '$lte' => last_id }).chapman_code(chapman_code).year(year).count    <= original code 06/12/21
         totals_pieces_all = Freecen2Piece.chapman_code(chapman_code).year(year).count
         totals_pieces_to_ignore = Freecen2Piece.where(_id: { '$gt' => last_id }).chapman_code(chapman_code).year(year).count
-        totals_pieces[year] = totals_pieces_all  -   totals_pieces_to_ignore
+        totals_pieces[year] = totals_pieces_all - totals_pieces_to_ignore
 
-        #totals_pieces_online[year] = Freecen2Piece.where(status_date: { '$lte' => time }).chapman_code(chapman_code).year(year).status('Online').count   <= original code 06/12/21
+        piece_ids_all = Freecen2Piece.where(chapman_code: chapman_code, year: year).pluck(:id)
+        piece_ids_to_ignore = Freecen2Piece.where(_id: { '$gt' => last_id }, chapman_code: chapman_code, year: year).pluck(:id)
+        piece_ids[year] = piece_ids_all - piece_ids_to_ignore
+
         totals_pieces_online_all = Freecen2Piece.chapman_code(chapman_code).year(year).status('Online').count
         totals_pieces_online_to_ignore = Freecen2Piece.where(status_date: { '$gt' => time }).chapman_code(chapman_code).year(year).status('Online').count
         totals_pieces_online[year] = totals_pieces_online_all - totals_pieces_online_to_ignore
 
-        #totals_records_online[year] = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, record_type: year).count <= original code 06/12/21
         totals_records_online_all = SearchRecord.where(chapman_code: chapman_code, record_type: year).count
         totals_records_online_to_ignore = SearchRecord.where(_id: { '$gt' => last_id }, chapman_code: chapman_code, record_type: year).count
         totals_records_online[year] = totals_records_online_all - totals_records_online_to_ignore
 
       end
-      [totals_pieces, totals_pieces_online, totals_records_online]
+      [totals_pieces, totals_pieces_online, totals_records_online, piece_ids]
     end
 
-    def before_place_year_totals(chapman_code, place_id, time)
+    def before_place_year_totals(place_id, time)
       last_id = BSON::ObjectId.from_time(time)
       piece_ids = {}
       totals_pieces = {}
@@ -197,9 +200,8 @@ class Freecen2Piece
         vld_total_pieces_online = 0
         csv_total_pieces_online = 0
 
-        #pieces = Freecen2Piece.where(_id: { '$lte' => last_id }, freecen2_place_id: place_id, chapman_code: chapman_code, year: year) <= original code 06/12/21
-        pieces_all = Freecen2Piece.where(freecen2_place_id: place_id, chapman_code: chapman_code, year: year)
-        pieces_to_ignore = pieces = Freecen2Piece.where(_id: { '$gt' => last_id }, freecen2_place_id: place_id, chapman_code: chapman_code, year: year)
+        pieces_all = Freecen2Piece.where(freecen2_place_id: place_id, year: year)
+        pieces_to_ignore = Freecen2Piece.where(_id: { '$gt' => last_id }, freecen2_place_id: place_id, year: year)
         pieces = pieces_all - pieces_to_ignore
 
         pieces.each do |piece|
@@ -210,16 +212,15 @@ class Freecen2Piece
           end
         end
 
-        #csv_piece_ids = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, record_type: year, freecen2_place_id: place_id).pluck(:freecen2_piece_id).uniq  <= original code 06/12/21
-        csv_piece_ids_all = SearchRecord.where(chapman_code: chapman_code, record_type: year, freecen2_place_id: place_id).pluck(:freecen2_piece_id).uniq
-        csv_piece_ids_to_ignore = SearchRecord.where(_id: { '$gt' => last_id }, chapman_code: chapman_code, record_type: year, freecen2_place_id: place_id).pluck(:freecen2_piece_id).uniq
+        csv_piece_ids_all = SearchRecord.where(record_type: year, freecen2_place_id: place_id).pluck(:freecen2_piece_id).uniq
+        csv_piece_ids_to_ignore = SearchRecord.where(_id: { '$gt' => last_id }, record_type: year, freecen2_place_id: place_id).pluck(:freecen2_piece_id).uniq
         csv_piece_ids = csv_piece_ids_all - csv_piece_ids_to_ignore
 
         if csv_piece_ids.present?
           csv_piece_ids.each do |csv_piece_id|
             if csv_piece_id.present?
               csv_total_pieces += 1
-              csv_total_pieces_online += 1
+              csv_total_pieces_online += 1 if Freecen2Piece.find_by(_id: csv_piece_id, status: 'Online').present?
               piece_ids_array << csv_piece_id
             end
           end
@@ -228,11 +229,9 @@ class Freecen2Piece
         totals_pieces_online[year] = vld_total_pieces_online + csv_total_pieces_online
         piece_ids[year] = piece_ids_array
 
-        #totals_records_online[year] = SearchRecord.where(_id: { '$lte' => last_id }, chapman_code: chapman_code, freecen2_place_id: place_id, record_type: year).count  <= original code 06/12/21
-        totals_records_online_all = SearchRecord.where(chapman_code: chapman_code, freecen2_place_id: place_id, record_type: year).count
-        totals_records_online_to_ignore = SearchRecord.where(_id: { '$gt' => last_id }, chapman_code: chapman_code, freecen2_place_id: place_id, record_type: year).count
+        totals_records_online_all = SearchRecord.where(freecen2_place_id: place_id, record_type: year).count
+        totals_records_online_to_ignore = SearchRecord.where(_id: { '$gt' => last_id }, freecen2_place_id: place_id, record_type: year).count
         totals_records_online[year] = totals_records_online_all - totals_records_online_to_ignore
-
       end
       [totals_pieces, totals_pieces_online, totals_records_online, piece_ids]
     end
@@ -246,30 +245,69 @@ class Freecen2Piece
     end
 
     def between_dates_county_year_totals(chapman_code, time1, time2)
+      first_id = BSON::ObjectId.from_time(time1)
       last_id = BSON::ObjectId.from_time(time2)
       totals_pieces_online = {}
+      totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_pieces_online[year] = Freecen2Piece.between(status_date: time1..time2).chapman_code(chapman_code).year(year).status('Online').count
+        totals_records_online_all = SearchRecord.where(chapman_code: chapman_code, record_type: year).count
+        totals_records_online_to_ignore_before = SearchRecord.where(_id: { '$lt' => first_id }, chapman_code: chapman_code, record_type: year).count
+        totals_records_online_to_ignore_after = SearchRecord.where(_id: { '$gt' => last_id }, chapman_code: chapman_code, record_type: year).count
+        totals_records_online[year] = totals_records_online_all - totals_records_online_to_ignore_before - totals_records_online_to_ignore_after
       end
-      totals_pieces_online
+      [totals_pieces_online, totals_records_online]
     end
 
-    def between_dates_place_year_totals(chapman_code, place_id, time1, time2)
+    def between_dates_place_year_totals(place_id, time1, time2)
       totals_pieces_online = {}
+      totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
         totals_pieces_online[year] = 0
         vld_total_pieces_online = 0
         csv_total_pieces_online = 0
-        pieces_online = Freecen2Piece.where(status_date: (time1..time2), freecen2_place_id: place_id, chapman_code: chapman_code, year: year, status:'Online')
+        vld_total_records_online = 0
+        csv_total_records_online = 0
+        pieces_online = Freecen2Piece.where(status_date: (time1..time2), freecen2_place_id: place_id, year: year, status:'Online')
         pieces_online.each do |piece|
           unless SearchRecord.where(freecen2_piece_id: piece._id).present? # CSVProc data
             vld_total_pieces_online += 1
+            vld_total_records_online += piece.num_individuals
           end
         end
-        csv_total_pieces_online += SearchRecord.where(c_at: (time1..time2), chapman_code: chapman_code, record_type: year, freecen2_place_id: place_id).distinct('freecen2_piece_id').count   # CSVProc data
+        csv_piece_ids = SearchRecord.where(c_at: (time1..time2), record_type: year, freecen2_place_id: place_id).pluck(:freecen2_piece_id).uniq
+        if csv_piece_ids.present?
+          csv_piece_ids.each do |csv_piece_id|
+            if csv_piece_id.present?
+              if Freecen2Piece.find_by(_id: csv_piece_id, status: 'Online').present?
+                csv_total_pieces_online += 1
+                csv_total_records_online = SearchRecord.where(freecen2_piece_id: csv_piece_id).count
+              end
+            end
+          end
+        end
         totals_pieces_online[year] = vld_total_pieces_online + csv_total_pieces_online
+        totals_records_online[year] = vld_total_records_online + csv_total_records_online
       end
-      totals_pieces_online
+      [totals_pieces_online, totals_records_online]
+    end
+
+    def between_dates_pieces_online(start_date, end_date)
+      @pieces_online = []
+      @pieces = Freecen2Piece.where(status_date: start_date..end_date, status: 'Online').or(Freecen2Piece.where(status_date: start_date..end_date, status: 'Part'))
+      @pieces.each do |piece|
+        if piece.status == 'Online'
+          num_records = piece.num_individuals.positive? ? piece.num_individuals : SearchRecord.where(freecen2_piece_id: piece.id).count
+        else
+          csv_files = FreecenCsvFile.where(freecen2_piece_id: piece.id, incorporated_date: start_date..end_date)
+          num_records = 0
+          csv_files.each do |file|
+            num_records += file.total_individuals
+          end
+        end
+        @pieces_online << [piece.chapman_code, piece.year, piece.number, piece.name, piece.civil_parish_names, piece.status, piece.status_date.strftime('%d/%b/%Y'), num_records]
+      end
+      @pieces_online.sort
     end
 
     def county_year_totals(chapman_code)
@@ -626,5 +664,49 @@ class Freecen2Piece
   def update_tna_change_log(userid)
     tna = TnaChangeLog.create(userid: userid, year: year, chapman_code: chapman_code, parameters: previous_changes, tna_collection: "#{self.class}")
     tna.save
+  end
+
+  def update_parts_status_on_file_upload(file, freecen1_piece)
+    return if file.blank? || freecen1_piece.blank?
+
+    piece2_number = Freecen2Piece.calculate_freecen2_piece_number(freecen1_piece)
+    regexp = BSON::Regexp::Raw.new('^' + piece2_number + '\D')
+    parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
+    return if parts.count.zero?
+
+    parts.each do |part|
+      part.update_attributes(status: 'Online', status_date: file._id.generation_time.to_datetime.in_time_zone('London'), shared_vld_file: file.id)
+    end
+  end
+
+  def  update_parts_status_on_file_deletion(file, freecen1_piece)
+    return if file.blank? || freecen1_piece.blank?
+
+    piece2_number = Freecen2Piece.calculate_freecen2_piece_number(freecen1_piece)
+    regexp = BSON::Regexp::Raw.new('^' + piece2_number + '\D')
+    parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
+
+    return if parts.count.zero?
+
+    parts.each do |part|
+      part.update_attributes(status: '', status_date: '', shared_vld_file: '')
+    end
+  end
+
+  def self.find_by_vld_file_name(freecen1_piece)
+    return if freecen1_piece.blank?
+
+    piece2_number = Freecen2Piece.calculate_freecen2_piece_number(freecen1_piece)
+    freecen2_piece = Freecen2Piece.find_by(number: piece2_number)
+    freecen2_place = freecen2_piece.freecen2_place if freecen2_piece.present?
+    return [freecen2_piece, freecen2_place] if freecen2_piece.present?
+
+    regexp = BSON::Regexp::Raw.new('^' + piece2_number + '\D')
+    parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
+
+    return if parts.count.zero?
+
+    freecen2_place = parts[0].freecen2_place
+    [parts[0], freecen2_place]
   end
 end

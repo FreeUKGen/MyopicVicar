@@ -11,25 +11,25 @@
     <thead >
       <tr>
         <th class='sticky-header '>Place name</th>
-        <th class='sticky-header t30'>Alternate names </th>
+        <th class='sticky-header t20'>Alternate names </th>
         <th class='sticky-header '>Latitude</th>
         <th class='sticky-header '>Longitude</th>
         <th class='sticky-header '>Show on map<br>
           <small> Opens new tab</small></th>
-        <th class='sticky-header '>Source</th>
-        <th class='sticky-header t25'>Notes<br>
+        <th class='sticky-header t20'>Source</th>
+        <th class='sticky-header t20'>Notes<br>
         </tr>
       </thead>
       <tbody  >
         <% @places.each do |place| %>
           <tr id="<%= place.id %>">
             <td ><%= link_to(place.place_name, freecen2_place_path(place), class: 'btn   btn--small', title: 'Additional information on the place' )%> </td>
-            <td class='t30'> <%= alternate(place) %></td>
+            <td class='t20'> <%= alternate(place) %></td>
             <td > <%= place.latitude%></td>
             <td > <%= place.longitude%></td>
             <td > <%= locate(place.latitude,place.longitude) %></td>
-            <td > <%= place.source%></td>
-            <td class='t25'> <%= place.place_notes%></td>
+            <td class='t20'> <%= place.source%></td>
+            <td class='t20'> <%= place.place_notes%></td>
           </tr>
         <% end%>
       </tbody>

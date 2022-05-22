@@ -169,7 +169,7 @@ class ManageCountiesController < ApplicationController
     @counties = @user.county_groups
     @countries = @user.country_groups
     if %w[volunteer_coordinator contacts_coordinator data_manager master_county_coordinator system_administrator documentation_coordinator SNDManager
-          CENManager REGManager executive_director project_manager].include?(@user.person_role)
+          CENManager REGManager country_coordinator executive_director project_manager].include?(@user.person_role)
       @countries = []
       counties = County.application_counties
       counties.each do |county|

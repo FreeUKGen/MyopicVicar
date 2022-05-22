@@ -13,14 +13,7 @@
   </div>
 <% end %>
 <% if appname_downcase == 'freecen' %>
-  Videos describing
-  <%= link_to 'this page', "https://youtu.be/1P95Un3Ky30", target: '_blank' %>,
-  <%= link_to 'transcriber action overview', "https://youtu.be/c1hF7QsKoDc" , target: '_blank' %>,
-  <%= link_to 'transcriber action details', "https://youtu.be/km143JaxdT8" , target: '_blank'%>
-  <% if %w[county_coordinator master_county_coordinator data_manager system_administrator].include?(@user.person_role) %>
-    , <%= link_to 'VLD Actions', "https://youtu.be/GUr_LbzNH0o", target: '_blank'%>
-  <% end%>
-  (all open in new tabs)<br>
+  <%= link_to 'Instructional Videos', '/cms/instructional-videos', target: '_blank' %>, ( opens in new tab)<br>
 <% end %>
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>

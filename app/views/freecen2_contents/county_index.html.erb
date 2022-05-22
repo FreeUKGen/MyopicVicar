@@ -40,6 +40,10 @@
         <legend style="text-align: center">
           <h3>Totals for All Places in <%= @county_description %></h3>
         </legend>
+        <div  style="text-align: center">
+          <p><small class="additional">Where applicable you can use the Action buttons to view a list of Pieces (including Civil Parish names)<br>
+              Note: A * next to the number of Pieces Online indicates that only part of one or more pieces is currently online - use View Pieces to see details</small></p>
+        </div>
         <div class='scrollable'>
           <table  class="table--bordered table--data table--striped " >
             <thead >
@@ -56,26 +60,35 @@
                 <th class='sticky-header'>New<br>
                   Pieces<br>
                   Online</th>
+                <% if @freecen2_contents.records[@chapman_code][:total][:pieces] > 0 %>
+                  <th class='sticky-header '>Actions</th>
+                <% end %>
               </tr>
             </thead>
             <tbody>
               <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
                 <tr>
                   <td><%= census %></td>
-                  <td><%= @freecen2_contents.records[@chapman_code][census][:pieces_online] %></td>
+                  <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][census][:piece_ids], @freecen2_contents.records[@chapman_code][census][:pieces_online]) %>
                   <td><%= @freecen2_contents.records[@chapman_code][census][:pieces] %></td>
                   <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][census][:pieces_online], @freecen2_contents.records[@chapman_code][census][:pieces]) %>
                   <td><%= @freecen2_contents.records[@chapman_code][census][:records_online] %></td>
                   <td><%= @freecen2_contents.records[@chapman_code][census][:added_pieces_online] %></td>
+                  <% if @freecen2_contents.records[@chapman_code][census][:pieces] > 0 %>
+                    <td><%= link_to 'View Pieces', display_pieces_by_status_freecen2_contents_path(:county_description => @county_description,:place_description => 'all', :place_id => '', :census_year => census, :order => 'status'), class: "btn btn--exsmall", method: :get %></td>
+                  <% else %>
+                    <td> N/A </td>
+                  <% end %>
                 </tr>
               <% end %>
               <tr>
                 <td>Total</td>
-                <td><%= @freecen2_contents.records[@chapman_code][:total][:pieces_online] %></td>
+                <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][:total][:piece_ids], @freecen2_contents.records[@chapman_code][:total][:pieces_online]) %>
                 <td><%= @freecen2_contents.records[@chapman_code][:total][:pieces] %></td>
                 <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][:total][:pieces_online], @freecen2_contents.records[@chapman_code][:total][:pieces]) %>
                 <td><%= @freecen2_contents.records[@chapman_code][:total][:records_online] %></td>
                 <td><%= @freecen2_contents.records[@chapman_code][:total][:added_pieces_online] %></td>
+                <td> N/A </td>
               </tr>
             </tbody>
           </table>

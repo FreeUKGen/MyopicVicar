@@ -1,5 +1,4 @@
 class FreecenParmsController < ApplicationController
-  #  skip_before_action :require_login #TODO: remove this once development done
 
   def download
     @chapman = params[:chapman_code] if params[:chapman_code].present?

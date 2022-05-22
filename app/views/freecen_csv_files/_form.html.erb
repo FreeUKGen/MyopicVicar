@@ -1,6 +1,6 @@
 <%= semantic_form_for @freecen_csv_file , :html => { :class => 'grid'}  do |f| %>
   <%= f.input :transcriber_name , :input_html => {:class => ' simple_form_bgcolour ',  :size => 30 }%>
-  <% if session[:my_own] || session[:role] == 'county_coordinator' || session[:role] == 'syndicate_coordinator' || session[:role] == 'system_administrator'%>
+  <% if session[:my_own] || %w[syndicate_coordinator master_county_coordinator county_coordinator system_administrator country_coordinator data_manager].include?(session[:role]) %>
     <%= f.input :locked_by_transcriber, :label => 'Locked by transcriber ',:include_blank => false,
       :collection => [ true, false],:input_html => {:class => ' simple_form_bgcolour medium_selection_field_width',  :size => 3} %>
     <% if session[:my_own]%>

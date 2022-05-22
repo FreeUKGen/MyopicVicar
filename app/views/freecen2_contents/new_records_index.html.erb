@@ -24,24 +24,24 @@
         <% end %>
         <th class='sticky-header'>Place</th>
         <th class='sticky-header'>Year</th>
-        <th class='sticky-header'>Records Online</th>
+        <th class='sticky-header'>New Records Online</th>
         <th colspan = "3" class='sticky-header t15'>Actions</th>
       </tr>
     </thead>
     <tbody>
       <%  @recent_additions.each do |entry| %>
-        <%#  # [0] = county name, [1] = place name, [2] = chapman code, [3] = freecen2_place_id, [4] = year %>
+        <%#  # [0] = county name, [1] = place name, [2] = chapman code, [3] = freecen2_place_id, [4] = year, [5] = added records %>
         <tr>
           <% if @additions_county == 'All' %>
             <td><%= entry[0] %></td>
           <% end %>
           <td><%= entry[1] %></td>
           <td><%= entry[4] %></td>
-          <td><%= records_for_place(entry[2], entry[1], entry[4]) %></td>
-          <td><%= locate_place_link(entry[3]) %></td>
-          <td><%= link_to 'View Pieces', freecen2_contents_piece_index_path(:county_description => entry[0],  :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :new_records => 'All'), class: "btn btn--small", method: :get %></td>
+          <td><%= entry[5] %></td>
+          <td><%= locate_place_link(entry[3], 'exsmall') %></td>
+          <td><%= link_to 'View Pieces', display_pieces_by_status_freecen2_contents_path(:county_description => entry[0],  :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :order => 'status', :new_records => 'All'), class: "btn btn--exsmall", method: :get %></td>
           <% if names_exist_for_place_year(entry[3], entry[4]) == true %>
-            <td><%= link_to 'View Names', freecen2_contents_place_names_path(:county_description => entry[0], :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :new_records => 'All'), class: "btn btn--small", method: :get %></td>
+            <td><%= link_to 'View Names', freecen2_contents_place_names_path(:county_description => entry[0], :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :new_records => 'All'), class: "btn btn--exsmall", method: :get %></td>
           <% else %>
             <td> N/A </td>
           <% end %>

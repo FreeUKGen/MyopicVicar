@@ -1,5 +1,5 @@
 class Freecen1VldFilesController < ApplicationController
-  skip_before_action :require_login
+
   require 'digest/md5'
 
   def create
@@ -27,6 +27,7 @@ class Freecen1VldFilesController < ApplicationController
     # deliberate crash if ther save fails
     p @vldfile.errors.full_messages unless result
     crash unless result
+
     @vldfile.update_attributes(uploaded_file_location: @vldfile.uploaded_file.file.file, userid: session[:userid])
     session.delete(:file_name) if session[:file_name].present?
     proceed, message = @vldfile.process_the_batch
@@ -80,11 +81,15 @@ class Freecen1VldFilesController < ApplicationController
         piece.freecen1_vld_files.delete(vldfile)
         freecen2_piece = piece.freecen2_piece
         freecen2_piece.freecen1_vld_files.delete(vldfile) if freecen2_piece.present?
+        freecen2_piece.update_parts_status_on_file_deletion(vldfile, piece)
         freecen2_place = vldfile.freecen2_place
-        freecen2_place.freecen1_vld_files.delete(vldfile) if freecen2_place.present?
-        freecen2_district = vldfile.freecen2_district
-        freecen2_district.freecen1_vld_files.delete(vldfile) if freecen2_district.present?
-        freecen2_place.update_data_present_after_vld_delete(freecen2_piece)
+        if freecen2_place.present?
+          freecen2_place.freecen1_vld_files.delete(vldfile)
+          freecen2_district = vldfile.freecen2_district
+          freecen2_district.freecen1_vld_files.delete(vldfile) if freecen2_district.present?
+          freecen2_place.update_data_present_after_vld_delete(freecen2_piece)
+          Freecen2PlaceCache.refresh(freecen2_place.chapman_code)
+        end
       end
     end
     flash[:notice] = "The vld file #{file_name} has been deleted."
@@ -159,6 +164,7 @@ class Freecen1VldFilesController < ApplicationController
 
   def update
     redirect_to(action: 'create') && return if session[:replace].present?
+
     @freecen1_vld_file = Freecen1VldFile.find(params[:id])
     unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'

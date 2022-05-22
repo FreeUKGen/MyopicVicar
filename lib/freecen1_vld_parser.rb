@@ -278,13 +278,14 @@ module Freecen
     # U   Q 150 30 Occupation
     # R        Employed Status (extracted from occupation field)
     # V   S 180  1 Flag for occupation (x or -)
-    # W   T 181  3 County code (3a capitals, no default but UNK if not known)
-    # X   U 184 20 Birth place (default -)
+    # W   T 181  3 Transcriber County code (3a capitals, no default but UNK if not known)
+    # X   U 184 20 Transcriber Birth place (default -)
     # Y   V 204  1 Flag for birth place (x or -)
     # Z   W 205  6 Disability (default blank)
     # AA  X 211  1 Language (W, E, B, G or blank)
     # AB  Y 212 44 Notes (default blank, no case
-
+    #     Z 276  3 Alternate birth county
+    #     AA 279 20 Alternate birth place
 
     VLD_POSITION_MAP =
     {

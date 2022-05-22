@@ -905,6 +905,8 @@ class FreecenCsvEntry
           record[:error_messages] += messagea
         elsif messagea == 'blank' && record[:year] == '1841'
 
+        elsif messagea == 'blank' && record[:uninhabited_flag] == 'x'
+
         elsif messagea == 'blank'
           messagea = "ERROR: line #{num} Schedule number is blank and not a page transition.<br>"
           message += messagea
@@ -2444,18 +2446,10 @@ class FreecenCsvEntry
 
   def validate_on_line_edit_of_fields(fields)
     success, message = FreecenValidations.text?(fields[:surname])
-    if success && fields[:surname].present? && fields[:surname].strip == '-'
-      errors.add(:surname, "has single - Hyphen in Surname") unless fields[:record_valid] == 'true'
-    elsif !success
-      errors.add(:surname, "Invalid; #{message}")
-    end
+    errors.add(:surname, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.text?(fields[:forenames])
-    if success && fields[:forenames].present? && fields[:forenames].strip == '-'
-      errors.add(:forenames, "has single - Hyphen in Forename") unless fields[:record_valid] == 'true'
-    elsif !success
-      errors.add(:forenames, "Invalid; #{message}")
-    end
+    errors.add(:forenames, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.name_question?(fields[:name_flag])
     errors.add(:name_flag, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'

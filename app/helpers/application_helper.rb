@@ -80,20 +80,7 @@ module ApplicationHelper
     when 'freereg'
       link_to('Records', main_app.new_freereg_content_path)
     when 'freecen'
-      new_records_pages = false
-      if  session[:userid_detail_id].present?
-        get_user_info_from_userid
-        if @user.present? && @user.person_role.present?
-          if @user.person_role == 'system_administrator'
-            new_records_pages = true
-          end
-        end
-      end
-      if new_records_pages == true
-        link_to('Records', main_app.freecen2_contents_path)
-      else
-        link_to('Records', main_app.freecen_coverage_path, id: 'db_coverage_nav')
-      end
+      link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
       link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
     end
@@ -750,7 +737,7 @@ module ApplicationHelper
       cookiePolicy: '/cms/about/cookie-policy',
       privacyNotice: 'https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view?usp=sharing',
       termAndConditions: '/cms/terms-and-conditions',
-      contactUs: '/contacts/new',
+      contactUs: contact_us_path,
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
@@ -759,9 +746,20 @@ module ApplicationHelper
       freebmdAccuracy: '/cms/help#Accuracy',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
-      freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
+      #freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
+      freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en',
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
     }
+  end
+
+  def contact_us_path
+    case appname_downcase
+    when "freereg"
+      path = '/cms/help/frequently-asked-questions-researchers?'
+    when "freecen"
+      path = '/contacts/new'
+    end
+    path
   end
 
   def fullwidth_adsense_freereg

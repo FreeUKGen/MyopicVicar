@@ -14,5 +14,13 @@
 #
 # Load the rails application
 require File.expand_path("../application", __FILE__)
+if defined?(PhusionPassenger)
+  PhusionPassenger.on_event(:starting_worker_process) do |forked|
+    Mongoid::Clients.clients.each do |name, client|
+	    client.close
+	    client.reconnect
+  	end
+	end
+end
 # Initialize the rails application
 MyopicVicar::Application.initialize!

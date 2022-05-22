@@ -1,0 +1,25 @@
+<% breadcrumb :show_freecen2_place_source,  @source%>
+<h2 class="text--center"> FreeCEN2 Place Source</h2>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<div  class="text--center">  <%= edit_freecen2_place_source_link(@source, 'button') %> <%= link_to 'Create Source', new_freecen2_place_source_path , method: :get, :class => "btn btn--small" %> <%= destroy_freecen2_place_source_link(@source, 'button')%>
+</div>
+<div class="grid__item  ">
+  <table class=" table--bordered table--data">
+    <colgroup >
+      <col class="t40">
+      <col class="t60">
+    </colgroup>
+    <tr>
+      <th class="caps">Field</th>
+      <th class="caps">Value</th>
+    </tr>
+    <tr>
+      <td>Source :</td>
+      <td class="weight--semibold"><%= @source.source %></td>
+    </tr>
+  </table>
+</div>

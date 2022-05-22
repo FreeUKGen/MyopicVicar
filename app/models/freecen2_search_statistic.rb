@@ -129,7 +129,7 @@ class Freecen2SearchStatistic
     self.time_gt_60s += 1   if (query.runtime || 0) > 60000
     self.ln += 1            if query.last_name.present?
     self.fn += 1            if query.first_name.present?
-    self.place += 1         if query.places.present?
+    self.place += 1         if query.places.present? || query.freecen2_places.present?
     self.nearby += 1        if query.search_nearby_places
     self.fuzzy += 1         if query.fuzzy
     self.inclusive += 1     if query.inclusive

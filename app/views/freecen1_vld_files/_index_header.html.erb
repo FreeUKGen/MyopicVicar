@@ -2,7 +2,7 @@
 <% session[:file_page] = params[:page]%>
 <h1 style="text-align: center">Listing of <%= @freecen1_vld_files.length if @freecen1_vld_files.present? %> FreeCen1 VLD Files for <%= @chapman_code%></h1>
 <%= render 'flash_notice' %>
-<% if %w[system_administrator data_manager county_coordinator master_county_coordinator].include?(@user.person_role)%>
+<% if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
   <div class="text--center">
     To upload a new file: click this <%= link_to 'Upload new VLD file', new_freecen1_vld_file_path, method: :get , :class => "btn btn--small"%><br>
     To replace a VLD file use the replace action in the specific file listed below<br>

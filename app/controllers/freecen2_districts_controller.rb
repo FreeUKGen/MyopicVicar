@@ -101,6 +101,7 @@ class Freecen2DistrictsController < ApplicationController
 
     session[:freecen2_district] = @freecen2_district.name
     @freecen2_place = @freecen2_district.freecen2_place
+    @records = (@freecen2_place.present? && SearchRecord.where(freecen2_place_id: @freecen2_place.id).count.positive?) ? true : false
     @freecen2_place = @freecen2_place.present? ? @freecen2_place.place_name : ''
     @districts = @freecen2_district.district_names
     @places = @freecen2_district.district_place_names

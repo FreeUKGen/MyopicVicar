@@ -225,7 +225,11 @@ class SearchQuery
 
 
   def adequate_first_name_criteria?
-    first_name.present? && chapman_codes.length > 0 && place_ids.present?
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      first_name.present? && chapman_codes.length.positive? && freecen2_place_ids.present?
+    else
+      first_name.present? && chapman_codes.length.positive? && place_ids.present?
+    end
   end
 
   def all_counties_have_both_surname_and_firstname

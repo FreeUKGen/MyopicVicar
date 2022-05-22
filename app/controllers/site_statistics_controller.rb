@@ -19,12 +19,35 @@ class SiteStatisticsController < ApplicationController
     @site_statistic = SiteStatistic.new
   end
 
+  def export_csv
+    start_date = params[:csvdownload][:period_from].to_datetime
+    end_date = params[:csvdownload][:period_to].to_datetime
+
+    if start_date >= end_date
+      message = 'End Date must be after Start Date'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    success, message, file_location, file_name = SiteStatistic.create_csv_file(start_date, end_date)
+
+    if success
+      if File.file?(file_location)
+        flash[:notice] = message unless message.empty?
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice] = 'There was a problem downloading the CSV file'
+    end
+    redirect_back(fallback_location: new_manage_resource_path)
+  end
+
   def index
     if appname_downcase == 'freecen'
       redirect_to freecen2_site_statistics_path
     else
       @site_statistics = SiteStatistic.all.order_by(interval_end: -1)
     end
+    @period_start_dates, @period_end_dates = SiteStatistic.get_stats_dates
   end
 
   def show

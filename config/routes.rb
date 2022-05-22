@@ -75,18 +75,19 @@ MyopicVicar::Application.routes.draw do
 
   resources :freecen_individuals
 
-  resources :site_statistics
-
+  get 'freecen2_site_statistics/grand_totals', to: 'freecen2_site_statistics#grand_totals', as: :grand_totals_freecen2_site_statistics
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
   resources :freecen2_site_statistics
 
   get 'freecen2_contents/county_index', to: 'freecen2_contents#county_index', as: :index_by_county_freecen2_contents
   get 'freecen2_contents/place_index', to: 'freecen2_contents#place_index', as: :freecen2_contents_place_index
   get 'freecen2_contents/place_names', to: 'freecen2_contents#place_names', as: :freecen2_contents_place_names
-  get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index
+  get 'freecen2_contents/display_pieces_by_status', to: 'freecen2_contents#display_pieces_by_status', as: :display_pieces_by_status_freecen2_contents
+  get 'freecen2_contents/display_pieces_by_name', to: 'freecen2_contents#display_pieces_by_name', as: :display_pieces_by_name_freecen2_contents
+  get 'freecen2_contents/display_pieces_by_number', to: 'freecen2_contents#display_pieces_by_number', as: :display_pieces_by_number_freecen2_contents
   get 'freecen2_contents/new_records_index', to: 'freecen2_contents#new_records_index', as: :freecen2_contents_new_records_index
-  get 'freecen2_contents/for_place_names', :to => 'freecen2_contents#for_place_names', :as => :freecen2_contents_for_place_names
-
+  get 'freecen2_contents/for_place_names', to: 'freecen2_contents#for_place_names', as: :freecen2_contents_for_place_names
+  get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index # not active
   resources :freecen2_contents
 
   get 'freecen2_search_statistics/graphic', to: 'freecen2_search_statistics#graphic', as: :graphic_freecen2_search_statistics
@@ -180,6 +181,7 @@ MyopicVicar::Application.routes.draw do
 
   resources :search_statistics
 
+  get 'site_statistics/export_csv', to: 'site_statistics#export_csv', as: :export_csv_site_statistics
   resources :site_statistics
 
   get 'feedbacks/list_by_userid',  :to => 'feedbacks#list_by_userid', :as => :list_by_userid_feedbacks
@@ -453,6 +455,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_places/for_search_form(.:format)', :to => 'freecen2_places#for_search_form', :as => :freecen2_places_for_search_form
   resources :freecen2_places
 
+  resources :freecen2_place_sources
 
   get 'places/:id/approve', :to => 'places#approve', :as => :approve_place
   get 'places/:id/rename', :to => 'places#rename', :as => :rename_place
