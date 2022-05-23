@@ -10,8 +10,8 @@
                   <%= image_tag("png/ty_#{appname_downcase}.png", alt: "Thank you for using #{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
                 </div>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-                    <p id="charity_text" class="weight--semibold">We're a registered charity: we need your support.</p>
-                    <p>Our sole purpose is to provide free access to family history <span style="white-space: nowrap;"><strong>for everyone, forever.</strong></span> Your donations enable us to support our volunteer transcribers to produce <span style="white-space: nowrap;">high-quality</span> transcriptions to grow your family tree.</p>
+                    <p id="charity_text" class="weight--semibold">We're a registered charity and we need your support.</p>
+                    <p>It's our mission to provide free access to family history <span style="white-space: nowrap;"><strong>for everyone, forever.</strong></span><br>Our data is free – but running our databases is not. Your donations enable us to support our volunteer transcribers to produce <span style="white-space: nowrap;">high-quality</span> transcriptions to grow your family tree.</p>
                 </div>
             </div>
         </div>
@@ -34,13 +34,13 @@
             </aside>
         </div>
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center push--bottom">
-          <span id="reminder_form_controller" class="push--right" tabindex="0">
+          <span id="reminder_form_controller" class="" tabindex="0">
+                <small class="remind_me_later_cta" id="remind_me_later_button">Remind me later</small>
                 <small><i class="fa fa-clock push-half--right remind_me_later_cta"></i></small>
-                <small class="push-half--right remind_me_later_cta" id="remind_me_later_button">Remind me later</small>
           </span>
           <span id="close_donate_cta_pop_up" class="push--left" tabindex="0">
             <small><i class="fa fa-times push-half--right close_cta"></i></small>
-            <small class="push-half--right close_cta" id="close_button_cta">Close</small>
+            <small class="close_cta" id="close_button_cta">Close</small>
           </span>
         </div>
         <aside class="grid__item lap-one-whole palm-one-whole " id="fundraising_box_2">
@@ -81,7 +81,7 @@
     }
 
     #donate_now_button {
-        width: 70%;
+        width: 100%;
         background-color: #c84182;
         border-color:  #c84182;
         padding:  5px;
@@ -126,6 +126,9 @@
         #donate_div {
             padding-left: 0px !important;
         }
+        #donate_now_button{
+            width: 70%;
+        }
     }
 
     @media only screen and (max-width: 1024px) {
@@ -168,7 +171,7 @@
 
     }
 
-    @media only screen and (min-width: 1024px) {
+    @media only screen and (min-width: 1025px) {
         #honeycomb {
             display: none !important;
         }
@@ -199,6 +202,15 @@
 
         #donate_div{
             padding-left: 0px !important;
+        }
+
+        #donate_now_button {
+            width:  100%;
+            float: right;
+        }
+
+        #read_more {
+            width:  85%;
         }
 
     }
@@ -253,7 +265,7 @@
     @media only screen and (min-width: 570px) {
         .donation_dialog{
             width: 70% !important;
-            top: 35%;
+            top: 15%;
             
         }
 
