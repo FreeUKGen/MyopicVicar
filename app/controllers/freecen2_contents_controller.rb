@@ -66,6 +66,8 @@ class Freecen2ContentsController < ApplicationController
   end
 
   def piece_index_setup(order_by_for_total, order_by_for_year)
+    redirect_to(freecen2_contents_path, notice: 'Record not found') && return if @freecen2_contents.blank?
+
     redirect_to(freecen2_contents_path, notice: 'Census Year not found') && return if !params[:census_year].presence || params[:census_year].blank?
 
     redirect_to(freecen2_contents_path, notice: 'Place not found') && return if !params[:place_description].presence || params[:place_description].blank?
@@ -170,6 +172,8 @@ class Freecen2ContentsController < ApplicationController
     @place = Freecen2Place.find_by(chapman_code: @chapman_code, place_name: @place_description)
     if @place.present?
       @place_unique_names = Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place.id)
+      redirect_back(fallback_location: freecen2_contents_path, notice: 'Names not found') && return if @place_unique_names.blank?
+
       @first_names = @place_unique_names.unique_forenames[@year]
       @last_names = @place_unique_names.unique_surnames[@year]
       @first_names_cnt = @first_names.count
@@ -269,6 +273,10 @@ class Freecen2ContentsController < ApplicationController
 
   def remove_dates_place(place_with_dates)
     place_name = place_with_dates.split('=')[0]
+  end
+
+  def show
+    redirect_to(freecen2_contents_path, notice: 'No such record') && return
   end
 
   private

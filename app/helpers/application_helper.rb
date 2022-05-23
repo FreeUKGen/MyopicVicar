@@ -752,7 +752,8 @@ module ApplicationHelper
       freebmdAccuracy: '/cms/help#Accuracy',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
-      freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
+      #freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
+      freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en',
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
     }
   end
