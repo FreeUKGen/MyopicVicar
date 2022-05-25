@@ -33,20 +33,23 @@
             </aside>
         </div>
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center push--bottom">
-          <span id="reminder_form_controller" class="" tabindex="0">
-                <small class="remind_me_later_cta push-half--right" id="remind_me_later_button">Remind me later</small>
-                <small><i class="fa fa-clock push-half--right remind_me_later_cta"></i></small>
-          </span>
-          <span id="close_donate_cta_pop_up" class="push-half--left" tabindex="0">
-            <small><i class="fa fa-times push-half--right close_cta"></i></small>
-            <small class="close_cta" id="close_button_cta">Close</small>
-          </span>
+          <!--span id="reminder_form_controller" class="" tabindex="0"-->
+                <!--small class="remind_me_later_cta push-half--right" id="remind_me_later_button">Remind me later</small-->
+
+            <%=button_tag "Remind me later <i class='fa fa-clock'></i>".html_safe , id:"reminder_form_controller", class: "remind_me_later_cta push-half--right", type: "button"%>
+                
+          <!--/span-->
+          <!--span id="close_donate_cta_pop_up" class="push-half--left" tabindex="0"-->
+            <%=button_tag "<i class='fa fa-times push-half--right close_cta'></i> Close".html_safe , id:"close_donate_cta_pop_up", class: "", type: "button"%>
+            
+          <!--/span-->
         </div>
         <aside class="grid__item lap-one-whole palm-one-whole " id="fundraising_box_2">
                 <%= image_tag("png/fr.png", alt: "Fundraising", class: "", id:"fundraising")%>
         </aside>
          <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-            <small class="float--right push--right" id="donate_cta_feedback">Send any feedback to feedback@freeukgenealogy.org.uk</small>
+            <%=button_tag "Send any feedback to feedback@freeukgenealogy.org.uk" , id:"donate_cta_feedback", class: "float--right push--right", type: "button"%>
+            <!--small class="float--right push--right" id="donate_cta_feedback">Send any feedback to feedback@freeukgenealogy.org.uk</small-->
          </div>
     </div>
 </div>
@@ -329,6 +332,13 @@
 
     #reminder_to_donate_form:hover, #donate_cta_feedback_form:hover {
       box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
+    #reminder_form_controller, #close_donate_cta_pop_up, #donate_cta_feedback {
+        border: none;
+        background-color: white;
+        font-size: 14px;
+        color: #505050;
     }
 
     #reminder_form_controller, #close_donate_cta_pop_up {
