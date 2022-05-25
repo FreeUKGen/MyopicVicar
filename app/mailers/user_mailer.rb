@@ -29,6 +29,18 @@ class UserMailer < ActionMailer::Base
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for contacting us. Reference #{@communication.identifier}")
   end
 
+  def acknowledge_donate_cta_feedback(original)
+    @appname = appname
+    @communication = original
+    mail(to: "#{@communication.email_address}", subject: "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
+  end
+
+  def communicate_donate_cta_feedback(original)
+    @appname = appname
+    @communication = original
+    mail(to: "feedback@freeukgenealogy.org.uk", subject: "#{appname} Donate CTA Feedback:#{@communication.identifier}")
+  end
+
   def acknowledge_feedback(original)
     @appname = appname
     @communication = original

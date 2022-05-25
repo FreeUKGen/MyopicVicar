@@ -1,13 +1,13 @@
-<div class="grid push-half--sides" id="donate_reminder_form">
+<div class="grid push-half--sides" id="feedback_form">
     <div class="container hard--left">
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole " style="width:95%">
-            <% if @reminder_to_donate.present? && (@reminder_to_donate.errors.present? || @reminder_to_donate.errors.any?) %>
+            <% if @feedback.present? && (@feedback.errors.present? || @feedback.errors.any?) %>
                 <div role="alert">
                     <fieldset class="input">
                         <legend>Error List</legend>
                         <h2 class="gamma">Please fix the following error and resubmit</h2>
                         <ol class="validation-list">
-                            <% @reminder_to_donate.errors.messages.each do |key, msg| %>
+                            <% @feedback.errors.messages.each do |key, msg| %>
                                 <li>
                                     <%= msg[0] %>
                                 </li>
@@ -18,26 +18,30 @@
             <% end %>
             <% if current_page?('/') || current_page?('/search_queries/new') %>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--right push-half--ends push-half--sides" style="height:30px">
-                    <%= button_tag type: 'button', class:"btn btn--small push--bottom", id: "close_reminder_form" do %>
+                    <%= button_tag type: 'button', class:"btn btn--small push--bottom", id: "close_feedback_form" do %>
                     <i class="fa fa-times"  tabindex="0"></i>
                     <% end %>
                 </div>
                <% end %>
-            <%=  form_tag("/reminder_to_donate#{(@reminder_to_donate)}", method: :post) do %>
+            <%=  form_tag("/donate_cta_feedback#{(@feedback)}", method: :post) do %>
               <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left" id="">
-                  <fieldset class="input" id="remind_me_later_form">
-                      <legend>Remind me later form:</legend>
-                      <h3>Send me a reminder</h3>
+                  <fieldset class="input" id="donate_feedback_form">
+                      <legend>Feedback form:</legend>
+                      <h3>Send a feedback:</h3>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                           <%= label_tag 'name', 'Name'%>
-                          <%= text_field_tag 'reminder_to_donate[name]', nil, tabindex: "0", class: "text-input" %>
+                          <%= text_field_tag 'feedback[name]', nil, tabindex: "0", class: "text-input" %>
                       </div>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                           <%= label_tag 'email', 'Email Address'%>
-                          <%= email_field_tag 'reminder_to_donate[email]', nil, tabindex: "0", class: "text-input" %>
+                          <%= email_field_tag 'feedback[email_address]', nil, tabindex: "0", class: "text-input" %>
                       </div>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-                          <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top' , id: 'submit_reminder', data: {style: "zoom-out", color: appname_downcase, size: "s", "spinner-color" => "#ffffff"} %>
+                          <%= label_tag 'body', 'Body'%>
+                          <%= text_area_tag 'feedback[body]', nil, tabindex: "0", class: "text-input" %>
+                      </div>
+                      <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                          <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top' , id: 'submit_feedback', data: {style: "zoom-out", color: appname_downcase, size: "s", "spinner-color" => "#ffffff"} %>
                       </div>
                   </fieldset>
               </div>
@@ -46,10 +50,10 @@
     </div>
 </div>
 <script>
-  //js code to close search criteria
-  $('#close_reminder_form').click(
+  $('#close_feedback_form').click(
     function() {
-     $('#reminder_to_donate_form').hide();
+     $('#donate_cta_feedback_form').hide();
      document.getElementById("overlay").style.display = "none";
   });
+
 </script>

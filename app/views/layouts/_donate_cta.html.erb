@@ -1,5 +1,4 @@
-<div id="overlay"></div>
-<div class="donation_dialog" id="donate_cta_pop_up">
+<div class="donation_dialog" id="donate_cta_pops">
     <div class="donate_cta__header__nav text--center">
         <p id="top_banner_text"><%= "Support our Free UK Genealogy Volunteers".upcase %></p>
     </div>
@@ -35,7 +34,7 @@
         </div>
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center push--bottom">
           <span id="reminder_form_controller" class="" tabindex="0">
-                <small class="remind_me_later_cta" id="remind_me_later_button">Remind me later</small>
+                <small class="remind_me_later_cta push-half--right" id="remind_me_later_button">Remind me later</small>
                 <small><i class="fa fa-clock push-half--right remind_me_later_cta"></i></small>
           </span>
           <span id="close_donate_cta_pop_up" class="push-half--left" tabindex="0">
@@ -46,9 +45,14 @@
         <aside class="grid__item lap-one-whole palm-one-whole " id="fundraising_box_2">
                 <%= image_tag("png/fr.png", alt: "Fundraising", class: "", id:"fundraising")%>
         </aside>
+         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+            <small class="float--right push--right" id="donate_cta_feedback">Send any feedback to feedback@freeukgenealogy.org.uk</small>
+         </div>
     </div>
 </div>
-<%= render "reminder_to_donate/form"%>
+
+
+
 
 <style>
     #overlay {
@@ -101,6 +105,19 @@
         border-radius: 6px;
         padding: 8px 0;
         z-index: 10000;
+    }
+
+    #reminder_to_donate_form, #donate_cta_feedback_form {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        background-color: #edfbfb;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 100000;
+        left: 0;
+        right: 0;
+        margin: auto auto;
+        display: none;
     }
 
     @media only screen and (min-width: 1300px) {
@@ -270,56 +287,21 @@
     }
 
     @media only screen and (min-width: 1024px) {
-        #reminder_to_donate_form {
+        #reminder_to_donate_form, #donate_cta_feedback_form {
             width: 30%;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            transition: 0.3s;
-            background-color: #edfbfb;
-            border-radius: 6px;
-            padding: 18px 0;
-            position: absolute;
-            z-index: 100000;
-            top: 3%;
-            left: 40%;
-            right: auto;
-            margin-left: -80px;
-            display: none;
+            max-width: 800px;
         }
     }
 
     @media only screen and (max-width: 1024px) {
-        #reminder_to_donate_form {
+        #reminder_to_donate_form, #donate_cta_feedback_form {
             width: 50%;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            transition: 0.3s;
-            background-color: #edfbfb;
-            border-radius: 6px;
-            padding: 18px 0;
-            position: absolute;
-            z-index: 100000;
-            top: 10%;
-            left: 40%;
-            right: auto;
-            margin-left: -80px;
-            display: none;
         }
     }
 
     @media only screen and (max-width: 720px) and (min-width: 570px){
-        #reminder_to_donate_form {
+        #reminder_to_donate_form, #donate_cta_feedback_form {
             width: 80%;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            transition: 0.3s;
-            background-color: #edfbfb;
-            border-radius: 6px;
-            padding: 18px 0;
-            position: absolute;
-            z-index: 100000;
-            top: 10%;
-            left: 20%;
-            right: auto;
-            margin-left: -80px;
-            display: none;
         }
         .thank_you_text_div {
             width: 60%;
@@ -340,24 +322,12 @@
     }
 
     @media only screen and (max-width: 570px) {
-        #reminder_to_donate_form {
+        #reminder_to_donate_form, #donate_cta_feedback_form {
             width: 90%;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            transition: 0.3s;
-            background-color: #edfbfb;
-            border-radius: 6px;
-            padding: 8px 0;
-            position: absolute;
-            z-index: 100000;
-            top: 5%;
-            left: 30%;
-            right: auto;
-            margin-left: -75px;
-            display: none;
         }
     }
 
-    #reminder_to_donate_form:hover {
+    #reminder_to_donate_form:hover, #donate_cta_feedback_form:hover {
       box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
     }
 
@@ -369,6 +339,16 @@
         border:  2px dashed;
         padding: 2px;
     }
+
+    #donate_cta_feedback:hover {
+        font-weight: bold;
+         text-decoration: underline;
+         cursor: pointer;
+    }
+
+    #donate_cta_feedback {
+    }
+
     #donate_cta_pop_up {
         display: none;
     }
@@ -420,6 +400,12 @@
   $('#close_reminder_form').click(
     function() {
      $('#reminder_to_donate_form').hide();
+     document.getElementById("overlay").style.display = "none";
+  });
+
+  $('#close_feedback_form').click(
+    function() {
+     $('#donate_cta_feedback_form').hide();
      document.getElementById("overlay").style.display = "none";
   });
 

@@ -48,6 +48,12 @@ document.getElementById('reminder_form_controller').onclick = function show_remi
   elem.className = "float--right";
 }
 
+document.getElementById('donate_cta_feedback').onclick = function show_feedback_form() {
+  setCookie('donate_cta_flag', 1,365);
+  $("#donate_cta_feedback_form").show();
+  $("#donate_cta_pops").hide();
+}
+
 
   // Switch Adsense checkbox value
   var toggleAdsenseCheckbox = function() {

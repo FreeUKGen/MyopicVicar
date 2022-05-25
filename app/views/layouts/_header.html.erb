@@ -63,4 +63,13 @@
 <% end %>
 </div>
 </header>
-<%= render "layouts/donate_cta" %>
+<div id="overlay"></div>
+<div id="donate_cta_pop_up">
+  <%= render "layouts/donate_cta" %>
+</div>
+<div id="reminder_to_donate_form">
+    <%= render "reminder_to_donate/form"%>
+</div>
+<div id="donate_cta_feedback_form">
+    <%= render "donate_cta_feedback/form"%>
+</div>

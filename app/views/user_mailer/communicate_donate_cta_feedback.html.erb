@@ -1,0 +1,7 @@
+<p> Dear <%= @send_to.person_forename %>;</p>
+<p>We have received correspondence for our <%=@appname%> donate CTA <%= @contact.identifier %> from <%= @contact.name %> email <%= @contact.email_address %>. </p>
+
+Following is the information submitted.</p>
+<p>  <%= @contact.body %></p>
+<p>The <%= @appname %> Team</p>
+</p>
