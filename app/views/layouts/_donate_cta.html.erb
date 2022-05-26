@@ -33,29 +33,17 @@
             </aside>
         </div>
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center push--bottom">
-          <!--span id="reminder_form_controller" class="" tabindex="0"-->
-                <!--small class="remind_me_later_cta push-half--right" id="remind_me_later_button">Remind me later</small-->
-
             <%=button_tag "Remind me later <i class='fa fa-clock push-half--left'></i>".html_safe , id:"reminder_form_controller", class: "remind_me_later_cta push-half--right", type: "button"%>
-                
-          <!--/span-->
-          <!--span id="close_donate_cta_pop_up" class="push-half--left" tabindex="0"-->
             <%=button_tag "<i class='fa fa-times push-half--right close_cta'></i> Close".html_safe , id:"close_donate_cta_pop_up", class: "", type: "button"%>
-            
-          <!--/span-->
         </div>
         <aside class="grid__item lap-one-whole palm-one-whole " id="fundraising_box_2">
                 <%= image_tag("png/fr.png", alt: "Fundraising", class: "", id:"fundraising")%>
         </aside>
          <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-            <%=button_tag "Send any feedback to feedback@freeukgenealogy.org.uk" , id:"donate_cta_feedback", class: "float--right push--right", type: "button"%>
-            <!--small class="float--right push--right" id="donate_cta_feedback">Send any feedback to feedback@freeukgenealogy.org.uk</small-->
+            <%=button_tag "Send any feedback to <span style='color:blue'>feedback@freeukgenealogy.org.uk</span>".html_safe , id:"donate_cta_feedback", class: "float--right push--right", type: "button"%>
          </div>
     </div>
 </div>
-
-
-
 
 <style>
     #overlay {
