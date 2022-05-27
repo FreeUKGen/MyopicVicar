@@ -33,7 +33,7 @@ gem 'bourbon'
 gem 'mail-logger'
 gem 'devise'
 gem 'devise-encryptable'
-gem 'nokogiri'
+gem 'nokogiri', ">= 1.13.6"
 gem 'osgb', git: 'https://github.com/FreeUKGen/osgb.git'
 gem 'rubyzip'
 gem 'zip-zip'
