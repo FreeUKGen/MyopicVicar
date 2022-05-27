@@ -130,7 +130,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <main  class="site__content  icon__honeycomb--top-right">
         <% unless device_type == :mobile%>
         <% end %>
-        <div class="container">
+        <div class="container" id="top">
           <% if session[:userid_detail_id].present?%>
             <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
              controller_name == "pages"%>
@@ -149,7 +149,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <% end %>
           <% if  session[:userid_detail_id].present?%>
             <div style="float:left;">
-              <a href="#" class = "btn  btn--small">Top of page</a>
+              <a href="#top">Top of page</a>
             </div>
             <div  style="float:right;">
               <%= form_tag(problem_url, :method=>:get) do %>
