@@ -24,7 +24,7 @@ module ApplicationHelper
   end
 
   def nav_about_page_link
-    return if session[:userid_detail_id].present?
+    #return if session[:userid_detail_id].present?
 
     link_to 'About', '/cms/about'
   end
