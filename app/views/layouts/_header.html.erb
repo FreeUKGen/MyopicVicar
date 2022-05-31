@@ -84,6 +84,16 @@
 </dialog>
 
 <style type="text/css">
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  #myDialog::-webkit-scrollbar, #myDialog1::-webkit-scrollbar, #myDialog2::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  #myDialog, #myDialog1, #myDialog2 {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
   #myDialog {
     background-color: white;
     border-radius: 6px;

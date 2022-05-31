@@ -10,7 +10,8 @@
                 </div>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                     <p id="charity_text" class="weight--semibold push-half--bottom">We're a registered charity and we need your support.</p>
-                    <p>It's our mission to provide free access to family history <span style="white-space: nowrap;"><strong>for everyone, forever.</strong></span><br>Our data is free – but running our databases is not. Your donations enable us to support our volunteer transcribers to produce <span style="white-space: nowrap;">high-quality</span> transcriptions to grow your family tree.</p>
+                    <p class="push-half--bottom">It's our mission to provide free access to family history <span style="white-space: nowrap;"><b>for everyone, forever.</b></span></p>
+                    <p>Our data is free – but running our databases is not. Your donations enable us to support our volunteer transcribers to produce <span style="white-space: nowrap;">high-quality</span> transcriptions to grow your family tree.</p>
                 </div>
             </div>
         </div>
@@ -20,7 +21,7 @@
                    <p><strong>Help us keep your family history free.</strong></p>
                     <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left">
                         <div class="grid__item desk-one-half lap-one-half palm-one-whole hard--left" id="read_more_div">
-                            <a href="https://www.freeukgenealogy.org.uk/why-donate" class="text--center btn btn--small" target="_blank" tabindex="0" id="read_more" autofocus="off">Read More</a>
+                            <a href="https://www.freeukgenealogy.org.uk/why-donate" class="text--center btn btn--small" target="_blank" tabindex="0" id="read_more" autofocus="false">Read More</a>
                         </div>
                         <div class="grid__item desk-one-half lap-one-half palm-one-whole" id="donate_div">
                             <%= link_to "DONATE NOW", "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}", class: "freeREG btn btn--small weight--semibold", id:"donate_now_button", target:"_blank", tabindex: "0" %>
@@ -386,3 +387,6 @@
     }
 
 </style>
+<script>
+    
+</script>
