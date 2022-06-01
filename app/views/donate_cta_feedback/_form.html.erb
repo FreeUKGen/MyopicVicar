@@ -16,13 +16,6 @@
                     </fieldset>
                 </div>
             <% end %>
-            <% if current_page?('/') || current_page?('/search_queries/new') %>
-                <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--right push-half--bottom push-half--sides" style="height:30px">
-                    <%= button_tag type: 'button', class:"btn btn--small push--bottom", id: "close_feedback_form" do %>
-                    <i class="fa fa-times"  tabindex="0"></i>
-                    <% end %>
-                </div>
-               <% end %>
             <%=  form_tag("/donate_cta_feedback#{(@feedback)}", method: :post) do %>
               <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left" id="">
                   <fieldset class="input" id="donate_feedback_form">
@@ -41,7 +34,16 @@
                           <%= text_area_tag 'feedback[body]', nil, tabindex: "0", class: "text-input" %>
                       </div>
                       <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-                          <%= submit_tag "Submit", class: 'spinner-controller ladda-button push--top' , id: 'submit_feedback', data: {style: "zoom-out", color: appname_downcase, size: "s", "spinner-color" => "#ffffff"} %>
+                        <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+                          <%= submit_tag "Submit", class: 'spinner-controller ladda-button' , id: 'submit_feedback', data: {style: "zoom-out", color: appname_downcase, size: "s", "spinner-color" => "#ffffff"} %>
+                        </div>
+                          <% if current_page?('/') || current_page?('/search_queries/new') %>
+                            <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+                                <%= button_tag type: 'button', class:"btn btn--small", id: "close_feedback_form" do %>
+                                <i class="fa fa-times"  tabindex="0"></i>
+                                <% end %>
+                            </div>
+                          <% end %>
                       </div>
                   </fieldset>
               </div>
