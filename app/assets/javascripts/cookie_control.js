@@ -20,7 +20,7 @@ $(document).ready(function() {
   };
 
   //turn off donate cta
-var close_donate_cta = function(){
+/*var close_donate_cta = function(){
   setCookie('donate_cta_flag', 1,365);
   document.getElementById("myDialog").close(); 
     $("#donate_cta_pop_up").hide();
@@ -58,7 +58,7 @@ document.getElementById('donate_cta_feedback').onclick = function show_feedback_
   document.getElementById("myDialog2").showModal();
   $("#donate_cta_feedback_form").show();
   $("#donate_cta_pops").hide();
-}
+}*/
 
 
   // Switch Adsense checkbox value
