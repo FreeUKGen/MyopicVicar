@@ -14,6 +14,11 @@ class DonateCtaFeedbackController < ApplicationController
   	end
   end
 
+  def index
+    get_user_info_from_userid
+    @feedbacks = DonateCtaFeedback.all
+  end
+
   private
 
   def feedback_params

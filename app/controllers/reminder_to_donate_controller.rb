@@ -14,6 +14,11 @@ class ReminderToDonateController < ApplicationController
   	
   end
 
+  def index
+    get_user_info_from_userid
+    @feedbacks = ReminderToDonate.all
+  end
+
   private
 
   def reminder_to_donate_params
