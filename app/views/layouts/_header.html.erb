@@ -24,7 +24,7 @@
         <div class="bnner-horz reg_adsense reg_unit reg_header">
           <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
           <% if @search_query.present? %>
-            <%= render enc_uri_reg(@search_query).html_safe %>
+            <iframe src="<%=enc_uri_reg(@search_query)%>"></iframe>
           <% else %>
             <%= my_heritage_720_90_first %>
           <% end %>
