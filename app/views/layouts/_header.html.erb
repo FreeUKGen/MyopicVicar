@@ -24,7 +24,7 @@
         <div class="bnner-horz reg_adsense reg_unit reg_header">
           <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
           <% if @search_query.present? %>
-            <link href="<%=enc_uri_reg(@search_query)%>" rel="dns-prefetch">
+            <link href='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName="<%= @search_query.first_name %>"&lastName="<%= @search_query.last_name %>"&tr_device=&size=160x600' rel="dns-prefetch">
           <% else %>
             <%= my_heritage_720_90_first %>
           <% end %>
