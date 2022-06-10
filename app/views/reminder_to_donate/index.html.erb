@@ -1,0 +1,34 @@
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<strong>Donate CTA feedbacks</strong>
+<section class='island   ' >
+  <div class='scrollable'>
+    <div class='table-wrapper'>
+      <div class='grid'>
+        <div class='grid__item one-whole' >
+          <%if @feedbacks.present?%>
+            <div class="scrollable ">
+              <table class='table--bordered table--data '>
+                <tr>
+                  <th class='sticky-header'>Name</th>
+                  <th class='sticky-header'>Email Address</th>
+                </tr>
+                <% @feedbacks.each do |message| %>
+                    <td><%= message.name %></td>
+                    <td><%= message.email %></td>
+                  </tr>
+                <% end %>
+              </table>
+            </div>
+          <% else%>
+            <h4 class='text--center'> No feedbacks</h4>
+          <% end%>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<br />
