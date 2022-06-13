@@ -5,7 +5,8 @@
         <strong class="results-header"><%= pluralize(@search_results.count, 'Results')%></strong>
       </div>
       <div class="grid__item one-sixth lap-one-third palm-one-half">
-        <button id="tool_button" class="btn btn--small dropbtn" onclick="myFunction()" tabindex="0"><i class="fa fa-cog"></i> Tools</button>
+        <!--button id="tool_button" class="btn btn--small dropbtn" onclick="myFunction()" tabindex="0"><i class="fa fa-cog"></i> Tools</button-->
+         <%= select_tag "Tools", options_for_select([['About this Query', about_search_query_path(@search_query, page_number: @page_number)], ['Printable format', show_print_version_search_query_path], ['Download as CSV', search_results_download_as_csv_path(@search_query)]]), prompt: "Tools", onchange: 'location.href= this.value'%>
       </div>
     </div>
   </div>
