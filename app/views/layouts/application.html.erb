@@ -201,12 +201,12 @@
       var switchOffCanvas = function() {
         classie.toggle(document.body, 'offcanvas--active');
         classie.toggle(elm, 'navbar_toggle--active');      }
-      if (el.addEventListener) {
+      if (el && el.addEventListener) {
         el.addEventListener('click', switchOffCanvas, false);
       } else if (el.attachEvent) {
           el.attachEvent('onclick', switchOffCanvas);
       }
-      if (cancel.addEventListener) {
+      if (cancel && cancel.addEventListener) {
         cancel.addEventListener('click', switchOffCanvas, false);
       } else if (cancel.attachEvent) {
           cancel.attachEvent('onclick', switchOffCanvas);
