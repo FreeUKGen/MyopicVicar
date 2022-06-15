@@ -203,12 +203,12 @@
         classie.toggle(elm, 'navbar_toggle--active');      }
       if (el && el.addEventListener) {
         el.addEventListener('click', switchOffCanvas, false);
-      } else if (el.attachEvent) {
+      } else if (el && el.attachEvent) {
           el.attachEvent('onclick', switchOffCanvas);
       }
       if (cancel && cancel.addEventListener) {
         cancel.addEventListener('click', switchOffCanvas, false);
-      } else if (cancel.attachEvent) {
+      } else if (cancel && cancel.attachEvent) {
           cancel.attachEvent('onclick', switchOffCanvas);
       }
 
@@ -219,9 +219,9 @@
         classie.toggle(document.body, 'offcanvas--active');
         classie.toggle(el, 'site__header__menu-btn--active');
       }
-      if (el.addEventListener) {
+      if (el && el.addEventListener) {
         el.addEventListener('click', switchOffCanvas, false);
-      } else if (el.attachEvent) {
+      } else if (el && el.attachEvent) {
           el.attachEvent('onclick', switchOffCanvas);
       }
     </script>
