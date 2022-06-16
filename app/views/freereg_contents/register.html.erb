@@ -8,7 +8,18 @@
     </div>
     <br>
     <h3 class=" text--center">Information about the <%=RegisterType.display_name(@register.register_type) %> from <%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h3>
-    <%= render 'register' %>
-    <%= render 'decade' %>
+    <div class="grid">
+      <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+        <div class="grid__item one-whole">
+          <%= render 'register' %>
+        </div>
+        <div class="grid__item one-whole">
+          <%= my_heritage_300_250_second %>
+        </div>
+      </div>
+      <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+        <%= render 'decade' %>
+      </div>
+    </div>
   </section>
 </div>

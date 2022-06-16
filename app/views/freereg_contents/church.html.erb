@@ -7,7 +7,18 @@
     </div>
     <br>
     <h2 class=" text--center"><%=@church.church_name %> of <%= @place_name %> in <%= @county %> </h2>
-    <%= render 'church' %>
-    <%= render 'decade' %>
+    <div class="grid">
+      <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+        <div class="grid__item one-whole">
+          <%= render 'church' %>
+        </div>
+        <div class="grid__item one-whole">
+          <%= my_heritage_300_250_second %>
+        </div>
+      </div>
+      <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+        <%= render 'decade' %>
+      </div>
+    </div>
   </section>
 </div>
