@@ -12,12 +12,14 @@
         <div class="grid__item one-whole">
           <%= render 'church' %>
         </div>
-        <div class="grid__item one-whole">
-          <div class = "adsense_box push--ends">
-            <span>Advertisement</span>
-            <%= my_heritage_300_250_second %>
+        <% unless device_type == :mobile %>
+          <div class="grid__item one-whole">
+            <div class = "adsense_box push--ends">
+              <span>Advertisement</span>
+              <%= my_heritage_300_250_second %>
+            </div>
           </div>
-        </div>
+        <% end %>
       </div>
       <div class="grid__item desk-one-half lap-one-half palm-one-whole">
         <%= render 'decade' %>
