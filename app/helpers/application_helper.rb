@@ -724,7 +724,7 @@ module ApplicationHelper
       privacyNotice: 'Privacy Notice
       <span class="accessibility">Opens in new window</span>',
       termAndConditions: 'Terms and Conditions',
-      contactUs: 'Contact Us',
+      contactUs: 'FAQs & Contact Us',
       donation: 'Make a donation to cover our operating costs
       <span class="accessibility">Opens in new window</span>',
       fugNews: 'News about Free UK Genealogy
