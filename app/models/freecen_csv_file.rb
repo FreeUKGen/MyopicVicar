@@ -658,7 +658,7 @@ class FreecenCsvFile
       records = freecen_csv_entries
       @record_number = 0
       records.each do |rec|
-        next if rec['deleted_flag'].present?
+        # next if rec['deleted_flag'].present?
 
         @record_number += 1
         line = []
