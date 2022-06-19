@@ -1025,7 +1025,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_ecclesiastical_parish
-    unless ChapmanCode::CODES['Ireland'].values.member?(@csvfile.chapman_code) || (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841')
+    unless ChapmanCode::CODES['Ireland'].values.member?(@csvfile.chapman_code) || (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841') || (ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841')
       message, @csvfile.ecclesiastical_parish = FreecenCsvEntry.validate_ecclesiastical_parish(@data_record, @csvfile.ecclesiastical_parish)
       @project.write_messages_to_all(message, true) unless message == ''
     end
@@ -1037,7 +1037,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_ward
-    unless ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && %w[1841 1851].include?(@csvfile.year)
+    unless ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && %w[1841 1851].include?(@csvfile.year) || (ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841')
       message, @csvfile.ward = FreecenCsvEntry.validate_ward(@data_record, @csvfile.ward)
       @project.write_messages_to_all(message, true) unless message == ''
     end

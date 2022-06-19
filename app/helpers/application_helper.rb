@@ -13,6 +13,12 @@
 # limitations under the License.
 #
 module ApplicationHelper
+  DONATE_ID = {
+      #field: id
+      "freebmd" => '5007',
+      "freecen" => '5005',
+      "freereg" => '5004',
+    }
   def nav_search_form_link
     link_to('Search', main_app.new_search_query_path) unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
   end
@@ -746,7 +752,8 @@ module ApplicationHelper
       freebmdAccuracy: '/cms/help#Accuracy',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
-      freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
+      #freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
+      freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en',
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
     }
   end
