@@ -23,5 +23,8 @@
 </footer>
 
 <script>
-  $(".google-auto-placed").prepend('<p class = "text--center strong">Space for Advertisement</p>')
+  let div = document.getElementsByClassName("google-auto-placed");
+  let p = document.createElement("p");
+  div.prepend("Space for Advertisement", p);
+  //$(".google-auto-placed").prepend('<p class = "text--center strong">Space for Advertisement</p>')
 </script>
