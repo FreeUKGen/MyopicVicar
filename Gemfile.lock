@@ -207,7 +207,7 @@ GEM
     mimemagic (0.3.5)
     mini_magick (4.11.0)
     mini_mime (1.0.2)
-    mini_portile2 (2.4.0)
+    mini_portile2 (2.8.0)
     minitest (5.14.2)
     mobileesp_converted (0.2.3)
     mobvious (0.3.2)
@@ -227,10 +227,11 @@ GEM
     mysql2 (0.5.3-x64-mingw32)
     newrelic_rpm (6.14.0)
     nio4r (2.5.4)
-    nokogiri (1.10.10)
-      mini_portile2 (~> 2.4.0)
-    nokogiri (1.10.10-x64-mingw32)
-      mini_portile2 (~> 2.4.0)
+    nokogiri (1.13.6)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
+    nokogiri (1.13.6-x64-mingw32)
+      racc (~> 1.4)
     octokit (4.19.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
@@ -245,6 +246,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     public_suffix (4.0.6)
+    racc (1.6.0)
     rack (2.2.3)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -460,7 +462,7 @@ DEPENDENCIES
   mongoid
   mysql2
   newrelic_rpm
-  nokogiri
+  nokogiri (>= 1.13.6)
   octokit
   osgb!
   pry
