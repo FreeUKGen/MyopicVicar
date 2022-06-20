@@ -2446,10 +2446,18 @@ class FreecenCsvEntry
 
   def validate_on_line_edit_of_fields(fields)
     success, message = FreecenValidations.text?(fields[:surname])
-    errors.add(:surname, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
+    if success && fields[:surname].present? && fields[:surname].strip == '-'
+      errors.add(:surname, "has single - Hyphen in Surname") unless fields[:record_valid] == 'true'
+    elsif !success
+      errors.add(:surname, "Invalid; #{message}")
+    end
 
     success, message = FreecenValidations.text?(fields[:forenames])
-    errors.add(:forenames, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
+    if success && fields[:forenames].present? && fields[:forenames].strip == '-'
+      errors.add(:forenames, "has single - Hyphen in Forename") unless fields[:record_valid] == 'true'
+    elsif !success
+      errors.add(:forenames, "Invalid; #{message}")
+    end
 
     success, message = FreecenValidations.name_question?(fields[:name_flag])
     errors.add(:name_flag, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
