@@ -154,10 +154,12 @@
     </table>
   </div>
   <% unless device_type == :mobile%>
-    <div class="grid__item  two-fifths  palm-one-whole text--center float--right">
-      <span> Advertisement</span><br>
-      <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @record_name[0] %>&lastName=<%= @record_name[1] %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe>
-    </div>
+    <% unless  @search_record.blank? || @search_query.blank? %>
+      <div class="grid__item  two-fifths  palm-one-whole text--center float--right">
+        <span> Advertisement</span><br>
+        <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @record_name[0] %>&lastName=<%= @record_name[1] %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe>
+      </div>
+    <% end %>
   <% end %>
   <!--div  id='results_table_ad' class='float--right text--center reg_units reg_side_adverts'>
     <span class=''>Advertisement</span><br>
