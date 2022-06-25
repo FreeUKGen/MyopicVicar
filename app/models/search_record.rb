@@ -682,6 +682,19 @@ class SearchRecord
     location_array
   end
 
+  def get_record_names
+    first_name = ""
+    last_name = ""
+    transcript_names.each do |name|
+      if name[:type] == 'primary' #TODO constantize
+        first_name << name[:first_name] if name[:first_name]
+        last_name << name[:last_name] if name[:last_name]
+      end
+    end
+    name_array =[first_name, last_name]
+    names_array
+  end
+
   def friendly_url
     particles = []
     # first the primary names
