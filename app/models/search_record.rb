@@ -692,7 +692,7 @@ class SearchRecord
       end
     end
     name_array =[first_name, last_name]
-    names_array
+    name_array
   end
 
   def friendly_url
