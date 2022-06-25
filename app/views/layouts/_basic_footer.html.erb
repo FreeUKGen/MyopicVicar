@@ -5,7 +5,7 @@
         <!-- <div class="grid"> -->
         <!-- <div class="info-1 grid__item  one-third  palm-one-whole text--left"> -->
         <!-- <ul class="nav  nav--stacked  lap-and-up-flush--bottom"> -->
-        <div class="c-subfooter-1__nav" role="navigation">
+        <div class="c-subfooter-1__nav">
             <p class="c-subfooter-1__nav-heading">Useful Links</p>
             <ul class="c-subfooter-1__nav-list">
                 <li class="c-subfooter-1__nav-item">
@@ -18,7 +18,7 @@
                     <%= link_to helpful_anchors[:termAndConditions].html_safe, helpful_links[:termAndConditions] %>
                 </li>
                 <li class="c-subfooter-1__nav-item">
-                    <%= link_to helpful_anchors[:contactUs].html_safe, helpful_links[:contactUs] %>
+                    <%= link_to appname_downcase == 'freereg' ? "FAQs & #{helpful_anchors[:contactUs].html_safe}" : helpful_anchors[:contactUs].html_safe, helpful_links[:contactUs], html_options2 %>
                 </li>
                 <li class="c-subfooter-1__nav-item">
                     <%= link_to helpful_anchors[:donation].html_safe, helpful_links[:donation ] %>
