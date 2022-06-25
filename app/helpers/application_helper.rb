@@ -378,12 +378,12 @@ module ApplicationHelper
     if title.present?
       content_for :title, title
     elsif content_for?(:title)
-      title = content_for(:title) +  ' | ' + project_name.upcase
+      title = content_for(:title) +  ' | ' + appname
 
     elsif  page_title.present?
-      title = page_title + ' | '  + project_name.upcase
+      title = page_title + ' | '  + appname
     else
-      title = "#{project_name.upcase} | #{project_description[appname_downcase]}"
+      title = "#{appname} | #{project_description[appname_downcase]}"
     end
   end
   def display_number(num)
