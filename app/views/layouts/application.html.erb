@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html >
 <!--[if lt IE 7]> <html class="ie6" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="ie7" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="ie8" lang="en"> <![endif]-->
@@ -43,6 +43,19 @@
         }
       };
     </script>
+    <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
+      <script>
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+        window.update_personalized_adverts = function (preference) {
+          if(preference == 'accept') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
+          } else if(preference == 'deny') {
+            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
+          }
+        };
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+      </script>
+    <% end %>
     <% if appname_downcase == 'freereg' %>
       <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
         <div class="reg_adsense reg_unit reg_page_level_ads">
@@ -50,25 +63,25 @@
         </div>
       <% end %>
     <% end %>
+
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta charset="utf-8"/>
+    <title><%= title %></title>
     <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-      <title><%= title %></title>
+      
       <meta name="keywords" content="genealogy,registers,parish,records,church,transcriptions,indexes,baptism,marriage,burial,death,family,history">
       <meta name="description" content="Search your ancestry with FreeREG. FreeREG provides free online access to transcriptions of birth, marriage and burial records from Church of England and Church of Scotland registers. You can also use FreeREG to discover: non-Conformist records from England, Scotland and Wales, Municipal Cemetary records, Memorial records and documents relating to life events out of country, at sea and in the military.  ">
     <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
-      <title>FreeCEN - UK Census Records (England, Scotland, Wales)</title>
       <meta name="keywords" content="genealogy,census,census records,transcriptions,indexes,family history">
       <meta name="description" content="Use FreeCEN to access 19th Century UK Censuses online and for free. You can use FreeCEN transcriptions to discover your ancestors' occupation, family history and household information.">
     <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
-      <title>FreeBMD - UK Birth, Marriage, and Death Records (England, Scotland, Wales)</title>
       <meta name="keywords" content="genealogy,registers,birth records,birth certificates,transcriptions,indexes,birth,marriage,death">
       <meta name="description" content="FreeBMD provides free on-line access to the GRO indexes of births, marriages and deaths for England and Wales. ">
     <% end %>
     <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
     <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" />
     <!--[if lt IE 9]>
-      <%= javascript_include_tag "html5shiv" %>
+      <%#= javascript_include_tag "html5shiv" %>
     <![endif]-->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="568">
@@ -80,10 +93,22 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
+
     <!-- Windows 8.1 + IE11 and above -->
     <meta name="msapplication-config" content="browserconfig.xml" />
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:italic,300,400,600&display=swap" rel="stylesheet">
+
+    <!--link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:italic,300,400,600&display=swap" rel="stylesheet"-->
+
     <!-- Styles -->
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= stylesheet_link_tag "https://fonts.googleapis.com/css?family=Source+Sans+Pro:italic,300,400,600&display=swap",rel: "stylesheet","content-encoding" => "gzip" %>
+    <%= stylesheet_link_tag "styles/scss/palm",rel: "stylesheet","content-encoding" => "gzip" %>
+    <%= stylesheet_link_tag 'styles/css/icons.data.svg.css',rel: "stylesheet" %>
+    <%= stylesheet_link_tag "styles/css/donate_icon",rel: "stylesheet" %>
+    <%= stylesheet_link_tag "styles/css/freereg_content",rel: "stylesheet" %>
+    <%= stylesheet_link_tag "styles/scss/freebmd_content",rel: "stylesheet" if appname.downcase == 'freebmd'%>
+    <%= stylesheet_link_tag "styles/scss/lap_and_up", media:"(min-width:571px)",rel: "stylesheet" %>
+    <%= stylesheet_link_tag "styles/scss/ladda",rel: "stylesheet" %>
     <%= stylesheet_link_tag 'styles/css/icons.data.svg.css' %>
     <%= stylesheet_link_tag "styles/scss/palm" %>
     <%= stylesheet_link_tag "styles/scss/lap_and_up", media:"(min-width:571px)" %>
@@ -97,42 +122,43 @@
     <%#= raise Rails.root.inspect%>
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
-    <%= stylesheet_link_tag "styles/css/freebmd_content" if appname.downcase == 'freebmd'%>
     <!-- JavaScripts -->
-    <%= javascript_include_tag "application" %>
-    <%= javascript_include_tag "jquery.min.js" %>
-    <%= javascript_include_tag "jquery.chained.remote.js" %>
-    <%= javascript_include_tag "cookie_control.js" %>
-    <%= javascript_include_tag "advert_control.js" %>
-    <%= javascript_include_tag "jquery.cookiesDirective.js" %>
-    <%= javascript_include_tag "spin.min.js" %>
-    <%= javascript_include_tag "ladda.min.js" %>
+    <%= javascript_include_tag "application"%>
+    <%= javascript_include_tag "jquery.min.js"%>
+    <%= javascript_include_tag "jquery.validate.min.js"%>
+    <%= javascript_include_tag "jquery.chained.remote.js"%>
+    <%= javascript_include_tag "cookie_control.js"%>
+    <%= javascript_include_tag "jquery.cookiesDirective.js"%>
+    <%= javascript_include_tag "spin.min.js"%>
+    <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
+    <%= javascript_include_tag "#{appname.downcase}_advert_control.js" %>
     <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
     <% end %>
-    <script src="https://use.fontawesome.com/5b8044f85d.js"></script>
     <%= csrf_meta_tags %>
   </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
-    <!-- Google Tag Manager (noscript) -->
-    <noscript>
-      <iframe src='https://www.googletagmanager.com/ns.html?id=<%= "#{gtm_key_value}"%>'
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-    <%# if appname_downcase == 'freebmd'%>
-    <%#= render 'layouts/bmd_main_nav'%>
-    <%# else %>
-    <%= render "layouts/main_nav" %>
-    <%# end %>
+    <% if appname_downcase == 'freecen' || appname_downcase == 'freebmd'%>
+      <!-- Google Tag Manager (noscript) -->
+      <noscript><iframe src='https://www.googletagmanager.com/ns.html?id=<%= "#{gtm_key_value}"%>'
+      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+      <!-- End Google Tag Manager (noscript) -->
+    <% end %>
+    <% if appname_downcase == 'freebmd'%>
+      <%= render 'layouts/bmd_main_nav'%>
+    <% else %>
+      <%= render "layouts/main_nav" %>
+    <% end %>
     <div class="offcanvas__primary">
       <%= render "layouts/header" %>
-      <main  class="site__content  icon__honeycomb--top-right">
+      <main  class="site__content  icon__honeycomb--top-right" id="bmd_site_content">
         <% unless device_type == :mobile%>
         <% end %>
         <div class="container">
+          <%#= breadcrumbs  :class => "delta  text--magenta" if appname_downcase="freebmd"%>
           <% if session[:userid_detail_id].present?%>
-            <%= breadcrumbs  :class => "delta  text--teal"  unless controller_name == "refinery" ||
+            <%= breadcrumbs  :class => "delta  project-text-color"  unless controller_name == "refinery" ||
              controller_name == "pages"%>
           <% end%>
           <% if content_for? :sidebar %>
@@ -145,7 +171,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </div>
             </div>
           <% else %>
-            <%= yield %>
+            <div class="push--top">
+              <%= yield %>
+            </div>
           <% end %>
           <% if  session[:userid_detail_id].present?%>
             <div style="float:left;">
@@ -168,6 +196,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- example offcanvas switching code -->
     <script type="text/javascript">
       var el = document.getElementById("trigger-offcanvas");
+      var elm = document.getElementById("menu_container");
+      var cancel = document.getElementById("trigger-offcanvas-cancel");
+      var switchOffCanvas = function() {
+        classie.toggle(document.body, 'offcanvas--active');
+        classie.toggle(elm, 'navbar_toggle--active');      }
+      if (el.addEventListener) {
+        el.addEventListener('click', switchOffCanvas, false);
+      } else if (el.attachEvent) {
+          el.attachEvent('onclick', switchOffCanvas);
+      }
+      if (cancel.addEventListener) {
+        cancel.addEventListener('click', switchOffCanvas, false);
+      } else if (cancel.attachEvent) {
+          cancel.attachEvent('onclick', switchOffCanvas);
+      }
+
+    </script>
+    <script type="text/javascript">
+      var el = document.getElementById("trigger-offcanvas-old");
       var switchOffCanvas = function() {
         classie.toggle(document.body, 'offcanvas--active');
         classie.toggle(el, 'site__header__menu-btn--active');

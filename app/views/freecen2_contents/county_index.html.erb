@@ -7,33 +7,43 @@
   <p></p>
   <div class="grid">
     <div class="grid__item one-third palm-one-whole" >
-      <%= simple_form_for :view_place_recs, method: :get do |p| %>
-        <fieldset class="inputs">
-          <legend>Places in <%= @county_description %></legend>
-          <div style="text-align: center">
-            <small class="additional">You may view the Database Records for a specific Place and if there are Pieces Online also get a list of Names currently in the Database.<br>
-              <i> Note: Brackets after the Place name indicate there are Pieces Online for those years.</i></small></div>
-          <label class="label ttip" tabindex="0" for="place_description" >
-            Place
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Required. Only Places with Pieces are included.</span> </label>
-          <select class="select" id="place_description"  name="place_description" required="required">
-            <% @places_for_county.each do |key, value| %>
-              <option value="<%=key%>" ><%=value%></option>
-            <% end %>
-          </select>
-          <%= p.submit 'View Place Records',  :class => "btn   btn--small"%><br>
-        </fieldset>
-      <% end %>
-      <% if @freecen2_contents.records[@chapman_code][:total][:added_pieces_online] > 0 &&  @freecen2_contents.new_records.present? %>
-        <fieldset>
-          <legend>Recent Additions</legend>
-          <div style="text-align: center">
-            <p><small class="additional">You may view a list of Places in <%= @county_description %> that have had Pieces added to the database in the previous 30 days</small></p>
-            <%= link_to 'View Recent Additions', freecen2_contents_new_records_index_path(:new_records => @county_description), class: "btn btn--small", method: :get %>
-          </div>
+      <div class="grid__item one-whole">
+        <%= simple_form_for :view_place_recs, method: :get do |p| %>
+          <fieldset class="inputs">
+            <legend>Places in <%= @county_description %></legend>
+            <div style="text-align: center">
+              <small class="additional">You may view the Database Records for a specific Place and if there are Pieces Online also get a list of Names currently in the Database.<br>
+                <i> Note: Brackets after the Place name indicate there are Pieces Online for those years.</i></small></div>
+            <label class="label ttip" tabindex="0" for="place_description" >
+              Place
+              <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+              <span class="ttip__text">Required. Only Places with Pieces are included.</span> </label>
+            <select class="select" id="place_description"  name="place_description" required="required">
+              <% @places_for_county.each do |key, value| %>
+                <option value="<%=key%>" ><%=value%></option>
+              <% end %>
+            </select>
+            <%= p.submit 'View Place Records',  :class => "btn   btn--small"%><br>
+          </fieldset>
         <% end %>
-      </fieldset>
+        <% if @freecen2_contents.records[@chapman_code][:total][:added_pieces_online] > 0 &&  @freecen2_contents.new_records.present? %>
+          <fieldset>
+            <legend>Recent Additions</legend>
+            <div style="text-align: center">
+              <p><small class="additional">You may view a list of Places in <%= @county_description %> that have had Pieces added to the database in the previous 30 days</small></p>
+              <%= link_to 'View Recent Additions', freecen2_contents_new_records_index_path(:new_records => @county_description), class: "btn btn--small", method: :get %>
+            </div>
+          <% end %>
+        </fieldset>
+      </div>
+      <% unless device_type == :mobile %>
+        <div class="grid__item one-whole">
+          <div class = "adsense_box push--ends">
+            <span>Advertisement</span>
+            <%= my_heritage_300_250_cen %>
+          </div>
+        </div>
+      <% end %>
     </div>
     <li class="grid__item two-thirds palm-one-whole" >
       <fieldset style="border-style: none;">
