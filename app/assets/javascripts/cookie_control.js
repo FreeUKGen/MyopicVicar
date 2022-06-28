@@ -21,7 +21,7 @@ $(document).ready(function() {
 
   //turn off donate cta
 var close_donate_cta = function(){
-  setCookie('donate_cta_flag', 1,365);
+  setCookie('donate_cta_flag', 1,2);
   document.getElementById("myDialog").close(); 
     $("#donate_cta_pop_up").hide();
     document.getElementById("overlay").style.display = "none";
@@ -38,7 +38,7 @@ var close_donate_cta = function(){
 }
 
 document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
-  setCookie('donate_cta_flag', 1,365);
+  setCookie('donate_cta_flag', 1,2);
   document.getElementById("myDialog").close();
   document.getElementById("myDialog1").showModal();
   $("#reminder_to_donate_form").show();
@@ -53,7 +53,7 @@ document.getElementById('reminder_form_controller').onclick = function show_remi
 }
 
 document.getElementById('donate_cta_feedback').onclick = function show_feedback_form() {
-  setCookie('donate_cta_flag', 1,365);
+  setCookie('donate_cta_flag_new', 1,2);
   document.getElementById("myDialog").close();
   document.getElementById("myDialog2").showModal();
   $("#donate_cta_feedback_form").show();
