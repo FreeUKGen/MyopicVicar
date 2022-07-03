@@ -524,7 +524,7 @@ class Freecen1VldFile
 
   def compute_schedule_number(rec, census_fields)
     if !census_fields.include?('ecclesiastical_parish')
-      line = '0'
+      line = @blank
     elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
       line = rec['sequence_in_household'] == 1 ? rec['schedule_number'] : line = @blank
       @use_schedule_blank = false
