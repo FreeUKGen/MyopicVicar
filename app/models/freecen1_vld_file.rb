@@ -191,7 +191,6 @@ class Freecen1VldFile
   end
 
   def create_csv_file
-    #this makes aback up copy of the file in the attic and creates a new one
     @chapman_code = chapman_code
     year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
@@ -203,7 +202,6 @@ class Freecen1VldFile
   end
 
   def create_entry_csv_file
-    #this makes aback up copy of the file in the attic and creates a new one
     @chapman_code = chapman_code
     year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
@@ -524,7 +522,7 @@ class Freecen1VldFile
 
   def compute_schedule_number(rec, census_fields)
     if !census_fields.include?('ecclesiastical_parish')
-      line = '0'
+      line = (rec['sequence_in_household'] - 1).zero? ? '0' : @blank
     elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
       line = rec['sequence_in_household'] == 1 ? rec['schedule_number'] : line = @blank
       @use_schedule_blank = false
