@@ -37,6 +37,21 @@ var close_donate_cta = function(){
   document.getElementById('read_more').onclick = close_donate_cta;
 }
 
+//close overlay with esc key
+$(document).keyup(function(evt) {
+  evt = evt || window.event;
+  var isEscape = false;
+  if ("key" in evt) {
+      isEscape = (evt.key === "Escape" || evt.key === "Esc");
+  } else {
+      isEscape = (evt.keyCode === 27);
+  }
+  console.log(isEscape);
+  if (isEscape) {
+      close_donate_cta();
+  }  // esc
+});
+
 document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
   setCookie('donate_cta_flag_new', 1,2);
   document.getElementById("myDialog").close();
