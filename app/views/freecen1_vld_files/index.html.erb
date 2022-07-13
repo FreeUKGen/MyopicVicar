@@ -29,8 +29,7 @@
           <td><%= freecen1_vld_file.transcriber_name %></td>
           <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
           <td><%= link_to 'Replace', new_freecen1_vld_file_path(replace: freecen1_vld_file.file_name), data: { confirm: 'Confirm you want to replace this file'}, method: :get if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
-          <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { confirm: 'Confirm you want to delete this file'}, method: :delete if %w[system_administrator data_manager county_coordinator
-  country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
+          <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { confirm: 'Are you sure you want to delete this Vld File? It may take some time to process, you will receive a message when the file delete has completed.'}, method: :delete if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
           <td><%= link_to 'Edit', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Confirm you want to edit the file'} if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
         </tr>
       <% end %>
