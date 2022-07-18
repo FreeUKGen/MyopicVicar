@@ -1,0 +1,272 @@
+<!--p class="text--right">
+  <%#= link_to "New Search", new_search_query_path, :class => "btn   btn--small bordered push-half--right" %>
+  <%#= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small bordered push-half--right" %>
+  <%#= link_to "Printable Format", '#', :class => "btn   btn--small bordered push-half--right"%>
+  <--a href="#" id="citation-toggle" class="btn   btn--small bordered push-half--right citation-toggle">Generate Citation</a>
+  </p-->
+<!--h1 class="title">Entry Information</h1>
+<p>Has our search engine found the record you are seeking? The next step is to ordering your certificate ! Click on Ordering Certificates to learn what to do now.</p-->
+
+
+
+<% title "Record Details" %>
+<%#= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, search_query_path(@search_query, id: params[:search_id]), class: " btn   btn--small" %>
+
+
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+  <h1 class="accessibility">Entry Information</h1>
+  <div class="grid">
+    <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
+      <p class="alpha push-half--top project-text-color flush--bottom"><strong><%= "#{@search_record[:GivenName].upcase} #{@search_record[:Surname].upcase}" %></strong></p>
+      <hr>
+      <section>
+        <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
+          <table class="table--bordered table--data">
+            <thead>
+              <!--tr>
+                <td colspan="2">
+                  <h2>Entry Information</h2>
+                </td>
+              </tr-->
+            </thead>
+            <tbody>
+            <%# raise @search_record[:RecordTypeID].inspect%>
+              <% record_type = RecordType::display_name(@search_record[:RecordTypeID])%>
+              <tr>
+                <th class="project-text-color">
+                  Event Type
+                </th>
+                <td>
+                  <%= "#{record_type}" %>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  Date
+                </th>
+                <td>
+                  <%= "#{QuarterDetails.quarters.key((@search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(@search_record[:QuarterNumber]-1)/4 + 1837}"%>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  District
+                </th>
+                <td>
+                  <%= "#{@search_record[:District]}" %>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  Mother or Spouse Surname
+                </th>
+                <td>
+                  <%= "#{@search_record[:AssociateName]}" %>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  Age at Death/Date of Birth
+                </th>
+                <td>
+                  <%= "#{@search_record[:AgeAtDeath]}" %>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  Volume
+                </th>
+                <td>
+                  <%= "#{@search_record[:Volume]}" %>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  Page
+                </th>
+                <td>
+                  <%= "#{@search_record[:Page]}" %>
+                </td>
+              </tr>
+              <tr>
+                <th class="project-text-color">
+                  Transcriber
+                </th>
+                <td>
+                  <%= @search_record.transcribers %>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class='push-half--top'>
+            <div class="float--right">
+              <%#= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record, @previous_record.friendly_url), class: 'push-half--right push-half--top' unless @previous_record.nil? %>
+              <%#= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i> '.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record, @next_record.friendly_url), class: 'push-half--right push-half--top' unless @next_record.nil?%>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="grid__item one-whole">
+        <h4>Scanned Images</h4>
+        This entry was transcribed from the below scan(s).
+        <% @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
+        <ul>
+          <% ScanList.where(ScanID: @scan_ids).each do |s| %>
+            <li><%= s.SeriesRangeFileName %></li>
+          <% end %>
+        </ul>
+      </div>
+      <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
+        <h4>Corrections</h4>
+        <p>If you have a correction to this entry, please submit a correction. Please note that you can view the scan from which this entry was transcribed, please click on .Please examine this image to verify that any correction you submit is the same as in the GRO index.</p>
+        <%= link_to "I have viewed the scan and wish to submit a correction", report_error_contact_path(@search_record, :query => @search_query), target: "_blank" %>
+      </div>
+      <div class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
+        <h4>Postems</h4>
+        <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
+        <%# if @search_record.postems_list.present? %>
+        <p>Below are the list of postems</p>
+          <%# @search_record.postems_list.each do |postem|%>
+            <ul>
+              <li><%#= postem %></li>
+            </ul>
+          <%# end %>
+        <%# end%>
+        <%= link_to "Add a postem", "#" %>
+      </div>
+    </div>
+    <% unless print_friendly %>
+      <% if device_type == :desktop %>
+        <div class="grid__item two-tenths lap-one-tenths palm-one-whole "  id='results_table_ad'>
+          <center>
+            <p>Advertisement</p>
+            <%= adsence_right_side_banner %>
+          </center>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  
+  <!--div class="grid">
+    <ul>
+      <li class="grid__item one-third lap-one-third palm-one-whole click_scan text--center border_text">
+        <%#= link_to  "Scan(s)", '#', :class => "push-half--right push-half--down", title: "Please Click here to view Scan Information. Scan Info is shown by default"%>
+      </li>
+      <li class="grid__item one-third lap-one-third palm-one-whole click_postem text--center border_text">
+        <%#= link_to  "Postem(s)", '#', :class => "push-half--right push-half--down", title: "Please Click here to view or create Postem(s)"%>
+      </li>
+      <li class="grid__item one-third lap-one-third palm-one-whole click_transcriber text--center border_text">
+        <%#= link_to  "Transcriber(s)", '#', :class => "push-half--right push-half--down", title: "Please Click here to view Transcriber(s) who transcribed the record" %>
+      </li>
+  </div>
+  <div class='scan_info' id="scan_information">
+    <div class="grid">
+      <div class="grid__item one-whole lap-one-whole palm-one-whole">
+        <h4>Scan Info:</h4>
+        This entry was transcribed from the below scan(s).
+        <%# @scan_ids = BestGuess.includes(:ScanLinks).where(RecordNumber: @search_record[:RecordNumber]).pluck(:ScanID)%>
+        <ul>
+          <%# ScanList.where(ScanID: @scan_ids).each do |s| %>
+            <li><%#= s.SeriesRangeFileName %></li>
+          <%# end %>
+        </ul>
+      </div>
+      <div class="grid__item one-whole lap-one-whole palm-one-whole">
+        <h4>Postems</h4>
+        <p>A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it.</p>
+        <%# if @search_record.best_guess_hash.postems.present? %>
+          <%# @search_record.best_guess_hash.postems.each do |postem|%>
+            <ul>
+              <li><%#= postem.Information %></li>
+            </ul>
+          <%# end %>
+        <%# end%>
+    </div>
+    </div>
+    <div class="grid">
+      <div class="grid__item one-sixth lap-one-whole palm-one-whole thumbnail">
+        <%#= image_tag('1837B3-B-0017.jpg', size:"50x50", alt: '1837B3-B-0017.jpg')%>
+      </div>
+      <div class="img-zoom-container">
+        <div class="grid__item three-sixths lap-one-whole palm-one-whole whole_image">
+          <%#= image_tag('1837B3-B-0017.jpg', height: "350", width: '350', class: 'whole_image1', id:'myimage')%>
+        </div>
+        <div class="grid__item two-sixths lap-one-whole palm-one-whole whole_image1">
+          <div id="myresult" class="img-zoom-result"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='postems' id='postem_info'>
+    <div class="grid">
+      <div class="grid__item one-whole lap-one-whole palm-one-whole">
+        <h4>Postems</h4>
+        <p>A Postem is a note left by someone about this record - the content of the postem is determined by the person who left it. FreeBMD can offer no assurance about the postem and will not enter into correspondence about it.</p>
+      </div>
+      <%# if @search_record.best_guess_hash.postems.present? %>
+        <%# @search_record.best_guess_hash.postems.each do |postem|%>
+          <ul>
+            <li><%#= postem.Information %></li>
+          </ul>
+        <%# end %>
+      <%# end%>
+    </div>
+    <div class="text--center">
+      <a href="#" id="create_postem" class="btn btn--small">Create Postem</a>
+    </div>
+  </div>
+  <div class='transcribers' id='transcriber_info'>
+    <div class="grid">
+      <div class="grid__item one-whole lap-one-whole palm-one-whole">
+        <%# if BestGuess.transcriber(@search_record.RecordNumber).present? %>
+          <h4>This Record has been transcribed by following Transcriber(s)</h4>
+          <%# BestGuess.transcriber(@search_record.RecordNumber).each do |t| %>
+            <p><%#= t["UserID"] %></p>
+          <%# end %>
+        <%# else %>
+          <p>--</p>
+        <%# end %>
+      </div>
+    </div>
+  </div>
+  <div class="push-half--topVB">
+    <h5> If you believe there to be an error in this transcription then please <%#= link_to "report", report_error_contact_path(@search_record, :query => @search_query), target: "_blank" %> it to our data manager (link opens in a new tab or window).</h5>
+  </div-->
+  
+  <script>
+    $('.whole_image1').hide();
+    $('.postems, .transcribers').hide();
+    $('.click_scan').css('border', "none")
+    $('.click_postem, .click_transcriber').css('border', "1px solid grey")
+
+    $('.click_scan').click(function() {
+        $('.scan_info').show();
+        //$('.click_postem, .click_transcriber').css('background', "#ccc")
+        $('.click_scan').css('background', "white")
+        $('.click_scan').css('border', "none")
+        $('.click_postem, .click_transcriber').css('border', "1px solid grey")
+        $('.postems, .transcribers').hide();
+    });
+    $('.click_postem').click(function() {
+        $('.postems').toggle();
+        //$('.click_scan, .click_transcriber').css('background', "#ccc")
+        $('.click_postem').css('background', "white")
+        $('.click_postem').css('border', "none")
+        $('.click_scan, .click_transcriber').css('border', "1px solid grey")
+        $('.scan_info, .transcribers').hide();
+    });
+    $('.click_transcriber').click(function() {
+        $('.transcribers').toggle();
+        //$('.click_postem, .click_scan').css('background', "#ccc")
+        $('.click_transcriber').css('background', "white")
+        $('.click_transcriber').css('border', "none")
+        $('.click_postem, .click_scan').css('border', "1px solid grey")
+        $('.scan_info, .postems').hide();
+    });
+
+    $('.thumbnail').click(function() {
+        $('.whole_image1').toggle();
+        imageZoom("myimage", "myresult");
+    });
+
+  </script>

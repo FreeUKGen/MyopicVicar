@@ -1,13 +1,26 @@
 <% title "About Search Results" %>
-<% case appname_downcase %>
-<% when 'freereg' %>
-<%= render 'about' %>
-<% when 'freecen' %>
-<% if Rails.application.config.freecen2_place_cache %>
-  <%= render 'about_freecen2' %>
-<% else%>
-  <%= render 'about_freecen' %>
-<% end%>
-<% when 'freebmd' %>
-<%= render 'about' %>
-<% end %>
+<style scoped="scoped">
+  .aboutQuery section { margin-bottom: 28px; padding-bottom: 14px; max-width: 32rem; border-bottom: 1px solid #ccc; }
+  .aboutQuery h3 { margin-bottom: 14px; }
+  .aboutQuery p { margin-bottom: 14px; }
+</style>
+<div class="aboutQuery push palm-flush--bottom">
+  <div class="text--center push--bottom">
+    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
+    <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small  " %>
+    <%= link_to "Back", search_query_path(@search_query ), :class => "btn   btn--small  "%>
+  </div>
+  <h2>About this Query</h2>
+  <% case appname_downcase %>
+  <% when 'freereg' %>
+    <%= render 'about' %>
+  <% when 'freecen' %>
+    <% if Rails.application.config.freecen2_place_cache %>
+      <%= render 'about_freecen2' %>
+    <% else%>
+      <%= render 'about_freecen' %>
+    <% end%>
+  <% when 'freebmd' %>
+    <%= render 'about_freebmd' %>
+  <% end %>
+</div>

@@ -1,0 +1,63 @@
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<h1 class="accessibility">Search Results</h1>
+<table class="table--bordered table--data">
+  <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
+  <thead>
+    <tr>
+      <% unless print_friendly %>
+        <% unless old_search_results %>
+          <th>Detail</th>
+        <% end %>
+      <% end %>
+      <th>Individual</th>
+      <th>Record Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% n = 0 %>
+    <% search_results.each do |search_record| %>
+      <% n = n +1 %>
+      <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
+      <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
+        <% unless print_friendly %>
+          <% unless old_search_results%>
+            <td>
+              <center>
+                <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, old_search_results: old_search_results), rel: "nofollow", class: "btn  btn--small")%>
+                <i><%= seen(@search_query,search_record) %></i>
+              </center>
+            </td>
+            <% end %>
+        <% end %>
+        <td class="table--data">
+          <dl>
+            <strong>
+              <dt class="ttip">
+                <%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
+                <span class="ttip__text"><%="#{search_record[:Volume]} #{search_record[:Page]}"%></span>
+              </dt>
+            
+            <dt>
+              <%= search_record.event_quarter %>
+            </dt>
+            <dt>
+              <% if print_friendly %>
+                <%= search_record[:District] %>
+              <% else %>
+                <% if search_record.district_linkable? %>
+                  <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><span class="accessibility"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                <% else %>
+                  <%= search_record[:District] %>
+                <% end %>
+              <% end %>
+            </dt>
+          </dl>
+        </td>
+        <td>
+          <center><%= "#{record_type}" %></center>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+  <!--/div-->

@@ -83,9 +83,49 @@ module UseridRole
       'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Gazetteer', 'Message System','Place Edit Reasons', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies']
 
     }
+  when 'freebmd'
+    OPTIONS = {
+      'checker' => ["Saved Entries", "View Saved Searches",'Communicate', 'Profile', 'Roadmap'],
+      'computer' => ["Saved Entries", "View Saved Searches", 'Profile', 'Roadmap'],
+      'researcher' => ["Saved Entries", "View Saved Searches",'Communicate', 'Profile', 'Roadmap'],
+      'pending' => ["Saved Entries", "View Saved Searches", 'Profile'],
+      'contacts_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Display County Coordinators',
+                                 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap'],
+      'county_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap'],
+      'data_manager' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Manage Counties', 'Manage Syndicates', 'Profile', 'Roadmap' ],
+      'documentation_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
+                                      'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+      'engagement_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+
+      'executive_director' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators',
+                               'Feedback', 'Profile', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
+                               'Site Statistics', 'Search Performance', 'Syndicate Coordinators', 'System Documentation'],
+      'genealogy_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
+      'general_communication_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+
+      'project_manager' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                            'System Documentation'],
+      'publicity_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
+
+      'syndicate_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
+      'system_administrator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics','Feedback', 'FreeCen Errors',
+                                 'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
+      'trainee' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Profile', 'Roadmap'],
+      'technical' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
+                      'System Documentation'],
+
+      'transcriber' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Profile', 'Roadmap'],
+      'validator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Profile', 'Roadmap'],
+      'volunteer_coordinator' => ["Saved Entries", "Saved Searches", 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap'],
+      'website_coordinator' => ["Saved Entries", "Saved Searches", 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
+
+    }
   end
   #'/messages/communications?source=original',
   OPTIONS_TRANSLATION = {
+    'Saved Entries' => '/userid_details/list_saved_entry',
+    "View Saved Searches" => '/saved_search',
     'Communicate' => '/messages/communications?source=original',
     'Denominations' => '/denominations',
     'Database Statistics' => '/freecen2_site_statistics/grand_totals',
@@ -177,7 +217,7 @@ module UseridRole
     'Place Edit Reasons' => 'Edit the reasons for Editing a FreeCEN2 Place',
     'Place Sources' => 'Edit sources for a FreeCEN2 Place'
   }
-  USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
+  USERID_MANAGER_OPTIONS = ["Saved Entries",'Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Transcription Agreement Accepted',
                             'Transcription Agreement Not Accepted', 'Incomplete Registrations', 'Create userid', 'Transcriber Statistics']
   USERID_ACCESS_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename']
@@ -194,7 +234,8 @@ module UseridRole
     'Select Secondary Role' => '/userid_details/secondary_roles',
     'Transcriber Statistics' => '/userid_details/transcriber_statistics',
     'Transcription Agreement Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Accepted',
-    'Transcription Agreement Not Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Not Accepted'
+    'Transcription Agreement Not Accepted' => '/manage_syndicates/selection?option=Transcription Agreement Not Accepted',
+    'Saved Entries' => '/userid_details/list_saved_entry'
   }
   FILE_MANAGEMENT_OPTIONS = ['Upload New Batch', 'List by Number of Errors then Filename', 'List those with Zero Dates', 'List by Filename',
                              'List by uploaded date (ascending)', 'List by uploaded date (descending)', 'List files waiting to be processed', 'Review Specific Batch']

@@ -1,0 +1,28 @@
+<div class="grid">
+  <section class="island ">
+    <div >
+    	<% if @name_type == "0"%>
+      	<h3 class=" text--center"><%= "#{@record_type.upcase} SURNAMES" %></h3>
+      <% else %>
+      	<h3 class=" text--center"><%= "#{@record_type.upcase} FORENAMES" %></h3>
+      <% end %>
+      <p class=" text--center">You may find it useful to use your browser find option to search for critical parts of names</p>
+      <p>
+        <% ("A".."Z").each do |letter| %>
+          <p><%= letter%></p>
+          <p>
+            <% @unique_names[letter].each do |name| %>
+              <%= name %>&emsp;&nbsp;
+            <% end%>
+          </p>
+        <% end%>
+        <p> Additional Names</p>
+        <p>
+          <% @remainders.each do |name| %>
+            <%= name %>&emsp;&nbsp;
+          <% end%>
+        </p>
+      </p>
+    </div>
+  </section>
+</div>

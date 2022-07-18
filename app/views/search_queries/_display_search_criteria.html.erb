@@ -1,28 +1,73 @@
+<% search_criteria = appname.downcase == 'freebmd' ? bmd_search_criteria(@search_query) : search_params_for_display(@search_query) %>
 <% if defined?(@printable_format) && @printable_format %>
-  <% if Rails.application.config.freecen2_place_cache %>
-    <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
-      <%= name %>: <b><%= value %></b> ;
-    <% end %><br>
-    <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
-  <% else%>
-    <% search_params_for_display(@search_query).each do |name, value| %>
-      <%= name %>: <b><%= value %></b> ;
-    <% end %><br>
-    <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
-  <% end%>
+  <% search_criteria.each do |name, value| %>
+    <%= name %>: <b><%= value %></b> ;
+  <% end %><br>
+  <h4 class="accessiblity"><%= pluralize(@result_count, ' Search Result', ' Search Results') %></h4>
+  <% unless appname_downcase == 'freebmd' %>
+    <% if Rails.application.config.freecen2_place_cache %>
+      <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
+        <%= name %>: <b><%= value %></b> ;
+      <% end %><br>
+      <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
+    <% else%>
+      <% search_params_for_display(@search_query).each do |name, value| %>
+        <%= name %>: <b><%= value %></b> ;
+      <% end %><br>
+      <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
+    <% end%>
+  <% end %>
 <% else %>
-  <div class="grid">
-    <div class="grid__item  two-thirds  lap-two-thirds  palm-one-whole push-half--top">
-      <section class="islet islet--light soft--left hard--bottom">
-        <h2 class="gamma flush--bottom"><em>When you searched for:</em></h2>
-        <% if Rails.application.config.freecen2_place_cache %>
-          <div class="criteria-group">
-            <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
-              <dl class="criteria">
-                <dt class="criteria__name"><%= name %></dt>
-                <dd class="criteria__value"><%= value %></dd>
-              </dl>
-            <% end %>
+    <div class='container' id='search_criteria_container'>
+      <div class="grid">
+        <div class="grid__item  seven-tenths lap-three-quarters palm-one-whole">
+          <section class="islet islet--light soft--left hard--bottom">
+            <div class='grid'>
+              <%= button_tag type: 'button', class:"float--right btn btn--small", id: "hide-search-criteria" do %>
+                <i class="fa fa-times"  tabindex="0"></i>
+              <% end %>
+              <div class="grid__item one-whole lap-one-whole palm-one-whole">
+                <h2 class="epsilon flush--bottom push-half--bottom"><em>When you searched for:</em></h2>
+                <% if Rails.application.config.freecen2_place_cache %>
+                  <div class="criteria-group">
+                    <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
+                      <dl class="criteria">
+                        <dt class="criteria__name"><%= name %></dt>
+                        <dd class="criteria__value"><%= value %></dd>
+                      </dl>
+                    <% end %>
+                  </div>
+                <% else%>
+                  <div class="criteria-group">
+                    <% search_criteria = appname.downcase == 'freebmd' ? bmd_search_criteria(@search_query) : search_params_for_display(@search_query) %>
+                    <% search_criteria.each do |name, value| %>
+                      <dl class="criteria">
+                        <dt class="criteria__name epsilon"><%= name %></dt>
+                        <dd class="criteria__value zeta"><%= value %></dd>
+                      </dl>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </section>
+        </div>
+        <% unless appname_downcase == 'freebmd' %>
+          <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
+            <section class="islet islet--light soft--left hard--bottom">
+              <% if @ucf_results.size > 0 %>
+                <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Exact Result', ' Exact Results') %> and <br>
+                  <%= pluralize(@ucf_results.size, ' Uncertain Result', ' Uncertain Results')%></h2>
+              <% elsif  @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS  %>
+                <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
+              <%else%>
+                <h2 class="gamma flush--bottom"> We found more than <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %> Results</h2>
+              <% end%>
+              <% unless defined?(@printable_format) && @printable_format%>
+                <small class="additional zeta">Listed by birth date. Select a heading to sort by that column; select again to reverse the order.
+                  See individual details by selecting the View button.</small>
+              <% end %>
+            </section>
           </div>
         <% else%>
           <div class="criteria-group">
@@ -50,7 +95,18 @@
           <small class="additional zeta">Listed by date. Select a heading to sort by that column; select again to reverse the order.
             See individual details by selecting the View button.</small>
         <% end %>
-      </section>
+      </div>
     </div>
-  </div>
 <% end %>
+
+<script>
+  //js code to close search criteria
+  $('#hide-search-criteria').click(
+    function() {
+     $('#search_criteria_container').hide();
+     $('#view_search_criteria').css("display", "inline-block");
+  });
+
+</script>
+  
+

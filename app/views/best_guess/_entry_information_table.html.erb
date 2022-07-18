@@ -1,0 +1,185 @@
+<table class="table--bordered table--data">
+  <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
+  <tbody>
+    <% record_type = RecordType::display_name(record.RecordTypeID)%>
+    <tr>
+      <th scope="row">
+        Event Type
+      </th>
+      <td>
+        <%= "#{record_type}" %>
+      </td>
+    </tr>
+    <% if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
+      <tr>
+        <th scope="row">
+          Date
+        </th>
+        <td>
+          <%= format_quarter(record.QuarterNumber) %>
+        </td>
+      </tr>
+    <% end %>
+    <tr>
+      <th scope="row">
+        District
+      </th>
+      <td>
+        <% if record.district_linkable? %>
+          <%= link_to "#{record.display_district_name}", "http://www.ukbmd.org.uk/reg/districts/#{record.define_url_distict}.html", target: "_blank" %><br>
+          <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+        <% else %>
+          <%= record.display_district_name %>
+        <% end %>
+        <% if record.District.blank? %>
+          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+        <% end %>
+      </td>
+    </tr>
+    <% if entry_type == "marriage" %>
+    	<tr>
+	      <th scope="row">
+	        <%= mother_or_spouse_surname(record_type)%>
+	      </th>
+	      <td>
+	      	<% if search && record.AssociateName.present? %>
+            <% if @search %>
+	        	  <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+            <% else %>
+              <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+            <% end %>
+	        	<span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+	        <% else %>
+	        	<%= record.AssociateName %>
+	        <% end %>
+          <% if record.AssociateName.blank? %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+	      </td>
+    	</tr>
+    <% end %>
+    <% if entry_type == "birth" %>
+    	<tr>
+	      <th scope="row">
+	        <%= mother_or_spouse_surname(record_type)%>
+	      </th>
+	      <td>
+	        <%= record.AssociateName %>
+          <% if record.AssociateName.blank? %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+	      </td>
+    	</tr>
+    <% end %>
+    <tr>
+      <th scope="row">
+        Volume
+      </th>
+      <td>
+        <%= "#{ record.Volume }" %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Page
+      </th>
+      <td>
+        <% unless record.Page.to_i == 0 %>
+          <% if @search %>
+            <%= link_to "#{record.Page}", same_page_entries_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, search_id: search_id, entry_id: original_record.RecordNumber) %>
+          <% else %>
+            <%= link_to "#{record.Page}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: original_record.RecordNumber) %>
+          <% end %>
+          <br>
+        <% else%>
+          <%= record.Page %>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Transcriber
+      </th>
+      <td>
+        <%#= record.transcribers.join(', ') if record.transcribers.present? %>
+        <%# if record.transcribers.blank? %>
+          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+        <%# end %>
+      </td>
+    </tr>
+    <% if search == true %>
+      <% unless (record.Confirmed & 512).zero? %>
+        <tr>
+          <th scope="row">
+            Refers
+          </th>
+          <td>
+             <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+    <% if record.get_comments.present? %>
+      <tr>
+        <th scope="row">
+          Comment
+        </th>
+        <%  record.get_comments.each do |cl| %>
+          <td>
+            <%= cl.comment.CommentText %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+    <% unless search %>
+      <% if type == "reference" %>
+        <tr>
+          <th scope="row">
+            Help Text
+          </th>
+          <td>
+            <% case %>
+            <% when record.reference_entry_description_text_display? %>
+              <%= ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE %>
+            <% when !original_record.late_entry_description_text_display?%>
+              <%= ApplicationText::REFERENCE_ENTRY_TEXT %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+    <% if search %>
+      <% event_registered = record.event_registration %>
+      <% if event_registered.present?%>
+        <tr>
+          <th scope="row">
+            Registered
+          </th>
+          <td >
+            <%= format_registered(event_registered, record.QuarterNumber) %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+    <% if search %>
+      <tr>
+        <th scope="row">
+          More Information
+        </th>
+        <td class="project-text-color">
+          <%= render partial: 'more_information' %>
+        </td>
+      </tr>
+    <% end %>
+    <%# if more_info %>
+      <!--td  colspan=2>
+        <%# if  search %>
+          <%#= link_to 'Complete Details', friendly_bmd_record_details_path(@search_id, record.id, record.friendly_url, search_entry: record), :rel => "nofollow", :title => "", class: 'btn btn--natural'%>
+        <%# else %>
+          <%#= link_to 'Complete Details', friendly_bmd_record_details_non_search_path(record.id, record.friendly_url, search_entry: record), class: 'btn btn--natural'%>
+        <%# end %>
+      </td-->
+    <%# end %>
+  </tbody>
+</table>
+<%#= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? %>

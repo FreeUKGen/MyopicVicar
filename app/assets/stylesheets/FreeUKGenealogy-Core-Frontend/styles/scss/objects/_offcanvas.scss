@@ -25,6 +25,79 @@
  </div>
  *
  */
+ @media only screen and (max-width: 1055px) and (min-width: 570px){
+  /**
+   * Off-canvas wrapper container
+   */
+  .offcanvas {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+  }
+
+  /**
+   * Set up the primary element to be
+   * showing and not the secondary element
+   */
+  .offcanvas__primary,
+  .offcanvas__secondary {
+    display: block;
+    position: relative;
+    @include vendor(transition, 0.25s all ease-in);
+  }
+  .offcanvas__primary {
+    width: 100%;
+    float: right;
+    z-index: 1;
+  }
+  .offcanvas__secondary {
+    width: 85%;
+    margin-left: -100%;
+    float: left;
+    z-index: 2;
+  }
+
+  /**
+   * Active state - show the secondary and only
+   * a small bit of the primary off to the right
+   */
+  .offcanvas--active {
+    .offcanvas__primary {
+      margin-right: -85%;
+    }
+    .offcanvas__secondary {
+      margin-left: 0;
+    }
+  }
+
+  /**
+   * Alternative, reversed layout.
+   */
+  .offcanvas--rev {
+    .offcanvas__primary {
+      padding-right: 0;
+      float: left;
+    }
+    .offcanvas__secondary {
+      margin-left: 0;
+      margin-right: -100%;
+      float: right;
+    }
+    &.offcanvas--active {
+      .offcanvas__primary {
+        margin-right: 0;
+        margin-left: -85%;
+      }
+      .offcanvas__secondary {
+        margin-right: 0;
+      }
+    }
+  }
+ }
+
+
+ 
 @include media-query(palm) {
 
   /**

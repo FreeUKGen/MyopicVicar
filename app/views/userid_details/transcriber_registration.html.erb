@@ -3,10 +3,7 @@
 <div class="grid">
   <div class="grid__item two-thirds lap-one-half palm-one-whole">
     <div class="read-length">
-      <p>Thank you for volunteering as a transcriber for <%= appname %>. To join one of our existing teams of transcribers (we call them syndicates), fill in this form with your details: Please read our <%= link_to "Privacy Notice(link opens in new tab)", helpful_links[:privacyNotice], target: "_blank" %> for information on how we will protect and use your data.</p>
-      <p>Then select a team from the list of <q>Syndicates available</q>.</p>
-      <p>After successfully submitting the form, you will receive an email that contains a link to complete the registration process. Click on that link or copy and paste it into you browser&rsquo;s address window. You must respond to the email <em>within 24 hours</em>. If you have not received it within a few minutes, please check your spam folder.</p>
-      <p>Begin with the documents linked in the form. If you have any questions about the documents or about transcribing, please <%= link_to 'contact us','/contacts/new', target: '_blank' %> (link opens in new tab).</p>
+      <%= render "#{appname.downcase}_volunteer_signup_text"%>
     </div>
   </div>
   <aside class="grid__item one-third lap-one-half palm-one-whole">
@@ -129,7 +126,7 @@
       <% end %>
       <div class="grid">
         <aside class="grid__item one-whole">
-          <div class = "adsense_box push--ends reg_adsense">
+          <div class = "adsense_box push--ends cen_unit reg_unit reg_adsense">
             <p class = "text--center">Advertisement</p>
             <%#= fullwidth_adsense %>
             <%= my_heritage_720_90_second %>

@@ -51,6 +51,7 @@ class UseridDetail
   field :do_not_acknowledge_me, type: Boolean
   field :acknowledge_with_pseudo_name, type: Boolean
   field :pseudo_name, type: String
+  field :saved_entry, type: Array, default: []
   # Note if you add or change fields you may need to update the display and edit field order in /lib/freereg_options_constants
 
   attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy
@@ -63,6 +64,7 @@ class UseridDetail
   has_many :freereg1_csv_files, dependent: :restrict_with_error
   has_many :attic_files, dependent: :restrict_with_error
   has_many :assignments
+  has_many :saved_searches
 
   validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
     :skill_level #,:new_transcription_agreement
@@ -605,7 +607,7 @@ class UseridDetail
   end
 
   def userid_and_email_address_does_not_exist
-    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
+    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists? || Submitter.where(UserID: self[:userid]).exists?
     errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
     errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
     errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
@@ -758,6 +760,12 @@ class UseridDetail
     total_records
   end
 
+  def get_saved_entries
+    record_hash = self.saved_entry
+    record_number = BestGuessHash.where(Hash: record_hash).pluck(:RecordNumber)
+    BestGuess.where(RecordNumber: record_number)
+  end
+
   private
 
   def filter_users
@@ -800,5 +808,4 @@ class UseridDetail
       self.new_transcription_agreement = 'Declined'
     end
   end
-
 end #end class

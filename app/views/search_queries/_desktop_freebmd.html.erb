@@ -1,68 +1,76 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-<h1 class="accessibility">Search Results</h1>
-<div class="table-wrapper" id="search-result">
-  <table class="table--bordered table--data">
-    <caption class="gamma"> <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
-      <small class="additional">Select a heading to sort results on that column.<br>
-        Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
-    </caption>
-    <thead>
-      <tr>
-        <th>
-          <%= link_to('Main participant(s)', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME), :title => 'Ascending sort on name') %>
-        </th>
-        <th>
-          <%= link_to('Record type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE), :title => 'Ascending sort on Record type') %>
-        </th>
-        <th>
-          <%= link_to('Event date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE), :title => 'Ascending sort on Event date') %>
-        </th>
-        <th>
-          <%= link_to('County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY), :title => 'Ascending sort on County') %>
-        </th>
-        <th>
-          <%= link_to("Place : Church : Register type", reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION), :title => 'Ascending sort on Place') %>
-        </th>
-        <% unless print_friendly %>
-          <th>Detail</th>
-        <% end %>
-      </tr>
-    </thead>
-    <tbody>
-      <% n = 0 %>
-      <% search_results.each do |search_record| %>
-        <% n = n + 1 %>
-        <tr id="<%=search_record[:_id]%>">
-          <td>
-          <% search_record[:transcript_names].uniq.each_with_index do |name, i| %>
-            <% if  name['type'] == 'primary' %>
-              <% if i > 0 %>
-              <br />
-      <% end%>
-      <%= "#{name['first_name']} #{name['last_name']} " %>
+    <h1 class="accessibility">Search Results</h1>
+      <table class="table--bordered table--data">
+        <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
+        <thead>
+          <tr>
+            <% unless print_friendly %>
+              <th>Detail</th>
+            <% end %>
+            <th>Individual
+              <%#= link_to_unless(print_friendly, 'Individual',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
+            </th>
+            
+            <th>Record Type
+              <%#= link_to_unless(print_friendly, 'Record Type',
+            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% n = 0 %>
+          <% search_results.each do |search_record| %>
+            <% n = n +1 %>
+            <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
+            <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
+              <% unless print_friendly %>
+                <td>
+                  <center>
+                    <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+                    <i><%= seen(@search_query,search_record) %></i>
+                  </center>
+                </td>
+              <% end %>
+              <td class="table--data">
+                <dl>
+                  <strong>
+                    <dt class="ttip">
+                      <%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
+                      <span class="ttip__text"><%="#{search_record[:Volume]} #{search_record[:Page]}"%></span>
+                    </dt>
+                  
+                  <dt>
+                    <%= format_quarter_year(search_record.QuarterNumber) %>
+                  </dt>
+                  <dt>
+                    <% if print_friendly %>
+                      <%= search_record[:District] %>
+                    <% else %>
+                      <% if search_record.district_linkable? %>
+                        <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><span class="accessibility"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                      <% else %>
+                        <%= search_record[:District] %>
+                      <% end %>
+                    <% end %>
+                  </dt>
+                  <dt>
+                     <%#= render partial: 'best_guess/more_information' %>
+                  </dt>
+                </dl>
+              </td>
+              <td>
+                <center><%= "#{record_type}" %></center>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <!--/div-->
+    <% unless print_friendly %>
+      <div class='text--center inline-block'>
+        <%= paginate @paginatable_array if @paginatable_array.present? %>
+      </div>
     <% end %>
-  <% end%>
-</td>
-<td>
-  <%= RecordType::display_name(search_record.record_type) %>
-</td>
-<td>
-  <%= transcript_date(search_record) %>
-</td>
-<td>
-  <%= county(search_record) %>
-</td>
-<td>
-  <%= format_location(search_record) %>
-</td>
-<% unless print_friendly %>
-  <td>
-    <%= link_to("Row #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url),title: "As available for this record")%>
-    <i><%= viewed(@search_query,search_record) %></i>
-  </td>
-<% end %>
-</tr>
-<% end %>
-</tbody>
-</table>
-</div>
+
+

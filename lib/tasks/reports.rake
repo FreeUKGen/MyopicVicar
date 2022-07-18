@@ -28,10 +28,13 @@ namespace :reports do
 
   desc "extract_collection_unique_names"
   task :extract_collection_unique_names, [:limit] => [:environment] do |t, args|
-    require 'extract_collection_unique_names'
+    appname = MyopicVicar::Application.config.freexxx_display_name.downcase
+    require 'extract_collection_unique_names' if appname != "freebmd"
+    require 'bmd_unique_names' if appname == "freebmd"
     limit = args.limit
     puts "Extracting unique names"
-    ExtractCollectionUniqueNames.process(limit)
+    ExtractCollectionUniqueNames.process(limit) if appname != "freebmd"
+    BmdUniqueNames.process(limit) if appname == "freebmd"
     puts "Completed Checking #{limit} collection unique names"
   end
 

@@ -17,20 +17,47 @@
 <div class="read-length">
   <p class="push-half--bottom">Thank you for reporting a possible error in our transcription. <b>We will change our record if we agree with your interpretation of the source document we transcribed.</b> If you have access to a different document which has different evidence, please provide details so that we can attach a note to our transcription. We would be grateful if you could send us an image of the different document so that we may transcribe it.</p>
   <p style="font-size: 0.9rem;">Please note: some Record Offices and some websites allow you to make copies for personal use only &mdash; if your document is such a copy, we cannot use it.</p>
+  <p>Please read our <%= link_to "Privacy Notice(#{ApplicationText::NEW_TAB_LINK_TEXT})", Constant::PRIVACY_POLICY_LINK, target: "_blank" %> for information on how we will protect and use your data, and then complete the form below.</p>
 </div>
 <div class="push palm-flush--bottom">
+  <ol class="grid">
+    <li class="grid__item one-half lap-one-whole palm-one-whole" id="quesons">
+      <label class="ttip" for="questins" tabindex="0">Select your query
+        <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+        <span class="ttip__text">Please select your query</span>
+      </label>
+      <%= select_tag "questins", options_for_select(FreebmdDataProblem::QUESTION_VALUE), prompt: "Please choose an option that closely relates your query" %>
+    </li>
+    <li class="grid__item one-half lap-one-whole palm-one-whole clear--left" id="explanation">
+      <label class="ttip"  tabindex="0">Explanation
+        <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+        <span class="ttip__text">Please read the below explanation for your query</span>
+      </label>
+      <div id="answer" class="answer_explanations">Please find the explanation for your query here</div>
+    </li>
+    <li class="grid__item one-half lap-one-whole palm-one-whole clear--left">
+      <div class="read_answer">
+        <label class="ttip" for="read_explanation" tabindex="0">
+          <%= check_box_tag "read_explanation", 1, false, required: true %>
+          <span>Yes, I have read the above explanation and wish to submit the report</span>
+        </label>
+      </div>
+    </li>
+  </ol>
+</div>
+<div class="push palm-flush--bottom report_form">
   <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
     <%= f.hidden_field :query %>
     <%= f.hidden_field :contact_type %>
     <%= f.hidden_field :contact_time %>
     <%= f.hidden_field :record_id %>
     <%= f.hidden_field :entry_id %>
-    <%= f.hidden_field :line_id %>
+    <%= f.hidden_field :line_id %>  
     <%= f.hidden_field :previous_page_url %>
     <%= f.hidden_field :county %>
     <%= f.hidden_field :problem_page_url %>
     <ol class="grid">
-      <li class="grid__item one-quarter lap-one-half palm-one-whole" id="name_input">
+      <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left" id="name_input">
         <label class="label ttip" for="name" tabindex="0">Your name
           <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Required. Your name for when we contact you: it will not be made public</span>
@@ -52,10 +79,12 @@
           <input id="email_address" name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
         <% end%>
       </li>
+      
+      
       <li class="grid__item one-half lap-one-whole palm-one-whole push--bottom clear--left">
         <label class="ttip" for="description" tabindex="0">Description
           <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-          <span class="ttip__text">Your reasons for commenting on the record entry</span>
+          <span class="ttip__text">Your reasons for commenting on the entry</span>
         </label>
         <% if @contact.body.nil? %>
           <textarea id="description" name="contact[body]" style="width: 100%; max-width: 32rem;" rows="6"></textarea>
@@ -78,3 +107,42 @@
     </ol>
   <% end %>
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<script type="text/javascript">
+  $('#read_explanation').change(function() {
+      $('.report_form').toggle();
+    
+});
+  console.log('hey');
+  $(document).ready(function() {
+
+    $('#questins').change(function(){
+      var question_id = ""
+      $.each($("#questins option:selected"), function() {
+        value = $(this).val()
+        console.log(value)
+      });
+      if(value) {
+        question_id = value;
+        $.ajax({
+          url: "/contacts/question_answer_finder",
+          type: "GET",
+          data : {
+            question_id: question_id
+          },
+        })
+        $('.read_answer').show();
+      } else {
+        $('.read_answer').hide();
+        $('#answer').html('Please find the explanation for your query here');
+
+      };
+     
+        console.log(question_id)
+        // alert(template_id);
+        // ajax request
+    ;
+    });
+  })
+</script>

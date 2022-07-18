@@ -1,0 +1,60 @@
+<% breadcrumb :same_page_entries, @record  unless @search %>
+<div class='container'>
+  <% if @search %>
+    <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @record.RecordNumber), class: " btn   btn--small" if @search_id.present?%>
+    <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @record, @record.friendly_url), class: " btn   btn--small" unless @record.blank?%>
+    <% end %>
+  <h1 class="lead"><%= "Entries in Page: #{@page}, Volume: #{@volume} at District: #{@district} for #{format_quarter(@quarter.to_i)}" %></h1>
+</div>
+<div class="container">
+  <div class="grid">
+    <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole " id='bmd_results'>
+      <table class="table--bordered table--data ">
+        <thead>
+          <tr>
+              <th>Detail</th>
+            <th>Individual</th>
+            <th>Record Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%# raise session[:saved_search_record].inspect%>
+          <% n = 0 %>
+          <% @page_records.each do |search_record| %>
+            <% n = n +1%>
+            <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
+            <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>_hover" >
+                <td>
+                  <center>
+                    <% if @search %>
+                      <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_id, search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
+                    <% else %>
+                    <%# raise session[:saved_search_record].inspect%>
+                      <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_non_search_path(search_record.id, search_record.friendly_url, saved_record: true), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
+                    <% end %>
+                  <i><%#= seen(@search_query,search_record) %></i></center>
+                </td>
+              <td class="table--data">
+                <dl>
+                  <strong><dt><%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></dt></strong>
+                  <dt><%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%></dt>
+                  <dt><%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record[:District].downcase}.html", target: "_blank" %></dt>
+                  </dl>
+              </td>
+              
+              <td class="<%#= record_type.downcase %>">
+                <center><%= "#{record_type}" %></center>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+      <% if device_type == :desktop %>
+        <div class="grid__item two-tenths lap-two-tenths palm-one-whole "  id='results_table_ad'>
+          <center><p>Advertisement</p>
+          <%= adsence_right_side_banner %></center>
+        </div>
+      <% end %>
+  </div>
+</div>

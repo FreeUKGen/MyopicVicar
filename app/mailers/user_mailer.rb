@@ -4,8 +4,11 @@
 class UserMailer < ActionMailer::Base
   reg_website = MyopicVicar::Application.config.website == 'https://www.freereg.org.uk' ? '' : 'Test'
   cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
+  @website = ['https://test3.freereg.org.uk', 'https://test3.freecen.org.uk', 'https://test3.freebmd.org.uk'].include?(MyopicVicar::Application.config.website) ? 'Test' : ''
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: "#{reg_website} FreeREG Servant <freereg-processing@freereg.org.uk>"
+    default from: "#{@website} FreeREG Servant <freereg-processing@freereg.org.uk>"
+  elsif MyopicVicar::Application.config.template_set == 'freebmd'
+    default from: "#{@website} FreeBMD Servant <freebmd-contacts@freebmd.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
     default from: "#{cen_website} FreeCEN Servant <freecen-processing@freecen.org.uk>"
   end
@@ -270,6 +273,11 @@ class UserMailer < ActionMailer::Base
       get_coordinator_name
       mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     elsif appname.downcase == 'freecen'
+      manager = UseridDetail.userid("CENManager").first
+      get_coordinator_name
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
+    elsif appname.downcase == 'freebmd'
+      manager = UseridDetail.userid("VinodhiniS").first
       get_coordinator_name
       mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     end
@@ -417,14 +425,14 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of syndicate") unless @coordinator.blank?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of syndicate") unless @coordinator.blank?
   end
 
   def send_change_of_email_notification_to_sc(user)
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of email") unless @coordinator.blank?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of email") unless @coordinator.blank?
   end
 
   def send_message(mymessage, ccs, from, host)
@@ -469,7 +477,7 @@ class UserMailer < ActionMailer::Base
     # attachments["report.log"] = report
     @person_forename = user.person_forename
     @email_address = user.email_address
-    mail(:from => "freecen-processing@freecen.org.uk",:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCEN update processing report")
+    mail(:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCEN update processing report")
   end
 
   private

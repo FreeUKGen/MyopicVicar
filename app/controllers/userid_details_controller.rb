@@ -583,7 +583,11 @@ class UseridDetailsController < ApplicationController
     end
   end
 
-
+  def list_saved_entry
+    get_user_info_from_userid
+    @userid = @user
+    @saved_entries = @userid.get_saved_entries
+  end
 
   private
 

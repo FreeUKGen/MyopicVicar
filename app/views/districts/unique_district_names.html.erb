@@ -1,0 +1,17 @@
+<div class="container">
+  <section class="island ">
+    <div class="text--center">
+    	<%= link_to 'View Birth Names', unique_district_names_path(id: @district_number, record_type: "birth" ), method: :get, :class => "btn   btn--small" unless @record_type == "birth" %>
+    	<%= link_to 'View Marriage Names', unique_district_names_path(id: @district_number, record_type: "marriage" ), method: :get, :class => "btn   btn--small" unless @record_type == "marriage"%>
+    	<%= link_to 'View Death Names', unique_district_names_path(id: @district_number, record_type: "death" ), method: :get, :class => "btn   btn--small" unless @record_type == "death"%>
+    </div>
+    <%= render 'flash_notice' %>
+    <br>
+    <h2 class=" text--center">Unique names for people in District: <%= @district.DistrictName %></h2>
+    <div class="text--center">
+      <%= link_to 'View unique surnames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "0" ) unless @name_type == "0" %>
+      <%= link_to 'View unique forenames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "1" ) unless @name_type == "1" %>
+    </div>
+    <%= render 'unique_names' %>
+  </section>
+</div>

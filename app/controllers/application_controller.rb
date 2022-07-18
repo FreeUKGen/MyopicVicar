@@ -26,7 +26,11 @@ class ApplicationController < ActionController::Base
   require 'chapman_code'
   require 'userid_role'
   require 'register_type'
+  require 'quarter_details'
+  require 'freebmd_data_problem'
+  require 'constant'
   require 'gdpr_countries'
+  require 'application_text'
   helper_method :appname, :appname_upcase, :appname_downcase, :mobile_device?, :device_type
   def appname
     MyopicVicar::Application.config.freexxx_display_name
@@ -71,10 +75,8 @@ class ApplicationController < ActionController::Base
 
   def load_message_flag
     # This tells system there is a message to display
-    if session[:message].blank?
-      session[:message] = 'no'
-      session[:message] = 'load' if Refinery::Page.where(slug: 'message').exists?
-    end
+      session[:message] = 'no' if session[:message].blank?
+      session[:message] = 'load' if Refinery::Page.present? && Refinery::Page.where(slug: 'message').exists?
   end
 
   private

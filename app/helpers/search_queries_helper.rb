@@ -1,5 +1,20 @@
 require 'text'
 module SearchQueriesHelper
+  ID_HASH = {
+      #field: id
+      first_name: 'firstname',
+      last_name: 'last_name',
+      start_quarter: 'from_quarter',
+      start_year: 'from_year',
+      end_quarter: 'to_quarter',
+      end_year: 'end_year',
+      min_age_at_death: 'search_query_min_age_at_death',
+      max_age_at_death: 'search_query_max_age_at_death',
+      age_at_death: 'search_query_age_at_death',
+      dob_at_death: 'search_query_dob_at_death',
+      min_dob_at_death: 'search_query_min_dob_at_death',
+      max_dob_at_death: 'search_query_max_dob_at_death'
+    }
 
   def results_search_form_link
     link_to "New Search", new_search_query_path, class: "btn  btn--small "
@@ -208,7 +223,55 @@ module SearchQueriesHelper
     elsif MyopicVicar::Application.config.template_set == 'freecen'
       contents_link = link_to "Database Coverage" , freecen_coverage_path, :title => "Database Coverage"
     elsif MyopicVicar::Application.config.template_set == 'freebmd'
-      contents_link = link_to "Database Coverage" , freebmd_coverage_path, :title => "Database Coverage"
+      contents_link = link_to "Database Coverage" , freecen_coverage_path, :title => "Database Coverage"
     end
+  end
+
+  def set_value field_value=nil
+    return field_value
+  end
+
+  def set_checkbox_checked_value field_value:, value: nil
+    return field_value.include?value
+  end
+
+  def bmd_record_type_name search_record_type
+    search_record_type.map do |rec_type|
+      next if rec_type == '0'
+      RecordType::display_name(rec_type.to_i)
+    end
+  end
+
+  def bmd_search_criteria search_query
+    display_map = {}
+    display_map["First Name"] = search_query.first_name.present? ? search_query.first_name.upcase : "Not Specified" 
+    display_map["Last Name"] = search_query.last_name.present? ? search_query.last_name.upcase : "Not Specified"
+    display_map["First Name Exact Match?"] = search_query.first_name_exact_match ? 'Yes' : 'No'
+    display_map["Phonetic Surnames"] = search_query.fuzzy ? 'Yes' : 'No'
+    display_map["Search Start Date"] = "#{QuarterDetails.quarters.key(search_query.start_quarter).upcase} #{search_query.start_year}"
+    display_map["Search End Date"] = "#{QuarterDetails.quarters.key(search_query.end_quarter).upcase} #{search_query.end_year}"
+    if search_query.bmd_record_type.present?
+      display_map["Record Type"] = bmd_record_type_name(search_query.bmd_record_type).compact.to_sentence
+    end
+    display_map["Spouse First Name"] = search_query.spouse_first_name if search_query.spouse_first_name
+    display_map["Identifiable Spouses Only"] = 'Yes' if  search_query.identifiable_spouse_only
+    display_map["Spouse Surname"] = search_query.spouses_mother_surname if search_query.spouses_mother_surname
+    display_map["Mother Surname"] = search_query.mother_last_name if search_query.mother_last_name.present?
+    display_map["Volume"] = search_query.volume if search_query.volume
+    display_map["Page"] = search_query.page if search_query.page
+    counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(" or ")
+    display_map["Counties"] = counties if search_query.chapman_codes.size >= 1
+    display_map["Districts"] = search_query.get_district_name if search_query.districts.compact.size >= 1
+    display_map["Age At Death"] = "#{search_query.age_at_death}#{search_query.dob_at_death}" if search_query.age_at_death.present? || search_query.dob_at_death.present?
+    display_map["Age At Death Range"] = "#{search_query.min_age_at_death}-#{search_query.max_age_at_death}" if search_query.min_age_at_death.present?
+    display_map["Date of Birth Range"] = "(#{search_query.min_dob_at_death}) - (#{search_query.max_dob_at_death})" if search_query.max_dob_at_death.present?
+    display_map["Match Recorded Ages/Date of Birth"] = 'Yes' if  search_query.match_recorded_ages_or_dates
+    display_map["Partial search on"] = search_query.wildcard_field if search_query.wildcard_field.present?
+    display_map["Partial search type"] = search_query.wildcard_option if search_query.wildcard_option.present?
+    display_map
+  end
+
+  def error_field_label_id
+
   end
 end

@@ -1,0 +1,36 @@
+<h1 class="beta">You have <%= pluralize(@saved_searches.count, "saved search")%></h1>
+<table class="table--bordered table--data ">
+  <caption class='accessibility'></caption>
+  <thead>
+    <tr>
+      <th>Search Again</th>
+      <th>Search Details</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @saved_searches.each do |search| %>
+      <tr>
+        <td>
+          <center>
+            <%= link_to("Run this search", search_query_path(search.search_id, saved_search: search.id), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+          </center>
+        </td>
+        <td class="table--data">
+          <dl>
+            <% search_query = SearchQuery.find(search.search_id) %>
+            <% search_criteria = bmd_search_criteria(search_query) %>
+            <% search_criteria.each do |name, value| %>
+              <dt class="criteria__name epsilon"><%= name %>: <span><strong><%= value %></strong></span></dt>
+            <% end %>
+          </dl>
+        </td>
+        <td>
+          <%= link_to 'Destroy', "/saved_search/#{search.id}", method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+    <!--/div-->
+  

@@ -1,0 +1,63 @@
+<section class="islet islet--light soft--left hard--bottom">
+	<div class="container">
+	  <div class="grid">
+	  	<i class="fa fa-times float--right project-text-color" id="hide-search-criteria" tabindex="0"></i>
+	    <div class="grid__item one-whole lap-one-whole palm-one-whole ">
+	    	<h2 class="epsilon flush--bottom push-half--bottom"><em>When you searched for:</em></h2>
+				<div class="criteria-group">
+          <% search_criteria = bmd_search_criteria(@search_query) %>
+          <% search_criteria.each do |name, value| %>
+            <dl class="criteria">
+              <dt class="criteria__name epsilon"><%= name %></dt>
+              <dd class="criteria__value zeta"><%= value %></dd>
+            </dl>
+          <% end %>
+        </div>
+			</div>
+		</div>
+	</div>
+</section>
+<section>
+	<%= form_tag compare_search_path(params[:id], saved_search_id: params[:saved_search_id] ), method: :get, id: 'compare_filter_form' do %>
+	  <div class="grid">
+	    <div class="grid__item desk-wide-one-third desk-one-third lap-one-whole palm-one-whole">
+	      <%= label_tag 'filter_results', 'Filter By' %>
+	      <%= select_tag(:filter_option, options_for_select([['Births', "1"], ['Deaths', "2"], ['Marriages', "3"],["Newly Added", "4"],["Removed", "5"]], selected: @filter_condition), {:prompt => "Filter By", id: 'compare_filter_results', tabindex: "0"}) %>
+	    </div>
+	    <div class="grid__item desk-wide-one-third desk-one-third lap-one-whole palm-one-whole">
+	      <%= button_tag 'Update Comparision', class: 'spinner-controller ladda-button push--top update_results' , id: 'filter_form_submit', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
+	    </div>
+	  </div>
+	<% end %>
+</section>
+<div class="grid push-half--top">
+	<div class="grid__item one-whole lap-one-whole palm-one-whole">
+		<hr class='grid__item one-whole lap-one-whole palm-one-whole'>
+	</div>
+</div>
+<section>
+	<div class="container">
+	  <div class="grid">
+		    <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
+		    	<% if @search_results.present? %>
+			    	<strong><%= pluralize(@search_results.count, 'results')%></strong>
+			    	<div class="scrollable">
+				      <%= render(partial: "compare_search_table", locals: { search_results: @search_results, old_search_results: false })  %>
+			    	</div>
+			    	<% else%>
+			    		Not Available
+		    	<% end %>
+		  </div>
+		  <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
+		  	<% if @save_search_results.present? %>
+			  	<strong><%= pluralize(@save_search_results.count, 'saved search results')%></strong>
+			    <div class="scrollable">
+			      <%= render(partial: "compare_search_table", locals: { search_results: @save_search_results, old_search_results: true })  %>
+			    </div>
+			  <% else %>
+			    Not Available
+			  <% end %>
+		  </div>
+	  </div>
+	</div>
+</section>

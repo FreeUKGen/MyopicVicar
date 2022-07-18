@@ -1,68 +1,115 @@
-<header class="site__header" >
-  <div class="container">
-    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
-      <% case appname_downcase %>
-      <% when 'freecen' %>
-      <% unless device_type == :mobile%>
-        <div class="bnner-horz cen_unit_headers cen_unit">
-          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
-          <%= my_heritage_720_90_cen %>
+<% if appname_downcase == 'freecen' || appname_downcase == 'freereg' %>
+  <header class="site__header" >
+    <div class="container">
+      <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
+        <% case appname_downcase %>
+        <% when 'freecen' %>
+          <% unless device_type == :mobile %>
+            <div class="bnner-horz cen_unit_headers cen_unit">
+              <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447">
+                <%= image_tag 'png/header-donate.png', class: "donations", alt: "Donations - FreeUKGenealogy" %>
+              </a>
+              <%= my_heritage_720_90_cen %>
+            </div>        
+            <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
+              <div class="cookieConsent island island--teal flush--bottom">
+                <div id="cookieText" >
+                  We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
+                </div>
+                <div class = "cookieAcceptButton">
+                  <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% when 'freereg' %>
+          <% unless device_type == :mobile%>
+            <div class="bnner-horz reg_adsense reg_unit reg_header">
+              <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
+              <%= my_heritage_720_90_first %>
+            </div>
+            <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
+              <div class="cookieConsent island island--teal flush--bottom">
+                <div id="cookieText" >
+                  We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
+                </div>
+                <div class = "cookieAcceptButton">
+                  <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+        <button type="button" id="trigger-offcanvas" class="site__header__menu-btn">
+            <span>Menu</span>
+            <i class="icon__cancel" aria-hidden="true"></i>
+        </button>
+        <% case appname_downcase %>
+        <% when 'freereg' %>
+          <%= link_to '/', class: "site__header__logo  icon__freereg" do %>
+            <h1 class="accessibility">FreeREG | Free Parish Register Records</h1>
+          <% end %>
+        <% when 'freecen' %>
+          <%= link_to '/', class: "site__header__logo  icon__freecen" do %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </header>
+<% else %>
+  <header class="site__header bmd_site_header">
+    <div class="flush--sides soft--sides">
+      <% unless device_type == :mobile %>
+        <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
+          <div class="bnner-horz bmd_adsenses header_ads">
+            <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">
+              <%= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
+            </a>
+            <%= advert_code("header", "horz") %>
+          </div>
+        <% end %>
+      <% end %>
+      <!--div class="one-tenth lap-up-one-eighth lap-one-seventh palm-one-third" style=""-->
+        <%= image_tag 'png/beta.png', alt: "this is beta version of FreeBMD", class:  "one-tenth lap-up-one-eighth lap-one-seventh palm-one-third", style: "transform: rotate(-10deg) scale(1.15); margin-left: 3.8em;"%>
+      <!--/div-->
+    </div>
+      
+      <!--div class="grid">
+        <div class="grid__item one-eighth lap-one-fifth palm-one-third" >
+          
         </div>
-        <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
-          <div class="cookieConsent island island--teal flush--bottom">
-            <div id="cookieText" >
-              We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
-            </div>
-            <div class = "cookieAcceptButton">
-              <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
-            </div>
-          </div>
-        <% end %>
-      <% end %>
-      <% when 'freereg' %>
-      <% unless device_type == :mobile%>
-        <div class="bnner-horz reg_adsense reg_unit reg_header">
-          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
-          <%= my_heritage_720_90_first %>
-          </div>
-        <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
-          <div class="cookieConsent island island--teal flush--bottom">
-            <div id="cookieText" >
-              We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
-            </div>
-            <div class = "cookieAcceptButton">
-              <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
-            </div>
-          </div>
-        <% end %>
-      <% end %>
-      <% when 'freebmd' %>
-      <% unless device_type == :mobile%>
-        <div class="bnner-horz reg_adsense">
-          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/"><%= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
-          <%= banner_header %>
-        <% end %>
-      </div>
-    <% end %>
-  <% end %>
-  <button type="button" id="trigger-offcanvas" class="site__header__menu-btn">
-    <span>Menu</span>
-    <i class="icon__cancel" aria-hidden="true"></i>
-  </button>
-  <% case appname_downcase %>
-  <% when 'freereg' %>
-  <%= link_to '/', class: "site__header__logo  icon__freereg" do %>
-    <h1 class="accessibility">FreeREG | Free Parish Register Records</h1>
-  <% end %>
-  <% when 'freecen' %>
-  <%= link_to '/', class: "site__header__logo  icon__freecen" do %>
-  <% end %>
-  <% when 'freebmd' %>
-  <%= link_to '/', class: "site__header__logo  icon__freebmd" do %>
-  <% end %>
+        <div class="grid__item seven-eighths lap-five-sixths palm-three-quarters"-->
+          <% unless device_type == :mobile %>
+            <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
+              <!--div class="bnner-horz bmd_adsense header_ad">
+                <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">
+                  <%#= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
+                </a>
+                <%#= advert_code("header", "horz") %>
+              </div-->
+              <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
+                <div class="cookieConsent island island--teal flush--bottom">
+                  <div id="cookieText" >
+                    We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
+                  </div>
+                  <div class = "cookieAcceptButton">
+                    <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      <!--/div-->
+    </div>
+    <div id="trigger-offcanvas-old">
+      <button type="button"  class="site__header__menu-btn">
+        <span>Menu</span>
+          <i class="icon__cancel" aria-hidden="true"></i>
+      </button>
+    </div>
+  </header>
 <% end %>
-</div>
-</header>
 <%# unless browser.safari? && browser.full_version.to_f < 15.4 %>
   <!--div id="overlay"></div>
   <dialog id="myDialog" role="dialog">
@@ -75,4 +122,3 @@
     <%#= render "donate_cta_feedback/form"%>
   </dialog-->
 <%# end %>
-

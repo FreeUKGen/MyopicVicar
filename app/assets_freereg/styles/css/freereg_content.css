@@ -493,8 +493,12 @@ li.choice label { font-weight: normal; margin-bottom: 7px; }
 .ttip:focus { outline: none; }
 .ttip img:hover + .ttip__text,
 .ttip span:hover + .ttip__text,
+.ttip .fa:hover::before + .ttip__text,
 .ttip:focus .ttip__text {
-  visibility: visible;
+  visibility: visible !important;
+}
+.ttip > i {
+  color: blue !important;
 }
 form#new_search_query fieldset.inputs > ol {
     margin-left: -28px;

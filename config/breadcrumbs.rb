@@ -38,6 +38,11 @@ crumb :create_userid_detail do |userid_detail|
   end
 end
 
+crumb :list_saved_entries do
+  link "Saved Records", list_saved_entries_userid_details_path
+  parent :regmanager_userid_options
+end
+
 crumb :transcriber_statistics do
   link "Transcriber Statistics"
   parent :regmanager_userid_options
@@ -2177,13 +2182,29 @@ end
 
 crumb :search_names do
   link 'Search Place Names', search_names_freecen2_place_path
-  parent :root
+  parent :root 
 end
 
 crumb :tna_change_logs do
   link 'Changes to TNA collections', tna_change_logs_path
   parent :root
 end
+
+######################################FreeBMD Breadcrumbs#########################################################
+
+
+
+crumb :entry_information do |rec|
+  link "#{rec.GivenName} #{rec.Surname}"
+  parent :list_saved_entries
+end
+
+#if params[:saved_record].present?
+  crumb :same_page_entries do |record|
+    link "Entries of page #{record.Page}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: record.RecordNumber)
+    parent :entry_information, record
+  end
+#end
 # crumb :projects do
 #   link 'Projects', projects_path
 # end

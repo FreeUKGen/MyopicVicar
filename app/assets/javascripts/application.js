@@ -11,4 +11,6 @@
 // GO AFTER THE REQUIRES BELOW.
 //= require jquery
 //= require jquery_ujs
+//= require jquery.validate
+//= require jquery.validate.min
 //= require_tree .

@@ -1,53 +1,59 @@
+<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% title "Search Results" %>
-<h1 class="accessibility">Search results</h1>
+<!--h1 class="accessibility">Search results</h1-->
 <%= render 'flash_notice' %>
-<% show_contents_link%>
+<%# show_contents_link%>
+<div class='container'>
+  <!--h1 class="semi-kilo">Results</h1-->
+  <%= render(partial: 'navigation_links') %>
+  <h4 class="accessibility">Search Criteria</h4>
+</div>
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
-  <%= render 'display_search_criteria' %>
+  <%= render 'display_search_criteria'%> 
   <section>
-    <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+    <% if @result_count >= @max_result %>
       <%= render 'too_many_results' %>
     <% else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
-      <div class="grid">
-        <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
-          <%= render 'no_results' %>
-        </div>
-         <% unless device_type == :mobile%>
-          <div class="grid__item desk-one-fifth lap-one-third palm-one-whole float--right">
-            <span class=''>Advertisement</span><br>
-            <%#= my_heritage_300_250_first %>
-            <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @search_query.first_name %>&lastName=<%= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe>
+        <div class="grid">
+          <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
+            <%= render 'no_results' %>
           </div>
-        <% end %>
-      </div>
+           <% unless device_type == :mobile%>
+            <div class="grid__item desk-one-fifth lap-one-third palm-one-whole float--right">
+              <span class=''>Advertisement</span><br>
+              <%#= my_heritage_300_250_first %>
+              <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @search_query.first_name %>&lastName=<%= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe>
+            </div>
+          <% end %>
+        </div>
       <% else %>
-        <% if device_type == :desktop || device_type == :tablet %>
-          <% case MyopicVicar::Application.config.template_set%>
-          <% when 'freereg'%>
+        <%# if device_type == :desktop || device_type == :tablet %>
+        <% case MyopicVicar::Application.config.template_set%>
+        <% when 'freereg'%>
           <div class="container">
             <div class="grid">
-                <div class= '' id='results_table'>
-                  <div class="grid__item one-whole">
-                    <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
-                  </div>
-                  <div class="grid__item one-whole">
-                    <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-                      <%= render 'please_donate' %>
-                    <% end %>
-                  </div>
+              <div class= '' id='results_table'>
+                <div class="grid__item one-whole">
+                  <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
                 </div>
-                <% unless device_type == :mobile%>
-                  <div  id='results_table_ad' class='float--right text--center'>
-                    <span class=''>Advertisement</span><br>
-                    <%#= my_heritage_300_250_first reg_unit reg_side_advert %>
-                    <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @search_query.first_name %>&lastName=<%= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe>
-                  </div>
-                <% end %>
+                <div class="grid__item one-whole">
+                  <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+                    <%= render 'please_donate' %>
+                  <% end %>
+                </div>
+              </div>
+              <% unless device_type == :mobile%>
+                <div  id='results_table_ad' class='float--right text--center'>
+                  <span class=''>Advertisement</span><br>
+                  <%#= my_heritage_300_250_first reg_unit reg_side_advert %>
+                  <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @search_query.first_name %>&lastName=<%= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe>
+                </div>
+              <% end %>
             </div>
           </div>
-          <% when 'freecen'%>
+        <% when 'freecen'%>
           <div class="container">
             <div class="grid">
               <div class="grid__item  palm-one-whole " id='results_table'>
@@ -59,32 +65,41 @@
                     <%= render 'please_donate' %>
                   <% end %>
                 </div>
-              </div>
-              <% unless device_type == :mobile%>
+                <% unless device_type == :mobile%>
                   <div  id='results_table_ad' class='float--right text--center'>
                     <span class=''>Advertisement</span><br>
                     <%#= my_heritage_300_250_first %>
                     <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freecen&clientId=4662&campaignId=freecen_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel&tr_ifid=FREECEN_+337188516&firstName=<%= @search_query.first_name %>&lastName=<%= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe>
                   </div>
                 <% end %>
+              </div>
             </div>
           </div>
-          <% when 'freebmd'%>
+        <% when 'freebmd'%>
+          <%= render(partial: 'show_freebmd') %>
+        <% else %>
           <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
         <% end%>
-      <% else %>
-        <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results, :ucf_results =>  @ucf_results}) %>
+      <% end%>
+      <% if @result_count > 10 && @result_count < @max_result %>
+        <br>
+        <%= render 'nav_header' %>
       <% end %>
-    <% end%>
-    <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-      <br>
-      <%= render 'nav_header' %>
+      <% if @result_count > 0 && @result_count < @max_result %>
+        <% if appname_downcase == 'freebmd'%>
+          <%#= render 'bmd_search_results_footer' %>
+        <% else %>
+          <%= render 'please_donate' %>
+        <% end %>
+      <% end %>
     <% end %>
-  <% end %>
-</section>
+  </section>
 <% else %>
     <%= render 'no_results' %>
 <% end %>
+<script type="text/javascript">
+  Ladda.bind( 'button[type=submit]' );
+</script>
 <script type="text/javascript">
   var result = window.canRunAds;
   function changeClass(screen_width) {
@@ -103,6 +118,75 @@
   var screen_width = window.matchMedia("(max-width: 1000px)")
   changeClass(screen_width)
   screen_width.addListener(changeClass);
+
+
+  //js code for pagination
+  function results_to_display(){
+      console.log('res')
+     $('#limit_form').submit();
+  };
+
+  //js code to show search criteria
+  $('#view_search_criteria').click(
+    function() {
+     $('#search_criteria_container').show();
+     $('#view_search_criteria').hide();
+  });
+
+  /* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+/*$("#tool_button").click(
+  function() {
+    $(".hide").toggle();
+  });
+
+
+
+ Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+   $(".hide").hide();
+  }
+}*/
+
+
+  //js code to hide show criteria button on load
+  //$('#view_search_criteria').hide();
+
+
+  //$(document).ready(function() {
+   // $("#filter_results").change(function() {
+    //  var condition = $(this).val();
+   //   var search_id = $('#search_id').val();
+    //  $.ajax({
+    //      url: '<%= search_query_path(params[:id])%>',
+    //      type: "GET",
+     //     data: {
+     //         selected_condition: condition,
+     //         id: search_id
+     //     }
+     // });
+   // });
+ // });
+ function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
 </script>
 <style type="text/css">
   @media only screen and (max-width: 1000px) {

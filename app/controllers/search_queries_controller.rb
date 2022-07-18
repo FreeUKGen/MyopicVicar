@@ -11,13 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 #
+
 class SearchQueriesController < ApplicationController
   skip_before_action :require_login
   skip_before_action :verify_authenticity_token
   before_action :check_for_mobile, only: :show
+  before_action :require_login, only: :compare_search
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
   rescue_from Timeout::Error, with: :search_taking_too_long
+  #autocomplete :BestGuess, :Surname, full: false,  limit: 5
+  #autocomplete :BestGuess, :GivenName, full: false, limit: 5
   RECORDS_PER_PAGE = 100
 
   def about
@@ -34,6 +38,7 @@ class SearchQueriesController < ApplicationController
     @search_query['chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['chapman_codes'][1].eql?('CHI')
     @search_query['birth_chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['birth_chapman_codes'][1].eql?('CHI')
     @search_query.session_id = request.session_options[:id]
+    @search_query['partial_search'] = true if @search_query['wildcard_field'].present? && @search_query['wildcard_option'].present?
   end
 
   def analyze
@@ -69,14 +74,19 @@ class SearchQueriesController < ApplicationController
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
-      @search_results = @search_query.search
-      redirect_to search_query_path(@search_query)
+      @search_results = @search_query.search_records
+      redirect_to search_query_path(@search_query, anchor: "bmd_content")
     else
       #message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
       #redirect_back(fallback_location: new_search_query_path, notice: message)
       render :new
     end
   end
+
+  def valid_wildcard_qurey
+
+  end
+
 
   def edit
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
@@ -209,17 +219,49 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
+    #raise params.inspect
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    if params[:sort_option].present?
+      @sort_condition = params[:sort_option]
+      order_field = params[:sort_option]
+      if order_field == @search_query.order_field
+        # reverse the directions
+        @search_query.order_asc = !@search_query.order_asc unless params[:page].present?
+      else
+        @search_query.order_field = order_field
+        @search_query.order_asc = true
+      end
+      @search_query.save!
+    end
+    @search_results = @search_query.search_records if params[:saved_search].present?
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-    if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
+    @save_search_id = params[:saved_search] if params[:saved_search].present?
+    if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
     else
-      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
+      response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+      @filter_condition = params[:filter_option]
+      @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
+      #if params[:sort_option].present?
+        #if @search_query.order_asc
+         # @search_results = @search_results.order(:order_field)
+        #else
+         # @search_results = @search_results.order(order_field: :desc)
+        #end
+      #end
+      @results_per_page = params[:results_per_page] || 20
+      total_page = @search_results.count
+      @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+      @paginatable_array = Kaminari.paginate_array(@search_results, total_count: @search_results.count).page(params[:page]).per(@results_per_page)
+      @max_result = maximum_results
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
@@ -228,27 +270,44 @@ class SearchQueriesController < ApplicationController
     end
   end
 
+
+  def maximum_results
+    case appname_downcase
+    when 'freebmd'
+      max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS
+    when 'freecen'
+      max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    when 'freereg'
+      max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    end
+    max_result
+  end
+
   def show_print_version
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
+    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
     @printable_format = true
-    if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    if @search_query.result_count >= max_result
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
     else
-      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
+      response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+      @paginatable_array = @search_results
+      @max_result = maximum_results
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
     end
-    render 'show', layout: false
+    render 'show', layout: 'printable_layout'
   end
 
   def show_query
@@ -266,9 +325,86 @@ class SearchQueriesController < ApplicationController
     redirect_to search_query_path(@search_query)
   end
 
+  def districts_of_selected_counties
+    districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
+    @districts = Hash.new
+    params[:selected_counties].reject { |c| c.empty? }.each { |c|
+      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
+    }
+    @districts
+  end
+
+  def wildcard_options_dropdown
+    field = params[:field]
+    @options = params[:option] if params[:option].present?
+    array = Constant::OPTIONS_HASH[params[:field]]
+    middle_name_option = array
+    @middle_name_option = middle_name_option
+  end
+
+  def download_as_csv
+    search_id = params[:id]
+    @search_query = SearchQuery.find_by(id: search_id)
+    send_data @search_query.download_csv, filename: "search_results-#{Date.today}.csv"
+  end
+
+  def compare_search
+    #raise params.inspect
+    get_user_info_from_userid
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
+    @save_search_id = params[:saved_search_id]
+    @saved_search = @user.saved_searches.find(@save_search_id)
+    @saved_search_result_hash = @saved_search.saved_search_result.records.keys
+    saved_search_response, saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
+    @save_search_results = @search_query.sort_results(saved_search_results)
+    response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results
+    if params[:filter_option].present?
+      @filter_condition = params[:filter_option]
+      @search_results = filtered_search_results #if filtered_search_results.present?
+      @save_search_results = filter_saved_search_results #if filter_saved_search_results.present?
+    end
+  end
+
+  def filtered_results
+    @search_results.select{ |r|  r["RecordTypeID"] == @filter_condition.to_i }
+  end
+
+  def filtered_search_results
+    filter_cond = @filter_condition.to_i
+    if RecordType::BMD_RECORD_TYPE_ID.include?(filter_cond)
+      records = filter(@search_results)
+    elsif filter_cond == 4
+      select_hash = @search_query.search_result.records.keys - @saved_search_result_hash
+      result = @search_query.search_result.records.select{|k,v| select_hash.include?(k)}
+      records = result.values.map{|h| BestGuess.new(h)}
+    else filter_cond == 5
+      records = nil
+    end
+    records
+  end
+
+  def filter_saved_search_results
+    filter_cond = @filter_condition.to_i
+    if RecordType::BMD_RECORD_TYPE_ID.include?(filter_cond)
+      records = filter(@save_search_results)
+    elsif filter_cond == 4
+      records = nil
+    else filter_cond == 5
+      select_hash = @saved_search_result_hash - @search_query.search_result.records.keys
+      result = @saved_search.saved_search_result.records.select{|k,v| select_hash.include?(k)}
+      records = result.values.map{|h| BestGuess.new(h)}#BestGuess.get_best_guess_records(select_hash)
+    end
+    records
+  end
+
   private
 
   def search_params
     params.require(:search_query).permit!
+  end
+
+  def filter(results)
+    results.select{|r| r["RecordTypeID"] == @filter_condition.to_i }
   end
 end

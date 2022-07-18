@@ -1,0 +1,51 @@
+<% breadcrumb :list_saved_entries %>
+<table class="table--bordered table--data ">
+  <thead>
+    <tr>
+      <th>Detail</th>
+      <th>Individual</th>
+      <th>Record Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% n = 0 %>
+    <% @saved_entries.each do |search_record| %>
+      <% n = n +1 %>
+      <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
+      <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
+          <td>
+            <center>
+            	<%= link_to("View #{n}".html_safe,friendly_bmd_record_details_non_search_path(search_record.id, search_record.friendly_url, saved_record: true, saved_entry: search_record.id), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+              <%#= link_to("View #{n}".html_safe,best_guess_path(search_record.RecordNumber), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+              <i><%#= seen(@search_query,search_record) %></i>
+            </center>
+          </td>
+        <td class="table--data">
+          <dl>
+            <strong>
+              <dt class="ttip">
+                <%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
+                <span class="ttip__text"><%="#{search_record[:Volume]} #{search_record[:Page]}"%></span>
+              </dt>
+            
+            <dt>
+              <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
+            </dt>
+            <dt>
+              <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record[:District].downcase}.html", target: "_blank" %>
+            </dt>
+            <dt>
+               <%#= render partial: 'best_guess/more_information' %>
+            </dt>
+          </dl>
+        </td>
+        <td>
+          <center><%= "#{record_type}" %></center>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+    
+
+

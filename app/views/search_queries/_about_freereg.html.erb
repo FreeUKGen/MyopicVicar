@@ -1,0 +1,149 @@
+  <section>
+    <h3>Name</h3>
+    <p>
+      Search Criteria:
+      <b>First Name</b> is <b><i><%= @search_query.first_name.blank? ? "blank" : @search_query.first_name.upcase %></i></b>,
+      <b>Last Name</b> is <b><i><%= @search_query.last_name.blank? ?  "blank" : @search_query.last_name.upcase %></i></b>.
+      <b>Exact matching</b> is <b><i><%= @search_query.fuzzy ? "disabled" : "enabled" %></i></b>.
+      <% if @search_query.query_contains_wildcard? && @search_query.fuzzy %>
+        <i>(Because this query contained a wildcard, use of SOUNDEX was ignored in favour of a wildcard search on exact names.)</i>
+      <% end %>
+    </p>
+    <p>
+      Search Logic:
+      <% if @search_query.first_name %>
+        Records with a first name of <b><i><%= @search_query.first_name.upcase %></i></b> (ignoring capitalisation)
+        <% if @search_query.fuzzy && !@search_query.query_contains_wildcard? %>
+          and records with a first name whose Soundex is <%= fuzzy(@search_query.first_name)%>
+        <% end %>.
+        <% emendations = EmendationRule.where(:replacement => @search_query.first_name.downcase).all.to_a %>
+        <% if emendations && emendations.size > 0 %>
+          In addition, match records whose first name is
+          <b><i><%= raw(emendations.map{|e| e.original }.join("</i></b> or <b><i>")) %> </i></b> (ignoring capitalisation).
+        <% end %>
+      <% end %>
+      <% if @search_query.last_name %>
+        Records with a last name of <b><i><%= @search_query.last_name.upcase %></i></b> (ignoring capitalisation)
+        <% if @search_query.fuzzy && !@search_query.query_contains_wildcard? %>
+          and records with a last name whose Soundex is <%= fuzzy(@search_query.last_name)%>
+        <% end %>
+      <% end %>
+      <% if appname.downcase == 'freereg' && (@search_query.inclusive || @search_query.witness) %>
+        This search will match against the primary names in the record (i.e. baptised, bride and groom, or deceased).  In addition, it will search
+        <% if @search_query.inclusive %> for other <b>family members</b>  (father, mother, etc.) <% end %>
+        <% if @search_query.inclusive && @search_query.witness %> and <% end %>
+        <% if @search_query.witness %> <b>witnesses</b> <% end %>
+        mentioned in a record.
+      <% end %>
+      <% unless  @search_query.no_additional_census_fields?%>
+        <br>
+        The following <b>filters</b> were applied:<br>
+        <% if @search_query.sex.present? %>Were <b> <%=SearchQuery::Sex::OPTIONS.key(@search_query.sex)%><br>
+          </b><% end %>
+        <% if @search_query.marital_status.present? %> Were <b> <%=SearchQuery::MaritalStatus::OPTIONS.key(@search_query.marital_status)%><br>
+          </b><% end %>
+        <% if @search_query.language.present? && ['ENGLISH','WELSH','GAELIC'].include?(SearchQuery::Language::OPTIONS.key(@search_query.language)) %> Spoke <b><%=SearchQuery::Language::OPTIONS.key(@search_query.language)%><br>
+          </b><% end %>
+        <% if @search_query.language.present? && SearchQuery::Language::OPTIONS.key(@search_query.language) == 'BOTH' %> Both <b>ENLISH/WELSH</b> or <b>ENGLISH/GAELIC</b> are spoken<br>
+        </b><% end %>
+      <% if @search_query.occupation? %> Followed an <b>OCCUPATION</b> where the following characters <b><%=@search_query.occupation %></b> were present.<% end %>
+      <% if @search_query.disabled.present? %>Had a <b>DISABILITY</b><br>
+      <% end %>
+    <% end %>
+    <% if @search_query.places.present? %>
+      <lb/>Additional names which our volunteers marked as partially illegible have been added below the direct results.  (For more information on our practices for encoding unclear characters, see <a href="https://www.freereg.org.uk/cms/information-for-transcribers/dealing-with-uncertainty#ucf">"Dealing with Uncertainty"</a>.)
+    <% end %>
+  </p>
+</section>
+<section>
+  <h3>Date</h3>
+  <% if appname.downcase == 'freecen'%>
+    <p>Census Criteria:
+      <% if @search_query.record_type.blank? %>
+        <b> All </b>census years were included
+      <% else%>
+        The census year <b><%= @search_query.record_type %></b> was selected.
+      <% end%>
+    </p>
+  <% end%>
+  <p>
+    <% if ['freecen', 'freebmd'].include?(appname.downcase)  %>Birth Date range or Age: <% else%> Event Date: <% end%>
+    <% unless @search_query.start_year.blank? && @search_query.end_year.blank? %>
+      <% if @search_query.start_year %>
+        <b>Start Year</b> is <b><i><%= @search_query.start_year %></i></b>.
+      <% end %>
+      <% if @search_query.end_year %>
+        <b>End Year</b> is <b><i><%= @search_query.end_year %></i></b>.
+      <% end %>
+    <% else %>
+      <i><b>No </b>date criteria were specified.</i>
+    </p>
+  <% end %>
+</section>
+<% if MyopicVicar::Application.config.template_set == 'freereg' %>
+  <section>
+    <h3>Records</h3>
+    <p>
+      <% if @search_query.record_type %>
+        <%= RecordType::display_name(@search_query.record_type) %> records were specified.
+      <% else %>
+        All three record types &mdash; Baptisms, Burials and Marriages &mdash; were included.
+      <% end %>
+    </p>
+  </section>
+<% end %>
+<section>
+  <h3>Location</h3>
+  <% if appname.downcase == 'freecen'%>
+    <p>Search Criteria:
+      The following <b>birth counties</b> were included:
+      <% counties = @search_query.birth_chapman_codes.size %>
+      <% start = 0 %>
+      <% @and = " and " %>
+      <% while start < counties do  %>
+        <b><%= ChapmanCode.name_from_code(@search_query.birth_chapman_codes[start])  %></b>
+        <% start +=1 %>
+        <%= @and unless start == counties %>
+      <% end%>.
+    </p>
+  <% end%>
+  <% if @search_query.radius_search? %>
+    <p>
+      Search Criteria:
+      <b>Search additional places</b>
+      near
+      <b><%= @search_query.places.map {|pl| pl.place_name }.join(" or ")%></b>
+      in
+      <b><%= ChapmanCode.name_from_code(@search_query.chapman_codes[0])%></b>
+    </p>
+    <p>
+      Search Logic:
+      <% first_place = @search_query.places.first%>
+      We have records within these places:
+    </p>
+    <ol>
+      <% @search_query.all_radius_places.each do |near_place| %>
+        <li>
+          <%= near_place.place_name %> (<%= near_place.county%>)   (<%= geo_near_distance(first_place,near_place,@search_query.place_system).round(1) %> <%=Place::MeasurementSystem::system_to_units(@search_query.place_system)%>)
+        </li>
+      <% end %>
+    </ol>
+  <% else %>
+    <p>The following <% if appname.downcase == 'freecen'%><b>census </b><% end%>counties were included in the search:
+      <% counties = @search_query.chapman_codes.size %>
+      <% start = 0 %>
+      <% @and = " and " %>
+      <% while start < counties do  %>
+        <b><%= ChapmanCode.name_from_code(@search_query.chapman_codes[start])  %></b>
+        <% start +=1 %>
+        <%= @and unless start == counties %>
+      <% end%>.</p>
+    <% place = @search_query.places.map {|pl| pl.place_name} %>
+    <% if place.size == 0 %>
+      <b>All <% if appname.downcase == 'freecen'%><b>census </b><% end%>places</b> with data in the selected counties were included.
+    <% else %>
+      The <% if appname.downcase == 'freecen'%><b>census </b><% end%>place with the name <b><%= place[0] %></b> was searched.
+    <% end %>
+  <% end %>
+</p>
+</section>

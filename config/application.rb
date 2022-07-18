@@ -56,10 +56,11 @@ module MyopicVicar
     # -- all .rb files in that directory are automatically loaded.
     app = config_for(:freeukgen_application)
     config.template_set = app['template_set']
+    config.search_table = app['search_table']
     config.advert_key = app['advert_key']
     config.gtm_key = app['gtm_key']
     # Custom directories with classes and modules you want to be autoloadable.
-    # config.autoload_paths += %W(#{config.root}/extras)
+     config.autoload_paths += %W(#{config.root}/app/models/freebmd/)
 
     # Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.
@@ -85,6 +86,7 @@ module MyopicVicar
     config.filter_parameters += [:password]
 
     config.middleware.use Mobvious::Manager
+    #config.middleware.use Rack::Deflater
 
     # Use SQL instead of Active Record's schema dumper when creating the database.
     # This is necessary if your schema can't be completely dumped by the schema dumper,
@@ -110,7 +112,7 @@ module MyopicVicar
     when TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
-
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'javascripts')
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles')
     when TemplateSet::FREEBMD
       config.freexxx_display_name = 'FreeBMD'

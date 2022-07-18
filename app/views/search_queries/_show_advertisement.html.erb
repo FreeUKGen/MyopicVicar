@@ -5,7 +5,8 @@
     <span>Advertisement</span>
     <div class="bnner-horz-secondary">
       <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', :class => "donations", :alt => "Donations - FreeUKGenealogy" %></a>
-      <%= google_advert %>
+      <%= advert_code("google", "horz") %>
+        <%#= google_advert_was_here %>
     </div>
   </div>
   <% when 'freereg' %>

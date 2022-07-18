@@ -88,7 +88,7 @@ module ApplicationHelper
     when 'freecen'
       link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
-      link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
+      link_to('Records', main_app.district_alphabet_selection_path)
     end
   end
 
@@ -625,18 +625,11 @@ module ApplicationHelper
     content_tag :span, 'You can visit the old FreeCEN website here -'
   end
 
-  def fullwidth_adsense
-    case MyopicVicar::Application.config.template_set
-    when 'freecen'
-      fullwidth_adsense_freecen
-    when 'freereg'
-      fullwidth_adsense_freereg
-    end
-  end
-
   def app_advert
     MyopicVicar::Application.config.advert_key
   end
+
+  
 
   def data_ad_client
     app_advert['data_ad_client']
@@ -662,6 +655,10 @@ module ApplicationHelper
     MyopicVicar::Application.config.gtm_key
   end
 
+  def app_config
+    MyopicVicar::Application.config
+  end
+
   def transform_boolean(value)
     result = value ? 'Yes' : 'No'
   end
@@ -671,10 +668,20 @@ module ApplicationHelper
       facebook: '<i class="fa fa-facebook-square fa-2x"></i>',
       news: '<i class="fa fa-rss-square fa-2x"></i>',
       twitter: '<i class="fa fa-twitter-square fa-2x"></i>',
-      github: '<i class="fa fa-github-square fa-2x" aria-hidden="true"></i>',
+      github: '<i class="fa fa-github-square fa-2x"></i>',
       info: '<i class="fa fa-info-circle"></i>',
-      pinterest: '<i class="fa fa-pinterest-square fa-2x" aria-hidden="true"></i>',
-      instagram: '<i class="fa fa-instagram fa-2x"></i>'
+      pinterest: '<i class="fa fa-pinterest-square fa-2x"></i>',
+      instagram: '<i class="fa fa-instagram fa-2x"></i>',
+      left_arrow_pink: '<i class="fa fa-arrow-left"></i>',
+      search: '<i class="fa fa-search"></i>',
+      reset: '<i class="fas fa-times></i>',
+      postem: '<i class="fas fa-envelope"></i>',
+      open_postem: '<i class="fas fa-envelope-open-text"></i>',
+      scan_file: '<i class="fas fa-file-image"></i>',
+      scan_file_filled: '<i class="fas fa-file-image"></i>',
+      camera: '<i class="fas fa-camera"></i>',
+      heart: '<i class="far fa-heart"></i>',
+      heart_filled: '<i class="fas fa-heart"></i>'
     }
   end
 
@@ -683,27 +690,28 @@ module ApplicationHelper
       facebook: 'https://www.facebook.com/freeukgen',
       news: 'https://www.freeukgenealogy.org.uk/news/',
       twitter: 'https://www.twitter.com/freeukgen',
-      github: 'https://github.com/FreeUKGen/MyopicVicar/',
+      github: 'https://github.com/FreeUKGen/FreeBMD2',
       pinterest: 'https://www.pinterest.co.uk/FreeUKGenealogy/',
       instagram: 'https://www.instagram.com/freeukgenealogy/'
+     # bmd1_coverage: "#{district_alphabet_selection_path}"
     }
   end
 
-  def html_options
-    {target: '_blank', rel: 'noreferrer'}
+  def html_options(alt_text: nil)
+    {target: '_blank', rel: 'noreferrer', alt: alt_text.to_s}
   end
 
   def app_icons2
     {
-      facebook: '<i class="fa fa-facebook-square fa-3x" title="facebook"></i>
+      facebook: '<i class="fab fa-facebook-square fa-3x" title="facebook"></i>
       <span class="accessibility">facebook</span>',
       news: '<i class="fa fa-rss-square fa-3x" title="news"></i>
       <span class="accessibility">FreeUKGenealogy News</span>',
-      twitter: '<i class="fa fa-twitter-square fa-3x" title="twitter"></i>
+      twitter: '<i class="fab fa-twitter-square fa-3x" title="twitter"></i>
       <span class="accessibility">twitter</span>',
-      pinterest: '<i class="fa fa-pinterest-square fa-3x" title="pinterest"></i>
+      pinterest: '<i class="fab fa-pinterest-square fa-3x" title="pinterest"></i>
       <span class="accessibility">pinterest</span>',
-      instagram: '<i class="fa fa-instagram fa-3x" title="instagram"></i>
+      instagram: '<i class="fab fa-instagram-square fa-3x" title="instagram"></i>
       <span class="accessibility">instagram</span>'
 
     }
@@ -753,7 +761,7 @@ module ApplicationHelper
   def helpful_links
     {
       cookiePolicy: '/cms/about/cookie-policy',
-      privacyNotice: 'https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view?usp=sharing',
+      privacyNotice: Constant::PRIVACY_POLICY_LINK,
       termAndConditions: '/cms/terms-and-conditions',
       contactUs: contact_us_path,
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
@@ -780,214 +788,144 @@ module ApplicationHelper
     path
   end
 
-  def fullwidth_adsense_freereg
-    banner = <<-HTML
-    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block;width:728px;height:90px"
-    data-ad-client="#{data_ad_client}"
-    data-ad-slot="#{data_ad_slot_header}">
-    </ins>
-    <script type="text/javascript">
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-    HTML
-    if Rails.env.development?
-      banner = <<-HTML
-      <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-      HTML
+  def advert_code(slot_name, size)
+    if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
+      #bannner = gdpr_advert(slot_name, size)
+    else
+      banner = non_gdpr_advert(slot_name, size)
     end
-    banner.html_safe
+    banner
   end
 
-  def fullwidth_adsense_freecen
+  def get_slot_code_from_slot_name
+    {
+      "header" => app_advert['data_ad_slot_header'],
+      "right_side" => app_advert['data_ad_slot_side'],
+      "google" => app_advert['data_ad_slot_google_advert'],
+      "coverage" => app_advert['data_ad_slot_coverage'],
+      "fullwidth" => app_advert['data_ad_slot_fullwidth'],
+      "large_side_banners" => app_advert['side_banners_large_slot'],
+      "square_side" => app_advert['side_banners_square_slot'] 
+    }
+  end
+
+  def get_advert_size
+    {
+      "horz" => [728,90],#width,height
+      "side" => [120,600],
+      "side_big" => [300,600],
+      "square" => [336, 280]
+    }
+  end
+
+  def slot_number(slot_name)
+    get_slot_code_from_slot_name[slot_name]
+  end
+
+  def non_gdpr_advert(slot_name, size)
+    width = get_advert_size[size][0]
+    height = get_advert_size[size][1]
+    #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
     banner = <<-HTML
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- FreeCEN2 Transcriber Registration (Responsive) -->
+    <!-- Responsive ad -->
     <ins class="adsbygoogle adSenseBanner"
-    style="display:inline-block;width:728px;height:90px"
-    data-ad-client="#{data_ad_client}"
-    data-ad-slot="#{data_ad_slot_fullwidth}">
+      style="display:inline-block;width: #{width}px;height: #{height}px"
+      data-ad-client="#{data_ad_client}"
+      data-ad-slot= "#{slot_number(slot_name)}"
+      data-full-width-responsive="true">
     </ins>
     <script type="text/javascript">
-    (adsbygoogle = window.adsbygoogle || []).push({});
+      (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
     HTML
     if Rails.env.development?
       banner = <<-HTML
       <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-      HTML
+    HTML
     end
     banner.html_safe
   end
 
-  def adsence_right_side_banner_gdpr
+  def banner_header
+    logger.warn(user_location.inspect)
+    if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
+      bannner = banner_header_gdpr
+    else
+      banner = banner_header_non_gdpr
+    end
+    banner
+  end
+
+  def content_text tag, info_text
+    content_tag tag, info_text, class: 'ttip__text'
+  end
+  
+  def viewed(search_query, search_record)
+    search_results = search_query.search_result
+    viewed_records = search_results.viewed_records
+    field = ''
+    #raise viewed_records.inspect
+    if viewed_records.present?
+      field = '(Seen)' if viewed_records.include?("#{search_record[:_id]}")
+    end
+    field
+  end 
+ 
+  def gdpr_advert(slot_name, size)
+    #@data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
+    width = get_advert_size[size][0]
+    height = get_advert_size[size][1]
     banner = <<-HTML
-    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle float--right"
-    style="display:inline-block;width:300px;height:600px"
-    data-ad-client = "#{data_ad_client}"
-    data-ad-slot = "#{app_advert['data_ad_slot_side']}">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- Responsive ad -->
+    <ins class="adsbygoogle adSenseBanner"
+    style="display:inline-block; width: #{width}px;height: #{height}px"
+    data-ad-client="#{data_ad_client}"
+    data-ad-slot= "#{slot_number(slot_name)}"
+    data-full-width-responsive="true">
     </ins>
     <script type="text/javascript">
     (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
     HTML
     if Rails.env.development?
-      banner = <<-HTML
-      <img src="http://dummyimage.com/120x600/000/fff?text=banner+ad">
-      HTML
+    banner = <<-HTML
+    <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
+    HTML
     end
     banner.html_safe
   end
 
-  def adsence_right_side_banner_non_gdpr
+
+  def user_location
+    request.location.present? ? request.location.country : ""
+  end
+
+  def banner_header_freereg
     banner = <<-HTML
     <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <ins class="adsbygoogle float--right"
-    style="display:inline-block;width:300px;height:600px"
-    data-ad-client = "#{data_ad_client}"
-    data-ad-slot = "#{app_advert['data_ad_slot_side']}">
-    </ins>
     <script type="text/javascript">
     (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-    window.update_personalized_side_adverts = function (preference) {
-      if(preference == 'accept') {
-          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
-        } else if(preference == 'deny') {
-          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
-        }
-        };
-        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-        </script>
-        <script type="text/javascript">
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-        HTML
-        if Rails.env.development?
-          banner = <<-HTML
-          <img src="http://dummyimage.com/120x600/000/fff?text=banner+ad">
-          HTML
-        end
-        banner.html_safe
-      end
-
-      def adsence_right_side_banner
-        if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
-          bannner = adsence_right_side_banner_gdpr
-        else
-          banner = adsence_right_side_banner_non_gdpr
-        end
-        banner
-      end
-
-      def google_advert
-        @data_ad_slot = current_page?(freecen_coverage_path) ? data_ad_slot_coverage : data_ad_slot_google_advert
-        banner = <<-HTML
-        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Responsive ad -->
-        <ins class="adsbygoogle adSenseBanner"
-        style="display:inline-block;width:728px;height:90px"
-        data-ad-client="#{data_ad_client}"
-        data-ad-slot= "#{@data_ad_slot}">
-        </ins>
-        <script type="text/javascript">
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-        HTML
-        if Rails.env.development?
-          banner = <<-HTML
-          <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-          HTML
-        end
-        banner.html_safe
-      end
-
-      def user_location
-        request.location.present? ? request.location.country : ""
-      end
-
-      def banner_header
-        logger.warn(user_location.inspect)
-        if GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)
-          bannner = banner_header_gdpr
-        else
-          banner = banner_header_non_gdpr
-        end
-        banner
-      end
-
-
-      def banner_header_non_gdpr
-        banner = <<-HTML
-        <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <ins class="adsbygoogle adSenseBanner"
-        style="display:inline-block;width:728px;height:90px"
-        data-ad-client = "#{data_ad_client}"
-        data-ad-slot = "#{data_ad_slot_header}">
-        </ins>
-        <script>
-        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-        window.update_personalized_header_adverts = function (preference) {
-          if(preference == 'accept') {
-              (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
-            } else if(preference == 'deny') {
-              (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
-            }
-            };
-            (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-            </script>
-            <script type="text/javascript">
-            (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-            HTML
-            if Rails.env.development?
-              banner = <<-HTML
-              <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-              HTML
-            end
-            banner.html_safe
-          end
-
-          def banner_header_gdpr
-            banner = <<-HTML
-            <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <ins class="adsbygoogle adSenseBanner"
-            style="display:inline-block;width:728px;height:90px"
-            data-ad-client = "#{data_ad_client}"
-            data-ad-slot = "#{data_ad_slot_header}">
-            </ins>
-            <script type="text/javascript">
-            (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-            HTML
-            if Rails.env.development?
-              banner = <<-HTML
-              <img src="http://dummyimage.com/728x90/000/fff/?text=banner+ad" alt='Banner add'>
-              HTML
-            end
-            banner.html_safe
-          end
-
-          def side_banners
-            banner = <<-HTML
-            <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <ins class="adsbygoogle adSenseBanner"
-            style="display:inline-block;width:120px;height:600px"
-            data-ad-client = "#{data_ad_client}"
-            data-ad-slot = "#{app_advert['data_ad_slot_side']}">
-            </ins>
-            <script type="text/javascript">
-            (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-            HTML
-            if Rails.env.development?
-              banner = <<-HTML
-              <img src="http://dummyimage.com/120x600/000/fff?text=banner+ad">
-              HTML
-            end
-            banner.html_safe
-          end
+    window.update_page_level_adverts_consent = function (preference) {
+    if(preference == 'accept') {
+        (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
+      } else if(preference == 'deny') {
+        (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
+      }
+      };
+      (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+      </script>
+      <script type="text/javascript">
+      //Google Adsense
+      (adsbygoogle = window.adsbygoogle || []).push({
+                                                      google_ad_client: "#{data_ad_client}",
+                                                      enable_page_level_ads: true
+      });
+      </script>
+      HTML
+      banner.html_safe
+  end
 
           def banner_header_freereg
             banner = <<-HTML
@@ -1181,4 +1119,4 @@ module ApplicationHelper
   def enc_uri_reg(search_query)
     'https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName="#{search_query.first_name}"&lastName="#{search_query.last_name}"&tr_device=&size=160x600'
   end
-              end
+end

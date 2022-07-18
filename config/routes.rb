@@ -223,6 +223,7 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/:id/convert_to_issue(.:format)', :to => 'contacts#convert_to_issue', :as => :convert_contact_to_issue
   get 'contacts/:id/keep',  :to => 'contacts#keep', :as => :keep_contact
   get 'contacts/:id/unkeep',  :to => 'contacts#unkeep', :as => :unkeep_contact
+  get 'contacts/question_answer_finder' => 'contacts#question_answer_finder'
 
   resources :contacts
 
@@ -365,6 +366,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
+  get 'userid_details/list_saved_entry', to: 'userid_details#list_saved_entry', :as => :list_saved_entries_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do
@@ -524,9 +526,27 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/:id/reorder(.:format)', :to => 'search_queries#reorder', :as => :reorder_search_query
   get 'search_queries/report(.:format)', :to => 'search_queries#report', :as => :search_query_report
   get 'search_queries/selection',  :to => 'search_queries#selection', :as => :select_search_query_report
+  get 'search_queries/districts_of_selected_counties' => 'search_queries#districts_of_selected_counties'
+  get 'search_queries/wildcard_options_dropdown' => 'search_queries#wildcard_options_dropdown'
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
-  resources :search_queries
+  get 'search_queries/:id/download_as_csv' => 'search_queries#download_as_csv', as: :search_results_download_as_csv
+  post 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
+  get 'search_queries/:id/compare_search/:saved_search_id', to: 'search_queries#compare_search', as: :compare_search
+  resources :search_queries do
+    #get :autocomplete_BestGuess_Surname, :on => :collection
+    #get :autocomplete_BestGuess_GivenName, :on => :collection
+  end
 
+  resources :postems
+  resources :saved_search
+
+  get 'districts/:id/unique_names' => 'districts#unique_district_names' , as: :unique_district_names
+  get 'districts/:id/:friendly(.:format)', :to => 'districts#show', as: :district_friendly_url
+  get 'districts/alphabet_selection', to: 'districts#alphabet_selection', as: :district_alphabet_selection
+  get 'districts/districts_list', :to =>'districts#districts_list', :as => :districts_list
+
+  resources :districts
+  
   resources :s3buckets
 
   resources :fields
@@ -582,12 +602,26 @@ MyopicVicar::Application.routes.draw do
   get 'assignments/:id/list_by_syndicate(.:format)', :to => 'assignments#list_by_syndicate', :as => :list_by_syndicate_assignment
   resources :assignments
 
+
+
+
   get 'gaps/:id/index(.:format)', :to => 'gaps#index', :as => :index_gap
   resources :gaps
 
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
   resources :gap_reasons
 
+  get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
+  get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_non_search
+  get ':search_id/:entry_id/marriage_details/', :to => 'best_guess#show_marriage', :as => :show_marriage_details
+  get ':search_id/:entry_id/reference_details/', :to => 'best_guess#show_reference_entry', :as => :show_reference_entry
+  get ':search_id/:entry_id/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries
+  get ':entry_id/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries_non_search
+  get ':entry_id/marriage_details', to: 'best_guess#show_marriage', as: :show_marriage_details_non_search
+  resources :best_guess
+  post 'entry-information/:id/save_entry', to: 'best_guess#save_entry', as: :save_entry
+  get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
+  resources :best_guess_hash
 
 
   # This line mounts Refinery's routes at the root of your application.

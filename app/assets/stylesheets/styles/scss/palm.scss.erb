@@ -90,15 +90,33 @@
     display: block;
   }
 
+  .kodhandam {
+    background-color: white;
+    position: absolute;
+    top: 150px;
+    width: 310px;
+    height: 48px;
+    z-index: 20;
+    left: 30px;
+    padding: 5px;
+
+
+}
+
+.hamburger_menu {
+  display: none !important;
+}
+
 
   /**
    * Off canvas nav
    */
-  .site__header__nav {
-    z-index: 1;
 
-    .main-nav {
+   .site__header__nav_palm {
+    
+      z-index: 1;
 
+    .main_nav_palm{
       ul {
         @extend %nav;
         @extend %nav--stacked;
@@ -107,7 +125,58 @@
 
       a {
         background: $light;
-        text-transform: uppercase;
+        text-transform: capitalize;
+<% if MyopicVicar::Application.config.template_set=='freecen' %>
+        color: $lavender-on-light;
+<% elsif MyopicVicar::Application.config.template_set=='freereg' %>
+        color: $turquoise-on-light;
+<% else %>
+        color: $magenta-on-light;
+<% end %>
+        font-weight: normal;
+        padding: $base-spacing-unit / 2;
+        &:active,
+        &:focus,
+        &:hover {
+          background: $project-color-faded;
+          color: $focus-hover;
+        }
+      }
+
+    }
+
+    .social-links {
+      display: none;
+
+      ul {
+        @extend %nav;
+      }
+    }
+
+  }
+  .site__header__nav {
+    <% if MyopicVicar::Application.config.template_set=='freebmd' %>
+      background: $project-color;
+      overflow: hidden;
+      height: 46px;
+
+      position: absolute;
+      right: 0;
+      left: 0;
+      top: 150px;
+      z-index: 3;
+    <% end %>
+
+    .main-nav{
+      ul {
+        @extend %nav;
+        @extend %nav--stacked;
+        margin-top: 0;
+      }
+
+      a {
+        background: $light;
+        text-transform: capitalize;
 <% if MyopicVicar::Application.config.template_set=='freecen' %>
         color: $lavender-on-light;
 <% elsif MyopicVicar::Application.config.template_set=='freereg' %>
@@ -208,6 +277,19 @@
     margin-bottom: $base-spacing-unit;
   }
 }
+
+@media only screen and (min-width: 572px) {
+  #small_screen_logo {
+    display: none;
+    }
+}
+
+@media only screen and (max-width: 572px) {
+  #small_screen_logo {
+    margin: 56px auto 28px auto;
+    }
+}
+
 /**
  * Extracted from BMD2 Dec 2019
  * needed for Font awesome
@@ -219,3 +301,4 @@ li i {
 .social_links a {
   display:inline-block !important;
 }
+

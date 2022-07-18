@@ -1,0 +1,103 @@
+<%= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, "/districts/districts_list?params=#{@district.DistrictName.first}", class: " btn   btn--small" %>
+<%= link_to "Back to selection".html_safe, district_alphabet_selection_path(@district.DistrictName.first), class: " btn   btn--small" %>
+<div class="grid">
+  <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
+    <h1 class="beta push-half--top flush--bottom">District Information: <%= "#{@district.district_name_display_format}"%></h1>
+    <hr>
+    <section>
+      <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
+        <table class="table--bordered table--data">
+          <caption class="accessibility"> Information about <%= "#{@district.district_name_display_format} District"%>  </caption>
+          <tbody>
+            <tr>
+              <th rowspan="6">Volume</th>
+            </tr>
+            <tr>
+              <td>Year 1837 to 1851</td>
+              <td><%= @district.Volume1837to1851 %></td>
+            </tr>
+            <tr>
+              <td>Year 1852 to 1945</td>
+              <td><%= @district.Volume1852to1945 %></td>
+            </tr>
+            <tr>
+              <td>Year 1946 to 1965</td>
+              <td><%= @district.Volume1946to1965 %></td>
+            </tr>
+            <tr>
+              <td>Year 1966 to 1973</td>
+              <td><%= @district.Volume1966to1973 %></td>
+            </tr>
+            <tr>
+              <td>Year 1974 to End</td>
+              <td><%= @district.Volume1974toEnd %></td>
+            </tr>
+            <tr>
+              <th rowspan="<%= @district.DistrictToCounty.count + 1%>">County</th>
+            </tr>
+            <% @district.DistrictToCounty.each do |d| %>
+              <tr>
+                <td><%= ChapmanCode::FREEBMD_CODES['England and Wales'].key(d.County) %></td>
+                <td><%= "From #{QuarterDetails.quarter_human(d.StartQN)}" %> <%= QuarterDetails.quarter_year(d.EndQN) > 1993 ? "" : "to #{QuarterDetails.quarter_human(d.EndQN)}" %></td>
+              </tr>
+            <% end %>
+            <tr>
+                <th rowspan="4">Unique Names</th>
+              </tr>
+              <tr>
+                <td><%= link_to 'View Birth Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "birth" ), method: :get %></td>
+                <td>
+                  <dl>
+                    <dt>
+                      Forenames Count: <%= @birth_uniq_forename_count%>
+                    </dt>
+                    <dt>
+                      Surnames Count: <%= @birth_uniq_surname_count%>
+                    </dt>
+                  </dl>
+                </td>
+              </tr>
+              <tr>
+                <td><%= link_to 'View Marriage Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "marriage" ), method: :get %></td>
+                <td>
+                  <dl>
+                    <dt>
+                      Forenames Count: <%= @marriage_uniq_forename_count%>
+                    </dt>
+                    <dt>
+                      Surnames Count: <%= @marriage_uniq_surname_count%>
+                    </dt>
+                  </dl>
+                </td>
+              </tr>
+              <tr>
+                <td><%= link_to 'View Death Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "death" ), method: :get %></td>
+                <td>
+                  <dl>
+                    <dt>
+                      Forenames Count: <%= @death_uniq_forename_count%>
+                    </dt>
+                    <dt>
+                      Surnames Count: <%= @death_uniq_surname_count%>
+                    </dt>
+                  </dl>
+                </td>
+              </tr>
+              <tr>
+                <th>UKBMD Link</th>
+                <td colspan="2">
+                  <% if @district.district_url_definable? %>
+                  There is  more information about <%= @district.district_name_display_format.capitalize %> on the UKBMD website. Please note that during the period this Registration District name was used there could be changes in which places were included within the district. UKBMD  includes information on these: 
+                  <%= link_to "More information about #{@district.district_name_display_format.capitalize} on UKBMD", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html", target: "_blank" %><br>
+                    <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                  <% else %>
+                    Not Available
+                  <% end %>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+      </div>  
+    </section>
+  </div>
+</div>

@@ -81,3 +81,45 @@ a#donate:hover {
 #donate:focus #donateBtn {
  color:#00857e;
 }
+
+#donate.freeREG:hover #donateBtn, #donate.freeREG:focus #donateBtn {color: #b48282}
+
+  .btn-volunteer {
+    margin-top: 25px;
+    display: block;
+    height: 70px;
+   }
+
+ .btn-feedback {
+    margin-top: 25px;
+    width: 75px;
+    display:block;
+    height: 70px;
+ }
+
+ .volunteer_box {
+    margin-top: 3px;
+ }
+
+ .feedback_box {
+    margin-top: 3px;
+    display: block;
+    width: auto;
+    padding-top: 3px;
+ }
+
+ #volunteer{
+  position:relative;
+display: block;
+width: auto;
+padding: 3px 45px;
+color: #FFF;
+font-size: 1.1em;
+font-weight: bold;
+}
+
+.laddo {
+  position: absolute !important;
+
+}
+
