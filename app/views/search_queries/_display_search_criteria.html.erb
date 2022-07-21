@@ -69,31 +69,6 @@
               <% end %>
             </section>
           </div>
-        <% else%>
-          <div class="criteria-group">
-            <% search_params_for_display(@search_query).each do |name, value| %>
-              <dl class="criteria">
-                <dt class="criteria__name"><%= name %></dt>
-                <dd class="criteria__value"><%= value %></dd>
-              </dl>
-            <% end %>
-          </div>
-        <% end %>
-      </section>
-    </div>
-    <div class="grid__item  one-third lap-one-third  palm-one-whole  push-half--top">
-      <section class="islet islet--light soft--left hard--bottom">
-        <% if @ucf_results.size > 0 %>
-          <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Exact Result', ' Exact Results') %> and <br>
-            <%= pluralize(@ucf_results.size, ' Uncertain Result', ' Uncertain Results')%></h2>
-        <% elsif  @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS  %>
-          <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
-        <%else%>
-          <h2 class="gamma flush--bottom"> We found more than <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %> Results</h2>
-        <% end%>
-        <% unless defined?(@printable_format) && @printable_format%>
-          <small class="additional zeta">Listed by date. Select a heading to sort by that column; select again to reverse the order.
-            See individual details by selecting the View button.</small>
         <% end %>
       </div>
     </div>
