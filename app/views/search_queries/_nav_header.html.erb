@@ -1,7 +1,7 @@
 <% unless defined?(@printable_format) && @printable_format %>
-  <% unless appname.downcase == 'freebmd' %>
-    <nav class="text--center push--bottom" role="navigation" aria-label="Options for search results">
-      <ul class="nav">
+  <nav class="text--center push--bottom" role="navigation" aria-label="Options for search results">
+    <ul class="nav">
+      <% unless appname.downcase == 'freebmd' %>
         <li><%= results_revise_search_form_link %></li>
         <li><%= results_search_form_link %></li>
         <li><%= results_about_search_link %></li>
