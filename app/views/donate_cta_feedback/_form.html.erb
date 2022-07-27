@@ -1,0 +1,53 @@
+<div class="grid push-half--sides" id="feedback_form">
+    <div class="container hard--left">
+        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole " style="width:95%">
+            <% if @feedback.present? && (@feedback.errors.present? || @feedback.errors.any?) %>
+                <div role="alert">
+                    <fieldset class="input">
+                        <legend>Error List</legend>
+                        <h2 class="gamma">Please fix the following error and resubmit</h2>
+                        <ol class="validation-list">
+                            <% @feedback.errors.messages.each do |key, msg| %>
+                                <li>
+                                    <%= msg[0] %>
+                                </li>
+                            <% end %>
+                        </ol>
+                    </fieldset>
+                </div>
+            <% end %>
+            <%=  form_tag("/donate_cta_feedback#{(@feedback)}", method: :post) do %>
+              <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left" id="">
+                  <fieldset class="input" id="donate_feedback_form">
+                      <legend>Feedback form:</legend>
+                      <h3>Send a feedback:</h3>
+                      <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                          <%= label_tag 'name', 'Name'%>
+                          <%= text_field_tag 'feedback[name]', nil, tabindex: "0", class: "text-input" %>
+                      </div>
+                      <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                          <%= label_tag 'email', 'Email Address'%>
+                          <%= email_field_tag 'feedback[email_address]', nil, tabindex: "0", class: "text-input" %>
+                      </div>
+                      <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                          <%= label_tag 'body', 'Body'%>
+                          <%= text_area_tag 'feedback[body]', nil, tabindex: "0", class: "text-input" %>
+                      </div>
+                      <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                        <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+                          <%= submit_tag "Submit", class: 'spinner-controller ladda-button' , id: 'submit_feedback', data: {style: "zoom-out", color: appname_downcase, size: "s", "spinner-color" => "#ffffff"} %>
+                        </div>
+                          <% if current_page?('/') || current_page?('/search_queries/new') %>
+                            <div class="grid__item desk-one-half lap-one-half palm-one-whole">
+                                <%= button_tag type: 'button', class:"btn btn--small", id: "close_feedback_form" do %>
+                                <i class="fa fa-times"  tabindex="0"></i>
+                                <% end %>
+                            </div>
+                          <% end %>
+                      </div>
+                  </fieldset>
+              </div>
+            <% end %>
+        </div>
+    </div>
+</div>

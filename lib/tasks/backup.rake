@@ -1,4 +1,4 @@
-namespace :freereg do
+ namespace :freereg do
 
   SQL_TABLES = [
     "active_admin_comments",

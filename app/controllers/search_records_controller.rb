@@ -114,7 +114,7 @@ class SearchRecordsController < ApplicationController
 
   def add_evidence_explained_values
     @piece = @cen_piece
-    @place = @dwelling.place
+    @place = @dwelling.place if @place.present?
     @place = @dwelling.freecen2_place if @place.blank?
     @place = @place.place_name if @place.present?
     @enumeration_district = @dwelling.enumeration_district
@@ -233,6 +233,7 @@ class SearchRecordsController < ApplicationController
   def show_freereg
     # common code for the three show versions show print and citation
     @entry = @search_record.freereg1_csv_entry
+    @record_name = @search_record.get_record_names
     @entry.display_fields(@search_record)
     proceed, @place_id, @church_id, @register_id, extended_def = @entry.location_ids
     message = 'There is an issue with the linkages for this records. Please contact us using the Website Problem option to report this message'

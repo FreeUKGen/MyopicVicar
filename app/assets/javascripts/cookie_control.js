@@ -19,6 +19,54 @@ $(document).ready(function() {
     };
   };
 
+/*  //turn off donate cta
+var close_donate_cta = function(){
+  setCookie('donate_cta_flag_new', 1,2);
+  document.getElementById("myDialog").close(); 
+    $("#donate_cta_pop_up").hide();
+    document.getElementById("overlay").style.display = "none";
+
+};
+
+  if ((getCookie('donate_cta_flag_new') == 0) || (getCookie('donate_cta_flag_new') === null)) {
+    document.getElementById("myDialog").showModal(); 
+  document.getElementById("overlay").style.display = "block";
+  $("#donate_cta_pop_up").show();
+  document.getElementById('close_donate_cta_pop_up').onclick = close_donate_cta;
+  document.getElementById('donate_now_button').onclick = close_donate_cta;
+  document.getElementById('read_more').onclick = close_donate_cta;
+}
+
+//close overlay with esc key
+$(document).keyup(function(evt) {
+  evt = evt || window.event;
+  var isEscape = false;
+  if ("key" in evt) {
+      isEscape = (evt.key === "Escape" || evt.key === "Esc");
+  } else {
+      isEscape = (evt.keyCode === 27);
+  }
+  console.log(isEscape);
+  if (isEscape) {
+      close_donate_cta();
+  }  // esc
+});
+
+document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
+  setCookie('donate_cta_flag_new', 1,2);
+  document.getElementById("myDialog").close();
+  document.getElementById("myDialog1").showModal();
+  $("#reminder_to_donate_form").show();
+  $("#donate_cta_pop_up").hide();
+  $("#reminder_form_controller").hide();
+  var element = document.getElementById("donate_box");
+  var elem = document.getElementById("other_links")
+  element.className = "grid__item desk-one-half lap-one-half palm-one-whole";
+  element.classList.remove('text--center');
+  elem.classList.remove('text--center');
+  elem.className = "float--right";
+}*/
+
   // Switch Adsense checkbox value
   var toggleAdsenseCheckbox = function() {
     if (getCookie('userAdPersonalization') == 1) {
