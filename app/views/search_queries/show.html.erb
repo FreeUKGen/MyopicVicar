@@ -5,7 +5,6 @@
 <%# show_contents_link%>
 <div class='container'>
   <!--h1 class="semi-kilo">Results</h1-->
-  <%= render(partial: 'navigation_links') %>
   <h4 class="accessibility">Search Criteria</h4>
 </div>
 <% if @search_query.present? %>
@@ -94,6 +93,10 @@
       <% end %>
     <% end %>
   </section>
+  <div class="container">
+    <%= render(partial: 'navigation_links') %>
+  </div>
+
 <% else %>
     <%= render 'no_results' %>
 <% end %>
