@@ -139,6 +139,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def reorder
+    #raise params.inspect
     old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
@@ -224,7 +225,8 @@ class SearchQueriesController < ApplicationController
     if params[:sort_option].present?
       @sort_condition = params[:sort_option]
       order_field = params[:sort_option]
-      if order_field == @search_query.order_field
+      #if order_field == @search_query.order_field
+      if params[:sort_option] == params[:previous_sort_option]
         # reverse the directions
         @search_query.order_asc = !@search_query.order_asc unless params[:page].present?
       else

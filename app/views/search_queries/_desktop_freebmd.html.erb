@@ -51,8 +51,9 @@
                         <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><span class="accessibility"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
                       <% else %>
                         <%= search_record[:District] %>
-                      <% end %>
+                      <% end %>                      
                     <% end %>
+                    Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
                   </dt>
                   <dt>
                      <%#= render partial: 'best_guess/more_information' %>

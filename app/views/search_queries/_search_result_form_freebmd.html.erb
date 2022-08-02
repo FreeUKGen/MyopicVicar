@@ -4,14 +4,14 @@
       <div class="grid">
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
           <%= label_tag 'filter_results', 'Filter By' %>
-          <%= select_tag(:filter_option, options_for_select([['Births', "1"], ['Deaths', "2"], ['Marriages', "3"]], selected: @filter_condition), {:prompt => "Filter By", id: 'filter_results', tabindex: "0"}) %>
+          <%= select_tag(:filter_option, options_for_select([['Births', "1"], ['Deaths', "2"], ['Marriages', "3"]], selected: @filter_condition), {:prompt => "", id: 'filter_results', tabindex: "0"}) %>
         </div>
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
           <%= label_tag 'sort_results', 'Sort By' %>
           <%#= select_tag(:sort_option, options_for_select([['First Name(s)', "GivenName"], ['Surname', "Surname"], ['Record Type', "RecordTypeID"], ['Quarter', "QuarterNumber"], ['District', "District"]], selected: @sort_condition), {:prompt => "Sort By", id: 'sort_results', tabindex: "0"}) %>
-          <%= select_tag(:sort_option, options_for_select([['Year', "QuarterNumber"], ['District', "District"], ['First Name(s)', "GivenName"], ['Surname', "Surname"]], selected: @sort_condition), {:prompt => "Sort By", id: 'sort_results', tabindex: "0"}) %>
+          <%= select_tag(:sort_option, options_for_select([['Year', "QuarterNumber"], ['District', "District"], ['First Name(s)', "GivenName"], ['Surname', "Surname"]], selected: @sort_condition), {id: 'sort_results', tabindex: "0"}) %>
         </div>
-
+        <%= hidden_field_tag 'previous_sort_option', params[:sort_option]  %>
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
           <%= label_tag 'results_per_page', 'Show' %>
           <%= select_tag :results_per_page, options_for_select([5,20,40,60,80,100], selected: @results_per_page), id: 'results_per_page', tabindex: 0 %>

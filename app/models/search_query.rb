@@ -1034,11 +1034,11 @@ class SearchQuery
       when SearchOrder::SURNAME
         if self.order_asc
           results.sort! do |x, y|
-            compare_name_bmd(y, x, 'Surname',['GivenName', 'QuarterNumber', 'DistrictName'])
+            compare_name_bmd(x, y, 'Surname',['GivenName', 'QuarterNumber', 'District'])
           end
         else
           results.sort! do |x, y|
-            compare_name_bmd(x,y, 'Surname',['GivenName', 'QuarterNumber', 'DistrictName'])
+            compare_name_bmd(y, x, 'Surname',['GivenName', 'QuarterNumber', 'District'])
           end
         end
          #if order_asc
@@ -1049,11 +1049,11 @@ class SearchQuery
       when SearchOrder::FIRSTNAME
         if self.order_asc
           results.sort! do |x, y|
-           compare_name_bmd(y, x, 'GivenName', ['Surname', 'QuarterNumber', 'DistrictName'])
+           compare_name_bmd(x, y, 'GivenName', ['Surname', 'QuarterNumber', 'District'])
           end
         else
           results.sort! do |x, y|
-             compare_name_bmd(x,y, 'GivenName',['Surname', 'QuarterNumber', 'DistrictName'])
+             compare_name_bmd(y, x, 'GivenName',['Surname', 'QuarterNumber', 'District'])
           end
         end
         #raise 'hi'
@@ -1081,22 +1081,22 @@ class SearchQuery
        when SearchOrder::BMD_DATE
         unless self.order_asc
           results.sort! do |x, y|
-           compare_name_bmd(y, x, 'QuarterNumber', ['Surname', 'GivenName', 'DistrictName'])
+           compare_name_bmd(y, x, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
           end
         else
           results.sort! do |x, y|
-             compare_name_bmd(x,y, 'QuarterNumber', ['Surname', 'GivenName', 'DistrictName'])
+             compare_name_bmd(x,y, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
           end
         end
         
       when SearchOrder::DISTRICT
         if self.order_asc
           results.sort! do |x, y|
-           compare_name_bmd(y, x, 'DistrictName', ['Surname', 'GivenName', 'QuarterNumber'])
+           compare_name_bmd(x, y, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
           end
         else
           results.sort! do |x, y|
-             compare_name_bmd(x,y, 'DistrictName', ['Surname', 'GivenName', 'QuarterNumber'])
+             compare_name_bmd(y, x, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
           end
         end
       end
@@ -2046,8 +2046,8 @@ class SearchQuery
   end
 
   def download_csv
-    attributes = %w{ GivenName Surname RecordType Quarter District }
-    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District" ]
+    attributes = %w{ GivenName Surname RecordType Quarter District Volume Page}
+    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
     CSV.generate(headers: true) do |csv|
       csv << fields
       searched_records.each do |record|
