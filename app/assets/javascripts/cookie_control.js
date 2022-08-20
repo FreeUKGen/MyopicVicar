@@ -19,7 +19,7 @@ $(document).ready(function() {
     };
   };
 
-/*  //turn off donate cta
+  //donate cta
 var close_donate_cta = function(){
   setCookie('donate_cta_flag_new', 1,2);
   document.getElementById("myDialog").close(); 
@@ -65,7 +65,8 @@ document.getElementById('reminder_form_controller').onclick = function show_remi
   element.classList.remove('text--center');
   elem.classList.remove('text--center');
   elem.className = "float--right";
-}*/
+}
+/*CTA code changes ends*/
 
   // Switch Adsense checkbox value
   var toggleAdsenseCheckbox = function() {
