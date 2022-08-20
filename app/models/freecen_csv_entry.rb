@@ -1374,7 +1374,7 @@ class FreecenCsvEntry
           record[:occupation_flag] = 'x'
           record[:occupation] = record[:occupation][0...-1].strip
         elsif messagea == 'unusual use of Scholar'
-          messageb = "Warning: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
+          messageb = "Warning: line #{num} Occupation #{record[:occupation]} is #{messagea}. Aged #{record[:age]}.<br>"
           message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
           record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         else
