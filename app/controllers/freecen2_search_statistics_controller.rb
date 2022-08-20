@@ -1,6 +1,8 @@
 class Freecen2SearchStatisticsController < ApplicationController
   skip_before_action :require_login
 
+  require 'csv'
+
   LAUNCH = [2015, 4, 14, 14]
 
   def graphic
@@ -15,6 +17,7 @@ class Freecen2SearchStatisticsController < ApplicationController
 
   def index
     @freecen2_search_statistics = Freecen2SearchStatistic.where(:searches.ne => 0).desc(:interval_end).limit(100)
+    @period_start_dates, @period_end_dates = get_stats_dates
   end
 
   def show
@@ -81,5 +84,66 @@ class Freecen2SearchStatisticsController < ApplicationController
   def hours_from_launch
     seconds_from_launch = Time.now - Time.new(LAUNCH[0], LAUNCH[1], LAUNCH[2], LAUNCH[3])
     (seconds_from_launch / 3600).to_i
+  end
+
+  def export_csv
+    start_date = params[:csvdownload][:period_from].to_datetime
+    end_date = params[:csvdownload][:period_to].to_datetime
+
+    if params[:csvdownload][:period_from].to_datetime >= params[:csvdownload][:period_to].to_datetime
+      message = 'End Date must be after Start Date'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    @report_array = []
+
+    report_recs = Freecen2SearchStatistic.between(interval_end: start_date..end_date)
+
+    report_recs.each do |report_rec|
+      @report_array << [report_rec.interval_end.strftime('%d/%b/%Y'), report_rec.searches, report_rec.zero_result, report_rec.limit_result, report_rec.ln, report_rec.fn, report_rec.place, report_rec.nearby, report_rec.fuzzy, report_rec.zero_county, report_rec.one_county, report_rec.multi_county, report_rec.date, report_rec.record_type, report_rec.zero_birth_chapman_codes, report_rec.one_birth_chapman_codes, report_rec.multi_birth_chapman_codes, report_rec.disabled, report_rec.marital_status, report_rec.sex, report_rec.language, report_rec.occupation]
+    end
+
+    success, message, file_location, file_name = create_csv_file(@report_array, start_date, end_date)
+
+    if success
+      if File.file?(file_location)
+        flash[:notice] = message unless message.empty?
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice] = 'There was a problem downloading the CSV file'
+    end
+    redirect_back(fallback_location: new_manage_resource_path)
+  end
+
+  def create_csv_file(report_array, start_date, end_date)
+    file = "FreeCen2_SearchStats_#{start_date.strftime('%Y%m%d')}_#{end_date.strftime('%Y%m%d')}.csv"
+    file_location = Rails.root.join('tmp', file)
+    success, message = write_csv_file(file_location, report_array)
+
+    [success, message, file_location, file]
+  end
+
+  def write_csv_file(file_location, report_array)
+    column_headers = %w[End_date Searches Zero_results Maxed_out Surname Forename Place Nearby Fuzzy Zero_county One_county Multiple_counties Date Census_year Zero_birth One_birth Multiple_birth Disabled Marital Sex Language Occupation]
+    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      csv << column_headers
+      report_array.each do |rec|
+        csv << rec
+      end
+    end
+    [true, '']
+  end
+
+  def get_stats_dates
+    stats_dates = @freecen2_search_statistics.pluck(:interval_end)
+    all_dates = stats_dates.sort.reverse
+    all_dates_str = all_dates.map { |date| date.to_datetime.strftime('%d/%b/%Y') }
+    array_length = all_dates_str.length
+    end_dates = Array.new(all_dates_str)
+    end_dates.delete_at(array_length - 1)
+    start_dates = Array.new(all_dates_str)
+    start_dates.delete_at(0)
+    [start_dates, end_dates]
   end
 end
