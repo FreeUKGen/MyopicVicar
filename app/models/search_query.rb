@@ -2046,8 +2046,8 @@ class SearchQuery
   end
 
   def download_csv
-    attributes = %w{ GivenName Surname RecordType Quarter District }
-    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District" ]
+    attributes = %w{ GivenName Surname RecordType Quarter District Volume Page }
+    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
     CSV.generate(headers: true) do |csv|
       csv << fields
       searched_records.each do |record|
