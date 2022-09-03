@@ -7,8 +7,8 @@ task :update_freecen2_place_data_present, [:file] => [:environment] do |t, args|
     p 'Place does not exist'
   else
     p place.inspect
-    cen = place.search_records.distinct(:record_type)
-    p cen.inspect
+    cen_data = place.search_records.distinct(:record_type)
+    p cen_data.inspect
     if cen_data.present?
       place.update_attributes(data_present: true, cen_data_years: cen_data)
     else
