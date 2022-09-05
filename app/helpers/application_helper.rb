@@ -213,6 +213,22 @@ module ApplicationHelper
        :feedback_type => feedback_type }
   end
 
+  def problem_button_options_nonuserid
+    # construct url parameters for problem reports
+    problem_time = Time.now.utc
+    session_id = request.session['session_id']
+    problem_page_url = request.env['REQUEST_URI']
+    previous_page_url = request.env['HTTP_REFERER']
+    feedback_type = Feedback::FeedbackType::ISSUE
+
+    {  :feedback_time => problem_time,
+       :session_id => session_id,
+       :problem_page_url => problem_page_url,
+       :previous_page_url => previous_page_url,
+       :feedback_type => feedback_type
+     }
+  end
+
   #Do not believe the following is used anywhere
   def freereg1_csv_file_for_display(freereg1_csv_file)
     display_map = {}

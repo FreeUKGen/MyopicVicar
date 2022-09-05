@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 #
 class FeedbacksController < ApplicationController
+  skip_before_action :require_login
   require 'reply_userid_role'
 
   def archive
@@ -174,13 +175,15 @@ class FeedbacksController < ApplicationController
 
   def new
     session[:return_to] ||= request.referer
-    get_user_info_from_userid
     @feedback = Feedback.new(new_params) if params[:source_feedback_id].blank?
-    @message = Message.new
-    @message.message_time = Time.now
-    @message.userid = @user.userid
-    @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
-    @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
+    get_user_info_from_userid if session[:userid_detail_id].present?
+    if @user.present?
+      @message = Message.new
+      @message.message_time = Time.now
+      @message.userid = @user.userid
+      @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
+      @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
+    end
   end
 
   def restore

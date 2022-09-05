@@ -202,7 +202,7 @@ class Feedback
 
   def communicate_initial_contact
     self.acknowledge_feedback
-    self.feedback_action_communication
+    #self.feedback_action_communication
   end
 
   def delete_replies

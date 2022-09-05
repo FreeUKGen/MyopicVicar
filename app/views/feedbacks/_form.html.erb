@@ -10,6 +10,10 @@
   <%@feedback.errors.clear%>
 <% end %>
 <%= simple_form_for(@feedback, :html => {:multipart => true}) do |f| %>
+<% if @user.blank? %>
+    <%= f.input :name, :label => "Name" , :input_html => {:class => "simple_form_bgcolour "}%>
+    <%= f.input :email_address, :label => "Email Address" , :input_html => {:class => "simple_form_bgcolour "}%>
+  <% end %>
   <%= f.input :title, :label => "Summary" , :input_html => {:class => "simple_form_bgcolour ", :size => 40 }%>
   <%= f.input :body, :label =>"Description" ,as: :text, :input_html => { :class => "simple_form_bgcolour ",:rows => 10, :cols =>60 , :placeholder => "Enter your comments"}%>
   <%= f.input :screenshot, :label => "Screenshot: Only jpg, jpeg, png or gif file" %>
