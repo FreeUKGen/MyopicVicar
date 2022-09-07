@@ -53,6 +53,8 @@ class FreecenCsvFilesController < ApplicationController
     controls(@freecen_csv_file)
     @records = @freecen_csv_file.freecen_csv_entries.count
     @userids = UseridDetail.get_userids_for_selection('all')
+    @types_of_processing = ['Information', 'All Warnings', 'No POB Warnings', 'Error']
+    @type_of_processing = 'No POB Warnings'
   end
 
   def controls(file)
@@ -520,7 +522,7 @@ class FreecenCsvFilesController < ApplicationController
       flash[:notice] = 'Cannot select a blank userid' if params[:freecen_csv_file][:userid].blank?
       redirect_to(action: 'change_userid') && return if params[:freecen_csv_file][:userid].blank?
 
-      proceed, message = @freecen_csv_file.change_owner_of_file(params[:freecen_csv_file][:userid])
+      proceed, message = @freecen_csv_file.change_owner_of_file(params[:freecen_csv_file][:userid],params[:freecen_csv_file][:type_of_processing])
       if proceed
         flash[:notice] = 'The copy of the file to userid is being processed'
         redirect_to(freecen_csv_file_path(@freecen_csv_file)) && return
