@@ -521,36 +521,15 @@ class Freecen1VldFile
   end
 
   def compute_schedule_number(rec, census_fields)
-    if !census_fields.include?('ecclesiastical_parish')
-      line = (rec['sequence_in_household'] - 1).zero? ? '0' : @blank
-    elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
-      line = rec['sequence_in_household'] == 1 ? rec['schedule_number'] : line = @blank
-      @use_schedule_blank = false
-      @initial_line_hash['schedule_number'] = rec['schedule_number']
-    elsif rec['schedule_number'].present? && (rec['schedule_number'] == @initial_line_hash['schedule_number'])
+    if rec['dwelling_number'] == @initial_line_hash['dwelling_number'] # NB dwelling_number holds col 5-10 from VLD file (A six digit number (leading zeros) which counts the households)
       line = @blank
-      @use_schedule_blank = true
-    elsif %w[b n u v].include?(rec['uninhabited_flag'])
-      line = rec['schedule_number']
-      @use_schedule_blank = false
-      @initial_line_hash['schedule_number'] = rec['schedule_number']
-    elsif rec['sequence_in_household'] == 1 && rec['schedule_number'] == '0'
-      line = '0'
-      @use_schedule_blank = false
-      @initial_line_hash['schedule_number'] = '0'
-    elsif rec['uninhabited_flag'] == 'x' && rec['schedule_number'].present?
-      line = rec['schedule_number']
-      @use_schedule_blank = false
-      @initial_line_hash['schedule_number'] = rec['schedule_number']
-    elsif rec['uninhabited_flag'] == 'x' && rec['schedule_number'].blank?
-      line = '0'
-      @use_schedule_blank = false
-      @initial_line_hash['schedule_number'] = '0'
-
     else
-      line = rec['schedule_number']
-      @use_schedule_blank = false
-      @initial_line_hash['schedule_number'] = rec['schedule_number']
+      if !census_fields.include?('ecclesiastical_parish') || rec['uninhabited_flag'] == 'x' && rec['schedule_number'].blank?
+        line = '0'
+      else
+        line = rec['schedule_number']
+        @initial_line_hash['schedule_number'] = rec['schedule_number']
+      end
     end
     line
   end
