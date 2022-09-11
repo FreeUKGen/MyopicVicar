@@ -529,36 +529,35 @@ class Freecen1VldFile
       line = rec['schedule_number']
       @initial_line_hash['schedule_number'] = rec['schedule_number']
     end
+    line
   end
-  line
-end
 
-def compute_address(rec)
-  if rec['dwelling_number'] == @initial_line_hash['dwelling_number']
-    number = @blank
-    address = @blank
-  else
-    @initial_line_hash['dwelling_number'] = rec['dwelling_number']
-    number = rec['house_number']
-    address = rec['house_or_street_name']
+  def compute_address(rec)
+    if rec['dwelling_number'] == @initial_line_hash['dwelling_number']
+      number = @blank
+      address = @blank
+    else
+      @initial_line_hash['dwelling_number'] = rec['dwelling_number']
+      number = rec['house_number']
+      address = rec['house_or_street_name']
+    end
+    [number, address]
   end
-  [number, address]
-end
 
-def compute_surname(rec)
-  line = %w[b n u v].include?(rec['uninhabited_flag']) ? '' : rec[:surname]
-  line
-end
+  def compute_surname(rec)
+    line = %w[b n u v].include?(rec['uninhabited_flag']) ? '' : rec[:surname]
+    line
+  end
 
-def compute_age(rec)
-  line = rec['age_unit'].present? ? rec['age'] + rec['age_unit'] : rec['age']
-  line
-end
+  def compute_age(rec)
+    line = rec['age_unit'].present? ? rec['age'] + rec['age_unit'] : rec['age']
+    line
+  end
 
-def compute_occupation(rec, year)
-  if %w[1841 1851 1861 1871 1881].include?(year)
-    line = rec['occupation']
-  elsif /\(em'ee\)/i.match(rec['occupation']) || /\(em'er\)/i.match(rec['occupation'])|| /\(Notem\)/i.match(rec['occupation'])
+  def compute_occupation(rec, year)
+    if %w[1841 1851 1861 1871 1881].include?(year)
+      line = rec['occupation']
+    elsif /\(em'ee\)/i.match(rec['occupation']) || /\(em'er\)/i.match(rec['occupation'])|| /\(Notem\)/i.match(rec['occupation'])
       parts = rec['occupation'].split('(')
       line = parts[0].strip
     else
