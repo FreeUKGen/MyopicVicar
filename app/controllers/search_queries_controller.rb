@@ -245,6 +245,7 @@ class SearchQueriesController < ApplicationController
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
+      @max_result = max_result # rbl 12.9.2022: otherwise @max_result is nil in app/views/search_queries/show.html.erb
     else
       response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
       response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'

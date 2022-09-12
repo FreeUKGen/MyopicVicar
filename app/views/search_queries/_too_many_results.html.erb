@@ -2,6 +2,7 @@
   <h2 class="gamma text--negative push-half--bottom">Too many search results</h2>
   <p class="read-length"> Consider adding a forename if not already included or adding a date range. <br>
     <% if appname_downcase == 'freebmd' %>
+      The number of results for this search (<%= @result_count %>) equals or exceeds our display limit of <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS%>. This limit is there to avoid overloading your device with too much information at one time.
     <%else%>
       <% if appname_downcase == 'freecen' %>
         You can also limit the number of census years that are searched.<br>

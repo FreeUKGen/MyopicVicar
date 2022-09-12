@@ -1291,7 +1291,7 @@ class SearchQuery
     records = spouse_given_name_filter(records) if self.spouse_first_name.present?
     records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
     records = combined_age_results records if self.age_at_death.present? || check_age_range?
-    records = records.take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
+    # records = records.take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
     persist_results(records)
     records
   end
