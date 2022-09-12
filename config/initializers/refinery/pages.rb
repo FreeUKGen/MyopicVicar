@@ -70,7 +70,7 @@ Refinery::Pages.configure do |config|
   # For more information on whitelist see ALLOWED_ELEMENTS
   # (https://github.com/flavorjones/loofah/blob/v2.0.3/lib/loofah/html5/whitelist.rb#L151)
   # config.add_whitelist_elements = ["source", "track"]
-  config.add_whitelist_elements = ["style", "script", "iframe"]
+  config.add_whitelist_elements = ["style", "script", "iframe", "svg"]
   # You can add new HTML attributes not already supported by Loofah::HTML5::WhiteList::ALLOWED_ATTRIBUTES
   # For more information on whitelist see ALLOWED_ATTRIBUTES
   # (https://github.com/flavorjones/loofah/blob/v2.0.3/lib/loofah/html5/whitelist.rb#L152)
