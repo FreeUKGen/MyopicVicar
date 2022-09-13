@@ -375,19 +375,40 @@ class SearchQuery
     return x_name['last_name'] <=> y_name['last_name']
   end
 
+  def field_values_match(x, y, fieldname)
+    if x[fieldname].class == String
+      return x[fieldname].to_s.downcase == y[fieldname].to_s.downcase
+    else
+      return x[fieldname] == y[fieldname]
+    end
+  end
+
+  def compare_field_values(x, y, fieldname)
+    if x[fieldname].class == String
+      return x[fieldname].to_s.downcase <=> y[fieldname].to_s.downcase
+    else
+      return x[fieldname] <=> y[fieldname]
+    end
+  end
+
   def compare_name_bmd(x, y, order_field, next_order_field=nil)
-    if x[order_field].to_s.downcase == y[order_field].to_s.downcase
+    if field_values_match(x, y, order_field)
+    # if x[order_field].to_s.downcase == y[order_field].to_s.downcase
       #raise x[order_field].inspect
       next_order_field.each do |field|
         if x[field].nil? || y[field].nil?
-          return x[field].to_s.downcase <=> y[field].to_s.downcase
+          return compare_field_values(x, y, field)
+          # return x[field].to_s.downcase <=> y[field].to_s.downcase
         end
-        next if x[field].to_s.downcase == y[field].to_s.downcase
-        return x[field].to_s.downcase <=> y[field].to_s.downcase
+        # next if x[field].to_s.downcase == y[field].to_s.downcase
+        next if field_values_match(x, y, field)
+        # return x[field].to_s.downcase <=> y[field].to_s.downcase
+        return compare_field_values(x, y, field)
       end
     end
     if x[order_field].nil? || y[order_field].nil?
-      return x[order_field].to_s.downcase <=> y[order_field].to_s.downcase
+      # return x[order_field].to_s.downcase <=> y[order_field].to_s.downcase
+      return compare_field_values(x, y, order_field)
     end
     return x[order_field].to_s.downcase <=> y[order_field].to_s.downcase
   end
