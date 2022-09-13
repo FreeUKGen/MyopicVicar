@@ -405,12 +405,13 @@ class SearchQuery
         # return x[field].to_s.downcase <=> y[field].to_s.downcase
         return compare_field_values(x, y, field)
       end
-    end
-    if x[order_field].nil? || y[order_field].nil?
-      # return x[order_field].to_s.downcase <=> y[order_field].to_s.downcase
+    else
       return compare_field_values(x, y, order_field)
     end
-    return x[order_field].to_s.downcase <=> y[order_field].to_s.downcase
+    # if x[order_field].nil? || y[order_field].nil?
+      # return x[order_field].to_s.downcase <=> y[order_field].to_s.downcase
+    # end
+    # return x[order_field].to_s.downcase <=> y[order_field].to_s.downcase
   end
 
   def county_is_valid
