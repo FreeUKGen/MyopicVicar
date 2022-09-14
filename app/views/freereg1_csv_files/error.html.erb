@@ -25,7 +25,7 @@
               <td><%= line.error_message %></td>
               <td><%= line.record_type %></td>
               <td><%= line.data_line %></td>
-              <td><%= link_to 'Edit', error_freereg1_csv_entry_path(line, referrer: @referrer), :class => "btn   btn--small" %></td>
+              <td><%= link_to 'Edit', error_freereg1_csv_entry_path(line, referrer: @referrer, error: true), :class => "btn   btn--small" %></td>
             </tr>
           <%end%>
         </table>
