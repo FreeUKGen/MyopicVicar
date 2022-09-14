@@ -21,7 +21,26 @@
   <%= f.input :groom_father_forename,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
   <%= f.input :groom_father_surname,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
   <%= f.input :groom_father_occupation,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
+  <% if params[:error].present? %>
+    <%= f.input :witness1_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
+    <%= f.input :witness1_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
+    <%= f.input :witness2_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
+    <%= f.input :witness2_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
+    <%= f.input :witness3_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
+    <%= f.input :witness3_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
+    <%= f.input :witness4_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
+    <%= f.input :witness4_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
+    <%= f.input :witness5_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
+    <%= f.input :witness5_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
+    <%= f.input :witness6_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
+    <%= f.input :witness6_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
+    <%= f.input :witness7_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
+    <%= f.input :witness7_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
+    <%= f.input :witness8_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
+    <%= f.input :witness8_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
+  <% end %>
   <%= f.simple_fields_for :multiple_witnesses do |multiple| %>
+
     <%= multiple.input :witness_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
     <%= multiple.input :witness_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
     <%= multiple.input :_destroy, :as => :boolean ,:input_html => {:class => " simple_form_bgcolour  "} %>
