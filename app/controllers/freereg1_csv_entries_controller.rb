@@ -171,6 +171,7 @@ class Freereg1CsvEntriesController < ApplicationController
     # This prepares an error file to be edited by the entry edit/create process.
     # The error file was created by the csv file processor
     @error_file = BatchError.find(params[:id]) if params[:id].present?
+    @error = true
     if @error_file.blank?
       flash[:notice] = 'The error entry was not found'
       redirect_to(params[:referrer]) && return
