@@ -21,7 +21,7 @@
   <%= f.input :groom_father_forename,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
   <%= f.input :groom_father_surname,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
   <%= f.input :groom_father_occupation,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
-  <% if @error %>
+  <% if @error.present? %>
     <%= f.input :witness1_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
     <%= f.input :witness1_surname,:input_html => { :class => " simple_form_bgcolour  ",:size => 30 } %>
     <%= f.input :witness2_forename,:input_html => {:class => " simple_form_bgcolour  ", :size => 30 } %>
