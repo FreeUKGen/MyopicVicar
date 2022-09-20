@@ -376,7 +376,7 @@ class SearchQuery
   end
 
   def field_values_match(x, y, fieldname)
-    if x[fieldname].class == String
+    if x[fieldname].class == String && y[fieldname].class == String
       return x[fieldname].to_s.downcase == y[fieldname].to_s.downcase
     else
       return x[fieldname] == y[fieldname]
@@ -384,7 +384,7 @@ class SearchQuery
   end
 
   def compare_field_values(x, y, fieldname)
-    if x[fieldname].class == String
+    if x[fieldname].class == String && y[fieldname].class == String
       return x[fieldname].to_s.downcase <=> y[fieldname].to_s.downcase
     else
       return x[fieldname] <=> y[fieldname]
@@ -393,25 +393,17 @@ class SearchQuery
 
   def compare_name_bmd(x, y, order_field, next_order_field=nil)
     if field_values_match(x, y, order_field)
-    # if x[order_field].to_s.downcase == y[order_field].to_s.downcase
-      #raise x[order_field].inspect
       next_order_field.each do |field|
         if x[field].nil? || y[field].nil?
           return compare_field_values(x, y, field)
-          # return x[field].to_s.downcase <=> y[field].to_s.downcase
         end
-        # next if x[field].to_s.downcase == y[field].to_s.downcase
         next if field_values_match(x, y, field)
-        # return x[field].to_s.downcase <=> y[field].to_s.downcase
         return compare_field_values(x, y, field)
       end
+      return 0 # rbl 20.9.2022: only gets to here if all next_order_field values match, so return 'equals' in that situation.
     else
       return compare_field_values(x, y, order_field)
     end
-    # if x[order_field].nil? || y[order_field].nil?
-      # return x[order_field].to_s.downcase <=> y[order_field].to_s.downcase
-    # end
-    # return x[order_field].to_s.downcase <=> y[order_field].to_s.downcase
   end
 
   def county_is_valid
