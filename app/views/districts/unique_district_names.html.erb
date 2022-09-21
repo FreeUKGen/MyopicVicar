@@ -7,10 +7,10 @@
     </div>
     <%= render 'flash_notice' %>
     <br>
-    <h2 class=" text--center">Unique names for people in District: <%= @district.DistrictName %></h2>
+    <h2 class=" text--center">Names for people in District: <%= @district.DistrictName %></h2>
     <div class="text--center">
-      <%= link_to 'View unique surnames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "0" ) unless @name_type == "0" %>
-      <%= link_to 'View unique forenames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "1" ) unless @name_type == "1" %>
+      <%= link_to 'View surnames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "0" ) unless @name_type == "0" %>
+      <%= link_to 'View forenames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "1" ) unless @name_type == "1" %>
     </div>
     <%= render 'unique_names' %>
   </section>
