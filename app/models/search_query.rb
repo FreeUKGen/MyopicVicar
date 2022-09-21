@@ -1296,10 +1296,14 @@ class SearchQuery
         records = combined_age_results records if self.age_at_death.present? || check_age_range?
         persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
         records
+        success = true
+        [records, success]
       end
     rescue => e
       logger.warn("#{App.name_upcase}:error: #{e}")
       records = nil
+      success = false
+      [records, success]
     end
     
   end
