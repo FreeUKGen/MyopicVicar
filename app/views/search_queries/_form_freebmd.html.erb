@@ -8,13 +8,13 @@
     <div role="alert">
         <fieldset class="input">
             <legend>Error List</legend>
-            <h2 class="gamma">Following <%= pluralize(@search_query.errors.count, 'error') %> prohibited this search from being processed:</h2>
+            <h2 class="gamma">There <%= @search_query.errors.count > 1 ? 'are' : 'is' %> <%= pluralize(@search_query.errors.count, 'error') %> in this search:</h2>
             <ol class="validation-list">
-                <%# raise @search_query.errors.inspect %>
                 <% @search_query.errors.messages.each do |key, msg| %>
                     <% msg.each do |m| %>
-                        <li>
-                            <label for="<%=SearchQueriesHelper::ID_HASH[key]%>" class="validation-list__error"><%= m %></label>
+                        <li class="validation-list__error">
+                            <a href="#<%=SearchQueriesHelper::ID_HASH[key]%>" class='validation-list__error'><%= m %></a>
+                            <!--label for="<%#=SearchQueriesHelper::ID_HASH[key]%>" class="validation-list__error"><%#= m %></label-->
                         </li>
                     <% end %>
                 <% end %>
