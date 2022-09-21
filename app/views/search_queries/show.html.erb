@@ -10,7 +10,7 @@
 </div>
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
-  <%= render 'display_search_criteria'%> 
+  <%= render 'display_search_criteria'%>
   <section>
     <% if @result_count >= @max_result %>
       <%= render 'too_many_results' %>
