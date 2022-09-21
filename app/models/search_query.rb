@@ -1294,12 +1294,15 @@ class SearchQuery
         records = spouse_given_name_filter(records) if self.spouse_first_name.present?
         records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
         records = combined_age_results records if self.age_at_death.present? || check_age_range?
-        records = records.limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)#take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
-        persist_results(records)  if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
         records
       end
     rescue => e
+      logger.warn("#{App.name_upcase}:error: #{e}")
       records = nil
+    end
+    if records.present?
+      records = records.limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)#take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
+      persist_results(records)  if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     end
   end
 
