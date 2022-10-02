@@ -14,7 +14,7 @@ DATA_ROOT=/raid/freereg2
 FREEREG2=${DATA_ROOT}/back_up_${TODAY}
 ROOT=/home/apache/hosts/freereg2/production
 HOST="mongo5.freeukgen.org.uk:27017"
-BASE="freereg_production_2017"
+BASE="freereg_2021"
 cd $ROOT
 umask 0002
 if [[ ! -d ${FREEREG2} ]] ; then
