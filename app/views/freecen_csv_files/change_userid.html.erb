@@ -12,6 +12,11 @@
     <%= simple_form_for @freecen_csv_file,:html => { :class =>  "grid"} do |f| %>
       <%= f.input :userid,{ :as => :select,:label => "Select userid",:include_blank => false,
   :required => true, :collection => @userids, :size => 15,:input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 10}  } %>
+  <%= f.input :type_of_processing,{ :as => :select,:label => "Select type of processing report",:include_blank => false,
+  :required => true, :collection => @types_of_processing, :size => 10,:input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 4}  } %>
+  <div>
+    <p class="text--center"> <small><b>Note:</b> processing report will be emailed to new User</small></p>
+  </div>
       <%= f.button :submit, 'Copy to Userid'   %>
     <% end %>
   </section>

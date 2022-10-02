@@ -191,7 +191,6 @@ class Freecen1VldFile
   end
 
   def create_csv_file
-    #this makes aback up copy of the file in the attic and creates a new one
     @chapman_code = chapman_code
     year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
@@ -203,7 +202,6 @@ class Freecen1VldFile
   end
 
   def create_entry_csv_file
-    #this makes aback up copy of the file in the attic and creates a new one
     @chapman_code = chapman_code
     year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
@@ -336,10 +334,6 @@ class Freecen1VldFile
 
   def add_fields(rec, census_fields, year)
     line = []
-    if rec['deleted_flag'].present?
-      rec['uninhabited_flag'] = 'x'
-      rec['notes'] = rec['notes'].present? ? 'Deleted flag set on VLD; ' + rec['notes'] : 'Deleted flag set on VLD; '
-    end
     census_fields.each do |field|
       case field
       when 'enumeration_district'
@@ -387,7 +381,7 @@ class Freecen1VldFile
       when 'birth_county'
         county, place = compute_alternate(rec)
         line << county
-        line << place
+        line << place if census_fields.include?('ecclesiastical_parish') # birth place not in 1841 census
       when 'disability'
         line << rec['disability']
       when 'language'
@@ -528,7 +522,7 @@ class Freecen1VldFile
 
   def compute_schedule_number(rec, census_fields)
     if !census_fields.include?('ecclesiastical_parish')
-      line = '0'
+      line = (rec['sequence_in_household'] - 1).zero? ? '0' : @blank
     elsif special_enumeration_district?(@initial_line_hash['enumeration_district'])
       line = rec['sequence_in_household'] == 1 ? rec['schedule_number'] : line = @blank
       @use_schedule_blank = false
@@ -610,7 +604,7 @@ class Freecen1VldFile
 
   def compute_notes(rec)
     if rec['notes'].present? && rec['unoccupied_notes'].present?
-      line = (rec['notes'] + rec['unoccupied_notes']) unless rec['notes'] == rec['unoccupied_notes']
+      line = rec['notes'] == rec['unoccupied_notes']  ?  rec['notes'] : (rec['notes'] + rec['unoccupied_notes'])
     elsif rec['notes'].present? && rec['unoccupied_notes'].blank?
       line = rec['notes']
     elsif rec['unoccupied_notes'].present?

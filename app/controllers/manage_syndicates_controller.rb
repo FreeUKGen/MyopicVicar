@@ -60,7 +60,7 @@ class ManageSyndicatesController < ApplicationController
     get_user_info_from_userid
     @county = session[:syndicate]
     @who = @user.person_forename
-    @sorted_by = '; sorted by userid and then file name ascending)'
+    @sorted_by = '; sorted by userid (and then file name ascending)'
     session[:sorted_by] = @sorted_by
     session[:sort] = 'userid_lower_case ASC, file_name ASC'
     case appname_downcase

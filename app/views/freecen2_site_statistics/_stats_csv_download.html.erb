@@ -5,13 +5,13 @@
     <fieldset class="inputs">
       <legend>Download CSV File</legend>
       <p>There are two Comma Separated Values (CSV) report types available for download.
-        <b>Individuals Report</b> - which gives counts of individuals for each county at the specified end date and individuals added between the specified start and end dates.
+        <b>Search Records Report</b> - which gives counts of search records for each county at the specified end date and search records added between the specified start and end dates.
         <b>Pieces Report</b> - which gives details of New Pieces Online (by county) between the specified start and end dates.<br>
       </p>
       <p>Please select the Report Type, use the Start and End Date dropdowns to specify your dates and then click the <b>Download CSV File</b> button.</p>
       <ol class="grid">
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="rb_individuals">
-          <%= f.radio_button :report_type, 'individuals',:checked=>true %> <b>Individuals Report</b>
+          <%= f.radio_button :report_type, 'search_records',:checked=>true %> <b>Search Records Report</b>
         </li>
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="rb_pieces">
           <%= f.radio_button :report_type, 'pieces' %> <b>Pieces Report</b>
@@ -30,7 +30,7 @@
       </ol>
       <p class="text--center">
         <br>
-        <small><b>Note:</b> The CSV file will be named FreeCen_xxxxx_YYYYMMDD_YYYYMMDD.csv (where xxxxx is Stats or Pieces respectively and YYYYMMDD are your Start and End Dates)</small></p>
+        <small><b>Note:</b> The CSV file will be named FreeCen_xxxxx_YYYYMMDD_YYYYMMDD.csv (where xxxxx is SearchRecords or Pieces respectively and YYYYMMDD are your Start and End Dates)</small></p>
     </fieldset>
   <% end %>
 </div>

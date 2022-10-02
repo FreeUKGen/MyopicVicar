@@ -132,8 +132,8 @@ class Freecen2PlacesController < ApplicationController
 
     @county = @place.county
     @chapman_code = @place.chapman_code
-    if @chapman_code == 'LND'
-      message = 'Only system administrators and data administrator can edit LND'
+    if @chapman_code == 'LND' ||  @chapman_code == 'WLS'
+      message = 'Only system administrators and data administrator can edit LND and WLS'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
       %w[system_administrator data_manager].include?(@user.person_role)
     end
@@ -246,6 +246,7 @@ class Freecen2PlacesController < ApplicationController
     @counties = ChapmanCode.keys.sort
     @counties -= Freecen::UNNEEDED_COUNTIES
     @counties << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role)
+    @counties << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
 
     get_sources
   end
