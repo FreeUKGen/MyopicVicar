@@ -18,7 +18,7 @@ $(document).ready(function() {
       $('#cookie_check_box').prop('checked', false);
     };
   };
-/*
+
   //donate cta
 var close_donate_cta = function(){
   setCookie('donate_cta_flag_new', 1,2);
