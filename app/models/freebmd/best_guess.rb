@@ -96,24 +96,36 @@ class BestGuess < FreebmdDbBase
     get_scan_lists.approved
   end
 
+  def non_definite_scan_lists
+    get_scan_lists.non_definite
+  end
+
+  def unrejected_non_definite_scan_lists
+    non_definite_scan_lists.unrejected
+  end
+
+  def rejected_non_definite_scan_lists
+    non_definite_scan_lists.rejected
+  end
+
   def unapproved_definitive_scanslists
-    get_scan_lists.non_definite.unrejected.definitive if approved_scanslists.blank?
+    unrejected_non_definite_scan_lists.definitive if approved_scanslists.blank?
   end
 
   def unapproved_probable_scanslists
-    get_scan_lists.non_definite.unrejected.probable if unapproved_definitive_scanslists.blank?
+    unrejected_non_definite_scan_lists.probable if unapproved_definitive_scanslists.blank?
   end
 
   def rejected_probable_scanslists
-    get_scan_lists.non_definite.rejected.probably_confirm if unapproved_probable_scanslists.blank?
+    rejected_non_definite_scan_lists.probably_confirm if unapproved_probable_scanslists.blank?
   end
 
   def rejected_possible_scanslists
-    get_scan_lists.non_definite.rejected.possibly_confirm if rejected_probable_scanslists.blank?
+    rejected_non_definite_scan_lists.possibly_confirm if rejected_probable_scanslists.blank?
   end
 
   def rejected_likely_scanslists
-    get_scan_lists.non_definite.rejected.can_be_confirm if rejected_possible_scanslists.blank?
+    rejected_non_definite_scan_lists.can_be_confirm if rejected_possible_scanslists.blank?
   end
 
   def scanlists
