@@ -74,7 +74,7 @@ class BestGuess < FreebmdDbBase
     users = []
     # record_info = BestGuess.includes(:best_guess_links).where(RecordNumber: record).first
     get_rec_links.includes(:accession).each do |link|
-      users << link.accession.bmd_file.submitter.UserID if self.Confirmed & ENTRY_SYSTEM || self.Confirmed & ENTRY_REFERENCE
+      users << link.try(:accession).try(:bmd_file).try(:submitter).try(:UserID) if self.Confirmed & ENTRY_SYSTEM || self.Confirmed & ENTRY_REFERENCE
     end
     users
     # record_info = BestGuess.where(RecordNumber: record).first

@@ -101,10 +101,10 @@
         Transcriber
       </th>
       <td>
-        <%#= record.transcribers.join(', ') if record.transcribers.present? %>
-        <%# if record.transcribers.blank? %>
+        <%= record.transcribers.join(', ') if record.transcribers.present? %>
+        <% if record.transcribers.blank? %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-        <%# end %>
+        <% end %>
       </td>
     </tr>
     <% if search == true %>
