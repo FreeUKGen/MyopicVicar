@@ -15,7 +15,8 @@ class UseridDetailsController < ApplicationController
   include ActiveModel::Dirty
   require 'userid_role'
   require 'import_users_from_csv'
-  skip_before_action :require_login, only: [:general, :create, :researcher_registration, :transcriber_registration, :technical_registration]
+  skip_before_action :require_login, only: [:general, :create, :public, :researcher_registration, :transcriber_registration, :technical_registration,
+                                            :transcriber_info, :transcriber_info_no_email]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
   
   def all
@@ -292,6 +293,10 @@ class UseridDetailsController < ApplicationController
     @options = UseridRole::VALUES
     @prompt = 'Select Role?'
     @location = 'location.href= "role?role=" + this.value'
+  end
+
+  def public
+    @userid = params[:id]
   end
 
   def record_validation_errors(exception)
@@ -587,6 +592,16 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     @userid = @user
     @saved_entries = @userid.get_saved_entries
+  end
+
+  def transcriber_info
+    @username = params[:fullname]
+    @total = params[:no_of_records]
+    @email = params[:email]
+  end
+  def transcriber_info_no_email
+    @username = params[:fullname]
+    @total = params[:no_of_records]
   end
 
   private
