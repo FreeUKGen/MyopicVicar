@@ -71,18 +71,13 @@ class BestGuess < FreebmdDbBase
   end
 
   def transcribers
-    # users = []
     user_hash = {}
     get_rec_links.includes(:accession).each do |link|
       submitter = link.try(:accession).try(:bmd_file).try(:submitter)
       if submitter.present?
-        submitter_number = submitter.SubmitterNumber.to_s
         username = submitter.UserID
         privacy_key = submitter.PrivacyKey
-        fullname = submitter.GivenName+' '+submitter.Surname
-        no_of_records = submitter.TotalEntries.to_s
-        email = submitter.EmailID
-        user_hash[username] = privacy_key.to_s+'|'+submitter_number+'|'+fullname+'|'+no_of_records+'|'+email
+        user_hash[username] = privacy_key
       end
     end
     user_hash

@@ -16,7 +16,7 @@ class UseridDetailsController < ApplicationController
   require 'userid_role'
   require 'import_users_from_csv'
   skip_before_action :require_login, only: [:general, :create, :public, :researcher_registration, :transcriber_registration, :technical_registration,
-                                            :transcriber_info, :transcriber_info_no_email]
+                                            :transcriber_info]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
   
   def all
@@ -595,13 +595,8 @@ class UseridDetailsController < ApplicationController
   end
 
   def transcriber_info
-    @username = params[:fullname]
-    @total = params[:no_of_records]
-    @email = params[:email]
-  end
-  def transcriber_info_no_email
-    @username = params[:fullname]
-    @total = params[:no_of_records]
+    @userid = params[:userid]
+    @transcriber = Submitter.where(UserID: @userid).first
   end
 
   private

@@ -1,13 +1,13 @@
-<h2>Transcriber information: <%= @username %></h2>
+<h2>Transcriber information: <%= @transcriber.UserID %></h2>
 <table class="table--bordered table--data">
-  <caption class="accessibility">Information about <%= @username %>  </caption>
+  <caption class="accessibility">Information about <%= @transcriber.UserID %>  </caption>
   <tbody>
   <tr>
     <th scope="row">
       Transcriber name
     </th>
     <td>
-      <%= @username %>
+      <%= "#{@transcriber.GivenName} #{@transcriber.Surname}" %>
     </td>
   </tr>
   <tr>
@@ -15,16 +15,16 @@
       No of records transcribed
     </th>
     <td>
-      <%= @total %>
+      <%= @transcriber.TotalEntries %>
     </td>
   </tr>
-  <% if not @email.blank? %>
+  <% if @transcriber.PrivacyKey == 3 %>
   <tr>
     <th scope="row">
       Email address
     </th>
     <td>
-      <%= @email %>
+      <%= @transcriber.EmailID %>
     </td>
   </tr>
     <% end %>
