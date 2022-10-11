@@ -39,37 +39,42 @@
         <h4>Go to <%= @name_type %> starting with :
     <% end %>
     <% ("A".."Z").each do |letter| %>
-      <% if @unique_names[letter].count > 0 %>
          <a href="#names_<%=letter%>"><%=letter%></a>
-      <% end %>
     <% end %>
-
-    <% if @remainder.count > 0 %>
        or
        <a href="#names_Remainder">Additional Names</a>
        </h4>
-    <% end%>
 </div>
 <div class="island  island--light ">
   <nl>
     <li class="grid" >
           <% ("A".."Z").each do |letter| %>
           <% @id = "names_" + letter %>
-            <h4 id=<%=@id%> ><b><%= @name_type %> starting with <%= letter %></h4>
+            <h4 id=<%=@id%> ><b><%= @name_type %> starting with <%= letter %>:</h4>
             <ul>
+              <% if @unique_names[letter].count >0 %>
               <% @unique_names[letter].each do |name| %>
                 <li style="display:inline"><%= name %>&emsp;&nbsp;</li>
+              <% end %>
+              <% else %>
+                <li style="display:inline"><i>-NONE-</i></li>
               <% end %>
             </ul>
               <p><a href="#">Back to Top of page</a></p>
               <% end %>
           <% @id = "names_Remainder"%>
           <div id=<%=@id%> >
-          <p><b> Additional Names </b></p>
+          <h4>Additional <%= @name_type %>:</h4>
           <p>
+            <ul>
+            <% if @remainder.count >0 %>
             <% @remainder.each do |name| %>
               <%= name %>&emsp;&nbsp;
             <% end %>
+            <% else %>
+                <li style="display:inline"><i>-NONE-</i></li>
+              <% end %>
+            </ul>
             <p><a href="#">Back to Top of page</a></p>
         </p>
       </li>
