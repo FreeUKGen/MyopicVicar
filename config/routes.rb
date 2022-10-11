@@ -94,6 +94,7 @@ MyopicVicar::Application.routes.draw do
   resources :freecen2_contents
 
   get 'freecen2_search_statistics/graphic', to: 'freecen2_search_statistics#graphic', as: :graphic_freecen2_search_statistics
+  get 'freecen2_search_statistics/export_csv', to: 'freecen2_search_statistics#export_csv', as: :export_csv_freecen2_search_statistics
   resources :freecen2_search_statistics
 
   resources :freecen1_vld_entries

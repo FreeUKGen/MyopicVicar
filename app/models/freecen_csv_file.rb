@@ -74,6 +74,7 @@ class FreecenCsvFile
   field :total_individuals, type: Integer
   field :completes_piece, type: Boolean, default: false
   field :incorporating_lock, type: Boolean, default: false
+  field :type_of_processing, type: String  # placeholder used by change_userid process
 
 
   before_save :add_lower_case_userid_to_file, :add_country_to_file
@@ -911,7 +912,7 @@ class FreecenCsvFile
     result
   end
 
-  def change_owner_of_file(new_userid)
+  def change_owner_of_file(new_userid, type_of_processing)
     # rspec tested
     # first step is to move the files
     result = [true, '']
@@ -925,7 +926,7 @@ class FreecenCsvFile
     if result[0]
       physical_file = PhysicalFile.new(userid: new_userid, file_name: file_name, base: true, base_uploaded_date: Time.new)
       physical_file.save
-      physical_file.add_file('reprocessing')
+      physical_file.add_file_change_of_owner('reprocessing',type_of_processing)
     end
     result
   end

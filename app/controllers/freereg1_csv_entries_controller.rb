@@ -171,6 +171,7 @@ class Freereg1CsvEntriesController < ApplicationController
     # This prepares an error file to be edited by the entry edit/create process.
     # The error file was created by the csv file processor
     @error_file = BatchError.find(params[:id]) if params[:id].present?
+    @error = true
     if @error_file.blank?
       flash[:notice] = 'The error entry was not found'
       redirect_to(params[:referrer]) && return
@@ -182,7 +183,22 @@ class Freereg1CsvEntriesController < ApplicationController
     end
 
     @freereg1_csv_file = @error_file.freereg1_csv_file
-    @freereg1_csv_entry = Freereg1CsvEntry.new(@error_file.data_line)
+    entry = Freereg1CsvEntry.new(@error_file.data_line)
+    data_record = @error_file.data_line
+    if data_record[:record_type] == "ma" || data_record[:record_type] == "ba"
+      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
+      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
+      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness3_forename], :witness_surname => data_record[:witness3_surname]) unless data_record[:witness3_forename].blank? &&  data_record[:witness3_surname].blank?
+      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness4_forename], :witness_surname => data_record[:witness4_surname]) unless data_record[:witness4_forename].blank? &&  data_record[:witness4_surname].blank?
+      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness5_forename], :witness_surname => data_record[:witness5_surname]) unless data_record[:witness5_forename].blank? &&  data_record[:witness5_surname].blank?
+      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness6_forename], :witness_surname => data_record[:witness6_surname]) unless data_record[:witness6_forename].blank? &&  data_record[:witness6_surname].blank?
+      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness7_forename], :witness_surname => data_record[:witness7_surname]) unless data_record[:witness7_forename].blank? &&  data_record[:witness7_surname].blank?
+      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness8_forename], :witness_surname => data_record[:witness8_surname]) unless data_record[:witness8_forename].blank? &&  data_record[:witness8_surname].blank?
+    end
+    entry.multiple_witnesses.each do |witness|
+      witness.witness_surname = witness.witness_surname.upcase if witness.witness_surname.present?
+    end
+    @freereg1_csv_entry = entry
     session[:error_id] = params[:id]
   end
 

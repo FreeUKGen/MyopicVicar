@@ -53,6 +53,8 @@ class FreecenCsvFilesController < ApplicationController
     controls(@freecen_csv_file)
     @records = @freecen_csv_file.freecen_csv_entries.count
     @userids = UseridDetail.get_userids_for_selection('all')
+    @types_of_processing = ['Information', 'All Warnings', 'No POB Warnings', 'Error']
+    @type_of_processing = 'No POB Warnings'
   end
 
   def controls(file)
@@ -325,14 +327,19 @@ class FreecenCsvFilesController < ApplicationController
     end
     case params[:order]
     when 'alphabetic'
+      @sorted_by = '; sorted by file name ascending'
       session[:sort] = 'file_name ASC'
     when 'userid'
+      @sorted_by = '; sorted by userid (and then file name ascending)'
       session[:sort] = 'userid_lower_case ASC, file_name ASC'
     when 'oldest'
+      @sorted_by = '; ordered by oldest'
       session[:sort] = 'uploaded_date ASC'
     when 'recent'
+      @sorted_by = '; sorted by most recent date of upload'
       session[:sort] = 'uploaded_date DESC'
     end
+    session[:sorted_by] = @sorted_by if params[:order].present?
     if session[:stats_view]
       if !session[:stats_year].present?
         session[:stats_year] = params[:stats_year]
@@ -361,7 +368,7 @@ class FreecenCsvFilesController < ApplicationController
           @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
         elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
           @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
-        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'all'
+        elsif helpers.can_view_files?(session[:role])
           @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
         end
       end
@@ -520,7 +527,7 @@ class FreecenCsvFilesController < ApplicationController
       flash[:notice] = 'Cannot select a blank userid' if params[:freecen_csv_file][:userid].blank?
       redirect_to(action: 'change_userid') && return if params[:freecen_csv_file][:userid].blank?
 
-      proceed, message = @freecen_csv_file.change_owner_of_file(params[:freecen_csv_file][:userid])
+      proceed, message = @freecen_csv_file.change_owner_of_file(params[:freecen_csv_file][:userid],params[:freecen_csv_file][:type_of_processing])
       if proceed
         flash[:notice] = 'The copy of the file to userid is being processed'
         redirect_to(freecen_csv_file_path(@freecen_csv_file)) && return

@@ -34,17 +34,17 @@ class Freecen2SiteStatisticsController < ApplicationController
 
     @report_array = []
     case report_type
-    when 'individuals'
+    when 'search_records'
       report_start = Freecen2SiteStatistic.find_by(interval_end: start_date)
       report_end = Freecen2SiteStatistic.find_by(interval_end: end_date)
       ChapmanCode.merge_counties.each do |county|
         Freecen::CENSUS_YEARS_ARRAY.each do |census|
-          @total_individuals = report_end.records.dig(county, census).nil? ? 0 : report_end.records[county][census][:individuals]
-          @added_individuals = report_start.records.dig(county, census).nil? ? @total_individuals : @total_individuals - report_start.records[county][census][:individuals]
-          @added_individuals = 0 if @added_individuals.negative?
+          @total_search_records = report_end.records.dig(county, census).nil? ? 0 : report_end.records[county][census][:search_records]
+          @added_search_records= report_start.records.dig(county, census).nil? ? @total_search_records: @total_search_records - report_start.records[county][census][:search_records]
+          @added_search_records = 0 if @added_search_records.negative?
 
           county_name = ChapmanCode.name_from_code(county)
-          @report_array << [county, county_name, census, @total_individuals, @added_individuals]
+          @report_array << [county, county_name, census, @total_search_records, @added_search_records]
         end
       end
 
@@ -74,8 +74,8 @@ class Freecen2SiteStatisticsController < ApplicationController
 
   def create_csv_file(report_array, report_type, start_date, end_date)
     case report_type
-    when 'individuals'
-      rep_lead = 'FreeCen_Stats_'
+    when 'search_records'
+      rep_lead = 'FreeCen_SearchRecords_'
     when 'pieces'
       rep_lead = 'FreeCen_Pieces_'
     end
@@ -88,8 +88,8 @@ class Freecen2SiteStatisticsController < ApplicationController
 
   def write_csv_file(file_location, report_array, report_type)
     case report_type
-    when 'individuals'
-      column_headers = %w[chapman_code county census total_individuals added_individuals]
+    when 'search_records'
+      column_headers = %w[chapman_code county census total_search_records added_search_records]
     when 'pieces'
       column_headers = %w[chapman_code year number name civil_parishes status date records]
     end
