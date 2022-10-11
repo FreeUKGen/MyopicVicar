@@ -36,68 +36,47 @@
     </nl>
   <% end%>
     <% if @first_names_cnt >0 || @last_names_cnt > 0 %>
-        <h4> Show <%= @name_type %> starting with :
-    <% end %>
-    <% if @first_letter != 'All' %>
-      <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%=@year%>&amp;name_type=<%= @name_type%>&amp;first_letter=All">Any Letter</a><br> or starting with:
+        <h4>Go to <%= @name_type %> starting with :
     <% end %>
     <% ("A".."Z").each do |letter| %>
       <% if @unique_names[letter].count > 0 %>
-        <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%=@year%>&amp;name_type=<%=@name_type%>&amp;first_letter=<%=letter%>"><%=letter%></a>
+         <a href="#names_<%=letter%>"><%=letter%></a>
       <% end %>
-    <% end %> </h4>
-  <p>
-    <% if @remainder.count > 0 %>
-      <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%=@year%>&amp;name_type=<%=@name_type%>&amp;first_letter=Remainder">Additional Names</a>
-    <% end%>
-  </p>
-</div>
-<div class="island  island--light text--center">
-  <% if @first_letter != 'All' %>
-    <% if @first_letter != 'Remainder' %>
-      <div>
-        <h4><%= @name_type %> Starting with <%= @first_letter%> : <%= @unique_names[@first_letter].count%></h4>
-      </div>
-    <% else %>
-      <div style="text-align: center">
-        <h4>Additional Names : <%= @remainder.count%></h4>
-      </div>
     <% end %>
-  <% else %>
-    <div>
-      <h4>All <%= @name_type %></h4>
-    </div>
-  <% end %>
+
+    <% if @remainder.count > 0 %>
+       or
+       <a href="#names_Remainder">Additional Names</a>
+       </h4>
+    <% end%>
+
+</div>
+<div class="island  island--light ">
+
   <nl>
+
     <li class="grid" >
-      <% if @first_letter != 'All' %>
-        <% if @first_letter != 'Remainder' %>
-          <p>
-            <% @unique_names[@first_letter].each do |name| %>
-              <%= name %>&emsp;&nbsp;
-            <% end %>
-          <% else %>
-            <% @remainder.each do |name| %>
-              <%= name %>&emsp;&nbsp;
-            <% end %>
-          <% end %>
-        </p>
-        <% else %>
           <% ("A".."Z").each do |letter| %>
-            <p><b><%= letter%></b></p>
-            <p>
+          <% @id = "names_" + letter %>
+            <h4 id=<%=@id%> ><b><%= @name_type %> starting with <%= letter %></h4>
+            <ul>
               <% @unique_names[letter].each do |name| %>
-                <%= name %>&emsp;&nbsp;
+                <li style="display:inline"><%= name %>&emsp;&nbsp;</li>
               <% end %>
-            </p>
-          <% end%>
-          <p><b> Additional Names</b></p>
+            </ul>
+              <p><a href="#">Back to Top of page</a></p>
+              <% end %>
+          <% @id = "names_Remainder"%>
+          <div id=<%=@id%> >
+          <p><b> Additional Names </b></p>
           <p>
             <% @remainder.each do |name| %>
               <%= name %>&emsp;&nbsp;
             <% end %>
-          <% end %>
+            <p><a href="#">Back to Top of page</a></p>
         </p>
       </li>
+
+
     </nl>
   </div>
