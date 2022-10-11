@@ -2046,16 +2046,33 @@ class SearchQuery
   end
 
   def download_csv
-    attributes = %w{ GivenName Surname RecordType Quarter District }
-    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District" ]
-    CSV.generate(headers: true) do |csv|
+    #attributes = %w{ GivenName Surname RecordType Quarter District }
+    attributes = %w{ RecordType Quarter Surname GivenName AgeAtDeath District DistrictFlag Volume Page}
+    #fields = ["Given Name", "Surname", "Record Type", "Quarter", "District" ]
+    fields = ["Record Type", "Quarter", "Surname", "Given Name", "AAD/Spouse/Mother", "District", "Flag", "Volume", "Page"]
+    # tab-separated output as per BMD1 format:
+    CSV.generate(headers: true, col_sep: "\t" ) do |csv|
       csv << fields
-      searched_records.each do |record|
+      sorted_search_results = self.sort_search_results
+      sorted_search_results.each do |record|
+      # searched_records.each do |record|
         qn = record[:QuarterNumber]
-        quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
+        # output quarter in BMD1 format:
+        quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_csv(qn)
+        # map record_type to upper and lower case to match BMD1 format:
         record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
-        record["RecordType"] = record_type
+        # aad can be aad, spouse or mother's name:
+        aad = ""
+        if !record[:AgeAtDeath].blank?
+          aad = record[:AgeAtDeath]
+        elsif !record[:AssociateName].blank?
+          aad = record[:AssociateName]
+        else
+          aad = ""
+        end
+        record["RecordType"] = record_type[0]+record_type[1..-1].downcase
         record["Quarter"] = quarter
+        record["AgeAtDeath"] = aad
         csv << attributes.map{ |attr| record[attr] }
       end
     end

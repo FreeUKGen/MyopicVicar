@@ -8,8 +8,21 @@ module QuarterDetails
     }
   end
 
+  def self.quarters_csv
+    {
+      Mar: 1,
+      Jun: 2,
+      Sep: 3,
+      Dec: 4
+    }
+  end
+
   def self.quarter_month record_quarter_number
     quarters.key((record_quarter_number - 1)%4 + 1)
+  end
+
+  def self.quarter_month_csv record_quarter_number
+    quarters_csv.key((record_quarter_number - 1)%4 + 1)
   end
 
   def self.quarter_year record_quarter_number
@@ -25,6 +38,9 @@ module QuarterDetails
     "#{quarter_month(record_quarter_number).upcase} #{quarter_year(record_quarter_number)}"
   end
 
+  def self.quarter_csv record_quarter_number
+    "#{quarter_month_csv(record_quarter_number)} #{quarter_year(record_quarter_number)}"
+  end
   def self.month_hash
     {
       "01" => "January",
