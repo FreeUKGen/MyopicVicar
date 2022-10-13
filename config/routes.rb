@@ -611,6 +611,7 @@ MyopicVicar::Application.routes.draw do
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
   resources :gap_reasons
 
+  get "/entry-information/:hash/hash", :to => 'best_guess_hash#bmd1_show'
   get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
   get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_non_search
   get ':search_id/:entry_id/marriage_details/', :to => 'best_guess#show_marriage', :as => :show_marriage_details
@@ -620,7 +621,8 @@ MyopicVicar::Application.routes.draw do
   get ':entry_id/marriage_details', to: 'best_guess#show_marriage', as: :show_marriage_details_non_search
   resources :best_guess
   post 'entry-information/:id/save_entry', to: 'best_guess#save_entry', as: :save_entry
-  get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
+  get "entry-information/:id/show", :to => 'best_guess_hash#show', :as => :citation_url
+  get "/cgi/information.pl", :to => 'best_guess_hash#bmd1_url'
   resources :best_guess_hash
 
 
