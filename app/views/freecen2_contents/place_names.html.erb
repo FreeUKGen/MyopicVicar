@@ -50,7 +50,7 @@
     <li class="grid" >
           <% ("A".."Z").each do |letter| %>
           <% @id = "names_" + letter %>
-            <h4 id=<%=@id%> ><b><%= @name_type %> starting with <%= letter %>:</h4>
+            <h4 id=<%=@id%> ><%= @name_type %> starting with <%= letter %>:</h4>
             <ul>
               <% if @unique_names[letter].count >0 %>
               <% @unique_names[letter].each do |name| %>
@@ -63,8 +63,7 @@
               <p><a href="#">Back to Top of page</a></p>
               <% end %>
           <% @id = "names_Remainder"%>
-          <div id=<%=@id%> >
-          <h4>Additional <%= @name_type %>:</h4>
+          <h4 id=<%=@id%> >Additional <%= @name_type %>:</h4>
           <p>
             <ul>
             <% if @remainder.count >0 %>
