@@ -6,76 +6,72 @@
       <li> | <a data-method="get" href="/freecen2_contents/new_records_index?locale=en&amp;new_records=All">Back to Recent Additions</a></li>
     <% else %>
       <% if @place_description == 'all' %>
-           <li> | <a data-method="get" href="/freecen2_contents/county_index?locale=en&amp;county_description=<% @county_description %>">Back to Records for <%=@county_description %></a></li>
+        <li> | <a data-method="get" href="/freecen2_contents/county_index?locale=en&amp;county_description=<% @county_description %>">Back to Records for <%=@county_description %></a></li>
       <% else %>
-           <li> | <a data-method="get" href="/freecen2_contents/county_index?locale=en&amp;county_description=<% @county_description %>">Choose another Place in <%= @county_description %></a></li>
-           <li> | <a data-method="get" href="/freecen2_contents/place_index?locale=en&amp;county_description=<% @county_description %>&amp;place_description=<% @place_description %>">Back to Records for <%= @place_description %></a></li>
+        <li> | <a data-method="get" href="/freecen2_contents/county_index?locale=en&amp;county_description=<% @county_description %>">Choose another Place in <%= @county_description %></a></li>
+        <li> | <a data-method="get" href="/freecen2_contents/place_index?locale=en&amp;county_description=<% @county_description %>&amp;place_description=<% @place_description %>">Back to Records for <%= @place_description %></a></li>
       <% end %>
     <% end %>
-    </ul>
+  </ul>
 </nav>
 <h2 class="accessibility">Lists Names currently in the Database for <%= @place_description %> with option to view forenames or surnames</h2>
 <h2 class="gamma text--center">Names from <%= @place_description %> in <%= @county_description %> in <%= @year %></h2>
 <p><small class="additional read-length">Note: You may find it useful to use your browser find option to search for critical parts of names</small></p>
 <div class="island island--bordered text--center">
   <%= form_with url: freecen2_contents_place_names_path do |f| %>
-    <nl>
-      <li class="grid" >
-        <% if @name_type == 'Forenames' %>
-          <h3 style="text-align: center"> Total <%= @name_type %> : <%= @first_names_cnt %></h3>
-        <% else %>
-          <h3 style="text-align: center"> Total <%= @name_type %> : <%= @last_names_cnt %></h3>
-        <% end %>
-        <h4> Switch Name Type To :
+    <li class="grid" >
+      <% if @name_type == 'Forenames' %>
+        <h3 style="text-align: center"> Total <%= @name_type %> : <%= @first_names_cnt %></h3>
+      <% else %>
+        <h3 style="text-align: center"> Total <%= @name_type %> : <%= @last_names_cnt %></h3>
+      <% end %>
+      <h4> Switch Name Type To :
         <% if @name_type == 'Surnames' %>
-           <td> <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%= @year%>&amp;name_type=Forenames">Forenames</a></td>
+          <td> <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%= @year%>&amp;name_type=Forenames&amp;new_records=<%= @new_records%>">Forenames</a></td>
         <% else %>
-        <td> <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%= @year%>&amp;name_type=Surnames">Surnames</a></td>
+          <td> <a data-method="get"data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%@place_id%>&amp;census_year=<%= @year%>&amp;name_type=Surnames&amp;new_records=<%= @new_records%>">Surnames</a></td>
         <% end %></h4>
-      </li>
-    </nl>
+    </li>
   <% end%>
-    <% if @first_names_cnt >0 || @last_names_cnt > 0 %>
-        <h4>Go to <%= @name_type %> starting with :
+  <% if @first_names_cnt >0 || @last_names_cnt > 0 %>
+    <h4>Go to <%= @name_type %> starting with :
     <% end %>
     <% ("A".."Z").each do |letter| %>
-         <a href="#names_<%=letter%>"><%=letter%></a>
+      <a href="#names_<%=letter%>"><%=letter%></a>
     <% end %>
-       or
-       <a href="#names_Remainder">Additional Names</a>
-       </h4>
+    or
+    <a href="#names_Remainder">Additional Names</a>
+  </h4>
 </div>
 <div class="island  island--light ">
-  <nl>
-    <li class="grid" >
-          <% ("A".."Z").each do |letter| %>
-          <% @id = "names_" + letter %>
-            <h4 id=<%=@id%> ><%= @name_type %> starting with <%= letter %>:</h4>
-            <ul>
-              <% if @unique_names[letter].count >0 %>
-              <% @unique_names[letter].each do |name| %>
-                <li style="display:inline"><%= name %>&emsp;&nbsp;</li>
-              <% end %>
-              <% else %>
-                <li style="display:inline"><i>-NONE-</i></li>
-              <% end %>
-            </ul>
-              <p><a href="#">Back to Top of page</a></p>
-              <% end %>
-          <% @id = "names_Remainder"%>
-          <h4 id=<%=@id%> >Additional <%= @name_type %>:</h4>
-          <p>
-            <ul>
-            <% if @remainder.count >0 %>
-            <% @remainder.each do |name| %>
-              <%= name %>&emsp;&nbsp;
-            <% end %>
-            <% else %>
-                <li style="display:inline"><i>-NONE-</i></li>
-              <% end %>
-            </ul>
-            <p><a href="#">Back to Top of page</a></p>
-        </p>
-      </li>
-    </nl>
-  </div>
+  <li class="grid" >
+    <% ("A".."Z").each do |letter| %>
+      <% @id = "names_" + letter %>
+      <h4 id=<%=@id%> ><%= @name_type %> starting with <%= letter %>:</h4>
+      <ul>
+        <% if @unique_names[letter].count >0 %>
+          <% @unique_names[letter].each do |name| %>
+            <li style="display:inline"><%= name %>&emsp;&nbsp;</li>
+          <% end %>
+        <% else %>
+          <li style="display:inline"><i>-NONE-</i></li>
+        <% end %>
+      </ul>
+      <p><a href="#">Back to Top of page</a></p>
+    <% end %>
+    <% @id = "names_Remainder"%>
+    <h4 id=<%=@id%> >Additional <%= @name_type %>:</h4>
+    <p>
+      <ul>
+        <% if @remainder.count >0 %>
+          <% @remainder.each do |name| %>
+            <%= name %>&emsp;&nbsp;
+          <% end %>
+        <% else %>
+          <li style="display:inline"><i>-NONE-</i></li>
+        <% end %>
+      </ul>
+      <p><a href="#">Back to Top of page</a></p>
+    </p>
+  </li>
+</div>
