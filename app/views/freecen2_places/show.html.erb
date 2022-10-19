@@ -83,8 +83,12 @@
             <td class="weight--semibold"> <%= cen_years(@place.cen_data_years) %></td>
           </tr>
           <tr>
-            <td>Number of records online for this place:</td>
+            <td>Number of search records online for this place:</td>
             <td class="weight--semibold"> <%= number_with_delimiter(@place.search_records.count) %></td>
+          </tr>
+          <tr>
+            <td>Number of pieces for this place:</td>
+            <td class="weight--semibold"> <%= number_with_delimiter(@place.freecen2_pieces.count) %></td>
           </tr>
           <tr>
             <td>Edits </td>
