@@ -51,8 +51,8 @@ class BestGuess < FreebmdDbBase
   def record_hash
     surname = self.Surname.upcase
     given_name = self.GivenName.upcase
-    #district_name = self.district.DistrictName.upcase
-    district_name = self.District.upcase
+    district_name = self.district.try(:DistrictName).try(:upcase)
+    district_name = self.District.upcase unless district_name.present?
     volume = self.Volume.upcase
     page = self.Page.upcase
     year = QuarterDetails.quarter_year(self.QuarterNumber)
