@@ -51,8 +51,8 @@ class BestGuess < FreebmdDbBase
   def record_hash
     surname = self.Surname.upcase
     given_name = self.GivenName.upcase
-    #district_name = self.district.DistrictName.upcase
-    district_name = self.District.upcase
+    district_name = self.district.DistrictName.upcase
+    #district_name = self.District.upcase
     volume = self.Volume.upcase
     page = self.Page.upcase
     year = QuarterDetails.quarter_year(self.QuarterNumber)
@@ -74,8 +74,9 @@ class BestGuess < FreebmdDbBase
     users = []
     # record_info = BestGuess.includes(:best_guess_links).where(RecordNumber: record).first
     get_rec_links.includes(:accession).each do |link|
-      users << link.accession.bmd_file.submitter.UserID if self.Confirmed & ENTRY_SYSTEM || self.Confirmed & ENTRY_REFERENCE
+      users << link.try(:accession).try(:bmd_file).try(:submitter).try(:UserID) if self.Confirmed & ENTRY_SYSTEM || self.Confirmed & ENTRY_REFERENCE
     end
+    users.reject!(&:blank?)
     users
     # record_info = BestGuess.where(RecordNumber: record).first
     # accession_numbers = BestGuessLink.where(RecordNumber: record).pluck(:AccessionNumber)
@@ -95,24 +96,36 @@ class BestGuess < FreebmdDbBase
     get_scan_lists.approved
   end
 
+  def non_definite_scan_lists
+    get_scan_lists.non_definite
+  end
+
+  def unrejected_non_definite_scan_lists
+    non_definite_scan_lists.unrejected
+  end
+
+  def rejected_non_definite_scan_lists
+    non_definite_scan_lists.rejected
+  end
+
   def unapproved_definitive_scanslists
-    get_scan_lists.non_definite.unrejected.definitive if approved_scanslists.blank?
+    unrejected_non_definite_scan_lists.definitive if approved_scanslists.blank?
   end
 
   def unapproved_probable_scanslists
-    get_scan_lists.non_definite.unrejected.probable if unapproved_definitive_scanslists.blank?
+    unrejected_non_definite_scan_lists.probable if unapproved_definitive_scanslists.blank?
   end
 
   def rejected_probable_scanslists
-    get_scan_lists.non_definite.rejected.probably_confirm if unapproved_probable_scanslists.blank?
+    rejected_non_definite_scan_lists.probably_confirm if unapproved_probable_scanslists.blank?
   end
 
   def rejected_possible_scanslists
-    get_scan_lists.non_definite.rejected.possibly_confirm if rejected_probable_scanslists.blank?
+    rejected_non_definite_scan_lists.possibly_confirm if rejected_probable_scanslists.blank?
   end
 
   def rejected_likely_scanslists
-    get_scan_lists.non_definite.rejected.can_be_confirm if rejected_possible_scanslists.blank?
+    rejected_non_definite_scan_lists.can_be_confirm if rejected_possible_scanslists.blank?
   end
 
   def scanlists
