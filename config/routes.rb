@@ -369,6 +369,9 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/list_saved_entry', to: 'userid_details#list_saved_entry', :as => :list_saved_entries_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
+  get 'userid_details/:fullname/:no_of_records/:email/transcriber_info', :to => 'userid_details#transcriber_info', :as => :transcriber_info_with_email
+  get 'userid_details/:fullname/:no_of_records/transcriber_info', :to => 'userid_details#transcriber_info', :as => :transcriber_info_no_email
+
   resources :userid_details do
     collection { post :import }
   end
@@ -623,6 +626,9 @@ MyopicVicar::Application.routes.draw do
   get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
   resources :best_guess_hash
 
+  #get 'transcriber/:id/display_info', :to => 'transcriber#details', :as => :transcriber_info
+  #get '/userid_details/:id/display_info', :to => 'transcriber#details', :as => :transcriber_info
+  #resources :submitter
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.

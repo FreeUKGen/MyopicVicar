@@ -1,0 +1,27 @@
+<%# breadcrumb :my_own_userid_detail, @userid %>
+<section class="island  island--light">
+  <div class="grid">
+    <%= render "my_own_header_links" %>
+    <div style="clear:both;"> </div>
+    <%= render "flash_notice" %>
+    <table  class="table--bordered   palm-one-whole " >
+      <thead>
+      <tr>
+        <th >Field</th>
+        <th class="caps">Value</th>
+      </tr>
+      </thead>
+      <%= render 'basic_userid_details' %>
+      <% if @userid.person_role != 'researcher' %>
+        <%= render 'additional_userid_details' %>
+        <% case appname_downcase %>
+      <% when 'freereg' %>
+          <%= render 'freereg_userid_details' %>
+        <% end%>
+      <% end%>
+    </table>
+  </div>
+  <div class="grid__item  one-third  palm-one-whole ">
+    <%= render "resource_sidebar" %>
+  </div>
+</section>

@@ -101,7 +101,28 @@
         Transcriber
       </th>
       <td>
-        <%= record.transcribers.join(', ') if record.transcribers.present? %>
+        <%#= record.transcribers.join(', ') if record.transcribers.present? %>
+        <% record.transcribers.each do | key, value| %>
+         <%
+           transcriber_arr = value.to_s.split('|')
+           privacy = transcriber_arr.shift()
+           id = transcriber_arr.shift()
+           fullname = transcriber_arr.shift()
+           no_of_records = transcriber_arr.shift()
+           email = transcriber_arr.shift()
+         %>
+           <% if privacy.to_i > 1 %>
+            <% case privacy.to_i  %>
+              <% when 2 %>
+            <%= link_to key, '/userid_details/'+fullname+'/'+no_of_records+'/transcriber_info' %>
+              <% else %>
+              <%= link_to key, '/userid_details/'+fullname+'/'+no_of_records+'/'+email+'/transcriber_info' %>
+              <% end %>
+           <% else %>
+            <%= key %>
+           <% end %>
+           <br/>
+        <% end %>
         <% if record.transcribers.blank? %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
