@@ -92,9 +92,8 @@ class Freecen1VldFilesController < ApplicationController
         end
       end
     end
-    flash[:notice] = "The vld file #{file_name} has been deleted."
     vldfile.delete if vldfile.present?
-    redirect_to freecen1_vld_files_path
+    redirect_to freecen1_vld_files_path, notice: "The vld file #{file_name} has been deleted."
   end
 
   def edit

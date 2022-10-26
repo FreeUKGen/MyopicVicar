@@ -327,14 +327,19 @@ class FreecenCsvFilesController < ApplicationController
     end
     case params[:order]
     when 'alphabetic'
+      @sorted_by = '; sorted by file name ascending'
       session[:sort] = 'file_name ASC'
     when 'userid'
+      @sorted_by = '; sorted by userid (and then file name ascending)'
       session[:sort] = 'userid_lower_case ASC, file_name ASC'
     when 'oldest'
+      @sorted_by = '; ordered by oldest'
       session[:sort] = 'uploaded_date ASC'
     when 'recent'
+      @sorted_by = '; sorted by most recent date of upload'
       session[:sort] = 'uploaded_date DESC'
     end
+    session[:sorted_by] = @sorted_by if params[:order].present?
     if session[:stats_view]
       if !session[:stats_year].present?
         session[:stats_year] = params[:stats_year]
@@ -363,7 +368,7 @@ class FreecenCsvFilesController < ApplicationController
           @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
         elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
           @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
-        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'all'
+        elsif helpers.can_view_files?(session[:role])
           @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
         end
       end
