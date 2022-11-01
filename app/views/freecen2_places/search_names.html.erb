@@ -24,6 +24,9 @@
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="ends_with_search_input">
           <%= f.radio_button :advanced_search, 'ends_with' %> Ends with
         </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="no_advanced_search_input">
+          <%= f.radio_button :advanced_search, 'not_applicable', :checked =>true%> N/A
+        </li>
       </ol>
     </fieldset>
     <%= f.input :county, selected: @county, :label => "County to be searched. Leave empty to search all Counties. Click in box for county options. Previous selection preloaded. ",:include_blank => true, :collection => @counties,:hint =>'', :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width"}   %>
