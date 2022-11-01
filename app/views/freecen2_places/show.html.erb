@@ -91,6 +91,14 @@
             <td class="weight--semibold"> <%= number_with_delimiter(@place.freecen2_pieces.count) %></td>
           </tr>
           <tr>
+            <td>Linked to PARMS record:</td>
+            <% if @place.freecen2_districts.exists? || @place.freecen2_pieces.exists? || @place.freecen2_civil_parishes.exists? %>
+              <td class="weight--semibold"> Yes</td>
+            <% else %>
+              <td class="weight--semibold"> No</td>
+            <% end %>
+          </tr>
+          <tr>
             <td>Edits </td>
             <td class="weight--semibold"> <%= link_edits(@place) %></td>
           </tr>
