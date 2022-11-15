@@ -29,7 +29,7 @@
         </li>
       </ol>
     </fieldset>
-    <%= f.input :county, selected: @county, :label => "County to be searched. Leave empty to search all Counties. Click in box for county options. Previous selection preloaded. ",:include_blank => true, :collection => @counties,:hint =>'', :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width"}   %>
+    <%= f.input :county, selected: @county, label: 'County to be searched. Leave empty to search all Counties. Click in box for county options. Previous selection preloaded. ',include_blank: true,collection: @counties, input_html:  {class: 'simple_form_bgcolour simple_form_position overide_selection_field_width'} %>
     <%= f.hidden_field :disabled, :value=> false %>
     <%= f.button :submit, 'Search Place Names',:button_html => {:class => "btn" }  %>
     <p class=" text--center"><br>
