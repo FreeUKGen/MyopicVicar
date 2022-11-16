@@ -292,11 +292,13 @@ class Freecen2PlacesController < ApplicationController
     @counties = @counties.delete_if { |county| county == 'Unknown' }
     get_user_info_from_userid
     @place_name = session[:search_names].present? ? session[:search_names][:search] : ''
-    if session[:search_names][:clear_county]
-      @county = ''
-      session[:search_names][:clear_county] = false
-    else
-      @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
+    if session[:search_names].present?
+      if session[:search_names][:clear_county]
+        @county = ''
+        session[:search_names][:clear_county] = false
+      else
+        @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
+      end
     end
     @advanced_search = session[:search_names].present? ? session[:search_names][:advanced_search] : 'not_applicable'
     @freecen2_place = Freecen2Place.new(place_name: @place_name, county: @county)
