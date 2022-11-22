@@ -623,6 +623,10 @@ MyopicVicar::Application.routes.draw do
   get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
   resources :best_guess_hash
 
+  resources :unique_forenames
+
+  resources :unique_surnames
+
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.
