@@ -3,5 +3,6 @@ class UniqueSurnamesController < ApplicationController
 
   def index
     @surnames = UniqueSurnames.where("name LIKE '%" + params[:prefix] + "%'")
+    render :json => @surnames
   end
 end
