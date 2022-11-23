@@ -39,7 +39,7 @@ class Freecen2Place
   field :editor, type: String, default: ''
   field :reason_for_change, type: Array
   field :other_reason_for_change, type: String
-  field :disabled, type: String, default: "false"
+  field :disabled, type: String, default: "false"  # obsolete as of 12/2022 (when hard delete places with no links to other data replaced disabling a place)
   field :master_place_lat, type: String
   field :master_place_lon, type: String
   field :error_flag, type: String, default: nil
