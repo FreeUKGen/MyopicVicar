@@ -33,7 +33,9 @@
                             <a href="https://www.freeukgenealogy.org.uk/why-donate" class="text--center btn btn--small" target="_blank" tabindex="0" id="read_more" autofocus="false" style="padding:10px">Why donate?</a>
                         </div>
                         <div class="grid__item desk-one-half lap-one-half palm-one-whole" id="donate_div" style="display:flex; justify-content:center;">
-                            <%= link_to "DONATE NOW", "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}", class: "freeREG btn btn--small weight--semibold", id:"donate_now_button", target:"_blank", tabindex: "0", style: 'padding:10px' %>
+                            <% donate_link = "https://donate.thebiggive.org.uk/campaign/a056900002NEB61AAH" %>
+                            <% donate_cta_link = "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}" %>
+                            <%= link_to "DONATE NOW", donate_link , class: "freeREG btn btn--small weight--semibold", id:"donate_now_button", target:"_blank", tabindex: "0", style: 'padding:10px' %>
                         </div>
                     </div>
                 </div>
