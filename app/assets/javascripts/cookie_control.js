@@ -18,15 +18,24 @@ $(document).ready(function() {
       $('#cookie_check_box').prop('checked', false);
     };
   };
-/*
-  //donate cta
-var close_donate_cta = function(){
-  setCookie('donate_cta_flag_new', 1,2);
-  document.getElementById("myDialog").close(); 
-    $("#donate_cta_pop_up").hide();
-    document.getElementById("overlay").style.display = "none";
 
-};
+  //donate cta
+  window.setBigGiveCookie = function(name,value) {
+    var expires = "";
+    var date = new Date();
+    expirationDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()+1, 0, 0, 0);
+    expires = "; expires="+expirationDate.toGMTString();
+    document.cookie = name+"="+value+expires+"; path=/";
+  };
+
+  var close_donate_cta = function(){
+    //setCookie('donate_cta_flag_new', 1,1);
+    setBigGiveCookie('donate_cta_flag_new', 1);//big gift code change
+    document.getElementById("myDialog").close(); 
+      $("#donate_cta_pop_up").hide();
+      document.getElementById("overlay").style.display = "none";
+
+  };
 
   if ((getCookie('donate_cta_flag_new') == 0) || (getCookie('donate_cta_flag_new') === null)) {
     document.getElementById("myDialog").showModal(); 
@@ -53,7 +62,7 @@ $(document).keyup(function(evt) {
 });
 
 document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
-  setCookie('donate_cta_flag_new', 1,2);
+  setCookie('donate_cta_flag_new', 1,1);
   document.getElementById("myDialog").close();
   document.getElementById("myDialog1").showModal();
   $("#reminder_to_donate_form").show();
