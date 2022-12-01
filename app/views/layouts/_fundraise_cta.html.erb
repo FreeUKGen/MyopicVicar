@@ -10,12 +10,13 @@
         <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole" id="thank_you">
             <%=button_tag "<i class='fa fa-times push-half--right close_cta'></i> Close".html_safe , id:"close_donate_cta_pop_up", class: "", type: "button"%>
             <!--div class="" id="main_box"-->
-                <div class="grid__item desk-three-quarters lap-one-whole palm-one-whole logo_div push-half--bottom" style="padding-left: 0px;">
-                  <%= image_tag("png/donate_title_text.png", alt: "Help us keep your family history free", id:'help_text')%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                <div class="grid__item desk-three-quarters lap-one-whole palm-one-whole logo_div" style="">
+                  <%#= image_tag("png/donate_title_text.png", alt: "Help us keep your family history free", id:'help_text')%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                  <h3>We're taking part in The Big Give's 2022 Christmas Challenge</h3>
                 </div>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-                    <p id="" class="push-half--bottom">We're taking part in The Big Give's 2022 Christmas Challenge which means any donation given this week will be <b>doubled</b> by our pledgers.</p>
-                    <p class="push-half--bottom">A £15 donation helps get 1000 new records into our databases. Donate via the link below and that number becomes 2,000 high-quality records, free for anyone to search.</p>
+                    <p id="" class="push-half--bottom">Thank you to everyone who has donated so far: you helped us match our pledge pot in just two days!</p>
+                    <p class="push-half--bottom">We still need your support to secure our services and build on them for the future. A £15 donation means 1,000 new records will be added to our databases and £30 runs our servers for one day.</p>
                 </div>
             <!--/div-->
         </div>
@@ -23,7 +24,8 @@
             <div class="grid__item desk-one-whole desk-one-whole lap-one-whole palm-one-whole" >
                 <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom" style="display: flex; justify-content: center;">
                     <div class="grid__item desk-wide-three-fifths desk-three-fifths lap-one-whole palm-one-whole hard--left" id='impact_text_div'>
-                        <%= image_tag("png/impact_text.png", alt: "One donation, twice the impact", class: "text--center", id: 'impact_text')%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                        <%#= image_tag("png/impact_text.png", alt: "One donation, twice the impact", class: "text--center", id: 'impact_text')%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                        <h3>Help us keep your family history free</h3>
                     </div>
                 </div>
                 <div class="" id="request_box">
