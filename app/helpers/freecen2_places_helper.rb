@@ -53,4 +53,11 @@ module Freecen2PlacesHelper
   def cen_years(cen_data_years)
     data_years = cen_data_years.present? ? cen_data_years.sort : ''
   end
+
+  def search_names_clear_county
+    if session[:search_names].present?
+      session[:search_names][:clear_county] = true
+    end
+    link_to 'Clear County', search_names_freecen2_place_path, class: 'btn btn--small'
+  end
 end

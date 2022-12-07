@@ -144,7 +144,6 @@ class Freecen2PlacesController < ApplicationController
 
     get_reasons
     get_sources
-
   end
 
   def for_search_form
@@ -165,8 +164,6 @@ class Freecen2PlacesController < ApplicationController
       end
     end
   end
-
-
 
   def index
     get_user_info_from_userid
@@ -292,10 +289,15 @@ class Freecen2PlacesController < ApplicationController
     @counties = @counties.delete_if { |county| county == 'Unknown' }
     get_user_info_from_userid
     @place_name = session[:search_names].present? ? session[:search_names][:search] : ''
-    @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
+    if session[:search_names].present?
+      if session[:search_names][:clear_county]
+        @county = ''
+        session[:search_names][:clear_county] = false
+      else
+        @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
+      end
+    end
     @freecen2_place = Freecen2Place.new(place_name: @place_name, county: @county)
-    session.delete(:search_names) if session[:search_names].present?
-    session[:search_names] = []
   end
 
   def search_names_results
@@ -309,26 +311,26 @@ class Freecen2PlacesController < ApplicationController
     @advanced_search = session[:search_names][:advanced_search]
     if @advanced_search.present?
       redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') && return unless search_place.match(/^[A-Za-z ]+$/)
-      if @advanced_search != "soundex"
-        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless Freecen2Place.standard_place(search_place).length >=3
+      if @advanced_search != 'soundex' && @advanced_search != 'not_applicable'
+        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless Freecen2Place.standard_place(search_place).length >= 3
       end
     end
     case @advanced_search
-    when "soundex"
+    when 'soundex'
       place_soundex = Text::Soundex.soundex(Freecen2Place.standard_place(search_place))
-      @type_head = 'Soundex '
+      @type_head = 'Soundex'
       @results = Freecen2Place.sound_search(place_soundex, search_county)
-    when "starts_with"
+    when 'starts_with'
       regexp = BSON::Regexp::Raw.new('^' + Freecen2Place.standard_place(search_place))
-      @type_head = 'Starts with '
+      @type_head = 'Starts with'
       @results = Freecen2Place.regexp_search(regexp, search_county)
-    when "contains"
+    when 'contains'
       regexp = BSON::Regexp::Raw.new(Freecen2Place.standard_place(search_place))
-      @type_head = 'Contains string '
+      @type_head = 'Contains string'
       @results = Freecen2Place.regexp_search(regexp, search_county)
-    when "ends_with"
+    when 'ends_with'
       regexp = BSON::Regexp::Raw.new(Freecen2Place.standard_place(search_place) + '$')
-      @type_head = 'Ends with '
+      @type_head = 'Ends with'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     else
       @type_head = ''

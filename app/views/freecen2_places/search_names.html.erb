@@ -24,13 +24,29 @@
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="ends_with_search_input">
           <%= f.radio_button :advanced_search, 'ends_with' %> Ends with
         </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="no_advanced_search_input">
+          <%= f.radio_button :advanced_search, 'not_applicable', :checked =>true %> N/A
+        </li>
       </ol>
     </fieldset>
-    <%= f.input :county, selected: @county, :label => "County to be searched. Leave empty to search all Counties. Click in box for county options. Previous selection preloaded. ",:include_blank => true, :collection => @counties,:hint =>'', :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width"}   %>
-    <%= f.hidden_field :disabled, :value=> false %>
+    <div id="ChooseCounty">
+      <fieldset class="inputs" class="input" style="text-align: center">
+        <legend><b>County to be searched</b></legend>
+        <ol class="grid">
+          <li class="grid__item three-quarters lap-three-quarters palm-one-whole">
+            <%= f.input :county, selected: @county, label: 'Click in box for county options. Previous selection preloaded. ',hint: 'Leave empty to search all Counties.',include_blank: true,collection: @counties, input_html:  {class: 'simple_form_bgcolour simple_form_position overide_selection_field_width'} %>
+            <%= f.hidden_field :disabled, :value=> false %>
+          </li>
+          <li class="grid__item one-quarter lap-one-quarter palm-one-whole">
+            <%= search_names_clear_county %>
+          </li>
+        </ol>
+      </fieldset>
+    </div>
     <%= f.button :submit, 'Search Place Names',:button_html => {:class => "btn" }  %>
     <p class=" text--center"><br>
-      <small><em> [Note: The regular Place Name Search is a text search that ignores ‘stop words’. These are common words that have little actual meaning. A list of these words can be found <%= link_to 'HERE', "https://github.com/mongodb/mongo/blob/0e3b3ca8480ddddf5d0105d11a94bd4698335312/src/mongo/db/fts/stop_words_english.txt", target: :_blank %> (opens in new tab).<br>
+      <small><em> [Note: The regular Place Name Search is a text search that ignores ‘stop words’. These are common words that have little actual meaning. <br>
+          A list of these words can be found <%= link_to 'HERE', "https://github.com/mongodb/mongo/blob/0e3b3ca8480ddddf5d0105d11a94bd4698335312/src/mongo/db/fts/stop_words_english.txt", target: :_blank %> (opens in new tab).<br>
           If your search returns no results and you think it might be because it contains a ‘stop word’, please try an Advanced Search, as this does not ignore 'stop words'.]</em></small></p>
   <% end %>
 </div>

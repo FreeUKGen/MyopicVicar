@@ -1,5 +1,9 @@
 <% breadcrumb :search_names_results%>
-<h3 style="text-align: center"> <%= @total%> Results in a Freecen2 Place Name <%= @type_head %>Search for '<%= session[:search_names][:search]%>' in <%= @county %></h3>
+<% if @type_head == '' %>
+  <h3 style="text-align: center"> <%= @total%> Results in a Freecen2 Place Name Search for '<%= session[:search_names][:search]%>' in <%= @county %></h3>
+<% else %>
+  <h3 style="text-align: center"> <%= @total%> Results in a Freecen2 Place Name <%= @type_head %> '<%= session[:search_names][:search]%>' in <%= @county %></h3>
+<% end %>
 <%= render 'flash_notice' %>
 <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
   <div style="text-align: center">
