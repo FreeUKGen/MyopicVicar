@@ -165,7 +165,37 @@ class BestGuessController < ApplicationController
     end
   end
 
+  def unique_forenames
+    term = params[:term].downcase
+    @entries = BestGuess.select("GivenName").where('lower(GivenName) LIKE ?', term+"%").distinct(:GivenName)
+    namesarray = forenames_as_array(@entries)
+    render :json => namesarray
+  end
+  def unique_surnames
+    prefix = params[:prefix].downcase
+    surnames = BestGuess.distinct(:Surname)
+    @entries = BestGuess.select("Surname").where('lower(Surname) LIKE ?', prefix+"%").distinct(:Surname)
+    namesarray = surnames_as_array(@entries)
+    render :json => namesarray
+  end
+
   private
+
+  def forenames_as_array(records)
+    arr = []
+    records.each do |rec|
+      arr << rec.GivenName
+    end
+    arr.sort
+  end
+
+  def surnames_as_array(records)
+    arr = []
+    records.each do |rec|
+      arr << rec.Surname
+    end
+    arr.sort
+  end
 
   def show_postem_or_scan
     case @option

@@ -23,6 +23,11 @@
     </div>
 <% end %>
 
+<script
+    src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+    integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
+    crossorigin="anonymous"></script>
+
 <div class="bmd_search_form">
     <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="input">
@@ -34,7 +39,8 @@
                         <%="First name(s)".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0" %>
+              <%#= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', :autocomplete => autocomplete_BestGuess_GivenName_search_queries_path, tabindex: "0" %>
+              <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0" %>
                 <label>
                     <small>
                         <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
@@ -43,13 +49,13 @@
                 </label>
             </li>
 
-            <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
+          <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
                 <div class='labels'>
                     <%= label_tag 'last_name', "Surname".html_safe, class: "ttip" do %>
                         <%= "Surname".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name)  , class: 'text-input flush--bottom', id: 'last_name', placeholder: 'Enter Surname here', tabindex: "0"%>
+                <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', placeholder: 'Enter Surname here', :autocomplete => autocomplete_BestGuess_Surname_search_queries_path, tabindex: "0"%>
                 <label>
                     <small class="ttip__text">
                         <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
@@ -263,6 +269,16 @@
                 
             </li>
         </ol>
+
+      <script>
+          $( "#first_name" ).autocomplete({
+              source: '/unique_forenames/?term='
+          });
+          $( "#last_name" ).autocomplete({
+              source: '/unique_surnames/?term='
+          });
+      </script>
+
     </fieldset>
     <fieldset class="input" id="advanced_search">
       <legend>Additional search options</legend>

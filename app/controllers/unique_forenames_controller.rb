@@ -2,21 +2,21 @@ class UniqueForenamesController < ApplicationController
   skip_before_action :require_login
 
   def index
-    @forenames = UniqueForenames.where("name LIKE '%" + params[:prefix] + "%'")
-    render :json => @forenames
+    @forenames = UniqueForenames.where("name LIKE \"" + params[:term] + "%\"")
+    render :json => get_search_names_hash(@forenames)
   end
 
   def show
-    @forenames = UniqueForenames.where("name LIKE '%" + params[:prefix] + "%'")
+    @forenames = UniqueForenames.where("name LIKE '%" + params[:term] + "%'")
   end
 
   # when we want to return JSON as an array of names, something like this could be handy:
   def get_search_names_hash(names)
-    original = {}
-    names.search_names.each do |name|
-      original[name._id] = JSON.parse(name.to_json(except: :_id))
+    output_array = []
+    names.each do |name|
+      output_array << name.Name
     end
-    original
+    output_array
   end
 
 end

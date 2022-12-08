@@ -491,10 +491,12 @@ ActiveRecord::Schema.define(version: 20190521095546) do
 
   create_table "UniqueForenames", primary_key: "NameID", id: :integer, unsigned: true, default: nil, force: :cascade, options: "ENGINE=MyISAM DEFAULT CHARSET=latin1" do |t|
     t.string "Name", limit: 100
+    t.integer "count"
   end
 
   create_table "UniqueSurnames", primary_key: "NameID", id: :integer, unsigned: true, default: nil, force: :cascade, options: "ENGINE=MyISAM DEFAULT CHARSET=latin1" do |t|
     t.string "Name", limit: 100
+    t.integer "count"
   end
 
   create_table "bmd_searches", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
