@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 20190521095546) do
+ActiveRecord::Schema.define(version: 20221209222347) do
 
   create_table "Accessions", primary_key: "AccessionNumber", id: :integer, unsigned: true, default: nil, force: :cascade, options: "ENGINE=MyISAM DEFAULT CHARSET=latin1" do |t|
     t.integer "FileNumber", limit: 3, null: false, unsigned: true
@@ -273,8 +272,7 @@ ActiveRecord::Schema.define(version: 20190521095546) do
     t.string "Volume1852to1945", limit: 3
     t.string "Volume1946to1965", limit: 3
     t.string "Volume1966to1973", limit: 3
-    t.string "Volume1974to1993_4", limit: 3
-    t.string "Volume1993_4toEnd", limit: 3
+    t.string "Volume1974toEnd", limit: 3
     t.integer "UsageCount", default: 0
     t.index ["DistrictName"], name: "DistrictName", unique: true
   end
@@ -489,28 +487,6 @@ ActiveRecord::Schema.define(version: 20190521095546) do
     t.index ["Year"], name: "Year_2"
   end
 
-  create_table "UniqueForenames", primary_key: "NameID", id: :integer, unsigned: true, default: nil, force: :cascade, options: "ENGINE=MyISAM DEFAULT CHARSET=latin1" do |t|
-    t.string "Name", limit: 100
-    t.integer "count"
-  end
-
-  create_table "UniqueSurnames", primary_key: "NameID", id: :integer, unsigned: true, default: nil, force: :cascade, options: "ENGINE=MyISAM DEFAULT CHARSET=latin1" do |t|
-    t.string "Name", limit: 100
-    t.integer "count"
-  end
-
-  create_table "bmd_searches", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "refinery_authentication_devise_roles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "title"
-  end
-
-  create_table "refinery_authentication_devise_roles_users", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-ActiveRecord::Schema.define(version: 20190803225458) do
-
   create_table "refinery_authentication_devise_roles", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.string "title"
   end
@@ -542,8 +518,8 @@ ActiveRecord::Schema.define(version: 20190803225458) do
     t.datetime "remember_created_at"
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string "slug"
     t.string "userid_detail_id"
     t.string "password_salt"
@@ -552,16 +528,14 @@ ActiveRecord::Schema.define(version: 20190803225458) do
     t.index ["slug"], name: "index_refinery_authentication_devise_users_on_slug"
   end
 
-
   create_table "refinery_county_pages", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.string "name"
     t.string "chapman_code"
     t.text "content"
     t.integer "position"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
-
 
   create_table "refinery_image_translations", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.integer "refinery_image_id", null: false
@@ -574,7 +548,6 @@ ActiveRecord::Schema.define(version: 20190803225458) do
     t.index ["refinery_image_id"], name: "index_refinery_image_translations_on_refinery_image_id"
   end
 
-
   create_table "refinery_images", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.string "image_mime_type"
     t.string "image_name"
@@ -582,13 +555,6 @@ ActiveRecord::Schema.define(version: 20190803225458) do
     t.integer "image_width"
     t.integer "image_height"
     t.string "image_uid"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "image_title"
-    t.string "image_alt"
-  end
-
-  create_table "refinery_page_part_translations", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -598,23 +564,21 @@ ActiveRecord::Schema.define(version: 20190803225458) do
     t.string "locale", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "body"
+    t.text "body", limit: 4294967295
     t.index ["locale"], name: "index_refinery_page_part_translations_on_locale"
     t.index ["refinery_page_part_id"], name: "index_refinery_page_part_translations_on_refinery_page_part_id"
   end
-
 
   create_table "refinery_page_parts", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.integer "refinery_page_id"
     t.string "slug"
     t.integer "position"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string "title"
     t.index ["id"], name: "index_refinery_page_parts_on_id"
     t.index ["refinery_page_id"], name: "index_refinery_page_parts_on_refinery_page_id"
   end
-
 
   create_table "refinery_page_translations", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.integer "refinery_page_id", null: false
@@ -628,7 +592,6 @@ ActiveRecord::Schema.define(version: 20190803225458) do
     t.index ["locale"], name: "index_refinery_page_translations_on_locale"
     t.index ["refinery_page_id"], name: "index_refinery_page_translations_on_refinery_page_id"
   end
-
 
   create_table "refinery_pages", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.integer "parent_id"
@@ -644,9 +607,6 @@ ActiveRecord::Schema.define(version: 20190803225458) do
     t.integer "depth"
     t.string "view_template"
     t.string "layout_template"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "custom_slug"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "children_count", default: 0, null: false
@@ -656,7 +616,6 @@ ActiveRecord::Schema.define(version: 20190803225458) do
     t.index ["parent_id"], name: "index_refinery_pages_on_parent_id"
     t.index ["rgt"], name: "index_refinery_pages_on_rgt"
   end
-
 
   create_table "refinery_resource_translations", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.integer "refinery_resource_id", null: false
@@ -668,27 +627,35 @@ ActiveRecord::Schema.define(version: 20190803225458) do
     t.index ["refinery_resource_id"], name: "index_refinery_resource_translations_on_refinery_resource_id"
   end
 
-
   create_table "refinery_resources", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.string "file_mime_type"
     t.string "file_name"
     t.integer "file_size"
     t.string "file_uid"
     t.string "file_ext"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
-
 
   create_table "seo_meta", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
     t.integer "seo_meta_id"
     t.string "seo_meta_type"
     t.string "browser_title"
     t.text "meta_description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.index ["id"], name: "index_seo_meta_on_id"
     t.index ["seo_meta_id", "seo_meta_type"], name: "id_type_index_on_seo_meta"
+  end
+
+  create_table "unique_forenames", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
+    t.string "Name", limit: 100
+    t.integer "count"
+  end
+
+  create_table "unique_surnames", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
+    t.string "Name", limit: 100
+    t.integer "count"
   end
 
 end
