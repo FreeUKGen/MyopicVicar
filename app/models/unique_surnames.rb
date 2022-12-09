@@ -1,3 +1,3 @@
 class UniqueSurnames < FreebmdDbBase
-  self.table_name = 'UniqueSurnames'
+  self.table_name = 'unique_surnames'
 end

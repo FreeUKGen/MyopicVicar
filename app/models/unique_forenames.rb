@@ -1,4 +1,4 @@
 class UniqueForenames < FreebmdDbBase
-  self.table_name = 'UniqueForenames'
+  self.table_name = 'unique_forenames'
 
 end
