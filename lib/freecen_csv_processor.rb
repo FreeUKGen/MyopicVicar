@@ -1042,7 +1042,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_ward
-    unless ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) && %w[1841 1851].include?(@csvfile.year) || (ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code) && @csvfile.year == '1841')
+    unless %w[1851].include?(@csvfile.year) || (%w[1841].include?(@csvfile.year) && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code)))
       message, @csvfile.ward = FreecenCsvEntry.validate_ward(@data_record, @csvfile.ward)
       @project.write_messages_to_all(message, true) unless message == ''
     end
