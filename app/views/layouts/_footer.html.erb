@@ -5,20 +5,20 @@
       <% when 'freereg' %>
       <%= render 'layouts/freereg_caution' %>
       <% when 'freecen' %>
-      <%= render 'layouts/freecen_caution' %>
+        <%= render 'layouts/freecen_caution' %>
+        <div class="c-subfooter-3 island  island--white flush--bottom text--center">
+          The space below is reserved for an advertisement
+        </div>
       <% when 'freebmd' %>
       <%= render 'layouts/freebmd_caution' %>
-    <% end %>
+      <% end %>
+    </div>
   </div>
-</div>
-<div class="c-subfooter-3 island  island--white flush--bottom text--center">
-  The space below is reserved for an advertisement
-</div>
-<div class="c-subfooter-2 icon__honeycomb--bottom-left  island  flush--bottom">
-  <nav class="container  text--center">
-    <%= render "layouts/other_projects" %>
-  </nav>
-</div>
-<%= render 'layouts/basic_footer' %>
+  <div class="c-subfooter-2 icon__honeycomb--bottom-left  island  flush--bottom">
+    <nav class="container  text--center">
+      <%= render "layouts/other_projects" %>
+    </nav>
+  </div>
+    <%= render 'layouts/basic_footer' %>
 </footer>
 
