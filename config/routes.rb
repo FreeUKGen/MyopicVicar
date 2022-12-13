@@ -291,6 +291,7 @@ MyopicVicar::Application.routes.draw do
   get 'counties/display', :to =>'counties#display', :as => :display_counties
   get 'counties/select', :to =>'counties#select', :as => :select_counties
   get 'counties/selection', :to =>'counties#selection', :as => :selection_counties
+  get 'counties/:id', :to =>'counties#bmd_view'
   resources :counties
 
   get 'freecen2_districts/selection_by_name', to: 'freecen2_districts#selection_by_name', as: :selection_by_name_freecen2_districts

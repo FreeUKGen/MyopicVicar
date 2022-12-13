@@ -22,6 +22,14 @@ class District < FreebmdDbBase
     self.InfoBookmark.present? && self.InfoBookmark != "xxxx"
   end
 
+  def display_district_volume(volume)
+    display_volume = volume
+    if volume == 'xx'
+      display_volume = 'N/A'
+    end
+    display_volume
+  end
+
   def format_district_name
     self.DistrictName.gsub(/(?<=\S) *\(.*\) *$/,'')
   end

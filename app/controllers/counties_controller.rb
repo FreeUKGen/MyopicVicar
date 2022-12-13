@@ -13,6 +13,7 @@
 #
 class CountiesController < ApplicationController
   require 'county'
+  skip_before_action :require_login, only: [:bmd_view]
 
   def create
     params[:county][:chapman_code] = ChapmanCode.values_at(params[:county][:county_description])
@@ -131,6 +132,15 @@ class CountiesController < ApplicationController
 
     flash[:notice] = 'The change to the county was successful'
     redirect_to counties_path
+  end
+
+  def bmd_view
+    @chapman_code = params[:id]
+    @districts = []
+    districts = DistrictToCounty.where(County: @chapman_code)
+    districts.each do |district|
+      @districts << district.DistrictNumber
+    end
   end
 
   private

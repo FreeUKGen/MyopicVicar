@@ -10,34 +10,58 @@
           <caption class="accessibility"> Information about <%= "#{@district.district_name_display_format} District"%>  </caption>
           <tbody>
             <tr>
-              <th rowspan="6">Volume</th>
+              <th rowspan="7">Volume</th>
             </tr>
             <tr>
               <td>Year 1837 to 1851</td>
-              <td><%= @district.Volume1837to1851 %></td>
+              <td>
+                <%= @district.Volume1837to1851 unless @district.Volume1837to1851 == 'xx' %>
+                <%= 'N/A' if @district.Volume1837to1851 == 'xx' %>
+              </td>
             </tr>
             <tr>
               <td>Year 1852 to 1945</td>
-              <td><%= @district.Volume1852to1945 %></td>
+              <td>
+                <%= @district.Volume1852to1945 unless @district.Volume1852to1945 == 'xx' %>
+                <%= 'N/A' if @district.Volume1852to1945 == 'xx' %>
+              </td>
             </tr>
             <tr>
               <td>Year 1946 to 1965</td>
-              <td><%= @district.Volume1946to1965 %></td>
+              <td>
+                <%= @district.Volume1946to1965 unless @district.Volume1946to1965 == 'xx' %>
+                <%= 'N/A' if @district.Volume1946to1965 == 'xx' %>
+              </td>
             </tr>
             <tr>
               <td>Year 1966 to 1973</td>
-              <td><%= @district.Volume1966to1973 %></td>
+              <td>
+                <%= @district.Volume1966to1973 unless @district.Volume1966to1973 == 'xx' %>
+                <%= 'N/A' if @district.Volume1966to1973 == 'xx' %>
+              </td>
             </tr>
             <tr>
-              <td>Year 1974 to End</td>
-              <td><%= @district.Volume1974toEnd %></td>
+              <td>Year 1974 to 1993-4</td>
+              <td>
+                <%= @district.Volume1974to1993_4 unless @district.Volume1974to1993_4 == 'xx' %>
+                <%= 'N/A' if @district.Volume1974to1993_4 == 'xx' %>
+              </td>
+            </tr>
+            <tr>
+              <td>Year 1993_4 to End</td>
+              <td>
+                <%= @district.Volume1993_4toEnd unless @district.Volume1993_4toEnd == 'xx'%>
+                <%= 'N/A' if @district.Volume1993_4toEnd == 'xx' %>
+              </td>
             </tr>
             <tr>
               <th rowspan="<%= @district.DistrictToCounty.count + 1%>">County</th>
             </tr>
             <% @district.DistrictToCounty.each do |d| %>
               <tr>
-                <td><%= ChapmanCode::FREEBMD_CODES['England and Wales'].key(d.County) %></td>
+                <td>
+                  <%= link_to ChapmanCode::FREEBMD_CODES['England and Wales'].key(d.County), '/counties/'+d.County %>
+                </td>
                 <td><%= "From #{QuarterDetails.quarter_human(d.StartQN)}" %> <%= QuarterDetails.quarter_year(d.EndQN) > 1993 ? "" : "to #{QuarterDetails.quarter_human(d.EndQN)}" %></td>
               </tr>
             <% end %>

@@ -1,0 +1,45 @@
+<h1><%= ChapmanCode::FREEBMD_CODES['England and Wales'].key(params[:id]) %></h1>
+<p><%= ChapmanCode::FREEBMD_CODES['England and Wales'].key(params[:id]) %>
+has the following Districts:</p>
+<table>
+  <tr>
+    <th rowspan="2">Name</th>
+    <th rowspan="2">Active from</th>
+    <th rowspan="2">Active to</th>
+    <th colspan="6">Volume numbers</th>
+    <th rowspan="2">Number of records</th>
+  </tr>
+  <tr>
+    <th>1837-1851</th>
+    <th>1852-1945</th>
+    <th>1946-1965</th>
+    <th>1966-1973</th>
+    <th>1974-1993-4</th>
+    <th>1993-4-present</th>
+  </tr>
+  <% @districts.each do |districtnumber|
+    @district = District.where(DistrictNumber: districtnumber).first
+  %>
+      <tr>
+        <td><%= link_to(@district.DistrictName, '/districts/'+@district.DistrictNumber.to_s) %></td>
+        <td>Q<%= @district.QuarterStart %> <%= @district.YearStart %></td>
+        <td><%= 'Q'+@district.QuarterEnd.to_s unless @district.QuarterEnd == 9 %>
+          <%= @district.YearEnd unless @district.YearEnd == 9999 %>
+          <%= 'Present' if @district.YearEnd == 9999 %>
+        </td>
+        <!--td><%#= display_district_volume(@district.Volume1837to1851) %></td>
+        <td><%#= display_district_volume(@district.Volume1852to1945) %></td>
+        <td><%#= display_district_volume(@district.Volume1946to1965) %></td>
+        <td><%#= display_district_volume(@district.Volume1966to1973) %></td>
+        <td><%#= display_district_volume(@district.Volume1974to1993_4) %></td>
+        <td><%#= display_district_volume(@district.Volume1993_4toEnd) %></td-->
+        <td><%= @district.Volume1837to1851 %></td>
+        <td><%= @district.Volume1852to1945 %></td>
+        <td><%= @district.Volume1946to1965 %></td>
+        <td><%= @district.Volume1966to1973 %></td>
+        <td><%= @district.Volume1974to1993_4 %></td>
+        <td><%= @district.Volume1993_4toEnd %></td>
+        <td><%= @district.UsageCount %></td>
+      </tr>
+  <%  end  %>
+</table>
