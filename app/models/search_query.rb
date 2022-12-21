@@ -1279,7 +1279,6 @@ class SearchQuery
 
   def search_records
     if MyopicVicar::Application.config.template_set = 'freebmd'
-      #raise age_at_death.is_a?nteger
       self.freebmd_search_records
     else
       self.search
@@ -1295,6 +1294,7 @@ class SearchQuery
     search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    bmd_search_records = Struct.new(:records, :success, :error_type)
     begin
       max_time = Rails.application.config.max_search_time
       Timeout::timeout(max_time) do
@@ -1310,16 +1310,15 @@ class SearchQuery
         records = combined_age_results records if self.age_at_death.present? || check_age_range?
         persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
         records
-        success = true
-        [records, success]
+        bmd_search_records.new(records, true, 0)
       end
+    rescue Timeout::Error
+      logger.warn("#{App.name_upcase}: Timeout")
+      bmd_search_records.new([], false, 1)
     rescue => e
       logger.warn("#{App.name_upcase}:error: #{e}")
-      records = nil
-      success = false
-      [records, success]
+      bmd_search_records.new([], false, 2)
     end
-    
   end
 
 

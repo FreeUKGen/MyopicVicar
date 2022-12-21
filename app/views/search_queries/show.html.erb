@@ -12,9 +12,13 @@
   <%= render 'nav_header' %>
   <%= render 'display_search_criteria'%>
   <section>
-    <% if @result_count >= @max_result %>
-      <%= render 'too_many_results' %>
-    <% else %>
+    <% case %>
+    <% when @timeout == true %>
+      <%= render 'timeout' %>
+    <% when @timeout == false %>
+      <% if @result_count >= @max_result %>
+        <%= render 'too_many_results' %>
+      <% else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
         <div class="grid">
           <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
@@ -91,6 +95,7 @@
         <% else %>
           <%= render 'please_donate' %>
         <% end %>
+      <% end %>
       <% end %>
     <% end %>
   </section>

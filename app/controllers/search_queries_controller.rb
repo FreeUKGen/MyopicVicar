@@ -74,12 +74,11 @@ class SearchQueriesController < ApplicationController
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
-      @search_results, success = @search_query.search_records
-      redirect_to search_query_path(@search_query, anchor: "bmd_content") if success
-      redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Search took too long to run. Please revise your search') && return unless success
+      @search_results, success, error_type = @search_query.search_records.to_a
+        redirect_to search_query_path(@search_query, anchor: "bmd_content") && return if success
+        redirect_to search_query_path(@search_query, timeout: true) && return if error_type == 1
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') && return unless success && error_type == 2
     else
-      #message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
-      #redirect_back(fallback_location: new_search_query_path, notice: message)
       render :new
     end
   end
@@ -221,6 +220,8 @@ class SearchQueriesController < ApplicationController
 
   def show
     #raise params.inspect
+    unless params[:timeout].present?
+      @timeout = false
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     if params[:sort_option].present?
       @sort_condition = params[:sort_option]
@@ -234,7 +235,7 @@ class SearchQueriesController < ApplicationController
       end
       @search_query.save!
     end
-    @search_results, success = @search_query.search_records if params[:saved_search].present?
+    @search_results, success, error_type = @search_query.search_records.to_a if params[:saved_search].present?
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
@@ -268,6 +269,9 @@ class SearchQueriesController < ApplicationController
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
     end
+  else
+    @timeout=true
+  end
   end
 
 
