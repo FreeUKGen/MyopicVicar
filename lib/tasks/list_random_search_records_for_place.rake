@@ -43,16 +43,19 @@ namespace :freecen do
 
         sample_size = total if total < sample_size
 
+
         outfile.puts 'Chapman_code,Place_name,District,Piece_number,Civil_Parish,Folio,Page,Schedule,Name'
 
         for a in 1..sample_size do
 
-            random = rand(1..total)
+            random = rand(1..total-1)
+
             results = SearchRecord.where({:chapman_code => chapman_code, :freecen2_place_id => { '$in' => fc2_place_ids } }).skip(random).limit(1)
 
             results.each do |rec|
 
               result_rec = SearchRecord.find_by(_id: rec._id)
+              #p "Search Record: #{rec.id}"
 
               # Search record from CSV data
               if result_rec.freecen_csv_entry_id.present?
@@ -63,6 +66,7 @@ namespace :freecen do
                   page_number = csv_entry.page_number
                   schedule_number = csv_entry.schedule_number
                   surname = csv_entry.surname
+                  forenames = csv_entry.forenames
                   full_name = "#{forenames} #{surname}"
                 else
                   civil_parish = '**MISSING**'
@@ -75,19 +79,6 @@ namespace :freecen do
                 end
               end
               # Search record from VLD data
-              if result_rec.freecen1_vld_file_id.present?
-                vld_file = Freecen1VldFile.find_by(_id: result_rec.freecen1_vld_file_id)
-                if vld_file.present?
-                  if vld_file.freecen2_district_id.present?
-                    district = Freecen2District.find_by(_id: vld_file.freecen2_district_id)
-                    district_name = district.name if district.present?
-                  end
-                  if vld_file.freecen2_piece_id.present?
-                    piece = Freecen2Piece.find_by(_id: vld_file.freecen2_piece_id)
-                    piece_number = piece.number if piece.present?
-                  end
-                end
-              end
               if result_rec.freecen_individual_id.present?
                 individual = FreecenIndividual.find_by(_id: result_rec.freecen_individual_id)
                 if individual.present?
@@ -101,6 +92,17 @@ namespace :freecen do
                       surname = vld_entry.surname
                       forenames = vld_entry.forenames
                       full_name = "#{forenames} #{surname}"
+                      vld_file = Freecen1VldFile.find_by(_id: vld_entry.freecen1_vld_file_id)
+                      if vld_file.present?
+                        if vld_file.freecen2_district_id.present?
+                          district = Freecen2District.find_by(_id: vld_file.freecen2_district_id)
+                          district_name = district.name if district.present?
+                        end
+                        if vld_file.freecen2_piece_id.present?
+                          piece = Freecen2Piece.find_by(_id: vld_file.freecen2_piece_id)
+                          piece_number = piece.number if piece.present?
+                        end
+                      end
                     end
                   end
                 end
