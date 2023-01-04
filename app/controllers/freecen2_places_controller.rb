@@ -289,6 +289,7 @@ class Freecen2PlacesController < ApplicationController
     @counties = @counties.delete_if { |county| county == 'Unknown' }
     get_user_info_from_userid
     @place_name = session[:search_names].present? ? session[:search_names][:search] : ''
+    @advanced_search = session[:search_names].present? ? session[:search_names][:advanced_search] : 'not_applicable'
     if session[:search_names].present?
       if session[:search_names][:clear_county]
         @county = ''
@@ -309,9 +310,9 @@ class Freecen2PlacesController < ApplicationController
 
     search_county = session[:search_names][:search_county]
     @advanced_search = session[:search_names][:advanced_search]
-    if @advanced_search.present?
+    if @advanced_search.present? && @advanced_search != 'not_applicable'
       redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') && return unless search_place.match(/^[A-Za-z ]+$/)
-      if @advanced_search != 'soundex' && @advanced_search != 'not_applicable'
+      if @advanced_search != 'soundex'
         redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless Freecen2Place.standard_place(search_place).length >= 3
       end
     end
