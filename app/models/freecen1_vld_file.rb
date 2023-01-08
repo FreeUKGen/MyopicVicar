@@ -138,6 +138,12 @@ class Freecen1VldFile
       [total_files, total_entries, total_individuals, total_dwellings]
     end
 
+    def create_audit_record(vld_file, who, loaded_date, fc2_piece_id)
+      @vld_audit = Freecen1VldFileAudit.new
+      @vld_audit.add_fields(vld_file, who, loaded_date, fc2_piece_id)
+      @vld_audit.save
+    end
+
     def delete_search_records(dir_name, file_name)
       Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
         SearchRecord.where(freecen1_vld_file_id: file.id).destroy_all

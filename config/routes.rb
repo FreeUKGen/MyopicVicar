@@ -76,7 +76,7 @@ MyopicVicar::Application.routes.draw do
   resources :freecen_dwellings
 
   resources :freecen_individuals
-  
+
 
   get 'freecen2_site_statistics/grand_totals', to: 'freecen2_site_statistics#grand_totals', as: :grand_totals_freecen2_site_statistics
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
@@ -102,6 +102,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen1_vld_files/:id/entry_csv_download(.:format)', to: 'freecen1_vld_files#entry_csv_download', as: :entry_csv_download_freecen1_vld_file
   get 'freecen1_vld_files/:id/csv_download(.:format)', to: 'freecen1_vld_files#csv_download', as: :csv_download_freecen1_vld_file
   resources :freecen1_vld_files
+
+  resources :freecen1_vld_file_audits
 
   get 'freecen_csv_files/spreadsheet/:id', :to => 'freecen_csv_files#spreadsheet', :as => :spreadsheet_freecen_csv_file
   get 'freecen_csv_files/download_spreadsheet', :to => 'freecen_csv_files#download_spreadsheet', :as => :download_spreadsheet_freecen_csv_file

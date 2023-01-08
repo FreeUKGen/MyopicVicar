@@ -4,6 +4,7 @@
 <%= render 'flash_notice' %>
 <% if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
   <div class="text--center">
+    <%= link_to 'List Deleted VLD Files', freecen1_vld_file_audits_path, method: :get , :class => "btn btn--small"%><br>
     To upload a new file: click this <%= link_to 'Upload new VLD file', new_freecen1_vld_file_path, method: :get , :class => "btn btn--small"%><br>
     To replace a VLD file use the replace action in the specific file listed below<br>
   </div>

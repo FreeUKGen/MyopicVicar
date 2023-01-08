@@ -1583,6 +1583,11 @@ crumb :freecen1_vld_entry do |county, entry|
   parent :freecen1_vld_entries, entry.freecen1_vld_file_id, session[:entry_page], entry
 end
 
+crumb :freecen1_vld_file_audits do |county, file|
+  link 'Deleted FreeCen1 VLD Files', freecen1_vld_file_audits_path(county: county, anchor: file)
+  parent :freecen1_vld_files, session[:county], file
+end
+
 
 #  .........................................................................freecen2_districts...........................................
 
@@ -1761,6 +1766,8 @@ crumb :show_freecen2_piece do |file, county, year|
     parent :freecen2_districts_chapman, county, year
   when 'missing_district_place_index'
     parent :freecen2_districts_missing_places, county
+  when 'vld_file_audit_index'
+    parent :freecen1_vld_file_audits, county, file
   else
     parent :county_options, county
   end
