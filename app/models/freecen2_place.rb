@@ -455,7 +455,7 @@ class Freecen2Place
           return true, "There is a disabled place with that name. It has been reactivated.", place
         end
       else
-        return false, "There is an active place with that name", place
+        return false, "There is an place with that name", place
       end
     when place.length == 0
       case
