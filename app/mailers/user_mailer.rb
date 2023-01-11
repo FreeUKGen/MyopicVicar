@@ -389,6 +389,28 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def report_for_data_manager(email_subject, email_body, report, report_name)
+    @appname = appname
+    data_managers = UseridDetail.role('data_manager').email_address_valid.all
+    dm_emails = []
+    data_managers.each do |dm|
+      user_email_with_name = dm.email_address
+      dm_emails << user_email_with_name
+    end
+
+    p 'AEV01 Test Start'
+    dm_emails = []
+    dm_emails << 'anne.vandervord@live.co.uk'
+    p "#{dm_emails}"
+    p 'AEV01 Test End'
+
+    unless report.length == 0
+      attachments[report_name] = { :mime_type => 'text/csv', :content => report }
+    end
+    mail(:to => dm_emails, :subject => email_subject, :body => email_body)
+
+  end
+
   def request_cc_image_server_group(sc, cc_email, group)
     @appname = appname
     subject = 'SC request image group'
