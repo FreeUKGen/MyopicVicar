@@ -398,11 +398,14 @@ class UserMailer < ActionMailer::Base
       dm_emails << user_email_with_name
     end
 
-    p 'AEV01 Test Start'
-    dm_emails = []
-    dm_emails << 'anne.vandervord@live.co.uk'
-    p "#{dm_emails}"
-    p 'AEV01 Test End'
+    secondary_data_managers = UseridDetail.where(secondary_role: 'data_manager')
+    secondary_data_managers.each do |sdm|
+      if sdm.email_address_valid
+        dm_emails << sdm.email_address
+      end
+    end
+
+    p "DM Email addresses: #{dm_emails}"
 
     unless report.length == 0
       attachments[report_name] = { :mime_type => 'text/csv', :content => report }
