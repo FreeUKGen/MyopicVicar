@@ -1768,6 +1768,8 @@ crumb :show_freecen2_piece do |file, county, year|
     parent :freecen2_districts_missing_places, county
   when 'vld_file_audit_index'
     parent :freecen1_vld_file_audits, county, file
+  when 'csv_file_audit_index'
+    parent :freecen_csv_file_audits, county, file
   else
     parent :county_options, county
   end
@@ -2065,6 +2067,11 @@ end
 crumb :correct_freecen_csv_entry do |entry, file|
   link 'Correct Error Record', error_freecen_csv_entry_path(entry._id)
   parent :error_freecen_csv_entries, file
+end
+
+crumb :freecen_csv_file_audits do |county, file|
+  link 'Unincorporated FreeCen CSV Files', freecen_csv_file_audits_path(county: county, anchor: file)
+  parent :freecen_csv_files
 end
 
 crumb :freecen2_places do |county, place|

@@ -19,18 +19,18 @@
     <% if @freecen1_vld_file_audits.present? %>
       <% @freecen1_vld_file_audits.each do |freecen1_vld_file_audit| %>
         <tr id="<%= freecen1_vld_file_audit.id%>">
-          <td><%= audit_piece_link(freecen1_vld_file_audit.file_name, freecen1_vld_file_audit.fc2_piece_id) %></td>
+          <td><%= vld_audit_piece_link(freecen1_vld_file_audit.file_name, freecen1_vld_file_audit.fc2_piece_id) %></td>
           <td><%= freecen1_vld_file_audit.num_entries  %></td>
           <td><%= freecen1_vld_file_audit.num_individuals %></td>
           <td><%= freecen1_vld_file_audit.num_dwellings %></td>
           <td><%= freecen1_vld_file_audit.action %></td>
-          <td><%= audit_loaded_at(freecen1_vld_file_audit.loaded_at) %></td>
+          <td><%= vld_audit_loaded_at(freecen1_vld_file_audit.loaded_at) %></td>
           <td><%= freecen1_vld_file_audit.userid %></td>
           <td><%= freecen1_vld_file_audit.transcriber_name %></td>
-          <td><%= audit_deleted_on(freecen1_vld_file_audit.c_at)%></td>
+          <td><%= vld_audit_deleted_on(freecen1_vld_file_audit.c_at)%></td>
           <td><%= freecen1_vld_file_audit.deleted_by %></td>
-          <td><%= audit_csv_files_piece_unincorporated(freecen1_vld_file_audit.fc2_piece_id) %></td>
-          <td><%= audit_csv_files_piece_incorporated(freecen1_vld_file_audit.fc2_piece_id) %></td>
+          <td><%= vld_audit_csv_files_piece_unincorporated(freecen1_vld_file_audit.fc2_piece_id) %></td>
+          <td><%= vld_audit_csv_files_piece_incorporated(freecen1_vld_file_audit.fc2_piece_id) %></td>
         </tr>
       <% end %>
     <% end %>

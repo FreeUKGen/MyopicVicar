@@ -307,7 +307,8 @@ class FreecenCsvFilesController < ApplicationController
 
     get_user_info_from_userid
     logger.warn("FREECEN:CSV_PROCESSING: Starting unincorporation rake task for #{@freecen_csv_file.file_name}")
-    pid1 =  spawn("rake freecen_csv_file_unincorporate[#{@freecen_csv_file.id}]")
+    pid1 =  spawn("rake freecen_csv_file_unincorporate[#{@freecen_csv_file.id},#{@user.userid}]")
+
     message = "The records for the csv file #{@freecen_csv_file.file_name} are being removed from the database. You will receive an email when the task has been completed."
     logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
 
@@ -474,6 +475,7 @@ class FreecenCsvFilesController < ApplicationController
     redirect_back(fallback_location: freecen_csv_file_path(@freecen_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
 
     controls(@freecen_csv_file)
+
     proceed, message = @freecen_csv_file.remove_batch
     flash[:notice] = proceed ? 'The removal of the batch was successful' : message
     if session[:my_own]

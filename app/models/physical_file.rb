@@ -204,6 +204,7 @@ class PhysicalFile
 
   def freecen_csv_file_and_entries_delete
     file = FreecenCsvFile.where(file_name: file_name, userid: userid).first
+    FreecenCsvFile.create_audit_record('Deleted',file, userid, file.freecen2_piece_id)
     FreecenCsvFile.where(file_name: file_name, userid: userid).destroy_all if file.present?
     if file_name.present?
       base_file_location = File.join(Rails.application.config.datafiles, userid, file_name)

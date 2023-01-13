@@ -1,5 +1,5 @@
-module Freecen1VldFileAuditsHelper
-  def vld_audit_piece_link(file_name, piece_id)
+module FreecenCsvFileAuditsHelper
+  def csv_audit_piece_link(file_name, piece_id)
     piece = Freecen2Piece.find_by(id: piece_id)
     if piece.present?
       link_to "#{file_name}", freecen2_piece_path(piece.id), class: 'btn   btn--small', title: 'Links to the FreeCEN2 Piece'
@@ -8,16 +8,17 @@ module Freecen1VldFileAuditsHelper
     end
   end
 
-  def vld_audit_loaded_at(load_date)
+  def csv_audit_loaded_at(load_date)
     load_date.strftime('%Y-%m-%d %H:%M')  if load_date.present?
   end
 
-  def vld_audit_deleted_on(deleted_date)
-    deleted_date.strftime('%Y-%m-%d %H:%M')  if deleted_date.present?
+
+  def csv_audit_action_on(action_date)
+    action_date.strftime('%Y-%m-%d %H:%M')  if action_date.present?
   end
 
 
-  def vld_audit_csv_files_piece_unincorporated(piece_id)
+  def csv_audit_csv_files_piece_unincorporated(piece_id)
     piece = Freecen2Piece.find_by(id: piece_id)
     if piece.freecen_csv_files.present?
       files = []
@@ -34,7 +35,7 @@ module Freecen1VldFileAuditsHelper
     end
   end
 
-  def vld_audit_csv_files_piece_incorporated(piece_id)
+  def csv_audit_csv_files_piece_incorporated(piece_id)
     piece = Freecen2Piece.find_by(id: piece_id)
     if piece.freecen_csv_files.present?
       files = []
