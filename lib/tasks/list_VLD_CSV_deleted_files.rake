@@ -1,7 +1,6 @@
 namespace :freecen do
-
   desc 'List VLD CSV deleted files'
-  task :list_VLD_CSV_deleted_files, [:days]  => :environment do | t, args|
+  task :list_VLD_CSV_deleted_files, [:days] => :environment do |_t, args|
     require 'user_mailer'
 
     time = Time.now.utc
@@ -18,7 +17,7 @@ namespace :freecen do
     report_name = 'FreeCEN_VLD_CSV_deleted_files.csv'
     report_header = 'chapman_code,file_type,file_name,num_entries,load_type,loaded_date,loaded_by,transcriber,action_type,action_date,actioned_by,piece_status'
 
-    vlds_deleted = Freecen1VldFileAudit.where(c_at: { '$lt': earliest_date }).all.order_by(dir_name: 1, c_at: 1)
+    vlds_deleted = Freecen1VldFileAudit.where(c_at: { '$lt': earliest_date }).all.order_by(dir_name: 1, file_name: 1, c_at: -1)
 
     vlds_deleted.each do |vld|
 
@@ -28,17 +27,17 @@ namespace :freecen do
         piece_status = fc2_piece.status
       end
 
-      unless piece_status == 'Online'
+      next if piece_status == 'Online'
 
-        report_csv = report_header  if report_csv.length == 0
+      report_csv = report_header  if report_csv.length == 0
 
-        report_csv += "\n"
-        report_csv += "#{vld.dir_name},VLD,#{vld.file_name},#{vld.num_entries},#{vld.action},#{vld.loaded_at.strftime('%d %b %Y')},#{vld.userid},#{vld.transcriber_name},Deleted,#{vld.c_at.strftime('%d %b %Y')},#{vld.deleted_by},#{piece_status}"
-        vld_files_deleted_cnt += 1
-      end
+      report_csv += "\n"
+      report_csv += "#{vld.dir_name},VLD,#{vld.file_name},#{vld.num_entries},#{vld.action},#{vld.loaded_at.strftime('%d %b %Y %H:%M')},#{vld.userid},#{vld.transcriber_name},Deleted,#{vld.c_at.strftime('%d %b %Y %H:%M')},#{vld.deleted_by},#{piece_status}"
+      vld_files_deleted_cnt += 1
+
     end
 
-    csvs_deleted = FreecenCsvFileAudit.where(c_at: { '$lt': earliest_date }).all.order_by(chapman_code: 1, c_at: 1)
+    csvs_deleted = FreecenCsvFileAudit.where(c_at: { '$lt': earliest_date }).all.order_by(chapman_code: 1, file_name: 1, c_at: -1)
 
     csvs_deleted.each do |csv|
 
@@ -48,14 +47,14 @@ namespace :freecen do
         piece_status = fc2_piece.status
       end
 
-      unless piece_status == 'Online'
+      next if piece_status == 'Online'
 
-        report_csv = report_header  if report_csv.length == 0
+      report_csv = report_header  if report_csv.length == 0
 
-        report_csv += "\n"
-        report_csv += "#{csv.chapman_code},CSV,#{csv.file_name},#{csv.total_records},CSVProcLoad,#{csv.loaded_at.strftime('%d %b %Y')},#{csv.userid},#{csv.transcriber_name},#{csv.action_type},#{csv.c_at.strftime('%d %b %Y')},#{csv.action_by},#{piece_status}"
-        csvproc_files_deleted_cnt += 1
-      end
+      report_csv += "\n"
+      report_csv += "#{csv.chapman_code},CSV,#{csv.file_name},#{csv.total_records},CSVProcLoad,#{csv.loaded_at.strftime('%d %b %Y %H:%M')},#{csv.userid},#{csv.transcriber_name},#{csv.action_type},#{csv.c_at.strftime('%d %b %Y %H:%M')},#{csv.action_by},#{piece_status}"
+      csvproc_files_deleted_cnt += 1
+
     end
 
     line1 = "#{vld_files_deleted_cnt} VLD files were deleted before #{earliest_date.strftime('%d %b %Y')} and have not subsequently been incorporated as CSVProc files."
