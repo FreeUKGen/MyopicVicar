@@ -1,5 +1,5 @@
 <% breadcrumb :freecen_csv_file_audits,@chapman_code, params[:page] %>
 <% session[:file_page] = params[:page]%>
-<h1 style="text-align: center">Listing of <%= @freecen_csv_file_audits.length if @freecen_csv_file_audits.present? %> FreeCen CSV Files for <%= @chapman_code%> that have been unincorporated/removed/deleted</h1>
+<h1 style="text-align: center">Listing of <%= @freecen_csv_file_audits.length if @freecen_csv_file_audits.present? %> FreeCen CSV Files for <%= @chapman_code%> that have been Unincorporated, Removed or Deleted</h1>
 <h3 class=" delta text--center">(sorted by most recent action date)</h3>
 <%= render 'flash_notice' %>
