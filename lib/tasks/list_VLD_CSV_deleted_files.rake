@@ -4,7 +4,8 @@ namespace :freecen do
   task :list_VLD_CSV_deleted_files, [:days]  => :environment do | t, args|
     require 'user_mailer'
 
-    last_midnight = Time.now.utc
+    time = Time.now.utc
+    last_midnight = Time.utc(time.year, time.month, time.day)
 
     earliest_date = last_midnight - args.days.to_i.days
 
