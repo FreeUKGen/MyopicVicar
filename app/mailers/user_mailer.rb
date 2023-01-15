@@ -389,23 +389,24 @@ class UserMailer < ActionMailer::Base
     end
   end
 
-  def report_for_data_manager(email_subject, email_body, report, report_name)
+  def report_for_data_manager(email_subject, email_body, report, report_name, email_to)
     @appname = appname
-    data_managers = UseridDetail.role('data_manager').email_address_valid.all
     dm_emails = []
-    data_managers.each do |dm|
-      user_email_with_name = dm.email_address
-      dm_emails << user_email_with_name
-    end
-
-    secondary_data_managers = UseridDetail.where(secondary_role: 'data_manager')
-    secondary_data_managers.each do |sdm|
-      if sdm.email_address_valid
-        dm_emails << sdm.email_address
+    if email_to == 'data_manager'
+      data_managers = UseridDetail.role('data_manager').email_address_valid.all
+      data_managers.each do |dm|
+        user_email_with_name = dm.email_address
+        dm_emails << user_email_with_name
       end
+      secondary_data_managers = UseridDetail.where(secondary_role: 'data_manager')
+      secondary_data_managers.each do |sdm|
+        dm_emails << sdm.email_address if sdm.email_address_valid
+      end
+    else
+      dm_emails << email_to
     end
 
-    p "DM Email addresses: #{dm_emails}"
+    p "Email addresses: #{dm_emails}"
 
     unless report.length == 0
       attachments[report_name] = { :mime_type => 'text/csv', :content => report }

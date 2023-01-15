@@ -1,7 +1,22 @@
 namespace :freecen do
   desc 'List VLD CSV deleted files'
-  task :list_VLD_CSV_deleted_files, [:days] => :environment do |_t, args|
+  task :list_VLD_CSV_deleted_files, [:days, :email_address] => :environment do |_t, args|
+
+    print "Usage: list_VLD_CSV_deleted_files[days,email_address]
+
+      \tEmail Data Manager a list of VLD/CSV files that have been Deleted/Unincorporated/Removed
+      \tprior to run date minus the specified number of days
+      \tand the fc2 Piece Status does not currently have a status = Online.
+      \tdays is optional, default days = 7
+      \temail_address is optional, if entered the email will be sent to that address rather than users with the data_manager role\n\n"
+
+
+    args.with_defaults(:days => 7, :email_address => nil)
+    print "List VLD_CSV deleted files args[:days]=#{args[:days]}\targs[:email_address]=#{args[:email_address]}\n"
+
     require 'user_mailer'
+
+    email_to = args.email_address.present? ? args[:email_address] : 'data_manager'
 
     time = Time.now.utc
     last_midnight = Time.utc(time.year, time.month, time.day)
@@ -67,8 +82,8 @@ namespace :freecen do
       email_body = line1 + "\n" + line2
     end
 
-    p 'Sending email to Data Manager(s)'
-    UserMailer.report_for_data_manager(email_subject, email_body, report_csv, report_name).deliver_now
+    p "Sending email"
+    UserMailer.report_for_data_manager(email_subject, email_body, report_csv, report_name, email_to).deliver_now
 
     p "Finished listing of #{email_subject}}"
   end
