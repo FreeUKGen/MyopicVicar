@@ -3,29 +3,30 @@ require 'chapman_code'
 
 task :list_vld_files_with_invalid_civil_parish, [:chapman, :limit] => :environment do |_t, args|
 
-  args.with_defaults(:chapman => 'ALL', :limit => 0) # ie no limit
+  args.with_defaults(:limit => 0) # ie no limit
 
-  file_for_warning_messages = 'log/list_vld_files_with_invalid_civil_parish.log'
+  if args.chapman.nil?
+    message = 'Chapman Code parameter must be supplied'
+    exit
+  end
+
+  chapman_code = args.chapman.to_s
+  file_for_warning_messages = "log/list_vld_files_with_invalid_civil_parish_#{chapman_code}.log"
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
   message_file = File.new(file_for_warning_messages, 'w')
-  csv_output_file_name = 'log/list_vld_files_with_invalid_civil_parish.csv'
+  csv_output_file_name = "log/list_vld_files_with_invalid_civil_parish_#{chapman_code}.csv"
   FileUtils.mkdir_p(File.dirname(csv_output_file_name))
   csv_output_file = File.new(csv_output_file_name, 'w')
   csv_output_file.puts 'chapman_code,vld_file,enumeration_district,vld_civil_parish,fc2_piece_number,fc2_piece_civil_parishes(hamlets)'
-  chapman_code = args.chapman.to_s
   limit = args.limit.to_i
   file_count = 0
-  this_chapman_code = nil
-  counties = chapman_code == 'ALL' ? 'All Counties' : "#{ChapmanCode.name_from_code(chapman_code)}(#{chapman_code})"
+  counties = "#{ChapmanCode.name_from_code(chapman_code)}(#{chapman_code})"
   time_start = Time.now.utc
   limit_text = limit.positive? ? " with a limit of #{limit} VLD file(s)" : ''
   message = "#{time_start.strftime('%d/%m/%Y %H:%M:%S')} Starting list of VLD files with invalid civil parish for #{counties}#{limit_text}"
   output_to_log(message_file, message)
-  if chapman_code == 'ALL'
-    files = Freecen1VldFile.order_by(dir_name: 1, file_name: 1)
-  else
-    files = Freecen1VldFile.where(dir_name: chapman_code).order_by(file_name: 1)
-  end
+
+  files = Freecen1VldFile.where(dir_name: chapman_code).order_by(file_name: 1)
 
   civil_parishes = []
   message = "Total of #{files.length} files to process for #{counties}"
@@ -34,12 +35,6 @@ task :list_vld_files_with_invalid_civil_parish, [:chapman, :limit] => :environme
   files.each do |file|
     file_count += 1
     next if limit.positive? && file_count > limit
-
-    if this_chapman_code.blank? || this_chapman_code != file.dir_name
-      message = "Working on #{file.dir_name}"
-      output_to_log(message_file, message)
-      this_chapman_code = file.dir_name
-    end
 
     entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id)
 
@@ -59,7 +54,7 @@ task :list_vld_files_with_invalid_civil_parish, [:chapman, :limit] => :environme
 
     entries.each do |entry|
       unless civil_parish_valid(entry.civil_parish, fc2_piece_civil_parishes)
-        compute_duplicate(this_chapman_code, civil_parishes, fc2_piece_civil_parishes, entry, file_name, fc2_piece_number)
+        compute_duplicate(chapman_code, civil_parishes, fc2_piece_civil_parishes, entry, file_name, fc2_piece_number)
       end
 
       #   end entry
@@ -81,7 +76,7 @@ task :list_vld_files_with_invalid_civil_parish, [:chapman, :limit] => :environme
   message = "#{civil_parishes.length} issues with Civil Parish identified"
   output_to_log(message_file, message)
   time_end = Time.now.utc
-  files_processed = limit.positive? ? limit : file_count - 1
+  files_processed = limit.positive? ? limit : file_count
   run_time = time_end - time_start
   file_processing_average_time = run_time / files_processed
   message = "Average time to process a VLD file #{file_processing_average_time.round(2)} secs"
