@@ -536,13 +536,13 @@ class FreecenCsvFile
     end
   end
 
-  def add_to_rake_delete_freecen_csv_file_list
+  def add_to_rake_delete_freecen_csv_file_list(action_userid)
     #respected as part of remove batch
     processing_file = Rails.root.join(Rails.application.config.delete_list)
     File.open(processing_file, 'a') do |f|
       f.write("#{self.id},#{self.userid},#{self.file_name}\n")
     end
-    FreecenCsvFile.create_audit_record('Removed', self, self.userid, self.freecen2_piece_id)
+    FreecenCsvFile.create_audit_record('Removed', self, action_userid,  self.freecen2_piece_id)
   end
 
   def are_we_changing_location?(param)
@@ -1185,14 +1185,14 @@ class FreecenCsvFile
     end
   end
 
-  def remove_batch
+  def remove_batch(action_userid)
     case
     when locked_by_transcriber || locked_by_coordinator
       [false, 'The removal of the batch was unsuccessful; the batch is locked']
 
     else
       # deal with file and its records
-      add_to_rake_delete_freecen_csv_file_list
+      add_to_rake_delete_freecen_csv_file_list(action_userid)
       save_to_attic
       delete
       # deal with the Physical Files collection

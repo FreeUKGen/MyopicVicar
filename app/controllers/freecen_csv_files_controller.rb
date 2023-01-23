@@ -106,7 +106,7 @@ class FreecenCsvFilesController < ApplicationController
 
 
     # save a copy to attic and delete all batches
-    @physical_file.freecen_csv_file_and_entries_delete
+    @physical_file.freecen_csv_file_and_entries_delete(session[:userid])
 
     @physical_file.delete
     session[:type] = 'edit'
@@ -476,7 +476,7 @@ class FreecenCsvFilesController < ApplicationController
 
     controls(@freecen_csv_file)
 
-    proceed, message = @freecen_csv_file.remove_batch
+    proceed, message = @freecen_csv_file.remove_batch(session[:userid])
     flash[:notice] = proceed ? 'The removal of the batch was successful' : message
     if session[:my_own]
       redirect_to my_own_freecen_csv_file_path
