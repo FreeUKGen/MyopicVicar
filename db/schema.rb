@@ -273,7 +273,8 @@ ActiveRecord::Schema.define(version: 20190521095546) do
     t.string "Volume1852to1945", limit: 3
     t.string "Volume1946to1965", limit: 3
     t.string "Volume1966to1973", limit: 3
-    t.string "Volume1974toEnd", limit: 3
+    t.string "Volume1974to1993_4", limit: 3
+    t.string "Volume1993_4toEnd", limit: 3
     t.integer "UsageCount", default: 0
     t.index ["DistrictName"], name: "DistrictName", unique: true
   end
