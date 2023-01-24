@@ -74,10 +74,12 @@ class SearchQueriesController < ApplicationController
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
-      @search_results, success, error_type = @search_query.search_records.to_a
-        redirect_to search_query_path(@search_query, anchor: "bmd_content") && return if success
-        redirect_to search_query_path(@search_query, timeout: true) && return if error_type == 1
-        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') && return unless success && error_type == 2
+      #raise @search_query.search_records.inspect
+      @search_results, success, error_type = @search_query.search_records
+      error = error_type.to_i if error_type.present?
+      redirect_to search_query_path(@search_query, anchor: "bmd_content") and return if success
+      redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
+      redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') && return unless error_type != 1
     else
       render :new
     end
@@ -219,7 +221,6 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
-    #raise params.inspect
     unless params[:timeout].present?
       @timeout = false
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
@@ -271,6 +272,7 @@ class SearchQueriesController < ApplicationController
     end
   else
     @timeout=true
+    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
   end
   end
 
