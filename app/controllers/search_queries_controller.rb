@@ -74,11 +74,11 @@ class SearchQueriesController < ApplicationController
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
-      @search_results = @search_query.search_records
-      redirect_to search_query_path(@search_query, anchor: "bmd_content")
+      @search_results, success, error_type = @search_query.search_records.to_a
+        redirect_to search_query_path(@search_query, anchor: "bmd_content") && return if success
+        redirect_to search_query_path(@search_query, timeout: true) && return if error_type == 1
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') && return unless success && error_type == 2
     else
-      #message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
-      #redirect_back(fallback_location: new_search_query_path, notice: message)
       render :new
     end
   end
@@ -220,6 +220,8 @@ class SearchQueriesController < ApplicationController
 
   def show
     #raise params.inspect
+    unless params[:timeout].present?
+      @timeout = false
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     if params[:sort_option].present?
       @sort_condition = params[:sort_option]
@@ -233,15 +235,15 @@ class SearchQueriesController < ApplicationController
       end
       @search_query.save!
     end
-    @search_results = @search_query.search_records if params[:saved_search].present?
+    @search_results, success, error_type = @search_query.search_records.to_a if params[:saved_search].present?
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
-    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
+    @max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
+    @max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
     @save_search_id = params[:saved_search] if params[:saved_search].present?
-    if @search_query.result_count >= max_result
+    if @search_query.result_count >= @max_result
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
@@ -261,13 +263,15 @@ class SearchQueriesController < ApplicationController
       total_page = @search_results.count
       @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
       @paginatable_array = Kaminari.paginate_array(@search_results, total_count: @search_results.count).page(params[:page]).per(@results_per_page)
-      @max_result = maximum_results
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
     end
+  else
+    @timeout=true
+  end
   end
 
 
@@ -300,7 +304,7 @@ class SearchQueriesController < ApplicationController
       response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
       response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
       @paginatable_array = @search_results
-      @max_result = maximum_results
+      @max_result = max_result
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'

@@ -1279,7 +1279,6 @@ class SearchQuery
 
   def search_records
     if MyopicVicar::Application.config.template_set = 'freebmd'
-      #raise age_at_death.is_a?nteger
       self.freebmd_search_records
     else
       self.search
@@ -1295,19 +1294,31 @@ class SearchQuery
     search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-    records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
-    records = records.where(search_conditions)
-    records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
-    records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
-    records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
-    records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
-    records = spouse_given_name_filter(records) if self.spouse_first_name.present?
-    records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
-    records = combined_age_results records if self.age_at_death.present? || check_age_range?
-    records = records.take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
-    persist_results(records)
-    records
+    bmd_search_records = Struct.new(:records, :success, :error_type)
+    begin
+      max_time = Rails.application.config.max_search_time
+      Timeout::timeout(max_time) do
+        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
+        records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
+        records = records.where(search_conditions)
+        records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
+        records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
+        records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
+        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
+        records = spouse_given_name_filter(records) if self.spouse_first_name.present?
+        records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
+        records = combined_age_results records if self.age_at_death.present? || check_age_range?
+        persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        records
+        bmd_search_records.new(records, true, 0)
+      end
+    rescue Timeout::Error
+      logger.warn("#{App.name_upcase}: Timeout")
+      bmd_search_records.new([], false, 1)
+    rescue => e
+      logger.warn("#{App.name_upcase}:error: #{e}")
+      bmd_search_records.new([], false, 2)
+    end
   end
 
 
