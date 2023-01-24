@@ -375,21 +375,35 @@ class SearchQuery
     return x_name['last_name'] <=> y_name['last_name']
   end
 
+  def field_values_match(x, y, fieldname)
+    if x[fieldname].class == String && y[fieldname].class == String
+      return x[fieldname].to_s.downcase == y[fieldname].to_s.downcase
+    else
+      return x[fieldname] == y[fieldname]
+    end
+  end
+
+  def compare_field_values(x, y, fieldname)
+    if x[fieldname].class == String && y[fieldname].class == String
+      return x[fieldname].to_s.downcase <=> y[fieldname].to_s.downcase
+    else
+      return x[fieldname] <=> y[fieldname]
+    end
+  end
+
   def compare_name_bmd(x, y, order_field, next_order_field=nil)
-    if x[order_field] == y[order_field]
-      #raise x[order_field].inspect
+    if field_values_match(x, y, order_field)
       next_order_field.each do |field|
         if x[field].nil? || y[field].nil?
-          return x[field].to_s <=> y[field].to_s
+          return compare_field_values(x, y, field)
         end
-        next if x[field] == y[field]
-        return x[field] <=> y[field]
+        next if field_values_match(x, y, field)
+        return compare_field_values(x, y, field)
       end
+      return 0 # rbl 20.9.2022: only gets to here if all next_order_field values match, so return 'equals' in that situation.
+    else
+      return compare_field_values(x, y, order_field)
     end
-    if x[order_field].nil? || y[order_field].nil?
-      return x[order_field].to_s <=> y[order_field].to_s
-    end
-    return x[order_field] <=> y[order_field]
   end
 
   def county_is_valid
@@ -999,20 +1013,20 @@ class SearchQuery
         results.each do |rec|
         end
         results.sort! do |x, y|
-          if order_asc
+          if self.order_asc
             (x[order] || '') <=> (y[order] || '')
           else
             (y[order] || '') <=> (x[order] || '')
           end
         end
       when SearchOrder::DATE
-        if order_asc
+        if self.order_asc
           results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
         else
           results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
         end
       when SearchOrder::LOCATION
-        if order_asc
+        if self.order_asc
           results.sort! do |x, y|
             compare_location(x, y)
           end
@@ -1022,7 +1036,7 @@ class SearchQuery
           end
         end
       when SearchOrder::NAME
-        if order_asc
+        if self.order_asc
           results.sort! do |x, y|
             compare_name(x, y)
           end
@@ -1034,11 +1048,11 @@ class SearchQuery
       when SearchOrder::SURNAME
         if self.order_asc
           results.sort! do |x, y|
-            compare_name_bmd(y, x, 'Surname',['GivenName', 'QuarterNumber', 'DistrictName'])
+            compare_name_bmd(x, y, 'Surname',['GivenName', 'QuarterNumber', 'District'])
           end
         else
           results.sort! do |x, y|
-            compare_name_bmd(x,y, 'Surname',['GivenName', 'QuarterNumber', 'DistrictName'])
+            compare_name_bmd(y, x, 'Surname',['GivenName', 'QuarterNumber', 'District'])
           end
         end
          #if order_asc
@@ -1049,11 +1063,11 @@ class SearchQuery
       when SearchOrder::FIRSTNAME
         if self.order_asc
           results.sort! do |x, y|
-           compare_name_bmd(y, x, 'GivenName', ['Surname', 'QuarterNumber', 'DistrictName'])
+           compare_name_bmd(x, y, 'GivenName', ['Surname', 'QuarterNumber', 'District'])
           end
         else
           results.sort! do |x, y|
-             compare_name_bmd(x,y, 'GivenName',['Surname', 'QuarterNumber', 'DistrictName'])
+             compare_name_bmd(y, x, 'GivenName',['Surname', 'QuarterNumber', 'District'])
           end
         end
         #raise 'hi'
@@ -1073,30 +1087,30 @@ class SearchQuery
           #   compare_name_bmd(x,y, 'RecordTypeID')
           #end
         #end
-        if order_asc
+        if self.order_asc
           results.sort! { |x, y| (x[:RecordTypeID] || '') <=> (y[:RecordTypeID] || '') }
         else
           results.sort! { |x, y| (y[:RecordTypeID] || '') <=> (x[:RecordTypeID] || '') }
         end
        when SearchOrder::BMD_DATE
-        unless self.order_asc
+         if self.order_asc
           results.sort! do |x, y|
-           compare_name_bmd(y, x, 'QuarterNumber', ['Surname', 'GivenName', 'DistrictName'])
+           compare_name_bmd(x, y, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
           end
         else
           results.sort! do |x, y|
-             compare_name_bmd(x,y, 'QuarterNumber', ['Surname', 'GivenName', 'DistrictName'])
+             compare_name_bmd(y, x, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
           end
         end
         
       when SearchOrder::DISTRICT
         if self.order_asc
           results.sort! do |x, y|
-           compare_name_bmd(y, x, 'DistrictName', ['Surname', 'GivenName', 'QuarterNumber'])
+           compare_name_bmd(x, y, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
           end
         else
           results.sort! do |x, y|
-             compare_name_bmd(x,y, 'DistrictName', ['Surname', 'GivenName', 'QuarterNumber'])
+             compare_name_bmd(y, x, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
           end
         end
       end
@@ -1265,7 +1279,6 @@ class SearchQuery
 
   def search_records
     if MyopicVicar::Application.config.template_set = 'freebmd'
-      #raise age_at_death.is_a?nteger
       self.freebmd_search_records
     else
       self.search
@@ -1281,19 +1294,31 @@ class SearchQuery
     search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-    records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
-    records = records.where(search_conditions)
-    records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
-    records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
-    records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
-    records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
-    records = spouse_given_name_filter(records) if self.spouse_first_name.present?
-    records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
-    records = combined_age_results records if self.age_at_death.present? || check_age_range?
-    records = records.take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
-    persist_results(records)
-    records
+    bmd_search_records = Struct.new(:records, :success, :error_type)
+    begin
+      max_time = Rails.application.config.max_search_time
+      Timeout::timeout(max_time) do
+        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
+        records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
+        records = records.where(search_conditions)
+        records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
+        records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
+        records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
+        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
+        records = spouse_given_name_filter(records) if self.spouse_first_name.present?
+        records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
+        records = combined_age_results records if self.age_at_death.present? || check_age_range?
+        persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        records
+        bmd_search_records.new(records, true, 0)
+      end
+    rescue Timeout::Error
+      logger.warn("#{App.name_upcase}: Timeout")
+      bmd_search_records.new([], false, 1)
+    rescue => e
+      logger.warn("#{App.name_upcase}:error: #{e}")
+      bmd_search_records.new([], false, 2)
+    end
   end
 
 
@@ -2046,8 +2071,8 @@ class SearchQuery
   end
 
   def download_csv
-    attributes = %w{ GivenName Surname RecordType Quarter District }
-    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District" ]
+    attributes = %w{ GivenName Surname RecordType Quarter District Volume Page }
+    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
     CSV.generate(headers: true) do |csv|
       csv << fields
       searched_records.each do |record|
