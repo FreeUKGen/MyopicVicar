@@ -104,6 +104,9 @@ class Freecen2PlacesController < ApplicationController
 
     elsif @place.freecen2_districts.exists? || @place.freecen2_pieces.exists? || @place.freecen2_civil_parishes.exists?
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent districts, sub districts or civil parishes') && return
+    else
+      used_as_birth_place = Freecen2Place.search_records_birth_places?(@place)
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent search record birth places') && return if used_as_birth_place
 
     end
     # @place.update_attributes(disabled: 'true', data_present: false) - disabled flag is now obsolete 2022/11
@@ -167,6 +170,8 @@ class Freecen2PlacesController < ApplicationController
       end
     end
   end
+
+
 
   def index
     get_user_info_from_userid
