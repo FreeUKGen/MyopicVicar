@@ -9,23 +9,25 @@ def clean_name(chapman_code, file_limit, fix)
   num_files = 0
   @num_fixed = 0
   @num_to_fix = 0
-  @needs_fix = false
   county = chapman_code.to_s.downcase == 'all' ? 'all' : chapman_code.to_s
   lim = file_limit.to_i
-  fixit = fix.to_s.downcase == 'y' ? true : false
+  fixit = fix.to_s.downcase == 'y'
   p "#{time_start.strftime('%d/%m/%Y %H:%M:%S')} County=#{county} file_limit=#{lim} fixit=#{fixit}"
 
-  file_for_warning_messages = "log/clean_vld_civil_parish_names_#{county}_#{time_start.strftime("%Y%m%d%H%M%S")}.log"
+  file_for_warning_messages = "log/clean_vld_civil_parish_names_#{county}_#{time_start.strftime('%Y%m%d%H%M%S')}.log"
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
   @message_file = File.new(file_for_warning_messages, 'w')
 
   vld_file_count = county == 'all' ? Freecen1VldFile.count : Freecen1VldFile.where(dir_name: county).count
   scope = county == 'all' ? 'All counties have' : "#{county} has"
-  p "#{scope} #{vld_file_count} files"
+  mode = fixit ? 'This run will fix issues' : 'THis run will just list issues'
+  @message_text = "#{scope} #{vld_file_count} vld files - #{mode}"
+  output_message(@message_text, true, true)
 
   vld_files = county == 'all' ? Freecen1VldFile.order_by(dir_name: 1, file_name: 1).pluck(:id, :dir_name, :file_name, :num_entries) : Freecen1VldFile.where(dir_name: county).order_by(file_name: 1).pluck(:id, :dir_name, :file_name, :num_entries)
 
   vld_files.each do |vld_file|
+    @needs_fix = false
 
     num_files += 1
     break if num_files > lim
@@ -35,9 +37,8 @@ def clean_name(chapman_code, file_limit, fix)
     @vld_file_name = vld_file[2]
     @vld_num_entries = vld_file[3]
 
-    @message_text = "Working on VLD File  #{@vld_chapman_code} #{@vld_file_name } with #{@vld_num_entries} records"
-    p @message_text
-    @message_file.puts "#{@message_text}"
+    @message_text = "Working on VLD File #{@vld_chapman_code} #{@vld_file_name} with #{@vld_num_entries} records"
+    output_message(@message_text, true, true)
 
     @this_enum = ''
     @this_civil_parish = ''
@@ -87,12 +88,17 @@ def clean_name(chapman_code, file_limit, fix)
   time_end = Time.now.utc
   run_time = time_end - time_start
   file_processing_average_time = run_time / files_processed
-  p "Processed #{files_processed} vld files"
-  p "Needing fix #{@num_to_fix} issues"
-  p "Fixed #{@num_fixed} issues"
-  p "Average time to process a file #{file_processing_average_time.round(2)} secs"
-  p "Run time = #{run_time.round(2)} secs"
-  p "#{time_end.strftime('%d/%m/%Y %H:%M:%S')} Finished"
+  @message_text = "Processed #{files_processed} vld files"
+  output_message(@message_text, true, true)
+  @message_text = "Needing fix #{@num_to_fix} issues"
+  output_message(@message_text, true, true)
+  @message_text = "Fixed #{@num_fixed} issues"
+  output_message(@message_text, true, true)
+  @message_text = "Average time to process a file #{file_processing_average_time.round(2)} secs"
+  output_message(@message_text, true, true)
+  @message_text = "Run time = #{run_time.round(2)} secs"
+  output_message(@message_text, true, true)
+  @message_text = "#{time_end.strftime('%d/%m/%Y %H:%M:%S')} Finished"
 end
 
 def look_for_ampersands(civil_parish)
@@ -102,7 +108,7 @@ def look_for_ampersands(civil_parish)
     to_fix = true
     fixed1 = civil_parish.gsub('&', ' and ')
     @message_text = "#{civil_parish} : found #{find1.length} ampersand(s)"
-    @message_file.puts "#{@message_text}"
+    output_message(@message_text, false, true)
   else
     fixed1 = civil_parish
   end
@@ -115,7 +121,7 @@ def look_for_commas(civil_parish, needs_fix)
     needs_fix = true
     fixed2 = civil_parish.gsub(',', ' ')
     @message_text = "#{civil_parish}: found #{find2.length} comma(s)"
-    @message_file.puts "#{@message_text}"
+    output_message(@message_text, false, true)
   else
     fixed2 = civil_parish
   end
@@ -127,20 +133,27 @@ def look_for_extra_spaces(civil_parish, needs_fix)
   unless fixed3 == civil_parish
     needs_fix = true
     @message_text = "#{civil_parish}: found multiple spaces"
-    @message_file.puts "#{@message_text}"
+    output_message(@message_text, false, true)
   end
   [needs_fix, fixed3]
 end
 
+def output_message(message, write_to_log, write_to_file)
+  p message.to_s if write_to_log
+  @message_file.puts message.to_s if write_to_file
+end
+
 def update_vld_records(chapman_code, file_id, file_name, enum, civil_parish, new_civil_parish, num_fixed)
   @message_text = "#{chapman_code} #{file_name} #{enum} #{civil_parish}: fixed_name: #{new_civil_parish}"
-  @message_file.puts "#{@message_text}"
+  @message_file.puts @message_text.to_s
 
   num_records_to_update = Freecen1VldEntry.where(freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish).count
 
   @message_text = "#{num_records_to_update} vld records to update"
+  @message_file.puts @message_text.to_s
 
-  #AEV01 record_to_update.update(civil_parish: new_vld_civil_parish)
+  result = Freecen1VldEntry.collection.find({ freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish }).update_many({ '$set' => { 'civil_parish' => new_civil_parish } })
 
   num_fixed += 1
+  num_fixed
 end
