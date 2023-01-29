@@ -1,3 +1,4 @@
+desc 'Clean up civil Parish names in vld file entries and related dwelling records'
 task :clean_vld_civil_parish_names, [:chapman_code, :file_limit, :fix] => [:environment] do |t, args|
   p "Started clean_vld_civil_parish_names #{args.chapman_code}  #{args.file_limit} #{args.fix}"
   clean_name(args.chapman_code, args.file_limit, args.fix)
@@ -54,7 +55,7 @@ def clean_name(chapman_code, file_limit, fix)
 
       next unless new_enum_civil_parish
 
-      @num_fixed = update_vld_records(@vld_chapman_code, @vld_file_id, @vld_file_name, @this_enum, @this_civil_parish, @new_vld_civil_parish, @num_fixed) if fixit && @needs_fix
+      @num_fixed = update_records(@vld_chapman_code, @vld_file_id, @vld_file_name, @this_enum, @this_civil_parish, @new_vld_civil_parish, @num_fixed) if fixit && @needs_fix
       @this_enum = the_enum
       @this_civil_parish = the_civil_parish
       @vld_entry_id = vld_entry[0]
@@ -82,7 +83,7 @@ def clean_name(chapman_code, file_limit, fix)
       end
     end
     # Fix last enumeration district?
-    @num_fixed = update_vld_records(@vld_chapman_code, @vld_file_id, @vld_file_name, @this_enum, @this_civil_parish, @new_vld_civil_parish, @num_fixed) if fixit && @needs_fix
+    @num_fixed = update_records(@vld_chapman_code, @vld_file_id, @vld_file_name, @this_enum, @this_civil_parish, @new_vld_civil_parish, @num_fixed) if fixit && @needs_fix
   end
   files_processed = lim < vld_file_count ? lim : vld_file_count
   time_end = Time.now.utc
@@ -143,16 +144,23 @@ def output_message(message, write_to_log, write_to_file)
   @message_file.puts message.to_s if write_to_file
 end
 
-def update_vld_records(chapman_code, file_id, file_name, enum, civil_parish, new_civil_parish, num_fixed)
+def update_records(chapman_code, file_id, file_name, enum, civil_parish, new_civil_parish, num_fixed)
   @message_text = "#{chapman_code} #{file_name} #{enum} #{civil_parish}: fixed_name: #{new_civil_parish}"
   @message_file.puts @message_text.to_s
 
-  num_records_to_update = Freecen1VldEntry.where(freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish).count
+  num_vld_records_to_update = Freecen1VldEntry.where(freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish).count
 
-  @message_text = "#{num_records_to_update} vld records to update"
-  @message_file.puts @message_text.to_s
+  @message_text = "#{num_vld_records_to_update} vld records to update"
+  output_message(@message_text, false, true)
 
-  result = Freecen1VldEntry.collection.find({ freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish }).update_many({ '$set' => { 'civil_parish' => new_civil_parish } })
+  vld_result = Freecen1VldEntry.collection.find({ freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish }).update_many({ '$set' => { 'civil_parish' => new_civil_parish } })
+
+  num_dwelling_records_to_update = FreecenDwelling.where(freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish).count
+
+  @message_text = "#{num_dwelling_records_to_update} dwelling records to update"
+  output_message(@message_text, false, true)
+
+  dwelling_result = FreecenDwelling.collection.find({ freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish }).update_many({ '$set' => { 'civil_parish' => new_civil_parish } })
 
   num_fixed += 1
   num_fixed
