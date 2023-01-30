@@ -1,6 +1,6 @@
 desc 'Clean up civil Parish names in vld file entries and related dwelling records'
 task :clean_vld_civil_parish_names, [:chapman_code, :file_limit, :fix] => [:environment] do |t, args|
-  p "Started clean_vld_civil_parish_names #{args.chapman_code}  #{args.file_limit} #{args.fix}"
+  p "Started clean_vld_civil_parish_names #{args.chapman_code} #{args.file_limit} #{args.fix}"
   clean_name(args.chapman_code, args.file_limit, args.fix)
   p 'Finished'
 end
@@ -13,17 +13,19 @@ def clean_name(chapman_code, file_limit, fix)
   county = chapman_code.to_s.downcase == 'all' ? 'all' : chapman_code.to_s
   lim = file_limit.to_i
   fixit = fix.to_s.downcase == 'y'
-  p "#{time_start.strftime('%d/%m/%Y %H:%M:%S')} County=#{county} file_limit=#{lim} fixit=#{fixit}"
 
   file_for_warning_messages = "log/clean_vld_civil_parish_names_#{county}_#{time_start.strftime('%Y%m%d%H%M%S')}.log"
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
   @message_file = File.new(file_for_warning_messages, 'w')
 
+  @message_text = "#{time_start.strftime('%d/%m/%Y %H:%M:%S')} County=#{county} file_limit=#{lim} fixit=#{fixit}"
+  output_message(true, true)
+
   vld_file_count = county == 'all' ? Freecen1VldFile.count : Freecen1VldFile.where(dir_name: county).count
   scope = county == 'all' ? 'All counties have' : "#{county} has"
-  mode = fixit ? 'This run will fix issues' : 'THis run will just list issues'
+  mode = fixit ? 'This run will fix issues' : 'This run will just list issues'
   @message_text = "#{scope} #{vld_file_count} vld files - #{mode}"
-  output_message(@message_text, true, true)
+  output_message(true, true)
 
   vld_files = county == 'all' ? Freecen1VldFile.order_by(dir_name: 1, file_name: 1).pluck(:id, :dir_name, :file_name, :num_entries) : Freecen1VldFile.where(dir_name: county).order_by(file_name: 1).pluck(:id, :dir_name, :file_name, :num_entries)
 
@@ -39,129 +41,118 @@ def clean_name(chapman_code, file_limit, fix)
     @vld_num_entries = vld_file[3]
 
     @message_text = "Working on VLD File #{@vld_chapman_code} #{@vld_file_name} with #{@vld_num_entries} records"
-    output_message(@message_text, true, true)
+    output_message(true, true)
 
-    @this_enum = ''
-    @this_civil_parish = ''
+    @this_enum = 'X'
+    @this_civil_parish = 'XXXXXX'
 
-    vld_entries = Freecen1VldEntry.where(freecen1_vld_file_id: @vld_file_id).order_by(enumeration_district: 1, civil_parish: 1).pluck(:id, :enumeration_district, :civil_parish)
+    vld_entries = Freecen1VldEntry.where(freecen1_vld_file_id: @vld_file_id).order_by(enumeration_district: 1, civil_parish: 1).pluck(:enumeration_district, :civil_parish)
 
     vld_entries.each do |vld_entry|
 
-      the_enum = vld_entry[1]
-      the_civil_parish = vld_entry[2]
+      the_enum = vld_entry[0]
+      the_civil_parish = vld_entry[1]
 
-      new_enum_civil_parish = @this_enum == '' || @this_civil_parish == '' || @this_enum != the_enum || @this_civil_parish != the_civil_parish ? true : false
+      new_enum_civil_parish = @this_enum != the_enum || @this_civil_parish != the_civil_parish ? true : false
 
-      next unless new_enum_civil_parish
+      next if !new_enum_civil_parish || the_civil_parish.blank?
 
-      @num_fixed = update_records(@vld_chapman_code, @vld_file_id, @vld_file_name, @this_enum, @this_civil_parish, @new_vld_civil_parish, @num_fixed) if fixit && @needs_fix
+      update_records if fixit && @needs_fix
+
       @this_enum = the_enum
       @this_civil_parish = the_civil_parish
-      @vld_entry_id = vld_entry[0]
-      @vld_enum = vld_entry[1]
-      @vld_civil_parish = vld_entry[2]
 
       @needs_fix = false
+      @new_vld_civil_parish = @this_civil_parish
 
-      unless @vld_civil_parish.blank?
+      # 1. look for all occurances of &
 
-        # 1. look for all occurances of &
+      look_for_ampersands
 
-        @needs_fix, @fixed1 = look_for_ampersands(@vld_civil_parish)
+      # 2. look for all occurances of ,
 
-        # 2. look for all occurances of ,
+      look_for_commas
 
-        @needs_fix, @fixed2 = look_for_commas(@fixed1, @needs_fix)
+      # 3. then look for all occurances of 2 spaces
 
-        # 3. then look for all occurances of 2 spaces
+      look_for_extra_spaces
 
-        @needs_fix, @new_vld_civil_parish = look_for_extra_spaces(@fixed2, @needs_fix)
-
-        @num_to_fix += 1 if @needs_fix == true
-
-      end
+      @num_to_fix += 1 if @needs_fix == true
     end
+
     # Fix last enumeration district?
-    @num_fixed = update_records(@vld_chapman_code, @vld_file_id, @vld_file_name, @this_enum, @this_civil_parish, @new_vld_civil_parish, @num_fixed) if fixit && @needs_fix
+    update_records if fixit && @needs_fix
+
   end
   files_processed = lim < vld_file_count ? lim : vld_file_count
   time_end = Time.now.utc
   run_time = time_end - time_start
   file_processing_average_time = run_time / files_processed
   @message_text = "Processed #{files_processed} vld files"
-  output_message(@message_text, true, true)
+  output_message(true, true)
   @message_text = "Needing fix #{@num_to_fix} issues"
-  output_message(@message_text, true, true)
+  output_message(true, true)
   @message_text = "Fixed #{@num_fixed} issues"
-  output_message(@message_text, true, true)
+  output_message(true, true)
   @message_text = "Average time to process a file #{file_processing_average_time.round(2)} secs"
-  output_message(@message_text, true, true)
+  output_message(true, true)
   @message_text = "Run time = #{run_time.round(2)} secs"
-  output_message(@message_text, true, true)
+  output_message(true, true)
   @message_text = "#{time_end.strftime('%d/%m/%Y %H:%M:%S')} Finished"
 end
 
-def look_for_ampersands(civil_parish)
-  to_fix = false
-  find1 = (0...civil_parish.length).find_all { |i| civil_parish[i, 1] == '&' }
+def look_for_ampersands
+  find1 = (0...@new_vld_civil_parish.length).find_all { |i| @new_vld_civil_parish[i, 1] == '&' }
   if find1.length.positive?
-    to_fix = true
-    fixed1 = civil_parish.gsub('&', ' and ')
-    @message_text = "#{civil_parish} : found #{find1.length} ampersand(s)"
-    output_message(@message_text, false, true)
-  else
-    fixed1 = civil_parish
+    @needs_fix = true
+    @message_text = "#{@new_vld_civil_parish} : found #{find1.length} ampersand(s)"
+    output_message(false, true)
+    @new_vld_civil_parish = @new_vld_civil_parish.gsub('&', ' and ')
   end
-  [to_fix, fixed1]
 end
 
-def look_for_commas(civil_parish, needs_fix)
-  find2 = (0...civil_parish.length).find_all { |i| civil_parish[i, 1] == ',' }
+def look_for_commas
+  find2 = (0...@new_vld_civil_parish.length).find_all { |i| @new_vld_civil_parish[i, 1] == ',' }
   if find2.length.positive?
-    needs_fix = true
-    fixed2 = civil_parish.gsub(',', ' ')
-    @message_text = "#{civil_parish}: found #{find2.length} comma(s)"
-    output_message(@message_text, false, true)
-  else
-    fixed2 = civil_parish
+    @needs_fix = true
+    @message_text = "#{@new_vld_civil_parish}: found #{find2.length} comma(s)"
+    output_message(false, true)
+    @new_vld_civil_parish = @new_vld_civil_parish.gsub(',', ' ')
   end
-  [needs_fix, fixed2]
 end
 
-def look_for_extra_spaces(civil_parish, needs_fix)
-  fixed3 = civil_parish.strip.squeeze(' ')
-  unless fixed3 == civil_parish
-    needs_fix = true
-    @message_text = "#{civil_parish}: found multiple spaces"
-    output_message(@message_text, false, true)
+def look_for_extra_spaces
+  fixed3 = @new_vld_civil_parish.strip.squeeze(' ')
+  unless fixed3 == @new_vld_civil_parish
+    @needs_fix = true
+    @message_text = "#{@new_vld_civil_parish}: found multiple spaces"
+    output_message(false, true)
+    @new_vld_civil_parish = fixed3
   end
-  [needs_fix, fixed3]
 end
 
-def output_message(message, write_to_log, write_to_file)
-  p message.to_s if write_to_log
-  @message_file.puts message.to_s if write_to_file
+def output_message(write_to_log, write_to_file)
+  p @message_text.to_s if write_to_log
+  @message_file.puts @message_text.to_s if write_to_file
 end
 
-def update_records(chapman_code, file_id, file_name, enum, civil_parish, new_civil_parish, num_fixed)
-  @message_text = "#{chapman_code} #{file_name} #{enum} #{civil_parish}: fixed_name: #{new_civil_parish}"
-  @message_file.puts @message_text.to_s
+#update_records(@vld_chapman_code, @vld_file_id, @vld_file_name, @this_enum, @this_civil_parish, @new_vld_civil_parish, @num_fixed)
 
-  num_vld_records_to_update = Freecen1VldEntry.where(freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish).count
+def update_records
+  @message_text = "#{@vld_chapman_code} #{@vld_file_name} #{@this_enum} #{@this_civil_parish}: fixed_name: #{@new_vld_civil_parish}"
+  output_message(false, true)
 
-  @message_text = "#{num_vld_records_to_update} vld records to update"
-  output_message(@message_text, false, true)
+  num_vld_records_to_update = Freecen1VldEntry.where(freecen1_vld_file_id: @vld_file_id, enumeration_district: @this_enum, civil_parish: @this_civil_parish).count
+  @message_text = " #{@vld_file_name} #{num_vld_records_to_update} vld records to update"
+  output_message(false, true)
 
-  vld_result = Freecen1VldEntry.collection.find({ freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish }).update_many({ '$set' => { 'civil_parish' => new_civil_parish } })
+  vld_result = Freecen1VldEntry.collection.find({ freecen1_vld_file_id: @vld_file_id, enumeration_district: @this_enum, civil_parish: @this_civil_parish }).update_many({ '$set' => { 'civil_parish' => @new_vld_civil_parish } })
 
-  num_dwelling_records_to_update = FreecenDwelling.where(freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish).count
-
+  num_dwelling_records_to_update = FreecenDwelling.where(freecen1_vld_file_id: @vld_file_id, enumeration_district: @this_enum, civil_parish: @this_civil_parish).count
   @message_text = "#{num_dwelling_records_to_update} dwelling records to update"
-  output_message(@message_text, false, true)
+  output_message(false, true)
 
-  dwelling_result = FreecenDwelling.collection.find({ freecen1_vld_file_id: file_id, enumeration_district: enum, civil_parish: civil_parish }).update_many({ '$set' => { 'civil_parish' => new_civil_parish } })
+  dwelling_result = FreecenDwelling.collection.find({ freecen1_vld_file_id: @vld_file_id, enumeration_district: @this_enum, civil_parish: @this_civil_parish }).update_many({ '$set' => { 'civil_parish' => @new_vld_civil_parish } })
 
-  num_fixed += 1
-  num_fixed
+  @num_fixed += 1
 end
