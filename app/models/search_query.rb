@@ -1297,6 +1297,7 @@ class SearchQuery
     bmd_search_records = Struct.new(:records, :success, :error_type)
     begin
       max_time = Rails.application.config.max_search_time
+      logger.warn(max_time)
       Timeout::timeout(max_time) do
         records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
         records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
@@ -1310,14 +1311,14 @@ class SearchQuery
         records = combined_age_results records if self.age_at_death.present? || check_age_range?
         persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
         records
-        bmd_search_records.new(records, true, 0)
+        [records, true, 0]
       end
     rescue Timeout::Error
       logger.warn("#{App.name_upcase}: Timeout")
-      bmd_search_records.new([], false, 1)
+      [[], false, 1]
     rescue => e
       logger.warn("#{App.name_upcase}:error: #{e}")
-      bmd_search_records.new([], false, 2)
+      [[], false, 2]
     end
   end
 
