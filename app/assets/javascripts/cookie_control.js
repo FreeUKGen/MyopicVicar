@@ -19,7 +19,7 @@ $(document).ready(function() {
     };
   };
 
-  /*donate cta
+  /*donate cta*/
   window.setBigGiveCookie = function(name,value) {
     var expires = "";
     var date = new Date();
@@ -61,11 +61,10 @@ $(document).keyup(function(evt) {
   }  // esc
 });
 
-document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
+/*document.getElementById('reminder_form_controller').onclick = function show_remind_me_later_form() {
   setCookie('donate_cta_flag_new', 1,1);
   document.getElementById("myDialog").close();
   document.getElementById("myDialog1").showModal();
-  $("#reminder_to_donate_form").show();
   $("#donate_cta_pop_up").hide();
   $("#reminder_form_controller").hide();
   var element = document.getElementById("donate_box");

@@ -32,6 +32,10 @@ class ApplicationController < ActionController::Base
     MyopicVicar::Application.config.freexxx_display_name
   end
 
+  def cta_display_status
+    MyopicVicar::Application.config.cta_display_status
+  end
+
   def appname_upcase
     appname.upcase
   end
