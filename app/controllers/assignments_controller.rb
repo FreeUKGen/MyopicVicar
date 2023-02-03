@@ -204,7 +204,7 @@ class AssignmentsController < ApplicationController
   def select_county
     @user = get_user
     counties_for_selection
-
+    @counties = @counties.sort if @counties.present?
     if @counties.blank?
       flash[:notice] = 'There are not any counties with images'
       redirect_back(fallback_location: new_manage_resource_path) && return
