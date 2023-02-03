@@ -2071,12 +2071,12 @@ class SearchQuery
     district_names_array.join(" or ") if district_names_array.present?
   end
 
-  def download_csv
+  def download_csv(page_number, results_per_page)
     attributes = %w{ GivenName Surname RecordType Quarter District Volume Page }
     fields = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
     CSV.generate(headers: true) do |csv|
       csv << fields
-      searched_records.each do |record|
+      sorted_and_paged_searched_records(page_number, results_per_page).each do |record|
         qn = record[:QuarterNumber]
         quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
         record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
@@ -2089,6 +2089,15 @@ class SearchQuery
 
   def searched_records
     search_result.records.values
+  end
+
+  def sorted_and_paged_searched_records(page_number, results_per_page)
+    params = bmd_search_params
+    search_results = self.search_result.records.values
+    search_results = self.sort_results(search_results) unless search_results.nil?
+    total_page = search_results.count
+    search_results = Kaminari.paginate_array(search_results, total_count: total_page).page(page_number).per(results_per_page)
+    search_results
   end
 
   private

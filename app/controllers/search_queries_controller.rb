@@ -259,9 +259,10 @@ class SearchQueriesController < ApplicationController
            # @search_results = @search_results.order(order_field: :desc)
           #end
         #end
-        @results_per_page = params[:results_per_page] || 20
+        @results_per_page = params[:results_per_page].present? ? params[:results_per_page].to_i : 20
         total_page = @search_results.count
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+        @page = params[:page].present? ? params[:page].to_i : 1
         @paginatable_array = Kaminari.paginate_array(@search_results, total_count: @search_results.count).page(params[:page]).per(@results_per_page)
         if !response || @search_results.nil? || @search_query.result_count.nil?
           logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
@@ -350,7 +351,9 @@ class SearchQueriesController < ApplicationController
   def download_as_csv
     search_id = params[:id]
     @search_query = SearchQuery.find_by(id: search_id)
-    send_data @search_query.download_csv, filename: "search_results-#{Date.today}.csv"
+    @page_number = params[:page].present? ? params[:page].to_i : 1
+    @results_per_page = params[:results_per_page].present? ? params[:results_per_page].to_i : 20
+    send_data @search_query.download_csv(@page_number, @results_per_page), filename: "search_results-#{Date.today}.csv"
   end
 
   def compare_search
