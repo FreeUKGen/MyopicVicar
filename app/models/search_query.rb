@@ -202,6 +202,8 @@ class SearchQuery
     3 => "Year of Birth",
     4 => "Year of Birth Range"
   }
+  RESULTS_PER_PAGE = 20
+  DEFAULT_PAGE = 1
 
   class << self
 
@@ -2071,33 +2073,21 @@ class SearchQuery
     district_names_array.join(" or ") if district_names_array.present?
   end
 
-  def download_csv(page_number, results_per_page)
-    attributes = %w{ GivenName Surname RecordType Quarter District Volume Page }
-    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
-    CSV.generate(headers: true) do |csv|
-      csv << fields
-      sorted_and_paged_searched_records(page_number, results_per_page).each do |record|
-        qn = record[:QuarterNumber]
-        quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
-        record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
-        record["RecordType"] = record_type
-        record["Quarter"] = quarter
-        csv << attributes.map{ |attr| record[attr] }
-      end
-    end
-  end
-
   def searched_records
     search_result.records.values
   end
 
-  def sorted_and_paged_searched_records(page_number, results_per_page)
-    params = bmd_search_params
-    search_results = self.search_result.records.values
+  def sorted_and_paged_searched_records
+    search_results = self.searched_records
     search_results = self.sort_results(search_results) unless search_results.nil?
-    total_page = search_results.count
-    search_results = Kaminari.paginate_array(search_results, total_count: total_page).page(page_number).per(results_per_page)
     search_results
+  end
+
+  def paginate_results(results,page_number,results_per_page)
+    page_number ||= DEFAULT_PAGE
+    results_per_page ||= RESULTS_PER_PAGE
+    total = results.count
+    Kaminari.paginate_array(results, total_count: total).page(page_number).per(results_per_page)
   end
 
   private
