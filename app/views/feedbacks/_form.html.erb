@@ -14,7 +14,11 @@
   <%= f.input :body, :label =>"Description" ,as: :text, :input_html => { :class => "simple_form_bgcolour ",:rows => 10, :cols =>60 , :placeholder => "Enter your comments"}%>
   <%= f.input :screenshot, :label => "Screenshot: Only jpg, jpeg, png or gif file" %>
   <%= f.input :feedback_time, :as => :hidden %>
-  <%= f.input :user_id , :as => :hidden %>
+  <% if @user.present? %>
+    <%= f.input :user_id, as: :hidden %>
+  <% else %>
+    <%= f.input :user_name %>
+  <% end %>
   <%= f.input :session_id, :as => :hidden %>
   <%= f.input :problem_page_url,  :as => :hidden %>
   <%= f.input :previous_page_url, :as => :hidden %>

@@ -203,7 +203,7 @@ module ApplicationHelper
     problem_page_url = request.env['REQUEST_URI']
     previous_page_url = request.env['HTTP_REFERER']
     feedback_type=Feedback::FeedbackType::ISSUE
-    user_id = session[:userid]
+    user_id = session[:userid] if session[:userid]
 
     {  :feedback_time => problem_time,
        :session_id => session_id,
