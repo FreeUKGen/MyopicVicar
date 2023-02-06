@@ -205,12 +205,14 @@ module ApplicationHelper
     feedback_type=Feedback::FeedbackType::ISSUE
     user_id = session[:userid] if session[:userid]
 
-    {  :feedback_time => problem_time,
-       :session_id => session_id,
-       :user_id => user_id,
-       :problem_page_url => problem_page_url,
-       :previous_page_url => previous_page_url,
-       :feedback_type => feedback_type }
+    {
+      feedback_time: problem_time,
+      session_id: session_id,
+      user_id: user_id,
+      problem_page_url: problem_page_url,
+      previous_page_url: previous_page_url,
+      feedback_type: feedback_type
+     }
   end
 
   #Do not believe the following is used anywhere
