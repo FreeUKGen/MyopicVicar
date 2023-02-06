@@ -20,8 +20,8 @@
     <%= f.input :user_name %>
   <% end %>
   <%= f.input :session_id, :as => :hidden %>
-  <%= f.input :problem_page_url,  :as => :hidden %>
-  <%= f.input :previous_page_url, :as => :hidden %>
-  <%= f.input :feedback_type, :as => :hidden %>
+  <%= f.input :problem_page_url,  as: :hidden %>
+  <%= f.input :previous_page_url, as: :hidden %>
+  <%= f.input :feedback_type, as: :hidden %>
   <%= f.button :submit, 'Submit Problem Report'   %>
 <% end %>
