@@ -56,11 +56,14 @@
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
       </script>
     <% end %>
-    <% if appname_downcase == 'freereg' %>
-      <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
+    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
+       <% if appname_downcase == 'freereg' %>
         <div class="reg_adsense reg_unit reg_page_level_ads">
           <%= banner_header_freereg %>
         </div>
+      <% end %>
+      <% if appname_downcase == 'freebmd' %>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7825403497160061" crossorigin="anonymous"></script>
       <% end %>
     <% end %>
 

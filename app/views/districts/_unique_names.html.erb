@@ -9,12 +9,14 @@
       <p class=" text--center">You may find it useful to use your browser find option to search for critical parts of names</p>
       <p>
         <% ("A".."Z").each do |letter| %>
+        <% unless @unique_names[letter].blank? %>
           <p><%= letter%></p>
           <p>
             <% @unique_names[letter].each do |name| %>
               <%= name %>&emsp;&nbsp;
             <% end%>
           </p>
+          <% end %>
         <% end%>
         <p> Additional Names</p>
         <p>
