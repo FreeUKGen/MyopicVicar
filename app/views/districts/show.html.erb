@@ -10,7 +10,7 @@
           <caption class="accessibility"> Information about <%= "#{@district.district_name_display_format} District"%>  </caption>
           <tbody>
             <tr>
-              <th rowspan="6">Volume</th>
+              <th rowspan="7">Volume</th>
             </tr>
             <tr>
               <td>Year 1837 to 1851</td>
@@ -29,8 +29,12 @@
               <td><%= @district.Volume1966to1973 %></td>
             </tr>
             <tr>
-              <td>Year 1974 to End</td>
-              <td><%#= @district.Volume1974toEnd %></td>
+              <td>Year 1974 to 1993_4</td>
+              <td><%= @district.Volume1974to1993_4 %></td>
+            </tr>
+            <tr>
+              <td>Year 1993-4 to End</td>
+              <td><%= @district.Volume1993_4toEnd %></td>
             </tr>
             <tr>
               <th rowspan="<%= @district.DistrictToCounty.count + 1%>">County</th>
