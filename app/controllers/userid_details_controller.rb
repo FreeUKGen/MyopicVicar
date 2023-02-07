@@ -628,6 +628,10 @@ class UseridDetailsController < ApplicationController
   end
 
   def permitted_users?
+    permitted_role? || permitted_secondary_roles?
+  end
+
+  def permitted_role?
     PERMITTED_ROLES.include? @current_user.person_role
   end
 
