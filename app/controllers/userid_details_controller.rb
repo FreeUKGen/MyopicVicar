@@ -636,7 +636,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def permitted_secondary_roles?
-     roles = @current_user.secondary_roles & PERMITTED_ROLES
+     roles = @current_user.secondary_role & PERMITTED_ROLES
      roles.present?
   end
 
