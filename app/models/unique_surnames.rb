@@ -4,5 +4,6 @@ class UniqueSurname
   include Mongoid::Timestamps::Updated::Short
   field :Name, type: String
   field :count, type: Integer
+  index( {Name: 1}, {background: true})
 end
 

@@ -4,7 +4,7 @@ class UniqueSurnamesController < ApplicationController
   def index
     require 'unique_surnames'
     @term_in_context = "^"+params[:term]
-    @surnames = UniqueSurname.where({"Name": {"$regex": @term_in_context}})
+    @surnames = UniqueSurname.where({"Name": {"$regex": @term_in_context, "$options": "i"}}).limit(10)
     render :json => get_search_names_hash(@surnames)
   end
 
