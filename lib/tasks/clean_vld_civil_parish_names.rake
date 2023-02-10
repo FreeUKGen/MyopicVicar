@@ -69,11 +69,15 @@ def clean_name(chapman_code, file_limit, fix)
 
       look_for_ampersands
 
-      # 2. look for all occurances of ,
+      # 2. look for all occurances of .
+
+      look_for_dots
+
+      # 3. then look for all occurances of ,
 
       look_for_commas
 
-      # 3. then look for all occurances of 2 spaces
+      # 4. then look for all occurances of 2 spaces
 
       look_for_extra_spaces
 
@@ -108,6 +112,16 @@ def look_for_ampersands
     @message_text = "#{@new_vld_civil_parish} : found #{find1.length} ampersand(s)"
     output_message(false, true)
     @new_vld_civil_parish = @new_vld_civil_parish.gsub('&', ' and ')
+  end
+end
+
+def look_for_dots
+  find2 = (0...@new_vld_civil_parish.length).find_all { |i| @new_vld_civil_parish[i, 1] == '.' }
+  if find2.length.positive?
+    @needs_fix = true
+    @message_text = "#{@new_vld_civil_parish}: found #{find2.length} dot(s)"
+    output_message(false, true)
+    @new_vld_civil_parish = @new_vld_civil_parish.gsub('.', ' ')
   end
 end
 
