@@ -1,9 +1,7 @@
 <h2 style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>) in <b><%= @piece.district_name %></b> of <b><%= @piece.chapman_code %></b><br>
   </h2>
   <% if !session[:stats_view] %>
-    <p class=" text--center">Videos describing <%= link_to 'this page', "https://youtu.be/GnkkKkVGXs8", target: '_blank' %>, <%= link_to 'replace file', "https://youtu.be/XH-QBKRg9gQ" , target: '_blank' %>, <%= link_to 'convert to modern headers', "https://youtu.be/OPWW7UMS9ck" , target: '_blank' if @freecen_csv_file.traditional.zero?%>, <%= link_to 'download the file', "https://youtu.be/BssGDRlRmQo" , target: '_blank' %>, <%= link_to 'remove a file', "https://youtu.be/eZ9ef3be19w" , target: '_blank' %>, <%= link_to 'download message report', "https://youtu.be/TE9xbQ9XJsk" , target: '_blank' %> (all open in new tabs)<br>
-      On header line two,
-      <%= link_to 'view flags', "", target: '_blank' %>, <%= link_to 'view error messages', "", target: '_blank'  unless @freecen_csv_file.total_errors.zero? %>, <%= link_to 'view warning messages', "", target: '_blank' unless @freecen_csv_file.total_warnings.zero?%>, <%= link_to 'view information messages', "", target: '_blank'unless @freecen_csv_file.total_info.zero?%>, <%= link_to 'view civil parishes', "", target: '_blank' %>, <%= link_to 'view pages', "", target: '_blank' %>, <%= link_to 'view dwellings', "", target: '_blank' %>, <%= link_to 'view individuals', "", target: '_blank' %> (all open in new tabs)<br>
+    <p class=" text--center">Videos describing <%= link_to 'this page', "https://youtu.be/GnkkKkVGXs8", target: '_blank' %>, <%= link_to 'replace file', "https://youtu.be/XH-QBKRg9gQ" , target: '_blank' %>, <%= link_to 'download a spreadsheet file', "https://youtu.be/2ekZ_VXmTn0" , target: '_blank' %>, <%= link_to 'download message report', "https://youtu.be/f0l1tlWESII", target: '_blank' %> (all open in new tabs)<br>
     </p>
   <% end%>
   <div  style="text-align: center">
