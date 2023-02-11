@@ -193,6 +193,8 @@ class Freecen1VldFilesController < ApplicationController
 
     #logger.warn("FREECEN:VLD_INVALID_CIVIL_PARISH_LISTING: Starting rake task for #{userid} county #{chapman_code}")
     #pid1 = spawn("rake freecen:process_freecen1_vld[#{ File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)},#{userid}]")
+    #pid1 = spawn("rake list_vld_files_with_invalid_civil_parish[#{chapman_code},,#{userid}]")
+
     #logger.warn("FREECEN:VLD_INVALID_CIVIL_PARISH_LISTING: rake task for #{pid1}")
     flash[:notice] = "The list of VLD files with invalid Civil Parish names for #{chapman_code} is being generated. You will receive an email when it has finished."
     redirect_to freecen1_vld_files_path

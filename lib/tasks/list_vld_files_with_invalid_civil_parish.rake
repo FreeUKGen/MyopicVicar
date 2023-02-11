@@ -18,7 +18,8 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
   csv_output_file_name = "#{output_file_name}.csv"
   FileUtils.mkdir_p(File.dirname(csv_output_file_name))
   csv_output_file = File.new(csv_output_file_name, 'w')
-  csv_output_file.puts 'chapman_code,vld_file,enumeration_district,vld_civil_parish,fc2_piece_number,fc2_piece_civil_parishes(hamlets)'
+  csv_header = 'chapman_code,vld_file,enumeration_district,vld_civil_parish,fc2_piece_number,fc2_piece_civil_parishes(hamlets)'
+  csv_output_file.puts csv_header
   limit = args.limit.to_i
   userid = args.userid.present? ? args.userid.to_s : 'n/a'
   file_count = 0
@@ -28,9 +29,10 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
   message = "#{time_start.strftime('%d/%m/%Y %H:%M:%S')} Starting list of VLD files with invalid civil parish starting with #{counties_text}#{limit_text}"
   output_to_log(message_file, message)
 
-  vld_counties = []
-  if userid = 'n/a'
-    vld_counties <= start_chapman_code
+  unless userid == 'n/a'
+    vld_counties = []
+    vld_counties << start_chapman_code
+    report_csv = ''
   else
     vld_counties = Freecen1VldFile.distinct('dir_name')
     vld_counties.sort!
@@ -96,6 +98,12 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
         line << "#{problem_data[:fc2_piece_number]},"
         line << "\"#{problem_data[:fc2_piece_civil_parishes]}\""
         csv_output_file.puts line
+
+        unless userid == 'n/a'
+          report_csv = csv_header  if report_csv.length == 0
+          report_csv += "\n"
+          report_csv += line
+        end
       end
       message = "#{civil_parishes.length} issues with Civil Parish identified for #{chapman_code}"
       output_to_log(message_file, message)
@@ -126,16 +134,20 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
   message = "See #{new_file_for_warning_messages} and #{new_csv_output_file_name} for output"
   output_to_log(message_file, message)
 
-
-
-  if userid != 'n/a'
+  unless userid == 'n/a'
     require 'user_mailer'
     user_rec = UseridDetail.userid(userid).first
-    friendly_email = "#{user_rec.person_forename} #{user_rec.person_surname} <#{user_rec.email_address}>"
 
     p "sending email to #{userid} with list attached"
-    UserMailer.freecen_processing_report(friendly_email, "FreeCEN VLD processing #{args.filename} ended", report).deliver
+
+    email_subject = "FreeCEN: VLD files with invalid Civil parishes in #{start_chapman_code}"
+    email_body = civil_parishes.length.positive? ? 'See attached CSV file.' : 'No invalid Civil Parishes found.'
+    report_name = "FreeCEN_VLD_invalid_civil_parishes_#{start_chapman_code}.csv"
+    email_to = user_rec.email_address
+
+    UserMailer.freecen_vld_invalid_civil_parish_report(email_subject, email_body, report_csv, report_name, email_to).deliver_now
   end
+
   time_end = Time.now.utc
   message = "#{time_end.strftime('%d/%m/%Y %H:%M:%S')} Finished"
   output_to_log(message_file, message)
