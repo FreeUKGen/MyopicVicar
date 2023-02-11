@@ -115,6 +115,47 @@ class Freecen1VldFilesController < ApplicationController
     redirect_to new_manage_resource_path && return
   end
 
+  def edit_civil_parishes
+    case
+    when params[:commit] == 'Submit'
+
+      if session[:vld_cp_edit_id].present?
+        vldfile = Freecen1VldFile.find(session[:vld_cp_edit_id])
+      else
+        message = 'The file was not correctly linked. Have your coordinator contact the web master'
+        redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+      end
+
+      result = Freecen1VldEntry.collection.find({freecen1_vld_file_id:  vldfile.id, civil_parish: params[:editcivilparish][:old_civil_parish_name]}).update_many({"$set" => {:civil_parish => params[:new_civil_parish_name]}})
+      result = FreecenDwelling.collection.find({freecen1_vld_file_id:  vldfile.id, civil_parish: params[:editcivilparish][:old_civil_parish_name]}).update_many({"$set" => {:civil_parish => params[:new_civil_parish_name]}})
+
+      flash[:notice] = "The edit of #{vldfile.file_name} Civil Parish '#{params[:editcivilparish][:old_civil_parish_name]}' to '#{params[:new_civil_parish_name]}' was successful."
+      redirect_to freecen1_vld_files_path
+
+    else
+      get_user_info_from_userid
+      if params[:id].present?
+        @freecen1_vld_file = Freecen1VldFile.find(params[:id])
+        @chapman_code = session[:chapman_code]
+        session[:vld_cp_edit_id] = params[:id]
+      end
+      unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
+        message = 'The file was not correctly linked. Have your coordinator contact the web master'
+        redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+      end
+      load_people
+      @type = params[:type].presence || 'all'
+
+      @civil_parishes = SortedSet.new
+      all_civil_parishes = Freecen1VldEntry.where(:freecen1_vld_file_id => params[:id]).pluck(:civil_parish)
+      all_civil_parishes.each do |cp|
+        @civil_parishes << cp if cp.present?
+      end
+      redirect_to new_manage_resource_path && return
+    end
+  end
+
+
   def entry_csv_download
     get_user_info_from_userid
     @freecen1_vld_file = Freecen1VldFile.find(params[:id])
