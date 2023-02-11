@@ -1,7 +1,7 @@
 desc "List VLD files with invalid civil parish"
 require 'chapman_code'
 
-task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit] => :environment do |_t, args|
+task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid] => :environment do |_t, args|
 
   args.with_defaults(:limit => 500)
 
@@ -20,15 +20,21 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit] => :env
   csv_output_file = File.new(csv_output_file_name, 'w')
   csv_output_file.puts 'chapman_code,vld_file,enumeration_district,vld_civil_parish,fc2_piece_number,fc2_piece_civil_parishes(hamlets)'
   limit = args.limit.to_i
+  userid = args.userid.present? ? args.userid.to_s : 'n/a'
   file_count = 0
   counties_text = "#{ChapmanCode.name_from_code(start_chapman_code)}(#{start_chapman_code})"
   time_start = Time.now.utc
-  limit_text = limit.positive? ? " and a limit of #{limit} VLD file(s)" : ''
+  limit_text = limit.positive? && userid != 'n/a' ? " and a limit of #{limit} VLD file(s)" : ''
   message = "#{time_start.strftime('%d/%m/%Y %H:%M:%S')} Starting list of VLD files with invalid civil parish starting with #{counties_text}#{limit_text}"
   output_to_log(message_file, message)
 
-  vld_counties = Freecen1VldFile.distinct('dir_name')
-  vld_counties.sort!
+  vld_counties = []
+  if userid = 'n/a'
+    vld_counties <= start_chapman_code
+  else
+    vld_counties = Freecen1VldFile.distinct('dir_name')
+    vld_counties.sort!
+  end
 
   message = "VLD file chapman count = #{vld_counties.length} : #{vld_counties}"
   output_to_log(message_file, message)
@@ -120,6 +126,16 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit] => :env
   message = "See #{new_file_for_warning_messages} and #{new_csv_output_file_name} for output"
   output_to_log(message_file, message)
 
+
+
+  if userid != 'n/a'
+    require 'user_mailer'
+    user_rec = UseridDetail.userid(userid).first
+    friendly_email = "#{user_rec.person_forename} #{user_rec.person_surname} <#{user_rec.email_address}>"
+
+    p "sending email to #{userid} with list attached"
+    UserMailer.freecen_processing_report(friendly_email, "FreeCEN VLD processing #{args.filename} ended", report).deliver
+  end
   time_end = Time.now.utc
   message = "#{time_end.strftime('%d/%m/%Y %H:%M:%S')} Finished"
   output_to_log(message_file, message)
