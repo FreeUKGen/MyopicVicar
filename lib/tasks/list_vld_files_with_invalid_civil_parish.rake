@@ -138,12 +138,12 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
     require 'user_mailer'
     user_rec = UseridDetail.userid(userid).first
 
-    p "sending email to #{userid} with list attached"
-
     email_subject = "FreeCEN: VLD files with invalid Civil parishes in #{start_chapman_code}"
-    email_body = civil_parishes.length.positive? ? 'See attached CSV file.' : 'No invalid Civil Parishes found.'
+    email_body = report_csv == '' ? 'No invalid Civil Parishes found.' : 'See attached CSV file.'
     report_name = "FreeCEN_VLD_invalid_civil_parishes_#{start_chapman_code}.csv"
     email_to = user_rec.email_address
+
+    p "sending email to #{userid} - list of VLD files with invalid parishes attached"
 
     UserMailer.freecen_vld_invalid_civil_parish_report(email_subject, email_body, report_csv, report_name, email_to).deliver_now
   end

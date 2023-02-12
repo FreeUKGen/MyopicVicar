@@ -84,8 +84,6 @@ def clean_name(chapman_code, limit, fix)
         message_text = "#{cp_id} #{cp_county} #{cp_name}: fixed_name: #{new_cp_name}, fixed_standard_name: #{new_cp_standard_name}"
         message_file.puts "#{message_text}"
 
-        #AEV01 civil_parish.update(name: new_cp_name, standard_name: new_cp_standard_name)
-
         unless cp_fc2_piece_id.blank?
           piece = Freecen2Piece.find_by(id: cp_fc2_piece_id)
           piece_cp_names = piece.civil_parish_names
@@ -96,8 +94,6 @@ def clean_name(chapman_code, limit, fix)
             message_text = "#{cp_fc2_piece_id}: Piece: NEW civil_parish_names: #{new_cp_names}"
             message_file.puts "#{message_text}"
           end
-
-          #AEV02 piece.update(civil_parish_names: new_cp_names)
 
         end
         fixed += 1

@@ -22,6 +22,7 @@
       <li class="grid__item one-whole push--bottom text--center">
         <%= submit_tag "Submit", :class => "btn  btn--small"%><br>
         <%= link_to 'Cancel', freecen1_vld_files_path %>
+        <%= hidden_field_tag(:vld_file_id, params[:id]) %>
       </li>
     </ol>
   <% end %>
