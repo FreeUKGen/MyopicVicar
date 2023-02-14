@@ -968,7 +968,7 @@ class SearchQuery
       if fuzzy && ((first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD)))
         errors.add(:last_name, 'You cannot use both wildcards and soundex in a search')
       end
-      if place_search?
+      if place_search? || (App.name_downcase == 'freecen' && freecen2_place_search?)
         if last_name && last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
           errors.add(:last_name, 'Two letters must precede any wildcard in a surname.')
         end
@@ -978,13 +978,13 @@ class SearchQuery
         # place_id is an adequate index -- all is well; do nothing
       else
         errors.add(:last_name, 'Wildcard can only be used with a specific place.')
-        #if last_name.match(WILDCARD)
-        #if last_name.index(WILDCARD) < 3
-        #errors.add(:last_name, 'Three letters must precede any wildcard in a surname unless a specific place is also chosen.')
-        #end
-        #else
+        # if last_name.match(WILDCARD)
+        # if last_name.index(WILDCARD) < 3
+        # errors.add(:last_name, 'Three letters must precede any wildcard in a surname unless a specific place is also chosen.')
+        # end
+        # else
         # wildcard is in first name only -- no worries
-        #end
+        # end
       end
     end
   end

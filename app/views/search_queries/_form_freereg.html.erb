@@ -12,7 +12,10 @@
   </ul>
   <% @search_query.errors.clear %>
 <% end %>
-<div class="push soft--top palm-flush--bottom">
+<div class='text--left push-half--bottom'>
+  <small>Tip: Double-tab to move between fields</small>
+</div>
+<div class="palm-flush--bottom">
   <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="inputs">
       <legend>Search fields</legend>
