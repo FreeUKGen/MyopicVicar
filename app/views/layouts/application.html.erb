@@ -175,10 +175,10 @@
               <%= yield %>
             </div>
           <% end %>
+          <div style="float:left;">
+            <a href="#top">Top of page</a>
+          </div>
           <% if  session[:userid_detail_id].present?%>
-            <div style="float:left;">
-              <a href="#top">Top of page</a>
-            </div>
             <div  style="float:right;">
               <%= form_tag(problem_url, :method=>:get) do %>
                 <% problem_button_options.each_pair do |name, value| %>

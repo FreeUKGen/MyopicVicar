@@ -1,7 +1,7 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <h1 class="accessibility">Search Results</h1>
 <div class="table-wrapper" id="search-result">
-  <table class="table--bordered table--data">
+  <table class="table--bordered table--striped table--data">
     <caption class="gamma"> <%= pluralize(@result_count, ' Search Result', ' Search Results') %>
       <small class="additional">Select a heading to sort results on that column.<br>
         Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>

@@ -13,19 +13,39 @@
       <small> Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small>
       <ol class="grid">
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="soundex_search_input">
-          <%= f.radio_button :advanced_search, 'soundex' %> Soundex
+          <% if @advanced_search == 'soundex' %>
+            <%= f.radio_button :advanced_search, 'soundex', :checked =>true %> Soundex
+          <% else %>
+            <%= f.radio_button :advanced_search, 'soundex' %> Soundex
+          <% end%>
         </li>
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="starts_with_search_input">
-          <%= f.radio_button :advanced_search, 'starts_with' %> Starts with
+          <% if @advanced_search == 'starts_with' %>
+            <%= f.radio_button :advanced_search, 'starts_with', :checked =>true %> Starts with
+          <% else %>
+            <%= f.radio_button :advanced_search, 'starts_with' %> Starts with
+          <% end%>
         </li>
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="contains_search_input">
-          <%= f.radio_button :advanced_search, 'contains' %> Contains
+          <% if @advanced_search == 'contains' %>
+            <%= f.radio_button :advanced_search, 'contains', :checked =>true %> Contains
+          <% else %>
+            <%= f.radio_button :advanced_search, 'contains' %> Contains
+          <% end%>
         </li>
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="ends_with_search_input">
-          <%= f.radio_button :advanced_search, 'ends_with' %> Ends with
+          <% if @advanced_search == 'ends_with' %>
+            <%= f.radio_button :advanced_search, 'ends_with', :checked =>true %> Ends with
+          <% else %>
+            <%= f.radio_button :advanced_search, 'ends_with' %> Ends with
+          <% end%>
         </li>
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="no_advanced_search_input">
-          <%= f.radio_button :advanced_search, 'not_applicable', :checked =>true %> N/A
+          <% if @advanced_search.present? && @advanced_search != 'not_applicable' %>
+            <%= f.radio_button :advanced_search, 'not_applicable' %> N/A
+          <% else %>
+            <%= f.radio_button :advanced_search, 'not_applicable', :checked =>true%> N/A
+          <% end %>
         </li>
       </ol>
     </fieldset>

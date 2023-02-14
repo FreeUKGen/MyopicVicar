@@ -97,26 +97,29 @@ class Freecen2PlacesController < ApplicationController
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
 
     if @place.error_flag == 'Place name is not approved' || @place.disabled == 'true'
-      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place is not approved or is already disabled') && return
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place is not approved or is disabled') && return
 
     elsif @place.search_records.exists?
-      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be disabled because there are dependent search records') && return
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent search records') && return
 
     elsif @place.freecen2_districts.exists? || @place.freecen2_pieces.exists? || @place.freecen2_civil_parishes.exists?
-      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be disabled because there are dependent districts, sub districts or civil parishes') && return
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent districts, sub districts or civil parishes') && return
+
     end
-    @place.update_attributes(disabled: 'true', data_present: false)
+    # @place.update_attributes(disabled: 'true', data_present: false) - disabled flag is now obsolete 2022/11
+    place_name_deleted = @place.place_name
+    @place.delete
     if @place.errors.any?
-      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: "The disabling of the place was unsuccessful #{@place.errors.messages}") && retuurn
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: "The deletion of the place (#{place_name_deleted}) was unsuccessful #{@place.errors.messages}") && retuurn
 
     elsif session[:search_names].nil?
-      flash[:notice] = 'The disabling of the place was successful'
+      flash[:notice] = "The deletion of the place (#{place_name_deleted}) was successful"
       redirect_to(freecen2_places_path) && return
     elsif session[:search_names].present?
-      flash[:notice] = 'The disabling of the place was successful'
+      flash[:notice] = "The deletion of the place (#{place_name_deleted}) was successful"
       redirect_to(search_names_results_freecen2_place_path) && return
     else
-      flash[:notice] = 'The disabling of the place was successful'
+      flash[:notice] = "The deletion of the place (#{place_name_deleted}) was successful"
       redirect_to(search_names_freecen2_place_path) && return
     end
   end
@@ -289,6 +292,7 @@ class Freecen2PlacesController < ApplicationController
     @counties = @counties.delete_if { |county| county == 'Unknown' }
     get_user_info_from_userid
     @place_name = session[:search_names].present? ? session[:search_names][:search] : ''
+    @advanced_search = session[:search_names].present? ? session[:search_names][:advanced_search] : 'not_applicable'
     if session[:search_names].present?
       if session[:search_names][:clear_county]
         @county = ''
@@ -309,9 +313,9 @@ class Freecen2PlacesController < ApplicationController
 
     search_county = session[:search_names][:search_county]
     @advanced_search = session[:search_names][:advanced_search]
-    if @advanced_search.present?
+    if @advanced_search.present? && @advanced_search != 'not_applicable'
       redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') && return unless search_place.match(/^[A-Za-z ]+$/)
-      if @advanced_search != 'soundex' && @advanced_search != 'not_applicable'
+      if @advanced_search != 'soundex'
         redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless Freecen2Place.standard_place(search_place).length >= 3
       end
     end

@@ -561,8 +561,8 @@ module FreecenValidations
     def birth_place?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? NARROW_VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
           return [false, 'invalid text']
