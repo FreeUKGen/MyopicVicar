@@ -36,6 +36,10 @@ class ApplicationController < ActionController::Base
     MyopicVicar::Application.config.cta_display_status
   end
 
+  def array_of_userids
+    UseridDetail.all.pluck(:userid)
+  end
+
   def appname_upcase
     appname.upcase
   end
