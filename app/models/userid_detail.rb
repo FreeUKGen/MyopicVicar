@@ -84,6 +84,7 @@ class UseridDetail
   @old_date = "2017/10/17"
   @new_date = DateTime.new(@current_year, 01, 01)
   @users_count = UseridDetail.count
+  EVENT_YEAR_ONLY = 589
 
   scope :users_marked_active, ->{ where(active: true) }
   scope :users_accepted_new_transcription_agreement, ->{ where(new_transcription_agreement: "Accepted") }

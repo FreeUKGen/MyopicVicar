@@ -367,6 +367,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
   get 'userid_details/list_saved_entry', to: 'userid_details#list_saved_entry', :as => :list_saved_entries_userid_details
+  get 'userid_details/:id/saved_entries_as_csv' => 'userid_details#saved_entries_as_csv', as: :saved_entries_as_csv
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do
@@ -530,6 +531,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/wildcard_options_dropdown' => 'search_queries#wildcard_options_dropdown'
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   get 'search_queries/:id/download_as_csv' => 'search_queries#download_as_csv', as: :search_results_download_as_csv
+  #get 'search_queries/:id/saved_entries_as_csv' => 'search_queries#saved_entries_as_csv', as: :saved_entries_as_csv
   post 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
   get 'search_queries/:id/compare_search/:saved_search_id', to: 'search_queries#compare_search', as: :compare_search
   resources :search_queries do

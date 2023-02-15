@@ -2079,6 +2079,22 @@ class SearchQuery
     search_result.records.values
   end
 
+  def saved_entries_csv(saved_entries)
+    attributes = %w{ GivenName Surname RecordType Quarter District Volume Page }
+    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
+    CSV.generate(headers: true) do |csv|
+      csv << fields
+      saved_entries.each do |record|
+        qn = record[:QuarterNumber]
+        quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
+        record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
+        #record["RecordType"] = record_type
+        #record["Quarter"] = quarter
+        csv << attributes.map{ |attr| record[attr] }
+      end
+    end
+  end
+
   private
 
   def selected_sort_fields
