@@ -26,3 +26,24 @@ task :unique_forenames => :environment do
   end
   puts "Finished forenames"
 end
+
+task :unique_individual_forenames => :environment do
+  require 'unique_forenames'
+  puts 'Starting individual forenames'
+  UniqueForename.delete_all
+  n = 0
+  BestGuess.distinct.pluck(:GivenName).sort.each do |forename|
+    #n += 1
+    names = forename.split(/[^[[:word:]]]+/)
+    names.each do |thisname|
+      if thisname.length > 1
+        if UniqueForename.find_by(Name: thisname) == nil
+          records = BestGuess.where(GivenName: thisname).count
+          puts "#{thisname}, #{records}"
+          UniqueForename.create(:Name => thisname, :count => records)
+        end
+      end
+    end
+  end
+  puts "Finished individual forenames"
+end
