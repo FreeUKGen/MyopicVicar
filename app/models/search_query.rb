@@ -892,9 +892,17 @@ class SearchQuery
         end
       when SearchOrder::DATE
         if order_asc
-          results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
+          results.sort! { |x, y| 
+          x_field = x[:search_date].present? ? x[:search_date] : x[:secondary_search_date]
+          y_field = y[:search_date].present? ? y[:search_date] : y[:secondary_search_date]
+          x_field || '') <=> (y_field || '')
+        }
         else
-          results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
+          results.sort! { |x, y|
+          x_field = x[:search_date].present? ? x[:search_date] : x[:secondary_search_date]
+          y_field = y[:search_date].present? ? y[:search_date] : y[:secondary_search_date]
+          (y_field || '') <=> (x_field || '') 
+        }
         end
       when SearchOrder::LOCATION
         if order_asc
