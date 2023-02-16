@@ -1,0 +1,33 @@
+<% breadcrumb :freecen1_vld_file,  @chapman_code, @freecen1_vld_file %>
+<p style="text-align: center"><b>Editing Civil Parishes for FreeCen1 VLD file : <%= file_name(@freecen1_vld_file) %></b> for <b><%= @chapman_code %></b><br>
+</p>
+<%= render partial: 'flash_notice' %>
+<%unless session[:error_line].nil?%>
+  <%n = 0%>
+  <%while n < @n %>
+    <b><%=@error_message[n]%><%= @content[n]%></b>
+    <br>
+    <%n = n + 1%>
+  <%end%>
+<%end%>
+<div>
+  <%= form_for(:editcivilparish, url: edit_civil_parishes_freecen1_vld_file_path, method: :get, data: { confirm: "Are you sure you want to submit the edit?"}) do |f| %>
+    <ol class="grid">
+      <li class="grid__item one-whole push--bottom text--center">
+        Select Civil Parish name to edit: <%= f.select :old_civil_parish_name, @civil_parishes %>
+      </li>
+      <li class="grid__item one-whole push--bottom text--center">
+        New Civil Parish name: <%= text_field_tag 'new_civil_parish_name', nil, placeholder: 'Enter new Civil Parish name here..', :required => true %>
+      </li>
+      <li class="grid__item one-whole push--bottom text--center">
+        <%= submit_tag "Submit", :class => "btn  btn--small"%><br>
+        <%= link_to 'Cancel', freecen1_vld_files_path %>
+        <%= hidden_field_tag(:vld_file_id, params[:id]) %>
+      </li>
+    </ol>
+  <% end %>
+</div>
+<script type="text/javascript">
+  Ladda.bind( 'button[type=submit]' );
+</script>
+<br>

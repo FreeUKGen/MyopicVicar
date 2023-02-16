@@ -5,6 +5,17 @@
 <% if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
   <div class="text--center">
     To upload a new file: click this <%= link_to 'Upload new VLD file', new_freecen1_vld_file_path, method: :get , :class => "btn btn--small"%><br>
-    To replace a VLD file use the replace action in the specific file listed below<br>
+    <% if @user.person_role == "system_administrator" || @user.person_role == "data_manager" %>
+      <%= form_for(:listinvalidcivilparishes, url: list_invalid_civil_parishes_freecen1_vld_file_path, method: :get, data: { confirm: "Are you sure you want to generate a list of VLD fies with invalid Civil Parishes?"}) do |f| %>
+        <fieldset class="inputs">
+          <%= f.submit 'List files with invalid Civil Parishes', :class => "btn   btn--small", title: 'Sends a list via Email (CSV file attachment)',data: { disable_with: false } %>
+          <p class="text--left">
+            <i>Note: This initiates a background task on the server and the length of time taken will depend on the number of VLD files for the county, the number of other people submitting tasks for processing in both FreeCEN and FreeREG, as well as the number of searches being performed on this server. When the process has completed the list will be emailed to you as a CSV file attachment.</i></p>
+        </fieldset>
+      <% end %>
+    <% end %>
+    <p class="text--center text--negative push-half--bottom"> <b>
+        To replace a VLD file use the replace action in the specific file listed below<br>
+      </b></p>
   </div>
 <% end%>

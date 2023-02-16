@@ -11,9 +11,9 @@
       <th class='sticky-header '>Uploaded By</th>
       <th class='sticky-header '>Transcriber</th>
       <% if %w[system_administrator data_manager].include?(@user.person_role)%>
-        <th colspan = "4" class='sticky-header '>Actions</th>
+        <th colspan = "5" class='sticky-header '>Actions</th>
       <% else%>
-        <th colspan = "3" class='sticky-header '>Actions</th>
+        <th colspan = "4" class='sticky-header '>Actions</th>
       <% end%>
     </tr>
     <% if @freecen1_vld_files.present? %>
@@ -30,7 +30,8 @@
           <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
           <td><%= link_to 'Replace', new_freecen1_vld_file_path(replace: freecen1_vld_file.file_name), data: { confirm: 'Confirm you want to replace this file'}, method: :get if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
           <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Deleting", confirm: 'Are you sure you want to delete this Vld File? It may take some time to process, you will receive a message when the file delete has completed.'}, method: :delete if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
-          <td><%= link_to 'Edit', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Confirm you want to edit the file'} if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
+          <td><%= link_to 'Edit Transcriber', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Confirm you want to edit Transcriber for this file'} if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
+          <td><%= link_to 'Edit Civil Parishes', edit_civil_parishes_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to edit Civil Parishes for this VLD file?'} if %w[system_administrator data_manager].include?(@user.person_role)%></td>
         </tr>
       <% end %>
     <% end %>

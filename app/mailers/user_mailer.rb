@@ -240,6 +240,14 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def freecen_vld_invalid_civil_parish_report(email_subject, email_body, report, report_name, email_to)
+    email_addresses = []
+    email_addresses << email_to
+    attachments[report_name] = { :mime_type => 'text/csv', :content => report } unless report.empty?
+
+    mail(:to => email_addresses, :subject => email_subject, :body => email_body)
+  end
+
   def notification_of_technical_registration(user)
     @appname = appname
     @user = user
