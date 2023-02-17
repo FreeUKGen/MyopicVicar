@@ -767,6 +767,12 @@ class UseridDetail
     BestGuess.where(RecordNumber: record_number)
   end
 
+  def saved_entries_as_array
+    record_hash = self.saved_entry
+    record_number = BestGuessHash.where(Hash: record_hash).pluck(:RecordNumber)
+    record_number
+  end
+
   private
 
   def filter_users
