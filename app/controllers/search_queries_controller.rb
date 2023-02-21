@@ -362,15 +362,6 @@ class SearchQueriesController < ApplicationController
     send_data search_results_csv(paginated_array), filename: "search_results-#{Date.today}.csv"
   end
 
-  # def saved_entries_as_csv
-  #  search_id = params[:search_id]
-  #  @search_query = SearchQuery.find_by(search_id: search_id)
-  #  get_user_info_from_userid
-  #  @userid = @user
-  #  @saved_entries = @userid.get_saved_entries
-  #  send_data @search_query.saved_entries_csv(@saved_entries), filename: "saved_entries-#{Date.today}.csv"
-  #end
-
   def compare_search
     #raise params.inspect
     get_user_info_from_userid

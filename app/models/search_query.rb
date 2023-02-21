@@ -2078,18 +2078,21 @@ class SearchQuery
     search_result.records.values
   end
 
-  def saved_entries_csv(saved_entries)
+  def saved_entries_csv(userid)
     attributes = %w{ GivenName Surname RecordType Quarter District Volume Page }
     fields = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
     CSV.generate(headers: true) do |csv|
       csv << fields
-      saved_entries.each do |record|
-        qn = record[:QuarterNumber]
+      record_number = userid.saved_entries_as_array
+      saved_entries = BestGuess.find(record_number)
+      saved_entries.each do |saved_record|
+        this_record_atts = saved_record.attributes
+        qn = saved_record[:QuarterNumber]
         quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
-        record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
-        #record["RecordType"] = record_type
-        #record["Quarter"] = quarter
-        csv << attributes.map{ |attr| record[attr] }
+        record_type = RecordType::display_name(["#{saved_record[:RecordTypeID]}"])
+        this_record_atts["RecordType"] = record_type
+        this_record_atts["Quarter"] = quarter
+        csv << attributes.map{ |attr| this_record_atts[attr] }
       end
     end
   end
