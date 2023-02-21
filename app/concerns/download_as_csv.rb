@@ -7,7 +7,7 @@ module DownloadAsCsv
     CSV.generate(headers: true) do |csv|
       csv << FIELDS
       array.each do |record|
-        qn = record[:QuarterNumber]
+        qn = record['QuarterNumber']
         quarter = qn >= SearchQuery::EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
         record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
         record["RecordType"] = record_type
