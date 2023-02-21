@@ -596,7 +596,7 @@ class UseridDetailsController < ApplicationController
     get_user_info_from_userid
     @userid = @user
     record_number = @userid.saved_entries_as_array
-    saved_entries = BestGuess.find(record_number)
+    saved_entries = BestGuess.where(RecordNumber: record_number).map(&:attributes)
     send_data search_results_csv(saved_entries), filename: "saved_entries-#{Date.today}.csv"
     #send_data @search_query.saved_entries_csv(@userid), filename: "saved_entries-#{Date.today}.csv"
   end
