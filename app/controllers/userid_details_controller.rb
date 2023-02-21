@@ -15,6 +15,7 @@ class UseridDetailsController < ApplicationController
   include ActiveModel::Dirty
   require 'userid_role'
   require 'import_users_from_csv'
+  include DownloadAsCsv
   skip_before_action :require_login, only: [:general, :create, :researcher_registration, :transcriber_registration, :technical_registration]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
   
@@ -594,7 +595,10 @@ class UseridDetailsController < ApplicationController
     @search_query = SearchQuery.find_by(search_id: search_id)
     get_user_info_from_userid
     @userid = @user
-    send_data @search_query.saved_entries_csv(@userid), filename: "saved_entries-#{Date.today}.csv"
+    record_number = @userid.saved_entries_as_array
+    saved_entries = BestGuess.find(record_number)
+    send_data search_results_csv(saved_entries), filename: "saved_entries-#{Date.today}.csv"
+    #send_data @search_query.saved_entries_csv(@userid), filename: "saved_entries-#{Date.today}.csv"
   end
 
   private
