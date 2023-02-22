@@ -72,7 +72,7 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
 
         if fc2_piece.present?
           fc2_piece_number = fc2_piece.number
-          fc2_piece_civil_parishes = fc2_piece.civil_parish_names
+          fc2_piece_civil_parishes = fc2_piece.civil_parish_names.present? ? fc2_piece.civil_parish_names : '**MISSING**'
         else
           fc2_piece_number = '**MISSING**'
           fc2_piece_civil_parishes = '**MISSING**'
@@ -138,7 +138,7 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
     require 'user_mailer'
     user_rec = UseridDetail.userid(userid).first
 
-    email_subject = "FreeCEN: VLD files with invalid Civil parishes in #{start_chapman_code}"
+    email_subject = "FreeCEN: VLD files with invalid Civil Parishes in #{start_chapman_code}"
     email_body = report_csv == '' ? 'No invalid Civil Parishes found.' : 'See attached CSV file.'
     report_name = "FreeCEN_VLD_invalid_civil_parishes_#{start_chapman_code}.csv"
     email_to = user_rec.email_address
