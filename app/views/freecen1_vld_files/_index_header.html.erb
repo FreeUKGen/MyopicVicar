@@ -5,7 +5,7 @@
 <% if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
   <div class="text--center">
     To upload a new file: click this <%= link_to 'Upload new VLD file', new_freecen1_vld_file_path, method: :get , :class => "btn btn--small"%><br>
-    <% if @user.person_role == "system_administrator" %>
+    <% if @user.person_role == "system_administrator" || @user.person_role == "data_manager" %>
       <%= form_for(:listinvalidcivilparishes, url: list_invalid_civil_parishes_freecen1_vld_file_path, method: :get, data: { confirm: "Are you sure you want to generate a list of VLD fies with invalid Civil Parishes?"}) do |f| %>
         <fieldset class="inputs">
           <%= f.submit 'List files with invalid Civil Parishes', :class => "btn   btn--small", title: 'Sends a list via Email (CSV file attachment)',data: { disable_with: false } %>

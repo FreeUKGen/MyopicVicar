@@ -4,7 +4,7 @@
 <div style="text-align: center">
   <% if %w[data_manager county_coordinator country_coordinator master_county_coordinator system_administrator].include?(@user.person_role)%>
     <%= edit_freecen1_vld_file %>
-    <% if %w[system_administrator].include?(@user.person_role)%>
+    <% if %w[system_administrator data_manager].include?(@user.person_role)%>
       <%= edit_cp_freecen1_vld_file %>
     <% end%>
     <%= link_to 'Download file as CSVPro', csv_download_freecen1_vld_file_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" %>
