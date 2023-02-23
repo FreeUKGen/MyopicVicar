@@ -174,7 +174,7 @@ def self.ignore_hamlets(civil_parish_names)
     end
     just_civil_parish += char if ignore == false
   end
-  just_civil_parish
+  just_civil_parish.downcase
 end
 
 def self.civil_parish_valid(civil_parish, fc2_piece_civil_parishes)
@@ -184,7 +184,7 @@ def self.civil_parish_valid(civil_parish, fc2_piece_civil_parishes)
 
   return true if civil_parish.blank?
 
-  ignore_hamlets(fc2_piece_civil_parishes).include? civil_parish
+  ignore_hamlets(fc2_piece_civil_parishes).include? civil_parish.downcase
 end
 
 def self.compute_duplicate(chapman_code, civil_parishes, fc2_piece_civil_parishes, entry, file_name, fc2_piece_number)

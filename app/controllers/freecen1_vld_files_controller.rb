@@ -137,8 +137,8 @@ class Freecen1VldFilesController < ApplicationController
       result = FreecenDwelling.collection.find({freecen1_vld_file_id:  vldfile.id, civil_parish: params[:editcivilparish][:old_civil_parish_name]}).update_many({"$set" => {:civil_parish => params[:new_civil_parish_name]}})
 
       flash[:notice] = "The edit of #{vldfile.file_name} Civil Parish '#{params[:editcivilparish][:old_civil_parish_name]}' to '#{params[:new_civil_parish_name]}' was successful."
-      redirect_to freecen1_vld_files_path
-
+      # AEV redirect_to freecen1_vld_files_path
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     else
       get_user_info_from_userid
       if params[:id].present?
