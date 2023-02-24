@@ -62,7 +62,7 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
       files.each do |file|
         file_count += 1
 
-        entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id)
+        entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id).order_by(enumeration_district: 1, civil_parish: 1)
 
         message = "Processing #{file.file_name} with #{entries.length} entries"
         output_to_log(message_file, message)
