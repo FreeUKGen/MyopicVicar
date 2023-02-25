@@ -10,10 +10,10 @@
       <th class='sticky-header '>Loaded At</th>
       <th class='sticky-header '>Uploaded By</th>
       <th class='sticky-header '>Transcriber</th>
-      <% if %w[system_administrator data_manager].include?(@user.person_role)%>
-        <th colspan = "5" class='sticky-header '>Actions</th>
+      <% if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
+        <th colspan = "6" class='sticky-header '>Actions</th>
       <% else%>
-        <th colspan = "4" class='sticky-header '>Actions</th>
+        <th colspan = "5" class='sticky-header '>Actions</th>
       <% end%>
     </tr>
     <% if @freecen1_vld_files.present? %>
@@ -28,6 +28,7 @@
           <td><%= freecen1_vld_file.userid %></td>
           <td><%= freecen1_vld_file.transcriber_name %></td>
           <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
+          <td><%= link_to 'Download', download_vld_file_freecen1_vld_file_path(file: freecen1_vld_file.id), title: 'Download VLD file',data: { confirm: 'Confirm you want to download this VLD file'}, method: :get if %w[system_administrator data_manager].include?(@user.person_role)%></td>
           <td><%= link_to 'Replace', new_freecen1_vld_file_path(replace: freecen1_vld_file.file_name), data: { confirm: 'Confirm you want to replace this file'}, method: :get if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
           <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Deleting", confirm: 'Are you sure you want to delete this Vld File? It may take some time to process, you will receive a message when the file delete has completed.'}, method: :delete if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>
           <td><%= link_to 'Edit Transcriber', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Confirm you want to edit Transcriber for this file'} if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%></td>

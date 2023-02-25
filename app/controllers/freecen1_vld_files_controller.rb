@@ -66,6 +66,17 @@ class Freecen1VldFilesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path) && return
   end
 
+  def download_vld_file
+    file = Freecen1VldFile.find(params[:file])
+    redirect_back(fallback_location: select_userid_attic_files_path, notice: 'The file does not exist!') && return if file.blank?
+
+    vld_file = File.join(Rails.application.config.vld_file_locations, file.dir_name, file.file_name)
+    redirect_back(fallback_location: select_userid_attic_files_path, notice: 'The physical file does not exist!') && return unless File.exist?(vld_file)
+
+    send_file(vld_file, filename: file.file_name) && return
+  end
+
+
   def destroy
     vldfile = Freecen1VldFile.find(params[:id])
     if vldfile.present? && vldfile.dir_name.present? && vldfile.file_name.present?
