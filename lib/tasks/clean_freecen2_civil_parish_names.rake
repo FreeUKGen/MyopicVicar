@@ -1,7 +1,10 @@
 task :clean_freecen2_civil_parish_names, [:chapman_code, :limit, :fix] => [:environment] do |t, args|
-  p "Started clean_freecen2 _civil_parish_names #{args.chapman_code}  #{args.limit} #{args.fix}"
-  clean_name(args.chapman_code, args.limit, args.fix)
-  p 'Finished'
+  #
+  # Obsolete task - AV 20/02/2023
+  #
+  # p "Started clean_freecen2 _civil_parish_names #{args.chapman_code}  #{args.limit} #{args.fix}"
+  # clean_name(args.chapman_code, args.limit, args.fix)
+  # p 'Finished'
 end
 
 def clean_name(chapman_code, limit, fix)

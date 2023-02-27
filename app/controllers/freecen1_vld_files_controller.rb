@@ -131,25 +131,28 @@ class Freecen1VldFilesController < ApplicationController
     when params[:commit] == 'Submit'
 
       if  params[:editcivilparish][:old_civil_parish_name].present? &&
-          params[:new_civil_parish_name].present? &&
-          params[:editcivilparish][:old_civil_parish_name] == params[:new_civil_parish_name]
-        message = 'The new Civil Parish name is the same as the existing Civil Parish name, so no update is required.'
-        redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+          params[:new_civil_parish_name].present?
+        old_ed_cp_split = params[:editcivilparish][:old_civil_parish_name].split(' -- ')
+        enum_dist = old_ed_cp_split[0]
+        old_cp = old_ed_cp_split[1]
+        if old_cp == params[:new_civil_parish_name]
+          message = "The new Civil Parish name (#{params[:new_civil_parish_name]}) is the same as the existing Civil Parish name (#{old_cp}), so no update is required."
+          redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+        end
       end
 
       if params[:vld_file_id].present?
         vldfile = Freecen1VldFile.find(params[:vld_file_id])
       else
-        message = 'The file was not correctly linked. Have your coordinator contact the web master'
+        message = 'The file was not correctly linked. Have your coordinator contact the Web Master'
         redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
       end
 
-      result = Freecen1VldEntry.collection.find({freecen1_vld_file_id:  vldfile.id, civil_parish: params[:editcivilparish][:old_civil_parish_name]}).update_many({"$set" => {:civil_parish => params[:new_civil_parish_name]}})
-      result = FreecenDwelling.collection.find({freecen1_vld_file_id:  vldfile.id, civil_parish: params[:editcivilparish][:old_civil_parish_name]}).update_many({"$set" => {:civil_parish => params[:new_civil_parish_name]}})
+      result = Freecen1VldEntry.collection.find({ freecen1_vld_file_id: vldfile.id, civil_parish: old_cp, enumeration_district: enum_dist }).update_many({"$set" => { :civil_parish => params[:new_civil_parish_name] } })
+      result = FreecenDwelling.collection.find({ freecen1_vld_file_id: vldfile.id, civil_parish: old_cp, enumeration_district: enum_dist }).update_many({"$set" => { :civil_parish => params[:new_civil_parish_name] } })
 
-      flash[:notice] = "The edit of #{vldfile.file_name} Civil Parish '#{params[:editcivilparish][:old_civil_parish_name]}' to '#{params[:new_civil_parish_name]}' was successful."
-      redirect_to freecen1_vld_files_path
-
+      message = "The edit for Enumeration District #{enum_dist} - Civil Parish name '#{old_cp}' to '#{params[:new_civil_parish_name]}' was successful."
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     else
       get_user_info_from_userid
       if params[:id].present?
@@ -157,16 +160,16 @@ class Freecen1VldFilesController < ApplicationController
         @chapman_code = session[:chapman_code]
       end
       unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
-        message = 'The file was not correctly linked. Have your coordinator contact the web master'
+        message = 'The file was not correctly linked. Have your coordinator contact the Web Master'
         redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
       end
       load_people
       @type = params[:type].presence || 'all'
 
       @civil_parishes = SortedSet.new
-      all_civil_parishes = Freecen1VldEntry.where(:freecen1_vld_file_id => params[:id]).pluck(:civil_parish)
+      all_civil_parishes = Freecen1VldEntry.where(:freecen1_vld_file_id => params[:id]).pluck(:enumeration_district, :civil_parish)
       all_civil_parishes.each do |cp|
-        @civil_parishes << cp if cp.present?
+        @civil_parishes << "#{cp[0]} -- #{cp[1]}" if cp.present?
       end
       redirect_to new_manage_resource_path && return
     end
@@ -210,7 +213,7 @@ class Freecen1VldFilesController < ApplicationController
     chapman_code = session[:chapman_code]
 
     logger.warn("FREECEN:VLD_INVALID_CIVIL_PARISH_LISTING: Starting rake task for #{userid} county #{chapman_code}")
-    pid1 = spawn("rake list_vld_files_with_invalid_civil_parish[#{chapman_code},,#{userid}]")
+    pid1 = spawn("bundle exec rake list_vld_files_with_invalid_civil_parish[#{chapman_code},,#{userid}]")
     logger.warn("FREECEN:VLD_INVALID_CIVIL_PARISH_LISTING: rake task for #{pid1}")
     flash[:notice] = "The list of VLD files with invalid Civil Parish names for #{chapman_code} is being generated. You will receive an email when it has finished."
     redirect_to freecen1_vld_files_path

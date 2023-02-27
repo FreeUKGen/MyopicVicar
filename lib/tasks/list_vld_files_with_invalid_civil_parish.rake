@@ -62,7 +62,7 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
       files.each do |file|
         file_count += 1
 
-        entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id)
+        entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id).order_by(enumeration_district: 1, civil_parish: 1)
 
         message = "Processing #{file.file_name} with #{entries.length} entries"
         output_to_log(message_file, message)
@@ -72,7 +72,7 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
 
         if fc2_piece.present?
           fc2_piece_number = fc2_piece.number
-          fc2_piece_civil_parishes = fc2_piece.civil_parish_names
+          fc2_piece_civil_parishes = fc2_piece.civil_parish_names.present? ? fc2_piece.civil_parish_names : '**MISSING**'
         else
           fc2_piece_number = '**MISSING**'
           fc2_piece_civil_parishes = '**MISSING**'
@@ -138,7 +138,7 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
     require 'user_mailer'
     user_rec = UseridDetail.userid(userid).first
 
-    email_subject = "FreeCEN: VLD files with invalid Civil parishes in #{start_chapman_code}"
+    email_subject = "FreeCEN: VLD files with invalid Civil Parishes in #{start_chapman_code}"
     email_body = report_csv == '' ? 'No invalid Civil Parishes found.' : 'See attached CSV file.'
     report_name = "FreeCEN_VLD_invalid_civil_parishes_#{start_chapman_code}.csv"
     email_to = user_rec.email_address
@@ -174,7 +174,7 @@ def self.ignore_hamlets(civil_parish_names)
     end
     just_civil_parish += char if ignore == false
   end
-  just_civil_parish
+  just_civil_parish.downcase
 end
 
 def self.civil_parish_valid(civil_parish, fc2_piece_civil_parishes)
@@ -184,7 +184,7 @@ def self.civil_parish_valid(civil_parish, fc2_piece_civil_parishes)
 
   return true if civil_parish.blank?
 
-  ignore_hamlets(fc2_piece_civil_parishes).include? civil_parish
+  ignore_hamlets(fc2_piece_civil_parishes).include? civil_parish.downcase
 end
 
 def self.compute_duplicate(chapman_code, civil_parishes, fc2_piece_civil_parishes, entry, file_name, fc2_piece_number)
