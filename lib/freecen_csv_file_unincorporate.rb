@@ -1,10 +1,11 @@
 class FreecenCsvFileUnincorporate
-  def self.unincorporate(file)
+  def self.unincorporate(file, userid)
     freecen_file = FreecenCsvFile.find_by(_id: file)
     file_name = freecen_file.file_name
     chapman_code = freecen_file.chapman_code
     county = County.find_by(chapman_code: chapman_code)
     owner = freecen_file.userid
+    fc2_piece_id = freecen_file.freecen2_piece_id
     message = "#{file_name} for #{owner} in #{chapman_code} "
     p "#{file_name} for #{owner} in #{chapman_code} "
     result, messagea = freecen_file.can_we_unincorporate?
@@ -17,6 +18,8 @@ class FreecenCsvFileUnincorporate
     end
     if success
       UserMailer.unincorporation_report(county.county_coordinator, message, file_name, owner).deliver_now
+      # Log the unincorporation
+      FreecenCsvFile.create_audit_record('Unincorp',freecen_file, userid, fc2_piece_id)
     else
       UserMailer.unincorporation_report_failure(county.county_coordinator, message, file_name, owner).deliver_now
     end

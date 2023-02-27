@@ -36,8 +36,8 @@ task :freecen_csv_file_incorporate, [:freecen_csv_file] => [:environment] do |t,
   p 'Incorporation complete'
 end
 
-task :freecen_csv_file_unincorporate, [:freecen_csv_file] => [:environment] do |t, args|
+task :freecen_csv_file_unincorporate, [:freecen_csv_file, :userid] => [:environment] do |t, args|
   require 'freecen_csv_file_unincorporate'
-  FreecenCsvFileUnincorporate.unincorporate(args[:freecen_csv_file])
+  FreecenCsvFileUnincorporate.unincorporate(args[:freecen_csv_file],args[:userid])
   p 'Record removal complete'
 end

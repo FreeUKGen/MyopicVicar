@@ -71,6 +71,11 @@ class Freecen1VldFilesController < ApplicationController
     if vldfile.present? && vldfile.dir_name.present? && vldfile.file_name.present?
       file_name = vldfile.file_name
       dir_name = vldfile.dir_name
+      if vldfile.action.present?
+        loaded_date = vldfile.u_at
+      else
+        loaded_date = ''
+      end
       Freecen1VldFile.delete_freecen1_vld_entries(dir_name, file_name)
       Freecen1VldFile.delete_dwellings(dir_name, file_name)
       Freecen1VldFile.delete_individuals(dir_name, file_name)  # has callback to delete search records too
@@ -80,6 +85,7 @@ class Freecen1VldFilesController < ApplicationController
         piece.update_attributes(num_dwellings: 0, num_individuals: 0, num_entries: 0, freecen1_filename: '', status: '', status_date: '')
         piece.freecen1_vld_files.delete(vldfile)
         freecen2_piece = piece.freecen2_piece
+        freecen2_piece_id = freecen2_piece.id
         freecen2_piece.freecen1_vld_files.delete(vldfile) if freecen2_piece.present?
         freecen2_piece.update_parts_status_on_file_deletion(vldfile, piece)
         freecen2_place = vldfile.freecen2_place
@@ -92,7 +98,12 @@ class Freecen1VldFilesController < ApplicationController
         end
       end
     end
-    vldfile.delete if vldfile.present?
+    if vldfile.present?
+      get_user_info_from_userid
+      who = @user.userid
+      Freecen1VldFile.create_audit_record(vldfile, who, loaded_date, freecen2_piece_id)
+      vldfile.delete
+    end
     redirect_to freecen1_vld_files_path, notice: "The vld file #{file_name} has been deleted."
   end
 
@@ -190,6 +201,7 @@ class Freecen1VldFilesController < ApplicationController
     end
     @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
     @chapman_code = session[:chapman_code]
+    session[:type] = 'vld_file_audit_index'
   end
 
   def list_invalid_civil_parishes    # HERE HERE HERE
@@ -222,13 +234,15 @@ class Freecen1VldFilesController < ApplicationController
   end
 
   def update
-    redirect_to(action: 'create') && return if session[:replace].present?
+
+    #redirect_to(action: 'create') && return unless session[:replace].blank?
 
     @freecen1_vld_file = Freecen1VldFile.find(params[:id])
     unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+
     @freecen1_vld_file.update_attributes(freecen1_vld_file_params)
     if @freecen1_vld_file.errors.any?
       load_people
