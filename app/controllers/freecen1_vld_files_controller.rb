@@ -50,7 +50,7 @@ class Freecen1VldFilesController < ApplicationController
     get_user_info_from_userid
     @freecen1_vld_file = Freecen1VldFile.find(params[:id])
     unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
-      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      message = 'The file was not correctly linked. Have your coordinator contact the Web Manager'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
 
@@ -62,7 +62,6 @@ class Freecen1VldFilesController < ApplicationController
     else
       flash[:notice] = "There was a problem saving the file prior to download. Please send this message #{message} to your coordinator"
     end
-
     redirect_back(fallback_location: new_manage_resource_path) && return
   end
 
@@ -71,11 +70,12 @@ class Freecen1VldFilesController < ApplicationController
     redirect_back(fallback_location: select_userid_attic_files_path, notice: 'The file does not exist!') && return if file.blank?
 
     vld_file = File.join(Rails.application.config.vld_file_locations, file.dir_name, file.file_name)
-    redirect_back(fallback_location: select_userid_attic_files_path, notice: 'The physical file does not exist!') && return unless File.exist?(vld_file)
 
-    send_file(vld_file, filename: file.file_name) && return
+    send_file(vld_file, filename: file.file_name) && return if File.exist?(vld_file)
+
+    flash[:notice] = "The physical file #{file.file_name} does not exist, please contact the Web Manager."
+    redirect_back(fallback_location: new_manage_resource_path) && return
   end
-
 
   def destroy
     vldfile = Freecen1VldFile.find(params[:id])
