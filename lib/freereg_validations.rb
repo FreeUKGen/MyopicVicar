@@ -8,13 +8,13 @@ module FreeregValidations
   VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age","above", "over", "+"]
   VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
-  VALID_AGE_TYPE2 = /^(\d{1,2})([hdwmy\*\[\]\-\_\?])/
-  VALID_AGE_TYPE2A = /^(\d{1,2})(years)/
-  VALID_AGE_TYPE2B = /^(\d{1,2})(months)/
-  VALID_AGE_TYPE2C = /^(\d{1,2})(days)/
-  VALID_AGE_TYPE2D = /^(\d{1,2})(weeks)/
-  VALID_AGE_TYPE2E = /^(\d{1,2})(hours)/
-  VALID_AGE_TYPE3 =  /^(\d{1,2})([hdwmy\*\[\]\-\_\?])(\d{1,2})([hdwmy\*\[\]\-\_\?])/
+  VALID_AGE_TYPE2 = /^(\d{1,3})([hdwmy\*\[\]\-\_\?])/
+  VALID_AGE_TYPE2A = /^(\d{1,3})(years)/
+  VALID_AGE_TYPE2B = /^(\d{1,3})(months)/
+  VALID_AGE_TYPE2C = /^(\d{1,3})(days)/
+  VALID_AGE_TYPE2D = /^(\d{1,3})(weeks)/
+  VALID_AGE_TYPE2E = /^(\d{1,3})(hours)/
+  VALID_AGE_TYPE3 =  /^(\d{1,3})([hdwmy\*\[\]\-\_\?])(\d{1,2})([hdwmy\*\[\]\-\_\?])/
   VALID_AGE_TYPE4 = /\A [[:xdigit:]] \z/
   #\A\d{1,2}[\s+\/][A-Za-z\d]{0,3}[\s+\/]\d{2,4}\/?\d{0,2}?\z checks 01 mmm 1567/8
   #\A[\d{1,2}\*\-\?][\s+\/][A-Za-z\d\*\-\?]{0,3}[\s+\/][\d\*\-\?]{0,4}\/?[\d\*\-\?]{0,2}?\z

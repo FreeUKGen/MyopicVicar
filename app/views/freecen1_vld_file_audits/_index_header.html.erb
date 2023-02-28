@@ -1,0 +1,5 @@
+<% breadcrumb :freecen1_vld_file_audits,@chapman_code, params[:page] %>
+<% session[:file_page] = params[:page]%>
+<h1 style="text-align: center">Listing of <%= @freecen1_vld_file_audits.length if @freecen1_vld_file_audits.present? %> Deleted FreeCen1 VLD Files for <%= @chapman_code%> </h1>
+<h3 class=" delta text--center">(sorted by most recent date of deletion)</h3>
+<%= render 'flash_notice' %>

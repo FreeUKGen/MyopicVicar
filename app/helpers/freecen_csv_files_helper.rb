@@ -123,7 +123,8 @@ module FreecenCsvFilesHelper
           title: 'Checks if partial piece file is last for the piece'
       end
     else
-      link_to 'Remove records from database', unincorporate_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
+      get_user_info_from_userid
+      link_to 'Remove records from database', unincorporate_freecen_csv_file_path(@freecen_csv_file, @user.userid), class: 'btn   btn--small', method: :get,
         title: 'Removes all of the records from the database', data: { confirm:  'Are you sure you want to remove all of the records from the database?' }
     end
   end
