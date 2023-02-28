@@ -55,9 +55,10 @@ module Freecen2PlacesHelper
   end
 
   def search_names_clear_county
-    if session[:search_names].present?
-      session[:search_names][:clear_county] = true
-    end
-    link_to 'Clear County', search_names_freecen2_place_path, class: 'btn btn--small'
+    link_to 'Clear County', search_names_freecen2_place_path(clear_county: true), class: 'btn btn--small'
+  end
+
+  def search_names_clear_form
+    link_to 'Clear Form', search_names_freecen2_place_path(clear_form: true), class: 'btn btn--small'
   end
 end

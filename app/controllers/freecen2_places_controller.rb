@@ -45,13 +45,16 @@ class Freecen2PlacesController < ApplicationController
     @user = get_user
     params[:freecen2_place][:editor] = @user.userid
     @first_name = @user.person_forename if @user.present?
-    if params[:commit] == 'Search Place Names'
+    case params[:commit]
+    when 'Search Place Names'
       session[:search_names] = {}
       session[:search_names][:search] = params[:freecen2_place][:place_name]
       session[:search_names][:search_county] = params[:freecen2_place][:county]
       session[:search_names][:advanced_search] = params[:freecen2_place][:advanced_search]
       redirect_to search_names_results_freecen2_place_path
+
     else
+
       params[:freecen2_place][:chapman_code] = ChapmanCode.values_at(params[:freecen2_place][:county])
       params[:freecen2_place][:grid_reference] = params[:freecen2_place][:grid_reference].strip if params[:freecen2_place][:grid_reference].present?
       @place = Freecen2Place.new(freecen2_place_params)
@@ -291,16 +294,21 @@ class Freecen2PlacesController < ApplicationController
     @counties = ChapmanCode.keys.sort
     @counties = @counties.delete_if { |county| county == 'Unknown' }
     get_user_info_from_userid
+
+    if params[:clear_form].present? || params[:new_search].present?
+      session[:search_names][:search] = ''
+      session[:search_names][:search_county] = ''
+      session[:search_names][:advanced_search] = 'not_applicable'
+    end
+
+    if params[:clear_county].present?
+      session[:search_names][:search_county] = ''
+    end
+
     @place_name = session[:search_names].present? ? session[:search_names][:search] : ''
     @advanced_search = session[:search_names].present? ? session[:search_names][:advanced_search] : 'not_applicable'
-    if session[:search_names].present?
-      if session[:search_names][:clear_county]
-        @county = ''
-        session[:search_names][:clear_county] = false
-      else
-        @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
-      end
-    end
+    @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
+
     @freecen2_place = Freecen2Place.new(place_name: @place_name, county: @county)
   end
 
@@ -442,4 +450,5 @@ class Freecen2PlacesController < ApplicationController
   def freecen2_place_params
     params.require(:freecen2_place).permit!
   end
+
 end
