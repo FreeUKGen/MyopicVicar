@@ -1,0 +1,40 @@
+<%= render 'index_header' %>
+<div class="scrollable ">
+  <table class="table--bordered table--data table--striped ">
+    <tr>
+      <th class='sticky-header '>File Name<br />
+        (Link to FreeCEN2 Piece)</th>
+      <th class='sticky-header '>Entries</th>
+      <th class='sticky-header '>Individuals</th>
+      <th class='sticky-header '>Dwellings</th>
+      <th class='sticky-header '>Loaded At</th>
+      <th class='sticky-header '>Uploaded By</th>
+      <th class='sticky-header '>Transcriber</th>
+      <th class='sticky-header '>Action Type</th>
+      <th class='sticky-header '>Action On</th>
+      <th class='sticky-header '>Action By</th>
+      <th class='sticky-header '>Unincorporated CSV Files for Piece</th>
+      <th class='sticky-header '>Incorporated CSV Files For Piece</th>
+    </tr>
+    <% if @freecen_csv_file_audits.present? %>
+      <% @freecen_csv_file_audits.each do |freecen_csv_file_audit| %>
+        <tr id="<%= freecen_csv_file_audit.id%>">
+          <td><%= csv_audit_piece_link(freecen_csv_file_audit.file_name, freecen_csv_file_audit.fc2_piece_id) %></td>
+          <td><%= freecen_csv_file_audit.total_records %></td>
+          <td><%= freecen_csv_file_audit.total_individuals %></td>
+          <td><%= freecen_csv_file_audit.total_dwellings %></td>
+          <td><%= csv_audit_loaded_at(freecen_csv_file_audit.loaded_at) %></td>
+          <td><%= freecen_csv_file_audit.userid %></td>
+          <td><%= freecen_csv_file_audit.transcriber_name %></td>
+          <td><%= freecen_csv_file_audit.action_type%></td>
+          <td><%= csv_audit_action_on(freecen_csv_file_audit.c_at)%></td>
+          <td><%= freecen_csv_file_audit.action_by %></td>
+          <td><%= csv_audit_csv_files_piece_unincorporated(freecen_csv_file_audit.fc2_piece_id) %></td>
+          <td><%= csv_audit_csv_files_piece_incorporated(freecen_csv_file_audit.fc2_piece_id) %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  </table>
+</div>
+<br>
+<br>

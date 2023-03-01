@@ -76,7 +76,7 @@ MyopicVicar::Application.routes.draw do
   resources :freecen_dwellings
 
   resources :freecen_individuals
-  
+
 
   get 'freecen2_site_statistics/grand_totals', to: 'freecen2_site_statistics#grand_totals', as: :grand_totals_freecen2_site_statistics
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
@@ -101,7 +101,11 @@ MyopicVicar::Application.routes.draw do
 
   get 'freecen1_vld_files/:id/entry_csv_download(.:format)', to: 'freecen1_vld_files#entry_csv_download', as: :entry_csv_download_freecen1_vld_file
   get 'freecen1_vld_files/:id/csv_download(.:format)', to: 'freecen1_vld_files#csv_download', as: :csv_download_freecen1_vld_file
+  get 'freecen1_vld_files/list_invalid_civil_parishes', to: 'freecen1_vld_files#list_invalid_civil_parishes', as: :list_invalid_civil_parishes_freecen1_vld_file
+  get 'freecen1_vld_files/edit_civil_parishes', to: 'freecen1_vld_files#edit_civil_parishes', as: :edit_civil_parishes_freecen1_vld_file
   resources :freecen1_vld_files
+
+  resources :freecen1_vld_file_audits
 
   get 'freecen_csv_files/spreadsheet/:id', :to => 'freecen_csv_files#spreadsheet', :as => :spreadsheet_freecen_csv_file
   get 'freecen_csv_files/download_spreadsheet', :to => 'freecen_csv_files#download_spreadsheet', :as => :download_spreadsheet_freecen_csv_file
@@ -128,6 +132,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/:id/incorporate_partial(.:format)', :to => 'freecen_csv_files#incorporate_partial', :as => :incorporate_partial_freecen_csv_file
   get 'freecen_csv_files/:id/unincorporate(.:format)', :to => 'freecen_csv_files#unincorporate', :as => :unincorporate_freecen_csv_file
   resources :freecen_csv_files
+
+  resources :freecen_csv_file_audits
 
   get 'freecen_csv_entries/:id/propagate_note(.:format)', :to => 'freecen_csv_entries#propagate_note', :as => :propagate_note_freecen_csv_entry
   get 'freecen_csv_entries/:id/propagate_alternate(.:format)', :to => 'freecen_csv_entries#propagate_alternate', :as => :propagate_alternate_freecen_csv_entry

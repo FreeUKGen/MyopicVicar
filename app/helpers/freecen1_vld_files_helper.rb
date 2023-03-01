@@ -4,6 +4,10 @@ module Freecen1VldFilesHelper
     link_to 'Edit Transcriber', edit_freecen1_vld_file_path(@freecen1_vld_file, type: 'transcriber'), method: :get, class: 'btn   btn--small', title: 'Allows you to enter/edit the name of the person who transcribed the file.'
   end
 
+  def edit_cp_freecen1_vld_file
+    link_to 'Edit Civil Parishes', edit_civil_parishes_freecen1_vld_file_path(id: @freecen1_vld_file.id, type: 'civil parishes'), method: :get, class: 'btn   btn--small', title: 'Allows you to edit civil parishes for the VLD file.'
+  end
+
   def piece_link(vld)
     piece = vld.freecen_piece
     if piece.present?
@@ -24,7 +28,7 @@ module Freecen1VldFilesHelper
 
   def loaded_at(vld)
     if vld.action.present?
-      vld.u_at.strftime('%Y-%m-%d %H:%M') if vld.u_at.present?
+      vld.c_at.strftime('%Y-%m-%d %H:%M') if vld.c_at.present?
     else
       vld.id.generation_time.strftime('%Y-%m-%d %H:%M') if vld.id.present?
     end

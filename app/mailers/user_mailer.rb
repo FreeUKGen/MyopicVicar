@@ -246,6 +246,14 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def freecen_vld_invalid_civil_parish_report(email_subject, email_body, report, report_name, email_to)
+    email_addresses = []
+    email_addresses << email_to
+    attachments[report_name] = { :mime_type => 'text/csv', :content => report } unless report.empty?
+
+    mail(:to => email_addresses, :subject => email_subject, :body => email_body)
+  end
+
   def notification_of_technical_registration(user)
     @appname = appname
     @user = user
@@ -393,6 +401,32 @@ class UserMailer < ActionMailer::Base
       p file_name
       p userid
     end
+  end
+
+  def report_for_data_manager(email_subject, email_body, report, report_name, email_to)
+    @appname = appname
+    dm_emails = []
+    if email_to == 'data_manager'
+      data_managers = UseridDetail.role('data_manager').email_address_valid.all
+      data_managers.each do |dm|
+        user_email_with_name = dm.email_address
+        dm_emails << user_email_with_name
+      end
+      secondary_data_managers = UseridDetail.where(secondary_role: 'data_manager')
+      secondary_data_managers.each do |sdm|
+        dm_emails << sdm.email_address if sdm.email_address_valid
+      end
+    else
+      dm_emails << email_to
+    end
+
+    p "Email addresses: #{dm_emails}"
+
+    unless report.length == 0
+      attachments[report_name] = { :mime_type => 'text/csv', :content => report }
+    end
+    mail(:to => dm_emails, :subject => email_subject, :body => email_body)
+
   end
 
   def request_cc_image_server_group(sc, cc_email, group)
