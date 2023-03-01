@@ -539,7 +539,7 @@ class UserMailer < ActionMailer::Base
           array_of_email_addresses.push(copy.email_address) unless array_of_email_addresses.include?(copy.email_address)
         end
       end
-      array_of_email_addresses = nil
+      #array_of_email_addresses = nil
     end
     array_of_email_addresses
   end
