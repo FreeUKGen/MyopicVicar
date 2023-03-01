@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
   end
 
   def array_of_userids
-    UseridDetail.all.pluck(:userid)
+    UseridDetail.all.pluck(:userid).sort
   end
 
   def appname_upcase
