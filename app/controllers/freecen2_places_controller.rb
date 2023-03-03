@@ -295,7 +295,7 @@ class Freecen2PlacesController < ApplicationController
     @counties = @counties.delete_if { |county| county == 'Unknown' }
     get_user_info_from_userid
 
-    if params[:clear_form].present? || params[:new_search].present?
+    if session[:search_names].present? && (params[:clear_form].present? || params[:new_search].present?)
       session[:search_names][:search] = ''
       session[:search_names][:search_county] = ''
       session[:search_names][:advanced_search] = 'not_applicable'
