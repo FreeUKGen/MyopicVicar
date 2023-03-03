@@ -52,12 +52,6 @@ class Freecen2PlacesController < ApplicationController
       session[:search_names][:search_county] = params[:freecen2_place][:county]
       session[:search_names][:advanced_search] = params[:freecen2_place][:advanced_search]
       redirect_to search_names_results_freecen2_place_path
-    when 'Clear County'
-      session[:search_names] = {}
-      session[:search_names][:search] = params[:freecen2_place][:place_name]
-      session[:search_names][:search_county] = ''
-      session[:search_names][:advanced_search] = params[:freecen2_place][:advanced_search]
-      redirect_to(search_names_freecen2_place_path) && return
 
     else
 

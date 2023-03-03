@@ -59,13 +59,13 @@
             <%= f.hidden_field :disabled, :value=> false %>
           </li>
           <li class="grid__item one-quarter lap-one-quarter palm-one-whole">
-            <%= f.button :submit, 'Clear County', :class => "btn   btn--small"%>
+            <%= button_tag "Clear County", type: 'button', onclick: "clearCounty()", class: "btn btn--small", title: 'Clear County'%>
           </li>
         </ol>
       </fieldset
       </div>
       <div style="text-align: center">
-        <%= f.button :submit, 'Search Place Names',:button_html => {:class => "btn" }  %>
+        <%= f.button :submit, 'Search Place Names', :button_html => {:class => "btn" }  %>
         <p class=" text--center"><br>
           <small><em> [Note: The regular Place Name Search is a text search that ignores ‘stop words’. These are common words that have little actual meaning. <br>
               A list of these words can be found <%= link_to 'HERE', "https://github.com/mongodb/mongo/blob/0e3b3ca8480ddddf5d0105d11a94bd4698335312/src/mongo/db/fts/stop_words_english.txt", target: :_blank %> (opens in new tab).<br>
@@ -73,3 +73,9 @@
       </div>
     <% end %>
   </div>
+  <script>
+    function clearCounty() {
+     document.getElementById("freecen2_place_county").value = '';
+     document.getElementById("freecen2_place_county").focus()
+      }
+  </script>
