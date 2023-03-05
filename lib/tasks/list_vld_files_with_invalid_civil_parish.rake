@@ -195,6 +195,10 @@ def self.ignore_hamlets(civil_parish_names)
   just_civil_parish.downcase
 end
 
+def self.ignore_hyphens(civil_parish_names)
+  cps_no_hyphens = civil_parish_names.gsub('-', ' ')
+end
+
 def self.get_civil_parishes(piece, civil_parishes)
   cp_names = ''
   if piece.civil_parish_names.present?
@@ -212,7 +216,8 @@ def self.civil_parish_valid(civil_parish, fc2_piece_civil_parishes)
 
   return true if civil_parish.blank?
 
-  ignore_hamlets(fc2_piece_civil_parishes).include? civil_parish.downcase
+  cps_to_match = ignore_hamlets(fc2_piece_civil_parishes)
+  ignore_hyphens(cps_to_match).include? civil_parish.downcase
 end
 
 def self.compute_duplicate(chapman_code, civil_parishes, fc2_piece_civil_parishes, entry, file_name, fc2_piece_numbers)
