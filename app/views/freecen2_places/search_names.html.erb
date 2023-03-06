@@ -1,22 +1,12 @@
 <% breadcrumb :search_names%>
 <div  class="text--center push--bottom">
-  <table style="border: 0;"  class="push--bottom">
+  <div style="text-align: center">
+    <%= button_tag "Clear County", type: 'button', onclick: "clearCounty()", class: "btn btn--small", title: 'Clear County'%>
+    <%= search_names_clear_form %>
     <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
-      <colgroup>
-        <col span="1" style="width: 55%">
-      </colgroup>
+      <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
     <% end%>
-    <tbody <tbody style="text-align:right">
-      <tr>
-        <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
-          <td style="text-align: right"><%= search_names_clear_form %></td>
-          <td style="text-align: right"><%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place', style: 'text-align: right'%></td>
-        <%else%>
-          <td style="text-align: center"><%= search_names_clear_form %></td>
-        <% end%>
-      </tr>
-    </tbody>
-  </table>
+  </div>
 </div>
 <%= render 'flash_notice' %>
 <div class="island  island--light">
@@ -66,29 +56,22 @@
     <div id="ChooseCounty">
       <fieldset class="inputs" class="input" style="text-align: center">
         <legend><b>County to be searched</b></legend>
-        <ol class="grid">
-          <li class="grid__item three-quarters lap-three-quarters palm-one-whole">
-            <%= f.input :county, selected: @county, label: 'Click in box for county options. Previous selection preloaded. ',hint: 'Leave empty to search all Counties.',include_blank: true,collection: @counties, input_html:  {class: 'simple_form_bgcolour simple_form_position overide_selection_field_width'} %>
-            <%= f.hidden_field :disabled, :value=> false %>
-          </li>
-          <li class="grid__item one-quarter lap-one-quarter palm-one-whole">
-            <%= button_tag "Clear County", type: 'button', onclick: "clearCounty()", class: "btn btn--small", title: 'Clear County'%>
-          </li>
-        </ol>
-      </fieldset
-      </div>
-      <div style="text-align: center">
-        <%= f.button :submit, 'Search Place Names', :button_html => {:class => "btn" }  %>
-        <p class=" text--center"><br>
-          <small><em> [Note: The regular Place Name Search is a text search that ignores ‘stop words’. These are common words that have little actual meaning. <br>
-              A list of these words can be found <%= link_to 'HERE', "https://github.com/mongodb/mongo/blob/0e3b3ca8480ddddf5d0105d11a94bd4698335312/src/mongo/db/fts/stop_words_english.txt", target: :_blank %> (opens in new tab).<br>
-              If your search returns no results and you think it might be because it contains a ‘stop word’, please try an Advanced Search, as this does not ignore 'stop words'.]</em></small></p>
-      </div>
-    <% end %>
-  </div>
-  <script>
-    function clearCounty() {
-     document.getElementById("freecen2_place_county").value = '';
-     document.getElementById("freecen2_place_county").focus()
-      }
-  </script>
+        <%= f.input :county, selected: @county, label: 'Click in box for county options. Previous selection preloaded. ',hint: 'Leave empty to search all Counties.',include_blank: true,collection: @counties, input_html:  {class: 'simple_form_bgcolour simple_form_position overide_selection_field_width'} %>
+        <%= f.hidden_field :disabled, :value=> false %>
+      </fieldset>
+    </div>
+    <div style="text-align: center">
+      <%= f.button :submit, 'Search Place Names', :button_html => {:class => "btn" }  %>
+      <p class=" text--center"><br>
+        <small><em> [Note: The regular Place Name Search is a text search that ignores ‘stop words’. These are common words that have little actual meaning. <br>
+            A list of these words can be found <%= link_to 'HERE', "https://github.com/mongodb/mongo/blob/0e3b3ca8480ddddf5d0105d11a94bd4698335312/src/mongo/db/fts/stop_words_english.txt", target: :_blank %> (opens in new tab).<br>
+            If your search returns no results and you think it might be because it contains a ‘stop word’, please try an Advanced Search, as this does not ignore 'stop words'.]</em></small></p>
+    </div>
+  <% end %>
+</div>
+<script>
+  function clearCounty() {
+   document.getElementById("freecen2_place_county").value = '';
+   document.getElementById("freecen2_place_county").focus()
+    }
+</script>
