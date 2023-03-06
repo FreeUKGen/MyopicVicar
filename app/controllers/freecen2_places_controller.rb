@@ -291,8 +291,15 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def search_names
-    @counties = ChapmanCode.keys.sort
-    @counties = @counties.delete_if { |county| county == 'Unknown' }
+    @county_codes = County.distinct(:chapman_code).sort
+    @county_codes = @county_codes.delete_if { |code| code == 'UNK' }
+    @counties = {}
+    @county_codes.each do |code|
+      cnty_name = ChapmanCode.name_from_code(code)
+      key = "#{code} - #{cnty_name}"
+      @counties[key] = cnty_name
+    end
+
     get_user_info_from_userid
 
     if session[:search_names].present? && (params[:clear_form].present? || params[:new_search].present?)

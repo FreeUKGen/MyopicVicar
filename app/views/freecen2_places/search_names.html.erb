@@ -1,12 +1,10 @@
 <% breadcrumb :search_names%>
 <div  class="text--center push--bottom">
-  <div style="text-align: center">
-    <%= button_tag "Clear County", type: 'button', onclick: "clearCounty()", class: "btn btn--small", title: 'Clear County'%>
-    <%= search_names_clear_form %>
-    <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
-      <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
-    <% end%>
-  </div>
+  <%= button_tag "Clear County", type: 'button', onclick: "clearCounty()", class: "btn btn--small", title: 'Clear County'%>
+  <%= search_names_clear_form %>
+  <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
+    <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
+  <% end%>
 </div>
 <%= render 'flash_notice' %>
 <div class="island  island--light">
