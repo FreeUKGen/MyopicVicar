@@ -203,6 +203,23 @@ class Freecen2PlacesController < ApplicationController
     session[:type] = 'place_index'
   end
 
+  def get_counties_for_selection
+    @county_codes = []
+    ChapmanCode::CODES.each do |_country, counties|
+      counties.each do |key, value|
+        @county_codes << value
+      end
+    end
+    @county_codes = @county_codes.sort
+    @county_codes = @county_codes.delete_if { |code| code == 'UNK' }
+    @counties = {}
+    @county_codes.each do |code|
+      cnty_name = ChapmanCode.name_from_code(code)
+      key = "#{code} - #{cnty_name}"
+      @counties[key] = cnty_name
+    end
+  end
+
   def get_reasons
     @reasons = []
     PlaceEditReason.all.order_by(reason: 1).each do |reason|
@@ -291,15 +308,7 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def search_names
-    @county_codes = County.distinct(:chapman_code).sort
-    @county_codes = @county_codes.delete_if { |code| code == 'UNK' }
-    @counties = {}
-    @county_codes.each do |code|
-      cnty_name = ChapmanCode.name_from_code(code)
-      key = "#{code} - #{cnty_name}"
-      @counties[key] = cnty_name
-    end
-
+    get_counties_for_selection
     get_user_info_from_userid
 
     if session[:search_names].present? && (params[:clear_form].present? || params[:new_search].present?)
