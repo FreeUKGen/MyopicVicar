@@ -202,6 +202,8 @@ class SearchQuery
     3 => "Year of Birth",
     4 => "Year of Birth Range"
   }
+  RESULTS_PER_PAGE = 20
+  DEFAULT_PAGE = 1
 
   class << self
 
@@ -1279,7 +1281,6 @@ class SearchQuery
 
   def search_records
     if MyopicVicar::Application.config.template_set = 'freebmd'
-      #raise age_at_death.is_a?nteger
       self.freebmd_search_records
     else
       self.search
@@ -1295,19 +1296,31 @@ class SearchQuery
     search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-    records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
-    records = records.where(search_conditions)
-    records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
-    records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
-    records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
-    records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
-    records = spouse_given_name_filter(records) if self.spouse_first_name.present?
-    records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
-    records = combined_age_results records if self.age_at_death.present? || check_age_range?
-    records = records.take(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS)
-    persist_results(records)
-    records
+    begin
+      max_time = Rails.application.config.max_search_time
+      logger.warn(max_time)
+      Timeout::timeout(max_time) do
+        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
+        records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
+        records = records.where(search_conditions)
+        records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
+        records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
+        records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
+        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
+        records = spouse_given_name_filter(records) if self.spouse_first_name.present?
+        records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
+        records = combined_age_results records if self.age_at_death.present? || check_age_range?
+        persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        records
+        [records, true, 0]
+      end
+    rescue Timeout::Error
+      logger.warn("#{App.name_upcase}: Timeout")
+      [[], false, 1]
+    rescue => e
+      logger.warn("#{App.name_upcase}:error: #{e}")
+      [[], false, 2]
+    end
   end
 
 
@@ -2049,6 +2062,7 @@ class SearchQuery
     end
   end
 
+
   def spouse_surname_join_condition
     'inner join BestGuessMarriages as b on b.Volume=BestGuess.Volume and b.Page=BestGuess.Page and b.QuarterNumber=BestGuess.QuarterNumber and b.RecordNumber!= BestGuess.RecordNumber'
   end
@@ -2059,24 +2073,21 @@ class SearchQuery
     district_names_array.join(" or ") if district_names_array.present?
   end
 
-  def download_csv
-    attributes = %w{ GivenName Surname RecordType Quarter District Volume Page }
-    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
-    CSV.generate(headers: true) do |csv|
-      csv << fields
-      searched_records.each do |record|
-        qn = record[:QuarterNumber]
-        quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
-        record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
-        record["RecordType"] = record_type
-        record["Quarter"] = quarter
-        csv << attributes.map{ |attr| record[attr] }
-      end
-    end
-  end
-
   def searched_records
     search_result.records.values
+  end
+
+  def sorted_and_paged_searched_records
+    search_results = self.searched_records
+    search_results = self.sort_results(search_results) unless search_results.nil?
+    search_results
+  end
+
+  def paginate_results(results,page_number,results_per_page)
+    page_number ||= DEFAULT_PAGE
+    results_per_page ||= RESULTS_PER_PAGE
+    total = results.count
+    Kaminari.paginate_array(results, total_count: total).page(page_number).per(results_per_page)
   end
 
   private
