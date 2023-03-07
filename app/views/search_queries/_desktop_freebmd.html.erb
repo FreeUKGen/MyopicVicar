@@ -44,15 +44,20 @@
                     <%= format_quarter_year(search_record.QuarterNumber) %>
                   </dt>
                   <dt>
+                     Volume: <%= search_record[:Volume] %> | Page: <%= search_record[:Page] %>
+                  </dt>
+                  <dt>
                     <% if print_friendly %>
                       <%= search_record[:District] %>
                     <% else %>
-                      <% if search_record.district_linkable? %>
-                        <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><span class="accessibility"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                      <% district = District.where(DistrictNumber: search_record[:District]).first %>
+                      <% if district.present? %>
+                        <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url) %>
+                      <%# if search_record.district_linkable? %>
+                        <%#= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><span class="accessibility"><%#= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
                       <% else %>
                         <%= search_record[:District] %>
                       <% end %>
-                      Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
                     <% end %>
                   </dt>
                   <dt>
