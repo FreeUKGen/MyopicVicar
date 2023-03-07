@@ -1294,7 +1294,6 @@ class SearchQuery
     search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    bmd_search_records = Struct.new(:records, :success, :error_type)
     begin
       max_time = Rails.application.config.max_search_time
       logger.warn(max_time)
