@@ -43,7 +43,7 @@
       </tr>
       <tr>
         <td>
-          Please provide us with you physical location, i.e. Country.
+          Please provide us with your physical location, i.e. Country.
         </td>
         <td>
           <%= f.input :address,:input_html => { :size => 35 }%></td>
@@ -55,9 +55,15 @@
               Please read the researcher <%= link_to 'participation agreement', places_path%> and confirm that you accept these terms. PLEASE NOTE THE AGREEMENT IS NOT THERE YET
             </td>
             <td>
-              <%= f.input :transcription_agreement, {:as => :select,  :collection => [false,true], :include_blank => false, :required => true,:size => 35}%></td>
+              <%= f.input :transcription_agreement, {:as => :select,  :collection => [false,true], :required => true,:size => 35}%></td>
           </tr>
         </table>
+    <li class="betterstyling grid__item seven-twelfths lap-one-whole palm-one-whole">
+      <label class="label ttip" for="<%= @userid[:honeypot] %>" > Leave this field blank </label>
+      <input type="text" id="<%= @userid[:honeypot] %>" name="<%= @userid[:honeypot] %>">
+      <input type="hidden" id="__TIME" name="__TIME" value="<%= Time.now %>" />
+    </li>
+        <%#= hidden_field :__TIME, :value => "#{Time.now}" %>
         <p><b>After submitting this form you will be redirected to the home page and will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window) WITHIN 24HRS. </b></p>
         <%= f.action :submit, :as => :input, :label => 'Register Researcher' %>
       <% end %>

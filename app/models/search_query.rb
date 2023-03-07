@@ -202,6 +202,8 @@ class SearchQuery
     3 => "Year of Birth",
     4 => "Year of Birth Range"
   }
+  RESULTS_PER_PAGE = 20
+  DEFAULT_PAGE = 1
 
   class << self
 
@@ -2060,6 +2062,7 @@ class SearchQuery
     end
   end
 
+
   def spouse_surname_join_condition
     'inner join BestGuessMarriages as b on b.Volume=BestGuess.Volume and b.Page=BestGuess.Page and b.QuarterNumber=BestGuess.QuarterNumber and b.RecordNumber!= BestGuess.RecordNumber'
   end
@@ -2070,24 +2073,21 @@ class SearchQuery
     district_names_array.join(" or ") if district_names_array.present?
   end
 
-  def download_csv
-    attributes = %w{ GivenName Surname RecordType Quarter District Volume Page }
-    fields = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
-    CSV.generate(headers: true) do |csv|
-      csv << fields
-      searched_records.each do |record|
-        qn = record[:QuarterNumber]
-        quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
-        record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
-        record["RecordType"] = record_type
-        record["Quarter"] = quarter
-        csv << attributes.map{ |attr| record[attr] }
-      end
-    end
-  end
-
   def searched_records
     search_result.records.values
+  end
+
+  def sorted_and_paged_searched_records
+    search_results = self.searched_records
+    search_results = self.sort_results(search_results) unless search_results.nil?
+    search_results
+  end
+
+  def paginate_results(results,page_number,results_per_page)
+    page_number ||= DEFAULT_PAGE
+    results_per_page ||= RESULTS_PER_PAGE
+    total = results.count
+    Kaminari.paginate_array(results, total_count: total).page(page_number).per(results_per_page)
   end
 
   private

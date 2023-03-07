@@ -20,6 +20,7 @@ class SearchQueriesController < ApplicationController
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
   rescue_from Timeout::Error, with: :search_taking_too_long
+  include DownloadAsCsv
   #autocomplete :BestGuess, :Surname, full: false,  limit: 5
   #autocomplete :BestGuess, :GivenName, full: false, limit: 5
   RECORDS_PER_PAGE = 100
@@ -259,10 +260,10 @@ class SearchQueriesController < ApplicationController
            # @search_results = @search_results.order(order_field: :desc)
           #end
         #end
-        @results_per_page = params[:results_per_page] || 20
-        total_page = @search_results.count
+        @results_per_page = assign_value(params[:results_per_page],SearchQuery::RESULTS_PER_PAGE)
+        @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
-        @paginatable_array = Kaminari.paginate_array(@search_results, total_count: @search_results.count).page(params[:page]).per(@results_per_page)
+        @paginatable_array = @search_query.paginate_results(@search_results, @page, @results_per_page)
         if !response || @search_results.nil? || @search_query.result_count.nil?
           logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
           flash[:notice] = 'Your search results are not available. Please repeat your search'
@@ -275,6 +276,10 @@ class SearchQueriesController < ApplicationController
     end
   end
 
+  def assign_value value,default
+    value ||= default
+    value
+  end
 
   def maximum_results
     case appname_downcase
@@ -350,7 +355,11 @@ class SearchQueriesController < ApplicationController
   def download_as_csv
     search_id = params[:id]
     @search_query = SearchQuery.find_by(id: search_id)
-    send_data @search_query.download_csv, filename: "search_results-#{Date.today}.csv"
+    page_number = params[:page]
+    results_per_page = params[:results_per_page]
+    sorted_results = @search_query.sorted_and_paged_searched_records
+    paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
+    send_data search_results_csv(paginated_array), filename: "search_results-#{Date.today}.csv"
   end
 
   def compare_search
@@ -412,4 +421,5 @@ class SearchQueriesController < ApplicationController
   def filter(results)
     results.select{|r| r["RecordTypeID"] == @filter_condition.to_i }
   end
+
 end
