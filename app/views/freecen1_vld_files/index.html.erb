@@ -29,7 +29,9 @@
           <td><%= freecen1_vld_file.transcriber_name %></td>
           <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
           <% if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
-            <td><%= link_to 'Download', download_vld_file_freecen1_vld_file_path(file: freecen1_vld_file.id), title: 'Download VLD file',data: { confirm: 'Confirm you want to download this VLD file'}, method: :get %></td>
+            <% if %w[system_administrator data_manager country_coordinator].include?(@user.person_role)%>
+              <td><%= link_to 'Download', download_vld_file_freecen1_vld_file_path(file: freecen1_vld_file.id), title: 'Download VLD file',data: { confirm: 'Confirm you want to download this VLD file'}, method: :get %></td>
+            <% end%>
             <td><%= link_to 'Replace', new_freecen1_vld_file_path(replace: freecen1_vld_file.file_name), data: { confirm: 'Confirm you want to replace this file'}, method: :get %></td>
             <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Deleting", confirm: 'Are you sure you want to delete this Vld File? It may take some time to process, you will receive a message when the file delete has completed.'}, method: :delete %></td>
             <td><%= link_to 'Edit Transcriber', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Confirm you want to edit Transcriber for this file'} %></td>
