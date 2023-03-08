@@ -245,6 +245,7 @@ class Freecen2PlacesController < ApplicationController
     @county = session[:county]
     @counties = ChapmanCode.keys.sort
     @counties -= Freecen::UNNEEDED_COUNTIES
+    @counties = @counties.delete_if { |cnty| cnty == 'Channel Islands' } # GitHub story 1495
     @counties << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role)
     @counties << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
 
