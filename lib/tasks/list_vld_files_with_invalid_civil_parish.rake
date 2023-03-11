@@ -68,19 +68,37 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
         output_to_log(message_file, message)
 
         file_name = file.file_name
-        fc2_piece = Freecen2Piece.find_by(_id: file.freecen2_piece_id)
+        fc2_piece_main = Freecen2Piece.find_by(_id: file.freecen2_piece_id)
 
-        if fc2_piece.present?
-          fc2_piece_number = fc2_piece.number
-          fc2_piece_civil_parishes = fc2_piece.civil_parish_names.present? ? fc2_piece.civil_parish_names : '**MISSING**'
+        fc2_piece_numbers = ''
+        fc2_piece_civil_parishes = ''
+
+        if fc2_piece_main.present?
+
+          fc2_piece_numbers += "#{fc2_piece_main.number}, "
+          fc2_piece_civil_parishes = get_civil_parishes(fc2_piece_main, fc2_piece_civil_parishes)
+
+          regexp = BSON::Regexp::Raw.new('^' + fc2_piece_main.number + '\D')
+          parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
+          if parts.count.positive?
+            parts.each do |part|
+              fc2_piece_numbers += "#{part.number}, "
+              fc2_piece_civil_parishes = get_civil_parishes(part, fc2_piece_civil_parishes)
+            end
+
+          end
+
         else
-          fc2_piece_number = '**MISSING**'
-          fc2_piece_civil_parishes = '**MISSING**'
+          fc2_piece_numbers += '**MISSING**, '
+          fc2_piece_civil_parishes += '**MISSING**, '
         end
+
+        fc2_piece_numbers = fc2_piece_numbers[0...-2]
+        fc2_piece_civil_parishes = fc2_piece_civil_parishes[0...-2]
 
         entries.each do |entry|
           unless civil_parish_valid(entry.civil_parish, fc2_piece_civil_parishes)
-            compute_duplicate(chapman_code, civil_parishes, fc2_piece_civil_parishes, entry, file_name, fc2_piece_number)
+            compute_duplicate(chapman_code, civil_parishes, fc2_piece_civil_parishes, entry, file_name, fc2_piece_numbers)
           end
 
           #   end entry
@@ -95,7 +113,7 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
         line << "#{problem_data[:file_name]},"
         line << "#{problem_data[:enumeration_district]},"
         line << "\"#{problem_data[:civil_parish]}\","
-        line << "#{problem_data[:fc2_piece_number]},"
+        line << "\"#{problem_data[:fc2_piece_numbers]}\","
         line << "\"#{problem_data[:fc2_piece_civil_parishes]}\""
         csv_output_file.puts line
 
@@ -177,6 +195,20 @@ def self.ignore_hamlets(civil_parish_names)
   just_civil_parish.downcase
 end
 
+def self.ignore_hyphens(civil_parish_names)
+  cps_no_hyphens = civil_parish_names.gsub('-', ' ')
+end
+
+def self.get_civil_parishes(piece, civil_parishes)
+  cp_names = ''
+  if piece.civil_parish_names.present?
+    cp_names = piece.civil_parish_names
+  elsif civil_parishes == ''
+    cp_names = '**MISSING**'
+  end
+  civil_parishes += "#{cp_names}, " if cp_names != ''
+end
+
 def self.civil_parish_valid(civil_parish, fc2_piece_civil_parishes)
   return true if civil_parish == '-'
 
@@ -184,16 +216,17 @@ def self.civil_parish_valid(civil_parish, fc2_piece_civil_parishes)
 
   return true if civil_parish.blank?
 
-  ignore_hamlets(fc2_piece_civil_parishes).include? civil_parish.downcase
+  cps_to_match = ignore_hamlets(fc2_piece_civil_parishes)
+  ignore_hyphens(cps_to_match).include? civil_parish.downcase
 end
 
-def self.compute_duplicate(chapman_code, civil_parishes, fc2_piece_civil_parishes, entry, file_name, fc2_piece_number)
+def self.compute_duplicate(chapman_code, civil_parishes, fc2_piece_civil_parishes, entry, file_name, fc2_piece_numbers)
   duplicate = {}
   duplicate[:chapman_code] = chapman_code
   duplicate[:file_name] = file_name
   duplicate[:enumeration_district] = entry.enumeration_district
   duplicate[:civil_parish] = entry.civil_parish
-  duplicate[:fc2_piece_number] = fc2_piece_number
+  duplicate[:fc2_piece_numbers] = fc2_piece_numbers
   duplicate[:fc2_piece_civil_parishes] = fc2_piece_civil_parishes
   civil_parishes << duplicate if add_to_collection(civil_parishes, duplicate)
 end
