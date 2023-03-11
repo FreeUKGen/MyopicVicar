@@ -1,13 +1,15 @@
 <% breadcrumb :search_names%>
-<% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
-  <div style="text-align: center">
+<div  class="text--center push--bottom">
+  <%= button_tag "Clear County", type: 'button', onclick: "clearCounty()", class: "btn btn--small", title: 'Clear County'%>
+  <%= search_names_clear_form %>
+  <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
-  </div>
-<% end%>
+  <% end%>
+</div>
 <%= render 'flash_notice' %>
 <div class="island  island--light">
   <%= simple_form_for @freecen2_place, :html => { :class => "grid"}  do |f| %>
-    <%= f.input :place_name, :label => "Search for Place name(s). Previous search name preloaded.",:hint => "Names entered are case insensitive and should be the stem of a name e.g. ann will locate ann anns ann's anns'. Results will include both or any of the names entered and will be independent of their order." ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <%= f.input :place_name, :label => "Search for Place name(s). Previous search criteria preloaded.",:hint => "Names entered are case insensitive and should be the stem of a name e.g. ann will locate ann anns ann's anns'. Results will include both or any of the names entered and will be independent of their order." ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <fieldset class="input" style="text-align: center">
       <legend><b> Advanced Search options - </b><i>if required select one</i></legend>
       <small> Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small>
@@ -52,21 +54,22 @@
     <div id="ChooseCounty">
       <fieldset class="inputs" class="input" style="text-align: center">
         <legend><b>County to be searched</b></legend>
-        <ol class="grid">
-          <li class="grid__item three-quarters lap-three-quarters palm-one-whole">
-            <%= f.input :county, selected: @county, label: 'Click in box for county options. Previous selection preloaded. ',hint: 'Leave empty to search all Counties.',include_blank: true,collection: @counties, input_html:  {class: 'simple_form_bgcolour simple_form_position overide_selection_field_width'} %>
-            <%= f.hidden_field :disabled, :value=> false %>
-          </li>
-          <li class="grid__item one-quarter lap-one-quarter palm-one-whole">
-            <%= search_names_clear_county %>
-          </li>
-        </ol>
+        <%= f.input :county, selected: @county, label: 'Click in box for county options. Previous selection preloaded. ',hint: 'Leave empty to search all Counties.',include_blank: true,collection: @counties, input_html:  {class: 'simple_form_bgcolour simple_form_position overide_selection_field_width'} %>
+        <%= f.hidden_field :disabled, :value=> false %>
       </fieldset>
     </div>
-    <%= f.button :submit, 'Search Place Names',:button_html => {:class => "btn" }  %>
-    <p class=" text--center"><br>
-      <small><em> [Note: The regular Place Name Search is a text search that ignores ‘stop words’. These are common words that have little actual meaning. <br>
-          A list of these words can be found <%= link_to 'HERE', "https://github.com/mongodb/mongo/blob/0e3b3ca8480ddddf5d0105d11a94bd4698335312/src/mongo/db/fts/stop_words_english.txt", target: :_blank %> (opens in new tab).<br>
-          If your search returns no results and you think it might be because it contains a ‘stop word’, please try an Advanced Search, as this does not ignore 'stop words'.]</em></small></p>
+    <div style="text-align: center">
+      <%= f.button :submit, 'Search Place Names', :button_html => {:class => "btn" }  %>
+      <p class=" text--center"><br>
+        <small><em> [Note: The regular Place Name Search is a text search that ignores ‘stop words’. These are common words that have little actual meaning. <br>
+            A list of these words can be found <%= link_to 'HERE', "https://github.com/mongodb/mongo/blob/0e3b3ca8480ddddf5d0105d11a94bd4698335312/src/mongo/db/fts/stop_words_english.txt", target: :_blank %> (opens in new tab).<br>
+            If your search returns no results and you think it might be because it contains a ‘stop word’, please try an Advanced Search, as this does not ignore 'stop words'.]</em></small></p>
+    </div>
   <% end %>
 </div>
+<script>
+  function clearCounty() {
+   document.getElementById("freecen2_place_county").value = '';
+   document.getElementById("freecen2_place_county").focus()
+    }
+</script>
