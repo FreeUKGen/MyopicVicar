@@ -103,6 +103,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen1_vld_files/:id/csv_download(.:format)', to: 'freecen1_vld_files#csv_download', as: :csv_download_freecen1_vld_file
   get 'freecen1_vld_files/list_invalid_civil_parishes', to: 'freecen1_vld_files#list_invalid_civil_parishes', as: :list_invalid_civil_parishes_freecen1_vld_file
   get 'freecen1_vld_files/edit_civil_parishes', to: 'freecen1_vld_files#edit_civil_parishes', as: :edit_civil_parishes_freecen1_vld_file
+  get 'freecen1_vld_files/download_vld_file', to: 'freecen1_vld_files#download_vld_file', as: :download_vld_file_freecen1_vld_file
   resources :freecen1_vld_files
 
   resources :freecen1_vld_file_audits
