@@ -18,7 +18,7 @@ module Freecen2SiteStatisticsHelper
           files << file.file_name + ' (' + file.userid + ')'
         end
       end
-      files
+      files.size == 0 ? 'none' : files
     else
       'none'
     end
@@ -34,7 +34,7 @@ module Freecen2SiteStatisticsHelper
           files << file.file_name + ' (' + file.userid + ')'
         end
       end
-      files
+      files.size == 0 ? 'none' : files
     else
       'none'
     end
@@ -51,7 +51,7 @@ module Freecen2SiteStatisticsHelper
           files << file.file_name + ' (' + file.userid + ')'
         end
       end
-      files
+      files.size == 0 ? 'none' : files
     elsif piece.vld_files.present?
       # used for Scotland pieces where there can be multiple files for a single piece
       piece.vld_files

@@ -1,5 +1,5 @@
-<% breadcrumb :freecen2_site_statistics,  @county%>
-<h2 style="text-align: center"><%= @county %> Freecen2_Pieces for <%= @year %> ordered by <%=@sorted_by%></h2>
+<% breadcrumb :freecen2_stats_pieces,  @county%>
+<h2 style="text-align: center"><%= @chapman_code %> (<%= @county %>) : Freecen2 Pieces for <%= @year %> ordered by <%=@sorted_by%></h2>
 <p class=" text--center"> Select a link below to change the order of display</p>
 <div  class=" text--center push--bottom">
   <%= link_to 'Piece Number', list_pieces_freecen2_site_statistics_path(county: @county, sorted_by: 'Piece Number', stats_year: @year), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their piece number' %>

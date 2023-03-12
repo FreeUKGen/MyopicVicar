@@ -54,13 +54,21 @@ crumb :person_role_selection do
 end
 
 crumb :freecen2_site_statistics do |county|
-  link 'Freecen2 Site Statistics', freecen2_site_statistics_path
   if county == 'total'
+    link 'Freecen2 Site Statistics', freecen2_site_statistics_path
     parent :root
   else
+    link 'Freecen2 County Statistics', freecen2_site_statistics_path
     parent :county_options, county
   end
 end
+
+crumb :freecen2_stats_pieces do |county|
+  link 'Freecen2 Pieces List'
+  parent :freecen2_site_statistics, county
+end
+
+
 crumb :freecen2_search_statistics do |county|
   link 'Freecen2 Search Statistics'
   if county == 'total'
