@@ -17,8 +17,10 @@
         </fieldset>
       <% end %>
     <% end %>
-    <p class="text--center text--negative push-half--bottom"> <b>
-        To replace a VLD file use the replace action in the specific file listed below<br>
-      </b></p>
+    <% if %w[system_administrator data_manager country_coordinator].include?(@user.person_role)%>
+      <p class="text--center text--negative push-half--bottom"> <b>
+          To replace a VLD file use the replace action in the specific file listed below<br>
+        </b></p>
+    <% end %>
   </div>
 <% end%>
