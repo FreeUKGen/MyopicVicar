@@ -1,4 +1,77 @@
 module Freecen2SiteStatisticsHelper
+
+  def stats_piece_online(piece)
+    if piece.status.present?
+      status = piece.status_date.present? ? 'Y (' + piece.status_date.to_datetime.strftime("%d/%b/%Y %R") + ')' : 'N'
+    else
+      status = 'N'
+    end
+  end
+
+  def stats_csv_files_piece_unincorporated(piece)
+    if piece.freecen_csv_files.present?
+      files = []
+      piece.freecen_csv_files.incorporated(false).order_by(file_name: 1).each do |file|
+        if file.userid.blank?
+          files << file.file_name + ' ()'
+        else
+          files << file.file_name + ' (' + file.userid + ')'
+        end
+      end
+      files
+    else
+      'none'
+    end
+  end
+
+  def stats_csv_files_piece_incorporated(piece)
+    if piece.freecen_csv_files.present?
+      files = []
+      piece.freecen_csv_files.incorporated(true).order_by(file_name: 1).each do |file|
+        if file.userid.blank?
+          files << file.file_name + ' ()'
+        else
+          files << file.file_name + ' (' + file.userid + ')'
+        end
+      end
+      files
+    else
+      'none'
+    end
+  end
+
+  def stats_vld_files_piece(piece)
+    if piece.freecen1_vld_files.present?
+      # normal link to vld file (usually only 1)
+      files = []
+      piece.freecen1_vld_files.order_by(file_name: 1).each do |file|
+        if file.userid.blank?
+          files << file.file_name
+        else
+          files << file.file_name + ' (' + file.userid + ')'
+        end
+      end
+      files
+    elsif piece.vld_files.present?
+      # used for Scotland pieces where there can be multiple files for a single piece
+      piece.vld_files
+    elsif piece.shared_vld_file.present?
+      # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
+      file = Freecen1VldFile.find_by(_id: piece.shared_vld_file)
+      file.file_name if file.present?
+    else
+      'none'
+    end
+  end
+
+  def stats_data_file_type(piece)
+    if stats_csv_files_piece_unincorporated(piece) == 'none' && stats_csv_files_piece_incorporated(piece) == 'none' && stats_vld_files_piece(piece) == 'none'
+      type = 'n/a'
+    else
+      type = stats_vld_files_piece(piece) == 'none' ? 'CSVProc' : 'VLD'
+    end
+  end
+
   def data_integrity_flag(census, check_num)
 
     # 1) Search records = Individuals
@@ -23,6 +96,7 @@ module Freecen2SiteStatisticsHelper
     flag
   end
 
+
   def site_statistics_drilldown(cell, census, data_type)
     if census == :total
       year = 'all'
@@ -30,27 +104,14 @@ module Freecen2SiteStatisticsHelper
       year = census
     end
     case data_type
+    when 'year'
+      return link_to "#{year}", list_pieces_freecen2_site_statistics_path(county: @county, sorted_by: 'Piece Number', stats_year: year),:title=>'List Pieces', method: :get
     when 'search_records'
       data_integrity_flag(census, '1') != '' ? display_cell = content_tag(:td, cell.to_s + data_integrity_flag(census, '1'), style: "color: red") : display_cell = content_tag(:td, cell.to_s)
     when 'vld_files_on_line'
       data_integrity_flag(census, '2') != '' ? display_cell = content_tag(:td, cell.to_s + data_integrity_flag(census, '2'), style: "color: red") : display_cell = content_tag(:td, cell.to_s)
     when 'csv_files'
-      display_flagged = cell.to_s + data_integrity_flag(census, '3')
-      if cell > 0
-        if data_integrity_flag(census, '3') != ''
-          return link_to "#{display_flagged}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'all'),:title=>'List details', method: :get, style: "color: red"
-        else
-          return link_to "#{display_flagged}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'all'),:title=>'List details', method: :get
-        end
-      else
-        return display_flagged
-      end
-    when 'csv_files_incorporated'
-      if cell > 0
-        return link_to "#{cell}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'incorporated'),:title=>'List details', method: :get
-      else
-        return cell.to_s
-      end
+      data_integrity_flag(census, '3') != '' ? display_cell = content_tag(:td, cell.to_s + data_integrity_flag(census, '3'), style: "color: red") : display_cell = content_tag(:td, cell.to_s)
     when 'csv_entries'
       data_integrity_flag(census, '4') != '' ? display_cell = content_tag(:td, cell.to_s + data_integrity_flag(census, '4'), style: "color: red") : display_cell = content_tag(:td, cell.to_s)
     when 'individuals'

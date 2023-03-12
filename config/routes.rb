@@ -80,6 +80,7 @@ MyopicVicar::Application.routes.draw do
 
   get 'freecen2_site_statistics/grand_totals', to: 'freecen2_site_statistics#grand_totals', as: :grand_totals_freecen2_site_statistics
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
+  get 'freecen2_site_statistics/list_pieces', to: 'freecen2_site_statistics#list_pieces', as: :list_pieces_freecen2_site_statistics
   resources :freecen2_site_statistics
 
   get 'freecen2_contents/county_index', to: 'freecen2_contents#county_index', as: :index_by_county_freecen2_contents
