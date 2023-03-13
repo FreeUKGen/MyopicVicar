@@ -78,12 +78,19 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
           fc2_piece_numbers += "#{fc2_piece_main.number}, "
           fc2_piece_civil_parishes = get_civil_parishes(fc2_piece_main, fc2_piece_civil_parishes)
 
-          regexp = BSON::Regexp::Raw.new('^' + fc2_piece_main.number + '\D')
+          fc2_piece_base = fc2_piece_main.number[-1..-1].match?(/[A-Za-z]/) ? fc2_piece_main.number.chop : fc2_piece_main.number #is the last charcaacter an alphabetic?
+
+          p "AEV01 main=#{fc2_piece_main.number} base= #{fc2_piece_base}"
+
+          regexp = BSON::Regexp::Raw.new('^' + fc2_piece_base + '\D')
           parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
           if parts.count.positive?
             parts.each do |part|
-              fc2_piece_numbers += "#{part.number}, "
-              fc2_piece_civil_parishes = get_civil_parishes(part, fc2_piece_civil_parishes)
+              if part.number != fc2_piece_main.number
+                p "AEV02  adding #{part.number}"
+                fc2_piece_numbers += "#{part.number}, "
+                fc2_piece_civil_parishes = get_civil_parishes(part, fc2_piece_civil_parishes)
+              end
             end
 
           end
