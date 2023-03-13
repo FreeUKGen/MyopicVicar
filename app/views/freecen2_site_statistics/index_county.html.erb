@@ -43,43 +43,43 @@
           <tbody>
             <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
               <tr>
-                <td><%= site_statistics_drilldown('list', census, 'year') %></td>
-                <%= site_statistics_drilldown(@county_stats[census][:search_records], census, 'search_records') %>
-                <%= site_statistics_drilldown(@county_stats[census][:vld_files_on_line], census, 'vld_files_on_line') %>
-                <%= site_statistics_drilldown(@county_stats[census][:vld_files], census, 'vld_files') %>
-                <%= site_statistics_drilldown(@county_stats[census][:vld_entries], census, 'vld_entries') %>
-                <%= site_statistics_drilldown(@county_stats[census][:csv_files], census, 'csv_files')  %>
-                <%= site_statistics_drilldown(@county_stats[census][:csv_entries], census, 'csv_entries') %>
-                <%= site_statistics_drilldown(@county_stats[census][:csv_files_incorporated], census, 'csv_files_incorporated') %>
-                <%= site_statistics_drilldown(@county_stats[census][:csv_individuals_incorporated], census, 'csv_individuals_incorporated') %>
-                <%= site_statistics_drilldown(@county_stats[census][:individuals], census, 'individuals') %>
-                <%= site_statistics_drilldown(@county_stats[census][:dwellings], census, 'dwellings') %>
-                <%= site_statistics_drilldown(@county_stats[census][:added_vld_files], census, 'added_vld_files') %>
-                <%= site_statistics_drilldown(@county_stats[census][:added_vld_entries], census, 'added_vld_entries') %>
-                <%= site_statistics_drilldown(@county_stats[census][:added_csv_files], census, 'added_csv_files') %>
-                <%= site_statistics_drilldown(@county_stats[census][:added_csv_entries], census, 'added_csv_entries') %>
-                <%= site_statistics_drilldown(@county_stats[census][:added_csv_files_incorporated], census, 'added_csv_files_incorporated') %>
-                <%= site_statistics_drilldown(@county_stats[census][:added_csv_individuals_incorporated], census, 'added_csv_individuals_incorporated') %>
+                <td><%= site_statistics_display_cell('list', census, 'year') %></td>
+                <%= site_statistics_display_cell(@county_stats[census][:search_records], census, 'search_records') %>
+                <%= site_statistics_display_cell(@county_stats[census][:vld_files_on_line], census, 'vld_files_on_line') %>
+                <%= site_statistics_display_cell(@county_stats[census][:vld_files], census, 'vld_files') %>
+                <%= site_statistics_display_cell(@county_stats[census][:vld_entries], census, 'vld_entries') %>
+                <%= site_statistics_display_cell(@county_stats[census][:csv_files], census, 'csv_files')  %>
+                <%= site_statistics_display_cell(@county_stats[census][:csv_entries], census, 'csv_entries') %>
+                <%= site_statistics_display_cell(@county_stats[census][:csv_files_incorporated], census, 'csv_files_incorporated') %>
+                <%= site_statistics_display_cell(@county_stats[census][:csv_individuals_incorporated], census, 'csv_individuals_incorporated') %>
+                <%= site_statistics_display_cell(@county_stats[census][:individuals], census, 'individuals') %>
+                <%= site_statistics_display_cell(@county_stats[census][:dwellings], census, 'dwellings') %>
+                <%= site_statistics_display_cell(@county_stats[census][:added_vld_files], census, 'added_vld_files') %>
+                <%= site_statistics_display_cell(@county_stats[census][:added_vld_entries], census, 'added_vld_entries') %>
+                <%= site_statistics_display_cell(@county_stats[census][:added_csv_files], census, 'added_csv_files') %>
+                <%= site_statistics_display_cell(@county_stats[census][:added_csv_entries], census, 'added_csv_entries') %>
+                <%= site_statistics_display_cell(@county_stats[census][:added_csv_files_incorporated], census, 'added_csv_files_incorporated') %>
+                <%= site_statistics_display_cell(@county_stats[census][:added_csv_individuals_incorporated], census, 'added_csv_individuals_incorporated') %>
               </tr>
             <% end %>
             <tr>
               <td><%= @inverval_end.strftime('%d/%b/%Y') %></td>
-              <%= site_statistics_drilldown(@county_stats[:total][:search_records], :total, 'search_records') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:vld_files_on_line], :total, 'vld_files_on_line') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:vld_files], :total, 'vld_files') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:vld_entries], :total, 'vld_entries') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:csv_files], :total, 'csv_files')  %>
-              <%= site_statistics_drilldown(@county_stats[:total][:csv_entries], :total, 'csv_entries') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:csv_files_incorporated], :total, 'csv_files_incorporated') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:csv_individuals_incorporated], :total, 'csv_individuals_incorporated') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:individuals], :total, 'individuals') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:dwellings], :total, 'dwellings') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:added_vld_files], :total, 'added_vld_files') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:added_vld_entries], :total, 'added_vld_entries') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:added_csv_files], :total, 'added_csv_files') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:added_csv_entries], :total, 'added_csv_entries') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:added_csv_files_incorporated], :total, 'added_csv_files_incorporated') %>
-              <%= site_statistics_drilldown(@county_stats[:total][:added_csv_individuals_incorporated], :total, 'added_csv_individuals_incorporated') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:search_records], :total, 'search_records') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:vld_files_on_line], :total, 'vld_files_on_line') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:vld_files], :total, 'vld_files') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:vld_entries], :total, 'vld_entries') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:csv_files], :total, 'csv_files')  %>
+              <%= site_statistics_display_cell(@county_stats[:total][:csv_entries], :total, 'csv_entries') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:csv_files_incorporated], :total, 'csv_files_incorporated') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:csv_individuals_incorporated], :total, 'csv_individuals_incorporated') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:individuals], :total, 'individuals') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:dwellings], :total, 'dwellings') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:added_vld_files], :total, 'added_vld_files') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:added_vld_entries], :total, 'added_vld_entries') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:added_csv_files], :total, 'added_csv_files') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:added_csv_entries], :total, 'added_csv_entries') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:added_csv_files_incorporated], :total, 'added_csv_files_incorporated') %>
+              <%= site_statistics_display_cell(@county_stats[:total][:added_csv_individuals_incorporated], :total, 'added_csv_individuals_incorporated') %>
             </tr>
           </tbody>
         </table>

@@ -137,21 +137,6 @@ class Freecen2SiteStatisticsController < ApplicationController
     @period_start_dates, @period_end_dates = get_stats_dates
   end
 
-  def list_pieces
-    @county = session[:county]
-    @chapman_code = session[:chapman_code]
-    @year = params[:stats_year]
-    @sorted_by = params[:sorted_by].blank? ? 'Piece Number' : params[:sorted_by]
-    case @sorted_by
-    when 'Piece Number'
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('number ASC')
-    when 'Piece Name'
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('name ASC')
-    when 'Date Online'
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('status_date DESC, number ASC')
-    end
-  end
-
   def show
     @freecen2_site_statistic = Freecen2SiteStatistic.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No such record') && return if @freecen2_site_statistic.blank?

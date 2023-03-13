@@ -80,7 +80,6 @@ MyopicVicar::Application.routes.draw do
 
   get 'freecen2_site_statistics/grand_totals', to: 'freecen2_site_statistics#grand_totals', as: :grand_totals_freecen2_site_statistics
   get 'freecen2_site_statistics/export_csv', to: 'freecen2_site_statistics#export_csv', as: :export_csv_freecen2_site_statistics
-  get 'freecen2_site_statistics/list_pieces', to: 'freecen2_site_statistics#list_pieces', as: :list_pieces_freecen2_site_statistics
   resources :freecen2_site_statistics
 
   get 'freecen2_contents/county_index', to: 'freecen2_contents#county_index', as: :index_by_county_freecen2_contents
@@ -331,6 +330,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/:year/select_new_county', :to => 'freecen2_pieces#select_new_county', :as => :select_new_county_freecen2_piece
   get 'freecen2_pieces/csv_index', to: 'freecen2_pieces#csv_index', as: :csv_index_freecen2_piece
   get 'freecen2_pieces/place_pieces_index', to: 'freecen2_pieces#place_pieces_index', as: :place_pieces_index_freecen2_piece
+  get 'freecen2_pieces/stats_index', to: 'freecen2_pieces#stats_index', as: :stats_index_freecen2_pieces
   resources :freecen2_pieces
 
   get 'freecen2_civil_parishes/selection_by_name', to: 'freecen2_civil_parishes#selection_by_name', as: :selection_by_name_freecen2_civil_parishes
