@@ -37,6 +37,7 @@ task :unique_individual_forenames => :environment do
     names = forename.split(/[^[[:word:]]]+/)
     names.each do |thisname|
       if thisname.length > 1
+        thisname.titleize
         if UniqueForename.find_by(Name: thisname) == nil
           records = BestGuess.where(GivenName: thisname).count
           puts "#{thisname}, #{records}"
