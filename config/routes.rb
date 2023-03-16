@@ -368,6 +368,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
   get 'userid_details/list_saved_entry', to: 'userid_details#list_saved_entry', :as => :list_saved_entries_userid_details
   get 'userid_details/:id/saved_entries_as_csv' => 'userid_details#saved_entries_as_csv', as: :saved_entries_as_csv
+  get 'userid_details/:id/saved_entries_as_gedcom' => 'userid_details#saved_entries_as_gedcom', as: :saved_entries_as_gedcom
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do
