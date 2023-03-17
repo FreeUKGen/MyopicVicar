@@ -292,6 +292,21 @@ class Freecen2PiecesController < ApplicationController
     @scotland = scotland_county?(@chapman_code)
   end
 
+  def stats_index
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
+    @year = params[:stats_year]
+    @sorted_by = params[:sorted_by].blank? ? 'Most Recent Online' : params[:sorted_by]
+    case @sorted_by
+    when 'Piece Number'
+      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('number ASC')
+    when 'Piece Name'
+      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('name ASC')
+    when 'Most Recent Online'
+      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('status_date DESC, number ASC')
+    end
+  end
+
   def update
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the update') && return if params[:id].blank? || params[:freecen2_piece].blank?
 

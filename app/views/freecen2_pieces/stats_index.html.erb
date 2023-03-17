@@ -1,0 +1,56 @@
+<% breadcrumb :freecen2_stats_pieces,  @county%>
+<h2 style="text-align: center"><%= @chapman_code %> (<%= @county %>) : Listing All Freecen2 Pieces for <%= @year %> ordered by <%=@sorted_by%></h2>
+<p class=" text--center"> Select a link below to change the order of display</p>
+<div  class=" text--center push--bottom">
+  <% if @sorted_by != 'Piece Number' %>
+    <%= link_to 'Piece Number', stats_index_freecen2_pieces_path(county: @county, sorted_by: 'Piece Number', stats_year: @year), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their piece number' %>
+  <% end %>
+  <% if @sorted_by != 'Piece Name' %>
+    <%= link_to 'Piece Name', stats_index_freecen2_pieces_path(county: @county, sorted_by: 'Piece Name', stats_year: @year), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their piece name' %>
+  <% end %>
+  <% if @sorted_by != 'Most Recent Online' %>
+    <%= link_to 'Most Recent Online' ,  stats_index_freecen2_pieces_path(county: @county, sorted_by: 'Most Recent Online', stats_year: @year), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the most recent Online date' %>
+  <% end %>
+</div>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width" >
+    <thead >
+      <tr>
+        <th class='sticky-header'>Piece Number </th>
+        <th class='sticky-header'>Piece Name </th>
+        <th class='sticky-header'>Status</th>
+        <th class='sticky-header'>Online VLD Files</th>
+        <th class='sticky-header'>Incorporated CSV Files</th>
+        <th class='sticky-header'>Unincorporated CSV Files</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @freecen2_pieces.each do |piece|%>
+        <tr>
+          <td><%= piece.number %></td>
+          <td><%= piece.name %></td>
+          <% if piece_status(piece).blank? %>
+            <td> </td>
+          <% else %>
+            <td><%= piece_status(piece) %></td>
+          <% end %>
+          <% if vld_files_piece(piece) == 'There are no VLD files' %>
+            <td> </td>
+          <% else %>
+            <td><%= vld_files_piece(piece) %></td>
+          <% end %>
+          <% if csv_files_piece_incorporated(piece) == 'There are no incorporated CSV files' %>
+            <td> </td>
+          <% else %>
+            <td><%= csv_files_piece_incorporated(piece) %></td>
+          <% end %>
+          <% if csv_files_piece_unincorporated(piece) == 'There are no unincorporated CSV files' %>
+            <td> </td>
+          <% else %>
+            <td><%= csv_files_piece_unincorporated(piece) %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
