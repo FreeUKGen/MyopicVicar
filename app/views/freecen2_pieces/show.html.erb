@@ -42,19 +42,19 @@
         </tr>
         <tr>
           <td><%= csv_files_piece_link_unincorporated(@freecen2_piece) %></td>
-          <td class="weight--semibold"> <%=  csv_files_piece_unincorporated(@freecen2_piece) %> </td>
+          <td class="weight--semibold"> <%=  @freecen2_piece.display_csv_files_piece_unincorporated %> </td>
         </tr>
         <tr>
           <td><%= csv_files_piece_link_incorporated(@freecen2_piece) %></td>
-          <td class="weight--semibold"> <%=  csv_files_piece_incorporated(@freecen2_piece) %> </td>
+          <td class="weight--semibold"> <%=   @freecen2_piece.display_csv_files_piece_incorporated %> </td>
         </tr>
         <tr>
           <td><%= vld_files_piece_link(@freecen2_piece) %></td>
-          <td class="weight--semibold"> <%= vld_files_piece(@freecen2_piece) %> </td>
+          <td class="weight--semibold"> <%=  @freecen2_piece.display_vld_files_piece %> </td>
         </tr>
         <tr>
           <td>Status</td>
-          <td class="weight--semibold"> <%= piece_status(@freecen2_piece) %></td>
+          <td class="weight--semibold"> <%=  @freecen2_piece.display_piece_status %></td>
         </tr>
         <tr>
           <td>Film</td>
