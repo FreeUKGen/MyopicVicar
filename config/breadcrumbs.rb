@@ -1965,33 +1965,29 @@ crumb :freecen_csv_files do |file|
     link 'List of Files', freecen_csv_files_path(anchor: "#{file.id}", page: "#{session[:current_page]}")
   end
 
-  if session[:stats_view]
-    parent :freecen2_site_statistics,  session[:county]
-  else
-    if session[:my_own]
-      parent :my_own_freecen_csv_files
-    elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
-      if session[:piece_id].present?
-        piece = Piece.find_by(_id: piece_id).first
-        if piece.nil?
-          parent :county_options, session[:county]
-        else
-          parent :show_piece, session[:county], piece
-        end
-      else
+  if session[:my_own]
+    parent :my_own_freecen_csv_files
+  elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+    if session[:piece_id].present?
+      piece = Piece.find_by(_id: piece_id).first
+      if piece.nil?
         parent :county_options, session[:county]
-      end
-    elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
-      parent :userid_details_listing, session[:syndicate]
-    elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
-      if session[:userid_id].present?
-        parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
       else
-        parent :syndicate_options, session[:syndicate]
+        parent :show_piece, session[:county], piece
       end
-    elsif %w[system_administrator technical].include?(session[:role])
-      parent :cenmanager_userid_options
+    else
+      parent :county_options, session[:county]
     end
+  elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
+    parent :userid_details_listing, session[:syndicate]
+  elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+    if session[:userid_id].present?
+      parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
+    else
+      parent :syndicate_options, session[:syndicate]
+    end
+  elsif %w[system_administrator technical].include?(session[:role])
+    parent :cenmanager_userid_options
   end
 end
 
