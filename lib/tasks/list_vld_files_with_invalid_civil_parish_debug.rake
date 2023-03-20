@@ -1,7 +1,7 @@
-desc "List VLD files with invalid civil parish"
+desc "List VLD files with invalid civil parish DEBUG"
 require 'chapman_code'
 
-task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid] => :environment do |_t, args|
+task :list_vld_files_with_invalid_civil_parish_debug, [:start_chapman, :limit, :userid] => :environment do |_t, args|
 
   args.with_defaults(:limit => 500)
 
