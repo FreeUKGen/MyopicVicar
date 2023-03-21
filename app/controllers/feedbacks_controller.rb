@@ -176,7 +176,8 @@ class FeedbacksController < ApplicationController
   def new
     session[:return_to] ||= request.referer
     get_user_info_if_present
-    @feedback = Feedback.new(new_params) if params[:source_feedback_id].blank?
+    non_type_params = new_params.except(:type)
+    @feedback = Feedback.new(non_type_params) if params[:source_feedback_id].blank?
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid if @user.present?

@@ -211,7 +211,8 @@ module ApplicationHelper
       user_id: user_id,
       problem_page_url: problem_page_url,
       previous_page_url: previous_page_url,
-      feedback_type: feedback_type
+      feedback_type: feedback_type,
+      type: 'beta'
      }
   end
 
