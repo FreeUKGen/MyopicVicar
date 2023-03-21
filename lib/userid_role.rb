@@ -81,7 +81,7 @@ module UseridRole
       'validator' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'volunteer_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Gazetteer', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Gazetteer', 'Message System','Place Edit Reasons', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
-      'newsletter_coordinator' => ['Database Statistics', 'Profile', 'Site Statistics', 'Search Statistics', 'Transcriber Statistics']
+      'newsletter_coordinator' => ['Contacts', 'Database Statistics', 'Profile', 'Site Statistics', 'Search Statistics', 'Transcriber Statistics']
 
     }
   end

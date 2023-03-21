@@ -396,7 +396,7 @@ class Contact
     when 'General Comment'
       role = 'general_communication_coordinator'
     when 'Thank you'
-      role = 'publicity_coordinator'
+      role = 'newsletter_coordinator'#'publicity_coordinator'
     when 'Genealogical Question'
       role = 'genealogy_coordinator'
     when 'Enhancement Suggestion'
