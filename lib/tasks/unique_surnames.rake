@@ -17,13 +17,15 @@ task :unique_forenames => :environment do
   require 'unique_forenames'
   puts 'Starting forenames'
   UniqueForename.delete_all
-  n = 0
-  BestGuess.distinct.pluck(:GivenName).sort.each do |forename|
-    n += 1
-    records = BestGuess.where(GivenName: forename).count
-    puts "#{forename}, #{records}"
-    UniqueForename.create(:Name => forename, :count => records)
-  end
+  grouped_forenames =  BestGuess.group(:GivenName).count(:GivenName)
+  grouped_forenames.each { |rec| UniqueForename.create(Name: rec[0], count: rec[1])  }
+  #n = 0
+  #BestGuess.distinct.pluck(:GivenName).sort.each do |forename|
+   # n += 1
+    #records = BestGuess.where(GivenName: forename).count
+    #puts "#{forename}, #{records}"
+    #UniqueForename.create(:Name => forename, :count => records)
+  #end
   puts "Finished forenames"
 end
 
