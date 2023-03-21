@@ -204,6 +204,7 @@ module ApplicationHelper
     previous_page_url = request.env['HTTP_REFERER']
     feedback_type=Feedback::FeedbackType::ISSUE
     user_id = session[:userid] if session[:userid]
+    beta = session[:userid].present? ? 'feedback' : 'beta'
 
     {
       feedback_time: problem_time,
@@ -212,7 +213,7 @@ module ApplicationHelper
       problem_page_url: problem_page_url,
       previous_page_url: previous_page_url,
       feedback_type: feedback_type,
-      type: 'beta'
+      type: beta
      }
   end
 
