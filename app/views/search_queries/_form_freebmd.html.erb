@@ -40,7 +40,7 @@
                     <% end %>
                 </div>
               <%#= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', :autocomplete => autocomplete_BestGuess_GivenName_search_queries_path, tabindex: "0" %>
-              <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forename', tabindex: "0" %>
+              <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0" %>
                 <label>
                     <small>
                         <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
@@ -272,7 +272,7 @@
 
       <script>
           $( "#first_name" ).autocomplete({
-              source: '/unique_forename/?term='
+              source: '/unique_forenames/?term='
           });
           $( "#last_name" ).autocomplete({
               source: '/unique_surnames/?term='
