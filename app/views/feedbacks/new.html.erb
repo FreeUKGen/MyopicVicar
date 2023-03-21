@@ -5,7 +5,11 @@
   </div>
 <% end %>
   <% if @feedback.feedback_type == Feedback::FeedbackType::ISSUE %>
+  <% if params[:type] == 'beta' %>
+    <h1 style="text-align: center">Beta Feedback Report</h1>
+  <% else %>
     <h1 style="text-align: center">Problem Report</h1>
+  <% end %>
     <div class="grid">
       <% if params[:type] == 'beta' %>
         <p >Thank you for helping us improve the new-look FreeBMD website. We are committed to making this website as good as, if not better than the original FreeBMD website that is so loved by the genealogy community.</p><p>Please add a descriptive summary and additional information about what you want us to consider in our improvements to the website in the comment box. Attach a screen shot or any other images you think may be helpful to us.</p><p>Please note: When you submit your feedback, the contents of your report will be visible on the internet. Please read our <a href=<%=Constant::PRIVACY_POLICY_LINK%>>Privacy Notice</a> for information on how we will protect and use your data.</p>
