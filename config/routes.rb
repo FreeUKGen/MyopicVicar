@@ -623,10 +623,10 @@ MyopicVicar::Application.routes.draw do
   get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
   resources :best_guess_hash
 
-  get 'unique_forename/:prefix/', :to => 'best_guess#unique_forenames'
+  get 'unique_forenames/:prefix/', :to => 'best_guess#unique_forenames'
   get 'unique_surnames/:prefix/', :to => 'best_guess#unique_surnames'
 
-  resources :unique_forename
+  resources :unique_forenames
 
   resources :unique_surnames
 
