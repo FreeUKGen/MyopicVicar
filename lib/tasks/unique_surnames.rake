@@ -14,7 +14,7 @@ task :unique_surnames => :environment do
 end
 
 task :unique_forenames => :environment do
-  require 'unique_forenames'
+  require 'unique_forename'
   puts 'Starting forenames'
   UniqueForename.delete_all
   grouped_forenames =  BestGuess.group(:GivenName).count(:GivenName)
