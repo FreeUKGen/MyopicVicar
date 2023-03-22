@@ -98,6 +98,8 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
           fc2_piece_civil_parishes += '**MISSING**, '
         end
 
+        fc2_piece_civil_parishes = '**No Civil Parishes Recorded**, ' if fc2_piece_civil_parishes.blank?
+
         fc2_piece_numbers = fc2_piece_numbers[0...-2]
         fc2_piece_civil_parishes = fc2_piece_civil_parishes[0...-2]
 
@@ -201,7 +203,7 @@ def self.ignore_hamlets(civil_parish_names)
 end
 
 def self.ignore_hyphens(civil_parish_names)
-  cps_no_hyphens = civil_parish_names.gsub('-', ' ')
+  civil_parish_names.gsub('-', ' ')
 end
 
 def self.get_civil_parishes(piece, civil_parishes)
@@ -212,6 +214,7 @@ def self.get_civil_parishes(piece, civil_parishes)
     cp_names = '**MISSING**'
   end
   civil_parishes += "#{cp_names}, " if cp_names != ''
+  civil_parishes
 end
 
 def self.civil_parish_valid(civil_parish, fc2_piece_civil_parishes)
