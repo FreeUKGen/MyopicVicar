@@ -3,8 +3,10 @@
 </h3>
 <%= render 'flash_notice' %>
 <%= semantic_form_for @freecen2_civil_parish, :html => { :class => 'grid'}  do |f| %>
-  <% unless @user.person_role == "system_administrator" || @user.person_role == "data_manager" %>
-    <%= f.input :reason_changed,:label => 'Reason for making addition',required: true,:as => :text, :input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>
+  <% if @user.person_role == "system_administrator" || @user.person_role == "data_manager" %>
+    <%= f.input :reason_changed,:label => 'Reason for making addition',required: false,:as => :text,:input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>
+  <% else %>
+    <%= f.input :reason_changed,:label => 'Reason for making addition',required: true,:as => :text,:input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>
   <% end %>
   <%= f.input :name ,  label: 'Civil Parish Name',  :required => true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
   <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:',required: true, selected:  @freecen2_place_name, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour very_large_selection_field_width', size:5 }%>
