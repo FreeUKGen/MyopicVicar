@@ -9,20 +9,16 @@ module Freecen2PiecesHelper
   end
 
   def district_link(district)
-    if district.present? && session[:type] != 'locate_other_pieces'
+    if district.present?
       link_to "#{district.name}", freecen2_district_path(district), class: 'btn   btn--small', title:' Displays all of the information about the District to which this Sub District (Piece) is linked'
-    elsif session[:type] == 'locate_other_pieces'
-      district.name
     else
       'There is no district'
     end
   end
 
   def civil_link(piece)
-    if piece.present? && session[:type] != 'locate_other_pieces'
+    if piece.present?
       link_to 'Civil Parishes', index_for_piece_freecen2_civil_parishes_path(piece_id: piece.id, type: @type), class: 'btn   btn--small', title:' Displays a list of the Civil Parishes which belong to this Sub District (Piece)'
-    elsif session[:type] == 'locate_other_pieces'
-      'Civil Parishes'
     else
       'There is no piece'
     end
@@ -92,30 +88,24 @@ module Freecen2PiecesHelper
   end
 
   def csv_files_piece_link_unincorporated(piece)
-    if piece.present? && session[:type] != 'locate_other_pieces'
+    if piece.present?
       link_to 'Unincorporated Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title: 'Csv files for this Piece'
-    elsif session[:type] == 'locate_other_pieces'
-      'Unincorporated Freecen CSV Files'
     else
       'There is no piece'
     end
   end
 
   def csv_files_piece_link_incorporated(piece)
-    if piece.present? && session[:type] != 'locate_other_pieces'
+    if piece.present?
       link_to 'Incorporated Freecen CSV Files', freecen_csv_files_path, class: 'btn   btn--small', title: 'Csv files for this Piece'
-    elsif session[:type] == 'locate_other_pieces'
-      'Incorporated Freecen CSV Files'
     else
       'There is no piece'
     end
   end
 
   def vld_files_piece_link(piece)
-    if piece.present? && session[:type] != 'locate_other_pieces'
+    if piece.present?
       link_to 'Freecen VLD Files', freecen1_vld_files_path, class: 'btn   btn--small', title: 'VLD files for this Piece'
-    elsif session[:type] == 'locate_other_pieces'
-      'Freecen VLD Files'
     else
       'There is no piece'
     end
@@ -126,10 +116,8 @@ module Freecen2PiecesHelper
   end
 
   def place_link(place)
-    if place.present? && session[:type] != 'locate_other_pieces'
+    if place.present?
       link_to "#{place.place_name}", freecen2_place_path(place.id), class: 'btn   btn--small', title: ' Displays all of the information about the place to which this Sub District (Piece) is linked'
-    elsif session[:type] == 'locate_other_pieces'
-      place.place_name
     else
       'There is no place'
     end
