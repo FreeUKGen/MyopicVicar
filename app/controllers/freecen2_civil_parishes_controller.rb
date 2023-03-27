@@ -18,6 +18,8 @@ class Freecen2CivilParishesController < ApplicationController
     @new_civil_parish_params = Freecen2CivilParish.transform_civil_parish_params(params[:freecen2_civil_parish])
 
     @freecen2_civil_parish = Freecen2CivilParish.new(@new_civil_parish_params)
+    get_user_info_from_userid
+    @freecen2_civil_parish.reason_changed = "Created by #{@user.person_role} (#{@user.userid})" if @freecen2_civil_parish.reason_changed.blank?
 
     @freecen2_civil_parish.save
     if @freecen2_civil_parish.errors.any?
