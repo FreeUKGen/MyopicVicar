@@ -286,6 +286,11 @@ class Freecen2CivilParishesController < ApplicationController
 
 
       @freecen2_civil_parish.update_attributes(freecen2_civil_parish_params)
+      if @freecen2_civil_parish.reason_changed.blank?
+        get_user_info_from_userid
+        @freecen2_civil_parish.reason_changed = "Updated by #{@user.person_role} (#{@user.userid})"
+        @freecen2_civil_parish.save
+      end
       if @freecen2_civil_parish.errors.any?
         flash[:notice] = "The update of the civil parish failed #{@freecen_csv_entry.errors.full_messages}."
         redirect_back(fallback_location: edit_freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)) && return
