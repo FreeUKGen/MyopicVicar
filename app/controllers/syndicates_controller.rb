@@ -14,6 +14,8 @@
 class SyndicatesController < ApplicationController
   def create
     @syndicate = Syndicate.new(syndicate_params)
+    redirect_back(fallback_location: syndicates_path, notice: 'The Syndicate Name must not contain Question Marks') && return if @syndicate.syndicate_code.include? '?'
+
     @syndicate.add_syndicate_to_coordinator(params[:syndicate][:syndicate_code],params[:syndicate][:syndicate_coordinator])
     @syndicate.upgrade_syndicate_coordinator_person_role(params[:syndicate][:syndicate_coordinator])
     @syndicate.save
@@ -151,6 +153,8 @@ class SyndicatesController < ApplicationController
     redirect_back(fallback_location: syndicates_path, notice: 'The Syndicate was not found') && return if @syndicate.blank?
 
     my_params = params[:syndicate]
+    redirect_back(fallback_location: edit_manage_syndicate_path(@syndicate), notice: 'The Syndicate Name must not contain Question Marks') && return if my_params[:syndicate_code].include? '?'
+
     params[:syndicate] = @syndicate.update_fields_before_applying(my_params)
     @syndicate.update_attributes(syndicate_params)
     redirect_back(fallback_location: edit_manage_syndicate_path(@syndicate), notice: "The update of the Syndicate was unsuccessful because: #{@syndicate.errors.full_messages}") && return if @syndicate.errors.any?
