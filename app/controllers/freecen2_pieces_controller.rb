@@ -21,6 +21,8 @@ class Freecen2PiecesController < ApplicationController
     else
       @new_freecen2_piece_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
       @freecen2_piece = Freecen2Piece.new(@new_freecen2_piece_params)
+      get_user_info_from_userid
+      @freecen2_piece.reason_changed = "Created by #{@user.person_role} (#{@user.userid})" if @freecen2_piece.reason_changed.blank?
       @freecen2_piece.save
       if @freecen2_piece.errors.any?
         redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_piece.errors.full_messages}") && return
@@ -358,6 +360,11 @@ class Freecen2PiecesController < ApplicationController
       @type = session[:type]
       params[:freecen2_piece].delete :type
       @freecen2_piece.update(freecen2_piece_params)
+      if @@freecen2_piece.reason_changed.blank?
+        get_user_info_from_userid
+        @@freecen2_piece.reason_changed = "Updated by #{@user.person_role} (#{@user.userid})"
+        @@freecen2_piece.save
+      end
       if @freecen2_piece.errors.any?
         flash[:notice] = "The update of the piece failed #{@freecen2_piece.errors.full_messages}."
         redirect_back(fallback_location: edit_freecen2_piece_path(@freecen2_piece, type: @type)) && return
