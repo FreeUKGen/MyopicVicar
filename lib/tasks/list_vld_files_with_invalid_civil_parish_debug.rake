@@ -1,7 +1,7 @@
-desc "List VLD files with invalid civil parish"
+desc "List VLD files with invalid civil parish DEBUG"
 require 'chapman_code'
 
-task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid] => :environment do |_t, args|
+task :list_vld_files_with_invalid_civil_parish_debug, [:start_chapman, :limit, :userid] => :environment do |_t, args|
 
   args.with_defaults(:limit => 500)
 
@@ -78,11 +78,20 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
           fc2_piece_numbers += "#{fc2_piece_main.number}, "
           fc2_piece_civil_parishes = get_civil_parishes(fc2_piece_main, fc2_piece_civil_parishes)
 
+          message = "Processing main piece: #{fc2_piece_numbers}"
+          output_to_log(message_file, message)
+
+          message = "Processing main civil parishes: #{fc2_piece_civil_parishes}"
+          output_to_log(message_file, message)
+
           # Is the last charcaacter an alphabetic, if so remove before looking for 'parts'
           fc2_piece_base = fc2_piece_main.number[-1..-1].match?(/[A-Za-z]/) ? fc2_piece_main.number.chop : fc2_piece_main.number
 
           regexp = BSON::Regexp::Raw.new('^' + fc2_piece_base + '\D')
           parts = Freecen2Piece.where(number: regexp).order_by(number: 1)
+          message = "Parts #{parts.count}"
+          output_to_log(message_file, message)
+
           if parts.count.positive?
             parts.each do |part|
               if part.number != fc2_piece_main.number
@@ -97,6 +106,12 @@ task :list_vld_files_with_invalid_civil_parish, [:start_chapman, :limit, :userid
           fc2_piece_numbers += '**MISSING**, '
           fc2_piece_civil_parishes += '**MISSING**, '
         end
+
+        message = "All Piece numbers: #{fc2_piece_numbers}"
+        output_to_log(message_file, message)
+
+        message = "All Civil_Parishes: #{fc2_piece_civil_parishes}"
+        output_to_log(message_file, message)
 
         fc2_piece_civil_parishes = '**No Civil Parishes Recorded**, ' if fc2_piece_civil_parishes.blank?
 
