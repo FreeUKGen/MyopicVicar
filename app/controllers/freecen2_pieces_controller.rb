@@ -114,6 +114,24 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = session[:chapman_code]
   end
 
+  def export_csv
+    @chapman_code = session[:chapman_code]
+    @year = params[:csvdownload][:year]
+    p "AEV01 #{@chapman_code}"
+    p "AEV02 #{@year}"
+    success, message, file_location, file_name = Freecen2Piece.create_csv_export_listing(@chapman_code, @year)
+
+    if success
+      if File.file?(file_location)
+        flash[:notice] = message unless message.empty?
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice] = 'There was a problem downloading the listing as a CSV file'
+    end
+    redirect_back(fallback_location: new_manage_resource_path)
+  end
+
   def full_index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
 

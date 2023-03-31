@@ -331,6 +331,7 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/csv_index', to: 'freecen2_pieces#csv_index', as: :csv_index_freecen2_piece
   get 'freecen2_pieces/place_pieces_index', to: 'freecen2_pieces#place_pieces_index', as: :place_pieces_index_freecen2_piece
   get 'freecen2_pieces/stats_index', to: 'freecen2_pieces#stats_index', as: :stats_index_freecen2_pieces
+  get 'freecen2_pieces/export_csv', to: 'freecen2_pieces#export_csv', as: :export_csv_freecen2_pieces
   resources :freecen2_pieces
 
   get 'freecen2_civil_parishes/selection_by_name', to: 'freecen2_civil_parishes#selection_by_name', as: :selection_by_name_freecen2_civil_parishes

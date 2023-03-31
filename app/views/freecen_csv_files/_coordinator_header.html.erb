@@ -1,8 +1,6 @@
 <% breadcrumb :freecen_csv_files, @freecen_csv_file %>
-<% unless session[:stats_view] %>
-  <p class=" text--center">Videos describing <%= link_to 'this page', "https://youtu.be/GnkkKkVGXs8", target: '_blank' %>, <%= link_to 'download a spreadsheet file', "https://youtu.be/2ekZ_VXmTn0", target: '_blank' %>, <%= link_to 'upload traditional file', "https://youtu.be/DM889numA-s" , target: '_blank'%>, <%= link_to 'upload new CSVProc file', "https://youtu.be/GnkkKkVGXs8" , target: '_blank'%>, <%= link_to 'show details of the file', "https://youtu.be/f0l1tlWESII" , target: '_blank' %>, <%= link_to 'errors display', "https://youtu.be/f0l1tlWESII" , target: '_blank' %>, <%= link_to 'replace a file', "https://youtu.be/XH-QBKRg9gQ" , target: '_blank' %> (all open in new tabs)<br>
-  </p>
-<% end%>
+<p class=" text--center">Videos describing <%= link_to 'this page', "https://youtu.be/GnkkKkVGXs8", target: '_blank' %>, <%= link_to 'download a spreadsheet file', "https://youtu.be/2ekZ_VXmTn0", target: '_blank' %>, <%= link_to 'upload traditional file', "https://youtu.be/DM889numA-s" , target: '_blank'%>, <%= link_to 'upload new CSVProc file', "https://youtu.be/GnkkKkVGXs8" , target: '_blank'%>, <%= link_to 'show details of the file', "https://youtu.be/f0l1tlWESII" , target: '_blank' %>, <%= link_to 'errors display', "https://youtu.be/f0l1tlWESII" , target: '_blank' %>, <%= link_to 'replace a file', "https://youtu.be/XH-QBKRg9gQ" , target: '_blank' %> (all open in new tabs)<br>
+</p>
 <% if %w[system_administrator data_manager county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role) && session[:selection] == 'all'%>
   <div class="text--center">
     <%= link_to 'List CSV files that have been Unincorporated/Removed/Deleted', freecen_csv_file_audits_path, method: :get , :class => "btn btn--small"%><br>
@@ -13,11 +11,7 @@
 <% elsif session[:syndicate].present? %>
   <h2 style="text-align: center"> Files for  <%= session[:syndicate]%> <%=@sorted_by%></h2>
 <% elsif session[:county].present? %>
-  <% if session[:stats_view] %>
-    <h2 style="text-align: center"> Csv Files for  <%= session[:county]%>: <%= session[:stats_year]%>; <%= session[:stats_recs]%> <%= session[:sorted_by]%></h2>
-  <% else%>
-    <h2 style="text-align: center"> Files for  <%= session[:county]%>: <%= session[:selection]%> <%= session[:sorted_by]%></h2>
-  <% end%>
+  <h2 style="text-align: center"> Files for  <%= session[:county]%>: <%= session[:selection]%> <%= session[:sorted_by]%></h2>
 <% end%>
 <%= render 'flash_notice' %>
 <p class=" text--center"> Select a link below to change the order of display</p>
@@ -26,12 +20,8 @@
   <%= link_to 'Alphabetical Userid then file name', freecen_csv_files_path(order: 'userid', stats_year: session[:stats_year]), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their userid then file name' %>
   <%= link_to 'Oldest' ,  freecen_csv_files_path(order: 'oldest', stats_year: session[:stats_year]), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the oldest processing of the file' %>
   <%= link_to 'Most Recent' ,  freecen_csv_files_path(order: 'recent', stats_year: session[:stats_year]), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the most recent processing of the file' %>
-  <% unless session[:stats_view] %>
-    <%= link_to 'Download Spreadsheet' , download_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Lists the available census spreadsheet headers that can be downloaded to your computer and used for the transcription of a census document' %>
-  <% end%>
+  <%= link_to 'Download Spreadsheet' , download_spreadsheet_freecen_csv_file_path, method: :get , :class => "btn btn--small", title: 'Lists the available census spreadsheet headers that can be downloaded to your computer and used for the transcription of a census document' %>
 </div>
-<% unless session[:stats_view] %>
-  <p class="text--center"> To replace a file: locate the file in the list below and click on the RL option on the extreme right. <br>
-    To upload a new file: click this <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn btn--small"%>
-  </p>
-<% end%>
+<p class="text--center"> To replace a file: locate the file in the list below and click on the RL option on the extreme right. <br>
+  To upload a new file: click this <%= link_to 'Upload new file', new_csvfile_path, method: :get , :class => "btn btn--small"%>
+</p>

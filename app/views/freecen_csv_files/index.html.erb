@@ -45,11 +45,9 @@
                 <td><%= freecen_csv_file.total_info%></td>
                 <td><%= uploaded_date(freecen_csv_file)%></td>
                 <td><%= link_to 'Show', freecen_csv_file_path(freecen_csv_file, stats_year: session[:stats_year]), method: :get, class: 'btn   btn--small', title: 'Display information about the file and a number of reports on its contents' %></td>
-                <% unless session[:stats_view] %>
-                  <td><%=  link_to 'Errors', error_freecen_csv_file_path(freecen_csv_file), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated an error message. Any of the entries can be displayed on line' unless  freecen_csv_file.total_errors.zero? %></td>
-                  <td><%= link_to 'Replace', edit_csvfile_path(freecen_csv_file), method: :get, class: 'btn   btn--small', data: { confirm:  'Are you sure you want to replace these records?' }, title: 'Allows the complete replacement of the csv file and all of its entries. Will not be permitted if the file is locked' unless freecen_csv_file.incorporation_lock %>
-                  </td>
-                <% end %>
+                <td><%=  link_to 'Errors', error_freecen_csv_file_path(freecen_csv_file), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers which have generated an error message. Any of the entries can be displayed on line' unless  freecen_csv_file.total_errors.zero? %></td>
+                <td><%= link_to 'Replace', edit_csvfile_path(freecen_csv_file), method: :get, class: 'btn   btn--small', data: { confirm:  'Are you sure you want to replace these records?' }, title: 'Allows the complete replacement of the csv file and all of its entries. Will not be permitted if the file is locked' unless freecen_csv_file.incorporation_lock %>
+                </td>
               </tr>
             <% end %>
           <% else%>

@@ -1,7 +1,13 @@
 <% breadcrumb :freecen2_stats_pieces,  @county%>
 <h2 style="text-align: center"><%= @chapman_code %> (<%= @county %>) : Listing All Freecen2 Pieces for <%= @year %> ordered by <%=@sorted_by%></h2>
-<p class=" text--center"> Select a link below to change the order of display</p>
-<div  class=" text--center push--bottom">
+<div class=" text--center push--bottom">
+  <%= form_for(:csvdownload, url: export_csv_freecen2_pieces_path, method: :get, data: { confirm: "You sure you want to download the listing as a CSV file?"}) do |f| %>
+    <fieldset class="inputs" style="border-style: none;">
+      <%= f.submit 'Download list as CSV File', :class => "btn   btn--small", title: 'Downloads the listing as a CSV file ordered by most recent online'%>
+      <%= f.hidden_field :year, :value=>@year %>
+    </fieldset>
+  <% end %>
+  Select a link to change the order of display :
   <% if @sorted_by != 'Piece Number' %>
     <%= link_to 'Piece Number', stats_index_freecen2_pieces_path(county: @county, sorted_by: 'Piece Number', stats_year: @year), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their piece number' %>
   <% end %>
@@ -29,28 +35,29 @@
         <tr>
           <td><%= piece.number %></td>
           <td><%= piece.name %></td>
-          <% if piece_status(piece).blank? %>
+          <% if piece.display_piece_status.blank? %>
             <td> </td>
           <% else %>
-            <td><%= piece_status(piece) %></td>
+            <td><%= piece.display_piece_status %></td>
           <% end %>
-          <% if vld_files_piece(piece) == 'There are no VLD files' %>
+          <% if piece.display_vld_files_piece == 'There are no VLD files' %>
             <td> </td>
           <% else %>
-            <td><%= vld_files_piece(piece) %></td>
+            <td><%= piece.display_vld_files_piece %></td>
           <% end %>
-          <% if csv_files_piece_incorporated(piece) == 'There are no incorporated CSV files' %>
+          <% if piece.display_csv_files_piece_incorporated == 'There are no incorporated CSV files' %>
             <td> </td>
           <% else %>
-            <td><%= csv_files_piece_incorporated(piece) %></td>
+            <td><%= piece.display_csv_files_piece_incorporated %></td>
           <% end %>
-          <% if csv_files_piece_unincorporated(piece) == 'There are no unincorporated CSV files' %>
+          <% if piece.display_csv_files_piece_unincorporated == 'There are no unincorporated CSV files' %>
             <td> </td>
           <% else %>
-            <td><%= csv_files_piece_unincorporated(piece) %></td>
+            <td><%= piece.display_csv_files_piece_unincorporated %></td>
           <% end %>
         </tr>
       <% end %>
     </tbody>
   </table>
 </div>
+<br>
