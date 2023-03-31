@@ -8,7 +8,9 @@
     <%= link_to 'Download file as CSVPro', csv_download_freecen1_vld_file_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" %>
     <%= link_to 'Download vld entry file as CSV ', entry_csv_download_freecen1_vld_file_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" if @user.person_role == 'system_administrator' %>
     <%= link_to 'Delete Vld File', freecen1_vld_file_path(@freecen1_vld_file), method: :delete, data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Deleting", confirm: 'Are you sure you want to delete this Vld File? It may take some time to process, you will receive a message when the file delete has completed.' } , :class => "btn  btn--small"%>
-    <%= link_to 'Download VLD file', download_vld_file_freecen1_vld_file_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" %>
+    <% if %w[data_manager country_coordinator system_administrator].include?(@user.person_role)%>
+      <%= link_to 'Download VLD file', download_vld_file_freecen1_vld_file_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" %>
+    <% end%>
   <% end%>
   <%= link_to 'Show entries ', freecen1_vld_entries_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" if %w[data_manager country_coordinator system_administrator].include?(@user.person_role)%>
 </div>
