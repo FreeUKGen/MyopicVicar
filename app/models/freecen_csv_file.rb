@@ -43,6 +43,7 @@ class FreecenCsvFile
   field :file_digest, type: String
   field :file_errors, type: Array
   field :file_name, type: String
+  field :file_name_lower_case, type: String
   field :flexible, type: Boolean, default: true
   field :locked_by_coordinator, type: Boolean, default: false
   field :locked_by_transcriber, type: Boolean, default: false
@@ -77,7 +78,7 @@ class FreecenCsvFile
   field :type_of_processing, type: String  # placeholder used by change_userid process
 
 
-  before_save :add_lower_case_userid_to_file, :add_country_to_file
+  before_save :add_lower_case_userid_to_file, :add_country_to_file, :add_lower_case_file_name_to_file
   before_create :set_completes_piece_flag
   #after_save :recalculate_last_amended, :update_number_of_files
 
@@ -522,6 +523,10 @@ class FreecenCsvFile
   def add_lower_case_userid_to_file
     # rspec tested directly
     self[:userid_lower_case] = self[:userid].downcase
+  end
+
+  def add_lower_case_file_name_to_file
+    self[:file_name_lower_case] = self[:file_name].downcase
   end
 
   def is_whole_piece(piece)

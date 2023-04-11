@@ -37,7 +37,7 @@ class FreecenCsvFilesController < ApplicationController
     user = UseridDetail.find(params[:id])
     @who = user.userid
     @role = session[:role]
-    @freecen_csv_files = FreecenCsvFile.userid(user.userid).all.order_by('file_name ASC', 'userid_lower_case ASC').page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)  unless user.blank?
+    @freecen_csv_files = FreecenCsvFile.userid(user.userid).all.order_by('file_name_lower_case ASC', 'userid_lower_case ASC').page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)  unless user.blank?
     render 'index'
   end
 
@@ -122,7 +122,8 @@ class FreecenCsvFilesController < ApplicationController
     get_user_info_from_userid
     @who = @first_name
     @sorted_by = 'Alphabetical by file name'
-    session[:sort] = 'file_name ASC'
+    session[:sort] = 'file_name_lower_case ASC'
+    p "AEV01 #{session[:sort]}"
     session[:sorted_by] = @sorted_by
     @freecen_csv_files = FreecenCsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     render 'index'
@@ -133,7 +134,7 @@ class FreecenCsvFilesController < ApplicationController
     @who = @first_name
     @sorted_by = 'Ordered by number of errors'
     session[:sorted_by] = @sorted_by
-    session[:sort] = 'error DESC, file_name ASC'
+    session[:sort] = 'error DESC, file_name_lower_case ASC'
     @freecen_csv_files = FreecenCsvFile.userid(session[:userid]).errors.order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     render 'index'
   end
@@ -162,7 +163,7 @@ class FreecenCsvFilesController < ApplicationController
     get_user_info_from_userid
     @who = @first_name
     @freecen_csv_file = FreecenCsvFile.new
-    @freecen_csv_files = FreecenCsvFile.userid(@user.userid).order_by('file_name ASC').all
+    @freecen_csv_files = FreecenCsvFile.userid(@user.userid).order_by('file_name_lower_case ASC').all
     @files = {}
     @freecen_csv_files.each do |file|
       @files[":#{file.file_name}"] = file._id if file.file_name.present?
@@ -329,10 +330,10 @@ class FreecenCsvFilesController < ApplicationController
     case params[:order]
     when 'alphabetic'
       @sorted_by = '; sorted by file name ascending'
-      session[:sort] = 'file_name ASC'
+      session[:sort] = 'file_name_lower_case ASC'
     when 'userid'
       @sorted_by = '; sorted by userid (and then file name ascending)'
-      session[:sort] = 'userid_lower_case ASC, file_name ASC'
+      session[:sort] = 'userid_lower_case ASC, file_name_lower_case ASC'
     when 'oldest'
       @sorted_by = '; ordered by oldest'
       session[:sort] = 'uploaded_date ASC'
