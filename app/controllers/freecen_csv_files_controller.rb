@@ -123,7 +123,6 @@ class FreecenCsvFilesController < ApplicationController
     @who = @first_name
     @sorted_by = 'Alphabetical by file name'
     session[:sort] = 'file_name_lower_case ASC'
-    p "AEV01 #{session[:sort]}"
     session[:sorted_by] = @sorted_by
     @freecen_csv_files = FreecenCsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(FreeregOptionsConstants::FILES_PER_PAGE)
     render 'index'
