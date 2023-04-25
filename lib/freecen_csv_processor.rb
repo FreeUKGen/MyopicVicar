@@ -825,9 +825,9 @@ class CsvRecords < CsvFile
   end
 
   def extract_traditonal_headers(line)
-    if line.length == 25 && line[1] == 'ED'
+    if line.length == 25 && line[1].downcase == 'ed'
       traditional = 0
-    elsif line.length > 25 && line[1] == 'ED'
+    elsif line.length > 25 && line[1].downcase == 'ed'
       traditional = 1
     else
       traditional = 2
