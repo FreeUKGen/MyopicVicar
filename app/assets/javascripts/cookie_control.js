@@ -38,13 +38,16 @@ $(document).ready(function() {
   };
 
   if ((getCookie('donate_cta_flag_new') == 0) || (getCookie('donate_cta_flag_new') === null)) {
-    document.getElementById("myDialog").showModal(); 
-  document.getElementById("overlay").style.display = "block";
-  $("#donate_cta_pop_up").show();
-  document.getElementById('close_donate_cta_pop_up').onclick = close_donate_cta;
-  document.getElementById('donate_now_button').onclick = close_donate_cta;
-  document.getElementById('read_more').onclick = close_donate_cta;
-}
+    var dia = document.getElementById("myDialog")
+    if(dia) {
+      dia.showModal();
+    }
+    document.getElementById("overlay").style.display = "block";
+    $("#donate_cta_pop_up").show();
+    document.getElementById('close_donate_cta_pop_up').onclick = close_donate_cta;
+    document.getElementById('donate_now_button').onclick = close_donate_cta;
+    document.getElementById('read_more').onclick = close_donate_cta;
+  }
 
 //close overlay with esc key
 $(document).keyup(function(evt) {
