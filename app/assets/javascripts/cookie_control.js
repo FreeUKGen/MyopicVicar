@@ -44,7 +44,7 @@ $(document).ready(function() {
     var donate_now = document.getElementById('donate_now_button');
     var read_more = document.getElementById('read_more');
     if(!(dialog?.open)){
-      dialog.showModal();
+      dialog?.showModal();
     }
     if (overlay?.length) {
       overlay.style.display = "block";
