@@ -38,12 +38,21 @@ $(document).ready(function() {
   };
 
   if ((getCookie('donate_cta_flag_new') == 0) || (getCookie('donate_cta_flag_new') === null)) {
-    document.getElementById("myDialog")?.showModal();
-    document.getElementById("overlay")?.style.display = "block";
+    var dialog = document.getElementById("myDialog");
+    var overlay = document.getElementById("overlay");
+    var close_cta = document.getElementById('close_donate_cta_pop_up');
+    var donate_now = document.getElementById('donate_now_button');
+    var read_more = document.getElementById('read_more');
+    if(!(dialog?.open)){
+      dialog.showModal();
+    }
+    if (overlay?.length) {
+      overlay.style.display = "block";
+    }
     $("#donate_cta_pop_up").show();
-    document.getElementById('close_donate_cta_pop_up').onclick = close_donate_cta;
-    document.getElementById('donate_now_button').onclick = close_donate_cta;
-    document.getElementById('read_more').onclick = close_donate_cta;
+    close_cta ? close_cta.onclick = close_donate_cta : 'undefined';
+    donate_now ? donate_now.onclick = close_donate_cta : 'undefined';
+    read_more ? read_more.onclick = close_donate_cta : 'undefined';
   }
 
 //close overlay with esc key
