@@ -1,8 +1,13 @@
 desc "Update Search Records, VLD data and CSV data OVB to OVF"
-task :update_search_recs_ovb_to_ovf, [:limit, :fix, :restriction] => :environment do |t, args|
+task :update_search_recs_ovb_to_ovf, [:limit, :fix, :email, :restriction] => :environment do |t, args|
+
+  require 'user_mailer'
 
   args.with_defaults(:limit => 1000)
   start_time = Time.current
+
+  @send_email = args.email == 'N' ? false : true
+  @email_to = args.email if @send_email == true
 
   file_for_log = "log/update_search_recs_ovb_to_ovf_#{start_time.strftime('%Y%m%d%H%M')}.log"
   file_for_listing = "log/update_search_recs_ovb_to_ovf_#{start_time.strftime('%Y%m%d%H%M')}.csv"
@@ -19,6 +24,7 @@ task :update_search_recs_ovb_to_ovf, [:limit, :fix, :restriction] => :environmen
   single_county = 'XXX'
   initial_message = "Started Update of Search Records and associated VLD/CSV records - OVB to OVF with fix = #{fixit} - search record limit = #{record_limit}"
   start_message = initial_message
+  @report_csv = ''
 
   if args.restriction.present?
     case args.restriction.length
@@ -45,11 +51,13 @@ task :update_search_recs_ovb_to_ovf, [:limit, :fix, :restriction] => :environmen
 
   if args_valid == true
     output_to_log(file_for_log, start_message)
+    length_start_message = start_message.length
 
     search_recs_processed = 0
 
     hline = 'Year,Collection,Id,Info,Action'
     output_to_csv(file_for_listing, hline)
+    @report_csv = hline if @send_email
 
     Freecen::CENSUS_YEARS_ARRAY.each do |yyyy|
       census_year = yyyy.to_s
@@ -113,6 +121,17 @@ task :update_search_recs_ovb_to_ovf, [:limit, :fix, :restriction] => :environmen
     output_to_log(file_for_log, message)
     message = "Processed #{search_recs_processed} OVB Search Records records - see log/update_search_recs_ovb_to_ovf_YYYYMMDDHHMM.csv and .log for output"
     output_to_log(file_for_log, message)
+
+    unless args.email == 'N'
+      user_rec = UseridDetail.userid(@email_to).first
+      email_message =  "Sending csv file via email to #{user_rec.email_address}"
+      output_to_log(file_for_log, email_message)
+      subject_line_length = length_start_message - 66
+      email_subject = "FREECEN:: #{start_message[66, subject_line_length]}"
+      email_body = "Processed #{search_recs_processed} records - Update_search_recs_ovb_to_ovf csv output file attached"
+      report_name = "update_search_recs_ovb_to_ovf_#{start_time.strftime('%Y%m%d%H%M')}.csv"
+      UserMailer.report_for_data_manager(email_subject, email_body, @report_csv, report_name, user_rec.email_address).deliver_now
+    end
   end
   # end task
 end
@@ -134,6 +153,10 @@ def self.write_csv_line(csv_file, year, collection_type, rec_id, info, action)
   dline << "#{info},"
   dline << action.to_s
   output_to_csv(csv_file, dline)
+  if @send_email
+    @report_csv += "\n"
+    @report_csv += dline
+  end
 end
 
 def self.update_search_record(year, rec, fix, listing)
