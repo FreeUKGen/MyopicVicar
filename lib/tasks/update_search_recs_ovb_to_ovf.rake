@@ -1,5 +1,5 @@
 desc "Update Search Records, VLD data and CSV data OVB to OVF"
-task :update_search_recs_ovb_to_ovf, [:limit, :fix] => :environment do |t, args|
+task :update_search_recs_ovb_to_ovf, [:limit, :fix, :year] => :environment do |t, args|
 
   args.with_defaults(:limit => 1000)
   start_time = Time.current
@@ -12,9 +12,12 @@ task :update_search_recs_ovb_to_ovf, [:limit, :fix] => :environment do |t, args|
   file_for_listing = File.new(file_for_listing, 'w')
   fixit = args.fix.to_s == 'Y'
   record_limit = args.limit.to_i
+  one_year = args.year.present? ? true : false
+  single_year = args.year.present? ? args.year.to_s : 'XXXX'
 
-  message = "Started Update of Search Records and associated VLD/CSV records - OVB to OVF with fix = #{fixit} - search record limit = #{record_limit}"
-  output_to_log(file_for_log,message)
+  year_restriction = one_year ? " - restricted to year #{single_year}" : ' - all years'
+  message = "Started Update of Search Records and associated VLD/CSV records - OVB to OVF with fix = #{fixit} - search record limit = #{record_limit}#{year_restriction}"
+  output_to_log(file_for_log, message)
 
   search_recs_processed = 0
 
@@ -22,12 +25,12 @@ task :update_search_recs_ovb_to_ovf, [:limit, :fix] => :environment do |t, args|
   output_to_csv(file_for_listing, hline)
 
   Freecen::CENSUS_YEARS_ARRAY.each do |yyyy|
+    census_year = yyyy.to_s
+    next unless one_year == false || census_year == single_year
 
-    census_year = yyyy
     num_search_recs_to_update = SearchRecord.where(record_type: census_year, birth_chapman_code: 'OVB').count
-    message = num_search_recs_to_update.positive? ? "Working on Census Year #{census_year} - #{num_search_recs_to_update} to process" : "Census Year #{census_year} has 0 records to process"
-    file_for_log.puts message
-
+    message = num_search_recs_to_update.zero? ? "Census Year #{census_year} has 0 records to process" : "Working on Census Year #{census_year} - #{num_search_recs_to_update} to process"
+    output_to_log(file_for_log, message)
     next if num_search_recs_to_update.zero?
 
     search_recs_to_update = SearchRecord.where(record_type: census_year, birth_chapman_code: 'OVB')
