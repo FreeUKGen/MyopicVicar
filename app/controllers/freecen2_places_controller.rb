@@ -268,12 +268,13 @@ class Freecen2PlacesController < ApplicationController
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @county = session[:county]
-    @counties = ChapmanCode.keys.sort
-    @counties -= Freecen::UNNEEDED_COUNTIES
-    @counties = @counties.delete_if { |cnty| cnty == 'Channel Islands' } # GitHub story 1495
-    @counties << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role)
-    @counties << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
-
+    counties_for_select = ChapmanCode.keys
+    counties_for_select -= Freecen::UNNEEDED_COUNTIES
+    counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Channel Islands' } # GitHub story 1495
+    lnd_county_coord = County.find_by(chapman_code: 'LND')
+    counties_for_select << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
+    counties_for_select << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
+    @counties = counties_for_select.sort
     get_sources
   end
 
