@@ -169,19 +169,19 @@ def self.update_csv_entry_record(year, rec, fix, listing)
   if rec.verbatim_birth_county == 'OVB'
     rec.set(verbatim_birth_county: 'OVF') if fix
     county_update = true
-    write_csv_line(listing, year, 'FreecenCSVEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update OVB -> OVF')
+    write_csv_line(listing, year, 'FreecenCsvEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update OVB -> OVF')
   end
   if rec.birth_county == 'OVB'
     rec.set(birth_county: 'OVF') if fix
     county_update = true
-    write_csv_line(listing, year, 'FreecenCSVEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Birth_county update OVB -> OVF')
+    write_csv_line(listing, year, 'FreecenCsvEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Birth_county update OVB -> OVF')
   end
   return unless county_update
 
   return if rec.nationality.present?
 
   rec.set(nationality: 'British') if fix
-  write_csv_line(listing, year, 'FreecenCSVEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Nationality update -> British')
+  write_csv_line(listing, year, 'FreecenCsvEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Nationality update -> British')
 end
 
 def self.check_notes_for_british(notes)
