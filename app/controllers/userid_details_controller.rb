@@ -17,7 +17,7 @@ class UseridDetailsController < ApplicationController
   require 'import_users_from_csv'
   skip_before_action :require_login, only: [:general, :create, :researcher_registration, :transcriber_registration, :technical_registration]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
-  PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator']
+  PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'executive_director']
 
   def all
     session[:user_index_page] = params[:page] if params[:page]
@@ -359,7 +359,7 @@ class UseridDetailsController < ApplicationController
     ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
   end
 
-  
+
 
   def role
     @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
@@ -636,8 +636,8 @@ class UseridDetailsController < ApplicationController
   end
 
   def permitted_secondary_roles?
-     roles = @current_user.secondary_role & PERMITTED_ROLES
-     roles.present?
+    roles = @current_user.secondary_role & PERMITTED_ROLES
+    roles.present?
   end
 
   def stats_permitted_users?

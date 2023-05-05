@@ -33,10 +33,10 @@
           <!--span>I hereby prefer not to sign, the <%#= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br /-->
         </div>
       <% end %>
-      <% if %w[system_administrator county_coordinator master_county_coordinator syndicate_coordinator volunteer_coordinator].include?(@user.person_role) && !session[:my_own] %>
+      <% if %w[system_administrator executive_director county_coordinator master_county_coordinator syndicate_coordinator volunteer_coordinator].include?(@user.person_role) && !session[:my_own] %>
         <%= f.input :syndicate,:label => "Syndicate",:include_blank => false,  :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
       <% end%>
-      <% if %w[system_administrator county_coordinator master_county_coordinator syndicate_coordinator].include?(@user.person_role) && !session[:my_own] %>
+      <% if %w[system_administrator executive_director county_coordinator master_county_coordinator syndicate_coordinator].include?(@user.person_role) && !session[:my_own] %>
         <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 } %>
         <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: true, :hint => "Hold Ctrl or Shift to select multiple roles" unless appname.downcase == 'freecen'%>
       <% end %>
@@ -67,6 +67,6 @@
           $("#form_control").hide();
         }
     });
-  
+
   });
 </script>
