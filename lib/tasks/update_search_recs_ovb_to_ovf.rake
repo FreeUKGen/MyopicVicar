@@ -90,7 +90,7 @@ task :update_search_recs_ovb_to_ovf, [:limit, :fix, :email, :restriction] => :en
             if csv_entry_rec.present?
               update_csv_entry_record(census_year, csv_entry_rec, fixit, file_for_listing)
             else
-              write_csv_line(file_for_listing, census_year, 'SearchRecord', search_rec._id, "ERROR: FreecenCsvEntry record (#{search_rec.freecen_csv_entry_id}) not found")
+              write_csv_line(file_for_listing, census_year, 'SearchRecord', search_rec._id, "ERROR: FreecenCsvEntry record (#{search_rec.freecen_csv_entry_id}) not found", 'ERROR')
             end
           elsif search_rec.freecen_individual_id.present?
             individual_rec = FreecenIndividual.find_by(_id: search_rec.freecen_individual_id)
@@ -100,10 +100,10 @@ task :update_search_recs_ovb_to_ovf, [:limit, :fix, :email, :restriction] => :en
               if vld_entry_rec.present?
                 update_vld_entry_record(census_year, vld_entry_rec, fixit, file_for_listing)
               else
-                write_csv_line(file_for_listing, census_year, 'SearchRecord', search_rec._id, "ERROR: Freecen1VldEntry record (#{individual_rec.freecen1_vld_entry_id}) not found")
+                write_csv_line(file_for_listing, census_year, 'SearchRecord', search_rec._id, "ERROR: Freecen1VldEntry record (#{individual_rec.freecen1_vld_entry_id}) not found", 'ERROR')
               end
             else
-              write_csv_line(file_for_listing, census_year, 'SearchRecord', search_rec._id, "ERROR: Individual record (#{search_rec.freecen_individual_id}) not found")
+              write_csv_line(file_for_listing, census_year, 'SearchRecord', search_rec._id, "ERROR: Individual record (#{search_rec.freecen_individual_id}) not found", 'ERROR')
             end
           end
 
