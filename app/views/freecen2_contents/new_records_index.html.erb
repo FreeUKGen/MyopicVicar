@@ -1,31 +1,36 @@
+<h1 class="beta text--center">Recent Additions as of <%= @interval_end.strftime('%d')%>&nbsp;<%= @interval_end.strftime('%b')%>&nbsp;<%= @interval_end.strftime('%Y')%></h1>
+<nav aria-label="Records options">
+  <ul class="nav nav--banner">
+    <% if @additions_county == 'All'%>
+      <li><a data-method="get" href="/freecen2_contents?locale=en">Choose Another County</a></li>
+    <% else %>
+      <li><a data-method="get" href="/freecen2_contents/county_index?local=en&amp;county_description=<%=@additions_county%>">Back to Totals for <%= @additions_county %></a></li>
+    <% end %>
+  </ul>
+</nav>
 <% if @additions_county == 'All' %>
-  <h2 style="text-align: center">Recent Additions for All Counties as of  <%= @interval_end.strftime('%d %b %Y') %>
-    <span class="accessibility">Database Record totals for Pieces added online in the last 30 days</span></h2>
+  <h2 class="accessibility">Database Record totals for Pieces added online in the last 30 days</h2>
+  <h3 style="text-align: center">All Places with Pieces added to the database in the previous 30 days </h3>
 <% else %>
-  <h2 style="text-align: center">Recent Additions for <%= @additions_county %>  as of  <%= @interval_end.strftime('%d %b %Y') %>
-    <span class="accessibility">Database Record totals for Pieces for a specific County added online in the last 30 days</span>
-  </h2>
+  <h2 class="accessibility">Database Record totals for Pieces added for <%= @additions_county %> added online in the last 30 days</h2>
+  <h3 style="text-align: center">Places in <%= @additions_county %> with Pieces added to the database in the previous 30 days </h3>
 <% end %>
-<h3 style="text-align: center">Places with Pieces added to the database in the previous 30 days </h3>
-<div  style="text-align: center">
-  <% if @additions_county == 'All' %>
-    <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
-  <% else %>
-    <%= link_to 'Back to Totals for ' + @additions_county , index_by_county_freecen2_contents_path(county_description: @additions_county), method: :get , :class => "btn btn--small" %>
-  <% end %>
-</div>
-<p></p>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width " >
-    <thead >
+    <% if @additions_county == 'All' %>
+      <caption class="accessibility">The first column is the County. The other columns give Place name, the census year, the number of records added in the last 30 days and links to view a list of Pieces or Names for the Place.</caption>
+    <% else %>
+      <caption class="accessibility">The first column is the PLace name. The other columns give the census year, the number of records added in the last 30 days and links to view a list of Pieces or Names for the Place.</caption>
+    <% end %>
+    <thead>
       <tr>
         <% if @additions_county == 'All' %>
-          <th class='sticky-header'>County</th>
+          <th scope="col" class='sticky-header'>County</th>
         <% end %>
-        <th class='sticky-header'>Place</th>
-        <th class='sticky-header'>Year</th>
-        <th class='sticky-header'>New Records Online</th>
-        <th colspan = "3" class='sticky-header t15'>Actions</th>
+        <th scope="col" class='sticky-header'>Place</th>
+        <th scope="col" class='sticky-header'>Year</th>
+        <th scope="col" class='sticky-header'>New Records Online</th>
+        <th scope="col" colspan = "3" class='sticky-header t30'>Detail Links</th>
       </tr>
     </thead>
     <tbody>
@@ -33,15 +38,17 @@
         <%#  # [0] = county name, [1] = place name, [2] = chapman code, [3] = freecen2_place_id, [4] = year, [5] = added records %>
         <tr>
           <% if @additions_county == 'All' %>
-            <td><%= entry[0] %></td>
+            <td scope="row"><%= entry[0] %></td>
+            <td><%= entry[1] %></td>
+          <% else %>
+            <td scope="row"><%= entry[1] %></td>
           <% end %>
-          <td><%= entry[1] %></td>
           <td><%= entry[4] %></td>
           <td><%= entry[5] %></td>
-          <td><%= locate_place_link(entry[3], 'exsmall') %></td>
-          <td><%= link_to 'View Pieces', display_pieces_by_status_freecen2_contents_path(:county_description => entry[0],  :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :order => 'status', :new_records => 'All'), class: "btn btn--exsmall", method: :get %></td>
+          <td><%= locate_place_link(entry[3],'Y') %></td>
+          <td> <a data-method="get" href="/freecen2_contents/display_pieces_by_status?locale=en&amp;county_description=<%= entry[0]%>&amp;place_description=<%= entry[1]%>&amp;place_id=<%= entry[3]%>&amp;census_year=<%= entry[4]%>&amp;order=status&amp;new_records=All">Pieces<span class="accessibility"> in <%= entry[1]%> in <%= entry[4]%></span></a></td>
           <% if names_exist_for_place_year(entry[3], entry[4]) == true %>
-            <td><%= link_to 'View Names', freecen2_contents_place_names_path(:county_description => entry[0], :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :new_records => 'All'), class: "btn btn--exsmall", method: :get %></td>
+            <td> <a data-method="get" href="/freecen2_contents/place_names?locale=en&amp;county_description=<%= entry[0]%>&amp;place_description=<%=entry[1]%>&amp;place_id=<%= entry[3]%>&amp;census_year=<%= entry[4]%>&amp;new_records=All">Names<span class="accessibility"> in <%= entry[1]%> in <%= entry[4]%></span></a></td>
           <% else %>
             <td> N/A </td>
           <% end %>
@@ -50,4 +57,3 @@
     </tbody>
   </table>
 </div>
-<br />

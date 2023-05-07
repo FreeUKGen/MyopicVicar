@@ -1,65 +1,77 @@
-<% if @place_description == 'all' %>
-  <h2 style="text-align: center">Database Pieces for All Places in <%= @county_description %> in <%= @census_text %>
-    as of  <%= @interval_end.strftime('%d %b %Y')%><br>
-    ordered by <%= @order_text %>
-    <span class="accessibility">Database Pieces for all Places in a specific County</span></h2>
+ <% if @place_description == 'all' %>
+<h1 class="beta text--center">Database Pieces for All Places in <%= @county_description %> in <%= @census_text %> as of <%= @interval_end.strftime('%d')%>&nbsp;<%= @interval_end.strftime('%b')%>&nbsp;<%= @interval_end.strftime('%Y')%></h1>
 <% else %>
-  <h2 style="text-align: center">Database Pieces for <%= @place_description %> in <%= @county_description %> in <%= @census_text %>
-    as of  <%= @interval_end.strftime('%d %b %Y')%><br>
-    ordered by <%= @order_text %>
-    <span class="accessibility">Database Pieces for a specific Place in a specific County</span></h2>
+<h1 class="beta text--center">Database Pieces for <%= @place_description %> in <%= @county_description %> in <%= @census_text %> as of <%= @interval_end.strftime('%d')%>&nbsp;<%= @interval_end.strftime('%b')%>&nbsp;<%= @interval_end.strftime('%Y')%></h1>
+ <% end %>
+<nav aria-label="Records options">
+  <ul class="nav nav--banner">
+    <li><a data-method="get" href="/freecen2_contents?locale=en">Choose Another County</a></li>
+    <% if params[:new_records] == 'All' %>
+      <li> | <a data-method="get" href="/freecen2_contents/new_records_index?locale=en&amp;new_records=All">Back to Recent Additions</a></li>
+    <% else %>
+      <% if @place_description == 'all' %>
+           <li> | <a data-method="get" href="/freecen2_contents/county_index?locale=en&amp;county_description=<% @county_description %>">Back to Records for <%=@county_description %></a></li>
+      <% else %>
+           <li> | <a data-method="get" href="/freecen2_contents/county_index?locale=en&amp;county_description=<% @county_description %>">Choose another Place in <%= @county_description %></a></li>
+           <li> | <a data-method="get" href="/freecen2_contents/place_index?locale=en&amp;county_description=<% @county_description %>&amp;place_description=<% @place_description %>">Back to Records for <%= @place_description %></a> | </li>
+           <%= locate_place_link(@place_id,'N') %>
+      <% end %>
+    <% end %>
+    </ul>
+</nav>
+<% if @place_description == 'all' %>
+  <h2 class="gamma text--center">Database Pieces ordered by <%= @order_text %></h2>
+  <h2 class="accessibility">Database Pieces for all Places in <%= @county_description %> in <%= @census_text %> ordered by <%= @order_text %></h2>
+<% else %>
+  <h2 class="gamma text--center">Database Pieces ordered by <%= @order_text %></h2>
+  <h2 class="accessibility">Database Pieces for <%= @place_description %> in <%= @county_description %> in <%= @census_text %> ordered by <%= @order_text %></h2>
 <% end %>
-<div  style="text-align: center">
-  <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
-  <% if params[:new_records] == 'All' %>
-    <%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %>
-  <% else %>
-    <%= county_index_link(@county_description,@place_description) %>
-    <% if @place_description != 'all' %>
-      <%= link_to 'Back to Records for ' + @place_description, freecen2_contents_place_index_path(:county_description => @county_description, :place_description => @place_description), class: "btn btn--small", method: :get %>
-      <%= locate_place_link(@place_id,'small') %>
+<div>
+  <p><small class="additional read-length"><% if @order == 'status' %>
+      List is ordered by Piece Name within Online status/date so that the most recent Pieces Online are listed first.
     <% end %>
-  <% end %>
-  <p></p>
-  <p><% if @order == 'status' %>
-      List is ordered by Piece Name within Online status/date so that the most recent Pieces Online are listed first<br>
-    <% end %>
-    <b>Select a link below to change the order of display</b><br>
+    <b>You can change the order of display: </b>
     <% unless @order == 'status' %>
-      <%= link_to 'Most Recent Online', display_pieces_by_status_freecen2_contents_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @census, :order => @order), class: "btn btn--small", method: :get %>
+       <a data-method="get"data-method="get" href="/freecen2_contents/display_pieces_by_status?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%=@place_id%>&amp;census_year=<%= @census%>&amp;order=status>">Order by Most Recent Online</a> or
     <% end %>
     <% unless @order == 'name' %>
-      <%= link_to 'Piece Name', display_pieces_by_name_freecen2_contents_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @census, :order => @order), class: "btn btn--small", method: :get %>
+       <a data-method="get"data-method="get" href="/freecen2_contents/display_pieces_by_name?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%=@place_id%>&amp;census_year=<%= @census%>&amp;order=name">Order by Piece Name</a>
     <% end %>
     <% unless @order == 'number' %>
-      <%= link_to 'Piece Number', display_pieces_by_number_freecen2_contents_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @census, :order => @order), class: "btn btn--small", method: :get %>
+    <% unless @order == 'name' %>
+     or
+     <% end %>
+      <a data-method="get"data-method="get" href="/freecen2_contents/display_pieces_by_number?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=<%=@place_description%>&amp;place_id=<%=@place_id%>&amp;census_year=<%= @census%>&amp;order=number">Order by Piece Number</a>
     <% end %>
-    <br>
-  </p>
-  <p><i>Notes:<br>
+  <br><b>Notes:</b><br>
       1) An Online status of P indicates that only part of the Piece is currently online.<br>
-      2) Pieces ending with an alphabetic character that are online have the number of records included in the first of that number.</i></p>
+      2) Pieces ending with an alphabetic character that are online have the number of records included in the first of that number.</small></p>
 </div>
 <p></p>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width " >
+     <% if @place_description == 'all' %>
+    <caption class="accessibility">Table shows All Pieces in <%= @county_description %> in <%= @census_text %>.</caption>
+    <% else %>
+    <caption class="accessibility">Table shows Pieces for <%= @place_description %> in <%= @county_description %> in <%= @census_text %>.</caption>
+    <% end %>
     <thead >
       <tr>
-        <th class='sticky-header'>Piece Name</th>
-        <th class='sticky-header'>Piece Number</th>
+        <th scope="col" class='sticky-header'>Piece Name</th>
+        <th scope="col" class='sticky-header'>Piece Number</th>
         <% if @census_text == 'All Years' %>
-          <th class='sticky-header'>Year</th>
+          <th scope="col" class='sticky-header'>Year</th>
         <% end %>
-        <th class='sticky-header'>Online (Date)</th>
-        <th class='sticky-header'>Records Online</th>
-        <th class='sticky-header'>Civil Parishes<br>
+        <th scope="col" class='sticky-header t10'>Online (Date)</th>
+        <th scope="col" class='sticky-header'>Records Online</th>
+        <th scope="col" class='sticky-header'>Civil Parishes<br>
           <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
       </tr>
     </thead>
     <tbody>
       <%  @place_pieces.each do |piece|%>
         <tr>
-          <td><%= piece.name %></td>
+          <td scope="row"><%= piece.name %></td>
           <td><%= piece.number %></td>
           <% if @census_text == 'All Years' %>
             <td><%= piece.year %></td>
@@ -73,7 +85,7 @@
           <% end%>
           <td><%= records_for_piece(piece.id, piece.status) %></td>
           <% if piece.civil_parish_names == nil %>
-            <td><i> n/a </i></td>
+            <td><small> n/a </small></td>
           <% else%>
             <td><%= piece.civil_parish_names %></td>
           <% end%>

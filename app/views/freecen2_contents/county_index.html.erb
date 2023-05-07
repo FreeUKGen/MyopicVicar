@@ -1,110 +1,97 @@
-<div class="grid__item one_whole palm-one-whole" >
-  <h2 style="text-align: center">Database Records for <%= @county_description %> as of <%= @interval_end.strftime('%d %b %Y') %>
-    <span class="accessibility">Database Record totals for county with option to view totals for a specific place in the county</span></h2>
-  <div  style="text-align: center">
-    <%= link_to 'Back to Totals for All Counties' , freecen2_contents_path, method: :get , :class => "btn btn--small" %>
-  </div>
-  <p></p>
-  <div class="grid">
-    <div class="grid__item one-third palm-one-whole" >
-      <div class="grid__item one-whole">
-        <%= simple_form_for :view_place_recs, method: :get do |p| %>
-          <fieldset class="inputs">
-            <legend>Places in <%= @county_description %></legend>
-            <div style="text-align: center">
-              <small class="additional">You may view the Database Records for a specific Place and if there are Pieces Online also get a list of Names currently in the Database.<br>
-                <i> Note: Brackets after the Place name indicate there are Pieces Online for those years.</i></small></div>
-            <label class="label ttip" tabindex="0" for="place_description" >
-              Place
-              <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-              <span class="ttip__text">Required. Only Places with Pieces are included.</span> </label>
-            <select class="select" id="place_description"  name="place_description" required="required">
-              <% @places_for_county.each do |key, value| %>
-                <option value="<%=key%>" ><%=value%></option>
-              <% end %>
-            </select>
-            <%= p.submit 'View Place Records',  :class => "btn   btn--small"%><br>
-          </fieldset>
-        <% end %>
-        <% if @freecen2_contents.records[@chapman_code][:total][:added_pieces_online] > 0 &&  @freecen2_contents.new_records.present? %>
-          <fieldset>
-            <legend>Recent Additions</legend>
-            <div style="text-align: center">
-              <p><small class="additional">You may view a list of Places in <%= @county_description %> that have had Pieces added to the database in the previous 30 days</small></p>
-              <%= link_to 'View Recent Additions', freecen2_contents_new_records_index_path(:new_records => @county_description), class: "btn btn--small", method: :get %>
-            </div>
-          <% end %>
-        </fieldset>
-      </div>
-      <% unless device_type == :mobile %>
-        <div class="grid__item one-whole">
-          <div class = "adsense_box push--ends">
-            <span>Advertisement</span>
-            <%= my_heritage_300_250_cen %>
-          </div>
-        </div>
-      <% end %>
-    </div>
-    <li class="grid__item two-thirds palm-one-whole" >
-      <fieldset style="border-style: none;">
-        <legend style="text-align: center">
-          <h3>Totals for All Places in <%= @county_description %></h3>
-        </legend>
-        <div  style="text-align: center">
-          <p><small class="additional">Where applicable you can use the Action buttons to view a list of Pieces (including Civil Parish names)<br>
-              Note: A * next to the number of Pieces Online indicates that only part of one or more pieces is currently online - use View Pieces to see details</small></p>
-        </div>
-        <div class='scrollable'>
-          <table  class="table--bordered table--data table--striped " >
-            <thead >
-              <tr>
-                <th class='sticky-header'>Year</th>
-                <th class='sticky-header'>Pieces<br>
-                  Online</th>
-                <th class='sticky-header'>Total<br>
-                  Pieces</th>
-                <th class='sticky-header'>%<br>
-                  Online</th>
-                <th class='sticky-header'>Records<br>
-                  Online</th>
-                <th class='sticky-header'>New<br>
-                  Pieces<br>
-                  Online</th>
-                <% if @freecen2_contents.records[@chapman_code][:total][:pieces] > 0 %>
-                  <th class='sticky-header '>Actions</th>
-                <% end %>
-              </tr>
-            </thead>
-            <tbody>
-              <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
-                <tr>
-                  <td><%= census %></td>
-                  <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][census][:piece_ids], @freecen2_contents.records[@chapman_code][census][:pieces_online]) %>
-                  <td><%= @freecen2_contents.records[@chapman_code][census][:pieces] %></td>
-                  <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][census][:pieces_online], @freecen2_contents.records[@chapman_code][census][:pieces]) %>
-                  <td><%= @freecen2_contents.records[@chapman_code][census][:records_online] %></td>
-                  <td><%= @freecen2_contents.records[@chapman_code][census][:added_pieces_online] %></td>
-                  <% if @freecen2_contents.records[@chapman_code][census][:pieces] > 0 %>
-                    <td><%= link_to 'View Pieces', display_pieces_by_status_freecen2_contents_path(:county_description => @county_description,:place_description => 'all', :place_id => '', :census_year => census, :order => 'status'), class: "btn btn--exsmall", method: :get %></td>
-                  <% else %>
-                    <td> N/A </td>
-                  <% end %>
-                </tr>
-              <% end %>
-              <tr>
-                <td>Total</td>
-                <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][:total][:piece_ids], @freecen2_contents.records[@chapman_code][:total][:pieces_online]) %>
-                <td><%= @freecen2_contents.records[@chapman_code][:total][:pieces] %></td>
-                <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][:total][:pieces_online], @freecen2_contents.records[@chapman_code][:total][:pieces]) %>
-                <td><%= @freecen2_contents.records[@chapman_code][:total][:records_online] %></td>
-                <td><%= @freecen2_contents.records[@chapman_code][:total][:added_pieces_online] %></td>
-                <td> N/A </td>
-              </tr>
-            </tbody>
-          </table>
+<h1 class="beta text--center">Database Records for <%= @county_description %> as of <%= @interval_end.strftime('%d')%>&nbsp;<%= @interval_end.strftime('%b')%>&nbsp;<%= @interval_end.strftime('%Y')%></h1>
+<nav aria-label="Records options">
+    <ul class="nav nav--banner">
+      <li><a data-method="get" href="/freecen2_contents?locale=en">Choose Another County</a></li>
+    </ul>
+</nav>
+<div class="grid">
+  <div class="grid__item one-third palm-one-whole" >
+    <h2 class="accessibility">Choose a Place in <%= @county_description %></h2>
+    <%= simple_form_for :view_place_recs, method: :get do |p| %>
+      <fieldset class="inputs">
+        <legend>Places</legend>
+        <div class="push--bottom">
+          <p class="push-half--bottom">
+            <small class="additional">Select a Place to view its Database totals and get links to lists of Names currently in the Database.<br>
+              Note: the years that have Pieces online are listed after the Place name.</small>
+          </p>
+          <label class="label ttip" tabindex="0" for="place_description" >
+            Place
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Required. Only Places with Pieces are included.</span> </label>
+          <select class="select" id="place_description"  name="place_description" required="required">
+            <% @places_for_county.each do |key, value| %>
+              <option value="<%=key%>" ><%=value%></option>
+            <% end %>
+          </select>
+          <%= p.submit 'View Place Records',  :class => "btn   btn--small"%>
         </div>
       </fieldset>
-    </li>
+    <% end %>
+    <% if @freecen2_contents.records[@chapman_code][:total][:added_pieces_online] > 0 &&  @freecen2_contents.new_records.present? %>
+      <div class="island island--bordered">
+        <h2 class="accessibility">Recent additions for <%= @county_description %></h2>
+        <p class="push-half--bottom"><small class="additional">You can view a list of Places in <%= @county_description %> that have had Pieces added to the database in the previous 30 days:</small></p>
+        <p class="text--center"><a data-method="get" href="/freecen2_contents/new_records_index?locale=en&amp;new_records=<%=@county_description%>">View recent additions</a></p>
+      </div>
+    <% end %>
+  </div>
+  <div class="grid__item two-thirds palm-one-whole">
+    <h2 class="gamma text--center">Totals for All Places in <%= @county_description %></h2>
+    <p><small class="additional read-length">You can use the Detail links to view a list of Pieces (including Civil Parish names), where available.<br>
+        Note: a * next to the number of Pieces Online means that only part of one or more pieces is currently online.</small></p>
+    <div class='scrollable'>
+      <table  class="table--bordered table--data table--striped " >
+        <caption class="accessibility">Database totals for <%= @county_description %> by census year</caption>
+        <thead >
+          <tr>
+            <th scope="col" class='sticky-header'>Year</th>
+            <th scope="col" class='sticky-header'>Pieces<br>
+              Online</th>
+            <th scope="col" class='sticky-header'>Total<br>
+              Pieces</th>
+            <th scope="col" class='sticky-header'>%<br>
+              Online</th>
+            <th scope="col" class='sticky-header'>Records<br>
+              Online</th>
+            <th scope="col" class='sticky-header'>New<br>
+              Pieces<br>
+              Online</th>
+            <% if @freecen2_contents.records[@chapman_code][:total][:pieces] > 0 %>
+              <th scope="col" class='sticky-header '>Detail Links</th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
+            <tr>
+              <th scope="row"><%= census %></th>
+              <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][census][:piece_ids], @freecen2_contents.records[@chapman_code][census][:pieces_online]) %>
+              <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][census][:pieces], :delimiter => ',') %></td>
+              <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][census][:pieces_online], @freecen2_contents.records[@chapman_code][census][:pieces]) %>
+              <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][census][:records_online], :delimiter => ',') %></td>
+              <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][census][:added_pieces_online], :delimiter => ',') %></td>
+              <% if @freecen2_contents.records[@chapman_code][census][:pieces] > 0 %>
+                <td> <a data-method="get"data-method="get" href="/freecen2_contents/display_pieces_by_status?locale=en&amp;county_description=<%=@county_description%>&amp;place_description=all&amp;place_id=''&amp;census_year=<%=census%>&amp;order=status">Pieces <span class="accessibility">in <%= census %></span></a></td>
+              <% else %>
+                <td> N/A </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row">Total</th>
+            <%= contents_check_for_partials(@freecen2_contents.records[@chapman_code][:total][:piece_ids], @freecen2_contents.records[@chapman_code][:total][:pieces_online]) %>
+            <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][:total][:pieces], :delimiter => ',') %></td>
+            <%= contents_show_percentage(@freecen2_contents.records[@chapman_code][:total][:pieces_online], @freecen2_contents.records[@chapman_code][:total][:pieces]) %>
+            <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][:total][:records_online], :delimiter => ',') %></td>
+            <td><%= number_with_delimiter(@freecen2_contents.records[@chapman_code][:total][:added_pieces_online], :delimiter => ',') %></td>
+            <td> N/A </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
   </div>
 </div>
 <script>

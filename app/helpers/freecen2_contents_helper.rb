@@ -9,7 +9,7 @@ module Freecen2ContentsHelper
         partial_flag = '*' if Freecen2Piece.find_by(id: piece_id, status: 'Part').present?
         break if partial_flag == '*'
       end
-      display_val = pieces_online.to_s + partial_flag
+      display_val = number_with_delimiter(pieces_online, :delimiter => ',') + partial_flag
     end
     content_tag(:td, display_val)
   end
@@ -37,12 +37,26 @@ module Freecen2ContentsHelper
     return has_names
   end
 
-  def locate_place_link(place_id, button_size)
+  def locate_place_link(place_id,in_table)
     place = Freecen2Place.find_by(id: place_id)
-    if button_size == 'exsmall'
-      link_to 'Location', "https://www.google.com/maps/search/?api=1&query=#{place.latitude},#{place.longitude}", target: :_blank, class: 'btn   btn--exsmall', title: 'Shows the location on a Google map in a new tab'
+    zoom = 10
+    title = 'Show ' + place.place_name + ' on Map - opens in new tab'
+    lat = place.latitude
+    long = place.longitude
+    if lat.present? && long.present?
+      if in_table == 'N'
+        text = 'Show on Map'
+        return raw '<li><a href="https://google.com/maps/place/'+(lat.to_f.to_s)+','+(long.to_f.to_s)+'/@'+(lat.to_f.to_s)+','+(long.to_f.to_s)+','+(zoom.to_i.to_s)+'z" target="_blank" title="'+(title.to_s)+'">'+(text.to_s)+'</a></li>'
+      else
+        text = 'Show <span class="accessibility">' + place.place_name + '</span> on Map'
+        return raw '<a href="https://google.com/maps/place/'+(lat.to_f.to_s)+','+(long.to_f.to_s)+'/@'+(lat.to_f.to_s)+','+(long.to_f.to_s)+','+(zoom.to_i.to_s)+'z" target="_blank" title="'+(title.to_s)+'">'+(text.to_s)+'</a>'
+      end
     else
-      link_to 'Location', "https://www.google.com/maps/search/?api=1&query=#{place.latitude},#{place.longitude}", target: :_blank, class: 'btn   btn--small', title: 'Shows the location on a Google map in a new tab'
+      if in_table == 'N'
+        return raw '<li>(Show on Map not available)</li>'
+      else
+        return raw '(Show on Map not available)'
+      end
     end
   end
 

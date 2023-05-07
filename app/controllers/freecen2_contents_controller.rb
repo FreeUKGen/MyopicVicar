@@ -30,7 +30,9 @@ class Freecen2ContentsController < ApplicationController
     @freecen2_contents = Freecen2Content.find_by(id: @id)
     @interval_end = @freecen2_contents.interval_end
     @recent_additions = []
+
     @additions_county = params[:new_records] if params[:new_records].present?
+
     return if @freecen2_contents.new_records.blank?
     redirect_back(fallback_location: freecen2_contents_path, notice: 'Recent Additions not found') && return if @additions_county.blank?
 
@@ -178,6 +180,11 @@ class Freecen2ContentsController < ApplicationController
       @last_names = @place_unique_names.unique_surnames[@year]
       @first_names_cnt = @first_names.count
       @last_names_cnt = @last_names.count
+      if params[:new_records] == "All"
+        @new_records = params[:new_records]
+      else
+        @new_records = ""
+      end
       if params[:name_type] == 'Surnames' || params[:name_type].to_s.empty?
         @unique_names = @last_names
         @name_type = 'Surnames'
