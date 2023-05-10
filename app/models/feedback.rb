@@ -110,6 +110,11 @@ class Feedback
     copies_of_contact_action_sent_to_userids.each do |userid|
       message.add_message_to_userid_messages(UseridDetail.look_up_id(userid))
     end
+    if message.copies_to_userids.present?
+      message.copies_to_userids.each do |userid|
+        message.add_message_to_userid_messages(UseridDetail.look_up_id(userid))
+      end
+    end
   end
 
   def add_identifier

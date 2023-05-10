@@ -217,6 +217,11 @@ class Message
     copy_to = []
     UserMailer.message_reply(self, to_userid, copy_to, original_message, userid).deliver_now
     add_message_to_userid_messages(UseridDetail.look_up_id(to_userid)) unless to_userid.blank?
+    if self.copies_to_userids.present?
+      self.copies_to_userids.each do |userid|
+        add_message_to_userid_messages(UseridDetail.look_up_id(userid))
+      end
+    end
     recipients = []
     recipients << to_userid
     copies = []
