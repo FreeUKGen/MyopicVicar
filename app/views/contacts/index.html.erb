@@ -51,6 +51,7 @@
                   <%= link_to 'Show', contact_path(feedback.id, source: params[:action]),  :class => "btn btn--small", method: :get%>
                   <%= link_to 'Reply', reply_contact_path(source_contact_id:feedback.id) ,:class => "btn btn--small" %>
                   <%= link_to 'View Replies', contact_reply_messages_path(feedback.id), class: "btn btn--small", method: :get if feedback.has_replies?(feedback.id.to_s)%>
+                   <%= link_to 'Archive', archive_contact_path(feedback.id, source: params[:action]), :class => "btn btn--small",  data: { confirm: 'Are you sure you want archive this contact' } unless feedback.is_archived?%>
                   <%= link_to 'Archive', archive_contact_path(feedback.id, source: params[:action]), :class => "btn btn--small",  data: { confirm: 'Are you sure you want archive this contact' } unless feedback.is_archived?%>
                   <%= link_to 'Restore', restore_contact_path(feedback.id, source: params[:action]), :class => "btn btn--small",  data: { confirm: 'Are you sure you want archive this contact' } if feedback.is_archived?%>
                 </td>
@@ -93,6 +94,7 @@
                     <%= link_to 'Show', contact_path(feedback.id, source: params[:action]),  :class => "btn btn--small", method: :get%>
                     <%= link_to 'Reply', reply_contact_path(source_contact_id:feedback.id) ,:class => "btn btn--small" %>
                     <%= link_to 'View Replies', contact_reply_messages_path(feedback.id), class: "btn btn--small", method: :get if feedback.has_replies?(feedback.id.to_s)%>
+                    <%= link_to 'Keep until I say so', keep_contact_path(feedback.id), :class => 'btn btn--small',  data: { confirm: 'Are you sure you want keep this contact' } unless feedback.keep.present? %>
                     <%= link_to 'Archive', archive_contact_path(feedback.id, source: params[:action]), :class => "btn btn--small",  data: { confirm: 'Are you sure you want archive this contact' } unless feedback.is_archived?%>
                     <%= link_to 'Restore', restore_contact_path(feedback.id, source: params[:action]), :class => "btn btn--small",  data: { confirm: 'Are you sure you want archive this contact' } if feedback.is_archived?%>
                   </td>
