@@ -287,7 +287,6 @@ class ManageCountiesController < ApplicationController
     clean_session_for_images
     session.delete(:county)
     session.delete(:chapman_code)
-    session.delete(:stats_view)
     session.delete(:stats_year)
     session[:manage_user_origin] = 'manage county'
     get_user_info_from_userid

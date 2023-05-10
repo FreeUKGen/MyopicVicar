@@ -48,7 +48,7 @@ class PhysicalFilesController < ApplicationController
     redirect_back(fallback_location: { action: 'select_action' }) && return if @batch.blank?
 
     @batch.file_and_entries_delete if appname_downcase == 'freereg'
-    @batch.freecen_csv_file_and_entries_delete if appname_downcase == 'freecen'
+    @batch.freecen_csv_file_and_entries_delete(session[:userid]) if appname_downcase == 'freecen'
     @batch.delete
     flash[:notice] = 'The destruction of the physical files and all its entries and search records was successful'
     redirect_back(fallback_location: { action: 'select_action' }) && return

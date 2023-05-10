@@ -54,13 +54,21 @@ crumb :person_role_selection do
 end
 
 crumb :freecen2_site_statistics do |county|
-  link 'Freecen2 Site Statistics', freecen2_site_statistics_path
   if county == 'total'
+    link 'Freecen2 Site Statistics', freecen2_site_statistics_path
     parent :root
   else
+    link 'Freecen2 County Statistics', freecen2_site_statistics_path
     parent :county_options, county
   end
 end
+
+crumb :freecen2_stats_pieces do |county|
+  link 'Freecen2 Pieces List'
+  parent :freecen2_site_statistics, county
+end
+
+
 crumb :freecen2_search_statistics do |county|
   link 'Freecen2 Search Statistics'
   if county == 'total'
@@ -1583,6 +1591,11 @@ crumb :freecen1_vld_entry do |county, entry|
   parent :freecen1_vld_entries, entry.freecen1_vld_file_id, session[:entry_page], entry
 end
 
+crumb :freecen1_vld_file_audits do |county, file|
+  link 'Deleted FreeCen1 VLD Files', freecen1_vld_file_audits_path(county: county, anchor: file)
+  parent :freecen1_vld_files, session[:county], file
+end
+
 
 #  .........................................................................freecen2_districts...........................................
 
@@ -1761,6 +1774,10 @@ crumb :show_freecen2_piece do |file, county, year|
     parent :freecen2_districts_chapman, county, year
   when 'missing_district_place_index'
     parent :freecen2_districts_missing_places, county
+  when 'vld_file_audit_index'
+    parent :freecen1_vld_file_audits, county, file
+  when 'csv_file_audit_index'
+    parent :freecen_csv_file_audits, county, file
   else
     parent :county_options, county
   end
@@ -1948,33 +1965,29 @@ crumb :freecen_csv_files do |file|
     link 'List of Files', freecen_csv_files_path(anchor: "#{file.id}", page: "#{session[:current_page]}")
   end
 
-  if session[:stats_view]
-    parent :freecen2_site_statistics,  session[:county]
-  else
-    if session[:my_own]
-      parent :my_own_freecen_csv_files
-    elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
-      if session[:piece_id].present?
-        piece = Piece.find_by(_id: piece_id).first
-        if piece.nil?
-          parent :county_options, session[:county]
-        else
-          parent :show_piece, session[:county], piece
-        end
-      else
+  if session[:my_own]
+    parent :my_own_freecen_csv_files
+  elsif session[:county].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+    if session[:piece_id].present?
+      piece = Piece.find_by(_id: piece_id).first
+      if piece.nil?
         parent :county_options, session[:county]
-      end
-    elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
-      parent :userid_details_listing, session[:syndicate]
-    elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
-      if session[:userid_id].present?
-        parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
       else
-        parent :syndicate_options, session[:syndicate]
+        parent :show_piece, session[:county], piece
       end
-    elsif %w[system_administrator technical].include?(session[:role])
-      parent :cenmanager_userid_options
+    else
+      parent :county_options, session[:county]
     end
+  elsif %w[volunteer_coordinator syndicate_coordinator].include?(session[:role])
+    parent :userid_details_listing, session[:syndicate]
+  elsif session[:syndicate].present? && %w[county_coordinator system_administrator technical data_manager].include?(session[:role])
+    if session[:userid_id].present?
+      parent :userid_detail, session[:syndicate], UseridDetail.find(session[:userid_id])
+    else
+      parent :syndicate_options, session[:syndicate]
+    end
+  elsif %w[system_administrator technical].include?(session[:role])
+    parent :cenmanager_userid_options
   end
 end
 
@@ -2058,6 +2071,11 @@ end
 crumb :correct_freecen_csv_entry do |entry, file|
   link 'Correct Error Record', error_freecen_csv_entry_path(entry._id)
   parent :error_freecen_csv_entries, file
+end
+
+crumb :freecen_csv_file_audits do |county, file|
+  link 'Unincorporated FreeCen CSV Files', freecen_csv_file_audits_path(county: county, anchor: file)
+  parent :freecen_csv_files
 end
 
 crumb :freecen2_places do |county, place|

@@ -284,7 +284,6 @@ class ApplicationController < ActionController::Base
     session.delete(:original_message_id)
     session.delete(:query)
     session.delete(:search_names)
-    session[:stats_view] = false
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)
@@ -338,7 +337,6 @@ class ApplicationController < ActionController::Base
     session.delete(:register)
     session.delete(:search_names)
     session.delete(:type)
-    session[:stats_view] = false
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)

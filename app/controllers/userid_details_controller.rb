@@ -17,7 +17,8 @@ class UseridDetailsController < ApplicationController
   require 'import_users_from_csv'
   skip_before_action :require_login, only: [:general, :create, :researcher_registration, :transcriber_registration, :technical_registration]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
-  
+  PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator']
+
   def all
     session[:user_index_page] = params[:page] if params[:page]
     session[:return_to] = request.fullpath
@@ -627,7 +628,16 @@ class UseridDetailsController < ApplicationController
   end
 
   def permitted_users?
-    ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator'].include? @current_user.person_role
+    permitted_role? || permitted_secondary_roles?
+  end
+
+  def permitted_role?
+    PERMITTED_ROLES.include? @current_user.person_role
+  end
+
+  def permitted_secondary_roles?
+     roles = @current_user.secondary_role & PERMITTED_ROLES
+     roles.present?
   end
 
   def stats_permitted_users?

@@ -106,7 +106,7 @@ class FreecenCsvFilesController < ApplicationController
 
 
     # save a copy to attic and delete all batches
-    @physical_file.freecen_csv_file_and_entries_delete
+    @physical_file.freecen_csv_file_and_entries_delete(session[:userid])
 
     @physical_file.delete
     session[:type] = 'edit'
@@ -307,7 +307,8 @@ class FreecenCsvFilesController < ApplicationController
 
     get_user_info_from_userid
     logger.warn("FREECEN:CSV_PROCESSING: Starting unincorporation rake task for #{@freecen_csv_file.file_name}")
-    pid1 =  spawn("rake freecen_csv_file_unincorporate[#{@freecen_csv_file.id}]")
+    pid1 =  spawn("rake freecen_csv_file_unincorporate[#{@freecen_csv_file.id},#{@user.userid}]")
+
     message = "The records for the csv file #{@freecen_csv_file.file_name} are being removed from the database. You will receive an email when the task has been completed."
     logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
 
@@ -340,13 +341,6 @@ class FreecenCsvFilesController < ApplicationController
       session[:sort] = 'uploaded_date DESC'
     end
     session[:sorted_by] = @sorted_by if params[:order].present?
-    if session[:stats_view]
-      if !session[:stats_year].present?
-        session[:stats_year] = params[:stats_year]
-        session[:stats_recs] = params[:select_recs]
-      end
-      session[:selection] = params[:select_recs]
-    end
     case
     when session[:syndicate].present?
       if session[:userid_id].blank? && helpers.can_view_files?(session[:role]) && helpers.sorted_by?(session[:sorted_by])
@@ -359,18 +353,14 @@ class FreecenCsvFilesController < ApplicationController
         @freecen_csv_files = FreecenCsvFile.userid(UseridDetail.find(session[:userid_id]).userid).no_timeout.order_by(session[:sort]).all
       end
     when session[:county].present?
-      if session[:stats_view]
-        @freecen_csv_files  = FreecenCsvFile.before_year_csv_files(session[:chapman_code], session[:stats_year], session[:stats_todate], session[:stats_recs]).order_by(session[:sort]).all
-      else
-        if helpers.can_view_files?(session[:role]) && session[:selection] == 'errors'
-          @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all
-        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'validation'
-          @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
-        elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
-          @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
-        elsif helpers.can_view_files?(session[:role])
-          @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
-        end
+      if helpers.can_view_files?(session[:role]) && session[:selection] == 'errors'
+        @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).gt(total_errors: 0).order_by(session[:sort]).all
+      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'validation'
+        @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], validation: true, incorporated: false).order_by(session[:sort]).all
+      elsif helpers.can_view_files?(session[:role]) && session[:selection] == 'incorporated'
+        @freecen_csv_files = FreecenCsvFile.where(chapman_code: session[:chapman_code], incorporated: true).order_by(session[:sort]).all
+      elsif helpers.can_view_files?(session[:role])
+        @freecen_csv_files = FreecenCsvFile.chapman_code(session[:chapman_code]).order_by(session[:sort]).all
       end
     end
     #session[:current_page] = @freecen_csv_files.current_page if @freecen_csv_files.present?
@@ -474,7 +464,8 @@ class FreecenCsvFilesController < ApplicationController
     redirect_back(fallback_location: freecen_csv_file_path(@freecen_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freecen_csv_file.can_we_edit?
 
     controls(@freecen_csv_file)
-    proceed, message = @freecen_csv_file.remove_batch
+
+    proceed, message = @freecen_csv_file.remove_batch(session[:userid])
     flash[:notice] = proceed ? 'The removal of the batch was successful' : message
     if session[:my_own]
       redirect_to my_own_freecen_csv_file_path
