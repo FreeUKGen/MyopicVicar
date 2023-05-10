@@ -78,17 +78,61 @@ class Contact
       where(source_contact_id: id)
     end
 
-    def results(archived, order, user)
-      counties = user.county_groups
-      contacts = Contact.where(archived: archived)
-      if user.secondary_role.include?'volunteer_coordinator'
-        contacts = contacts.where(contact_type: "Volunteering Question").order_by(order)
-      elsif %w[county_coordinator country_coordinator].include?(user.person_role)
-        contacts = contacts.where(county: { '$in' => counties }).order_by(order)
-      else
-        contacts = Contact.where(archived: archived).order_by(order)
+    def primary_results(archived, order, user)
+      primary_contacts = contacts_of_role(user.person_role,archived, order,user)
+            #if user.secondary_role.include?'volunteer_coordinator'
+        #contacts = contacts.where(contact_type: "Volunteering Question").order_by(order)
+      #elsif %w[county_coordinator country_coordinator].include?(user.person_role)
+       # contacts = contacts.where(county: { '$in' => counties }).order_by(order)
+      #else
+       # contacts = Contact.where(archived: archived).order_by(order)
+      #end
+      #contacts
+    end
+
+    def secondary_results(archived, order, user)
+      secondary_role = user.secondary_role
+      secondary_contacts_array = []
+      if secondary_role.present?
+        secondary_role.each do |role|
+          contacts_of_role(role,archived, order,user).each do |c|
+            secondary_contacts_array << c
+          end
+        end
       end
-      contacts
+      secondary_contacts_array
+    end
+
+    def contacts_of_role(role, archived, order,user)
+      contacts = Contact.where(archived: archived)
+      case role
+      when 'volunteer_coordinator'
+        c = contacts.get_contacts('Volunteering Question')
+      when 'website_coordinator'
+        c = contacts.get_contacts('Website Problem')
+      when 'contacts_coordinator'
+        c = contacts.get_contacts('Data Question')
+      when 'general_communication_coordinator'
+        c = contacts.get_contacts('General Comment')
+      when 'publicity_coordinator'
+        c = contacts.get_contacts('Thank you')
+      when 'genealogy_coordinator'
+        c = contacts.get_contacts('Genealogical Question')
+      when 'project_manager'
+        c = contacts.get_contacts('Enhancement Suggestion')
+      when 'system_administrator'
+        c = contacts
+      when 'county_coordinator' || 'country_coordinator'
+        c = contacts.where(county: { '$in' => user.county_groups })
+      when 'country_coordinator'
+        c = contacts.where(county: { '$in' => user.county_groups })
+      end
+      ordered_contact = c.order_by(order)
+      ordered_contact
+    end
+
+    def get_contacts(contact_type)
+      where(contact_type: contact_type)
     end
 
     def type(status)
