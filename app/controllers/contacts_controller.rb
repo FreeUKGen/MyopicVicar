@@ -113,9 +113,11 @@ class ContactsController < ApplicationController
     params[:source] = 'original'
     get_user_info_from_userid
     order = 'contact_time DESC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
   end
+
 
   def keep
     @contact = Contact.find(params[:id]) if params[:id].present?
@@ -133,7 +135,9 @@ class ContactsController < ApplicationController
     params[:source] = 'original'
     get_user_info_from_userid
     order = 'contact_time  ASC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -141,7 +145,9 @@ class ContactsController < ApplicationController
   def list_by_date
     get_user_info_from_userid
     order = 'contact_time ASC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -149,7 +155,9 @@ class ContactsController < ApplicationController
   def list_by_most_recent
     get_user_info_from_userid
     order = 'contact_time DESC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -157,7 +165,9 @@ class ContactsController < ApplicationController
   def list_by_name
     get_user_info_from_userid
     order = 'name ASC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -165,7 +175,9 @@ class ContactsController < ApplicationController
   def list_by_type
     get_user_info_from_userid
     order = 'contact_type ASC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
   end
@@ -272,9 +284,15 @@ class ContactsController < ApplicationController
   def select_by_identifier
     get_user_info_from_userid
     @options = {}
+    @secondary_options ={}
     order = 'identifier ASC'
-    Contact.results(session[:archived_contacts], order, @user).each do |contact|
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contacts.each do |contact|
       @options[contact.identifier] = contact.id
+    end
+    @secondary_contacts.each do |contact|
+      @secondary_options[contact.identifier] = contact.id
     end
     @contact = Contact.new
     @location = 'location.href= "/contacts/" + this.value'

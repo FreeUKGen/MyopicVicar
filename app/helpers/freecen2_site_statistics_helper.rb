@@ -1,4 +1,5 @@
 module Freecen2SiteStatisticsHelper
+
   def data_integrity_flag(census, check_num)
 
     # 1) Search records = Individuals
@@ -23,34 +24,22 @@ module Freecen2SiteStatisticsHelper
     flag
   end
 
-  def site_statistics_drilldown(cell, census, data_type)
+
+  def site_statistics_display_cell(cell, census, data_type)
     if census == :total
       year = 'all'
     else
       year = census
     end
     case data_type
+    when 'year'
+      return link_to "#{year}", stats_index_freecen2_pieces_path(county: @county, sorted_by: 'Most Recent Online', stats_year: year),:title=>'List All Pieces', method: :get
     when 'search_records'
       data_integrity_flag(census, '1') != '' ? display_cell = content_tag(:td, cell.to_s + data_integrity_flag(census, '1'), style: "color: red") : display_cell = content_tag(:td, cell.to_s)
     when 'vld_files_on_line'
       data_integrity_flag(census, '2') != '' ? display_cell = content_tag(:td, cell.to_s + data_integrity_flag(census, '2'), style: "color: red") : display_cell = content_tag(:td, cell.to_s)
     when 'csv_files'
-      display_flagged = cell.to_s + data_integrity_flag(census, '3')
-      if cell > 0
-        if data_integrity_flag(census, '3') != ''
-          return link_to "#{display_flagged}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'all'),:title=>'List details', method: :get, style: "color: red"
-        else
-          return link_to "#{display_flagged}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'all'),:title=>'List details', method: :get
-        end
-      else
-        return display_flagged
-      end
-    when 'csv_files_incorporated'
-      if cell > 0
-        return link_to "#{cell}", freecen_csv_files_path(order: 'alphabetic', stats_year: year, select_recs: 'incorporated'),:title=>'List details', method: :get
-      else
-        return cell.to_s
-      end
+      data_integrity_flag(census, '3') != '' ? display_cell = content_tag(:td, cell.to_s + data_integrity_flag(census, '3'), style: "color: red") : display_cell = content_tag(:td, cell.to_s)
     when 'csv_entries'
       data_integrity_flag(census, '4') != '' ? display_cell = content_tag(:td, cell.to_s + data_integrity_flag(census, '4'), style: "color: red") : display_cell = content_tag(:td, cell.to_s)
     when 'individuals'
