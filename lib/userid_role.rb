@@ -128,6 +128,7 @@ module UseridRole
     'FreeUKGenealogy  Policies' => '/cms/freeukgenealogy-policies',
     'Gazetteer' => '/freecen2_places/search_names',
     'TNA Change Logs' => '/tna_change_logs',
+    'Transcriber Statistics' => '/userid_details/transcriber_statistics',
     'FreeCEN Handbook' => '/cms/freecen-handbook',
     'Place Edit Reasons' => '/place_edit_reasons',
     'Place Sources' => '/freecen2_place_sources'
