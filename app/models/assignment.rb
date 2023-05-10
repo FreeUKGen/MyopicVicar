@@ -103,7 +103,7 @@ class Assignment
         u_ids = UseridDetail.where(:id=>a_ids[0][4]).pluck(:id,:userid)
         userid = Hash.new{|h,k| h[k]=[]}.tap{|h| u_ids.each{|k,v| h[k] = v}}
 
-        i_ids = ImageServerImage.where(:assignment_id=>a_ids[0][0]).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
+        i_ids = ImageServerImage.where(:assignment_id=>a_ids[0][0]).order_by(image_file_name: 1).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
 
         (assignment_id, image_assignment_id, image_group_id, image, group_name) = prepare_for_parsing(a_ids,i_ids)
 
@@ -212,6 +212,7 @@ class Assignment
 
       return image
     end
+
 
     def get_update_assignment_new_status(type,my_own,orig_status)
       case type
