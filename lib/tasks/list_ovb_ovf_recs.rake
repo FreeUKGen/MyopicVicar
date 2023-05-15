@@ -67,11 +67,11 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
             if vld_entry_rec.present?
               get_vld_entry_record_info(vld_entry_rec)
             else
-              message = "**** VLD record not found - search record #{search_rec.id} - csv entry id #{search_rec.freecen1_vld_entry_id}"
+              message = "**** VLD entry record not found - search record #{search_rec.id} - vld entry id #{indiviaual_rec.freecen1_vld_entry_id}"
               output_to_log(file_for_log, message)
             end
           else
-            message = "**** Individual record not found - search record #{search_rec.id} - csv entry id #{search_rec.freecen_individual_id}"
+            message = "**** Individual record not found - search record #{search_rec.id} - Individual id #{search_rec.freecen_individual_id}"
             output_to_log(file_for_log, message)
           end
         end
