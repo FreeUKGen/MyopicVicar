@@ -10,14 +10,11 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
   file_for_log = File.new(file_for_log, 'w')
   file_for_listing = File.new(file_for_listing, 'w')
   args_valid = false
-  one_county = false
-  single_county = 'XXX'
   initial_message = 'Started Listing of  VLD/CSV records with POB OVB or OVF'
   start_message = initial_message
 
   if args.chapman_code.present?
     args_valid = true
-    one_county = true
     single_county = args.chapman_code.to_s
     start_message = "#{initial_message} - #{single_county} only"
   else
@@ -35,26 +32,22 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
 
     Freecen::CENSUS_YEARS_ARRAY.each do |yyyy|
       census_year = yyyy.to_s
-      next unless one_year == false || census_year == single_year
 
-      if one_county
-        num_search_recs_to_update = SearchRecord.where(record_type: census_year, chapman_code: single_county, birth_chapman_code: ['OVB', 'OVF']).count
-        message = num_search_recs_to_update.zero? ? "Census Year #{census_year} for #{single_county} has 0 records to process" : "Working on Census Year #{census_year} for #{single_county} - #{num_search_recs_to_update} to process"
-      else
-        num_search_recs_to_update = SearchRecord.where(record_type: census_year, birth_chapman_code: ['OVB', 'OVF']).count
-        message = num_search_recs_to_update.zero? ? "Census Year #{census_year} has 0 records to process" : "Working on Census Year #{census_year} - #{num_search_recs_to_update} to process"
-      end
+      num_search_recs_ovb = SearchRecord.where(record_type: census_year, chapman_code: single_county, birth_chapman_code: 'OVB').count
+      num_search_recs_ovf = SearchRecord.where(record_type: census_year, chapman_code: single_county, birth_chapman_code: 'OVF').count
+      num_search_recs = num_search_recs_ovb + num_search_recs_ovf
+      message = num_search_recs.zero? ? "Census Year #{census_year} for #{single_county} has 0 records to process" : "Working on Census Year #{census_year} for #{single_county} - #{num_search_recs} to process"
 
       output_to_log(file_for_log, message)
-      next if num_search_recs_to_update.zero?
+      next if num_search_recs.zero?
 
-      if one_county
-        search_recs_to_update = SearchRecord.where(record_type: census_year, chapman_code: single_county, birth_chapman_code: ['OVB', 'OVF'])
-      else
-        search_recs_to_update = SearchRecord.where(record_type: census_year, birth_chapman_code: ['OVB', 'OVF'])
-      end
 
-      search_recs_to_update.each do |search_rec|
+      search_recs = SearchRecord.where(record_type: census_year, chapman_code: single_county)
+
+
+      search_recs.each do |search_rec|
+
+        next unless %w[OVB OVF].include?(search_rec.birth_chapman_code)
 
         get_search_record_info(search_rec)
 
@@ -83,7 +76,7 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
           end
         end
 
-        write_csv_line(csv_file)
+        write_csv_line(file_for_listing) unless @file_for_listing == ''
         search_recs_processed += 1
       end
     end
@@ -93,7 +86,7 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
 
     message = "Finished Listing of  VLD/CSV records with POB OVB or OVF - run time = #{run_time}"
     output_to_log(file_for_log, message)
-    message = "Processed #{search_recs_processed} OVB Search Records records - see list_ovb_ovf_recs_YYYYMMDDHHMM.csv and .log for output"
+    message = "Processed #{search_recs_processed} OVB/OVF Search Records records - see list_ovb_ovf_recs_YYYYMMDDHHMM.csv and .log for output"
     output_to_log(file_for_log, message)
 
   end
@@ -147,9 +140,9 @@ end
 def self.get_csv_entry_info(rec)
   if rec.freecen_csv_file_id.present?
     csv_file_rec = FreecenCsvFile.find_by(_id: rec.freecen_csv_file_id)
-    @file_for_listing = csv_file_rec.present? ? csv_file_rec.file_name : "****CSVProc File missing #{rec.freecen_csv_file_id}"
+    @file_for_listing = csv_file_rec.present? ? csv_file_rec.file_name : "****CSV File not found #{rec.freecen_csv_file_id}"
   else
-    @file_for_listing = "****CSVProc File not found for CSV Entry #{rec.id}"
+    @file_for_listing = "****CSV File missing for CSV Entry #{rec.id}"
   end
   @folio_for_listing = rec.folio_number
   @schedule_for_listing = rec.schedule_number
@@ -163,8 +156,8 @@ def self.get_csv_entry_info(rec)
 end
 
 def self.get_individual_record_info(rec)
-  if rec.freecen_vld_file_id.present?
-    vld_file_rec = Freecen1VldFile.find_by(_id: rec.freecen1_vld_file_file_id)
+  if rec.freecen1_vld_file_id.present?
+    vld_file_rec = Freecen1VldFile.find_by(_id: rec.freecen1_vld_file_id)
     @file_for_listing = vld_file_rec.present? ? vld_file_rec.file_name : "****VLD File not found #{rec.freecen1_vld_file_id}"
   else
     @file_for_listing = "****VLD File missing for Individual #{rec.id}"
