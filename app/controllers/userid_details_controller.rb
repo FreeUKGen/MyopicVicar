@@ -17,7 +17,8 @@ class UseridDetailsController < ApplicationController
   require 'import_users_from_csv'
   skip_before_action :require_login, only: [:general, :create, :researcher_registration, :transcriber_registration, :technical_registration]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
-  PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator']
+  PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'newsletter_coordinator']
+  STATS_PERMITTED_ROLES = ['system_administrator', 'executive_director', 'project_manager', 'engagement_coordinator', 'contacts_coordinator', 'newsletter_coordinator']
 
   def all
     session[:user_index_page] = params[:page] if params[:page]
@@ -641,7 +642,16 @@ class UseridDetailsController < ApplicationController
   end
 
   def stats_permitted_users?
-    %w[system_administrator executive_director project_manager engagement_coordinator contacts_coordinator].include? @current_user.person_role
+    stats_access_role? || stats_access_secondary?
+  end
+
+  def stats_access_role?
+    STATS_PERMITTED_ROLES.include? @current_user.person_role
+  end
+
+  def stats_access_secondary?
+    roles = @current_user.secondary_role & STATS_PERMITTED_ROLES
+    roles.present?
   end
 
   def get_option_parameter(option, location)
