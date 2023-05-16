@@ -120,6 +120,7 @@ end
 
 def self.get_search_record_info(rec)
   clear_fields_for_listing
+  @search_rec_id = rec.id
   @census_year_for_listing = rec.record_type
 end
 
@@ -142,7 +143,7 @@ def self.get_csv_entry_info(rec)
     csv_file_rec = FreecenCsvFile.find_by(_id: rec.freecen_csv_file_id)
     @file_for_listing = csv_file_rec.present? ? csv_file_rec.file_name : "****CSV File not found #{rec.freecen_csv_file_id}"
   else
-    @file_for_listing = "****CSV File missing for CSV Entry #{rec.id}"
+    @file_for_listing = "****Search rec #{@search_rec_id} - CSV File missing for CSV Entry #{rec.id}"
   end
   @folio_for_listing = rec.folio_number
   @schedule_for_listing = rec.sequence_in_household == 1 ? rec.schedule_number : get_csv_schedule_number(rec.freecen_csv_file_id, rec.dwelling_number)
@@ -160,7 +161,7 @@ def self.get_individual_record_info(rec)
     vld_file_rec = Freecen1VldFile.find_by(_id: rec.freecen1_vld_file_id)
     @file_for_listing = vld_file_rec.present? ? vld_file_rec.file_name : "****VLD File not found #{rec.freecen1_vld_file_id}"
   else
-    @file_for_listing = "****VLD File missing for Individual #{rec.id}"
+    @file_for_listing = "****Search rec #{@search_rec_id} - VLD File missing for Individual #{rec.id}"
   end
 end
 
