@@ -145,7 +145,7 @@ def self.get_csv_entry_info(rec)
     @file_for_listing = "****CSV File missing for CSV Entry #{rec.id}"
   end
   @folio_for_listing = rec.folio_number
-  @schedule_for_listing = rec.schedule_number
+  @schedule_for_listing = rec,sequence_in_household == 1 ? rec.schedule_number : get_csv_schedule_number(rec.freecen_csv_file_id, rec.dwelling_number)
   @surname_for_listiing = rec.surname
   @pob_chapman_for_listing = rec.birth_county
   @pob_place_for_listing = rec.birth_place
@@ -174,4 +174,9 @@ def self.get_vld_entry_record_info(rec)
   @verbatim_pob_place_for_listing = rec.verbatim_birth_place
   @nationality = ''
   @notes_for_listing = rec.notes
+end
+
+def self.get_csv_schedule_number(csv_file_id, dwelling)
+  head_rec =  Freecen1VldEntry.find_by(freecen_csv_file_id: csv_file_id, dwelling_number: dwelling, sequence_in_household: 1)
+  schedule_number = head_rec.present? ? head_rec.schedule_number : "****not found"
 end
