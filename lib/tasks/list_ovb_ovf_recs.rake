@@ -145,7 +145,7 @@ def self.get_csv_entry_info(rec)
     @file_for_listing = "****CSV File missing for CSV Entry #{rec.id}"
   end
   @folio_for_listing = rec.folio_number
-  @schedule_for_listing = rec,sequence_in_household == 1 ? rec.schedule_number : get_csv_schedule_number(rec.freecen_csv_file_id, rec.dwelling_number)
+  @schedule_for_listing = rec.sequence_in_household == 1 ? rec.schedule_number : get_csv_schedule_number(rec.freecen_csv_file_id, rec.dwelling_number)
   @surname_for_listiing = rec.surname
   @pob_chapman_for_listing = rec.birth_county
   @pob_place_for_listing = rec.birth_place
