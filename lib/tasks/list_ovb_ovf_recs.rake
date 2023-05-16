@@ -141,7 +141,7 @@ end
 def self.get_csv_entry_info(rec)
   if rec.freecen_csv_file_id.present?
     csv_file_rec = FreecenCsvFile.find_by(_id: rec.freecen_csv_file_id)
-    @file_for_listing = csv_file_rec.present? ? csv_file_rec.file_name : "****CSV File not found #{rec.freecen_csv_file_id}"
+    @file_for_listing = csv_file_rec.present? ? csv_file_rec.file_name : "****Search rec #{@search_rec_id} - CSV File not found #{rec.freecen_csv_file_id}"
   else
     @file_for_listing = "****Search rec #{@search_rec_id} - CSV File missing for CSV Entry #{rec.id}"
   end
