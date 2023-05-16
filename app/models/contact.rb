@@ -386,6 +386,7 @@ class Contact
   end
 
   def role_from_contact
+    appname = MyopicVicar::Application.config.freexxx_display_name.downcase
     case contact_type
     when 'Website Problem'
       role = 'website_coordinator'
@@ -396,7 +397,8 @@ class Contact
     when 'General Comment'
       role = 'general_communication_coordinator'
     when 'Thank you'
-      role = 'publicity_coordinator'
+      role = 'publicity_coordinator' if appname == 'freereg'
+      role = 'newsletter_coordinator' if appname == 'freecen'
     when 'Genealogical Question'
       role = 'genealogy_coordinator'
     when 'Enhancement Suggestion'
