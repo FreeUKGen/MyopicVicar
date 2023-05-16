@@ -177,6 +177,6 @@ def self.get_vld_entry_record_info(rec)
 end
 
 def self.get_csv_schedule_number(csv_file_id, dwelling)
-  head_rec =  Freecen1VldEntry.find_by(freecen_csv_file_id: csv_file_id, dwelling_number: dwelling, sequence_in_household: 1)
+  head_rec =  FreecenCsvEntry.find_by(freecen_csv_file_id: csv_file_id, dwelling_number: dwelling, sequence_in_household: 1)
   schedule_number = head_rec.present? ? head_rec.schedule_number : "****not found"
 end
