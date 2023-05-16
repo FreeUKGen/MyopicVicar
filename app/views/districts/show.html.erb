@@ -91,9 +91,8 @@
                 <th>UKBMD Link</th>
                 <td colspan="2">
                   <% if @district.district_url_definable? %>
-                  There is  more information about <%= @district.district_name_display_format.capitalize %> on the UKBMD website. Please note that during the period this Registration District name was used there could be changes in which places were included within the district. UKBMD  includes information on these: 
-                  <%= link_to "More information about #{@district.district_name_display_format.capitalize} on UKBMD", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html", target: "_blank" %><br>
-                    <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                    There is  more information about <%= @district.district_name_display_format.capitalize %> on the UKBMD website. Please note that during the period this Registration District name was used there could be changes in which places were included within the district. UKBMD  includes information on these:
+                    <%= link_to "More information about #{@district.district_name_display_format.capitalize} on UKBMD", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%><br>
                   <% else %>
                     Not Available
                   <% end %>

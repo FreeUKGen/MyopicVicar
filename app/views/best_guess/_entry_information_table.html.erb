@@ -25,9 +25,9 @@
         District
       </th>
       <td>
-        <% if record.district_linkable? %>
-          <%= link_to "#{record.display_district_name}", "http://www.ukbmd.org.uk/reg/districts/#{record.define_url_distict}.html", target: "_blank" %><br>
-          <span class="weight--normal"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+        <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
+        <% if district.present? %>
+          <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
         <% else %>
           <%= record.display_district_name %>
         <% end %>
