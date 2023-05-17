@@ -3,6 +3,108 @@ task :update_search_recs_ovb_to_ovf, [:limit, :fix, :email, :restriction] => :en
 
   require 'user_mailer'
 
+  def self.output_to_log(message_file, message)
+    message_file.puts message.to_s
+    p message.to_s
+  end
+
+  def self.output_to_csv(csv_file, line)
+    csv_file.puts line.to_s
+  end
+
+  def self.write_csv_line(csv_file, year, collection_type, rec_id, info, action)
+    dline = ''
+    dline << "#{year},"
+    dline << "#{collection_type},"
+    dline << "#{rec_id},"
+    dline << "#{info},"
+    dline << action.to_s
+    output_to_csv(csv_file, dline)
+    if @send_email
+      @report_csv += "\n"
+      @report_csv += dline
+    end
+  end
+
+  def self.update_search_record(year, rec, fix, listing)
+    rec.set(birth_chapman_code: 'OVF') if fix
+    write_csv_line(listing, year, 'SearchRecord', rec._id, rec.chapman_code, 'Birth_chapman_code update OVB -> OVF')
+  end
+
+  def self.update_csv_entry_record(year, rec, fix, listing)
+    county_update = false
+    if rec.verbatim_birth_county == 'OVB'
+      rec.set(verbatim_birth_county: 'OVF') if fix
+      county_update = true
+      write_csv_line(listing, year, 'FreecenCsvEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update OVB -> OVF')
+    end
+    if rec.birth_county == 'OVB'
+      rec.set(birth_county: 'OVF') if fix
+      county_update = true
+      write_csv_line(listing, year, 'FreecenCsvEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Birth_county update OVB -> OVF')
+    end
+    return unless county_update
+
+    return if rec.nationality.present?
+
+    rec.set(nationality: 'British') if fix
+    write_csv_line(listing, year, 'FreecenCsvEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Nationality update -> British')
+  end
+
+  def self.check_notes_for_british(notes)
+    note_update = 'none'
+    unless notes.present? && notes.downcase.include?('british')
+      note_update = notes.present? && notes.length.positive? ? "#{notes} British" : 'British'
+    end
+    note_update
+  end
+
+  def self.update_individual_record(year, rec, fix, listing)
+    county_update = false
+    if rec.verbatim_birth_county == 'OVB'
+      rec.set(verbatim_birth_county: 'OVF') if fix
+      county_update = true
+      write_csv_line(listing, year, 'FreecenIndividual', rec._id, "#{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update OVB -> OVF')
+    end
+    if rec.birth_county == 'OVB'
+      rec.set(birth_county: 'OVF') if fix
+      county_update = true
+      write_csv_line(listing, year, 'FreecenIndividual', rec._id, "#{rec.forenames} #{rec.surname}", 'Birth_county update OVB -> OVF')
+    end
+    return unless county_update
+
+    addition_to_note = check_notes_for_british(rec.notes)
+    return if addition_to_note == 'none'
+
+    rec.set(notes: addition_to_note) if fix
+    write_csv_line(listing, year, 'FreecenIndividual', rec._id, "#{rec.forenames} #{rec.surname}", "Notes update -> #{addition_to_note}")
+  end
+
+  def self.update_vld_entry_record(year, rec, fix, listing)
+    county_update = false
+    if rec.verbatim_birth_county == 'OVB'
+      rec.set(verbatim_birth_county: 'OVF') if fix
+      county_update = true
+      write_csv_line(listing, year, 'Freecen1VldEntry', rec._id, "#{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update OVB -> OVF')
+    end
+    if rec.birth_county == 'OVB'
+      rec.set(birth_county: 'OVF') if fix
+      county_update = true
+      write_csv_line(listing, year, 'Freecen1VldEntry', rec._id, "#{rec.forenames} #{rec.surname}", 'Birth_county update OVB -> OVF')
+    end
+    return unless county_update
+
+    addition_to_note = check_notes_for_british(rec.notes)
+    return if addition_to_note == 'none'
+
+    rec.set(notes: addition_to_note) if fix
+    write_csv_line(listing, year, 'Freecen1VldEntry', rec._id, "#{rec.forenames} #{rec.surname}", "Notes update -> #{addition_to_note}")
+  end
+
+
+  # START
+
+
   args.with_defaults(:limit => 1000)
   start_time = Time.current
 
@@ -134,102 +236,4 @@ task :update_search_recs_ovb_to_ovf, [:limit, :fix, :email, :restriction] => :en
     end
   end
   # end task
-end
-
-def self.output_to_log(message_file, message)
-  message_file.puts message.to_s
-  p message.to_s
-end
-
-def self.output_to_csv(csv_file, line)
-  csv_file.puts line.to_s
-end
-
-def self.write_csv_line(csv_file, year, collection_type, rec_id, info, action)
-  dline = ''
-  dline << "#{year},"
-  dline << "#{collection_type},"
-  dline << "#{rec_id},"
-  dline << "#{info},"
-  dline << action.to_s
-  output_to_csv(csv_file, dline)
-  if @send_email
-    @report_csv += "\n"
-    @report_csv += dline
-  end
-end
-
-def self.update_search_record(year, rec, fix, listing)
-  rec.set(birth_chapman_code: 'OVF') if fix
-  write_csv_line(listing, year, 'SearchRecord', rec._id, rec.chapman_code, 'Birth_chapman_code update OVB -> OVF')
-end
-
-def self.update_csv_entry_record(year, rec, fix, listing)
-  county_update = false
-  if rec.verbatim_birth_county == 'OVB'
-    rec.set(verbatim_birth_county: 'OVF') if fix
-    county_update = true
-    write_csv_line(listing, year, 'FreecenCsvEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update OVB -> OVF')
-  end
-  if rec.birth_county == 'OVB'
-    rec.set(birth_county: 'OVF') if fix
-    county_update = true
-    write_csv_line(listing, year, 'FreecenCsvEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Birth_county update OVB -> OVF')
-  end
-  return unless county_update
-
-  return if rec.nationality.present?
-
-  rec.set(nationality: 'British') if fix
-  write_csv_line(listing, year, 'FreecenCsvEntry', rec._id, "#{rec.piece_number} #{rec.forenames} #{rec.surname}", 'Nationality update -> British')
-end
-
-def self.check_notes_for_british(notes)
-  note_update = 'none'
-  unless notes.present? && notes.downcase.include?('british')
-    note_update = notes.present? && notes.length.positive? ? "#{notes} British" : 'British'
-  end
-  note_update
-end
-
-def self.update_individual_record(year, rec, fix, listing)
-  county_update = false
-  if rec.verbatim_birth_county == 'OVB'
-    rec.set(verbatim_birth_county: 'OVF') if fix
-    county_update = true
-    write_csv_line(listing, year, 'FreecenIndividual', rec._id, "#{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update OVB -> OVF')
-  end
-  if rec.birth_county == 'OVB'
-    rec.set(birth_county: 'OVF') if fix
-    county_update = true
-    write_csv_line(listing, year, 'FreecenIndividual', rec._id, "#{rec.forenames} #{rec.surname}", 'Birth_county update OVB -> OVF')
-  end
-  return unless county_update
-
-  addition_to_note = check_notes_for_british(rec.notes)
-  return if addition_to_note == 'none'
-
-  rec.set(notes: addition_to_note) if fix
-  write_csv_line(listing, year, 'FreecenIndividual', rec._id, "#{rec.forenames} #{rec.surname}", "Notes update -> #{addition_to_note}")
-end
-
-def self.update_vld_entry_record(year, rec, fix, listing)
-  county_update = false
-  if rec.verbatim_birth_county == 'OVB'
-    rec.set(verbatim_birth_county: 'OVF') if fix
-    county_update = true
-    write_csv_line(listing, year, 'Freecen1VldEntry', rec._id, "#{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update OVB -> OVF')
-  end
-  if rec.birth_county == 'OVB'
-    rec.set(birth_county: 'OVF') if fix
-    county_update = true
-    write_csv_line(listing, year, 'Freecen1VldEntry', rec._id, "#{rec.forenames} #{rec.surname}", 'Birth_county update OVB -> OVF')
-  end
-  return unless county_update
-
-  addition_to_note = check_notes_for_british(rec.notes)
-  return if addition_to_note == 'none'
-
-  rec.set(notes: addition_to_note) if fix
-  write_csv_line(listing, year, 'Freecen1VldEntry', rec._id, "#{rec.forenames} #{rec.surname}", "Notes update -> #{addition_to_note}")
 end
