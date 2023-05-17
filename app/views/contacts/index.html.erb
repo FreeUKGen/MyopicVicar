@@ -38,7 +38,7 @@
               <th class='sticky-header'>Identification</th>
               <th class='sticky-header'>Action</th>
             </tr>
-            <% @contacts.each do |feedback| %>
+            <% @primary_contacts.each do |feedback| %>
               <tr>
                 <td><%= feedback.name %></td>
                 <td><%= feedback.email_address %></td>
@@ -62,4 +62,47 @@
     </div>
   </div>
 </section>
+<% if @secondary_contacts.present? %>
+  <h2 class=" text--center">List of secondary role contacts</h2>
+  <section class="island   " >
+    <div class="table-wrapper">
+      <div class="grid">
+        <div class="grid__item one-whole" >
+          <div class="scrollable ">
+            <table class="table--bordered table--data ">
+              <tr>
+                <th class='sticky-header'>Name</th>
+                <th class='sticky-header'>email</th>
+                <th class='sticky-header'>Type</th>
+                <th class='sticky-header'>County</th>
+                <th class='sticky-header'>Posted</th>
+                <th class='sticky-header'>Being Kept</th>
+                <th class='sticky-header'>Identification</th>
+                <th class='sticky-header'>Action</th>
+              </tr>
+              <% @secondary_contacts.each do |feedback| %>
+                <tr>
+                  <td><%= feedback.name %></td>
+                  <td><%= feedback.email_address %></td>
+                  <td><%= feedback.contact_type %></td>
+                  <td><%= feedback.county  %></td>
+                  <td><%= feedback.contact_time.strftime("%d %b %Y") unless feedback.contact_time.nil?%></td>
+                  <td><%= feedback.keep%></td>
+                  <td><%= feedback.identifier  %></td>
+                  <td>
+                    <%= link_to 'Show', contact_path(feedback.id, source: params[:action]),  :class => "btn btn--small", method: :get%>
+                    <%= link_to 'Reply', reply_contact_path(source_contact_id:feedback.id) ,:class => "btn btn--small" %>
+                    <%= link_to 'View Replies', contact_reply_messages_path(feedback.id), class: "btn btn--small", method: :get if feedback.has_replies?(feedback.id.to_s)%>
+                    <%= link_to 'Archive', archive_contact_path(feedback.id, source: params[:action]), :class => "btn btn--small",  data: { confirm: 'Are you sure you want archive this contact' } unless feedback.is_archived?%>
+                    <%= link_to 'Restore', restore_contact_path(feedback.id, source: params[:action]), :class => "btn btn--small",  data: { confirm: 'Are you sure you want archive this contact' } if feedback.is_archived?%>
+                  </td>
+                </tr>
+              <% end %>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<% end %>
 <br />
