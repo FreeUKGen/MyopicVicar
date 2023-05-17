@@ -6,9 +6,17 @@
     </div>
    <% end %>  
 <%= simple_form_for @contact, :html => { :class => "grid"}  do |f| %>
-<%= f.input :action,  
+<%= f.input :action,
     { :as => :select, :include_blank => true,  :label => "Make a Selection", :required => true, :collection => @options,:width => 10,      :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width",'onchange' => @location, :size => 5}}%>
 
+<% end %>
+<% if @secondary_options.present? %>
+   <h3 class=" text--center">List of secondary role contact identifiers</h2>
+   <%= simple_form_for @contact, :html => { :class => "grid"}  do |f| %>
+   <%= f.input :action,
+       { :as => :select, :include_blank => true,  :label => "Make a Selection", :required => true, :collection => @secondary_options,:width => 10,      :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width",'onchange' => @location, :size => 5}}%>
+
+   <% end %>
 <% end %>
 </div>
  
