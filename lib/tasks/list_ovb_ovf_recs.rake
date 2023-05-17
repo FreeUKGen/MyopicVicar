@@ -1,6 +1,97 @@
 desc "List VLD data and CSV data with POB OVB or OVF"
 task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
 
+  def self.output_to_list_log(message_file, message)
+    message_file.puts message.to_s
+    p message.to_s
+  end
+
+  def self.output_to_csv(csv_file, line)
+    csv_file.puts line.to_s
+  end
+
+  def self.write_csv_list_line(csv_file)
+    dline = ''
+    dline << "#{@file_for_listing},"
+    dline << "#{@census_year_for_listing},"
+    dline << "#{@folio_for_listing},"
+    dline << "#{@schedule_for_listing},"
+    dline << "#{@surname_for_listiing},"
+    dline << "#{@pob_chapman_for_listing},"
+    dline << "#{@pob_place_for_listing},"
+    dline << "#{@verbatim_pob_chapman_for_listing},"
+    dline << "#{@verbatim_pob_place_for_listing},"
+    dline << "#{@nationality_for_listing},"
+    dline << "#{@notes_for_listing},"
+    output_to_csv(csv_file, dline)
+  end
+
+  def self.get_search_record_info(rec)
+    clear_fields_for_listing
+    @search_rec_id = rec.id
+    @census_year_for_listing = rec.record_type
+  end
+
+  def self.clear_fields_for_listing
+    @census_year_for_listing = ''
+    @file_for_listing = ''
+    @folio_for_listing = ''
+    @schedule_for_listing = ''
+    @surname_for_listiing = ''
+    @pob_chapman_for_listing = ''
+    @pob_place_for_listing = ''
+    @verbatim_pob_chapman_for_listing = ''
+    @verbatim_pob_place_for_listing = ''
+    @nationality_for_listing = ''
+    @notes_for_listing = ''
+  end
+
+  def self.get_csv_entry_info(rec)
+    if rec.freecen_csv_file_id.present?
+      csv_file_rec = FreecenCsvFile.find_by(_id: rec.freecen_csv_file_id)
+      @file_for_listing = csv_file_rec.present? ? csv_file_rec.file_name : "****Search rec #{@search_rec_id} - CSV File not found #{rec.freecen_csv_file_id}"
+    else
+      @file_for_listing = "****Search rec #{@search_rec_id} - CSV File missing for CSV Entry #{rec.id}"
+    end
+    @folio_for_listing = rec.folio_number
+    @schedule_for_listing = rec.sequence_in_household == 1 ? rec.schedule_number : get_csv_schedule_number(rec.freecen_csv_file_id, rec.dwelling_number)
+    @surname_for_listiing = rec.surname
+    @pob_chapman_for_listing = rec.birth_county
+    @pob_place_for_listing = rec.birth_place
+    @verbatim_pob_chapman_for_listing = rec.verbatim_birth_county
+    @verbatim_pob_place_for_listing = rec.verbatim_birth_place
+    @nationality_for_listing = rec.nationality
+    @notes_for_listing = rec.notes
+  end
+
+  def self.get_individual_record_info(rec)
+    if rec.freecen1_vld_file_id.present?
+      vld_file_rec = Freecen1VldFile.find_by(_id: rec.freecen1_vld_file_id)
+      @file_for_listing = vld_file_rec.present? ? vld_file_rec.file_name : "****VLD File not found #{rec.freecen1_vld_file_id}"
+    else
+      @file_for_listing = "****Search rec #{@search_rec_id} - VLD File missing for Individual #{rec.id}"
+    end
+  end
+
+  def self.get_vld_entry_record_info(rec)
+    @folio_for_listing = rec.folio_number
+    @schedule_for_listing = rec.schedule_number
+    @surname_for_listiing = rec.surname
+    @pob_chapman_for_listing = rec.birth_county
+    @pob_place_for_listing = rec.birth_place
+    @verbatim_pob_chapman_for_listing = rec.verbatim_birth_county
+    @verbatim_pob_place_for_listing = rec.verbatim_birth_place
+    @nationality = ''
+    @notes_for_listing = rec.notes
+  end
+
+  def self.get_csv_schedule_number(csv_file_id, dwelling)
+    head_rec =  FreecenCsvEntry.find_by(freecen_csv_file_id: csv_file_id, dwelling_number: dwelling, sequence_in_household: 1)
+    schedule_number = head_rec.present? ? head_rec.schedule_number : "****not found"
+  end
+
+  # START
+
   start_time = Time.current
 
   file_for_log = "log/list_ovb_ovf_recs_#{start_time.strftime('%Y%m%d%H%M')}.log"
@@ -90,94 +181,7 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
     output_to_list_log(file_for_log, message)
 
   end
+
+
   # end task
-end
-
-def self.output_to_list_log(message_file, message)
-  message_file.puts message.to_s
-  p message.to_s
-end
-
-def self.output_to_csv(csv_file, line)
-  csv_file.puts line.to_s
-end
-
-def self.write_csv_list_line(csv_file)
-  dline = ''
-  dline << "#{@file_for_listing},"
-  dline << "#{@census_year_for_listing},"
-  dline << "#{@folio_for_listing},"
-  dline << "#{@schedule_for_listing},"
-  dline << "#{@surname_for_listiing},"
-  dline << "#{@pob_chapman_for_listing},"
-  dline << "#{@pob_place_for_listing},"
-  dline << "#{@verbatim_pob_chapman_for_listing},"
-  dline << "#{@verbatim_pob_place_for_listing},"
-  dline << "#{@nationality_for_listing},"
-  dline << "#{@notes_for_listing},"
-  output_to_csv(csv_file, dline)
-end
-
-def self.get_search_record_info(rec)
-  clear_fields_for_listing
-  @search_rec_id = rec.id
-  @census_year_for_listing = rec.record_type
-end
-
-def self.clear_fields_for_listing
-  @census_year_for_listing = ''
-  @file_for_listing = ''
-  @folio_for_listing = ''
-  @schedule_for_listing = ''
-  @surname_for_listiing = ''
-  @pob_chapman_for_listing = ''
-  @pob_place_for_listing = ''
-  @verbatim_pob_chapman_for_listing = ''
-  @verbatim_pob_place_for_listing = ''
-  @nationality_for_listing = ''
-  @notes_for_listing = ''
-end
-
-def self.get_csv_entry_info(rec)
-  if rec.freecen_csv_file_id.present?
-    csv_file_rec = FreecenCsvFile.find_by(_id: rec.freecen_csv_file_id)
-    @file_for_listing = csv_file_rec.present? ? csv_file_rec.file_name : "****Search rec #{@search_rec_id} - CSV File not found #{rec.freecen_csv_file_id}"
-  else
-    @file_for_listing = "****Search rec #{@search_rec_id} - CSV File missing for CSV Entry #{rec.id}"
-  end
-  @folio_for_listing = rec.folio_number
-  @schedule_for_listing = rec.sequence_in_household == 1 ? rec.schedule_number : get_csv_schedule_number(rec.freecen_csv_file_id, rec.dwelling_number)
-  @surname_for_listiing = rec.surname
-  @pob_chapman_for_listing = rec.birth_county
-  @pob_place_for_listing = rec.birth_place
-  @verbatim_pob_chapman_for_listing = rec.verbatim_birth_county
-  @verbatim_pob_place_for_listing = rec.verbatim_birth_place
-  @nationality_for_listing = rec.nationality
-  @notes_for_listing = rec.notes
-end
-
-def self.get_individual_record_info(rec)
-  if rec.freecen1_vld_file_id.present?
-    vld_file_rec = Freecen1VldFile.find_by(_id: rec.freecen1_vld_file_id)
-    @file_for_listing = vld_file_rec.present? ? vld_file_rec.file_name : "****VLD File not found #{rec.freecen1_vld_file_id}"
-  else
-    @file_for_listing = "****Search rec #{@search_rec_id} - VLD File missing for Individual #{rec.id}"
-  end
-end
-
-def self.get_vld_entry_record_info(rec)
-  @folio_for_listing = rec.folio_number
-  @schedule_for_listing = rec.schedule_number
-  @surname_for_listiing = rec.surname
-  @pob_chapman_for_listing = rec.birth_county
-  @pob_place_for_listing = rec.birth_place
-  @verbatim_pob_chapman_for_listing = rec.verbatim_birth_county
-  @verbatim_pob_place_for_listing = rec.verbatim_birth_place
-  @nationality = ''
-  @notes_for_listing = rec.notes
-end
-
-def self.get_csv_schedule_number(csv_file_id, dwelling)
-  head_rec =  FreecenCsvEntry.find_by(freecen_csv_file_id: csv_file_id, dwelling_number: dwelling, sequence_in_household: 1)
-  schedule_number = head_rec.present? ? head_rec.schedule_number : "****not found"
 end
