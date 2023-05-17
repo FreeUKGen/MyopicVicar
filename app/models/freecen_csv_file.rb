@@ -790,9 +790,7 @@ class FreecenCsvFile
     new_note = notes
     if notes.present? && notes.include?('British')
       new_note.slice! 'British'
-      p "AEV01 (#{new_note})"
       new_note.squish!
-      p "AEV02 (#{new_note})"
     end
     new_note
   end
