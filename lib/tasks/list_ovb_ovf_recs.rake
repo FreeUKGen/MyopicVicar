@@ -19,11 +19,11 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
     start_message = "#{initial_message} - #{single_county} only"
   else
     message = 'The chapman_code parameter is invalid'
-    output_to_log(file_for_log, message)
+    output_to_list_log(file_for_log, message)
   end
 
   if args_valid == true
-    output_to_log(file_for_log, start_message)
+    output_to_list_log(file_for_log, start_message)
 
     search_recs_processed = 0
 
@@ -38,7 +38,7 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
       num_search_recs = num_search_recs_ovb + num_search_recs_ovf
       message = num_search_recs.zero? ? "Census Year #{census_year} for #{single_county} has 0 records to process" : "Working on Census Year #{census_year} for #{single_county} - #{num_search_recs} to process"
 
-      output_to_log(file_for_log, message)
+      output_to_list_log(file_for_log, message)
       next if num_search_recs.zero?
 
 
@@ -57,7 +57,7 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
             get_csv_entry_info(csv_entry_rec)
           else
             message = "**** CSVEntry record not found - search record #{search_rec.id} - csv entry id #{search_rec.freecen_csv_entry_id}"
-            output_to_log(file_for_log, message)
+            output_to_list_log(file_for_log, message)
           end
         elsif search_rec.freecen_individual_id.present?
           individual_rec = FreecenIndividual.find_by(_id: search_rec.freecen_individual_id)
@@ -68,15 +68,15 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
               get_vld_entry_record_info(vld_entry_rec)
             else
               message = "**** VLD entry record not found - search record #{search_rec.id} - vld entry id #{individual_rec.freecen1_vld_entry_id}"
-              output_to_log(file_for_log, message)
+              output_to_list_log(file_for_log, message)
             end
           else
             message = "**** Individual record not found - search record #{search_rec.id} - Individual id #{search_rec.freecen_individual_id}"
-            output_to_log(file_for_log, message)
+            output_to_list_log(file_for_log, message)
           end
         end
 
-        write_csv_line(file_for_listing) unless @file_for_listing == ''
+        write_csv_list_line(file_for_listing) unless @file_for_listing == ''
         search_recs_processed += 1
       end
     end
@@ -85,15 +85,15 @@ task :list_ovb_ovf_recs, [:chapman_code] => :environment do |t, args|
     run_time = end_time - start_time
 
     message = "Finished Listing of  VLD/CSV records with POB OVB or OVF - run time = #{run_time}"
-    output_to_log(file_for_log, message)
+    output_to_list_log(file_for_log, message)
     message = "Processed #{search_recs_processed} OVB/OVF Search Records records - see list_ovb_ovf_recs_YYYYMMDDHHMM.csv and .log for output"
-    output_to_log(file_for_log, message)
+    output_to_list_log(file_for_log, message)
 
   end
   # end task
 end
 
-def self.output_to_log(message_file, message)
+def self.output_to_list_log(message_file, message)
   message_file.puts message.to_s
   p message.to_s
 end
@@ -102,7 +102,7 @@ def self.output_to_csv(csv_file, line)
   csv_file.puts line.to_s
 end
 
-def self.write_csv_line(csv_file)
+def self.write_csv_list_line(csv_file)
   dline = ''
   dline << "#{@file_for_listing},"
   dline << "#{@census_year_for_listing},"
