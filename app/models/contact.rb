@@ -114,7 +114,7 @@ class Contact
         c = contacts.get_contacts('Data Question')
       when 'general_communication_coordinator'
         c = contacts.get_contacts('General Comment')
-      when 'publicity_coordinator'
+      when 'publicity_coordinator' || 'newsletter_coordinator'
         c = contacts.get_contacts('Thank you')
       when 'genealogy_coordinator'
         c = contacts.get_contacts('Genealogical Question')
