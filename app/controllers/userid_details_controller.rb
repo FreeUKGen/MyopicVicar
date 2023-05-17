@@ -17,7 +17,7 @@ class UseridDetailsController < ApplicationController
   require 'import_users_from_csv'
   skip_before_action :require_login, only: [:general, :create, :researcher_registration, :transcriber_registration, :technical_registration]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
-  PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'executive_director']
+  PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'newsletter_coordinator','executive_director']
 
   def all
     session[:user_index_page] = params[:page] if params[:page]
