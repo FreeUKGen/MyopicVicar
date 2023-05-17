@@ -687,7 +687,7 @@ class FreecenCsvFile
     elsif type == 'Dwe'
       entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).in(data_transition: Freecen::LOCATION_DWELLING).all.order_by(record_number: 1)
     elsif type == 'Ind'
-      entries = FreecenCsvEntry.where(freecen_csv_file_id:_id).all.order_by(record_number: 1)
+      entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).all.order_by(record_number: 1)
     elsif type == 'Err'
       entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).where(:error_messages.gte => 1).all.order_by(record_number: 1)
     elsif type == 'War'
@@ -752,13 +752,15 @@ class FreecenCsvFile
       when 'language'
         line << rec['language']
       when 'notes'
-        line << rec.notes
+        line << remove_british(rec.notes)
+      when 'nationality'
+        line << check_for_british(rec.notes)
       when 'ward', 'parliamentary_constituency', 'poor_law_union', 'police_district', 'sanitary_district', 'special_water_district',
           'scavenging_district', 'special_lighting_district', 'school_board'
         entry = @use_blank ? @blank : @dash
         line << entry
-      when 'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'class_of_house', 'rooms_with_windows', 'industry', 'at_home', 'years_married',
-          'children_born_alive', 'children_living', 'children_deceased', 'nationality', 'disability_notes'
+      when 'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'class_of_house', 'industry', 'at_home', 'years_married',
+          'children_born_alive', 'children_living', 'children_deceased', 'disability_notes'
         line << @blank
       when 'location_flag'
         entry = rec.location_flag.presence || @blank
@@ -782,6 +784,21 @@ class FreecenCsvFile
       end
     end
     line
+  end
+
+  def remove_british(notes)
+    new_note = notes
+    if notes.present? && notes.include?('British')
+      new_note.slice! 'British'
+      p "AEV01 (#{new_note})"
+      new_note.squish!
+      p "AEV02 (#{new_note})"
+    end
+    new_note
+  end
+
+  def check_for_british(notes)
+    'British' if notes.present? && notes.include?('British')
   end
 
   def compute_enumeration_district(rec)
