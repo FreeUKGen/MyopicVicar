@@ -5,7 +5,9 @@
     <%= download_batch %>
     <%= browse_batch_entries%>
     <%= list_error_entries %>
-    <%= list_zero_year_entries %>
+    <% unless @freereg1_csv_file.register_type == 'MI' %>
+      <%= list_zero_year_entries %>
+    <% end %>
     <%= list_embargoed_entries %>
     <%= unique_names %>
     <%= remove_batch %>
