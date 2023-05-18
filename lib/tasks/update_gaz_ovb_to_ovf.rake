@@ -1,4 +1,4 @@
-desc 'Update Gazetteer OVB to OVF'
+desc 'Update Gazetteer OVB to OVF and update OVF caption'
 task :update_gaz_ovb_to_ovf, [:fix] => :environment do |t, args|
 
   file_for_listing = 'log/update_gaz_ovb_to_ovf.csv'
@@ -44,13 +44,23 @@ task :update_gaz_ovb_to_ovf, [:fix] => :environment do |t, args|
       if ovf_place.present?
         ovb_rec.delete
       else
-        ovb_rec.update_attributes(chapman_code: 'OVF', county: 'Overseas Foreign')
+        ovb_rec.update_attributes(chapman_code: 'OVF', county: 'Born Overseas')
       end
     end
     recs_processed += 1
-
   end
 
   p 'Finished Update of Gazetteer OVB to OVF'
   p "Processed #{recs_processed} OVB Gazetteer records - see log/update_gaz_ovb_to_ovf.csv for output"
+  p "Started Update of Gazetteer OVF caption with fix #{fixit}"
+  ovf_count = Freecen2Place.where(:chapman_code => 'OVF', county: 'Overseas Foreign').count
+  p "Found #{ovf_count} OVF Gazetteer records to update caption"
+  ovf_recs_fixed = 0
+  ovf_places = Freecen2Place.where(:chapman_code => 'OVF',county: 'Overseas Foreign')
+  ovf_places.each do |ovf_rec|
+    ovf_rec.update_attributes(county: 'Born Overseas') if fixit
+    ovf_recs_fixed += 1
+  end
+  p "Updated caption on #{ovf_recs_fixed} records"
+  p 'Finished Update of Gazetteer OVF caption'
 end
