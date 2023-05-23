@@ -29,12 +29,12 @@
             </ul>
         </div>
         <!-- <div class="grid__item  one-third  palm-one-whole"> -->
-        <div class="c-subfooter-1__fug">
+        <aside aria-labelledby="Parent project" class="c-subfooter-1__fug">
             <p class="c-subfooter-1__fug-heading">A project by</p>
             <%= link_to helpful_anchors[:freeukgenIcon].html_safe, helpful_links[:freeukgen], html_options_freeukgen_icon %>
-        </div>
+        </aside>
         <!-- <div class="follow-us grid__item  one-third  palm-one-whole"> -->
-        <div class="c-subfooter-1__social-nav">
+        <aside aria-labelledby="Social media links" class="c-subfooter-1__social-nav">
             <!-- <ul class="nav  nav--stacked   lap-and-up-flush--bottom"> -->
             <p class="c-subfooter-1__social-nav-heading">Follow us:<span class="accessibility">All open in new windows</span></p>
             <!-- <section class='social_links'> -->
@@ -55,7 +55,7 @@
                 <%= link_to app_icons2[:pinterest].html_safe, social_links[:pinterest] %>
                 </li>
             </ul>
-        </div>
+        </aside>
         <%= render 'layouts/stats' %>
         <%= render 'layouts/copyright' %>
 
