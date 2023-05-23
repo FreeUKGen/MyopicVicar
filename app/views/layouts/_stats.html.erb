@@ -1,10 +1,10 @@
 <div class="c-subfooter-1__stats">
   <% case appname.downcase %>
   <% when 'freereg' %>
-  <nav class="c-subfooter-1__stats-heading">
+  <h3 class="c-subfooter-1__stats-heading">
     <!-- <a href="https://www.freereg.org.uk/freereg_contents/new?locale=en">Statistics</a> -->
     <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freeregStat] %>
-  </nav>
+  </h3>
   <% if @site_stat %>
     <dl class="c-subfooter-1__stats-list">
       <dt class="c-subfooter-1__stats-term">Yesterday</dt>
@@ -33,10 +33,10 @@
   <% end %>
   <!--  -->
   <% when 'freecen' %>
-  <div class="c-subfooter-1__stats-heading">
+  <h3 class="c-subfooter-1__stats-heading">
     <!-- <a href="https://www.freecen.org.uk/freecen_coverage?locale=en">Statistics</a> -->
     <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freecenStat] %>
-  </div>
+  </h3>
   <% if @site_stat %>
     <dl class="c-subfooter-1__stats-list">
       <dt class="c-subfooter-1__stats-term">Yesterday</dt>
@@ -54,10 +54,10 @@
   <% end %>
   <!--  -->
   <% when 'freebmd' %>
-  <nav class="c-subfooter-1__stats-heading">
+  <h3 class="c-subfooter-1__stats-heading">
     <!-- <a href="https://www.freebmd.org.uk/progress.shtml">Statistics</a> -->
     <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freebmdStat] %>
-  </nav>
+  </h3>
   <dl class="c-subfooter-1__stats-list">
     <dt class="c-subfooter-1__stats-term">Active Volunteers</dt>
     <dd class="c-subfooter-1__stats-value">12,412 all-time</dd>
