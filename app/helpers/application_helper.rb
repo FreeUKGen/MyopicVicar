@@ -727,14 +727,11 @@ module ApplicationHelper
   def helpful_anchors
     {
       cookiePolicy: 'Cookie Policy',
-      privacyNotice: 'Privacy Notice
-      <span class="accessibility"></span>',
+      privacyNotice: 'Privacy Notice (pdf)',
       termAndConditions: 'Terms and Conditions',
       contactUs: 'Contact Us',
-      donation: 'Make a donation to cover our operating costs
-      <span class="accessibility"></span>',
-      fugNews: 'News about Free UK Genealogy
-      <span class="accessibility"></span>',
+      donation: 'Make a donation to cover our operating costs',
+      fugNews: 'News about Free UK Genealogy',
       freeregIcon: '<span class="accessibility">FreeREG</span>',
       freecenIcon: '<span class="accessibility">FreeCEN</span>',
       freebmdIcon: '<span class="accessibility">FreeBMD</span>',
