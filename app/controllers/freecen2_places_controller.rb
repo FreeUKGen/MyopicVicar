@@ -138,8 +138,13 @@ class Freecen2PlacesController < ApplicationController
 
     @county = @place.county
     @chapman_code = @place.chapman_code
-    if @chapman_code == 'LND' ||  @chapman_code == 'WLS'
-      message = 'Only system administrators and data administrator can edit LND and WLS'
+    if @chapman_code == 'LND'
+      lnd_county_coord = County.find_by(chapman_code: @chapman_code)
+      message = 'Only system administrators, data administrator and LND county coordinator can edit LND'
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
+      %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
+    elsif @chapman_code == 'WLS'
+      message = 'Only system administrators and data administrator can edit WLS'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
       %w[system_administrator data_manager].include?(@user.person_role)
     end
@@ -263,12 +268,13 @@ class Freecen2PlacesController < ApplicationController
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @county = session[:county]
-    @counties = ChapmanCode.keys.sort
-    @counties -= Freecen::UNNEEDED_COUNTIES
-    @counties = @counties.delete_if { |cnty| cnty == 'Channel Islands' } # GitHub story 1495
-    @counties << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role)
-    @counties << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
-
+    counties_for_select = ChapmanCode.keys
+    counties_for_select -= Freecen::UNNEEDED_COUNTIES
+    counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Channel Islands' } # GitHub story 1495
+    lnd_county_coord = County.find_by(chapman_code: 'LND')
+    counties_for_select << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
+    counties_for_select << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
+    @counties = counties_for_select.sort
     get_sources
   end
 
