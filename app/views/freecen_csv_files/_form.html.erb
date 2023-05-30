@@ -1,6 +1,6 @@
 <%= semantic_form_for @freecen_csv_file , :html => { :class => 'grid'}  do |f| %>
   <%= f.input :transcriber_name , :input_html => {:class => ' simple_form_bgcolour ',  :size => 30 }%>
-  <% if session[:my_own] || %w[syndicate_coordinator master_county_coordinator county_coordinator system_administrator country_coordinator data_manager].include?(session[:role]) %>
+  <% if session[:my_own] || %w[syndicate_coordinator master_county_coordinator county_coordinator system_administrator country_coordinator data_manager executive_director].include?(session[:role]) %>
     <%= f.input :locked_by_transcriber, :label => 'Locked by transcriber ',:include_blank => false,
       :collection => [ true, false],:input_html => {:class => ' simple_form_bgcolour medium_selection_field_width',  :size => 3} %>
     <% if session[:my_own]%>
@@ -13,11 +13,11 @@
     <%= f.input :locked_by_transcriber, :input_html => { :disabled => true, :size => 3} %>
     <%= f.input :locked_by_coordinator, :input_html => {:disabled => true, :size => 3} %>
   <% end %>
-  <% if %w[master_county_coordinator county_coordinator system_administrator country_coordinator data_manager].include?(session[:role]) %>
+  <% if %w[master_county_coordinator county_coordinator system_administrator country_coordinator data_manager executive_director].include?(session[:role]) %>
     <%= f.input :incorporation_lock, :label => 'Incorporation lock ',:include_blank => false,
           :collection => [ true, false],:input_html => {:class => ' simple_form_bgcolour medium_selection_field_width',  :size => 3} %>
   <% end %>
-  <% if %w[master_county_coordinator county_coordinator system_administrator country_coordinator data_manager].include?(session[:role]) %>
+  <% if %w[master_county_coordinator county_coordinator system_administrator country_coordinator data_manager executive_director].include?(session[:role]) %>
     <%= f.input :incorporating_lock, :label => 'Incorporating lock ',:include_blank => false,
           :collection => [ true, false],:input_html => {:class => ' simple_form_bgcolour medium_selection_field_width',  :size => 3} %>
   <% end %>
