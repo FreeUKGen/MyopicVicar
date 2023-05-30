@@ -7,14 +7,12 @@
       <dt class="c-subfooter-1__stats-term">Yesterday</dt>
       <dd class="c-subfooter-1__stats-value">
         <%= number_with_delimiter(@site_stat[:n_searches]) %> &nbsp;searches were performed</dd>
-      <!--  -->
       <% if @site_stat[:n_records_added].to_i > 0 %>
         <dd class="c-subfooter-1__stats-value">Volunteers uploaded&nbsp;
           <%= number_with_delimiter(@site_stat[:n_records_added]) %> &nbsp;records</dd>
       <% else %>
         <dd class="c-subfooter-1__stats-value">No records were added</dd>
       <% end %>
-      <!--  -->
       <dt class="c-subfooter-1__stats-term">Record Count</dt>
       <dd class="c-subfooter-1__stats-value">
         <%= number_with_delimiter(@site_stat[:n_records]) %> &nbsp;Records</dd>
@@ -28,7 +26,6 @@
   <% else %>
     <p class="c-subfooter-1__stats-term">Statistics temporarily unavailable</p>
   <% end %>
-  <!--  -->
   <% when 'freecen' %>
   <h2 class="c-subfooter-1__stats-heading gamma">Statistics</h2>
   <% if @site_stat %>
@@ -46,7 +43,6 @@
   <% else %>
     <p class="c-subfooter-1__stats-term">Statistics temporarily unavailable</p>
   <% end %>
-  <!--  -->
   <% when 'freebmd' %>
   <h2 class="c-subfooter-1__stats-heading gamma">Statistics</h2>
   <dl class="c-subfooter-1__stats-list">
