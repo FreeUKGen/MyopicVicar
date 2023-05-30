@@ -168,7 +168,7 @@ class ManageCountiesController < ApplicationController
   def get_counties_for_selection
     @counties = @user.county_groups
     @countries = @user.country_groups
-    if %w[volunteer_coordinator contacts_coordinator data_manager master_county_coordinator system_administrator documentation_coordinator SNDManager
+    if %w[volunteer_coordinator contacts_coordinator data_manager county_coordinator master_county_coordinator system_administrator documentation_coordinator SNDManager
           CENManager REGManager country_coordinator executive_director project_manager].include?(@user.person_role)
       @countries = []
       counties = County.application_counties
