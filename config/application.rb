@@ -77,7 +77,6 @@ module MyopicVicar
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     config.assets.enabled = true
-    config.assets.version = '1.0'
     # Change the path that assets are served from config.assets.prefix = "/assets"
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = 'utf-8'
@@ -127,8 +126,6 @@ module MyopicVicar
 
     # Enable the asset pipeline
     config.assets.enabled = true # commented out because already set above
-    # Version of your assets, change this if you want to expire all your assets
-    # config.assets.version = '1.0' # commented out because already set above
 
     # config.active_record.whitelist_attributes = true Remove as no longer relevant in rails 4.2
     config.api_only = false
