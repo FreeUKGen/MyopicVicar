@@ -31,7 +31,7 @@ class SiteStatisticsController < ApplicationController
     report_start = SiteStatistic.find_by(interval_end: start_date)
     report_end = SiteStatistic.find_by(interval_end: end_date)
     ChapmanCode.merge_counties.each do |county|
-      RRecordType::ALL_FREEREG_TYPES.each do |type|
+      RecordType::ALL_FREEREG_TYPES.each do |type|
         @total_search_records = report_end.records.dig(county, type).nil? ? 0 : report_end.records[county][type][:search_records]
         @added_search_records= report_start.records.dig(county, type).nil? ? @total_search_records: @total_search_records - report_start.records[county][type][:search_records]
         @added_search_records = 0 if @added_search_records.negative?
