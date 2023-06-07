@@ -8,7 +8,6 @@ namespace :freereg do
     SiteStatistic.no_timeout.each do |stats|
      date = stats.interval_end.to_date.to_formatted_s(:db)
       stats.update_attributes(date: date)
-      file = Freecen1VldFile.find_by(file_name: piece.freecen1_filename)
     end
     running_time = Time.now - start_time
     p "Processed"
