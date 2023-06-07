@@ -159,7 +159,7 @@ class SiteStatistic
         (0..2).each do |type|
           @total_search_records = report_end.county_stats.dig(county, type).nil? ? 0 : report_end.county_stats[county][type] if report_end.county_stats.present?
           @added_search_records= report_start.county_stats.dig(county, type).nil? ? @total_search_records: @total_search_records - report_start.county_stats[county][type] if report_start.county_stats.present?
-          @added_search_records = 0 if @added_search_records.negative? || @added_search_records.blank?
+          @added_search_records = 0 if  @added_search_records.blank?#@added_search_records.negative? ||
 
           county_name = ChapmanCode.name_from_code(county)
           case type
