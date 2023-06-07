@@ -152,7 +152,9 @@ class SiteStatistic
         stats_array << statistic
       end
       report_start = SiteStatistic.find_by(interval_end: start_date)
+      logger.warn(report_start)
       report_end = SiteStatistic.find_by(interval_end: end_date)
+      logger.warn(report_end)
       ChapmanCode.merge_counties.each do |county|
         (0..2).each do |type|
           @total_search_records = report_end.county_stats.dig(county, type).nil? ? 0 : report_end.county_stats[county][type] if report_end.county_stats.present?
