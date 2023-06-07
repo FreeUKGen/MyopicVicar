@@ -27,20 +27,6 @@ class SiteStatisticsController < ApplicationController
       message = 'End Date must be after Start Date'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-
-    report_start = SiteStatistic.find_by(interval_end: start_date)
-    report_end = SiteStatistic.find_by(interval_end: end_date)
-    ChapmanCode.merge_counties.each do |county|
-      RecordType::ALL_FREEREG_TYPES.each do |type|
-        @total_search_records = report_end.records.dig(county, type).nil? ? 0 : report_end.records[county][type][:search_records]
-        @added_search_records= report_start.records.dig(county, type).nil? ? @total_search_records: @total_search_records - report_start.records[county][type][:search_records]
-        @added_search_records = 0 if @added_search_records.negative?
-
-        county_name = ChapmanCode.name_from_code(county)
-        @report_array << [county, county_name, type, @total_search_records, @added_search_records]
-      end
-    end
-
     success, message, file_location, file_name = SiteStatistic.create_csv_file(start_date, end_date)
 
     if success

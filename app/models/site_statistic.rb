@@ -26,6 +26,7 @@ class SiteStatistic
   field :n_records_added_1871, type: Integer
   field :n_records_added_1881, type: Integer
   field :n_records_added_1891, type: Integer
+  field :county_stats, type: Hash
 
   index({ interval_end: -1})
 
@@ -47,6 +48,7 @@ class SiteStatistic
       stat.month = target_day.month
       stat.day = target_day.day
 
+
       case MyopicVicar::Application.config.template_set
       when 'freereg'
         results = SiteStatistic.record_type_counts_freereg
@@ -57,7 +59,7 @@ class SiteStatistic
         stat.n_searches = SearchStatistic.where(:year => stat.year, :month => stat.month, :day => stat.day).inject(0) { |accum, ss| accum += ss.n_searches }
         #find the previous one
         previous_stat = SiteStatistic.where(:interval_end => stat.interval_end - 1.day).first
-
+        stat.county_stats = SiteStatistic.record_type_counts_per_county
         if previous_stat
           stat.n_records_added = stat.n_records - previous_stat.n_records
           stat.n_records_added_marriages = stat.n_records_marriages - previous_stat.n_records_marriages
@@ -107,6 +109,30 @@ class SiteStatistic
       end
       result
     end
+    def record_type_counts_per_county
+      result = Hash.new
+      baptism_records_count = 0
+      burial_records_count = 0
+      marraiage_records_count = 0
+
+      ChapmanCode.merge_counties.each do |county|
+        records_for_county_count = Array.new
+
+        Freereg1CsvFile.where(county: county).no_timeout.each do |file|
+          case
+          when file.record_type == "ba"
+            baptism_records_count =  baptism_records_count + file.freereg1_csv_entries.count
+          when file.record_type == "bu"
+            burial_records_count =  burial_records_count + file.freereg1_csv_entries.count
+          when file.record_type == "ma"
+            marraiage_records_count =  marraiage_records_count + file.freereg1_csv_entries.count
+          end
+        end
+        records_for_county_count = [baptism_records_count, burial_records_count, marraiage_records_count]
+        result[county] = records_for_county_count
+      end
+      result
+    end
 
     def get_stats_dates
       stats_dates = SiteStatistic.all.pluck(:interval_end)
@@ -124,6 +150,26 @@ class SiteStatistic
       stats_array = []
       SiteStatistic.between(interval_end: start_date..end_date).each do |statistic|
         stats_array << statistic
+      end
+      report_start = SiteStatistic.find_by(interval_end: start_date)
+      report_end = SiteStatistic.find_by(interval_end: end_date)
+      ChapmanCode.merge_counties.each do |county|
+        (0..2).each do |type|
+          @total_search_records = report_end.county_stats.dig(county, type).nil? ? 0 : report_end.county_stats[county][type]
+          @added_search_records= report_start.records.dig(county, type).nil? ? @total_search_records: @total_search_records - report_start.county_stats[county][type]
+          @added_search_records = 0 if @added_search_records.negative?
+
+          county_name = ChapmanCode.name_from_code(county)
+          case type
+          when 0
+            type_name = 'baptism'
+          when 1
+            type_name = 'burial'
+          when 2
+            type_name = 'marriage'
+          end
+          stats_array << [county, county_name, type_name, @total_search_records, @added_search_records]
+        end
       end
       file = "Site_Stats_#{start_date.strftime("%Y%m%d")}_#{end_date.strftime("%Y%m%d")}.csv"
       file_location = Rails.root.join('tmp', file)
