@@ -150,6 +150,7 @@ class SiteStatistic
 
     def create_csv_file(start_date, end_date)
       stats_array = []
+      extra_array = []
       SiteStatistic.between(interval_end: start_date..end_date).each do |statistic|
         stats_array << statistic
       end
@@ -170,17 +171,17 @@ class SiteStatistic
           when 2
             type_name = 'marriage'
           end
-          stats_array << [county, county_name, type_name, @total_search_records, @added_search_records]
+          extra_array << [county, county_name, type_name, @total_search_records, @added_search_records]
         end
       end
       file = "Site_Stats_#{start_date.strftime("%Y%m%d")}_#{end_date.strftime("%Y%m%d")}.csv"
       file_location = Rails.root.join('tmp', file)
-      success, message = SiteStatistic.write_csv_file(file_location, stats_array)
+      success, message = SiteStatistic.write_csv_file(file_location, stats_array,extra_array)
 
       [success, message, file_location, file]
     end
 
-    def write_csv_file(file_location, stats_array)
+    def write_csv_file(file_location, stats_array, extra_array=nil)
       column_headers = %w(year month day searches records baptisms marriages burials added-records added-baptisms added-marriages added-burials)
 
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
@@ -189,6 +190,11 @@ class SiteStatistic
           line = []
           line = SiteStatistic.add_fields(line, rec)
           csv << line
+        end
+        if extra_array.present?
+          extra_array.each do |a|
+            csv << a
+          end
         end
       end
       [true, '']
