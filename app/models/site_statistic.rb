@@ -2,6 +2,7 @@ class SiteStatistic
   include Mongoid::Document
   include Mongoid::Timestamps
   field :interval_end, type: DateTime
+  field :date, type: Date
   field :year, type: Integer
   field :month, type: Integer
   field :day, type: Integer
@@ -43,6 +44,7 @@ class SiteStatistic
 
       #populate it
       stat.interval_end = last_midnight
+      stat.date = time.to_date.to_formatted_s(:db)
       target_day = last_midnight - 1.day
       stat.year = target_day.year
       stat.month = target_day.month
@@ -151,10 +153,10 @@ class SiteStatistic
       SiteStatistic.between(interval_end: start_date..end_date).each do |statistic|
         stats_array << statistic
       end
-      report_start = SiteStatistic.find_by(interval_end: start_date)
-      logger.warn(report_start)
-      report_end = SiteStatistic.find_by(interval_end: end_date)
-      logger.warn(report_end)
+      formatted_start_date = start_date.to_date.to_formatted_s(:db)
+      formatted_end_date = end_date.to_date.to_formatted_s(:db)
+      report_start = SiteStatistic.find_by(date: formatted_start_date)
+      report_end = SiteStatistic.find_by(date: formatted_end_date)
       ChapmanCode.merge_counties.each do |county|
         (0..2).each do |type|
           @total_search_records = report_end.county_stats.dig(county, type).nil? ? 0 : report_end.county_stats[county][type] if report_end.county_stats.present?
