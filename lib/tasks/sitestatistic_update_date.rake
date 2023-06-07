@@ -6,9 +6,8 @@ namespace :freereg do
     p "Starting at #{start_time}"
 
     SiteStatistic.no_timeout.each do |stats|
-     date = stats.interval_end.to_date.to_formatted_s(:db)
-     stats.date = date
-     stats.save!
+     d = stats.interval_end.strftime("%F")
+     stats.update_attribute(:date, d)
     end
     running_time = Time.now - start_time
     p "Processed"
