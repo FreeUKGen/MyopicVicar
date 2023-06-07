@@ -156,7 +156,7 @@ class SiteStatistic
       ChapmanCode.merge_counties.each do |county|
         (0..2).each do |type|
           @total_search_records = report_end.county_stats.dig(county, type).nil? ? 0 : report_end.county_stats[county][type]
-          @added_search_records= report_start.records.dig(county, type).nil? ? @total_search_records: @total_search_records - report_start.county_stats[county][type]
+          @added_search_records= report_start.county_stats.dig(county, type).nil? ? @total_search_records: @total_search_records - report_start.county_stats[county][type]
           @added_search_records = 0 if @added_search_records.negative?
 
           county_name = ChapmanCode.name_from_code(county)
