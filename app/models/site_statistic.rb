@@ -153,10 +153,8 @@ class SiteStatistic
       SiteStatistic.between(interval_end: start_date..end_date).each do |statistic|
         stats_array << statistic
       end
-      formatted_start_date = start_date.to_date.to_formatted_s(:db)
-      formatted_end_date = end_date.to_date.to_formatted_s(:db)
-      report_start = SiteStatistic.find_by(date: formatted_start_date)
-      report_end = SiteStatistic.find_by(date: formatted_end_date)
+      report_start = SiteStatistic.find_by(date: start_date)
+      report_end = SiteStatistic.find_by(date: end_date)
       ChapmanCode.merge_counties.each do |county|
         (0..2).each do |type|
           @total_search_records = report_end.county_stats.dig(county, type).nil? ? 0 : report_end.county_stats[county][type] if report_end.county_stats.present?
