@@ -2,7 +2,7 @@ class SiteStatistic
   include Mongoid::Document
   include Mongoid::Timestamps
   field :interval_end, type: DateTime
-  field :date, type: Date
+  field :date, type: String
   field :year, type: Integer
   field :month, type: Integer
   field :day, type: Integer
