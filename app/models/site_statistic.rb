@@ -27,7 +27,7 @@ class SiteStatistic
   field :n_records_added_1871, type: Integer
   field :n_records_added_1881, type: Integer
   field :n_records_added_1891, type: Integer
-  field :county_stats, type: Hash
+  field :county_stats, type: Hash, default: {}
 
   index({ interval_end: -1})
 
