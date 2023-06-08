@@ -157,23 +157,27 @@ class SiteStatistic
       report_start = SiteStatistic.find_by(date: start_date)
       report_end = SiteStatistic.find_by(date: end_date)
       extra_array << ["Chapman Code", "County", "Type", "Count", "New Records Added count"]
-      ChapmanCode.merge_counties.each do |county|
-        (0..2).each do |type|
-          @total_search_records = report_end.try(county_stats.dig(county, type)).nil? ? 0 : report_end.try(county_stats[county][type]) if report_end.try(county_stats).present?
-          @added_search_records= report_start.try(county_stats.dig(county, type)).nil? ? @total_search_records: @total_search_records - report_start.try(county_stats[county][type]) if report_start.try(county_stats).present?
-          @added_search_records = 0 if  @added_search_records.blank?#@added_search_records.negative? ||
+      if report_start.present? && report_end.present?
+        ChapmanCode.merge_counties.each do |county|
+          (0..2).each do |type|
+            @total_search_records = report_end.county_stats.dig(county, type).nil? ? 0 : report_end.county_stats[county][type] if report_end.county_stats.present?
+            @added_search_records= report_start.county_stats.dig(county, type).nil? ? @total_search_records: @total_search_records - report_start.county_stats[county][type] if report_start.county_stats.present?
+            @added_search_records = 0 if  @added_search_records.blank?#@added_search_records.negative? ||
 
-          county_name = ChapmanCode.name_from_code(county)
-          case type
-          when 0
-            type_name = 'baptism'
-          when 1
-            type_name = 'burial'
-          when 2
-            type_name = 'marriage'
+            county_name = ChapmanCode.name_from_code(county)
+            case type
+            when 0
+              type_name = 'baptism'
+            when 1
+              type_name = 'burial'
+            when 2
+              type_name = 'marriage'
+            end
+            extra_array << [county, county_name, type_name, @total_search_records, @added_search_records]
           end
-          extra_array << [county, county_name, type_name, @total_search_records, @added_search_records]
         end
+      else
+        exta_array << ["No information"]
       end
       file = "Site_Stats_#{start_date.strftime("%Y%m%d")}_#{end_date.strftime("%Y%m%d")}.csv"
       file_location = Rails.root.join('tmp', file)
