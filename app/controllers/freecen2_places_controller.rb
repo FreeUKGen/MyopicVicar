@@ -217,6 +217,7 @@ class Freecen2PlacesController < ApplicationController
     end
     @county_codes = @county_codes.sort
     @county_codes = @county_codes.delete_if { |code| code == 'UNK' }
+    @county_codes = @county_codes.delete_if { |code| code == 'OVB' } # GitHub story 1310
     @counties = {}
     @county_codes.each do |code|
       cnty_name = ChapmanCode.name_from_code(code)
@@ -271,6 +272,7 @@ class Freecen2PlacesController < ApplicationController
     counties_for_select = ChapmanCode.keys
     counties_for_select -= Freecen::UNNEEDED_COUNTIES
     counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Channel Islands' } # GitHub story 1495
+    counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Overseas British' } # GitHub story 1310 (note: includes #1526 mods too so that there are no conflicts when deployed)
     lnd_county_coord = County.find_by(chapman_code: 'LND')
     counties_for_select << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
     counties_for_select << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
