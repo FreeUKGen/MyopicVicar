@@ -44,7 +44,7 @@ class SiteStatistic
 
       #populate it
       stat.interval_end = last_midnight
-      stat.date = time.to_date.to_formatted_s(:db)
+      stat.date = last_midnight.to_date.to_formatted_s(:db)
       target_day = last_midnight - 1.day
       stat.year = target_day.year
       stat.month = target_day.month
@@ -156,10 +156,11 @@ class SiteStatistic
       end
       report_start = SiteStatistic.find_by(date: start_date)
       report_end = SiteStatistic.find_by(date: end_date)
+      extra_array << ["Chapman Code", "County", "Type", "Count", "New Records Added count"]
       ChapmanCode.merge_counties.each do |county|
         (0..2).each do |type|
-          @total_search_records = report_end.county_stats.dig(county, type).nil? ? 0 : report_end.county_stats[county][type] if report_end.county_stats.present?
-          @added_search_records= report_start.county_stats.dig(county, type).nil? ? @total_search_records: @total_search_records - report_start.county_stats[county][type] if report_start.county_stats.present?
+          @total_search_records = report_end.try(county_stats.dig(county, type)).nil? ? 0 : report_end.try(county_stats[county][type]) if report_end.try(county_stats).present?
+          @added_search_records= report_start.try(county_stats.dig(county, type)).nil? ? @total_search_records: @total_search_records - report_start.try(county_stats[county][type]) if report_start.try(county_stats).present?
           @added_search_records = 0 if  @added_search_records.blank?#@added_search_records.negative? ||
 
           county_name = ChapmanCode.name_from_code(county)
