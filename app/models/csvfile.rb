@@ -140,7 +140,8 @@ class Csvfile < CarrierWave::Uploader::Base
         # check to see if rake task running
         rake_lock_file = File.join(Rails.root, 'tmp', 'processing_rake_lock_file.txt')
         processor_initiation_lock_file = File.join(Rails.root, 'tmp', 'processor_initiation_lock_file.txt')
-        if File.exist?(rake_lock_file) || File.exist?(processor_initiation_lock_file)
+        f = File.open(rake_lock_file, File::CREAT)
+        if f.flock(File::LOCK_SH) || File.exist?(processor_initiation_lock_file)
           message = "The csv file #{file_name} has been sent for processing . You will receive an email when it has been completed."
         else
           initiation_locking_file = File.new(processor_initiation_lock_file, 'w')
@@ -162,6 +163,7 @@ class Csvfile < CarrierWave::Uploader::Base
       logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
       process = true
     end
+    raise ([process, message]).inspect
     [process, message]
   end
 
