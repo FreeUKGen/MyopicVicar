@@ -138,8 +138,13 @@ class Freecen2PlacesController < ApplicationController
 
     @county = @place.county
     @chapman_code = @place.chapman_code
-    if @chapman_code == 'LND' ||  @chapman_code == 'WLS'
-      message = 'Only system administrators and data administrator can edit LND and WLS'
+    if @chapman_code == 'LND'
+      lnd_county_coord = County.find_by(chapman_code: @chapman_code)
+      message = 'Only system administrators, data administrator and LND county coordinator can edit LND'
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
+      %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
+    elsif @chapman_code == 'WLS'
+      message = 'Only system administrators and data administrator can edit WLS'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
       %w[system_administrator data_manager].include?(@user.person_role)
     end
