@@ -20,12 +20,13 @@ class ManageCountiesController < ApplicationController
     @who = @user.person_forename
     @sorted_by = '; sorted by descending number of errors and then file name'
     session[:sorted_by] = @sorted_by
-    session[:sort] = 'error DESC, file_name ASC'
     session[:selection] = 'errors'
     case appname_downcase
     when 'freereg'
+      session[:sort] = 'error DESC, file_name ASC'
       redirect_to freereg1_csv_files_path
     when 'freecen'
+      session[:sort] = 'error DESC, file_name_lower_case ASC'
       redirect_to freecen_csv_files_path
     end
   end
@@ -36,12 +37,13 @@ class ManageCountiesController < ApplicationController
     @who = @user.person_forename
     @sorted_by = '; being validated'
     session[:sorted_by] = @sorted_by
-    session[:sort] = 'file_name ASC'
     session[:selection] = 'validation'
     case appname_downcase
     when 'freereg'
+      session[:sort] = 'file_name ASC'
       redirect_to freereg1_csv_files_path
     when 'freecen'
+      session[:sort] = 'file_name_lower_case ASC'
       redirect_to freecen_csv_files_path
     end
   end
@@ -102,12 +104,13 @@ class ManageCountiesController < ApplicationController
     @who = @user.person_forename
     @sorted_by = '; sorted alphabetically by file name'
     session[:sorted_by] = @sorted_by
-    session[:sort] = 'file_name ASC'
     session[:selection] = 'all'
     case appname_downcase
     when 'freereg'
+      session[:sort] = 'file_name ASC'
       redirect_to freereg1_csv_files_path
     when 'freecen'
+      session[:sort] = 'file_name_lower_case ASC'
       redirect_to freecen_csv_files_path
     end
   end
@@ -118,12 +121,13 @@ class ManageCountiesController < ApplicationController
     @who = @user.person_forename
     @sorted_by = '; sorted by userid then alphabetically by file name'
     session[:sorted_by] = @sorted_by
-    session[:sort] = 'userid_lower_case ASC, file_name ASC'
     session[:selection] = 'all'
     case appname_downcase
     when 'freereg'
+      session[:sort] = 'userid_lower_case ASC, file_name ASC'
       redirect_to freereg1_csv_files_path
     when 'freecen'
+      session[:sort] = 'userid_lower_case ASC, file_name_lower_case ASC'
       redirect_to freecen_csv_files_path
     end
   end
@@ -193,12 +197,13 @@ class ManageCountiesController < ApplicationController
     @who = @user.person_forename
     @sorted_by = '; incorporated'
     session[:sorted_by] = @sorted_by
-    session[:sort] = 'file_name ASC'
     session[:selection] = 'incorporated'
     case appname_downcase
     when 'freereg'
+      session[:sort] = 'file_name ASC'
       redirect_to freereg1_csv_files_path
     when 'freecen'
+      session[:sort] = 'file_name_lower_case ASC'
       redirect_to freecen_csv_files_path
     end
   end
