@@ -137,17 +137,15 @@ class Csvfile < CarrierWave::Uploader::Base
         process = true
       elsif processing_time < 600
         batch.update_attributes(waiting_to_be_processed: true, waiting_date: Time.now)
-        # check to see if rake task running
         rake_lock_file = File.join(Rails.root, 'tmp', 'processing_rake_lock_file.txt')
         processor_initiation_lock_file = File.join(Rails.root, 'tmp', 'processor_initiation_lock_file.txt')
-        f = File.open(rake_lock_file, File::CREAT)
-        if f.flock(File::LOCK_SH) || File.exist?(processor_initiation_lock_file)
-          message = "The csv file #{file_name} has been sent for processing . You will receive an email when it has been completed."
-        else
-          initiation_locking_file = File.new(processor_initiation_lock_file, 'w')
+        #if File.exist?(processor_initiation_lock_file)
+         # message = "The csv file #{file_name} has been sent for processing . You will receive an email when it has been completed."
+        #else
+          initiation_locking_file = File.new(processor_initiation_lock_file, 'w') unless File.exist?(processor_initiation_lock_file)
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
           message = "The csv file #{file_name} is being processed . You will receive an email when it has been completed."
-        end
+        #end
         process = true
       elsif processing_time >= 600
         batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
@@ -163,7 +161,7 @@ class Csvfile < CarrierWave::Uploader::Base
       logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
       process = true
     end
-    raise ([process, message]).inspect
+    #raise ([process, message]).inspect
     [process, message]
   end
 
