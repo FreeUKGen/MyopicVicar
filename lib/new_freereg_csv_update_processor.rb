@@ -58,6 +58,42 @@ class NewFreeregCsvUpdateProcessor
     EmailVeracity::Config[:skip_lookup]=true
   end
 
+  def self.create_rake_lock_file
+    @rake_lock_file = Rails.root.join('tmp', 'processing_rake_lock_file.txt')
+    @locking_file = File.new(@rake_lock_file, 'w')
+    p "FREEREG:CSV_PROCESSING: Created rake lock file #{@rake_lock_file} and processing files"
+  end
+
+  def self.check_file_lock_status
+    @rake_lock_file = Rails.root.join('tmp', 'processing_rake_lock_file.txt')
+    @locking_file = File.open(@rake_lock_file)
+    locked = @locking_file.flock(File::LOCK_EX | File::LOCK_NB)
+    p "processor lock file status: #{locked}"
+    locked
+  end
+
+  def self.process_activate_project(create_search_records,type,force,range)
+    while PhysicalFile.waiting.exists?
+      p "Locking file: #{@rake_lock_file}"
+      @locking_file.flock(File::LOCK_EX)
+      self.activate_project(create_search_records, type, force, range)
+      sleep(300)
+    end
+    p "Removing lock on #{@rake_lock_file}" 
+    @locking_file.flock(File::LOCK_UN)
+    p 'FREEREG:CSV_PROCESSING: removing rake lock file'
+    if @locking_file.present?
+      @locking_file.close
+      FileUtils.rm_f(@locking_file)
+    end
+    if File.exist?(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+      p 'FREEREG:CSV_PROCESSING: Removing Initiation lock'
+      x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
+      x.close
+      FileUtils.rm_f(x)
+    end
+  end
+
   def self.activate_project(create_search_records,type,force,range)
     force, create_search_records = NewFreeregCsvUpdateProcessor.convert_to_bolean(create_search_records,force)
     @project = NewFreeregCsvUpdateProcessor.new(Rails.application.config.datafiles,create_search_records,type,force,range,Time.new)
