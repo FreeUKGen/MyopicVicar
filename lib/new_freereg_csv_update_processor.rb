@@ -82,9 +82,10 @@ class NewFreeregCsvUpdateProcessor
     p "Removing lock on #{@rake_lock_file}" 
     @locking_file.flock(File::LOCK_UN)
     p 'FREEREG:CSV_PROCESSING: removing rake lock file'
-    if @locking_file.present?
-      @locking_file.close
-      FileUtils.rm_f(@locking_file)
+    if File.exist?(@rake_lock_file)
+      x = File.open(@rake_lock_file)
+      x.close
+      FileUtils.rm_f(@rake_lock_file)
     end
     if File.exist?(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
       p 'FREEREG:CSV_PROCESSING: Removing Initiation lock'
@@ -119,7 +120,7 @@ class NewFreeregCsvUpdateProcessor
         @project.total_files += 1
         #@project.communicate_to_managers(@csvfile) if @project.type_of_project == "individual"
       end
-      sleep(100) if Rails.env.production?
+      sleep(100) #if Rails.env.production?
     end
   end
 

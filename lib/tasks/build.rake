@@ -570,10 +570,15 @@ namespace :build do
       p msg.message
       p "#{msg.backtrace.inspect}"
       p 'FREEREG:CSV_PROCESSING: removing rake lock file'
-      if @locking_file.present?
-        @locking_file.close
-        FileUtils.rm_f(@locking_file)
+      if File.exist?(Rails.root.join('tmp/processing_rake_lock_file.txt'))
+        x = File.open(Rails.root.join('tmp/processing_rake_lock_file.txt'))
+        x.close
+        FileUtils.rm_f(x)
       end
+      #if @locking_file.present?
+        #@locking_file.close
+        #FileUtils.rm_f(@locking_file)
+      #end
       if File.exist?(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
         p 'FREEREG:CSV_PROCESSING: Removing Initiation lock'
         x = File.open(Rails.root.join('tmp/processor_initiation_lock_file.txt'))
