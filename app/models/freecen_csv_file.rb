@@ -805,7 +805,7 @@ class FreecenCsvFile
   end
 
   def compute_enumeration_district(rec)
-    if rec['enumeration_district'] == @initial_line_hash['enumeration_district']
+    if rec['enumeration_district'] == @initial_line_hash['enumeration_district'] && rec['civil_parish'] == @initial_line_hash['civil_parish'] && !@initial_line_hash['civil_parish'].blank?
       line = @blank
       @use_blank = true
     else
