@@ -1,8 +1,9 @@
 <section class="island  island--light">
   <%= semantic_form_for @syndicate,  :html => { :class =>  "grid"} do |f| %>
-    <%= f.input :syndicate_code,:label => "Syndicate name :",
+    <i>(Note: Syndicate name must not contain Question Marks)</i>
+    <%= f.input :syndicate_code,:label => "Syndicate name:",
               :input_html =>
-              {:class => "simple_form_bgcolour text-input", :size => 10 },
+              {:class => "simple_form_bgcolour text-input", :size => 30 },
               :wrapper_html => { :class => "grid__item  one-whole  palm-one-whole"
               }%>
     <%= f.input :syndicate_coordinator,

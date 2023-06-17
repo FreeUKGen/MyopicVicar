@@ -334,6 +334,55 @@ class Freecen2Piece
       totals_district_pieces
     end
 
+    def create_csv_export_listing(chapman_code, year)
+      @freecen2_pieces = Freecen2Piece.where(chapman_code: chapman_code, year: year).order_by('status_date DESC, number ASC')
+      file = "Piece_Status_#{chapman_code}_#{year}.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = write_csv_listing_file(file_location, @freecen2_pieces)
+
+      [success, message, file_location, file]
+    end
+
+    def write_csv_listing_file(file_location, pieces)
+      column_headers = %w(piece_number piece_name status online_vld_files incorporated_csv_fles unincorporated_csv_files)
+
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << column_headers
+        pieces.each do |rec|
+          line = []
+          line = add_csv_listing_fields(line, rec)
+          csv << line
+        end
+      end
+      [true, '']
+    end
+
+    def add_csv_listing_fields(line, record)
+      line << record.number
+      line << record.name
+      if record.display_piece_status.blank?
+        line << ' '
+      else
+        line << record.display_piece_status
+      end
+      if record.display_vld_files_piece == 'There are no VLD files'
+        line << ' '
+      else
+        line << record.display_vld_files_piece
+      end
+      if record.display_csv_files_piece_incorporated == 'There are no incorporated CSV files'
+        line << ' '
+      else
+        line << record.display_csv_files_piece_incorporated
+      end
+      if record.display_csv_files_piece_unincorporated == 'There are no unincorporated CSV files'
+        line << ' '
+      else
+        line << record.display_csv_files_piece_unincorporated
+      end
+      line
+    end
+
     def grand_year_totals
       totals_pieces = {}
       totals_pieces_online = {}
@@ -576,6 +625,71 @@ class Freecen2Piece
 
   def display_for_csv_show
     [year, chapman_code, district_name, number]
+  end
+
+  def display_piece_status
+    if status.present?
+      display_status = status_date.present? ? status + " (" + status_date.to_datetime.strftime("%d/%b/%Y %R") + ")" : status
+    else
+      display_status = ''
+    end
+    display_status
+  end
+
+  def display_vld_files_piece
+    if freecen1_vld_files.present?
+      # normal link to vld file (usually only 1)
+      files = []
+      freecen1_vld_files.order_by(file_name: 1).each do |file|
+        if file.userid.blank?
+          files << file.file_name
+        else
+          files << file.file_name + ' (' + file.userid + ')'
+        end
+      end
+      files
+    elsif vld_files.present?
+      # used for Scotland pieces where there can be multiple files for a single piece
+      vld_files
+    elsif shared_vld_file.present?
+      # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
+      file = Freecen1VldFile.find_by(_id: shared_vld_file)
+      file.file_name if file.present?
+    else
+      'There are no VLD files'
+    end
+  end
+
+  def display_csv_files_piece_unincorporated
+    if freecen_csv_files.present?
+      files = []
+      freecen_csv_files.incorporated(false).order_by(file_name: 1).each do |file|
+        if file.userid.blank?
+          files << file.file_name + ' ()'
+        else
+          files << file.file_name + ' (' + file.userid + ')'
+        end
+      end
+      files
+    else
+      'There are no unincorporated CSV files'
+    end
+  end
+
+  def display_csv_files_piece_incorporated
+    if freecen_csv_files.present?
+      files = []
+      freecen_csv_files.incorporated(true).order_by(file_name: 1).each do |file|
+        if file.userid.blank?
+          files << file.file_name + ' ()'
+        else
+          files << file.file_name + ' (' + file.userid + ')'
+        end
+      end
+      files
+    else
+      'There are no incorporated CSV files'
+    end
   end
 
   def do_we_update_place?

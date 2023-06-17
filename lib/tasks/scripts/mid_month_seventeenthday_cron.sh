@@ -13,4 +13,5 @@ ROOT=/home/apache/hosts/freecen2/production
 cd $ROOT
 umask 0002
 sudo -u webserv bundle exec rake RAILS_ENV=production freecen:archive_site_statistics --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production freecen:list_VLD_CSV_deleted_files --trace
 exit

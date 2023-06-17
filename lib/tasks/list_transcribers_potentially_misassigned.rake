@@ -8,7 +8,7 @@ task list_transcribers_potentially_misassigned: :environment do
 
   users = 0
 
-  problem_syndicates = ['Any County and Year', 'Any Questions? Ask Us', 'Technical', 'Wales Syndicate', 'Yorkshire Syndicate']
+  problem_syndicates = ['Any County and Year', 'Any Questions Ask Us', 'Technical', 'Wales Syndicate', 'Yorkshire Syndicate']
 
   valid_syndicates = Syndicate.all.pluck(:syndicate_code) - problem_syndicates
 

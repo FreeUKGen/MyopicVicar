@@ -38,7 +38,7 @@ class UsersNeverUploadedFile
 
   def users_syndicate_any_county
     users_list = []
-    model_name.in(syndicate: ["Any County and Year", "Any questions? Ask us"]).each do |user|
+    model_name.in(syndicate: ["Any County and Year", "Any Questions Ask Us"]).each do |user|
       users_list << [user.userid, user.syndicate]
     end
     users_list

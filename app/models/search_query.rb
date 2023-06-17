@@ -832,7 +832,7 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attribute(:search_index, @search_index)
-    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    records = SearchRecord.collection.find(@search_parameters)#.hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
@@ -846,7 +846,7 @@ class SearchQuery
     # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
-    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    secondary_records = SearchRecord.collection.find(@secondary_search_params)#.hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
 
@@ -968,7 +968,7 @@ class SearchQuery
       if fuzzy && ((first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD)))
         errors.add(:last_name, 'You cannot use both wildcards and soundex in a search')
       end
-      if place_search?
+      if place_search? || (App.name_downcase == 'freecen' && freecen2_place_search?)
         if last_name && last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
           errors.add(:last_name, 'Two letters must precede any wildcard in a surname.')
         end
@@ -978,13 +978,13 @@ class SearchQuery
         # place_id is an adequate index -- all is well; do nothing
       else
         errors.add(:last_name, 'Wildcard can only be used with a specific place.')
-        #if last_name.match(WILDCARD)
-        #if last_name.index(WILDCARD) < 3
-        #errors.add(:last_name, 'Three letters must precede any wildcard in a surname unless a specific place is also chosen.')
-        #end
-        #else
+        # if last_name.match(WILDCARD)
+        # if last_name.index(WILDCARD) < 3
+        # errors.add(:last_name, 'Three letters must precede any wildcard in a surname unless a specific place is also chosen.')
+        # end
+        # else
         # wildcard is in first name only -- no worries
-        #end
+        # end
       end
     end
   end

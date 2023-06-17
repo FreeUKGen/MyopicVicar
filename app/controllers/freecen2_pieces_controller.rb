@@ -21,6 +21,8 @@ class Freecen2PiecesController < ApplicationController
     else
       @new_freecen2_piece_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
       @freecen2_piece = Freecen2Piece.new(@new_freecen2_piece_params)
+      get_user_info_from_userid
+      @freecen2_piece.reason_changed = "Created by #{@user.person_role} (#{@user.userid})" if @freecen2_piece.reason_changed.blank?
       @freecen2_piece.save
       if @freecen2_piece.errors.any?
         redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_piece.errors.full_messages}") && return
@@ -112,6 +114,24 @@ class Freecen2PiecesController < ApplicationController
   def enter_number
     @freecen2_piece = Freecen2Piece.new
     @chapman_code = session[:chapman_code]
+  end
+
+  def export_csv
+    @chapman_code = session[:chapman_code]
+    @year = params[:csvdownload][:year]
+    p "AEV01 #{@chapman_code}"
+    p "AEV02 #{@year}"
+    success, message, file_location, file_name = Freecen2Piece.create_csv_export_listing(@chapman_code, @year)
+
+    if success
+      if File.file?(file_location)
+        flash[:notice] = message unless message.empty?
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice] = 'There was a problem downloading the listing as a CSV file'
+    end
+    redirect_back(fallback_location: new_manage_resource_path)
   end
 
   def full_index
@@ -292,6 +312,21 @@ class Freecen2PiecesController < ApplicationController
     @scotland = scotland_county?(@chapman_code)
   end
 
+  def stats_index
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
+    @year = params[:stats_year]
+    @sorted_by = params[:sorted_by].blank? ? 'Most Recent Online' : params[:sorted_by]
+    case @sorted_by
+    when 'Piece Number'
+      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('number ASC')
+    when 'Piece Name'
+      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('name ASC')
+    when 'Most Recent Online'
+      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('status_date DESC, number ASC')
+    end
+  end
+
   def update
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No information in the update') && return if params[:id].blank? || params[:freecen2_piece].blank?
 
@@ -325,6 +360,11 @@ class Freecen2PiecesController < ApplicationController
       @type = session[:type]
       params[:freecen2_piece].delete :type
       @freecen2_piece.update(freecen2_piece_params)
+      if @@freecen2_piece.reason_changed.blank?
+        get_user_info_from_userid
+        @@freecen2_piece.reason_changed = "Updated by #{@user.person_role} (#{@user.userid})"
+        @@freecen2_piece.save
+      end
       if @freecen2_piece.errors.any?
         flash[:notice] = "The update of the piece failed #{@freecen2_piece.errors.full_messages}."
         redirect_back(fallback_location: edit_freecen2_piece_path(@freecen2_piece, type: @type)) && return

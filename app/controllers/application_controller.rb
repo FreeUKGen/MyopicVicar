@@ -32,6 +32,10 @@ class ApplicationController < ActionController::Base
     MyopicVicar::Application.config.freexxx_display_name
   end
 
+  def cta_display_status
+    MyopicVicar::Application.config.cta_display_status
+  end
+
   def appname_upcase
     appname.upcase
   end
@@ -280,7 +284,6 @@ class ApplicationController < ActionController::Base
     session.delete(:original_message_id)
     session.delete(:query)
     session.delete(:search_names)
-    session[:stats_view] = false
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)
@@ -334,7 +337,6 @@ class ApplicationController < ActionController::Base
     session.delete(:register)
     session.delete(:search_names)
     session.delete(:type)
-    session[:stats_view] = false
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)
