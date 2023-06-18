@@ -482,11 +482,11 @@ class Freecen1VldFile
 
   def compute_where_census_taken(rec)
     if !@use_blank
-      line = rec['ecclesiastical_parish'] if rec['ecclesiastical_parish'].present?
-      line = rec['civil_parish'] if rec['civil_parish'].present? && rec['ecclesiastical_parish'].blank?
+      line = rec['ecclesiastical_parish'] if rec['ecclesiastical_parish'].present? && rec['ecclesiastical_parish'] != '-'
+      line = rec['civil_parish'] if rec['civil_parish'].present? && (rec['ecclesiastical_parish'].blank? || rec['ecclesiastical_parish'] == '-')
       @initial_line_hash['where_census_taken'] = line
     else
-      if rec['ecclesiastical_parish'].present? && rec['ecclesiastical_parish'] == @initial_line_hash['where_census_taken']
+      if rec['ecclesiastical_parish'].present?  && rec['ecclesiastical_parish'] != '-' && rec['ecclesiastical_parish'] == @initial_line_hash['where_census_taken']
         line = @blank
       elsif rec['civil_parish'].present? && rec['civil_parish'] == @initial_line_hash['where_census_taken']
         line = @blank
