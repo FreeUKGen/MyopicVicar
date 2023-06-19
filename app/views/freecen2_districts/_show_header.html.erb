@@ -1,7 +1,7 @@
 <h2 style="text-align: center">Details of FreeCen2 District:- <%= @freecen2_district.name%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h2>
 <%= render 'flash_notice' %>
 <h3 style="text-align: center"> Name changes will normally be done with the Edit District Name action and extremely rarely using the main Edit action</h3>
-<% if %w[county_coordinator master_county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
+<% if %w[county_coordinator master_county_coordinator country_coordinator data_manager executive_director system_administrator].include?(@user.person_role)%>
   <div style="text-align: center">
     <%= link_to 'Edit District', edit_freecen2_district_path(@freecen2_district, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Edit of all fields; note the edit of a district name functions as a merge of this District into another District'%>
   </div>

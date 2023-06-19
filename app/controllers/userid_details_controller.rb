@@ -20,6 +20,7 @@ class UseridDetailsController < ApplicationController
   PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'newsletter_coordinator']
   STATS_PERMITTED_ROLES = ['system_administrator', 'executive_director', 'project_manager', 'engagement_coordinator', 'contacts_coordinator', 'newsletter_coordinator']
 
+
   def all
     session[:user_index_page] = params[:page] if params[:page]
     session[:return_to] = request.fullpath
@@ -360,7 +361,7 @@ class UseridDetailsController < ApplicationController
     ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
   end
 
-  
+
 
   def role
     @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
@@ -637,8 +638,8 @@ class UseridDetailsController < ApplicationController
   end
 
   def permitted_secondary_roles?
-     roles = @current_user.secondary_role & PERMITTED_ROLES
-     roles.present?
+    roles = @current_user.secondary_role & PERMITTED_ROLES
+    roles.present?
   end
 
   def stats_permitted_users?
