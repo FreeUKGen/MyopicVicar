@@ -95,8 +95,11 @@ class Contact
       secondary_contacts_array = []
       if secondary_role.present?
         secondary_role.each do |role|
-          contacts_of_role(role,archived, order,user).each do |c|
-            secondary_contacts_array << c
+          contacts = contacts_of_role(role,archived, order,user)
+          if contacts.present?
+            contacts.each do |c|
+              secondary_contacts_array << c
+            end
           end
         end
       end
@@ -127,7 +130,7 @@ class Contact
       when 'country_coordinator'
         c = contacts.where(county: { '$in' => user.county_groups })
       end
-      ordered_contact = c.order_by(order)
+      ordered_contact = c.present? ? c.order_by(order) : c
       ordered_contact
     end
 
