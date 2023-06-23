@@ -114,7 +114,7 @@ class Contact
       when 'website_coordinator'
         c = contacts.get_contacts('Website Problem')
       when 'contacts_coordinator'
-        c = contacts.get_contacts('Data Question')
+        c = contacts.any_of({contact_type: 'Data Question'}, {contact_type: 'Data Problem'})
       when 'general_communication_coordinator'
         c = contacts.get_contacts('General Comment')
       when 'publicity_coordinator' || 'newsletter_coordinator'
