@@ -125,10 +125,10 @@ class Contact
         c = contacts.get_contacts('Enhancement Suggestion')
       when 'system_administrator'
         c = contacts
-      when 'county_coordinator' || 'country_coordinator'
+      when 'county_coordinator'
         c = contacts.where(county: { '$in' => user.county_groups })
       when 'country_coordinator'
-        c = contacts.where(county: { '$in' => user.county_groups })
+        c = contacts.where(county: { '$in' => user.country_groups })
       end
       ordered_contact = c.present? ? c.order_by(order) : c
       ordered_contact
