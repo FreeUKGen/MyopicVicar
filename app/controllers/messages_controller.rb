@@ -578,8 +578,9 @@ class MessagesController < ApplicationController
       @senders << Syndicate.syndicate_code(@syndicate).first.syndicate_coordinator if Syndicate.is_syndicate(@syndicate)
     else
       UseridDetail.active(true).all.order_by(userid_lower_case: 1).each do |sender|
-        @senders << sender.userid
+        @senders << sender.userid unless sender.userid == @user.userid
       end
+      @senders .unshift(@user.userid)
     end
     render 'select_recipients'
   end
@@ -614,10 +615,17 @@ class MessagesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
 
     get_user_info_from_userid
+    @problem_with_syndicate = false
     if session[:syndicate].present?
-      params[:recipients] = Array.new
+      params[:recipients] = []
       params[:recipients] << 'Members of Syndicate'
-      @syndicate = session[:syndicate]
+      if session[:syndicate].downcase == 'all'
+        @problem_with_syndicate = true
+        redirect_back(fallback_location: new_manage_resource_path, notice: "There is a problem with the syndicate selected (#{session[:syndicate]}), Please go back and select the syndicate from Manage Syndicates") && return
+
+      else
+        @syndicate = session[:syndicate]
+      end
     end
     if params[:recipients].blank?
       flash[:notice] = 'You did not select any recipients'
@@ -725,7 +733,7 @@ class MessagesController < ApplicationController
     else
       send_message
     end
-    redirect_to message_path(@message.id, source: 'original')
+    redirect_to message_path(@message.id, source: 'original') unless @problem_with_syndicate.present? && @problem_with_syndicate = true
   end
 
   private

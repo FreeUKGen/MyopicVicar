@@ -29,7 +29,7 @@
             <td class="t20"><%= link_to 'Show', freecen_piece , :class => "btn   btn--small"%>
               <%= link_to 'Edit', edit_freecen_piece_path(freecen_piece.id), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small" %>
               <%= link_to 'Destroy', freecen_piece_path(freecen_piece.id), method: :delete, :class => "btn   btn--small",
-              data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependants!' } if ['data_manager', 'system_administrator', 'county_coordinator', 'master_county_coordinator'].include?(@user.person_role) %></td>
+              data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependants!' } if ['data_manager', 'executive_director', 'system_administrator', 'county_coordinator', 'master_county_coordinator'].include?(@user.person_role) %></td>
           </tr>
         <% end %>
       </tbody>

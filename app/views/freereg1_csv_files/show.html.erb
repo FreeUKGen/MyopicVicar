@@ -40,10 +40,12 @@
           <td>Latest year in batch </td>
           <td class="weight--semibold"> <%= @freereg1_csv_file.datemax %></td>
         </tr>
-        <tr>
-          <td>Number of zero date entries in batch </td>
-          <td class="weight--semibold"> <%= zero_entry(@freereg1_csv_file) %></td>
-        </tr>
+        <% unless @freereg1_csv_file.register_type == 'MI' %>
+          <tr>
+            <td>Number of zero date entries in batch </td>
+            <td class="weight--semibold"> <%= zero_entry(@freereg1_csv_file) %></td>
+          </tr>
+        <% end %>
         <tr>
           <td>Number of records in each decade starting in 1530<br>
             The first decade will also contain any record of a year less than 1530<br>

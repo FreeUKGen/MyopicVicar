@@ -606,13 +606,13 @@ module MessagesHelper
     elsif message.nature == 'communication' && message.message_sent? && message.not_a_reply? && message.mine?(@user)
       link_to 'Resend Communication', select_role_message_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
     elsif message.nature == 'syndicate' && !message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Send Syndicate Message', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Select Syndicate Message Recipients and Send', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to select recipients and send this message'}, method: :get
     elsif message.nature == 'syndicate' && message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Resend Syndicate Message', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Select Syndicate Message Recipients and Resend', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to select recipients and resend this message'}, method: :get
     elsif message.nature == 'general' && !message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Send Message', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Select Message Recipients and Send', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to select recipients and send this message'}, method: :get
     elsif message.nature == 'general' && message.message_sent? && message.not_a_reply? && message.mine?(@user)
-      link_to 'Resend Message', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to send this message'}, method: :get
+      link_to 'Select Message Recipients and Resend', select_recipients_messages_path(message.id, source: action), :class => 'btn btn--small' , data: { confirm: 'Are you sure you want to select recipients and resend this message'}, method: :get
     end
   end
   def show_view_replies_link(message, action)

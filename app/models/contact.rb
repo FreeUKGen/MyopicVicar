@@ -95,8 +95,11 @@ class Contact
       secondary_contacts_array = []
       if secondary_role.present?
         secondary_role.each do |role|
-          contacts_of_role(role,archived, order,user).each do |c|
-            secondary_contacts_array << c
+          contacts = contacts_of_role(role,archived, order,user)
+          if contacts.present?
+            contacts.each do |c|
+              secondary_contacts_array << c
+            end
           end
         end
       end
@@ -111,10 +114,10 @@ class Contact
       when 'website_coordinator'
         c = contacts.get_contacts('Website Problem')
       when 'contacts_coordinator'
-        c = contacts.get_contacts('Data Question')
+        c = contacts.any_of({contact_type: 'Data Question'}, {contact_type: 'Data Problem'})
       when 'general_communication_coordinator'
         c = contacts.get_contacts('General Comment')
-      when 'publicity_coordinator'
+      when 'publicity_coordinator' || 'newsletter_coordinator'
         c = contacts.get_contacts('Thank you')
       when 'genealogy_coordinator'
         c = contacts.get_contacts('Genealogical Question')
@@ -122,12 +125,12 @@ class Contact
         c = contacts.get_contacts('Enhancement Suggestion')
       when 'system_administrator'
         c = contacts
-      when 'county_coordinator' || 'country_coordinator'
+      when 'county_coordinator'
         c = contacts.where(county: { '$in' => user.county_groups })
       when 'country_coordinator'
-        c = contacts.where(county: { '$in' => user.county_groups })
+        c = contacts.where(county: { '$in' => user.country_groups })
       end
-      ordered_contact = c.order_by(order)
+      ordered_contact = c.present? ? c.order_by(order) : c
       ordered_contact
     end
 
@@ -430,6 +433,7 @@ class Contact
   end
 
   def role_from_contact
+    appname = MyopicVicar::Application.config.freexxx_display_name.downcase
     case contact_type
     when 'Website Problem'
       role = 'website_coordinator'
@@ -440,7 +444,8 @@ class Contact
     when 'General Comment'
       role = 'general_communication_coordinator'
     when 'Thank you'
-      role = 'publicity_coordinator'
+      role = 'publicity_coordinator' if appname == 'freereg'
+      role = 'newsletter_coordinator' if appname == 'freecen'
     when 'Genealogical Question'
       role = 'genealogy_coordinator'
     when 'Enhancement Suggestion'
