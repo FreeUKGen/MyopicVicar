@@ -361,7 +361,7 @@ class Freecen2Place
         end
       elsif place.alternate_freecen2_place_names.present?
         place.alternate_freecen2_place_names.each do |alt_place|
-          alternate_place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => alt_place.alternate_name ).first
+          alternate_place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => alt_place.alternate_name).first
           if alternate_place_used.present?
             exist = true
             break
@@ -369,6 +369,11 @@ class Freecen2Place
         end
       end
       exist
+    end
+
+    def search_records_birth_places_alternate?(chapman_code, alternate_place)
+      place_used = SearchRecord.where(:birth_chapman_code => chapman_code, :birth_place => alternate_place).first
+      place_used.present? ? true : false
     end
 
   end
@@ -452,10 +457,13 @@ class Freecen2Place
           next unless value[:_destroy] == '1'
 
           if value[:alternate_name].blank?
-            err_msg = 'Other Name for Place cannot be emply with Destroy box checked'
+            err_msg = 'Other Name for Place cannot be empty with Destroy box checked'
           else
-            used_as_birth_place = Freecen2Place.search_records_birth_places?(value[:alternate_name])
-            err_msg = 'The Other Name for Place cannot be deleted because there are dependent search record birth places' if used_as_birth_place
+            used_as_birth_place = Freecen2Place.search_records_birth_places_alternate?(chapman_code, value[:alternate_name])
+            if used_as_birth_place
+              err_msg = "The Other Name for Place (#{value[:alternate_name]}) cannot be deleted because there are dependent search record birth places"
+              break
+            end
           end
         end
       end
