@@ -136,8 +136,9 @@ class ManageSyndicatesController < ApplicationController
   end
 
   def syndicates_for_selection
-    all = true if %w[volunteer_coordinator data_manager master_county_coordinator county_coordinator system_administrator documentation_coordinator SNDManager CENManager executive_director project_manager].include?(@user.person_role)
-
+    roles = %w[volunteer_coordinator data_manager system_administrator documentation_coordinator SNDManager CENManager executive_director project_manager]
+    roles << "county_coordinator" if appname_downcase == 'freecen'
+    all = true if roles.include?(@user.person_role)
     @syndicates = @user.syndicate_groups
     @syndicates = Syndicate.all.order_by(syndicate_code: 1) if all
     if @syndicates.present?
