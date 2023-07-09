@@ -416,8 +416,8 @@ class Freecen2Place
     alternate_names_set = SortedSet.new
     entries = 0
     dup_place_set = SortedSet.new
-    unless alternate_freecen2_place_names_attributes.blank?
-      alternate_freecen2_place_names_attributes.each do |_key, value|
+    if alternate_freecen2_place_names_attributes.present?
+      alternate_freecen2_place_names_attributes.each do |_key, value|  # check for duplicate alternate_names
         next unless value[:alternate_name].present? && value[:_destroy] == '0'
 
         alternate_names_set << Freecen2Place.standard_place(value[:alternate_name])
@@ -440,10 +440,24 @@ class Freecen2Place
           dups += "#{entry},"
         end
         display_dups = "#{dups[0...-1]})"
-        dup_place_set.length > 1 ? display_exist = 'already exist' : display_exist = 'already exists'
+        display_exist = dup_place_set.length > 1 ? 'already exist' : 'already exists'
         err_msg = "Other Names for Place cannot be duplicated - #{display_dups} #{display_exist}"
       else
         err_msg = 'Other Names for Place cannot be duplicated'
+      end
+    end
+    if err_msg == 'None'
+      if alternate_freecen2_place_names_attributes.present?
+        alternate_freecen2_place_names_attributes.each do |_key, value|  # check for use of alternate name in search_records POB  if trying to destroy
+          next unless value[:_destroy] == '1'
+
+          if value[:alternate_name].blank?
+            err_msg = 'Other Name for Place cannot be emply with Destroy box checked'
+          else
+            used_as_birth_place = Freecen2Place.search_records_birth_places?(value[:alternate_name])
+            err_msg = 'The Other Name for Place cannot be deleted because there are dependent search record birth places' if used_as_birth_place
+          end
+        end
       end
     end
     err_msg
