@@ -23,5 +23,9 @@
   <%= f.input :problem_page_url,  as: :hidden %>
   <%= f.input :previous_page_url, as: :hidden %>
   <%= f.input :feedback_type, as: :hidden %>
-  <%= f.button :submit, 'Submit Problem Report'   %>
+  <% if @user.present? %>
+    <%= f.button :submit, 'Submit Problem Report'   %>
+  <% else %>
+    <%= f.button :submit, 'Submit Feedback' %>
+  <% end %>
 <% end %>
