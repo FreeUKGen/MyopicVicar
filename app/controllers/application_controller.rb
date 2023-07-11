@@ -79,6 +79,10 @@ class ApplicationController < ActionController::Base
       session[:message] = 'load' if Refinery::Page.present? && Refinery::Page.where(slug: 'message').exists?
   end
 
+  def title_case
+    self.split.map(&:capitalize).join(' ')
+  end
+
   private
 
   def after_sign_in_path_for(resource_or_scope)
