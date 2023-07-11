@@ -80,7 +80,7 @@ class ApplicationController < ActionController::Base
   end
 
   def title_case
-    self.split.map(&:capitalize).join(' ')
+    split.map(&:capitalize).join(' ')
   end
 
   private
