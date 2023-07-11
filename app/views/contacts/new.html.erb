@@ -1,5 +1,9 @@
 <% title "Contact Us" %>
 <h1 class="title">Contact us</h1>
+<% if appname_downcase == "freebmd"%>
+  <p>Please bear with us as we are still developing FreeBMD2.</p>
+  <p>To contact us about a bug, please use the 'Beta feedback' button on the page where the problem is. To make a general comment, please use the form below.</p>
+<% end %>
 <p>Please read our <%= link_to "Privacy Notice(#{ApplicationText::NEW_TAB_LINK_TEXT})", Constant::PRIVACY_POLICY_LINK, target: "_blank" %> for information on how we will protect and use your data, and then fill in the form below with your details.</p>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue">

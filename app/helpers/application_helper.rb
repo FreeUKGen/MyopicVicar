@@ -788,6 +788,8 @@ module ApplicationHelper
       path = '/cms/help/frequently-asked-questions-researchers?'
     when "freecen"
       path = '/contacts/new'
+    when 'freebmd'
+      path = '/contacts/new'
     end
     path
   end

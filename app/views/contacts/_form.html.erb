@@ -21,6 +21,7 @@
         <%= f.hidden_field :session_id %>
         <%= f.hidden_field :problem_page_url %>
         <%= f.hidden_field :previous_page_url %>
+        <%= f.hidden_field :contact_type %>
         <ul style="margin-left: -28px;">
           <li class="grid__item one-half palm-one-whole push--bottom" id="name_input">
             <label tabindex="0" for="name" class="label ttip">Your name
@@ -60,15 +61,15 @@
               <%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
               <span class="ttip__text">Required. Please select the type of contact you are making so we may refer it to the correct person. <em>Data problems</em> are best reported from the specific record in your search results.</span>
             </label>
-            <select name="contact[contact_type]" id="contact_type" class="select" required="required" size="7">
-              <% @options.each do |value| %>
-                <% if value == @contact.contact_type %>
-                  <option value="<%=value%>" selected="selected"><%=value%></option>
-                <% else %>
-                  <option value="<%=value%>"><%=value%></option>
-                <% end %>
-              <% end %>
-            </select>
+            <!--select name="contact[contact_type]" id="contact_type" class="select" required="required" size="7">
+              <%# @options.each do |value| %>
+                <%# if value == @contact.contact_type %>
+                  <option value="<%#=value%>" selected="selected"><%#=value%></option>
+                <%# else %>
+                  <option value="<%#=value%>"><%#=value%></option>
+                <%# end %>
+              <%# end %>
+            </select-->
           </li>
           <% if 'freecen' == MyopicVicar::Application.config.template_set %>
             <li class="grid__item one-half palm-one-whole push--bottom">

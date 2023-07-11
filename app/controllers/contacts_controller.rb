@@ -52,6 +52,7 @@ class ContactsController < ApplicationController
 
   def create
     @contact = Contact.new(contact_params)
+    @contact.contact_type = 'General Comment'
     if @contact.contact_name.blank? #spam trap
       @contact.previous_page_url = request.env['HTTP_REFERER']
       if @contact.selected_county == 'nil'
