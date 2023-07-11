@@ -1,5 +1,10 @@
-<%= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, "/districts/districts_list?params=#{@district.DistrictName.first}", class: " btn   btn--small" %>
-<%= link_to "Back to selection".html_safe, district_alphabet_selection_path(@district.DistrictName.first), class: " btn   btn--small" %>
+<% unless @search_id.present? %>
+  <%= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, "/districts/districts_list?params=#{@district.DistrictName.first}", class: " btn   btn--small" %>
+  <%= link_to "Back to selection".html_safe, district_alphabet_selection_path(@district.DistrictName.first), class: " btn   btn--small" %>
+<% else %>
+  <%= link_to "Back to search results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @record.RecordNumber), class: " btn   btn--small" %>
+  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @record, @record.friendly_url), class: " btn   btn--small"  if params[:entry_id].present? %>
+<% end %>
 <div class="grid">
   <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
     <h1 class="beta push-half--top flush--bottom">District Information: <%= "#{@district.district_name_display_format}"%></h1>
