@@ -65,7 +65,7 @@ class District < FreebmdDbBase
   end
 
   def self.fetch_uniq_names params_hash
-    clean_uniq_name_param_hash params_hash
+    self.clean_uniq_name_param_hash params_hash
     record_type = params_hash[:record_type]
     record_type_id = RecordType::FREEBMD_OPTIONS[record_type.upcase]
     name_type = params_hash[:name_type]
@@ -79,7 +79,7 @@ class District < FreebmdDbBase
 
   private
 
-  def _clean_uniq_name_param_hash params_hash
+  def self.clean_uniq_name_param_hash params_hash
     params_hash[:record_type] ||= DEFAULT_TYPE
     params_hash[:name_type] ||= UNIQ_NAME_TYPE
     params_hash
