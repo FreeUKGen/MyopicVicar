@@ -20,7 +20,7 @@ class DistrictsController < ApplicationController
 	end
 
 	def unique_district_names
-		@record_type, @name_type, @district, @unique_names, @remainders = fetch_uniq_names params
+		@record_type, @name_type, @district, @unique_names, @remainders = Distrit.fetch_uniq_names params
 		#@record_type = params[:record_type].present? ? params[:record_type] : "birth"
 		#record_type_id = RecordType::FREEBMD_OPTIONS[@record_type.upcase]
 		#@name_type = params[:name_type].present? ? params[:name_type] : '1'
