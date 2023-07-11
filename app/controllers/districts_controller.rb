@@ -28,7 +28,7 @@ class DistrictsController < ApplicationController
 		#@district = District.where(DistrictNumber: @district_number).first
 		#name_doc = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id)
 		#@name_type == '0' ? name_doc.first.unique_surnames : name_doc.first.unique_forenames
-		@unique_names = @name_type.sort_by!(&:downcase)
+		@unique_names = @unique_names.sort_by!(&:downcase)
 		@unique_names.map!(&:title_case)
 		#@unique_names, @remainders = @district.letterize(@unique_names)
 	end
