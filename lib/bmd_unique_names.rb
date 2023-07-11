@@ -83,7 +83,7 @@ class BmdUniqueNames
     def extract_unique_surnames(names)
       surnames = []
       names.each_pair do |key, value|
-        surnames += value if ["Mother's Surname", "Surname"].include?(key)
+        surnames += value.strip if ["Mother's Surname", "Surname"].include?(key)
       end
       surnames = surnames.uniq.reject(&:empty?)
       surnames

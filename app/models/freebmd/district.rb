@@ -3,6 +3,9 @@ class District < FreebmdDbBase
   has_many :DistrictToCounty, foreign_key: :DistrictNumber
   has_many :records, foreign_key: :DistrictNumber, class_name: '::BestGuess'
   scope :not_invented, -> { where(Invented: 0) }
+  require 'record_type'
+  DEFAULT_TYPE = 'birth'
+  UNIQ_NAME_TYPE= '1'
 
   def letterize(names)
     new_list = {}
@@ -59,5 +62,26 @@ class District < FreebmdDbBase
     friendly.gsub!(/\W/, '-')
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
+  end
+
+  def fetch_uniq_names params_hash
+    clean_uniq_name_param_hash params_hash
+    record_type = params_hash[:record_type]
+    record_type_id = RecordType::FREEBMD_OPTIONS[record_type.upcase]
+    name_type = params_hash[:name_type]
+    district_number = params_hash[:id]
+    district = District.where(DistrictNumber: district_number).first
+    name_doc = DistrictUniqueName.where(district_number: district_number, record_type: record_type_id).first
+    unique_names = name_type == '0' ? name_doc.unique_surnames : name_doc.unique_forenames
+    unique_names, remainders = district.letterize(unique_names)
+    [record_type, name_type, district, unique_names, remainders]
+  end
+
+  private
+
+  def _clean_uniq_name_param_hash params_hash
+    params_hash[:record_type] ||= DEFAULT_TYPE
+    params_hash[:name_type] ||= UNIQ_NAME_TYPE
+    params_hash
   end
 end
