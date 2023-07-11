@@ -73,8 +73,7 @@ class District < FreebmdDbBase
     district = District.where(DistrictNumber: district_number).first
     name_doc = DistrictUniqueName.where(district_number: district_number, record_type: record_type_id).first
     unique_names = name_type == '0' ? name_doc.unique_surnames : name_doc.unique_forenames
-    unique_names, remainders = district.letterize(unique_names)
-    [record_type, name_type, district, unique_names, remainders]
+    [record_type, name_type, district, unique_names]
   end
 
   private
