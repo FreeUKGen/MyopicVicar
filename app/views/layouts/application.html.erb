@@ -158,7 +158,7 @@
       <main  class="site__content  icon__honeycomb--top-right" id="bmd_site_content">
         <% unless device_type == :mobile%>
         <% end %>
-        <div class="container">
+        <div class="container" id="top">
           <%#= breadcrumbs  :class => "delta  text--magenta" if appname_downcase="freebmd"%>
           <% if session[:userid_detail_id].present?%>
             <%= breadcrumbs  :class => "delta  project-text-color"  unless controller_name == "refinery" ||
@@ -188,7 +188,7 @@
           <% end %>
           <% if  session[:userid_detail_id].present?%>
             <div class="push--top" style="float:left;">
-              <a href="#" class = "btn  btn--small">Top of page</a>
+              <a href="#top" class = "btn  btn--small">Top of page</a>
             </div>
             <div  style="float:right;">
               <%= form_tag(problem_url, :method=>:get) do %>
