@@ -21,13 +21,7 @@ class DistrictsController < ApplicationController
 
 	def unique_district_names
 		@record_type, @name_type, @district, @unique_names, @remainders = District.fetch_uniq_names params
-		#@record_type = params[:record_type].present? ? params[:record_type] : "birth"
-		#record_type_id = RecordType::FREEBMD_OPTIONS[@record_type.upcase]
-		#@name_type = params[:name_type].present? ? params[:name_type] : '1'
 		@district_number = params[:id]
-		#@district = District.where(DistrictNumber: @district_number).first
-		#name_doc = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id)
-		#@name_type == '0' ? name_doc.first.unique_surnames : name_doc.first.unique_forenames
 		@unique_names = @unique_names.sort_by!(&:downcase)
 		@unique_names.map! { |n| n.split.map!(&:capitalize).join(' ') }
 		@unique_names, @remainders = @district.letterize(@unique_names)
