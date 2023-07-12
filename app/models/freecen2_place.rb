@@ -372,7 +372,7 @@ class Freecen2Place
     end
 
     def search_records_birth_places_alternate?(chapman_code, alternate_place)
-      place_used = SearchRecord.where(:birth_chapman_code => chapman_code, :birth_place => alternate_place).first
+      place_used = SearchRecord.where(birth_chapman_code: chapman_code, birth_place: alternate_place).no_timeout.first
       place_used.present? ? true : false
     end
 
