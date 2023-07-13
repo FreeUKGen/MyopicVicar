@@ -2,6 +2,13 @@
 <h1 class="accessibility">Search results</h1>
 <%= render 'flash_notice' %>
 <% show_contents_link%>
+<div class="grid__item one-whole">
+  <div class = "adsense_box push--ends reg_adsense">
+    <p class = "text--center">Advertisement</p>
+    <!-- GAM 71161633/FRBMD_freeregorg/freereg_header -->
+    <div data-fuse="22945844442"></div>
+  </div>
+</div>
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
   <%= render 'display_search_criteria' %>
@@ -35,6 +42,13 @@
                   <div class="grid__item one-whole">
                     <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
                       <%= render 'please_donate' %>
+                      <div class="grid__item one-whole">
+                        <div class = "adsense_box push--ends reg_adsense">
+                          <p class = "text--center">Advertisement</p>
+                          <!-- GAM 71161633/FRBMD_freeregorg/freereg_hrec_3 -->
+                          <div data-fuse="22945846128"></div>
+                        </div>
+                      </div>
                     <% end %>
                   </div>
                 </div>
