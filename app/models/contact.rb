@@ -80,14 +80,6 @@ class Contact
 
     def primary_results(archived, order, user)
       primary_contacts = contacts_of_role(user.person_role,archived, order,user)
-            #if user.secondary_role.include?'volunteer_coordinator'
-        #contacts = contacts.where(contact_type: "Volunteering Question").order_by(order)
-      #elsif %w[county_coordinator country_coordinator].include?(user.person_role)
-       # contacts = contacts.where(county: { '$in' => counties }).order_by(order)
-      #else
-       # contacts = Contact.where(archived: archived).order_by(order)
-      #end
-      #contacts
     end
 
     def secondary_results(archived, order, user)

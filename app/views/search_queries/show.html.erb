@@ -11,14 +11,13 @@
     <% else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
       <div class="grid">
-        <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
+        <div class="grid__item desk-two-thirds lap-two-thirds palm-one-whole">
           <%= render 'no_results' %>
         </div>
          <% unless device_type == :mobile%>
-          <div class="grid__item desk-one-fifth lap-one-third palm-one-whole float--right push--bottom">
-            <span class=''>Advertisement</span><br>
+          <div class="grid__item desk-one-third lap-one-third palm-one-whole float--right push--bottom">
+            <span class=''>Advertisements</span><br>
             <%= mh_160_600 %>
-            <!--iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%#= @search_query.first_name %>&lastName=<%#= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe-->
           </div>
         <% end %>
       </div>
@@ -41,8 +40,13 @@
                 <% unless device_type == :mobile%>
                   <div  id='results_table_ad' class='float--right text--center push--bottom'>
                     <span class=''>Advertisement</span><br>
-                    <%= mh_160_600 %>
-                    <!--iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%#= @search_query.first_name %>&lastName=<%#= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe-->
+                    <div class="grid__item one-whole">
+                      <%= mh_160_600 %>
+                    </div>
+                    <div class="grid__item one-whole">
+                      <!-- GAM 71161633/FRBMD_freeregorg/freereg_vrec_1 -->
+                      <div data-fuse="22945846137"></div>
+                    </div>
                   </div>
                 <% end %>
             </div>
@@ -78,7 +82,15 @@
     <% end%>
     <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
       <br>
-      <%= render 'nav_header' %>
+      <div class="container">
+        <div class="grid">
+          <div class= 'grid__item  two-thirds lap-six-tenths palm-one-whole'>
+            <div class="grid__item one-whole">
+              <%= render 'nav_header' %>
+            </div>
+          </div>
+        </div>
+      </div>
     <% end %>
   <% end %>
 </section>
@@ -89,11 +101,11 @@
   var result = window.canRunAds;
   function changeClass(screen_width) {
     if (screen_width.matches) {
-      $("#results_table").removeClass("grid__item  seven-tenths  palm-one-whole").addClass('');
+      $("#results_table").removeClass("grid__item  two-thirds  palm-one-whole").addClass('');
     } else {
       if(result === true) {
-        $("#results_table").addClass("grid__item  seven-tenths lap-six-tenths palm-one-whole");
-        $("#results_table_ad").addClass("grid__item  three-tenths  palm-one-whole");
+        $("#results_table").addClass("grid__item  two-thirds lap-six-tenths palm-one-whole");
+        $("#results_table_ad").addClass("grid__item  one-third  palm-one-whole");
       } else {
         $("#results_table_ad").hide();
         $("#results_table").addClass("");
