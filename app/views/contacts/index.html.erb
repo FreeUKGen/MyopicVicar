@@ -26,11 +26,11 @@
 <% if @primary_contact_present %>
   <%= render partial: 'list_contacts', locals: {contact: @primary_contacts } %>
 <% else %>
-  <%= render (partial: 'no_contacts', locals: {text: 'primary' })  %>
+  <%= render partial: 'no_contacts', locals: {text: 'primary' } %>
 <% end %>
 <% if @secondary_contact_present %>
   <%= render partial: 'list_contacts', locals: {contact: @secondary_contacts } %>
 <% else %>
-  <%= render (partial: 'no_contacts', locals: {text: 'secondary' })  %>
+  <%= render partial: 'no_contacts', locals: {text: 'secondary' }  %>
 <% end %>
 <br />
