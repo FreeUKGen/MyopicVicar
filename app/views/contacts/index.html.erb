@@ -24,13 +24,17 @@
   <% end%>
 </p>
 <% if @primary_contact_present %>
+<h3>Primary Contacts</h3>
   <%= render partial: 'list_contacts', locals: {contacts: @primary_contacts } %>
 <% else %>
+<h3>Primary Contacts</h3>
   <%= render partial: 'no_contacts', locals: {text: 'primary' } %>
 <% end %>
 <% if @secondary_contact_present %>
+<h3>Secondary Contacts</h3>
   <%= render partial: 'list_contacts', locals: {contacts: @secondary_contacts } %>
 <% else %>
+<h3>Secondary Contacts</h3>
   <%= render partial: 'no_contacts', locals: {text: 'secondary' }  %>
 <% end %>
 <br />
