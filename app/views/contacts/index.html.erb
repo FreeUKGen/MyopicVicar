@@ -23,6 +23,14 @@
     <%= link_to 'List active',contacts_path, method: :get , :class => "btn btn--small" %>
   <% end%>
 </p>
-<%=  @primary_contact_present ? render partial: 'list_contacts', locals: {contact: @primary_contacts } : render partial: 'no_contacts', locals: {text: 'primary' }  %>
-<%=  @secondary_contact_present ? render partial: 'list_contacts', locals: {contact: @secondary_contacts } : render partial: 'no_contacts', locals: {text: 'secondary' }  %>
+<% if @primary_contact_present %>
+  <%= render partial: 'list_contacts', locals: {contact: @primary_contacts } %>
+<% else %>
+  <%= render (partial: 'no_contacts', locals: {text: 'primary' })  %>
+<% end %>
+<% if @secondary_contact_present %>
+  <%= render partial: 'list_contacts', locals: {contact: @secondary_contacts } %>
+<% else %>
+  <%= render (partial: 'no_contacts', locals: {text: 'secondary' })  %>
+<% end %>
 <br />
