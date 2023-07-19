@@ -34,7 +34,7 @@
           <% when 'freereg'%>
           <div class="container">
             <div class="grid">
-                <div class= '' id='results_table'>
+                <div class= '' id='results_table' style="display:flex; overflow: unset;">
                   <div class="grid__item one-whole">
                     <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
                   </div>
@@ -52,7 +52,7 @@
                   </div>
                 </div>
                 <% unless device_type == :mobile%>
-                  <div  id='results_table_ad' class='float--right text--center push--bottom' style='display: flex;'>
+                  <div  id='results_table_ad' class='float--right text--center push--bottom'>
                     <span class=''>Advertisement</span><br>
                     <div class="grid__item one-whole">
                       <%= mh_160_600 %>
