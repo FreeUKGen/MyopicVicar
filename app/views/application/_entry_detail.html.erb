@@ -1,4 +1,4 @@
-<div class='grid' style='display:flex; overflow:unset;'>
+<div class='grid' style='overflow:unset;'>
   <section class='island' style='display:flex; overflow:unset;'>
     <div class='' id='results_detail_table'>
       <table class='table--bordered table--data push--bottom t90' >
@@ -179,10 +179,10 @@
   var result = window.canRunAds;
   function changeClass(screen_width) {
     if (screen_width.matches) {
-      $("#results_detail_table").removeClass("grid__item  three-fifths  palm-one-whole").addClass('');
+      $("#results_detail_table").removeClass("grid__item  two-thirds  palm-one-whole").addClass('');
     } else {
       if(result === true) {
-        $("#results_detail_table").addClass("grid__item  three-fifths  palm-one-whole");
+        $("#results_detail_table").addClass("grid__item  one-third  palm-one-whole");
         $('.advert_div').show();
       } else {
         $('.advert_div').hide();
