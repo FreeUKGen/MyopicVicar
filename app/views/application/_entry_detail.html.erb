@@ -155,7 +155,7 @@
   </div>
   <% unless device_type == :mobile%>
     <% unless  @search_record.blank? || @search_query.blank? %>
-      <div class="grid__item  two-fifths  palm-one-whole text--center float--right">
+      <div class="grid__item  one-third  palm-one-whole text--center float--right">
         <span> Advertisement</span><br>
         <div class="grid__item one-whole">
           <%= mh_160_600 %>
@@ -182,7 +182,7 @@
       $("#results_detail_table").removeClass("grid__item  two-thirds  palm-one-whole").addClass('');
     } else {
       if(result === true) {
-        $("#results_detail_table").addClass("grid__item  one-third  palm-one-whole");
+        $("#results_detail_table").addClass("grid__item  two-thirds  palm-one-whole");
         $('.advert_div').show();
       } else {
         $('.advert_div').hide();
