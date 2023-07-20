@@ -1215,4 +1215,13 @@ module ApplicationHelper
   def enc_uri_reg(search_query)
     'https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName="#{search_query.first_name}"&lastName="#{search_query.last_name}"&tr_device=&size=160x600'
   end
-              end
+#publift
+  def horz_advert(fuse)
+    content_tag :div, class:'grid__item one-whole' do
+      content_tag :fieldset do
+        concat(content_tag(:legend,"Advertisement", align:'center'))
+        concat(content_tag(:div,'',"data-fuse"=>fuse))
+      end
+    end
+  end
+end

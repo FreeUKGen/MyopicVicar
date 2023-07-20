@@ -7,12 +7,7 @@
 <% end%>
 <% case appname_downcase %>
 <% when 'freereg' %>
-  <div class="grid__item one-whole">
-    <div class = "adsense_box push--ends reg_adsense">
-      <p class = "text--center">Advertisement</p>
-      <div data-fuse="22945844442"></div>
-    </div>
-  </div>
+  <%= horz_advert('22945844442') %>
   <h1 class="title text--center">Search our Parish Registers</h1>
   <%= render 'form_freereg' %>
 <% when 'freecen' %>
