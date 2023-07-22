@@ -33,6 +33,46 @@ class Freecen1VldEntry
   field :unoccupied_notes, type: String
   field :verbatim_birth_county, type: String
   field :verbatim_birth_place, type: String
+  field :pob_valid, type: Boolean
 
+  embeds_many :freecen1_vld_entry_edits, cascade_callbacks: true
   belongs_to :freecen1_vld_file, index: true
+
+  ############################################################## class methods
+
+  class << self
+    def valid_pob?(vld_file, vld_entry)
+      result = false
+      result = true if vld_entry.birth_county == 'UNK' && vld_entry.birth_place == 'UNK'
+      result = true if Freecen2Place.valid_chapman_code?(vld_entry.birth_county) && vld_entry.birth_place == '-'
+      result = true if vld_file.full_year == '1841' && vld_entry.verbatim_birth_county == 'OUC' && vld_entry.verbatim_birth_place == '-'
+      result = Freecen2Place.valid_place_name?(vld_entry.birth_county, vld_entry.birth_place) unless result == true
+      result = Freecen2Place.valid_place_name?(vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place) unless result == true
+      result
+    end
+
+    def update_linked_records_pob(id, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place)
+      individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: id)
+      return if individual_rec.blank?
+
+      individual_rec.set(verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place, birth_county: birth_county, birth_place: birth_place,)
+      search_rec = SearchRecord.find_by(freecen_individual_id: individual_rec._id)
+      return if search_rec.blank?
+
+      search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place)
+    end
+
+  end
+
+  ############################################################### instance methods
+
+  def add_freecen1_vld_entry_edit(userid, reason, previous_verbatim_birth_county, previous_verbatim_birth_place, previous_birth_county, previous_birth_place)
+    edit = Freecen1VldEntryEdit.new(editor: userid, reason: reason)
+    edit[:previous_verbatim_birth_county] = previous_verbatim_birth_county
+    edit[:previous_verbatim_birth_place] = previous_verbatim_birth_place
+    edit[:previous_birth_county] = previous_birth_county
+    edit[:previous_birth_place] = previous_birth_place
+    freecen1_vld_entry_edits << edit
+  end
+
 end
