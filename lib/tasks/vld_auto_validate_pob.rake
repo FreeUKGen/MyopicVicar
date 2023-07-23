@@ -1,5 +1,5 @@
 desc 'Automatic validation of VLD POB data'
-task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit, :fix] => :environment do |_t, args|
+task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit] => :environment do |_t, args|
 
   require 'user_mailer'
 
@@ -80,14 +80,13 @@ task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit, :f
   end
 
   record_limit = args.limit.to_i
-  fixit = args.fix.to_s == 'Y'
 
   if args_valid == true
     file_for_listing = "log/vld_auto_validate_pob_#{vld_file.dir_name}_#{file_name}_#{userid}_#{start_time.strftime('%Y%m%d%H%M')}.csv"
     FileUtils.mkdir_p(File.dirname(file_for_listing)) unless File.exist?(file_for_listing)
     file_for_listing = File.new(file_for_listing, 'w')
 
-    message = "Automatic Validation of VLD POB data for #{vld_file.dir_name} - #{vld_file_name} with fix = #{fixit} for user #{userid}"
+    message = "Automatic Validation of VLD POB data for #{vld_file.dir_name} - #{vld_file_name} with limit = #{record_limit} for user #{userid}"
     start_message = "#{start_time} Started: #{message}"
     @report_csv = ''
 
@@ -121,11 +120,10 @@ task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit, :f
 
         if vld_entry.birth_place == 'UNK'
           reason = 'Automatic update of birth place UNK to hyphen'
-          if fixit
-            vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
-            vld_entry.update_attributes(birth_place: '-')
-            Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.birth_county, '-', vld_entry.notes)
-          end
+          vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
+          vld_entry.update_attributes(birth_place: '-')
+          Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.birth_county, '-', vld_entry.notes)
+
           write_csv_line(file_for_listing, vld_entry, 'N/A', reason)
         end
 
@@ -141,13 +139,17 @@ task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit, :f
               vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
               vld_entry.update_attributes(birth_county: prop_rec.new_birth_county, birth_place: prop_rec.new_birth_place) if prop_rec.propagate_pob
               vld_entry.update_attributes(notes: prop_rec.new_notes) if prop_rec.propagate_notes
+              if prop_rec.propagate_notes
+                vld_entry.notes.blank? ? the_note = prop_rec.new_notes : "#{vld_entry.notes} #{prop_rec.new_notes}"
+                vld_entry.update_attributes(notes: the_note)
+              end
               Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
               place_valid = true
             end
           end
         end
 
-        vld_entry.update_attributes(pob_valid: place_valid) if fixit
+        vld_entry.update_attributes(pob_valid: place_valid)
         if place_valid == false
           write_csv_line(file_for_listing, vld_entry, place_valid, '')
         end
