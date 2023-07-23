@@ -12,17 +12,20 @@ task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit, :f
     csv_file.puts line.to_s
   end
 
-  def self.write_csv_line(csv_file, id, dwelling_number, sequence_in_household, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, pob_valid, notes)
+  def self.write_csv_line(csv_file, vld_entry, pob_valid, comment)
     dline = ''
-    dline << "#{id},"
-    dline << "#{dwelling_number},"
-    dline << "#{sequence_in_household},"
-    dline << "#{verbatim_birth_county},"
-    dline << "#{verbatim_birth_place},"
-    dline << "#{birth_county},"
-    dline << "#{birth_place},"
+    dline << "#{vld_entry.id},"
+    dline << "#{vld_entry.folio_number},"
+    dline << "#{vld_entry.page_number},"
+    dline << "#{vld_entry.dwelling_number},"
+    dline << "#{vld_entry.sequence_in_household},"
+    dline << "#{vld_entry.verbatim_birth_county},"
+    dline << "#{vld_entry.verbatim_birth_place},"
+    dline << "#{vld_entry.birth_county},"
+    dline << "#{vld_entry.birth_place},"
+    dline << "#{vld_entry.notes},"
     dline << "#{pob_valid},"
-    dline << "#{notes},"
+    dline << "#{comment},"
     output_to_csv(csv_file, dline)
     @report_csv += "\n"
     @report_csv += dline
@@ -90,7 +93,7 @@ task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit, :f
 
     output_to_log(file_for_log, start_message)
 
-    hline = 'VldEntryId,Dwelling_number,Sequence_in_household,Verbatim_birth_county,Verbatim_birth_place,Birth_county,Birth_place,POB_valid,Notes'
+    hline = 'VldEntryId,Folio_number,Page_number,Dwelling_number,Sequence_in_household,Verbatim_birth_county,Verbatim_birth_place,Birth_county,Birth_place,Notes,POB_valid,Comments'
     output_to_csv(file_for_listing, hline)
     @report_csv = hline
 
@@ -114,18 +117,18 @@ task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit, :f
         if vld_entry.birth_place == 'UNK'
           reason = 'Automatic update of birth place UNK to hyphen'
           if fixit
-            vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, '-')
+            vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, '-', vld_entry.notes)
             vld_entry.update_attributes(birth_place: '-')
             Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, '-')
           end
-          write_csv_line(file_for_listing, vld_entry.id, vld_entry.dwelling_number, vld_entry.sequence_in_household, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, 'N/A', reason)
+          write_csv_line(file_for_listing, vld_entry, 'N/A', reason)
         end
 
         place_valid = Freecen1VldEntry.valid_pob?(vld_file, vld_entry)
 
         vld_entry.update_attributes(pob_valid: place_valid) if fixit
         if place_valid == false
-          write_csv_line(file_for_listing, vld_entry.id, vld_entry.dwelling_number, vld_entry.sequence_in_household, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, place_valid, '')
+          write_csv_line(file_for_listing, vld_entry, place_valid, '')
         end
 
         num_pob_valid += 1 if place_valid

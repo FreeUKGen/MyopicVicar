@@ -8,5 +8,6 @@ class Freecen1VldEntryEdit
   field :previous_verbatim_birth_place, type: String
   field :previous_birth_county, type: String
   field :previous_birth_place, type: String
+  field :previous_notes, type: String
   embedded_in :freecen1_vld_entry
 end

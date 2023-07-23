@@ -41,6 +41,7 @@ class Freecen1VldEntry
   ############################################################## class methods
 
   class << self
+
     def valid_pob?(vld_file, vld_entry)
       result = false
       result = true if vld_entry.birth_county == 'UNK' && vld_entry.birth_place == 'UNK'
@@ -55,24 +56,23 @@ class Freecen1VldEntry
       individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: id)
       return if individual_rec.blank?
 
-      individual_rec.set(verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place, birth_county: birth_county, birth_place: birth_place,)
+      individual_rec.set(verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place, birth_county: birth_county, birth_place: birth_place)
       search_rec = SearchRecord.find_by(freecen_individual_id: individual_rec._id)
       return if search_rec.blank?
 
       search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place)
     end
-
   end
 
   ############################################################### instance methods
 
-  def add_freecen1_vld_entry_edit(userid, reason, previous_verbatim_birth_county, previous_verbatim_birth_place, previous_birth_county, previous_birth_place)
+  def add_freecen1_vld_entry_edit(userid, reason, previous_verbatim_birth_county, previous_verbatim_birth_place, previous_birth_county, previous_birth_place, previous_notes)
     edit = Freecen1VldEntryEdit.new(editor: userid, reason: reason)
     edit[:previous_verbatim_birth_county] = previous_verbatim_birth_county
     edit[:previous_verbatim_birth_place] = previous_verbatim_birth_place
     edit[:previous_birth_county] = previous_birth_county
     edit[:previous_birth_place] = previous_birth_place
+    edit[:previous_notes] = previous_notes
     freecen1_vld_entry_edits << edit
   end
-
 end
