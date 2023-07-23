@@ -101,6 +101,11 @@ task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit, :f
     num_pob_valid = 0
     num_individuals = 0
 
+    if Freecen1VldEntryPropagation.count < 2
+      proceed = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', 'DEV', 'Newton Bushel', 'DEV', 'UNK', 'Unknown birth place Newton Bushel', true, true, userid)
+      p 'TESTING Propagation Record created' if proceed
+    end
+
     vld_entries.each do |vld_entry|
       next if FreecenIndividual.where(freecen1_vld_entry_id: vld_entry.id).count.zero? # IE not an individual
 
@@ -117,14 +122,30 @@ task :vld_auto_validate_pob, [:chapman_code, :vld_file_name, :userid, :limit, :f
         if vld_entry.birth_place == 'UNK'
           reason = 'Automatic update of birth place UNK to hyphen'
           if fixit
-            vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, '-', vld_entry.notes)
+            vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
             vld_entry.update_attributes(birth_place: '-')
-            Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, '-')
+            Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.birth_county, '-', vld_entry.notes)
           end
           write_csv_line(file_for_listing, vld_entry, 'N/A', reason)
         end
 
         place_valid = Freecen1VldEntry.valid_pob?(vld_file, vld_entry)
+
+        unless place_valid
+          Freecen1VldEntryPropagation.each do |prop_rec|
+            in_scope = Freecen1VldEntryPropagation.check_propagation_scope(prop_rec, vld_file)
+            next unless in_scope
+
+            if vld_entry.verbatim_birth_county == prop_rec.match_verbatim_birth_county && vld_entry.verbatim_birth_place == prop_rec.match_verbatim_birth_place
+              reason = 'Propagation'
+              vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
+              vld_entry.update_attributes(birth_county: prop_rec.new_birth_county, birth_place: prop_rec.new_birth_place) if prop_rec.propagate_pob
+              vld_entry.update_attributes(notes: prop_rec.new_notes) if prop_rec.propagate_notes
+              Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
+              place_valid = true
+            end
+          end
+        end
 
         vld_entry.update_attributes(pob_valid: place_valid) if fixit
         if place_valid == false

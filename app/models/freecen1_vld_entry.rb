@@ -52,11 +52,11 @@ class Freecen1VldEntry
       result
     end
 
-    def update_linked_records_pob(id, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place)
+    def update_linked_records_pob(id, birth_county, birth_place, notes)
       individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: id)
       return if individual_rec.blank?
 
-      individual_rec.set(verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place, birth_county: birth_county, birth_place: birth_place)
+      individual_rec.set(birth_county: birth_county, birth_place: birth_place, notes: notes)
       search_rec = SearchRecord.find_by(freecen_individual_id: individual_rec._id)
       return if search_rec.blank?
 
