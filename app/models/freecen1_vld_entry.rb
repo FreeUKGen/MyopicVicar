@@ -34,6 +34,7 @@ class Freecen1VldEntry
   field :verbatim_birth_county, type: String
   field :verbatim_birth_place, type: String
   field :pob_valid, type: Boolean
+  field :pob_warning, type: String
 
   embeds_many :freecen1_vld_entry_edits, cascade_callbacks: true
   belongs_to :freecen1_vld_file, index: true
@@ -41,16 +42,6 @@ class Freecen1VldEntry
   ############################################################## class methods
 
   class << self
-
-    def valid_pob?(vld_file, vld_entry)
-      result = false
-      result = true if vld_entry.birth_county == 'UNK' && vld_entry.birth_place == 'UNK'
-      result = true if Freecen2Place.valid_chapman_code?(vld_entry.birth_county) && vld_entry.birth_place == '-'
-      result = true if vld_file.full_year == '1841' && vld_entry.verbatim_birth_county == 'OUC' && vld_entry.verbatim_birth_place == '-'
-      result = Freecen2Place.valid_place_name?(vld_entry.birth_county, vld_entry.birth_place) unless result == true
-      result = Freecen2Place.valid_place_name?(vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place) unless result == true
-      result
-    end
 
     def update_linked_records_pob(id, birth_county, birth_place, notes)
       individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: id)
@@ -61,6 +52,14 @@ class Freecen1VldEntry
       return if search_rec.blank?
 
       search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place)
+    end
+
+    def in_propagation_scope?(prop_rec, chapman_code, vld_year)
+      result = false
+      result = true if prop_rec.scope_year == 'ALL' && prop_rec.scope_county == 'ALL'
+      result = true if prop_rec.scope_year == vld_year && prop_rec.scope_county == 'ALL'
+      result = true if prop_rec.scope_year == 'ALL' && prop_rec.scope_county == chapman_code
+      result
     end
   end
 

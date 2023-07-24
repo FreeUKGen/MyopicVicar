@@ -17,14 +17,6 @@ class Freecen1VldEntryPropagation
 
   class << self
 
-    def check_propagation_scope(prop_rec, vld_file)
-      result = false
-      result = true if prop_rec.scope_year == 'ALL' && prop_rec.scope_county == 'ALL'
-      result = true if prop_rec.scope_year == vld_file.full_year && prop_rec.scope_county == 'ALL'
-      result = true if prop_rec.scope_year == 'ALL' && prop_rec.scope_county == vld_file.dir_name
-      result
-    end
-
     def create_new_propagation(scope_year, scope_county, match_verbatim_birth_county, match_verbatim_birth_place, new_birth_county, new_birth_place, new_notes, propagate_pob, propagate_notes, userid)
       existing_prop = Freecen1VldEntryPropagation.where(scope_year: scope_year, scope_county: scope_county, match_verbatim_birth_county: match_verbatim_birth_county, match_verbatim_birth_plac: match_verbatim_birth_place).first
       if existing_prop.blank?
