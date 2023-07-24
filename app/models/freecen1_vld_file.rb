@@ -192,6 +192,14 @@ class Freecen1VldFile
     self[:file_name_lower_case] = self[:file_name].downcase if self[:file_name].present?
   end
 
+  def auto_validate_pobs
+    p "AEV01 #{dir_name} - #{file_name} - #{userid}"
+    logger.warn("FREECEN:VLD_POB_VALIDATION: Starting rake task for #{userid} #{file_name} in #{dir_name}")
+    #pid1 = spawn("rake freecen:vld_auto_validate_pob[\"#{dir_name}\", \"#{file_name}\",  \"#{userid}\"]")
+    pid1 = spawn("bundle exec rake freecen:vld_auto_validate_pob[#{dir_name},#{file_name},#{userid}]")
+    logger.warn("FREECEN:VLD_POB_VALIDATION: rake task for #{pid1}")
+  end
+
   def chapman_code
     dir_name.sub(/-.*/, '')
   end
@@ -659,6 +667,9 @@ class Freecen1VldFile
     process = true
     [process, message]
   end
+
+
+
 
   def setup_batch_on_upload
     file_location = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)

@@ -5,8 +5,8 @@ namespace :freecen do
     vld_file = Freecen1VldFile.where(dir_name: chapman_code, file_name: vld_file_name).first
     raise "VLD File #{vld_file_name} in #{chapman_code} does not exist" if vld_file.blank?
 
-    num_individuals = vld_file.num_individuals.to_f
-    run_time_estimate = (num_individuals / 1000).to_f.round(1).to_s
+    num_individuals = vld_file.num_individuals
+    run_time_estimate = (num_individuals.to_f / 1000).to_f.round(1).to_s
     puts "Estimated Run Time = #{run_time_estimate} mins"
     validator = Freecen::Freecen1VldPobValidator.new
     num_valid = validator.process_vld_file(chapman_code, vld_file_name, userid)
