@@ -42,4 +42,17 @@ module Freecen1VldFilesHelper
     end
   end
 
+  def pob_val_status(vld)
+    status = ''
+    num_pob_valid = Freecen1VldEntry.where(freecen1_vld_file_id: vld._id, pob_valid: true).count
+    num_pob_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: vld._id, pob_valid: false).count
+    if num_pob_valid.zero? && num_pob_invalid.zero?
+      status = 'Not Started'
+    elsif num_pob_invalid.positive?
+      status = "#{num_pob_invalid} Invalid POBs"
+    else
+      'All POBs are valid'
+    end
+    status
+  end
 end

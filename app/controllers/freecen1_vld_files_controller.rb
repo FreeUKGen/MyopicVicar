@@ -2,6 +2,19 @@ class Freecen1VldFilesController < ApplicationController
 
   require 'digest/md5'
 
+  def auto_validate_pobs
+    if params[:id].present?
+      vldfile = Freecen1VldFile.find(params[:id])
+    else
+      message = 'The file was not correctly linked. Have your coordinator contact the Web Master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    run_time_estimate = (vldfile.num_individuals / 1000).to_f.round(1).to_s
+    message = "Started Automatic Validation of POBs for #{vldfile.file_name} - you will receive an Email when it has completed (estimated Run Time = #{run_time_estimate} mins)"
+    redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+  end
+
   def create
     # Initial guards
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'You must select a file') && return if params[:freecen1_vld_file].blank? || params[:freecen1_vld_file][:uploaded_file].blank?
@@ -230,6 +243,17 @@ class Freecen1VldFilesController < ApplicationController
     redirect_to freecen1_vld_files_path
   end
 
+  def manual_validate_pobs
+    if params[:id].present?
+      vldfile = Freecen1VldFile.find(params[:id])
+    else
+      message = 'The file was not correctly linked. Have your coordinator contact the Web Master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+
+    message = "**** Process under construction ****"
+    redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+  end
 
   def new
     get_user_info_from_userid

@@ -10,8 +10,9 @@
       <th class='sticky-header '>Loaded At</th>
       <th class='sticky-header '>Uploaded By</th>
       <th class='sticky-header '>Transcriber</th>
+      <th class='sticky-header '>POB Val Status</th>
       <% if %w[system_administrator data_manager executive_director county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
-        <th colspan = "6" class='sticky-header '>Actions</th>
+        <th colspan = "8" class='sticky-header '>Actions</th>
       <% else%>
         <th colspan = "1" class='sticky-header '>Actions</th>
       <% end%>
@@ -27,6 +28,9 @@
           <td><%= loaded_at(freecen1_vld_file) %></td>
           <td><%= freecen1_vld_file.userid %></td>
           <td><%= freecen1_vld_file.transcriber_name %></td>
+          <% if %w[system_administrator data_manager].include?(@user.person_role)%>
+            <td><%= pob_val_status(freecen1_vld_file)  %></td>
+          <% end %>
           <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
           <% if %w[system_administrator data_manager executive_director county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
             <% if %w[system_administrator data_manager country_coordinator].include?(@user.person_role)%>
@@ -36,11 +40,23 @@
             <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Deleting", confirm: 'Are you sure you want to delete this Vld File? It may take some time to process, you will receive a message when the file delete has completed.'}, method: :delete %></td>
             <td><%= link_to 'Edit Transcriber', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Confirm you want to edit Transcriber for this file'} %></td>
             <td><%= link_to 'Edit Civil Parishes', edit_civil_parishes_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to edit Civil Parishes for this VLD file?'} %></td>
-          <% end%>
-        </tr>
-      <% end %>
-    <% end %>
-  </table>
-</div>
-<br>
-<br>
+            <% if  %w[system_administrator data_manager].include?(@user.person_role)%>
+              <% if pob_val_status(freecen1_vld_file) != 'All POBs are valid'%>
+                <td><%= link_to 'Auto POB Validation', auto_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Run Auto POB Validation for this VLD file?'} %></td>
+              <% else %>
+                <td><%= 'N/A' %>
+                <% end %>
+                <% if  pob_val_status(freecen1_vld_file) != 'All POBs are valid'  && pob_val_status(freecen1_vld_file) != 'Not Started'%>
+                  <td><%= link_to 'Manual POB Validation', manual_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Manually Validate POBs for this VLD file?'} %></td>
+                <% else %>
+                  <td><%= 'N/A' %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </tr>
+          <% end %>
+        <% end %>
+      </table>
+    </div>
+    <br>
+    <br>
