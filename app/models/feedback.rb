@@ -212,7 +212,7 @@ class Feedback
 
   def handbook_feedback_communication
     send_to_userid = 'GeoffJ'
-    UserMailer.feedback_action_request(self,send_to_userid).deliver_now
+    UserMailer.feedback_action_request(self,send_to_userid,'').deliver_now
   end
 
   def delete_replies
