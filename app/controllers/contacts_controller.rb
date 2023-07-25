@@ -115,9 +115,10 @@ class ContactsController < ApplicationController
     order = 'contact_time DESC'
     @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
     @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     @archived = session[:archived_contacts]
   end
-
 
   def keep
     @contact = Contact.find(params[:id]) if params[:id].present?
