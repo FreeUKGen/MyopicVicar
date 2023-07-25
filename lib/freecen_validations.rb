@@ -309,9 +309,9 @@ module FreecenValidations
 
       return [false, '?'] if field[-1] == '?'
 
-      return [true, ''] if %w[999y 999Y].include?(field)
+      return [false, 'Unusual Age 999'] if %w[999y 999Y].include?(field)
 
-      return [true, ''] if (field.match? VALID_NUMBER) && field.to_i == 999
+      return [false, 'Unusual Age 999'] if (field.match? VALID_NUMBER) && field.to_i == 999
 
       return [true, ''] if (field.match? VALID_NUMBER) && field.length <= 3 && field.to_i != 0 && field.to_i <= 120
 
