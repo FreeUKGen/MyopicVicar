@@ -353,6 +353,9 @@ MyopicVicar::Application.routes.draw do
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
 
+  get 'manage_documents/freecen_handbook', :to => 'manage_document#freecen_handbook', :as => :freecen_handbook_manage_documents
+  resources :manage_documents
+
 
   get 'userid_details/confirm_email_address', :to =>'userid_details#confirm_email_address', :as => :confirm_email_address_userid_details
   get 'userid_details/role', :to =>'userid_details#role', :as => :role_userid_detail

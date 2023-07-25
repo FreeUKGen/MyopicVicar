@@ -10,6 +10,9 @@
       <p >This process collects information about the page where you were having an issue. Please add a descriptive title and additional information about what you were experiencing or wanted to experience in the comment box and attach a screen shot or any other images. Submit the report by selecting the <b>Submit Problem Report </b>button at the bottom of the form and it will be submitted to the team for review and possible action.  <br />
     <em>The contents of your problem report will be publicly visible on the Internet.</em></p>
     </div>
+  <% elsif @feedback.feedback_type == 'freecen handbook feedback' %>
+    <h1 style="text-align: center">FreeCen Handbook Suggestion</h1>
+    <p> If you find an error or problem in one of the Handbook Parts, please let us know here.</p>
   <% else %>
     <h1>Give Feedback</h1>
   <% end %>

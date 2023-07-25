@@ -54,7 +54,7 @@ class FeedbacksController < ApplicationController
     redirect_back(fallback_location: new_feedback_path, notice: 'There was a problem creating your feedback!') && return if @feedback.errors.any?
 
     flash.notice = 'Thank you for your feedback!'
-    @feedback.communicate_initial_contact
+    @feedback.feedback_type == 'freecen handbook feedback' ? @feedback.communicate_handbook_feedback : @feedback.communicate_initial_contact
     if session[:return_to].present?
       redirect_to session.delete(:return_to)
     else
@@ -181,6 +181,7 @@ class FeedbacksController < ApplicationController
     @message.userid = @user.userid
     @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
     @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
+    @handbook_feedback = true if @feedback.feedback_type = 'freecen handbook feedback'
   end
 
   def restore

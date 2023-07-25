@@ -205,6 +205,16 @@ class Feedback
     self.feedback_action_communication
   end
 
+  def communicate_handbook_feedback
+    self.acknowledge_feedback
+    self.handbook_feedback_communication
+  end
+
+  def handbook_feedback_communication
+    send_to_userid = 'GeoffJ'
+    UserMailer.feedback_action_request(self,send_to_userid).deliver_now
+  end
+
   def delete_replies
     replies = Message.where(source_feedback_id: id).all
     return if replies.blank?
