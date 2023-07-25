@@ -49,6 +49,6 @@ namespace :freecen do
     end
     end_time = Time.now.to_f
     run_time = ((end_time - start_time) / 60).round(2).to_s
-    puts "Finished Automatic Validation of VLD POB data for #{args.chapman_code} - #{args.vld_file_name} for user #{args.userid} (Runtime = #{run_time} mins)\n"
+    puts "Finished Automatic Validation of VLD POB data for #{args.chapman_code} - #{args.vld_file_name} for user #{args.userid} (runtime = #{run_time} mins)\n"
   end
 end

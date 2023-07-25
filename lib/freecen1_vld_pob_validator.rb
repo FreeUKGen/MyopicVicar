@@ -71,8 +71,8 @@ module Freecen
           result = false
           warning = 'Verbatim POB is valid BUT Alternate POB is invalid'
         end
-        [result, warning]
       end
+      [result, warning]
     end
   end
 end
