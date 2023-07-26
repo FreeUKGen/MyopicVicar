@@ -1,10 +1,19 @@
 class Freecen1VldEntriesController < ApplicationController
   skip_before_action :require_login, only: [:show]
 
+  def edit_pob
+    message = "**** Process under construction ****"
+    redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+  end
+
   def index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No file identified') && return if params[:file].blank?
     get_user_info_from_userid
-    @freecen1_vld_entries = Freecen1VldEntry.where(freecen1_vld_file_id: params[:file]).order_by(dwelling_number: 1, sequence_in_household: 1)
+    if session[:vld_pob_val].present? && session[:vld_pob_val] = true
+      @freecen1_vld_entries = Freecen1VldEntry.where(freecen1_vld_file_id: params[:file], pob_valid: false).order_by(dwelling_number: 1, sequence_in_household: 1)
+    else
+      @freecen1_vld_entries = Freecen1VldEntry.where(freecen1_vld_file_id: params[:file]).order_by(dwelling_number: 1, sequence_in_household: 1)
+    end
     @freecen1_vld_file = Freecen1VldFile.find(params[:file])
     session.delete(:freecen1_vld_file)
   end

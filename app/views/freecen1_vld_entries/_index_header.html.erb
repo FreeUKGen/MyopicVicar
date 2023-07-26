@@ -1,5 +1,13 @@
-<% breadcrumb :freecen1_vld_entries,  @freecen1_vld_file, params[:page] %>
+<% if session[:vld_pob_val].present? && session[:vld_pob_val]%>
+  <% breadcrumb :freecen1_vld_file_manual_pob_val,  @freecen1_vld_file, params[:page] %>
+<% else %>
+  <% breadcrumb :freecen1_vld_entries,  @freecen1_vld_file, params[:page] %>
+<% end %>
 <% session[:entry_page] = params[:page]%>
 <% session[:freecen1_vld_file] = @freecen1_vld_file.id%>
-<h1 style="text-align: center">Listing of entries for <%= @freecen1_vld_file.file_name%></h1>
+<% if session[:vld_pob_val].present? && session[:vld_pob_val]%>
+  <h1 style="text-align: center">Listing <%= params[:num_invalid]%> entries with Invalid POBs for <%= @freecen1_vld_file.file_name%> in Census Year <%= @freecen1_vld_file.full_year%></h1>
+<% else %>
+  <h1 style="text-align: center">Listing of entries for <%= @freecen1_vld_file.file_name%></h1>
+<% end %>
 <%= render 'flash_notice' %>

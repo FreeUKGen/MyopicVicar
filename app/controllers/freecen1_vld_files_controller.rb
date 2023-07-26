@@ -233,9 +233,10 @@ class Freecen1VldFilesController < ApplicationController
     @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
     @chapman_code = session[:chapman_code]
     session[:type] = 'vld_file_audit_index'
+    session[:vld_pob_val] = false
   end
 
-  def list_invalid_civil_parishes    # HERE HERE HERE
+  def list_invalid_civil_parishes
 
     userid = session[:userid]
     chapman_code = session[:chapman_code]
@@ -249,14 +250,14 @@ class Freecen1VldFilesController < ApplicationController
 
   def manual_validate_pobs
     if params[:id].present?
-      vldfile = Freecen1VldFile.find(params[:id])
+      @freecen1_vld_file = Freecen1VldFile.find(params[:id])
     else
       message = 'The file was not correctly linked. Have your coordinator contact the Web Master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-
-    message = "**** Process under construction ****"
-    redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    session[:vld_pob_val] = true
+    @num_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+    redirect_to(freecen1_vld_entries_path(file: @freecen1_vld_file.id, num_invalid: @num_invalid))
   end
 
   def new
