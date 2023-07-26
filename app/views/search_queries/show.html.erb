@@ -73,11 +73,17 @@
                 </div>
               </div>
               <% unless device_type == :mobile%>
-                  <div  id='results_table_ad' class='float--right text--center'>
-                    <span class=''>Advertisement</span><br>
+                <div  id='results_table_ad' class='float--right text--center push--bottom'>
+                  <span class=''>Advertisement</span><br>
+                  <div class="grid__item one-whole">
                     <%= mh_160_600_freecen %>
                   </div>
-                <% end %>
+                  <div class="grid__item one-whole push--top" style="position: sticky; top:0; align-self: start;">
+                    <!-- GAM 71161633/FRBMD_freecenorguk/freecen_vrec_1 -->
+                    <div data-fuse="22946534660"></div>
+                  </div>
+                </div>
+              <% end %>
             </div>
           </div>
           <% when 'freebmd'%>
