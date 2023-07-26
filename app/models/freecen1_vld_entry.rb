@@ -24,6 +24,8 @@ class Freecen1VldEntry
   field :occupation, type: String
   field :occupation_flag, type: String
   field :page_number, type: Integer
+  field :pob_valid, type: Boolean
+  field :pob_warning, type: String
   field :relationship, type: String
   field :schedule_number, type: String
   field :sequence_in_household, type: Integer
@@ -33,8 +35,6 @@ class Freecen1VldEntry
   field :unoccupied_notes, type: String
   field :verbatim_birth_county, type: String
   field :verbatim_birth_place, type: String
-  field :pob_valid, type: Boolean
-  field :pob_warning, type: String
 
   embeds_many :freecen1_vld_entry_edits, cascade_callbacks: true
   belongs_to :freecen1_vld_file, index: true
