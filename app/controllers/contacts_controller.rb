@@ -138,6 +138,8 @@ class ContactsController < ApplicationController
     order = 'contact_time  ASC'
     @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
     @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
