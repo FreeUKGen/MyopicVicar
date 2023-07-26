@@ -95,13 +95,17 @@ class Contact
       secondary_contacts_array = []
       if secondary_role.present?
         secondary_role.each do |role|
-          contacts_of_role(role,archived, order,user).each do |c|
-            secondary_contacts_array << c
+          contacts = contacts_of_role(role,archived, order,user)
+          if contacts.present?
+            contacts.each do |c|
+              secondary_contacts_array << c
+            end
           end
         end
       end
       secondary_contacts_array
     end
+
 
     def contacts_of_role(role, archived, order,user)
       contacts = Contact.where(archived: archived)
@@ -111,7 +115,7 @@ class Contact
       when 'website_coordinator'
         c = contacts.get_contacts('Website Problem')
       when 'contacts_coordinator'
-        c = contacts.get_contacts('Data Question')
+        c = contacts.any_of({contact_type: 'Data Question'}, {contact_type: 'Data Problem'})
       when 'general_communication_coordinator'
         c = contacts.get_contacts('General Comment')
       when 'publicity_coordinator' || 'newsletter_coordinator'
@@ -122,12 +126,14 @@ class Contact
         c = contacts.get_contacts('Enhancement Suggestion')
       when 'system_administrator'
         c = contacts
-      when 'county_coordinator' || 'country_coordinator'
-        c = contacts.where(county: { '$in' => user.county_groups })
+      when 'county_coordinator'
+        c = contacts.where(county: { '$in' => user.county_groups }) if user.county_groups.present?
       when 'country_coordinator'
-        c = contacts.where(county: { '$in' => user.county_groups })
+        c = contacts.where(county: { '$in' => user.country_groups }) if user.country_groups.present?
+      when 'master_county_coordinator'
+        c = contacts.where(county: {'$ne'=> '' })
       end
-      ordered_contact = c.order_by(order)
+      ordered_contact = c.present? ? c.order_by(order) : c
       ordered_contact
     end
 

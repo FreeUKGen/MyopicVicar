@@ -354,7 +354,7 @@ module ChapmanCode
       'England and Wales Shipping' => 'EWS',
       'Out of County' => 'OUC',
       'Overseas British' => 'OVB',
-      'Overseas Foreign' => 'OVF',
+      'Born Overseas' => 'OVF',
       'Scottish Shipping' => 'SCS',
       'Other Locations' => 'OTH',
       'Royal Navy Ships' => 'RNS',
