@@ -1224,4 +1224,10 @@ module ApplicationHelper
       end
     end
   end
+
+  def fuse_tags_source
+    freereg = '3271'
+    freecen = '3270'
+    src = "https://cdn.fuseplatform.net/publift/tags/2/#{appname_downcase}/fuse.js"
+  end
 end
