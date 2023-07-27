@@ -41,7 +41,10 @@ module Freecen
             reason = "Propagation (id = #{prop_rec._id})"
             vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
             vld_entry.update_attributes(birth_county: prop_rec.new_birth_county, birth_place: prop_rec.new_birth_place) if prop_rec.propagate_pob
-            vld_entry.update_attributes(notes: prop_rec.new_notes) if prop_rec.propagate_notes
+            if prop_rec.propagate_notes
+              the_notes = vld_entry.notes.blank? ? prop_rec.new_notes : "#{vld_entry.notes} #{prop_rec.new_notes}"
+              vld_entry.update_attributes(notes: the_notes)
+            end
             Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
             pob_valid = true
             pob_warning = ''

@@ -9,7 +9,7 @@ class Freecen1VldFilesController < ApplicationController
       message = 'The file was not correctly linked. Have your coordinator contact the Web Master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-
+    # seems to be able to process about 1000 records per min
     run_time_estimate = (vldfile.num_individuals.to_f / 1000).to_f.round(0).to_s
 
     get_user_info_from_userid
