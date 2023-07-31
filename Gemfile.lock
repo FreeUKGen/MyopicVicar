@@ -14,7 +14,7 @@ GIT
       routing-filter (>= 0.4.0)
 
 PATH
-  remote: vendor/extensions
+  remote: vendor/extensions/county_pages
   specs:
     refinerycms-county_pages (1.4)
       refinerycms-core
@@ -205,7 +205,9 @@ GEM
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2020.1104)
-    mimemagic (0.3.5)
+    mimemagic (0.4.3)
+      nokogiri (~> 1)
+      rake
     mini_magick (4.11.0)
     mini_mime (1.0.2)
     mini_portile2 (2.8.0)

@@ -48,7 +48,7 @@ gem 'coffee-rails'#, '~> 3.2.1'
 gem 'uglifier'#, '>= 1.0.3'
 gem 'jquery-rails'
 gem 'font_awesome5_rails'
-gem 'refinerycms-county_pages', :path => 'vendor/extensions'
+gem 'refinerycms-county_pages', path: 'vendor/extensions/county_pages'
 gem 'rubocop-rails'
 gem 'rubocop', '~> 1.23.0', require: false
 gem 'browser'

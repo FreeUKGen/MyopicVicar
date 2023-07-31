@@ -1,0 +1,33 @@
+version: '3'
+services:
+  app:
+    build: .
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - .:/var/www/myopicvicar
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - mongo
+
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: freereg2
+      MYSQL_DATABASE: freereg2_development
+      MYSQL_USER: freereg2
+      MYSQL_PASSWORD: freereg2
+
+  mongo:
+    image: mongo:4
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db # named volume
+
+volumes:
+  mongodb_data:
