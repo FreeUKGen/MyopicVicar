@@ -57,7 +57,7 @@
       <% else %>
         <th class='sticky-header'>Deleted flag</th>
       <% end %>
-      <th colspan = "1" class='sticky-header '>Action</th>
+      <th colspan = "2" class='sticky-header '>Actions</th>
     </tr>
     <% @freecen1_vld_entries.each do |freecen1_vld_entry| %>
       <tr id="<%= freecen1_vld_entry.id %>">
@@ -108,7 +108,8 @@
         <% if session[:vld_pob_val].present? && session[:vld_pob_val]%>
           <td><%= freecen1_vld_entry.pob_valid %></td>
           <td><%= freecen1_vld_entry.pob_warning %></td>
-          <td><%= link_to 'Edit', edit_pob_freecen1_vld_entry_path(id: freecen1_vld_entry.id,file: @freecen1_vld_file.id) %></td>
+          <td><%= link_to 'Edit', edit_pob_freecen1_vld_entry_path(id: freecen1_vld_entry.id) %></td>
+          <td><%= link_to 'Override POB Status', override_pob_status_freecen1_vld_entry_path(id: freecen1_vld_entry.id), method: :get, data: { confirm:  'Are you sure you want to Override the POB Status for this entry?'} %></td>
         <% else %>
           <td><%= freecen1_vld_entry.deleted_flag %></td>
           <td><%= link_to 'Show', freecen1_vld_entry_path(id: freecen1_vld_entry.id,file: @freecen1_vld_file.id) %></td>

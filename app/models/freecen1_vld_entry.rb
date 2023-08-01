@@ -43,8 +43,8 @@ class Freecen1VldEntry
 
   class << self
 
-    def update_linked_records_pob(id, birth_county, birth_place, notes)
-      individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: id)
+    def update_linked_records_pob(vld_entry, birth_county, birth_place, notes)
+      individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
       return if individual_rec.blank?
 
       individual_rec.set(birth_county: birth_county, birth_place: birth_place, notes: notes)
@@ -60,6 +60,28 @@ class Freecen1VldEntry
       result = true if prop_rec.scope_year == vld_year && prop_rec.scope_county == 'ALL'
       result = true if prop_rec.scope_year == 'ALL' && prop_rec.scope_county == chapman_code
       result
+    end
+
+    def valid_pob?(vld_year, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place)
+      result = false
+      warning = ''
+      result = true if birth_county == 'UNK' && birth_place == 'UNK'
+      result = true if Freecen2Place.valid_chapman_code?(birth_county) && birth_place == '-'
+      result = true if vld_year == '1841' && birth_county == 'OUC' && birth_place == '-'
+      unless result
+        alternate_pob_valid = Freecen2Place.valid_place_name?(birth_county, birth_place)
+        verbatim_pob_valid = Freecen2Place.valid_place_name?(verbatim_birth_county, verbatim_birth_place)
+        if alternate_pob_valid && verbatim_pob_valid || alternate_pob_valid && !verbatim_pob_valid
+          result = true
+        elsif !alternate_pob_valid && !verbatim_pob_valid
+          result = false
+          warning = 'Verbatim POB is invalid AND Alternate POB is invalid'
+        elsif verbatim_pob_valid && !alternate_pob_valid
+          result = false
+          warning = 'Verbatim POB is valid BUT Alternate POB is invalid'
+        end
+      end
+      [result, warning]
     end
   end
 

@@ -27,7 +27,7 @@ module Freecen
         reason = 'Automatic update of birth place UNK to hyphen'
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
         vld_entry.update_attributes(birth_place: '-')
-        Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.birth_county, '-', vld_entry.notes)
+        Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
       end
 
       pob_valid, pob_warning = valid_pob?(vld_entry, vld_year)
@@ -45,7 +45,7 @@ module Freecen
               the_notes = vld_entry.notes.blank? ? prop_rec.new_notes : "#{vld_entry.notes} #{prop_rec.new_notes}"
               vld_entry.update_attributes(notes: the_notes)
             end
-            Freecen1VldEntry.update_linked_records_pob(vld_entry._id, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
+            Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
             pob_valid = true
             pob_warning = ''
           end
@@ -59,22 +59,7 @@ module Freecen
     def valid_pob?(vld_entry, vld_year)
       result = false
       warning = ''
-      result = true if vld_entry.birth_county == 'UNK' && vld_entry.birth_place == 'UNK'
-      result = true if Freecen2Place.valid_chapman_code?(vld_entry.birth_county) && vld_entry.birth_place == '-'
-      result = true if vld_year == '1841' && vld_entry.birth_county == 'OUC' && vld_entry.birth_place == '-'
-      unless result
-        alternate_pob_valid = Freecen2Place.valid_place_name?(vld_entry.birth_county, vld_entry.birth_place)
-        verbatim_pob_valid = Freecen2Place.valid_place_name?(vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place)
-        if alternate_pob_valid && verbatim_pob_valid || alternate_pob_valid && !verbatim_pob_valid
-          result = true
-        elsif !alternate_pob_valid && !verbatim_pob_valid
-          result = false
-          warning = 'Verbatim POB is invalid AND Alternate POB is invalid'
-        elsif verbatim_pob_valid && !alternate_pob_valid
-          result = false
-          warning = 'Verbatim POB is valid BUT Alternate POB is invalid'
-        end
-      end
+      result, warning = Freecen1VldEntry.valid_pob?(vld_year, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place)
       [result, warning]
     end
   end
