@@ -6,7 +6,7 @@
     <%= f.fields_for :sent_message do |multiple| %>
       <div class= "grid">
         <li  class="grid__item  one-fifth  palm-one-whole push--bottom " id="message_recipients">
-          <label class="ttip" for="sender" tabindex="0"> Sender  <%= image_tag 'png/info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Select who is to receive responses. Your userid has been preselected. A blank will use freereg_contacts.</span></a></label>
+          <label class="ttip" for="sender" tabindex="0"> Sender <%= image_tag 'png/info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Select who is to receive responses. Your userid has been preselected at the top of the list.</span></a></label>
         <select id="sender" name="sender" class="select" size="4">
           <% @senders.each do |sender| %>
             <% if sender == @sent_message.sender %>
@@ -38,7 +38,7 @@
       </select>
     </li>
     <li class="grid__item  one-fifth lap-one-whole palm-one-whole">
-      <label class="ttip" for="active" tabindex="0" > Active Member <%= image_tag 'png/info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Remove check to select inactive members</span></a></label>
+      <label class="ttip" for="active" tabindex="0" > Active Members only? <%= image_tag 'png/info.png', alt: 'Info', height: '16' %><span  class="ttip__text">Remove check to select inactive members</span></a></label>
     <% if @sent_message.active %>
       <input type="checkbox" name="active" value= "true" checked >
     <%else%>

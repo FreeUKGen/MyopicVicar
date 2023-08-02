@@ -43,6 +43,7 @@ class FreecenCsvFile
   field :file_digest, type: String
   field :file_errors, type: Array
   field :file_name, type: String
+  field :file_name_lower_case, type: String
   field :flexible, type: Boolean, default: true
   field :locked_by_coordinator, type: Boolean, default: false
   field :locked_by_transcriber, type: Boolean, default: false
@@ -77,7 +78,7 @@ class FreecenCsvFile
   field :type_of_processing, type: String  # placeholder used by change_userid process
 
 
-  before_save :add_lower_case_userid_to_file, :add_country_to_file
+  before_save :add_lower_case_userid_to_file, :add_country_to_file, :add_lower_case_file_name_to_file
   before_create :set_completes_piece_flag
   #after_save :recalculate_last_amended, :update_number_of_files
 
@@ -524,6 +525,10 @@ class FreecenCsvFile
     self[:userid_lower_case] = self[:userid].downcase
   end
 
+  def add_lower_case_file_name_to_file
+    self[:file_name_lower_case] = self[:file_name].downcase
+  end
+
   def is_whole_piece(piece)
     return true if piece.number.downcase + ".csv" == self.file_name.downcase
   end
@@ -687,7 +692,7 @@ class FreecenCsvFile
     elsif type == 'Dwe'
       entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).in(data_transition: Freecen::LOCATION_DWELLING).all.order_by(record_number: 1)
     elsif type == 'Ind'
-      entries = FreecenCsvEntry.where(freecen_csv_file_id:_id).all.order_by(record_number: 1)
+      entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).all.order_by(record_number: 1)
     elsif type == 'Err'
       entries = FreecenCsvEntry.where(freecen_csv_file_id: _id).where(:error_messages.gte => 1).all.order_by(record_number: 1)
     elsif type == 'War'
@@ -752,13 +757,15 @@ class FreecenCsvFile
       when 'language'
         line << rec['language']
       when 'notes'
-        line << rec.notes
+        line << remove_british(rec.notes)
+      when 'nationality'
+        line << check_for_british(rec.notes)
       when 'ward', 'parliamentary_constituency', 'poor_law_union', 'police_district', 'sanitary_district', 'special_water_district',
           'scavenging_district', 'special_lighting_district', 'school_board'
         entry = @use_blank ? @blank : @dash
         line << entry
-      when 'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'class_of_house', 'rooms_with_windows', 'industry', 'at_home', 'years_married',
-          'children_born_alive', 'children_living', 'children_deceased', 'nationality', 'disability_notes'
+      when 'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'class_of_house', 'industry', 'at_home', 'years_married',
+          'children_born_alive', 'children_living', 'children_deceased', 'disability_notes'
         line << @blank
       when 'location_flag'
         entry = rec.location_flag.presence || @blank
@@ -782,6 +789,19 @@ class FreecenCsvFile
       end
     end
     line
+  end
+
+  def remove_british(notes)
+    new_note = notes
+    if notes.present? && notes.include?('British')
+      new_note.slice! 'British'
+      new_note.squish!
+    end
+    new_note
+  end
+
+  def check_for_british(notes)
+    'British' if notes.present? && notes.include?('British')
   end
 
   def compute_enumeration_district(rec)

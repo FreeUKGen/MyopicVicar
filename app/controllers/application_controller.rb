@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
           last_midnight = Time.new(time.year, time.month, time.day)
           @site_stat = SiteStatistic.collection.find({ interval_end: last_midnight }, 'projection' => { interval_end: 0, year: 0, month: 0, day: 0, _id: 0 }).first
         end
-        session[:site_stats] = @site_stat
+        session[:site_stats] = @site_stat.id if @site_stats.present?
       when 'freecen'
         site_stat = Freecen2SiteStatistic.order_by(interval_end: -1).first
         session[:site_stats] = {}
@@ -288,7 +288,6 @@ class ApplicationController < ActionController::Base
     session.delete(:original_message_id)
     session.delete(:query)
     session.delete(:search_names)
-    session[:stats_view] = false
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)
@@ -342,7 +341,6 @@ class ApplicationController < ActionController::Base
     session.delete(:register)
     session.delete(:search_names)
     session.delete(:type)
-    session[:stats_view] = false
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)
