@@ -6,7 +6,7 @@
 <% session[:entry_page] = params[:page]%>
 <% session[:freecen1_vld_file] = @freecen1_vld_file.id%>
 <% if session[:vld_pob_val].present? && session[:vld_pob_val]%>
-  <h1 style="text-align: center">Listing <%= params[:num_invalid]%> entries with Invalid POBs for <%= @freecen1_vld_file.file_name%> in Census Year <%= @freecen1_vld_file.full_year%></h1>
+  <h1 style="text-align: center">Listing <%= params[:num_invalid]%> entries with Invalid POB for <%= @freecen1_vld_file.file_name%> in Census Year <%= @freecen1_vld_file.full_year%></h1>
 <% else %>
   <h1 style="text-align: center">Listing of entries for <%= @freecen1_vld_file.file_name%></h1>
 <% end %>

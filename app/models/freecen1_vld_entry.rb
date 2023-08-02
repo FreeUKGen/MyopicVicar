@@ -96,4 +96,14 @@ class Freecen1VldEntry
     edit[:previous_notes] = previous_notes
     freecen1_vld_entry_edits << edit
   end
+
+  def edits_made?(parameters)
+    return true if parameters[:verbatim_birth_county].present? && parameters[:verbatim_birth_county] != verbatim_birth_county
+    return true if parameters[:verbatim_birth_place].present? && parameters[:verbatim_birth_place] != verbatim_birth_place
+    return true if parameters[:birth_county].present? && parameters[:birth_county] != birth_county
+    return true if parameters[:birth_place].present? && parameters[:birth_place] != birth_place
+    return true if parameters[:notes].present? && parameters[:notes] != notes
+    return true if parameters[:notes].blank? && notes.present?
+    false
+  end
 end
