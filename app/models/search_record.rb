@@ -906,7 +906,7 @@ class SearchRecord
 
   def populate_search_names
     return unless transcript_names && transcript_names.size > 0
-
+    possible_last_names = transcript_names.map{|n| n[:last_name].downcase}.compact
     transcript_names.each do |name_hash|
       person_type = PersonType::FAMILY
       person_type = PersonType::PRIMARY if name_hash[:type] == 'primary'
@@ -920,15 +920,17 @@ class SearchRecord
       else
         person_gender = gender_from_role(person_role)
       end
-      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
+      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender, possible_last_names)
       search_names << name if name
     end
   end
 
-  def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
+  def search_name(first_name, last_name, person_type, person_role, person_gender, possible_last_names, source = Source::TRANSCRIPT)
     name = nil
     unless last_name.blank?
       name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+    else
+      name = SearchName.new({ :first_name => copy_name(first_name), possible_last_names: possible_last_names,:origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
     name
   end

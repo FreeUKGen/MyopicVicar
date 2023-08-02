@@ -6,6 +6,7 @@ class SearchName
   field :role, type: String
   field :gender, type: String #m=male, f=female, nil=not specified
   field :type, type: String
+  field :possible_last_names, type: Array
 
 
 
