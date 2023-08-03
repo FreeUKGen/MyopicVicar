@@ -55,17 +55,18 @@ class Freecen1VldEntriesController < ApplicationController
         result = true
         warning = ''
         reason = 'Manual Val Accept'
-      elsif @freecen1_vld_entry.edits_made?(params[:freecen1_vld_entry]) == false
-        flash[:notice] = 'The update failed as there where No Changes to save'
-        redirect_to(edit_pob_freecen1_vld_entry_path(id: params[:id])) && return
+        # @freecen1_vld_entry.edits_made?(params[:freecen1_vld_entry])
 
       else
         result, warning = Freecen1VldEntry.valid_pob?(vld_year, params[:freecen1_vld_entry][:verbatim_birth_county], params[:freecen1_vld_entry][:verbatim_birth_place], params[:freecen1_vld_entry][:birth_county], params[:freecen1_vld_entry][:birth_place])
       end
       if result
-        @freecen1_vld_entry.add_freecen1_vld_entry_edit(@user.userid, reason, @freecen1_vld_entry.verbatim_birth_county, @freecen1_vld_entry.verbatim_birth_place, @freecen1_vld_entry.birth_county, @freecen1_vld_entry.birth_place, @freecen1_vld_entry.notes)
-        @freecen1_vld_entry.update_attributes(params[:freecen1_vld_entry])
-        Freecen1VldEntry.update_linked_records_pob(@freecen1_vld_entry,  params[:freecen1_vld_entry][:birth_county], params[:freecen1_vld_entry][:birth_place],  params[:freecen1_vld_entry][:notes])
+        verbatim_changed, alternative_changed, notes_changed = @freecen1_vld_entry.edits_made?(params[:freecen1_vld_entry])
+        if verbatim_changed || alternative_changed || notes_changed
+          @freecen1_vld_entry.add_freecen1_vld_entry_edit(@user.userid, reason, @freecen1_vld_entry.verbatim_birth_county, @freecen1_vld_entry.verbatim_birth_place, @freecen1_vld_entry.birth_county, @freecen1_vld_entry.birth_place, @freecen1_vld_entry.notes)
+          @freecen1_vld_entry.update_attributes(params[:freecen1_vld_entry])
+          Freecen1VldEntry.update_linked_records_pob(@freecen1_vld_entry,  params[:freecen1_vld_entry][:birth_county], params[:freecen1_vld_entry][:birth_place],  params[:freecen1_vld_entry][:notes])
+        end
         @freecen1_vld_entry.update_attributes(pob_valid: result, pob_warning: warning)
         @freecen1_vld_entry.reload
         flash[:notice] = "**** UPDATE - under construction (POB validation result = #{result} / #{warning} / #{params[:commit]})****"
@@ -74,7 +75,7 @@ class Freecen1VldEntriesController < ApplicationController
         #flash[:notice] = 'The Edit was successful'
         #redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
       else
-        flash[:notice] = 'The Update failed as POB is still invalid - see POB Warning message'
+        flash[:notice] = "The Update failed as POB (#{params[:freecen1_vld_entry][:birth_county]} #{params[:freecen1_vld_entry][:birth_place]}) is invalid"
       end
       redirect_to(edit_pob_freecen1_vld_entry_path(id: params[:id])) && return
 

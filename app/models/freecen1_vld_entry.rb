@@ -98,12 +98,15 @@ class Freecen1VldEntry
   end
 
   def edits_made?(parameters)
-    return true if parameters[:verbatim_birth_county].present? && parameters[:verbatim_birth_county] != verbatim_birth_county
-    return true if parameters[:verbatim_birth_place].present? && parameters[:verbatim_birth_place] != verbatim_birth_place
-    return true if parameters[:birth_county].present? && parameters[:birth_county] != birth_county
-    return true if parameters[:birth_place].present? && parameters[:birth_place] != birth_place
-    return true if parameters[:notes].present? && parameters[:notes] != notes
-    return true if parameters[:notes].blank? && notes.present?
-    false
+    verbatim_changed = false
+    alternative_changed = false
+    notes_changed = false
+    verbatim_changed = true if parameters[:verbatim_birth_county].present? && parameters[:verbatim_birth_county] != verbatim_birth_county
+    verbatim_changed = true if parameters[:verbatim_birth_place].present? && parameters[:verbatim_birth_place] != verbatim_birth_place
+    alternative_changed = true if parameters[:birth_county].present? && parameters[:birth_county] != birth_county
+    alternative_changed = true if parameters[:birth_place].present? && parameters[:birth_place] != birth_place
+    notes_changed = true if parameters[:notes].present? && parameters[:notes] != notes
+    notes_changed = true if parameters[:notes].blank? && notes.present?
+    [verbatim_changed, alternative_changed, notes_changed]
   end
 end
