@@ -9,7 +9,12 @@
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
     <!-- Publift fuse tag-->
-    <script async src=<%= fuse_tags_source %>></script>
+    <script type="text/javascript">
+      if ((getCookie('donate_cta_flag_new') != null)) {
+        $('head').append('<script async src="<%= fuse_tags_source %>"></script>')
+      }
+    </script>
+    <!--script async src=<%#= fuse_tags_source %>></script-->
     <script>
     // Define dataLayer and the gtag function.
       window.dataLayer = window.dataLayer || [];
