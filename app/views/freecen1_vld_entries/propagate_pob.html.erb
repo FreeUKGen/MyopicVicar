@@ -1,0 +1,49 @@
+<h3 style="text-align: center">Define Scope for the VLD Entry Propagation</h3>
+<%= render 'flash_notice' %>
+<div class="island  island--light">
+  <%= form_for(:propagatepob, url: propagate_pob_freecen1_vld_entry_path, method: :get, data: { confirm: "Are you sure you want to Proceed with the Propagation?"}) do |f| %>
+    <ol class="grid">
+      <fieldset class="input" style="text-align: center">
+        <legend><b>MATCH</b></legend>
+        <div>
+          Verbatim Birth County : <%= text_field_tag 'verbatim_birth_county', @verbatim_birth_county, :readonly => true %>
+          Verbatim Birth Place : <%= text_field_tag 'verbatim_birth_place', @verbatim_birth_place, :readonly => true %>
+        </div>
+      </fieldset>
+      <fieldset class="input" style="text-align: center">
+        <legend><b>PROPAGATE</b></legend>
+        <div>
+          <%= f.hidden_field :fields, :value => @propagation_fields %>
+          Alternative Birth County : <%= text_field_tag 'birth_county', @birth_county, :readonly => true %>
+          Alternative Birth Place : <%= text_field_tag 'birth_place', @birth_place, :readonly => true %>
+        </div>
+        <div>
+          Notes : <%= text_field_tag 'notes', @notes, :readonly => true, :size => 80%>
+        </div>
+      </ol>
+    </fieldset>
+    <fieldset class="input" style="text-align: center">
+      <legend><b>Propagation Scope - </b><i>select one</i></legend>
+      <ol class="grid">
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="ed_scope_input">
+          <%= f.radio_button :propagation_scope, 'ed' %> ED </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="file_scope_input">
+          <%= f.radio_button :propagation_scope, 'file', :checked =>true %> File (Piece) </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="county_scope_input">
+          <%= f.radio_button :propagation_scope, 'county' %> County </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="year_scope_input">
+          <%= f.radio_button :propagation_scope, 'year' %> Census Year </li>
+        <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="all_scope_input">
+          <%= f.radio_button :propagation_scope, 'all' %> Whole Collection </li>
+      </ol>
+    </fieldset>
+    <div style="text-align: center">
+      <%= submit_tag "Submit", :class => "btn  btn--small"%><br>
+      <%= link_to 'Cancel', edit_pob_freecen1_vld_entry_path(id: params[:id]) %>
+    </div>
+  <% end %>
+</div>
+<script type="text/javascript">
+  Ladda.bind( 'button[type=submit]' );
+</script>
+<br>

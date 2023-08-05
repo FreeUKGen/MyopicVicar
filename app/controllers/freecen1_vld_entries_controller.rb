@@ -10,7 +10,7 @@ class Freecen1VldEntriesController < ApplicationController
       @counties = ChapmanCode.freecen_birth_codes
       @counties.sort!
     else
-      flash[:notice] = 'An id for the display of the entry does not exist'
+      flash[:notice] = 'An id for the edit of the entry does not exist'
       redirect_to new_manage_resource_path && return
     end
   end
@@ -28,8 +28,29 @@ class Freecen1VldEntriesController < ApplicationController
   end
 
   def propagate_pob
-    message = "**** Propagate POB under contruction ****"
-    redirect_to new_manage_resource_path && return
+    if params[:commit] == 'Submit'
+      # session.delete[:prop_pob_fields] if session[:prop_pob_fields].present?
+      p "AEV01 #{params.inspect}"
+      flash[:notice] = 'Propagation submitted'
+      redirect_to new_manage_resource_path && return
+
+    else
+      get_user_info_from_userid
+      if params[:id].present?
+        @freecen1_vld_entry = Freecen1VldEntry.find(params[:id])
+        @verbatim_birth_county = @freecen1_vld_entry.verbatim_birth_county
+        @verbatim_birth_place = @freecen1_vld_entry.verbatim_birth_place
+        @birth_county = @freecen1_vld_entry.birth_county
+        @birth_place = @freecen1_vld_entry.birth_place
+        @birth_notes = @freecen1_vld_entry.notes
+        @propagation_scope = ''
+        @propagation_fields = params[:fields]
+        p "AEV02 #{params.inspect}"
+      else
+        flash[:notice] = 'An id for the propagation of the entry does not exist'
+        redirect_to new_manage_resource_path && return
+      end
+    end
   end
 
   def show
@@ -51,12 +72,27 @@ class Freecen1VldEntriesController < ApplicationController
       @freecen1_vld_file = Freecen1VldFile.find(@freecen1_vld_entry.freecen1_vld_file_id)
       vld_year = @freecen1_vld_file.full_year
       reason = 'Manual Val Edit'
-      if params[:commit] == 'Accept'
+      case params[:commit]
+
+      when 'Propagate Alternative Fields'
+        session.delete(:propagate_pob) if session[:propagate_pob].present?
+        session[:prop_pob_fields] = 'Propagate Alternative Fields'
+        redirect_to(propagate_pob_freecen1_vld_entry_path(id: params[:id], fields: 'Propagate Alternative Fields')) && return
+
+      when 'Propagate Notes'
+        session.delete(:propagate_pob) if session[:propagate_pob].present?
+        session[:prop_pob_fields] = 'Propagate Notes'
+        redirect_to(propagate_pob_freecen1_vld_entry_path(id: params[:id])) && return
+
+      when 'Propagate Both'
+        session.delete(:propagate_pob) if session[:propagate_pob].present?
+        session[:prop_pob_fields] = 'Propagate Alternative Fields & Notes'
+        redirect_to(propagate_pob_freecen1_vld_entry_path(id: params[:id])) && return
+
+      when 'Accept'
         result = true
         warning = ''
         reason = 'Manual Val Accept'
-        # @freecen1_vld_entry.edits_made?(params[:freecen1_vld_entry])
-
       else
         result, warning = Freecen1VldEntry.valid_pob?(vld_year, params[:freecen1_vld_entry][:verbatim_birth_county], params[:freecen1_vld_entry][:verbatim_birth_place], params[:freecen1_vld_entry][:birth_county], params[:freecen1_vld_entry][:birth_place])
       end
@@ -69,7 +105,8 @@ class Freecen1VldEntriesController < ApplicationController
         end
         @freecen1_vld_entry.update_attributes(pob_valid: result, pob_warning: warning)
         @freecen1_vld_entry.reload
-        flash[:notice] = "**** UPDATE - under construction (POB validation result = #{result} / #{warning} / #{params[:commit]})****"
+        session[:propagate_pob] = @freecen1_vld_entry.id
+        flash[:notice] = "The Update was successful - Please specify Propagation Requirements"
         # if values changed offer propagation
         #
         #flash[:notice] = 'The Edit was successful'
@@ -82,6 +119,7 @@ class Freecen1VldEntriesController < ApplicationController
     else
       flash[:notice] = 'An id for the display of the entry does not exist'
       redirect_to new_manage_resource_path && return
+
     end
   end
 

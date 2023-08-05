@@ -2,19 +2,29 @@
 <%= render 'flash_notice' %>
 <%= semantic_form_for @freecen1_vld_entry, :html => { :class => 'grid'}   do |f| %>
   <% if %w[data_manager system_administrator].include?(@user.person_role)%>
-    <%= f.input :pob_valid , :label => 'POB Validation Status', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 10, :disabled => true}%>
-    <%= f.input :pob_warning , :label => 'POB Warning Message', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 45, :disabled => true}%>
+    <%= f.input :pob_valid , :label => 'POB Validation Status', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 10, :readonly => true}%>
+    <%= f.input :pob_warning , :label => 'POB Warning Message', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 45, :readonly => true}%>
     <%= f.input :verbatim_birth_county ,  label: 'Verbatim Birth County; current value highlighted', selected: @freecen1_vld_entry.verbatim_birth_county, collection: @counties, include_blank: false, :input_html =>{:class => ' simple_form_bgcolour small_selection_field_width', :size => 4}, required: true %>
     <%= f.input :verbatim_birth_place ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 }, required: true%>
     <%= f.input :birth_county ,  label: 'Alterative Birth County; current value highlighted',selected: @freecen1_vld_entry.birth_county, collection: @counties, include_blank: false, :input_html =>{:class => ' simple_form_bgcolour small_selection_field_width', :size => 4}, required: true%>
     <%= f.input :birth_place ,  label: 'Alterative Birth Place', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 }, required: true %>
     <%= f.input :notes, :as => :text, :input_html => {:class => 'simple_form control-label simple_form_bgcolour ',   :placeholder => 'Notes about entry in census',  :size => '50x5' }%>
     <div  style='text-align: center'>
-      <%= f.submit 'Submit',  class: "btn btn--gamma", data: { confirm: 'Are you sure you want to Save the changes?'}, title: 'Saves changes.'%>
-      <%= link_to 'Cancel', manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id), method: :get, class: "btn btn--gamma", title: 'Cancels the Editing session.'%>
+      <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
+        <%= f.submit 'Propagate Alternative Fields',  class: "btn btn--gamma", title: 'Propagate Alternative POB values only'%>
+        <%= f.submit 'Propagate Notes',  class: "btn btn--gamma", title: 'Propagate Notes only'%>
+        <%= f.submit 'Propagate Alernative Fields & Notes',  class: "btn btn--gamma", title: 'Propagate Alternative POB values & Notes'%>
+      <% else%>
+        <%= f.submit 'Submit',  class: "btn btn--gamma", data: { confirm: 'Are you sure you want to Save the changes?'}, title: 'Saves changes.'%>
+        <%= link_to 'Cancel', manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id), method: :get, class: "btn btn--gamma", title: 'Cancels the Editing session.'%>
+      <% end%>
     </div>
     <div style='text-align: center'>
-      <%= f.submit 'Accept',  class: "btn btn--gamma", data: { confirm: 'Are you sure you want to Override warnings?'}, title: 'Saves changes and overrides warnings.'%>
-    <% end %>
-  </div>
+      <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
+        <%= link_to 'No Propagation Required', manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id), method: :get, class: "btn btn--gamma", title: 'Finishes the Editing session.'%>
+      <% else%>
+        <%= f.submit 'Accept',  class: "btn btn--gamma", data: { confirm: 'Are you sure you want to Override warnings?'}, title: 'Saves changes and overrides warnings.'%>
+      <% end %>
+    </div>
+  <% end %>
 <% end %>
