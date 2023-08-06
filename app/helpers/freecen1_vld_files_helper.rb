@@ -53,7 +53,7 @@ module Freecen1VldFilesHelper
     elsif num_pob_invalid.positive?
       status = "#{num_pob_invalid} Invalid POBs"
     else
-      'All POBs are valid'
+      status = 'All POBs are valid'
     end
     status
   end

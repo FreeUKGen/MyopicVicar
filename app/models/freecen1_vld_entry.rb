@@ -42,7 +42,6 @@ class Freecen1VldEntry
   ############################################################## class methods
 
   class << self
-
     def update_linked_records_pob(vld_entry, birth_county, birth_place, notes)
       individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
       return if individual_rec.blank?
@@ -76,7 +75,7 @@ class Freecen1VldEntry
         elsif !alternate_pob_valid && !verbatim_pob_valid
           result = false
           warning = 'Verbatim POB is invalid AND Alternate POB is invalid'
-        elsif verbatim_pob_valid && !alternate_pob_valid
+        else
           result = false
           warning = 'Verbatim POB is valid BUT Alternate POB is invalid'
         end
@@ -109,4 +108,75 @@ class Freecen1VldEntry
     notes_changed = true if parameters[:notes].blank? && notes.present?
     [verbatim_changed, alternative_changed, notes_changed]
   end
+
+  def propagate_collection(propagation_fields, userid)
+    propagate_pob, propagate_notes = propagation_flags(propagation_fields)
+    success = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+    error_message = success ? '' : 'Propagation record for Collection not created as it already exists. Please re-run Auto Validation on this VLD file.'
+    [success, error_message]
+  end
+
+  def propagate_county(propagation_fields, chapman_code, userid)
+    propagate_pob, propagate_notes = propagation_flags(propagation_fields)
+    success = Freecen1VldEntryPropagation.create_new_propagation('ALL', chapman_code, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+    error_message = success ? '' : 'Propagation record for County not created as it already exists. Please re-run Auto Validation on this VLD file.'
+    [success, error_message]
+  end
+
+  def propagate_ed(propagation_fields, userid)
+    Freecen1VldEntry.where(freecen1_vld_file_id: freecen1_vld_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
+      next if entry.id == id || entry.pob_valid == true
+
+      propagate_values(entry, id, userid, birth_county, birth_place, notes, propagation_fields)
+    end
+    [true, '']
+  end
+
+  def propagate_file(propagation_fields, userid)
+    Freecen1VldEntry.where(freecen1_vld_file_id: freecen1_vld_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
+      next if entry.id == id || entry.pob_valid == true
+
+      propagate_values(entry, id, userid, birth_county, birth_place, notes, propagation_fields)
+    end
+    [true, '']
+  end
+
+  def propagation_flags(propagation_fields)
+    propagate_pob = %w[Alternative Both].include?(propagation_fields) ? true : false
+    propagate_notes = %w[Notes Both].include?(propagation_fields) ? true : false
+    [propagate_pob, propagate_notes]
+  end
+
+  def propagate_values(entry, id, userid, birth_county, birth_place, notes, propagation_fields)
+    reason = "Propagation (id = #{id})"
+    entry.add_freecen1_vld_entry_edit(userid, reason, entry.verbatim_birth_county, entry.verbatim_birth_place, entry.birth_county, entry.birth_place, entry.notes)
+    case propagation_fields
+
+    when 'Alternate'
+      entry.update_attributes(birth_county: birth_county, birth_place: birth_place, pob_valid: true, pob_warning: '')
+
+    when 'Notes'
+      entry.update_attributes(notes: notes, pob_valid: true, pob_warning:'')
+
+    when 'Both'
+      entry.update_attributes(birth_county: birth_county, birth_place: birth_place, notes: notes, pob_valid: true, pob_warning: '')
+
+    end
+    Freecen1VldEntry.update_linked_records_pob(entry, birth_county, birth_place, notes)
+  end
+
+  def propagate_year(propagation_fields, userid)
+    vld_file = Freecen1VldFile.find_by(_id: freecen1_vld_file_id)
+    if vld_file.present?
+      census_year = vld_file.full_year
+      propagate_pob, propagate_notes = propagation_flags(propagation_fields)
+      success = Freecen1VldEntryPropagation.create_new_propagation(census_year, 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+      error_message = success ? '' : 'Propagation record for Year not created as it already exists. Please re-run Auto Validation on this VLD file.'
+    else
+      error_message = 'Error creating Propagation record - VLD File not Found'
+      success = false
+    end
+    [success, error_message]
+  end
+
 end

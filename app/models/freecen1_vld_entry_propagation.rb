@@ -12,13 +12,11 @@ class Freecen1VldEntryPropagation
   field :propagate_notes, type: Boolean
   field :created_by, type: String
 
-
   ############################################################## class methods
 
   class << self
-
     def create_new_propagation(scope_year, scope_county, match_verbatim_birth_county, match_verbatim_birth_place, new_birth_county, new_birth_place, new_notes, propagate_pob, propagate_notes, userid)
-      existing_prop = Freecen1VldEntryPropagation.where(scope_year: scope_year, scope_county: scope_county, match_verbatim_birth_county: match_verbatim_birth_county, match_verbatim_birth_plac: match_verbatim_birth_place).first
+      existing_prop = Freecen1VldEntryPropagation.where(scope_year: scope_year, scope_county: scope_county, match_verbatim_birth_county: match_verbatim_birth_county, match_verbatim_birth_place: match_verbatim_birth_place).first
       if existing_prop.blank?
         new_prop = Freecen1VldEntryPropagation.new
         new_prop.scope_year = scope_year
@@ -38,7 +36,6 @@ class Freecen1VldEntryPropagation
       end
       success
     end
-
   end
 
   ############################################################### instance methods
