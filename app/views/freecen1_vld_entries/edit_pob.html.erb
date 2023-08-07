@@ -10,9 +10,9 @@
     <%= f.input :pob_warning , :label => 'POB Warning Message', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 45, :readonly => true}%>
     <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
       <%= f.input :verbatim_birth_county ,  label: 'Verbatim Birth County', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 5, :readonly => true}%>
-      <%= f.input :verbatim_birth_place ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 }, :readonly => true%>
+      <%= f.input :verbatim_birth_place ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30, :readonly => true}%>
       <%= f.input :birth_county ,  label: 'Alternative Birth County', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 5, :readonly => true}%>
-      <%= f.input :birth_place ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 }, :readonly => true%>
+      <%= f.input :birth_place ,  label: 'Alternative Birth Place', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30, :readonly => true}%>
       <%= f.input :notes, :as => :text, :input_html => {:class => 'simple_form control-label simple_form_bgcolour ',   :placeholder => 'Notes about entry in census',  :size => '40x5', :readonly => true}%>
     <% else%>
       <%= f.input :verbatim_birth_county ,  label: 'Verbatim Birth County; current value highlighted', selected: @freecen1_vld_entry.verbatim_birth_county, collection: @counties, include_blank: false, :input_html =>{:class => ' simple_form_bgcolour small_selection_field_width', :size => 4}, required: true %>
