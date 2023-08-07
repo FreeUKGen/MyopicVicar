@@ -27,7 +27,6 @@ class SiteStatisticsController < ApplicationController
       message = 'End Date must be after Start Date'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-
     success, message, file_location, file_name = SiteStatistic.create_csv_file(start_date, end_date)
 
     if success
