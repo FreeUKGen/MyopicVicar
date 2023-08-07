@@ -152,7 +152,7 @@ class Freecen1VldEntry
     entry.add_freecen1_vld_entry_edit(userid, reason, entry.verbatim_birth_county, entry.verbatim_birth_place, entry.birth_county, entry.birth_place, entry.notes)
     case propagation_fields
 
-    when 'Alternate'
+    when 'Alternative'
       entry.update_attributes(birth_county: birth_county, birth_place: birth_place, pob_valid: true, pob_warning: '')
 
     when 'Notes'
