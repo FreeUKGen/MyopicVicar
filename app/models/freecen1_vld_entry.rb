@@ -74,10 +74,10 @@ class Freecen1VldEntry
           result = true
         elsif !alternate_pob_valid && !verbatim_pob_valid
           result = false
-          warning = 'Verbatim POB is invalid AND Alternate POB is invalid'
+          warning = 'Verbatim POB is invalid AND Alternative POB is invalid'
         else
           result = false
-          warning = 'Verbatim POB is valid BUT Alternate POB is invalid'
+          warning = 'Verbatim POB is valid BUT Alternative POB is invalid'
         end
       end
       [result, warning]
