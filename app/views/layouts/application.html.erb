@@ -30,21 +30,6 @@
       })(window,document,'script','dataLayer','<%= "#{gtm_key_value}"%>');
     </script>
       <!-- End Google Tag Manager -->
-    <script>
-      window.update_analytics = function (preference) {
-        if(preference == 'accept') {
-            gtag('consent', 'update', {
-              'ad_storage': 'granted',
-        'analytics_storage': 'granted'
-            });
-        } else if(preference == 'deny') {
-            gtag('consent', 'update', {
-              'ad_storage': 'denied',
-        'analytics_storage': 'denied'
-            });
-        }
-      };
-    </script>
     <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <script>
         (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
