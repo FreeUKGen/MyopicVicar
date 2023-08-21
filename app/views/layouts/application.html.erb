@@ -10,17 +10,6 @@
     <script src="/prebid_ads.js" type="text/javascript"></script>
     <!-- Publift fuse tag-->
     <script async src='<%= fuse_tags_source %>' type="text/javascript"></script>
-    <script>
-    // Define dataLayer and the gtag function.
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-
-      // Default ad_storage to 'denied'.
-      gtag('consent', 'default', {
-        'ad_storage': 'denied',
-        'analytics_storage': 'denied'
-      });
-    </script>
     <!-- Google Tag Manager -->
     <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -33,7 +22,7 @@
     <% if appname_downcase == 'freereg' %>
       <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
         <div class="reg_adsense reg_unit reg_page_level_ads">
-          <%= banner_header_freereg %>
+          <%#= banner_header_freereg %>
         </div>
       <% end %>
     <% end %>
