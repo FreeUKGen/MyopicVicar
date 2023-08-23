@@ -78,6 +78,7 @@ module UseridRole
                       'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
 
       'transcriber' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'transcriber_special_powers' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'validator' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'volunteer_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Gazetteer', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Gazetteer', 'Message System','Place Edit Reasons', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
