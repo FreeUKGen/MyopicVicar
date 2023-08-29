@@ -29,6 +29,7 @@ class Assignment
       end
     end
 
+
     def bulk_update_assignment(my_own,assignment_id,action_type,orig_status,new_status)
       assignment = Assignment.id(assignment_id)
       return false if assignment.first.nil?
@@ -126,6 +127,7 @@ class Assignment
       userid = Hash.new{|h,k| h[k]=[]}.tap{|h| u_ids.each{|k,v| h[k] = v}}
 
       i_ids = ImageServerImage.where(:assignment_id=>{'$in'=>a_ids.map(&:first)}).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
+      group_name = group_name.sort_by{ |k,v| v.scan(/\d+/).join('').to_i }
 
       (assignment_id, image_assignment_id, image_group_id, image, group_name) = prepare_for_parsing(a_ids,i_ids)
 
