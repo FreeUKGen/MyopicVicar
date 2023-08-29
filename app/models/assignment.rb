@@ -127,9 +127,9 @@ class Assignment
       userid = Hash.new{|h,k| h[k]=[]}.tap{|h| u_ids.each{|k,v| h[k] = v}}
 
       i_ids = ImageServerImage.where(:assignment_id=>{'$in'=>a_ids.map(&:first)}).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
-      group_name = group_name.sort_by{ |k,v| v.scan(/\d+/).join('').to_i }
 
       (assignment_id, image_assignment_id, image_group_id, image, group_name) = prepare_for_parsing(a_ids,i_ids)
+      group_name = group_name.sort_by{ |k,v| v.scan(/\d+/).join('').to_i }
 
       assignment, count = generate_parsing_assignment(assignment_id,userid,group_name,image_group_id,image_assignment_id,image)
 
