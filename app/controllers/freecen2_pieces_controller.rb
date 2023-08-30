@@ -119,8 +119,6 @@ class Freecen2PiecesController < ApplicationController
   def export_csv
     @chapman_code = session[:chapman_code]
     @year = params[:csvdownload][:year]
-    p "AEV01 #{@chapman_code}"
-    p "AEV02 #{@year}"
     success, message, file_location, file_name = Freecen2Piece.create_csv_export_listing(@chapman_code, @year)
 
     if success
