@@ -6,6 +6,7 @@
 <%= render 'flash_notice' %>
 <%= semantic_form_for @freecen1_vld_entry, :html => { :class => 'grid'}   do |f| %>
   <% if %w[data_manager system_administrator].include?(@user.person_role)%>
+    <p style="text-align: center"><b> NB: Verbatim Birth County and Place are defaulted into Alternative Birth County and Place, if Alternatives were not specified </b></p>
     <%= f.input :pob_valid , :label => 'POB Validation Status', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 10, :readonly => true}%>
     <%= f.input :pob_warning , :label => 'POB Warning Message', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 45, :readonly => true}%>
     <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>

@@ -340,7 +340,12 @@ class Freecen1VldFile
   def add_entry_fields(rec, census_fields, year)
     line = []
     census_fields.each do |field|
-      line << rec[field.to_s]
+      if (field.to_s == 'birth_county' && rec[field.to_s] == rec['verbatim_birth_county'] && rec['birth_place'] == rec['verbatim_birth_place']) ||
+          (field.to_s == 'birth_place' && rec[field.to_s] == rec['verbatim_birth_place'] && rec['birth_county'] == rec['verbatim_birth_county'])
+        line << ''
+      else
+        line << rec[field.to_s]
+      end
     end
     line
   end

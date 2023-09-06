@@ -73,10 +73,12 @@ class Freecen1VldEntry
         if alternate_pob_valid && verbatim_pob_valid || alternate_pob_valid && !verbatim_pob_valid
           result = true
         elsif !alternate_pob_valid && !verbatim_pob_valid
-          result = false
-          warning = 'Verbatim POB is invalid AND Alternative POB is invalid'
+          if birth_county == verbatim_birth_county && birth_place == verbatim_birth_place
+            warning = 'Verbatim POB is invalid'
+          else
+            warning = 'Verbatim POB is invalid AND Alternative POB is invalid'
+          end
         else
-          result = false
           warning = 'Verbatim POB is valid BUT Alternative POB is invalid'
         end
       end
