@@ -12,6 +12,7 @@ class Freecen1VldFilesController < ApplicationController
     # seems to be able to process about 1000 records per min on local server and about 4000 per min on TEST3
     per_min = 4000
     run_time_estimate = (vldfile.num_individuals.to_f / per_min).to_f.round(0).to_s
+    run_time_estimate = 1 if run_time_estimate < 1
 
     get_user_info_from_userid
     vldfile.auto_validate_pobs
