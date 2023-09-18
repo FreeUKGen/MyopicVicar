@@ -727,14 +727,11 @@ module ApplicationHelper
   def helpful_anchors
     {
       cookiePolicy: 'Cookie Policy',
-      privacyNotice: 'Privacy Notice
-      <span class="accessibility">Opens in new window</span>',
+      privacyNotice: 'Privacy Notice (pdf)',
       termAndConditions: 'Terms and Conditions',
       contactUs: 'Contact Us',
-      donation: 'Make a donation to cover our operating costs
-      <span class="accessibility">Opens in new window</span>',
-      fugNews: 'News about Free UK Genealogy
-      <span class="accessibility">Opens in new window</span>',
+      donation: 'Make a donation to cover our operating costs',
+      fugNews: 'News about Free UK Genealogy',
       freeregIcon: '<span class="accessibility">FreeREG</span>',
       freecenIcon: '<span class="accessibility">FreeCEN</span>',
       freebmdIcon: '<span class="accessibility">FreeBMD</span>',
@@ -1215,4 +1212,18 @@ module ApplicationHelper
   def enc_uri_reg(search_query)
     'https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName="#{search_query.first_name}"&lastName="#{search_query.last_name}"&tr_device=&size=160x600'
   end
-              end
+#publift
+  def horz_advert(fuse)
+    content_tag :div, class:'grid__item one-whole' do
+      content_tag :fieldset do
+        concat(content_tag(:legend,"Advertisement", align:'center'))
+        concat(content_tag(:div,'',"data-fuse"=>fuse))
+      end
+    end
+  end
+
+  def fuse_tags_source
+    fuse_tags = {"freereg" =>'3271', "freecen" => '3270'}
+    src = "https://cdn.fuseplatform.net/publift/tags/2/#{fuse_tags[appname_downcase]}/fuse.js"
+  end
+end
