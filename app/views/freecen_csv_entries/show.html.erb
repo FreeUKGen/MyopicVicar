@@ -1,7 +1,7 @@
 <% unless @csv %>
   <% breadcrumb :show_freecen_csv_entry,  @freecen_csv_entry,  @freecen_csv_file %>
   <h3 style="text-align: center">Showing entry <b><%= @freecen_csv_entry.record_number %></b> for <%= file_name(@freecen_csv_file) %></b> (<%= @freecen_csv_file.userid %>) in <b><%= @place_name %></b> of <b><%= @chapman_code %></b><br>
-</h3>
+  </h3>
 <% if session[:userid].present?%>
   <div  style="text-align: center">
     <%= previous_entry %>
@@ -15,6 +15,7 @@
     <%= propagate_note%>
     <%= accept_entry %>
     <%= reject_entry %>
+
   </div>
   <br>
 <% end %>
@@ -24,6 +25,7 @@
 <%= render '/search_records/nav_dwelling_freecen2' if  @show_navigation %>
 <%= render '/search_records/nav_individual_freecen' if  @show_navigation %>
 <%= render '/freecen_csv_entries/freecen_csv_entry' %>
+<%= render '/freecen_csv_entries/donate_and_data_problem' %>
 <br>
 <style>
   .javascript{
