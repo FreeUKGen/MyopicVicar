@@ -15,7 +15,7 @@ class Freecen1VldFilesController < ApplicationController
     run_time_estimate = '1' if run_time_estimate == '0'
 
     get_user_info_from_userid
-    vldfile.auto_validate_pobs
+    vldfile.auto_validate_pobs(@user.userid)
 
     message = "Started Automatic Validation of POBs for #{vldfile.file_name} - you will receive an email when it has completed (estimated runtime = #{run_time_estimate} mins)"
     redirect_back(fallback_location: new_manage_resource_path, notice: message) && return

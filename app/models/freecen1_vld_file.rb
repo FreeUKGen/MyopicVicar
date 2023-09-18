@@ -192,10 +192,9 @@ class Freecen1VldFile
     self[:file_name_lower_case] = self[:file_name].downcase if self[:file_name].present?
   end
 
-  def auto_validate_pobs
-    logger.warn("FREECEN:VLD_POB_VALIDATION: Starting rake task for #{userid} #{file_name} in #{dir_name}")
-    #pid1 = spawn("rake freecen:vld_auto_validate_pob[\"#{dir_name}\", \"#{file_name}\",  \"#{userid}\"]")
-    pid1 = spawn("bundle exec rake freecen:vld_auto_validate_pob[#{dir_name},#{file_name},#{userid}]")
+  def auto_validate_pobs(email_userid)
+    logger.warn("FREECEN:VLD_POB_VALIDATION: Starting rake task for #{email_userid} #{file_name} in #{dir_name}")
+    pid1 = spawn("bundle exec rake freecen:vld_auto_validate_pob[#{dir_name},#{file_name},#{email_userid}]")
     logger.warn("FREECEN:VLD_POB_VALIDATION: rake task for #{pid1}")
   end
 
