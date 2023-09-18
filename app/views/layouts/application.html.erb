@@ -8,17 +8,8 @@
   <!--<![endif]-->
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
-    <script>
-    // Define dataLayer and the gtag function.
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-
-      // Default ad_storage to 'denied'.
-      gtag('consent', 'default', {
-        'ad_storage': 'denied',
-        'analytics_storage': 'denied'
-      });
-    </script>
+    <!-- Publift fuse tag-->
+    <script async src='<%= fuse_tags_source %>' type="text/javascript"></script>
     <!-- Google Tag Manager -->
     <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -28,38 +19,10 @@
       })(window,document,'script','dataLayer','<%= "#{gtm_key_value}"%>');
     </script>
       <!-- End Google Tag Manager -->
-    <script>
-      window.update_analytics = function (preference) {
-        if(preference == 'accept') {
-            gtag('consent', 'update', {
-              'ad_storage': 'granted',
-        'analytics_storage': 'granted'
-            });
-        } else if(preference == 'deny') {
-            gtag('consent', 'update', {
-              'ad_storage': 'denied',
-        'analytics_storage': 'denied'
-            });
-        }
-      };
-    </script>
-    <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
-      <script>
-        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-        window.update_personalized_adverts = function (preference) {
-          if(preference == 'accept') {
-            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
-          } else if(preference == 'deny') {
-            (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
-          }
-        };
-        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-      </script>
-    <% end %>
     <% if appname_downcase == 'freereg' %>
       <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
         <div class="reg_adsense reg_unit reg_page_level_ads">
-          <%= banner_header_freereg %>
+          <%#= banner_header_freereg %>
         </div>
       <% end %>
     <% end %>
@@ -132,7 +95,7 @@
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
-    <%= javascript_include_tag "#{appname.downcase}_advert_control.js" %>
+    <%#= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
     <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
     <% end %>

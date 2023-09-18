@@ -115,9 +115,10 @@ class ContactsController < ApplicationController
     order = 'contact_time DESC'
     @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
     @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     @archived = session[:archived_contacts]
   end
-
 
   def keep
     @contact = Contact.find(params[:id]) if params[:id].present?
@@ -137,6 +138,8 @@ class ContactsController < ApplicationController
     order = 'contact_time  ASC'
     @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
     @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
@@ -147,6 +150,8 @@ class ContactsController < ApplicationController
     order = 'contact_time ASC'
     @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
     @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
@@ -157,6 +162,8 @@ class ContactsController < ApplicationController
     order = 'contact_time DESC'
     @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
     @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
@@ -167,6 +174,8 @@ class ContactsController < ApplicationController
     order = 'name ASC'
     @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
     @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
@@ -177,6 +186,8 @@ class ContactsController < ApplicationController
     order = 'contact_type ASC'
     @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
     @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     #@contacts = Contact.results(session[:archived_contacts], order, @user)
     @archived = session[:archived_contacts]
     render :index
@@ -184,7 +195,7 @@ class ContactsController < ApplicationController
 
   def new
     @contact = Contact.new
-    @options = FreeregOptionsConstants::ISSUES
+    @options = FreeregOptionsConstants::ISSUES - ['Thank-you']
     @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
     #flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?

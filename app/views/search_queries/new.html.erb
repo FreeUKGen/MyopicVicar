@@ -7,16 +7,16 @@
 <% end%>
 <% case appname_downcase %>
 <% when 'freereg' %>
-<h1 class="title text--center">Search our Parish Registers</h1>
-<%= render 'form_freereg' %>
+  <h1 class="title text--center">Search our Parish Registers</h1>
+  <%= render 'form_freereg' %>
 <% when 'freecen' %>
-<h1 class="title text--center">Search our Census Records</h1>
-<% if Rails.application.config.freecen2_place_cache %>
-  <%= render 'form_freecen_freecen2' %>
-<% else%>
-  <%= render 'form_freecen' %>
-<% end%>
+  <h1 class="title text--center">Search our Census Records</h1>
+  <% if Rails.application.config.freecen2_place_cache %>
+    <%= render 'form_freecen_freecen2' %>
+  <% else%>
+    <%= render 'form_freecen' %>
+  <% end%>
 <% when 'freebmd' %>
-<h1 class="title text--center">Search our Birth/Marriage/Death Records</h1>
-<%= render 'form_freebmd' %>
+  <h1 class="title text--center">Search our Birth/Marriage/Death Records</h1>
+  <%= render 'form_freebmd' %>
 <% end %>
