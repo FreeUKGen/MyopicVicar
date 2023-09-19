@@ -1,3 +1,4 @@
+<% title "Registration Districts names starting with letter #{@character}" %>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <h1 class="accessibility">Districts</h1>
 <%= link_to "#{app_icons[:left_arrow_pink]} Back to selection".html_safe, district_alphabet_selection_path(@character), class: " btn   btn--small" %>
@@ -26,9 +27,9 @@
                   <dt>
                     <%= district.DistrictName %>
                   </dt>
-                  <dt>
+                  <dd>
                     Existing from <%= district.YearStart%> <%= district.YearEnd <  9999 ? "till #{district.YearEnd}" : "" %>
-                  </dt>
+                  </dd>
                 </dl>
               </td>
               <td class="table--data">

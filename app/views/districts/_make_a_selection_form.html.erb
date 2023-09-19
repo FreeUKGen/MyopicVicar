@@ -4,6 +4,6 @@
   </div>
 <% end %>
 <div class="island text--center">
-  <%= label_tag 'Make a selection' %>
+  <%= label_tag 'selection', 'Choose the first letter of the Registration District' %>
   <%= select_tag('selection', options_for_select(@options), { 'onchange' => @location, size: 4, required: true, class: "simple_form_bgcolour text--center overide_selection_field_width" }) %>
 </div>

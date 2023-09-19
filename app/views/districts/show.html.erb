@@ -1,3 +1,4 @@
+<% title "Registration District information: #{@district.DistrictName}" %>
 <%= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, "/districts/districts_list?params=#{@district.DistrictName.first}", class: " btn   btn--small" %>
 <%= link_to "Back to selection".html_safe, district_alphabet_selection_path(@district.DistrictName.first), class: " btn   btn--small" %>
 <div class="grid">
