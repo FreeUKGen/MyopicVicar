@@ -20,6 +20,7 @@ class Message
   field :keep, type: Boolean, default: false
   field :syndicate, type: String
   field :nature, type: String
+  field :sub_nature, type: String
   attr_accessor :action, :inactive_reasons, :active
   embeds_many :sent_messages
   accepts_nested_attributes_for :sent_messages, allow_destroy: true, reject_if: :all_blank

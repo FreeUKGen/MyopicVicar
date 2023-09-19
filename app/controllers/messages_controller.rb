@@ -85,6 +85,7 @@ class MessagesController < ApplicationController
   def create_for_communication_comment
     get_user_info_from_userid
     @message.nature = 'communication'
+    @message.sub_nature = 'comment'
     original_message = Message.id(@message.source_message_id).first
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['comment_only'], sent_time: Time.now)
     @message.sent_messages << [@sent_message]
@@ -108,6 +109,7 @@ class MessagesController < ApplicationController
 
   def create_for_contact_comment
     @message.nature = 'contact'
+    @message.sub_nature = 'comment'
     @contact = Contact.id(@message.source_contact_id).first
     @message.save
     redirect_back(fallback_location: contact_path(@contact), notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
@@ -129,6 +131,7 @@ class MessagesController < ApplicationController
 
   def create_for_feedback_comment
     @message.nature = 'feedback'
+    @message.sub_nature = 'comment'
     @feedback = Feedback.id(@message.source_feedback_id).first
     @message.save
     redirect_back(fallback_location: feedback_path(@feedback), notice: "The message was not created #{@message.errors.full_messages}") && return if @message.errors.any?
@@ -153,6 +156,7 @@ class MessagesController < ApplicationController
     original_message = Message.id(@message.source_message_id).first
     @message.syndicate = original_message.syndicate
     @message.nature = original_message.nature
+    @message.sub_nature = 'comment'
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: ['comment_only'], sent_time: Time.now)
     @message.sent_messages << [@sent_message]
     @sent_message.save
