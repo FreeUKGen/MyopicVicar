@@ -23,14 +23,7 @@
                 <%= link_to("View #{n}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber))%>
               </td>
               <td>
-                <dl>
-                  <dt>
-                    <%= district.DistrictName %>
-                  </dt>
-                  <dd>
-                    Existing from <%= district.YearStart%> <%= district.YearEnd <  9999 ? "till #{district.YearEnd}" : "" %>
-                  </dd>
-                </dl>
+                <%= district.DistrictName %>: Existing from <%= district.YearStart%> <%= district.YearEnd <  9999 ? "till #{district.YearEnd}" : "" %>
               </td>
               <td class="table--data">
                 <%= district.UsageCount %>
