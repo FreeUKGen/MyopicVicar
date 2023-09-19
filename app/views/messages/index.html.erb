@@ -13,8 +13,7 @@
   <% end%>
   <%= index_header_list_link %>
 </p>
-<%#= index_partial_render %>
-<%= render partial: index_partial_render, locals: {messages: @messages} %>
+<%= index_partial_render(@messages) %>
 <% if @comments.present? %>
-  <%= render partial: index_partial_render, locals: {messages: @comments} %>
+  <%= index_partial_render(@comments) %>
 <% end %>
