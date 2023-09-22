@@ -7,14 +7,14 @@
       <p >You can download a Comma-Separated Values file of rthe site statistics between the specified start and end dates. Use the drop downs to select from the dates for which these statistics are available. <br>
         <b>Note:</b> The file will be named Site_Stats_YYYYMMDD_YYYYMMDD.csv (where YYYYMMDD are your Start and End Dates)</p>
       <ol class="grid">
-        <li class="grid__item one-third palm-one-whole" 
-    <%= f.label :period_from, "Start Date: " %>
-    <%= f.select :period_from, @period_start_dates %>
-      </li>
-          <li class="grid__item one-third palm-one-whole" 
-    <%= f.label :period_to, "End Date: " %>
-    <%= f.select :period_to, @period_end_dates %>
-       </li>
+        <li class="grid__item one-third palm-one-whole">
+          <%= f.label :period_from, "Start Date: " %>
+          <%= f.select :period_from, @period_start_dates %>
+        </li>
+        <li class="grid__item one-third palm-one-whole">
+          <%= f.label :period_to, "End Date: " %>
+          <%= f.select :period_to, @period_end_dates %>
+        </li>
             <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
           </fieldset>
         <% end %>

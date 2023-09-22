@@ -1,5 +1,5 @@
-<div class='grid'>
-  <section class='island '>
+<div class='grid' style='overflow:unset;'>
+  <section class='island' style='display:flex; overflow:unset;'>
     <div class='' id='results_detail_table'>
       <table class='table--bordered table--data push--bottom t90' >
         <caption class='beta'><%= record_type(@entry) %> entry
@@ -155,27 +155,28 @@
   </div>
   <% unless device_type == :mobile%>
     <% unless  @search_record.blank? || @search_query.blank? %>
-      <div class="grid__item  two-fifths  palm-one-whole text--center float--right">
+      <div class="grid__item  one-third  palm-one-whole text--center float--right">
         <span> Advertisement</span><br>
-        <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @record_name[0] %>&lastName=<%= @record_name[1] %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe>
+        <div class="grid__item one-whole">
+          <%= mh_160_600 %>
+        </div>
+        <div class="grid__item one-whole push--top" style="position: sticky; top:0; align-self: start;">
+          <!-- GAM 71161633/FRBMD_freeregorg/freereg_vrec_1 -->
+          <div data-fuse="22945846137"></div>
+        </div>
       </div>
     <% end %>
   <% end %>
-  <!--div  id='results_table_ad' class='float--right text--center reg_units reg_side_adverts'>
-    <span class=''>Advertisement</span><br>
-    <%#= my_heritage_300_250_second %>
-    <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%#= @search_query.first_name %>&lastName=<%#= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe-->
-  </div>
 </section>
 </div>
 <script type="text/javascript">
   var result = window.canRunAds;
   function changeClass(screen_width) {
     if (screen_width.matches) {
-      $("#results_detail_table").removeClass("grid__item  three-fifths  palm-one-whole").addClass('');
+      $("#results_detail_table").removeClass("grid__item  two-thirds  palm-one-whole").addClass('');
     } else {
       if(result === true) {
-        $("#results_detail_table").addClass("grid__item  three-fifths  palm-one-whole");
+        $("#results_detail_table").addClass("grid__item  two-thirds  palm-one-whole");
         $('.advert_div').show();
       } else {
         $('.advert_div').hide();

@@ -14,7 +14,7 @@
       <%= link_to 'Delete Piece', freecen2_piece_path(@freecen2_piece), method: :delete, data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependants!' } , :class => "btn  btn--small"%>
     </div>
   <% end%>
-  <% if %w[data_manager system_administrator].include?(@user.person_role) or (%w[county_coordinator master_county_coordinator].include?(@user.person_role) and ("1901" "1911").include?(@freecen2_piece.year))%>
+  <% if %w[data_manager system_administrator].include?(@user.person_role) or (%w[county_coordinator master_county_coordinator executive_director].include?(@user.person_role) and ("1901" "1911").include?(@freecen2_piece.year))%>
     <div style="text-align: center">
       <%= link_to 'Add Civil Parish', new_freecen2_civil_parish_path(piece: @freecen2_piece, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Adding a Civil Parish is restricted to data managers and system administrators. For 1901 and 1911 this is also possible for county coordinators'%>
     </div>

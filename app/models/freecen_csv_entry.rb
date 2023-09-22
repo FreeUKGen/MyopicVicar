@@ -1204,6 +1204,10 @@ class FreecenCsvEntry
             message += messageb
             record[:error_messages] += messageb
           end
+        elsif messagea == 'Unusual Age 999'
+          messageb = "Warning: line #{num} Age #{record[:age]} looks unusual.<br>"
+          message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+          record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         else
           messageb = "ERROR: line #{num} Age #{record[:age]} is #{messagea}.<br>"
           message += messageb
@@ -2466,7 +2470,7 @@ class FreecenCsvEntry
     errors.add(:sex, "Invalid; #{message}")  unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.age?(fields[:age], fields[:marital_status], fields[:sex])
-    errors.add(:age, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
+    errors.add(:age, "Invalid; #{message}") unless success || fields[:record_valid] == 'true' || (message == 'Unusual Age 999' && freecen_csv_file.validation)
 
     success, message = FreecenValidations.uncertainty_status?(fields[:individual_flag])
     errors.add(:individual_flag, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'

@@ -1,23 +1,18 @@
 <div class="c-subfooter-1__stats">
   <% case appname.downcase %>
   <% when 'freereg' %>
-  <nav class="c-subfooter-1__stats-heading">
-    <!-- <a href="https://www.freereg.org.uk/freereg_contents/new?locale=en">Statistics</a> -->
-    <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freeregStat] %>
-  </nav>
+  <h2 class="c-subfooter-1__stats-heading gamma">Statistics</h2>
   <% if @site_stat %>
     <dl class="c-subfooter-1__stats-list">
       <dt class="c-subfooter-1__stats-term">Yesterday</dt>
       <dd class="c-subfooter-1__stats-value">
         <%= number_with_delimiter(@site_stat[:n_searches]) %> &nbsp;searches were performed</dd>
-      <!--  -->
       <% if @site_stat[:n_records_added].to_i > 0 %>
         <dd class="c-subfooter-1__stats-value">Volunteers uploaded&nbsp;
           <%= number_with_delimiter(@site_stat[:n_records_added]) %> &nbsp;records</dd>
       <% else %>
         <dd class="c-subfooter-1__stats-value">No records were added</dd>
       <% end %>
-      <!--  -->
       <dt class="c-subfooter-1__stats-term">Record Count</dt>
       <dd class="c-subfooter-1__stats-value">
         <%= number_with_delimiter(@site_stat[:n_records]) %> &nbsp;Records</dd>
@@ -31,12 +26,8 @@
   <% else %>
     <p class="c-subfooter-1__stats-term">Statistics temporarily unavailable</p>
   <% end %>
-  <!--  -->
   <% when 'freecen' %>
-  <nav class="c-subfooter-1__stats-heading">
-    <!-- <a href="https://www.freecen.org.uk/freecen_coverage?locale=en">Statistics</a> -->
-    <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freecenStat] %>
-  </nav>
+  <h2 class="c-subfooter-1__stats-heading gamma">Statistics</h2>
   <% if @site_stat %>
     <dl class="c-subfooter-1__stats-list">
       <dt class="c-subfooter-1__stats-term">Yesterday</dt>
@@ -52,12 +43,8 @@
   <% else %>
     <p class="c-subfooter-1__stats-term">Statistics temporarily unavailable</p>
   <% end %>
-  <!--  -->
   <% when 'freebmd' %>
-  <nav class="c-subfooter-1__stats-heading">
-    <!-- <a href="https://www.freebmd.org.uk/progress.shtml">Statistics</a> -->
-    <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freebmdStat] %>
-  </nav>
+  <h2 class="c-subfooter-1__stats-heading gamma">Statistics</h2>
   <dl class="c-subfooter-1__stats-list">
     <dt class="c-subfooter-1__stats-term">Active Volunteers</dt>
     <dd class="c-subfooter-1__stats-value">12,412 all-time</dd>

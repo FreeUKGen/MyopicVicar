@@ -7,6 +7,8 @@ module FreecenValidations
   FRACTIONAL_SCHEDULE = /\A\d+\s[12]\/[23]\z/.freeze
   VALID_NUMBER_PLUS = /\A[\da-z?]*\z/i.freeze
   VALID_NUMBER_PLUS_SUFFIX = /\A\d+[a-z]\z/i.freeze
+  VALID_ENUMERATOR_NUMBER_PLUS_SUFFIX1 = /\A\d+[a-z]{1,2}\z/i.freeze
+  VALID_ENUMERATOR_NUMBER_PLUS_SUFFIX2 = /\A\d+[a-z][0-9]\z/i.freeze
   VALID_ENUMERATOR_SPECIAL = /\A\d#\d\z/.freeze
   VALID_SPECIAL_LOCATION_CODES = %w[b n u v x].freeze
   NARROW_VALID_TEXT = /\A[-\w\s,'\.]*\z/.freeze
@@ -88,14 +90,14 @@ module FreecenValidations
 
       if field[-1] == '?'
         strip_field = field[0...-1].strip
-        return [false, '?'] if (strip_field.match? VALID_NUMBER) || (strip_field.match? VALID_NUMBER_PLUS_SUFFIX)
+        return [false, '?'] if (strip_field.match? VALID_NUMBER) || (strip_field.match? VALID_ENUMERATOR_NUMBER_PLUS_SUFFIX1) || (strip_field.match? VALID_ENUMERATOR_NUMBER_PLUS_SUFFIX2)
 
         return [false, '?'] if (strip_field.match? VALID_ENUMERATOR_SPECIAL) && field[0] == '0'
 
       elsif (field.match? VALID_ENUMERATOR_SPECIAL) && field[0] == '0'
         return [true, ''] unless field[-1] == '0'
 
-      elsif (field.match? VALID_NUMBER) || (field.match? VALID_NUMBER_PLUS_SUFFIX)
+      elsif (field.match? VALID_NUMBER) || (field.match? VALID_ENUMERATOR_NUMBER_PLUS_SUFFIX1) || (field.match? VALID_ENUMERATOR_NUMBER_PLUS_SUFFIX2)
         return [true, '']
       end
       [false, 'invalid']
@@ -307,9 +309,9 @@ module FreecenValidations
 
       return [false, '?'] if field[-1] == '?'
 
-      return [true, ''] if %w[999y 999Y].include?(field)
+      return [false, 'Unusual Age 999'] if %w[999y 999Y].include?(field)
 
-      return [true, ''] if (field.match? VALID_NUMBER) && field.to_i == 999
+      return [false, 'Unusual Age 999'] if (field.match? VALID_NUMBER) && field.to_i == 999
 
       return [true, ''] if (field.match? VALID_NUMBER) && field.length <= 3 && field.to_i != 0 && field.to_i <= 120
 
