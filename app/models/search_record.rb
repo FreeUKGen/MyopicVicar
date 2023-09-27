@@ -906,7 +906,7 @@ class SearchRecord
 
   def populate_search_names
     return unless transcript_names && transcript_names.size > 0
-    possible_last_names = transcript_names.map{|n| n[:last_name].downcase}.compact
+    possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.compact
     other_last_name = {}
     other_last_name = transcript_names.each{|n| other_last_name["#{n[:role]}"] = [n[:last_name]] if n[:last_name].present?}
     get_last_name = other_possible_last_name(other_last_name)
