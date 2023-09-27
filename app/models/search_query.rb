@@ -865,7 +865,7 @@ class SearchQuery
   def search_params
     params = {}
     params.merge!(name_search_params)
-    params.merge!(possible_name_search_params)
+   # params.merge!(possible_name_search_params)
     params.merge!(place_search_params)
     params.merge!(record_type_params)
     params.merge!(date_search_params)

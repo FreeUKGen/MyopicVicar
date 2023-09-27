@@ -923,14 +923,12 @@ class SearchRecord
       else
         person_gender = gender_from_role(person_role)
       end
-      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender, possible_last_names)
+      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender, possible_last_names, get_last_name)
       search_names << name if name
     end
   end
 
   def other_possible_last_name last_names_hash
-    keys= ['f', 'm', 'h', 'mr', 'fr']
-    case keys
     last_name = last_names_hash['f'] if last_names_hash.has_key?('f')
     last_name = last_names_hash['m'] if !last_names_hash.has_key?('f') && last_names_hash.has_key?('m')
     last_name = last_names_hash['h'] if !last_names_hash.has_key?('f') && !last_names_hash.has_key?('m') && last_names_hash.has_key?('h')
