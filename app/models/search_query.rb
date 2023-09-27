@@ -601,6 +601,15 @@ class SearchQuery
     errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
   end
 
+  def possible_name_search_params
+    params = {}
+    possible_surname_params = {}
+    possible_surname_params['first_name'] = first_name.downcase if first_name.present?
+    possible_surname_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present?
+    params['search_names'] = { '$elemMatch': possible_surname_params}
+    params
+  end
+
   def name_search_params
     params = {}
     name_params = {}
@@ -617,9 +626,9 @@ class SearchQuery
       else
         name_params['first_name'] = first_name.downcase if first_name
         name_params['last_name'] = last_name.downcase if last_name.present?
-        possible_surname_params['first_name'] = first_name.downcase if first_name.present?
-        possible_surname_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present?
-        params['search_names'] = { '$elemMatch': { "$or": [ name_params, possible_surname_params ] }}
+        #possible_surname_params['first_name'] = first_name.downcase if first_name.present?
+        name_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present?
+        params['search_names'] = { '$elemMatch': name_params}
       end
     end
     params
@@ -856,6 +865,7 @@ class SearchQuery
   def search_params
     params = {}
     params.merge!(name_search_params)
+    params.merge!(possible_name_search_params)
     params.merge!(place_search_params)
     params.merge!(record_type_params)
     params.merge!(date_search_params)
