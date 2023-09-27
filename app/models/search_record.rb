@@ -907,6 +907,9 @@ class SearchRecord
   def populate_search_names
     return unless transcript_names && transcript_names.size > 0
     possible_last_names = transcript_names.map{|n| n[:last_name].downcase}.compact
+    other_last_name = {}
+    other_last_name = transcript_names.each{|n| other_last_name["#{n[:role]}"] = [n[:last_name]] if n[:last_name].present?}
+    get_last_name = other_possible_last_name(other_last_name)
     transcript_names.each do |name_hash|
       person_type = PersonType::FAMILY
       person_type = PersonType::PRIMARY if name_hash[:type] == 'primary'
@@ -925,12 +928,23 @@ class SearchRecord
     end
   end
 
-  def search_name(first_name, last_name, person_type, person_role, person_gender, possible_last_names, source = Source::TRANSCRIPT)
+  def other_possible_last_name last_names_hash
+    keys= ['f', 'm', 'h', 'mr', 'fr']
+    case keys
+    last_name = last_names_hash['f'] if last_names_hash.has_key?('f')
+    last_name = last_names_hash['m'] if !last_names_hash.has_key?('f') && last_names_hash.has_key?('m')
+    last_name = last_names_hash['h'] if !last_names_hash.has_key?('f') && !last_names_hash.has_key?('m') && last_names_hash.has_key?('h')
+    last_name = last_names_hash['mr'] if !last_names_hash.has_key?('f') && !last_names_hash.has_key?('m') && !last_names_hash.has_key?('h') && last_names_hash.has_key?('mr')
+    last_name = last_names_hash['fr'] if !last_names_hash.has_key?('f') && !last_names_hash.has_key?('m') && !last_names_hash.has_key?('h') && last_names_hash.has_key?('mr') && last_names_hash.has_key?('fr')
+    last_name
+  end
+
+  def search_name(first_name, last_name, person_type, person_role, person_gender, possible_last_names, get_last_name,source = Source::TRANSCRIPT)
     name = nil
     unless last_name.blank?
       name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     else
-      name = SearchName.new({ :first_name => copy_name(first_name), possible_last_names: possible_last_names,:origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => copy_name(first_name), last_name: get_last_name ,possible_last_names: possible_last_names,:origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
     name
   end
