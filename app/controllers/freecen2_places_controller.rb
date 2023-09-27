@@ -45,13 +45,16 @@ class Freecen2PlacesController < ApplicationController
     @user = get_user
     params[:freecen2_place][:editor] = @user.userid
     @first_name = @user.person_forename if @user.present?
-    if params[:commit] == 'Search Place Names'
+    case params[:commit]
+    when 'Search Place Names'
       session[:search_names] = {}
       session[:search_names][:search] = params[:freecen2_place][:place_name]
       session[:search_names][:search_county] = params[:freecen2_place][:county]
       session[:search_names][:advanced_search] = params[:freecen2_place][:advanced_search]
       redirect_to search_names_results_freecen2_place_path
+
     else
+
       params[:freecen2_place][:chapman_code] = ChapmanCode.values_at(params[:freecen2_place][:county])
       params[:freecen2_place][:grid_reference] = params[:freecen2_place][:grid_reference].strip if params[:freecen2_place][:grid_reference].present?
       @place = Freecen2Place.new(freecen2_place_params)
@@ -104,6 +107,9 @@ class Freecen2PlacesController < ApplicationController
 
     elsif @place.freecen2_districts.exists? || @place.freecen2_pieces.exists? || @place.freecen2_civil_parishes.exists?
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent districts, sub districts or civil parishes') && return
+    else
+      used_as_birth_place = Freecen2Place.search_records_birth_places?(@place)
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent search record birth places') && return if used_as_birth_place
 
     end
     # @place.update_attributes(disabled: 'true', data_present: false) - disabled flag is now obsolete 2022/11
@@ -135,8 +141,13 @@ class Freecen2PlacesController < ApplicationController
 
     @county = @place.county
     @chapman_code = @place.chapman_code
-    if @chapman_code == 'LND' ||  @chapman_code == 'WLS'
-      message = 'Only system administrators and data administrator can edit LND and WLS'
+    if @chapman_code == 'LND'
+      lnd_county_coord = County.find_by(chapman_code: @chapman_code)
+      message = 'Only system administrators, data administrator and LND county coordinator can edit LND'
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
+      %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
+    elsif @chapman_code == 'WLS'
+      message = 'Only system administrators and data administrator can edit WLS'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
       %w[system_administrator data_manager].include?(@user.person_role)
     end
@@ -168,6 +179,8 @@ class Freecen2PlacesController < ApplicationController
     end
   end
 
+
+
   def index
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
@@ -198,6 +211,24 @@ class Freecen2PlacesController < ApplicationController
     session[:page] = request.original_url
     session[:manage_places] = true
     session[:type] = 'place_index'
+  end
+
+  def get_counties_for_selection
+    @county_codes = []
+    ChapmanCode::CODES.each do |_country, counties|
+      counties.each do |key, value|
+        @county_codes << value
+      end
+    end
+    @county_codes = @county_codes.sort
+    @county_codes = @county_codes.delete_if { |code| code == 'UNK' }
+    @county_codes = @county_codes.delete_if { |code| code == 'OVB' } # GitHub story 1310
+    @counties = {}
+    @county_codes.each do |code|
+      cnty_name = ChapmanCode.name_from_code(code)
+      key = "#{code} - #{cnty_name}"
+      @counties[key] = cnty_name
+    end
   end
 
   def get_reasons
@@ -243,11 +274,14 @@ class Freecen2PlacesController < ApplicationController
     @place.alternate_freecen2_place_names.build
     @place.alternate_freecen2_place_names.build
     @county = session[:county]
-    @counties = ChapmanCode.keys.sort
-    @counties -= Freecen::UNNEEDED_COUNTIES
-    @counties << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role)
-    @counties << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
-
+    counties_for_select = ChapmanCode.keys
+    counties_for_select -= Freecen::UNNEEDED_COUNTIES
+    counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Channel Islands' } # GitHub story 1495
+    counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Overseas British' } # GitHub story 1310 (note: includes #1526 mods too so that there are no conflicts when deployed)
+    lnd_county_coord = County.find_by(chapman_code: 'LND')
+    counties_for_select << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
+    counties_for_select << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
+    @counties = counties_for_select.sort
     get_sources
   end
 
@@ -288,19 +322,19 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def search_names
-    @counties = ChapmanCode.keys.sort
-    @counties = @counties.delete_if { |county| county == 'Unknown' }
+    get_counties_for_selection
     get_user_info_from_userid
+
+    if session[:search_names].present? && (params[:clear_form].present? || params[:new_search].present?)
+      session[:search_names][:search] = ''
+      session[:search_names][:search_county] = ''
+      session[:search_names][:advanced_search] = 'not_applicable'
+    end
+
     @place_name = session[:search_names].present? ? session[:search_names][:search] : ''
     @advanced_search = session[:search_names].present? ? session[:search_names][:advanced_search] : 'not_applicable'
-    if session[:search_names].present?
-      if session[:search_names][:clear_county]
-        @county = ''
-        session[:search_names][:clear_county] = false
-      else
-        @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
-      end
-    end
+    @county = session[:search_names].present? ? session[:search_names][:search_county] : ''
+
     @freecen2_place = Freecen2Place.new(place_name: @place_name, county: @county)
   end
 
@@ -442,4 +476,5 @@ class Freecen2PlacesController < ApplicationController
   def freecen2_place_params
     params.require(:freecen2_place).permit!
   end
+
 end

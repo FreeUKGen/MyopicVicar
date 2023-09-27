@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# 'Overseas British' => 'OVB', removed from Special by 1310 final step
+#
 module ChapmanCode
   require 'freereg_options_constants'
   require 'freecen_constants'
@@ -353,8 +355,7 @@ module ChapmanCode
       'Unknown' => 'UNK',
       'England and Wales Shipping' => 'EWS',
       'Out of County' => 'OUC',
-      'Overseas British' => 'OVB',
-      'Overseas Foreign' => 'OVF',
+      'Born Overseas' => 'OVF',
       'Scottish Shipping' => 'SCS',
       'Other Locations' => 'OTH',
       'Royal Navy Ships' => 'RNS',

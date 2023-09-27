@@ -111,7 +111,7 @@ module MyopicVicar
     when TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
-
+      config.assets.paths << Rails.root.join('app', 'assets_freereg', 'javascripts')
       config.assets.paths << Rails.root.join('app', 'assets_freereg', 'styles')
     when TemplateSet::FREEBMD
       config.freexxx_display_name = 'FreeBMD'

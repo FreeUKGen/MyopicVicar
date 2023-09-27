@@ -78,17 +78,67 @@ class Contact
       where(source_contact_id: id)
     end
 
-    def results(archived, order, user)
-      counties = user.county_groups
-      contacts = Contact.where(archived: archived)
-      if user.secondary_role.include?'volunteer_coordinator'
-        contacts = contacts.where(contact_type: "Volunteering Question").order_by(order)
-      elsif %w[county_coordinator country_coordinator].include?(user.person_role)
-        contacts = contacts.where(county: { '$in' => counties }).order_by(order)
-      else
-        contacts = Contact.where(archived: archived).order_by(order)
+    def primary_results(archived, order, user)
+      primary_contacts = contacts_of_role(user.person_role,archived, order,user)
+            #if user.secondary_role.include?'volunteer_coordinator'
+        #contacts = contacts.where(contact_type: "Volunteering Question").order_by(order)
+      #elsif %w[county_coordinator country_coordinator].include?(user.person_role)
+       # contacts = contacts.where(county: { '$in' => counties }).order_by(order)
+      #else
+       # contacts = Contact.where(archived: archived).order_by(order)
+      #end
+      #contacts
+    end
+
+    def secondary_results(archived, order, user)
+      secondary_role = user.secondary_role
+      secondary_contacts_array = []
+      if secondary_role.present?
+        secondary_role.each do |role|
+          contacts = contacts_of_role(role,archived, order,user)
+          if contacts.present?
+            contacts.each do |c|
+              secondary_contacts_array << c
+            end
+          end
+        end
       end
-      contacts
+      secondary_contacts_array
+    end
+
+
+    def contacts_of_role(role, archived, order,user)
+      contacts = Contact.where(archived: archived)
+      case role
+      when 'volunteer_coordinator'
+        c = contacts.get_contacts('Volunteering Question')
+      when 'website_coordinator'
+        c = contacts.get_contacts('Website Problem')
+      when 'contacts_coordinator'
+        c = contacts.any_of({contact_type: 'Data Question'}, {contact_type: 'Data Problem'})
+      when 'general_communication_coordinator'
+        c = contacts.get_contacts('General Comment')
+      when 'publicity_coordinator' || 'newsletter_coordinator'
+        c = contacts.get_contacts('Thank you')
+      when 'genealogy_coordinator'
+        c = contacts.get_contacts('Genealogical Question')
+      when 'project_manager'
+        c = contacts.get_contacts('Enhancement Suggestion')
+      when 'system_administrator'
+        c = contacts
+      when 'county_coordinator'
+        c = contacts.where(county: { '$in' => user.county_groups }) if user.county_groups.present?
+      when 'country_coordinator'
+        c = contacts.where(county: { '$in' => user.country_groups }) if user.country_groups.present?
+      when 'master_county_coordinator'
+        c = contacts.where(county: {'$ne'=> '' })
+      end
+      ordered_contact = c.present? ? c.order_by(order) : c
+      ordered_contact
+    end
+
+    def get_contacts(contact_type)
+      where(contact_type: contact_type)
     end
 
     def type(status)
@@ -386,6 +436,7 @@ class Contact
   end
 
   def role_from_contact
+    appname = MyopicVicar::Application.config.freexxx_display_name.downcase
     case contact_type
     when 'Website Problem'
       role = 'website_coordinator'
@@ -396,7 +447,8 @@ class Contact
     when 'General Comment'
       role = 'general_communication_coordinator'
     when 'Thank you'
-      role = 'publicity_coordinator'
+      role = 'publicity_coordinator' if appname == 'freereg'
+      role = 'newsletter_coordinator' if appname == 'freecen'
     when 'Genealogical Question'
       role = 'genealogy_coordinator'
     when 'Enhancement Suggestion'

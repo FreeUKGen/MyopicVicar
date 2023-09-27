@@ -12,8 +12,8 @@ module UseridRole
       'pending' => ['Profile'],
       'transcriber' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'syndicate_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'contacts_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display County Coordinators',
-                                 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Counties', 'Profile', 'System Documentation', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'contacts_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Transcriber Statistics','Display County Coordinators',
+                                 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Message System','Manage Counties', 'Profile', 'System Documentation', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'county_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts',  'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'country_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'volunteer_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
@@ -47,7 +47,7 @@ module UseridRole
       'pending' => ['Profile', 'FreeUKGenealogy  Policies'],
       'contacts_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display County Coordinators',
                                  'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Gazetteer', 'Manage Counties', 'Profile', 'Transcriber Statistics', 'System Documentation', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
-      'county_coordinator' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Manage County', 'Manage Syndicate', 'Site Statistics', 'Contacts', 'Communicate', 'Display Userids', 'Profile',  'Roadmap', 'FreeUKGenealogy  Policies'],
+      'county_coordinator' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Manage Counties', 'Manage Syndicates', 'Site Statistics', 'Contacts', 'Communicate', 'Display Userids', 'Profile',  'Roadmap', 'FreeUKGenealogy  Policies'],
       'master_county_coordinator' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Manage Counties', 'Manage Syndicates', 'Site Statistics', 'Contacts', 'Communicate', 'Display Userids', 'Profile',  'Roadmap', 'FreeUKGenealogy  Policies'],
       'country_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Display Userids', 'Gazetteer', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'data_manager' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Manage Counties', 'Manage Syndicates', 'Place Edit Reasons', 'Place Sources', 'FreeCen Errors', 'Physical Files', 'Communicate', 'Contacts', 'Database Statistics', 'Access Attic', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators', 'Profile',
@@ -78,9 +78,11 @@ module UseridRole
                       'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
 
       'transcriber' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'transcriber_special_powers' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'validator' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'volunteer_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Gazetteer', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
-      'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Gazetteer', 'Message System','Place Edit Reasons', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies']
+      'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Gazetteer', 'Message System','Place Edit Reasons', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+      'newsletter_coordinator' => ['Profile', 'Contacts', 'Database Statistics','Search Statistics', 'Search Performance', 'Site Statistics', 'Transcriber Statistics', 'FreeUKGenealogy  Policies']
 
     }
   end
@@ -128,6 +130,7 @@ module UseridRole
     'FreeUKGenealogy  Policies' => '/cms/freeukgenealogy-policies',
     'Gazetteer' => '/freecen2_places/search_names',
     'TNA Change Logs' => '/tna_change_logs',
+    'Transcriber Statistics' => '/userid_details/transcriber_statistics',
     'FreeCEN Handbook' => '/cms/freecen-handbook',
     'Place Edit Reasons' => '/place_edit_reasons',
     'Place Sources' => '/freecen2_place_sources'
