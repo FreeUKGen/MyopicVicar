@@ -1,10 +1,10 @@
 <% if session[:my_own] %>
   <% x = @assignment.values.first.values.first.values.first %>
   <div style="text-align: center">
-    <%#= link_to 'List Image Groups Under My Syndicate', my_list_by_syndicate_image_server_group_path, method: :get, :class => "btn btn--small" %>
-    <%#= link_to 'Image Groups Available for Allocation(By County)', select_county_assignment_path, method: :get, :class => "btn btn--small" %>
+    <%= link_to 'List Image Groups Under My Syndicate', my_list_by_syndicate_image_server_group_path, method: :get, :class => "btn btn--small" %>
+    <%= link_to 'Image Groups Available for Allocation(By County)', select_county_assignment_path, method: :get, :class => "btn btn--small" %>
     <% if ['bt','br'].include? x[:status] %>
-      <%#= link_to 'Send Finish Email to SC', assignment_path(x[:id], :status=>x[:status], :type=>'complete'), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put, :class => "btn btn--small" %>
+      <%= link_to 'Send Finish Email to SC', assignment_path(x[:id], :status=>x[:status], :type=>'complete'), data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put, :class => "btn btn--small" %>
     <% end %>
   </div>
   <div style="clear:both;"> </div>
