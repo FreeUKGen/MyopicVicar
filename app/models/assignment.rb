@@ -276,7 +276,7 @@ class Assignment
       image = Hash.new{|h,k| h[k]=[]}.tap{|h| i_ids.each{|k,v1,v2,v3,v4,v5,v6| h[k] << v3 << v4 << v5 << v6}}
 
       g_ids = ImageServerGroup.where(:id=>{'$in'=>image_group_id.values.uniq}).pluck(:id, :group_name)
-      group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| g_ids.each{|k,v| h[k] = v}}
+      #group_name = Hash.new{|h,k| h[k]=[]}.tap{|h| g_ids.each{|k,v| h[k] = v}}
 
       return assignment_id, image_assignment_id, image_group_id, image, group_name
     end
