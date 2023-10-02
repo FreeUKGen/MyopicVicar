@@ -334,6 +334,10 @@ class SearchQueriesController < ApplicationController
     @districts
   end
 
+  def end_year_val
+    @end_year = params[:year]
+  end
+
   def wildcard_options_dropdown
     field = params[:field]
     @options = params[:option] if params[:option].present?
