@@ -94,7 +94,7 @@
                 </div>
                 <div class="grid">
                     <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
-                        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
+                        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Dec', 4], ['Sep', 3], ['Jun', 2], ['Mar', 1]], set_value(@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
                     </div>
                     <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
                         <label class="accessibility" for="end_year">Finish Year</label>
