@@ -647,15 +647,4 @@ ActiveRecord::Schema.define(version: 20221209222347) do
     t.index ["id"], name: "index_seo_meta_on_id"
     t.index ["seo_meta_id", "seo_meta_type"], name: "id_type_index_on_seo_meta"
   end
-
-  create_table "unique_forenames", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
-    t.string "Name", limit: 100
-    t.integer "count"
-  end
-
-  create_table "unique_surnames", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci" do |t|
-    t.string "Name", limit: 100
-    t.integer "count"
-  end
-
 end

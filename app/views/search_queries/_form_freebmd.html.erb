@@ -375,12 +375,9 @@
 
             $("#from_year").change(function() {
                 var year = $("#from_year").val();
-                $.ajax({
-                    url: "/search_queries/end_year_val",
-                    type: "GET",
-                    data: {
-                        from_year: year
-                    }
+                $("#end_year").val(year);
+                $("#end_year")..attr({
+                    "min" : year
                 });
             });
 
