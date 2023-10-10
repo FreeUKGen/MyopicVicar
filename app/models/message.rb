@@ -20,6 +20,8 @@ class Message
   field :keep, type: Boolean, default: false
   field :syndicate, type: String
   field :nature, type: String
+  field :copies_to_userids, type: Array, default: []
+  field :copies_to_roles, type: Array, default: []
   attr_accessor :action, :inactive_reasons, :active
   embeds_many :sent_messages
   accepts_nested_attributes_for :sent_messages, allow_destroy: true, reject_if: :all_blank

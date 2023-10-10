@@ -107,9 +107,11 @@ class UserMailer < ActionMailer::Base
     @message = message
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
     sender_email_address = get_email_address_from_userid(sender_userid)
+    copies_to_userids = message.copies_to_userids
+    copies_to_userids_emails = get_email_address_array_from_array_of_userids(copies_to_userids) if copies_to_userids.present?
     @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
     get_message_attachment
-    mail(from: sender_email_address, to: "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
+    mail(from: sender_email_address, cc: copies_to_userids_emails,to: "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
   def coordinator_feedback_reply(feedback, ccs_userids, message, sender_userid)
@@ -120,7 +122,9 @@ class UserMailer < ActionMailer::Base
     sender_email_address = get_email_address_from_userid(sender_userid)
     @reply_messages = Message.where(source_feedback_id: @message.source_feedback_id).all
     get_message_attachment
-    mail(from: sender_email_address, to: "#{@feedback.name} <#{@feedback.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
+    copies_to_userids = message.copies_to_userids
+    copies_to_userids_emails = get_email_address_array_from_array_of_userids(copies_to_userids) if copies_to_userids.present?
+    mail(from: sender_email_address, cc: copies_to_userids_emails, to: "#{@feedback.name} <#{@feedback.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
   def message_reply(reply, to_userid, copy_to_userid, original_message, sender_userid)
@@ -131,7 +135,9 @@ class UserMailer < ActionMailer::Base
     sender_email = UseridDetail.create_friendly_from_email(sender_userid)
     to_email = UseridDetail.create_friendly_from_email(to_userid)
     copy_to_email = copy_to_userid.present? ? UseridDetail.create_friendly_from_email(copy_to_userid) : ''
-    mail(to: [to_email, sender_email, copy_to_email], subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
+    copies_to_userids = @reply.copies_to_userids
+   copies_to_userids_emails = get_email_address_array_from_array_of_userids(copies_to_userids) if copies_to_userids.present?
+    mail(to: [to_email, sender_email, copy_to_email], cc: copies_to_userids_emails, subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
   end
 
   def feedback_action_request(contact, send_to, copies_to)
@@ -533,7 +539,7 @@ class UserMailer < ActionMailer::Base
           array_of_email_addresses.push(copy.email_address) unless array_of_email_addresses.include?(copy.email_address)
         end
       end
-      array_of_email_addresses = nil
+      #array_of_email_addresses = nil
     end
     array_of_email_addresses
   end
