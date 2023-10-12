@@ -317,7 +317,6 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = session[:chapman_code]
     @year = params[:stats_year]
     @all_piece_ids = []
-    pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year)
     pieces = Freecen2Piece.where(admin_county: @chapman_code, year: @year)
     pieces.each do |piece|
       if piece.shared_vld_file.blank?
