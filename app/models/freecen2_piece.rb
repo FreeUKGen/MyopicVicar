@@ -337,7 +337,7 @@ class Freecen2Piece
     end
 
     def create_csv_export_listing(chapman_code, year)
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: chapman_code, year: year).order_by('status_date DESC, number ASC')
+      @freecen2_pieces = Freecen2Piece.where(admin_county: chapman_code, year: year).order_by('status_date DESC, number ASC')
       file = "Piece_Status_#{chapman_code}_#{year}.csv"
       file_location = Rails.root.join('tmp', file)
       success, message = write_csv_listing_file(file_location, @freecen2_pieces, chapman_code)
@@ -630,7 +630,9 @@ class Freecen2Piece
   end
 
   def display_piece_number(chap)
-    if chapman_code != chap
+    if chapman_code != admin_county
+      display_number = number + '(' + chapman_code + ')'
+    elsif chapman_code != chap
       display_number = number + '(' + chap + ')'
     else
       display_number = number
