@@ -316,14 +316,33 @@ class Freecen2PiecesController < ApplicationController
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @year = params[:stats_year]
+    @all_piece_ids = []
+    pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year)
+    pieces.each do |piece|
+      if piece.shared_vld_file.blank?
+        @all_piece_ids << piece.id
+      else
+        shared_vld_file = Freecen1VldFile.find_by(id: piece.shared_vld_file)
+        if shared_vld_file.present?
+          if shared_vld_file.dir_name == @chapman_code
+            multi_pieces = Freecen2Piece.where(shared_vld_file: piece.shared_vld_file)
+            if multi_pieces.present?
+              multi_pieces.each do |a_piece|
+                @all_piece_ids << a_piece.id
+              end
+            end
+          end
+        end
+      end
+    end
     @sorted_by = params[:sorted_by].blank? ? 'Most Recent Online' : params[:sorted_by]
     case @sorted_by
     when 'Piece Number'
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('number ASC')
+      @freecen2_pieces = Freecen2Piece.where({'_id' => {"$in" => @all_piece_ids}}).order_by('number ASC')
     when 'Piece Name'
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('name ASC')
+      @freecen2_pieces = Freecen2Piece.where({'_id' => {"$in" => @all_piece_ids}}).order_by('name ASC')
     when 'Most Recent Online'
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('status_date DESC, number ASC')
+      @freecen2_pieces = Freecen2Piece.where({'_id' => {"$in" => @all_piece_ids}}).order_by('status_date DESC, number ASC')
     end
   end
 

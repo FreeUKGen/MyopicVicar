@@ -57,6 +57,8 @@ class Freecen2Piece
 
   field :vld_files, type: Array, default: [] # used for Scotland pieces where there can be multiple files for a single piece
   field :shared_vld_file, type: String # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
+  field :admin_county, type: String # used by County Stats drilldown - can be different to chapman_code if a piece crosses county boundaries
+  validates_inclusion_of :admin_county, in: ChapmanCode.values
 
   belongs_to :freecen2_district, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
@@ -338,27 +340,27 @@ class Freecen2Piece
       @freecen2_pieces = Freecen2Piece.where(chapman_code: chapman_code, year: year).order_by('status_date DESC, number ASC')
       file = "Piece_Status_#{chapman_code}_#{year}.csv"
       file_location = Rails.root.join('tmp', file)
-      success, message = write_csv_listing_file(file_location, @freecen2_pieces)
+      success, message = write_csv_listing_file(file_location, @freecen2_pieces, chapman_code)
 
       [success, message, file_location, file]
     end
 
-    def write_csv_listing_file(file_location, pieces)
+    def write_csv_listing_file(file_location, pieces, chapman_code)
       column_headers = %w(piece_number piece_name status online_vld_files incorporated_csv_fles unincorporated_csv_files)
 
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << column_headers
         pieces.each do |rec|
           line = []
-          line = add_csv_listing_fields(line, rec)
+          line = add_csv_listing_fields(line, rec, chapman_code)
           csv << line
         end
       end
       [true, '']
     end
 
-    def add_csv_listing_fields(line, record)
-      line << record.number
+    def add_csv_listing_fields(line, record, chapman_code)
+      line << record.display_piece_number(chapman_code)
       line << record.name
       if record.display_piece_status.blank?
         line << ' '
@@ -627,6 +629,15 @@ class Freecen2Piece
     [year, chapman_code, district_name, number]
   end
 
+  def display_piece_number(chap)
+    if chapman_code != chap
+      display_number = number + '(' + chap + ')'
+    else
+      display_number = number
+    end
+    display_number
+  end
+
   def display_piece_status
     if status.present?
       display_status = status_date.present? ? status + " (" + status_date.to_datetime.strftime("%d/%b/%Y %R") + ")" : status
@@ -654,7 +665,7 @@ class Freecen2Piece
     elsif shared_vld_file.present?
       # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
       file = Freecen1VldFile.find_by(_id: shared_vld_file)
-      file.file_name if file.present?
+      "#{file.file_name}(shared)" if file.present?
     else
       'There are no VLD files'
     end

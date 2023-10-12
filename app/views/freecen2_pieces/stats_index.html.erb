@@ -33,7 +33,7 @@
     <tbody>
       <% @freecen2_pieces.each do |piece|%>
         <tr>
-          <td><%= piece.number %></td>
+          <td><%= piece.display_piece_number(@chapman_code) %></td>
           <td><%= piece.name %></td>
           <% if piece.display_piece_status.blank? %>
             <td> </td>
