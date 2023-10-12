@@ -1,21 +1,19 @@
 module Freecen
   class Freecen1VldPobValidator
 
-    def process_vld_file(chapman_code, vld_file_name, userid)
-      vld_file = Freecen1VldFile.where(dir_name: chapman_code, file_name: vld_file_name).first
+    def process_vld_file(chapman_code, vld_file, userid)
+
       vld_year = vld_file.full_year
 
-      vld_entries = Freecen1VldEntry.where(freecen1_vld_file_id: vld_file.id)
-      num_pob_valid = 0
+      invalid_pob_entries = Freecen1VldEntry.where(freecen1_vld_file_id: vld_file.id, pob_valid: false).or(Freecen1VldEntry.where(freecen1_vld_file_id: vld_file.id, pob_valid: nil))
+      num_pob_valid = Freecen1VldEntry.where(freecen1_vld_file_id: vld_file.id, pob_valid: true).count
 
-      vld_entries.each do |vld_entry|
+      invalid_pob_entries.each do |vld_entry|
+
         next if FreecenIndividual.where(freecen1_vld_entry_id: vld_entry.id).count.zero? # IE not an individual
 
-        if vld_entry.pob_valid.present? && vld_entry.pob_valid == true # IE POB already set to VALID
-          num_pob_valid += 1
-        else
-          num_pob_valid += 1 if individual_pob_valid?(vld_entry, chapman_code, vld_year, userid)
-        end
+        num_pob_valid += 1 if individual_pob_valid?(vld_entry, chapman_code, vld_year, userid)
+
       end
       num_pob_valid
     end

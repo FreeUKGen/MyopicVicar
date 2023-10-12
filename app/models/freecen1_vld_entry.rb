@@ -55,18 +55,18 @@ class Freecen1VldEntry
 
     def in_propagation_scope?(prop_rec, chapman_code, vld_year)
       result = false
-      result = true if prop_rec.scope_year == 'ALL' && prop_rec.scope_county == 'ALL'
-      result = true if prop_rec.scope_year == vld_year && prop_rec.scope_county == 'ALL'
-      result = true if prop_rec.scope_year == 'ALL' && prop_rec.scope_county == chapman_code
+      result = true if (prop_rec.scope_year == 'ALL' && prop_rec.scope_county == 'ALL') ||
+        (prop_rec.scope_year == vld_year && prop_rec.scope_county == 'ALL') ||
+        (prop_rec.scope_year == 'ALL' && prop_rec.scope_county == chapman_code)
       result
     end
 
     def valid_pob?(vld_year, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place)
       result = false
       warning = ''
-      result = true if birth_county == 'UNK' && birth_place == 'UNK'
-      result = true if Freecen2Place.valid_chapman_code?(birth_county) && birth_place == '-'
-      result = true if vld_year == '1841' && birth_county == 'OUC' && birth_place == '-'
+      result = true if (birth_county == 'UNK' && birth_place == 'UNK') ||
+        (Freecen2Place.valid_chapman_code?(birth_county) && birth_place == '-') ||
+        (vld_year == '1841' && birth_county == 'OUC' && birth_place == '-')
       unless result
         alternate_pob_valid = Freecen2Place.valid_place_name?(birth_county, birth_place)
         verbatim_pob_valid = Freecen2Place.valid_place_name?(verbatim_birth_county, verbatim_birth_place)

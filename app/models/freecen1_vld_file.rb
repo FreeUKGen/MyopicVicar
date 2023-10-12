@@ -193,8 +193,10 @@ class Freecen1VldFile
   end
 
   def auto_validate_pobs(email_userid)
-    logger.warn("FREECEN:VLD_POB_VALIDATION: Starting rake task for #{email_userid} #{file_name} in #{dir_name}")
-    pid1 = spawn("bundle exec rake freecen:vld_auto_validate_pob[#{dir_name},#{file_name},#{email_userid}]")
+    mode = 'F'
+    #mode = 'C'
+    logger.warn("FREECEN:VLD_POB_VALIDATION: Starting rake task for #{email_userid} VLD File #{file_name} in #{dir_name}")
+    pid1 = spawn("bundle exec rake freecen:vld_auto_validate_pob[#{mode},#{dir_name},#{file_name},#{email_userid}]")
     logger.warn("FREECEN:VLD_POB_VALIDATION: rake task for #{pid1}")
   end
 

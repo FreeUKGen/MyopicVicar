@@ -136,7 +136,7 @@ class UserMailer < ActionMailer::Base
     to_email = UseridDetail.create_friendly_from_email(to_userid)
     copy_to_email = copy_to_userid.present? ? UseridDetail.create_friendly_from_email(copy_to_userid) : ''
     copies_to_userids = @reply.copies_to_userids
-   copies_to_userids_emails = get_email_address_array_from_array_of_userids(copies_to_userids) if copies_to_userids.present?
+    copies_to_userids_emails = get_email_address_array_from_array_of_userids(copies_to_userids) if copies_to_userids.present?
     mail(to: [to_email, sender_email, copy_to_email], cc: copies_to_userids_emails, subject: "#{@sending.person_forename} #{@sending.person_surname} of #{@appname} sent a message #{@reply.subject} in response to reference #{@original_message.identifier}")
   end
 
@@ -252,6 +252,16 @@ class UserMailer < ActionMailer::Base
     attachments[report_name] = { :mime_type => 'text/csv', :content => report } unless report.empty?
 
     mail(:to => email_addresses, :subject => email_subject, :body => email_body)
+  end
+
+  def freecen_vld_invalid_pob_report(email_subject, email_body, report, report_name, email_to, cc_to)
+    email_addresses = []
+    email_addresses << email_to
+    cc_addresses = []
+    cc_addresses << cc_to
+    attachments[report_name] = { :mime_type => 'text/csv', :content => report } unless report.empty?
+
+    mail(:to => email_addresses, :cc => cc_addresses, :subject => email_subject, :body => email_body)
   end
 
   def notification_of_technical_registration(user)
