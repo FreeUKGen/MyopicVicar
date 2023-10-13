@@ -73,8 +73,9 @@
                     </div>
                     <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
                         <label class="accessibility" for="from_year">Start Year</label>
-                        <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, step: 10 }, class: 'select_year_start date_years text-input', name: 'search_query[start_year]', id: 'from_year', tabindex: "0") %>
-                        <%#= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), within: 1837..1992, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                        <%#= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, step: 10 }, class: 'select_year_start date_years text-input', name: 'search_query[start_year]', id: 'from_year', tabindex: "0") %>
+                      <%#= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), within: 1837..1992, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                      <%= text_field_tag 'search_query[start_year]', set_value(@search_query.start_year), class: 'text-input flush--bottom', id: 'from_year', :autocomplete => '/gro_year', tabindex: "0", placeholder: 'YYYY' %>
                     </div>
                 </div>
             </li>
@@ -259,7 +260,7 @@
                     </div>
                 </div>
                 <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
+                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: true}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
                 
             </li>
         </ol>
