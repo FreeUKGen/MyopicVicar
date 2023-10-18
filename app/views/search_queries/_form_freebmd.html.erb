@@ -363,8 +363,13 @@
 
             $("#search_query_chapman_codes").change(function() {
                 var counties = [];
+                function pushValue(item) {
+                    counties.push(item);
+                };
+
                 $.each($("#search_query_chapman_codes option:selected"), function() {
-                    counties.push($(this).val())
+                    var valuesArray = $(this).val().split(" ");
+                    valuesArray.forEach(pushValue);
                 });
                 $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
@@ -419,8 +424,12 @@
             
             if ($("#search_query_chapman_codes option:selected").length) {
                 var counties = [];
+                function pushValue(item) {
+                    counties.push(item);
+                };
                 $.each($("#search_query_chapman_codes option:selected"), function() {
-                    counties.push($(this).val())
+                    var valuesArray = $(this).val().split(" ");
+                    valuesArray.forEach(pushValue);
                 });
                 $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
