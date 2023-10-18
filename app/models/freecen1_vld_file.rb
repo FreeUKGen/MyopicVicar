@@ -254,12 +254,12 @@ class Freecen1VldFile
       when '1841'
         success = true
         message = ''
-        file = 'RS41' + '_' + piece.to_s + '.csv'
+        file = 'HS4' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1841
       when '1851'
         success = true
         message = ''
-        file = 'RS51' + '_' + piece.to_s + '.csv'
+        file = 'HS5' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1851
       when '1861'
         file = 'RS61' + '_' + piece.to_s + '.csv'
