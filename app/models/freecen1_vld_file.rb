@@ -252,11 +252,15 @@ class Freecen1VldFile
       message = 'Scotland Code not checked'
       case year
       when '1841'
+        success = true
+        message = ''
         file = 'RS41' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1861
+        census_fields = Freecen::CEN2_SCT_1841
       when '1851'
+        success = true
+        message = ''
         file = 'RS51' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1871
+        census_fields = Freecen::CEN2_SCT_1851
       when '1861'
         file = 'RS61' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1861
