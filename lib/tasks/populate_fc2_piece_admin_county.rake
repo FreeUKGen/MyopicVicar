@@ -27,7 +27,7 @@ namespace :freecen do
 
     recs_updated = 0
     total_recs = Freecen2Piece.all.count
-    log_file_name = 'log/Populate_freecen2_piece_admin_county,log'
+    log_file_name = 'log/Populate_freecen2_piece_admin_county.log'
     FileUtils.mkdir_p(File.dirname(log_file_name)) unless File.exist?(log_file_name)
     log_file = File.new(log_file_name, 'w')
 
