@@ -53,8 +53,6 @@ class Freecen1VldEntriesController < ApplicationController
 
       flash[:notice] = success ? 'Propagation processed successfully' : message
       redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
-      # manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)
-      # redirect_to new_manage_resource_path && return
 
     else
       get_user_info_from_userid
@@ -103,14 +101,22 @@ class Freecen1VldEntriesController < ApplicationController
       if result
         verbatim_changed, alternative_changed, notes_changed = @freecen1_vld_entry.edits_made?(params[:freecen1_vld_entry])
         if verbatim_changed || alternative_changed || notes_changed
+          was_OUC = @freecen1_vld_entry.birth_county == 'OUC' ? true : false
+          # #######
           @freecen1_vld_entry.add_freecen1_vld_entry_edit(@user.userid, reason, @freecen1_vld_entry.verbatim_birth_county, @freecen1_vld_entry.verbatim_birth_place, @freecen1_vld_entry.birth_county, @freecen1_vld_entry.birth_place, @freecen1_vld_entry.notes)
           @freecen1_vld_entry.update_attributes(params[:freecen1_vld_entry])
           Freecen1VldEntry.update_linked_records_pob(@freecen1_vld_entry,  params[:freecen1_vld_entry][:birth_county], params[:freecen1_vld_entry][:birth_place],  params[:freecen1_vld_entry][:notes])
         end
         @freecen1_vld_entry.update_attributes(pob_valid: result, pob_warning: warning)
         @freecen1_vld_entry.reload
-        session[:propagate_pob] = @freecen1_vld_entry.id
-        flash[:notice] = "The #{params[:commit]} was successful - Please specify Propagation Requirements"
+        if @freecen1_vld_entry.birth_county == 'OUC' || was_OUC
+          flash[:notice] = "The #{params[:commit]} was successful - Note: Propagation is not permitted for Birth County OUC"
+          redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
+
+        else
+          session[:propagate_pob] = @freecen1_vld_entry.id
+          flash[:notice] = "The #{params[:commit]} was successful - Please specify Propagation Requirements"
+        end
       else
         flash[:notice] = "The #{params[:commit]} failed as POB (#{params[:freecen1_vld_entry][:birth_county]} #{params[:freecen1_vld_entry][:birth_place]}) is invalid"
       end
