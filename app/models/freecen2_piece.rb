@@ -90,9 +90,9 @@ class Freecen2Piece
     end
 
     def valid_series?(series)
-      return true if %w[HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series.upcase)
+      return true if %w[HS4 HS5 HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series.upcase)
 
-      # Need to add Scotland and Ireland
+      # Need to add Scotland after 1861 -> and Ireland
       false
     end
 
@@ -122,9 +122,12 @@ class Freecen2Piece
       when 'HO107'
         year = parts[1].delete('^0-9').to_i <= 1465 ? '1841' : '1851'
         census_fields = parts[1].delete('^0-9').to_i <= 1465 ? Freecen::CEN2_1841 : Freecen::CEN2_1851
-      when 'HS51'
-        year = parts[1].delete('^0-9')[2..3] == '51' ? '1851' : '1841'
-        census_fields = parts[1].delete('^0-9')[2..3] == '51' ? Freecen::CEN2_SCT_1851 : Freecen::CEN2_SCT_1841
+      when 'HS4'
+        year = '1841'
+        census_fields = Freecen::CEN2_SCT_1841
+      when 'HS5'
+        year = '1851'
+        census_fields = Freecen::CEN2_SCT_1851
       when 'RS6'
         year = '1861'
         census_fields = Freecen::CEN2_SCT_1861
