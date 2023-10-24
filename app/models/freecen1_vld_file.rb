@@ -202,7 +202,7 @@ class Freecen1VldFile
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
     if success
       file_location = Rails.root.join('tmp', file)
-      success, message = write_csv_file(file_location, census_fields, year)
+      success, message = write_csv_file(file_location, census_fields, series, year)
     end
     [success, message, file_location, file]
   end
@@ -290,7 +290,7 @@ class Freecen1VldFile
     [success, message, file, census_fields]
   end
 
-  def write_csv_file(file_location, census_fields, year)
+  def write_csv_file(file_location, census_fields, series, year)
     header = census_fields
     @initial_line_hash = {}
     @blank = nil
@@ -306,7 +306,7 @@ class Freecen1VldFile
         next if rec.blank?
 
         @record_number += 1
-        line = add_fields(rec, census_fields, year)
+        line = add_fields(rec, census_fields, series, year)
         csv << line
       end
     end
@@ -342,7 +342,7 @@ class Freecen1VldFile
     line
   end
 
-  def add_fields(rec, census_fields, year)
+  def add_fields(rec, census_fields, series, year)
     line = []
     census_fields.each do |field|
       case field
@@ -361,7 +361,7 @@ class Freecen1VldFile
       when 'page_number'
         line << compute_page_number(rec)
       when 'schedule_number'
-        line << compute_schedule_number(rec, census_fields)
+        line << compute_schedule_number(rec, census_fields, series, year)
       when 'uninhabited_flag'
         line << compute_uninhabited_flag(rec)
       when 'house_or_street_name'
@@ -530,10 +530,12 @@ class Freecen1VldFile
     line
   end
 
-  def compute_schedule_number(rec, census_fields)
+  def compute_schedule_number(rec, census_fields, series, year)
     if rec['dwelling_number'] == @initial_line_hash['dwelling_number'] # NB dwelling_number holds col 5-10 from VLD file (A six digit number (leading zeros) which counts the households)
       line = @blank
     elsif !census_fields.include?('ecclesiastical_parish') || rec['uninhabited_flag'] == 'x' && rec['schedule_number'].blank?
+      line = '0'
+    elsif series == 'HS' && year == '1841' && rec['schedule_number'].blank?
       line = '0'
     else
       line = rec['schedule_number']
