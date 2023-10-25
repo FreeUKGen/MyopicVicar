@@ -193,7 +193,7 @@ namespace :freecen do
       vld_file_name = args.vld_file_name
       userid = args.userid
 
-      file_for_log = "log/vld_auto_validate_pob_#{chapman_code}_#{vld_file_name}_#{run_start.strftime('%Y%m%d%H%M')}.log"
+      file_for_log = "#{Rails.root}/log/vld_auto_validate_pob_#{chapman_code}_#{vld_file_name}_#{run_start.strftime('%Y%m%d%H%M')}.log"
       log_file = open_log_file(file_for_log)
 
       message = "Starting Automatic Validation of VLD POB data for #{chapman_code} - #{vld_file_name} for user #{userid}"
@@ -208,7 +208,7 @@ namespace :freecen do
       output_to_log(log_file, message)
       p message
     else
-      csv_filename = Rails.root.join('tmp', 'VLD_POB_COUNTY.CSV')
+      csv_filename = "#{Rails.root}/tmp/VLD_POB_COUNTY.CSV"
       if File.file?(csv_filename)
         _success, county_def_array = read_in_county_csv_file(csv_filename)
         county_def_array.each do |params|
@@ -217,7 +217,7 @@ namespace :freecen do
           @ccuserid = params[2].to_s
           @limit = params[3].to_s
         end
-        file_for_log = "log/vld_auto_validate_pob_#{@chapman_code}_#{run_start.strftime('%Y%m%d%H%M')}.log"
+        file_for_log = "#{Rails.root}/log/vld_auto_validate_pob_#{@chapman_code}_#{run_start.strftime('%Y%m%d%H%M')}.log"
         log_file = open_log_file(file_for_log)
         message = "Starting Automatic Validation of VLD POB data for #{@chapman_code} - for user #{@userid} (cc user #{@ccuserid}) with limit of previously unvalidated files = #{@limit}"
         output_to_log(log_file, message)
