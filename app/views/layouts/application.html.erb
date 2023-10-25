@@ -82,7 +82,16 @@
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
     <!-- JavaScripts -->
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>    
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>   
+    <%#= javascript_include_tag "application"%>
+    <%= javascript_include_tag "jquery.min.js"%>
+    <%= javascript_include_tag "jquery.validate.min.js"%>
+    <%= javascript_include_tag "jquery.chained.remote.js"%>
+    <%= javascript_include_tag "cookie_control.js"%>
+    <%= javascript_include_tag "jquery.cookiesDirective.js"%>
+    <%= javascript_include_tag "spin.min.js"%>
+    <%= javascript_include_tag "ladda.min.js"%>
+    <%= javascript_include_tag "freecen_coverage_graph.js" %> 
     <%#= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
     <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
