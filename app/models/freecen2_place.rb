@@ -291,9 +291,6 @@ class Freecen2Place
       return [true, place.first.id] unless place.count.zero?
 
       result, place_id = Freecen2Place.alternate_place(county, place_name)
-      return [true, place_id] if result
-
-      result, place_id = Freecen2Place.original_place(county, place_name)
       [result, place_id]
     end
 
@@ -308,7 +305,7 @@ class Freecen2Place
       [place_alternate_valid, place_id]
     end
 
-    def original_place(county, place)
+    def original_place(county, place) # no longer used when validating a place #1564
       place_original = Freecen2Place.where(original_chapman_code: county, original_standard_name: place)
       place_alternate_valid = (place_original.present? && place_original.count > 0) ? true : false
       place_id = place_original.first.id if place_original.present? && place_original.count > 0

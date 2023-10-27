@@ -7,7 +7,7 @@
       <%= f.hidden_field :year, :value=>@year %>
     </fieldset>
   <% end %>
-  Select a link to change the order of display :
+  Click button to change the order of display :
   <% if @sorted_by != 'Piece Number' %>
     <%= link_to 'Piece Number', stats_index_freecen2_pieces_path(county: @county, sorted_by: 'Piece Number', stats_year: @year), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical order of their piece number' %>
   <% end %>
@@ -22,7 +22,7 @@
   <table  class="table--bordered table--data table--striped my-width" >
     <thead >
       <tr>
-        <th class='sticky-header'>Piece Number </th>
+        <th class='sticky-header'>Piece Number (Chapman Code) </th>
         <th class='sticky-header'>Piece Name </th>
         <th class='sticky-header'>Status</th>
         <th class='sticky-header'>Online VLD Files</th>
@@ -33,7 +33,7 @@
     <tbody>
       <% @freecen2_pieces.each do |piece|%>
         <tr>
-          <td><%= piece.number %></td>
+          <td><%= piece.display_piece_number(@chapman_code) %></td>
           <td><%= piece.name %></td>
           <% if piece.display_piece_status.blank? %>
             <td> </td>
