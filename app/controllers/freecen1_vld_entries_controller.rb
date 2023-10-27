@@ -7,6 +7,8 @@ class Freecen1VldEntriesController < ApplicationController
     get_user_info_from_userid
     if params[:id].present?
       @freecen1_vld_entry = Freecen1VldEntry.find(params[:id])
+      @freecen1_vld_file = Freecen1VldFile.find(@freecen1_vld_entry.freecen1_vld_file_id)
+      @freecen2_piece = Freecen2Piece.find(@freecen1_vld_file.freecen2_piece_id)
       @counties = ChapmanCode.freecen_birth_codes
       @counties.sort!
     else
