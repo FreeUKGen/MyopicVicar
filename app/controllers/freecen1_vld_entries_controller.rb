@@ -32,7 +32,6 @@ class Freecen1VldEntriesController < ApplicationController
 
   def propagate_pob
     if params[:commit] == 'Submit'
-      # session.delete[:prop_pob_fields] if session[:prop_pob_fields].present?
       @freecen1_vld_entry = Freecen1VldEntry.find(params[:id])
       @propagation_fields = params[:propagatepob][:propagation_fields]
       @propagation_scope = params[:propagatepob][:propagation_scope]
@@ -54,8 +53,22 @@ class Freecen1VldEntriesController < ApplicationController
       end
 
       flash[:notice] = success ? 'Propagation processed successfully' : message
-      redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
+      @freecen1_vld_file = Freecen1VldFile.find(@freecen1_vld_entry.freecen1_vld_file_id)
+      pob_invalid_count = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+      if pob_invalid_count.positive?
+        @freecen1_vld_entry = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false, id: {'$gt': params[:id]}).order_by(dwelling_number: 1, sequence_in_household: 1).first
+        if @freecen1_vld_entry.blank?
+          redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
 
+        else
+          redirect_to(edit_pob_freecen1_vld_entry_path(id: @freecen1_vld_entry.id)) && return
+
+        end
+
+      else
+        redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
+
+      end
     else
       get_user_info_from_userid
       if params[:id].present?
@@ -89,6 +102,23 @@ class Freecen1VldEntriesController < ApplicationController
       vld_year = @freecen1_vld_file.full_year
       reason = 'Manual Val Edit'
       case
+
+      when params[:commit]  == 'No Propagation Required'
+        pob_invalid_count = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+        if pob_invalid_count.positive?
+          @freecen1_vld_entry = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false, id: {'$gt': params[:id]}).order_by(dwelling_number: 1, sequence_in_household: 1).first
+          if @freecen1_vld_entry.blank?
+            redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
+
+          else
+            redirect_to(edit_pob_freecen1_vld_entry_path(id: @freecen1_vld_entry.id)) && return
+
+          end
+
+        else
+          redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
+
+        end
 
       when %w[Alternative Notes Both].include?(params[:commit])
         redirect_to(propagate_pob_freecen1_vld_entry_path(id: params[:id], propagation_fields: params[:commit])) && return

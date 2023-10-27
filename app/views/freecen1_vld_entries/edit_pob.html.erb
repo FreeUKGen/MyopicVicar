@@ -1,7 +1,7 @@
 <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
   <h3  style="text-align: center">Specify Propagation Requirements</h3>
 <% else%>
-  <h3 style="text-align: center">VLD Entry Record Details </h3>
+  <h3 style="text-align: center">VLD Entry Edit POB</h3>
 <% end%>
 <%= render 'flash_notice' %>
 <%= semantic_form_for @freecen1_vld_entry, :html => { :class => 'grid'}   do |f| %>
@@ -69,7 +69,7 @@
     </div>
     <div style='text-align: center'>
       <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
-        <%= link_to 'No Propagation Required', manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id), method: :get, class: "btn btn--gamma", title: 'Finishes the Editing session without Propagation.'%>
+        <%= f.submit 'No Propagation Required',  class: "btn btn--gamma", title: 'No Propagation Required'%>
       <% else%>
         <%= link_to 'Cancel', manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)%>
       <% end %>
