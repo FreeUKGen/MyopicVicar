@@ -133,7 +133,7 @@ namespace :freecen do
           report_csv  += "\n"
           report_csv  += output_csv_line(file.file_name, entry)
         end
-        message = "Processed #{file.file_name} - #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs\n"
+        message = "Processed #{chapman_code} - #{file.file_name} - #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs\n"
         report += message
       end
 
@@ -149,6 +149,7 @@ namespace :freecen do
 
       output_to_log(log_file, report)
       email_csv_file(userid, ccuserid, chapman_code, report, report_csv, log_file)
+      previously_unvalidated_processed
     end
 
     def self.validate_vld_pob_one_file(chapman_code, vld_file, userid, log_file)
@@ -172,7 +173,7 @@ namespace :freecen do
       output_to_log(log_file, report)
       return unless userid.present?
 
-      scope = vld_file.file_name
+      scope = "#{chapman_code} - #{vld_file.file_name}"
       email_summary_to_user(userid, scope, report, log_file)
     end
 
@@ -212,21 +213,29 @@ namespace :freecen do
       if File.file?(csv_filename)
         _success, county_def_array = read_in_county_csv_file(csv_filename)
         county_def_array.each do |params|
-          @chapman_code = params[0].to_s
+          @counties_string = params[0].to_s
+          @chapman_codes = @counties_string[1..-2].split
           @userid = params[1].to_s
           @ccuserid = params[2].to_s
           @limit = params[3].to_s
         end
-        file_for_log = "#{Rails.root}/log/vld_auto_validate_pob_#{@chapman_code}_#{run_start.strftime('%Y%m%d%H%M')}.log"
+        file_for_log = "#{Rails.root}/log/vld_auto_validate_pob_counties_#{run_start.strftime('%Y%m%d%H%M')}.log"
         log_file = open_log_file(file_for_log)
-        message = "Starting Automatic Validation of VLD POB data for #{@chapman_code} - for user #{@userid} (cc user #{@ccuserid}) with limit of previously unvalidated files = #{@limit}"
+        message = "Starting Automatic Validation of VLD POB data for #{@counties_string} - for user #{@userid} (cc user #{@ccuserid}) with limit of previously unvalidated files = #{@limit}"
         output_to_log(log_file, message)
         p message
         start_time = Time.now.to_f
-        validate_vld_pob_one_county(@chapman_code, @userid, @ccuserid, @limit, log_file)
+        previously_unvalidated_processed_total = 0
+        previously_unvalidated_processed = 0
+        @chapman_codes.each do |chap|
+          exit if previously_unvalidated_processed_total >= @limit.to_i && previously_unvalidated_processed_total.positive?
+
+          previously_unvalidated_processed = validate_vld_pob_one_county(chap, @userid, @ccuserid, @limit, log_file)
+          previously_unvalidated_processed_total += previously_unvalidated_processed
+        end
         end_time = Time.now.to_f
         run_time = ((end_time - start_time) / 60).round(2).to_s
-        message = "Finished Automatic Validation of VLD POB data for #{@chapman_code} - for user #{@userid} (cc user #{@ccuserid}) with limit of previously unvalidated files = #{@limit} (runtime = #{run_time} mins)\n"
+        message = "Finished Automatic Validation of VLD POB data for for #{@counties_string} - for user #{@userid} (cc user #{@ccuserid}) with limit of previously unvalidated files = #{@limit} (runtime = #{run_time} mins)"
         output_to_log(log_file, message)
         p message
       else
