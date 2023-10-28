@@ -1,7 +1,7 @@
 <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
-  <h3  style="text-align: center">Specify Propagation Requirements</h3>
+  <h3  style="text-align: center"><%= @chap%> - <%= @year%> - <%= @file_name%> - Specify Propagation Requirements</h3>
 <% else%>
-  <h3 style="text-align: center">VLD Entry Edit POB</h3>
+  <h3 style="text-align: center"><%= @chap%> - <%= @year%> - <%= @file_name%> - Entry Edit POB</h3>
 <% end%>
 <%= render 'flash_notice' %>
 <%= semantic_form_for @freecen1_vld_entry, :html => { :class => 'grid'}   do |f| %>

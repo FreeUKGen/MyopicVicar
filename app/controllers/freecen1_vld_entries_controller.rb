@@ -9,6 +9,9 @@ class Freecen1VldEntriesController < ApplicationController
       @freecen1_vld_entry = Freecen1VldEntry.find(params[:id])
       @freecen1_vld_file = Freecen1VldFile.find(@freecen1_vld_entry.freecen1_vld_file_id)
       @freecen2_piece = Freecen2Piece.find(@freecen1_vld_file.freecen2_piece_id)
+      @file_name = @freecen1_vld_file.file_name
+      @year = @freecen1_vld_file.full_year
+      @chap = @freecen1_vld_file.dir_name
       @counties = ChapmanCode.freecen_birth_codes
       @counties.sort!
     else

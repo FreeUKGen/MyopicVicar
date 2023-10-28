@@ -38,6 +38,7 @@ namespace :freecen do
 
     def self.output_csv_header
       dline = ''
+      dline << 'chapman_code,'
       dline << 'file_name,'
       dline << 'dwelling_number,'
       dline << 'sequence_in_household,'
@@ -53,8 +54,9 @@ namespace :freecen do
       dline
     end
 
-    def self.output_csv_line(file_name, entry)
+    def self.output_csv_line(chapman, file_name, entry)
       dline = ''
+      dline << "#{chapman},"
       dline << "#{file_name},"
       dline << "#{entry.dwelling_number},"
       dline << "#{entry.sequence_in_household},"
@@ -66,7 +68,6 @@ namespace :freecen do
       dline << "#{entry.verbatim_birth_place},"
       dline << "#{entry.birth_county},"
       dline << "#{entry.birth_place},"
-      dline << "#{entry.notes}"
       dline
     end
 
@@ -92,7 +93,7 @@ namespace :freecen do
       [success, array_of_data_lines]
     end
 
-    def self.validate_vld_pob_one_county(chapman_code, userid, ccuserid, limit, log_file)
+    def self.validate_vld_pob_one_county(chapman_code, userid, limit, log_file)
       vld_err_messages = []
       num_individuals = 0
       num_valid = 0
@@ -105,12 +106,13 @@ namespace :freecen do
       report = ''
       report_csv = ''
 
-      files = Freecen1VldFile.where(dir_name: chapman_code).order_by(file_name: 1)
+      files = Freecen1VldFile.where(dir_name: chapman_code).order_by(full_year: 1, piece: 1)
 
       files.each do |file|
         previously_validated = Freecen1VldEntry.where(freecen1_vld_file_id: file.id, pob_valid: false).or(Freecen1VldEntry.where(freecen1_vld_file_id: file.id, pob_valid: true)).first
+
         previously_unvalidated_processed += 1 if previously_validated.blank?
-        next if previously_unvalidated_processed > max_files
+        next if previously_unvalidated_processed > max_files && previously_validated.blank?
 
         files_processed += 1
         begin
@@ -131,7 +133,7 @@ namespace :freecen do
         invalid_pob_entries.each do |entry|
           report_csv  += output_csv_header if report_csv.empty?
           report_csv  += "\n"
-          report_csv  += output_csv_line(file.file_name, entry)
+          report_csv  += output_csv_line(chapman_code, file.file_name, entry)
         end
         message = "Processed #{chapman_code} - #{file.file_name} - #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs\n"
         report += message
@@ -145,11 +147,9 @@ namespace :freecen do
           report += "  #{msg}\n"
         end
       end
-      return if userid.blank?
 
       output_to_log(log_file, report)
-      email_csv_file(userid, ccuserid, chapman_code, report, report_csv, log_file)
-      previously_unvalidated_processed
+      [previously_unvalidated_processed, report, report_csv]
     end
 
     def self.validate_vld_pob_one_file(chapman_code, vld_file, userid, log_file)
@@ -171,7 +171,7 @@ namespace :freecen do
         end
       end
       output_to_log(log_file, report)
-      return unless userid.present?
+      return if userid.blank?
 
       scope = "#{chapman_code} - #{vld_file.file_name}"
       email_summary_to_user(userid, scope, report, log_file)
@@ -214,7 +214,7 @@ namespace :freecen do
         _success, county_def_array = read_in_county_csv_file(csv_filename)
         county_def_array.each do |params|
           @counties_string = params[0].to_s
-          @chapman_codes = @counties_string[1..-2].split
+          @chapman_codes = @counties_string[1..-2].split(',')   # remove square brackets
           @userid = params[1].to_s
           @ccuserid = params[2].to_s
           @limit = params[3].to_s
@@ -227,12 +227,17 @@ namespace :freecen do
         start_time = Time.now.to_f
         previously_unvalidated_processed_total = 0
         previously_unvalidated_processed = 0
+        @overall_report = ''
+        @overall_csv = ''
         @chapman_codes.each do |chap|
           exit if previously_unvalidated_processed_total >= @limit.to_i && previously_unvalidated_processed_total.positive?
 
-          previously_unvalidated_processed = validate_vld_pob_one_county(chap, @userid, @ccuserid, @limit, log_file)
+          previously_unvalidated_processed, county_report, county_csv = validate_vld_pob_one_county(chap, @userid, @limit, log_file)
+          @overall_report += county_report
+          @overall_csv += county_csv
           previously_unvalidated_processed_total += previously_unvalidated_processed
         end
+        email_csv_file(@userid, @ccuserid, 'counties', @overall_report, @overall_csv, log_file)
         end_time = Time.now.to_f
         run_time = ((end_time - start_time) / 60).round(2).to_s
         message = "Finished Automatic Validation of VLD POB data for for #{@counties_string} - for user #{@userid} (cc user #{@ccuserid}) with limit of previously unvalidated files = #{@limit} (runtime = #{run_time} mins)"

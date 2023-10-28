@@ -24,7 +24,7 @@ module Freecen
       if vld_entry.birth_place == 'UNK'
         reason = 'Automatic update of birth place UNK to hyphen'
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
-        vld_entry.update_attributes(birth_place: '-')
+        vld_entry.set(birth_place: '-')
         Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
       end
 
@@ -38,10 +38,10 @@ module Freecen
           if vld_entry.verbatim_birth_county == prop_rec.match_verbatim_birth_county && vld_entry.verbatim_birth_place == prop_rec.match_verbatim_birth_place
             reason = "Propagation (id = #{prop_rec._id})"
             vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
-            vld_entry.update_attributes(birth_county: prop_rec.new_birth_county, birth_place: prop_rec.new_birth_place) if prop_rec.propagate_pob
+            vld_entry.set(birth_county: prop_rec.new_birth_county, birth_place: prop_rec.new_birth_place) if prop_rec.propagate_pob
             if prop_rec.propagate_notes
               the_notes = vld_entry.notes.blank? ? prop_rec.new_notes : "#{vld_entry.notes} #{prop_rec.new_notes}"
-              vld_entry.update_attributes(notes: the_notes)
+              vld_entry.set(notes: the_notes)
             end
             Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
             pob_valid = true
@@ -50,7 +50,7 @@ module Freecen
         end
       end
 
-      vld_entry.update_attributes(pob_valid: pob_valid, pob_warning: pob_warning)
+      vld_entry.set(pob_valid: pob_valid, pob_warning: pob_warning)
       pob_valid
     end
 
