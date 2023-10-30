@@ -239,7 +239,6 @@ class Freecen1VldFilesController < ApplicationController
   end
 
   def list_invalid_civil_parishes
-
     userid = session[:userid]
     chapman_code = session[:chapman_code]
 
@@ -279,9 +278,6 @@ class Freecen1VldFilesController < ApplicationController
   end
 
   def update
-
-    #redirect_to(action: 'create') && return unless session[:replace].blank?
-
     @freecen1_vld_file = Freecen1VldFile.find(params[:id])
     unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'

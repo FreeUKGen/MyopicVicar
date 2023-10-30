@@ -10,6 +10,8 @@ class Freecen1VldEntriesController < ApplicationController
       @freecen1_vld_file = Freecen1VldFile.find(@freecen1_vld_entry.freecen1_vld_file_id)
       @freecen2_piece = Freecen2Piece.find(@freecen1_vld_file.freecen2_piece_id)
       @file_name = @freecen1_vld_file.file_name
+      @num_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+      @pob_status_info = @freecen1_vld_entry.pob_valid == true ? "TRUE" : "FALSE (#{@freecen1_vld_entry.pob_warning})"
       @year = @freecen1_vld_file.full_year
       @chap = @freecen1_vld_file.dir_name
       @counties = ChapmanCode.freecen_birth_codes
@@ -103,6 +105,7 @@ class Freecen1VldEntriesController < ApplicationController
       @freecen1_vld_entry = Freecen1VldEntry.find(params[:id])
       @freecen1_vld_file = Freecen1VldFile.find(@freecen1_vld_entry.freecen1_vld_file_id)
       vld_year = @freecen1_vld_file.full_year
+      @num_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
       reason = 'Manual Val Edit'
       case
 
