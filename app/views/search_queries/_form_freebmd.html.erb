@@ -99,7 +99,7 @@
                     <legend class="label">Record Type</legend>
                     <ol class="choices-group">
                         <li class="choice">
-                            <%= f.label :bmd_record_type_all, { :class => "header_label rule", id: 'all_record_types_label'} do %>
+                            <%= f.label :bmd_record_type_all, { :class => "optional_attributes rule", id: 'all_record_types_label'} do %>
                                 <%= check_box_tag 'search_query[bmd_record_type][]', '0',set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '0'),{ multiple: true, class: 'checkAll', id: 'search_query_bmd_record_type_all', tabindex: "0" } %>
                                 <%= content_text(:optional_checkbox_label, 'Select All') %>
                             <% end %>
@@ -328,6 +328,9 @@
 
     .flex_item {
         flex-grow: 2;
+    }
+    #all_record_types_label {
+        color: inherit;
     }
 </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
