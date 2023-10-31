@@ -101,8 +101,7 @@
                         <li class="choice">
                             <%= f.label :bmd_record_type_all, { :class => "header_label rule", id: 'all_record_types_label'} do %>
                                 <%= check_box_tag 'search_query[bmd_record_type][]', '0',set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '0'),{ multiple: true, class: 'checkAll', id: 'search_query_bmd_record_type_all', tabindex: "0" } %>
-                                #Select All
-                            <%= content_text(:optional_checkbox_label, 'Select All') %>
+                                <%= content_text(:optional_checkbox_label, 'Select All') %>
                             <% end %>
                         </li>
                         <li class="choice">
