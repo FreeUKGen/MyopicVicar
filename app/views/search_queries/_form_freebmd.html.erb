@@ -38,8 +38,7 @@
                         <%="First name(s)".html_safe %>
                     <% end %>
                 </div>
-              <%#= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', :autocomplete => autocomplete_BestGuess_GivenName_search_queries_path, tabindex: "0" %>
-              <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0" %>
+                <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0" %>
                 <label>
                     <small>
                         <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
@@ -54,7 +53,7 @@
                         <%= "Surname".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', placeholder: 'Enter Surname here', :autocomplete => autocomplete_BestGuess_Surname_search_queries_path, tabindex: "0"%>
+                <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', :autocomplete => autocomplete_BestGuess_Surname_search_queries_path, tabindex: "0"%>
                 <label>
                     <small class="ttip__text">
                         <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
@@ -64,24 +63,19 @@
             </li>
 
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
-                <div class='labels'>
-                    <div class="datereangefromlabel">
-                        <%= label_tag 'from_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip" do %>
-                            <%= "From Quarter/Year".html_safe %>
-                        <% end %>
-                    </div>
-                </div>
-                <div class="grid">
-                    <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
-                        <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0")%>
-                        <%#= month_field_tag('search_query[start_quarter]', set_value(@search_query.start_quarter), min: 1, max:12, step:3 , class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0")%>
-                    </div>
-                    <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
-                        <label class="accessibility" for="from_year">Start Year</label>
-                        <%#= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, step: 10 }, class: 'select_year_start date_years text-input', name: 'search_query[start_year]', id: 'from_year', tabindex: "0") %>
-                        <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
-                    </div>
-                </div>
+                <fieldset class="choices" id="">
+                    <legend class="label">From Quarter/Year</legend>
+                    <ol class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
+                        <li class="">
+                            <label class="accessibility" for="from_quarter">Start Quarter</label>
+                            <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0") %>
+                        </li>
+                        <li class="">
+                            <label class="accessibility" for="from_year">Start Year</label>
+                            <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                        </li>
+                    </ol>
+                </fieldset>
             </li>
 
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangetogrid">
@@ -143,7 +137,7 @@
                         <%= "Spouse's first name(s)".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input flush--bottom', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name', tabindex: "0"%>
+                <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input flush--bottom', id: 'spouse_first_name', tabindex: "0"%>
                 <label>
                     <small>
                         <%= check_box_tag 'search_query[identifiable_spouse_only]', set_value(@search_query.identifiable_spouse_only), set_value(@search_query.identifiable_spouse_only), tabindex: "0" %>
@@ -158,7 +152,7 @@
                         <%= "Spouse/Mothers surname".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', placeholder: '', id: 'spouses_mother_surname'%>
+                <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', id: 'spouses_mother_surname'%>
             </li>
             
             <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
@@ -171,17 +165,17 @@
                 <div id="death_age_and_dob">
                     <div id="death_age">
                         <label class="accessibility" for="search_query_age_at_death">Age at death</label>
-                        <%= number_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), placeholder: 'Enter Age', class: 'text-input flush--bottom', tabindex: "0" %>
+                        <%= number_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), class: 'text-input flush--bottom', tabindex: "0" %>
                     </div>
                     <div id="death_age_range">
                         <div class="grid">
                             <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                 <label class="accessibility" for="search_query_min_age_at_death">Start Age</label>
-                                <%= number_field_tag 'search_query[min_age_at_death]', set_value(@search_query.min_age_at_death), placeholder: 'min age', class: 'text-input', tabindex: "0" %>
+                                <%= number_field_tag 'search_query[min_age_at_death]', set_value(@search_query.min_age_at_death), class: 'text-input', tabindex: "0" %>
                             </div>
                             <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                 <label class="accessibility" for="search_query_max_age_at_death">Finish Age</label>
-                                <%= number_field_tag 'search_query[max_age_at_death]', set_value(@search_query.max_age_at_death), placeholder: 'max age', class: 'text-input',  tabindex: "0" %>
+                                <%= number_field_tag 'search_query[max_age_at_death]', set_value(@search_query.max_age_at_death), class: 'text-input',  tabindex: "0" %>
                             </div>
                         </div>
                     </div>
@@ -193,11 +187,11 @@
                         <div class="grid">
                             <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                 <label class="accessibility" for="search_query_min_dob_at_death">Start Birth Year</label>
-                                <%= number_field_tag 'search_query[min_dob_at_death]', set_value(@search_query.min_dob_at_death), { class: 'text-input', placeholder: 'start year', tabindex: "0" } %>
+                                <%= number_field_tag 'search_query[min_dob_at_death]', set_value(@search_query.min_dob_at_death), { class: 'text-input', tabindex: "0" } %>
                             </div>
                             <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                 <label class="accessibility" for="search_query_max_dob_at_death">Finish Birth Year</label>
-                                <%= number_field_tag 'search_query[max_dob_at_death]', set_value(@search_query.max_dob_at_death), { class: 'text-input', placeholder: 'end year', tabindex: "0" } %>
+                                <%= number_field_tag 'search_query[max_dob_at_death]', set_value(@search_query.max_dob_at_death), { class: 'text-input', tabindex: "0" } %>
                             </div>
                             
                         </div>
@@ -219,7 +213,7 @@
                         <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
+                <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', tabindex: "0" %>
             </li>
 
             <li class="grid__item desk-wide-one-eighth desk-one-quarter lap-one-half palm-one-whole pages">
@@ -229,7 +223,7 @@
                         <span class="ttip__text"><%#= info_tag_text[:page]%></span>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
+                <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', tabindex: "0"%>
             </li>
 
             <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole countiess">
@@ -504,7 +498,6 @@
                 if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
                     $('#spouses_mother_surname').prop('disabled', false);
                     $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
-                    $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here");
                     $('.spouse_or_mother_surname_label').attr('tabindex', '0');
                     $('.spouse_or_mother_surname_label').text("Mother's Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s name before marriage</span>')
@@ -519,15 +512,12 @@
                     $('#spuse_checkbox').show();
                     $('#spouses_mother_surname').prop('disabled', false)
                     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                    $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                     $('.spouse_or_mother_surname_label').text("Spouse's Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').val([]);
                     aad_selection_function();
-                    $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
                     $('#spouse_first_name').prop('disabled', false)
-                    $('#spouse_first_name').prop('placeholder', "Enter Spouse's First Name(s) here")
                     $('#age_at_death_or_date_of_birth_div').hide();
                 } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
                     $('#age_at_death_or_date_of_birth_div').show();
@@ -546,7 +536,6 @@
 
             if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
                 //$('#spouses_mother_surname').prop('disabled', false)
-              //  $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
                 $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
                 $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                 $('.spouse_or_mother_surname_label').attr('tabindex', '0');
@@ -563,8 +552,6 @@
             } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
                 //$('#spouses_mother_surname').prop('disabled', false)
                // $('#spouse_first_name').prop('disabled', false)
-                //$('#spouse_first_name').prop('placeholder', "Enter Spouse First Name(s) here ")
-               // $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                 $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
                 $('.spouse_or_mother_surname_label').text("Spouses Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                 //$('#spouses_mother_surname').css('background', 'white');
@@ -581,7 +568,6 @@
                 $('#death_select_box').prop('disabled', false);
                 //$('#spouses_mother_surname').val('').prop('disabled', true)
                 //$('#spouses_mother_surname').css('background', '#ccc');
-                //$('#spouses_mother_surname').prop('placeholder', '');
                 //$('#spouses_mother_surname').prop('name', '');
                 aad_selection_function();
                 //$('#death_select_box').css('background', 'white');
@@ -598,7 +584,6 @@
                 $('#age_at_death_or_date_of_birth_div').hide();
                 $('#spouse_first_name').val('');
                 //$('#spouses_mother_surname').val('').prop('disabled', true)
-                //$('#spouses_mother_surname').prop('placeholder', '')
                 //$('#spouses_mother_surname').prop('name', '');
                 //$('#death_select_box').prop('disabled', 'disabled');
                 //$('#death_select_box').css('background', '#ccc');
@@ -607,7 +592,6 @@
                 $('#death_select_box').val([]);
                 aad_selection_function();
                 //$('#spouse_first_name').prop('disabled', true)
-                //$('#spouse_first_name').prop('placeholder', "")
                 //$('#spouse_first_name').css('background', '#ccc');
             };
 
