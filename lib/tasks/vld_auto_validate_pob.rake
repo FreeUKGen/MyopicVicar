@@ -136,10 +136,12 @@ namespace :freecen do
           report_csv  += output_csv_line(chapman_code, file.file_name, entry)
         end
         message = "Processed #{chapman_code} - #{file.file_name} - #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs\n"
+        p message
         report += message
       end
 
       message = "Processed #{chapman_code} - #{files_processed} vld files with #{total_individuals} individuals - found #{total_invalid_pobs} invalid POBs\n"
+      p message
       report += message
       unless vld_err_messages.empty?
         report += "The following processing error messages were reported:\n"

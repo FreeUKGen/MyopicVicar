@@ -42,8 +42,8 @@ class Freecen1VldEntry
   ############################################################## class methods
 
   class << self
-    def update_linked_records_pob(vld_entry, birth_county, birth_place, notes)
-      individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
+    def update_linked_records_pob(vld_file, vld_entry, birth_county, birth_place, notes)
+      individual_rec = FreecenIndividual.find_by(freecen1_vld_file_id: vld_file.id, freecen1_vld_entry_id: vld_entry.id)
       return if individual_rec.blank?
 
       individual_rec.set(birth_county: birth_county, birth_place: birth_place, notes: notes)
