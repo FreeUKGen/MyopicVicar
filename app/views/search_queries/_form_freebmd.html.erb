@@ -79,23 +79,19 @@
             </li>
 
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangetogrid">
-                <div class='labels'>
-                    <div class="todaterangelabel">
-                        <%= label_tag 'to_quarter', "Date range to #{app_icons[:info]}".html_safe, class: "ttip" do %>
-                            <%= "To Quarter/Year".html_safe %>
-                        <% end %>
+                <fieldset class="choices" id="">
+                    <legend class="label">To Quarter & Year</legend>
+                    <div class='flex_container'>
+                        <div class="flex_item">
+                            <label class="accessibility" for="to_quarter">To Quarter</label>
+                            <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value_or_default(4,@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
+                            </div>
+                        <div class="flex_item">
+                            <label class="accessibility" for="to_year">To Year</label>
+                            <%= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+                            </div>
                     </div>
-                </div>
-                <div class="grid">
-                    <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
-                        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Dec', 4], ['Sep', 3], ['Jun', 2], ['Mar', 1]], set_value_or_default(4,@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
-                    </div>
-                    <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
-                        <label class="accessibility" for="end_year">Finish Year</label>
-                        <%#= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_years text-input', name: 'search_query[end_year]', id: 'end_year', tabindex: "0") %>
-                        <%= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'end_year', tabindex: "0", placeholder: 'YYYY'%>
-                    </div>
-                </div>
+                </fieldset>
             </li>
 
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole recordTypeGrid">
