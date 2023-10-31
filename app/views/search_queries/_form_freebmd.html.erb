@@ -65,16 +65,16 @@
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
                 <fieldset class="choices" id="">
                     <legend class="label">From Quarter & Year</legend>
-                    <ol>
-                    <li class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
-                        <label class="accessibility" for="from_quarter">Start Quarter</label>
-                        <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0") %>
-                    </li>
-                    <li class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
-                        <label class="accessibility" for="from_year">Start Year</label>
-                        <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
-                    </li>
-                    </ol>
+                    <div class='flex_container'>
+                        <div class="flex_item">
+                            <label class="accessibility" for="from_quarter">Start Quarter</label>
+                            <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0") %>
+                        </div>
+                        <div class="flex_item">
+                            <label class="accessibility" for="from_year">Start Year</label>
+                            <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                        </div>
+                    </div>
                 </fieldset>
             </li>
 
@@ -323,6 +323,11 @@
 
     #search_query_chapman_codes optgroup option:hover {
         position: relative;
+    }
+    .flex_container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
     }
 </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
