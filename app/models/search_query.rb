@@ -613,6 +613,7 @@ class SearchQuery
   def name_search_params
     params = {}
     name_params = {}
+    other_params = {}
     possible_surname_params = {}
     if query_contains_wildcard?
       name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name
@@ -628,7 +629,7 @@ class SearchQuery
         name_params['last_name'] = last_name.downcase if last_name.present?
         #possible_surname_params['first_name'] = first_name.downcase if first_name.present?
         name_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present?
-        other_params['first_name'] = first_name.downcase if first_name
+        other_params['first_name'] = first_name.downcase if first_name.present?
         other_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present?
         params['search_names'] = { '$elemMatch': {"$or": [name_params, other_params]}}
       end
