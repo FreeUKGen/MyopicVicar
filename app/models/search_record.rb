@@ -64,6 +64,7 @@ class SearchRecord
   field :secondary_search_date, type: String
   field :embargoed, type: Boolean, default: false
   field :release_year, type: Integer
+  field :possible_last_names, type: Array, default: []
 
   # search fields
   embeds_many :search_names, :class_name => 'SearchName'
@@ -254,6 +255,7 @@ class SearchRecord
       # Usewd only by a few old rake tasks. It was effectively replaced by update_create_search_record(entry, search_version, place)
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = SearchRecord.new(search_record_parameters)
+      search_record.possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
       search_record.freereg1_csv_entry = entry
       search_record.search_record_version = search_version
       search_record.transform
@@ -907,7 +909,7 @@ class SearchRecord
 
   def populate_search_names
     return unless transcript_names && transcript_names.size > 0
-    possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
+    #possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
     #other_last_name = {}
     # other_last_name = transcript_names.each{|n| other_last_name["#{n[:role]}"] = [n[:last_name]] if n[:last_name].present?}
     #get_last_name = other_possible_last_name(other_last_name)
@@ -924,7 +926,7 @@ class SearchRecord
       else
         person_gender = gender_from_role(person_role)
       end
-      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender, possible_last_names)
+      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
       search_names << name if name
     end
   end
@@ -938,12 +940,12 @@ class SearchRecord
     last_name
   end
 
-  def search_name(first_name, last_name, person_type, person_role, person_gender, possible_last_names,source = Source::TRANSCRIPT)
+  def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
     name = nil
     unless last_name.blank?
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name),possible_last_names: possible_last_names, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     else
-      name = SearchName.new({ :first_name => copy_name(first_name), possible_last_names: possible_last_names,:origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => copy_name(first_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
     name
   end
