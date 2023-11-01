@@ -155,6 +155,12 @@
           <% end %>
         </li>
         <li class="grid__item one-third lap-one-whole palm-one-whole">
+          <%= f.label :no_surname, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :no_surname, {},  true, false %>
+            Check Records with no surnames
+          <% end %>
+        </li>
+        <li class="grid__item one-third lap-one-whole palm-one-whole">
           <%= f.label :search_nearby_places, { :class => "ttip", :tabindex => "0" } do %>
             <%= f.check_box :search_nearby_places, {},  true, false %>
             Nearby places

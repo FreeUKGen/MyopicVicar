@@ -97,6 +97,7 @@ class SearchQuery
   #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
+  field :no_surname, type: Boolean
   field :witness, type: Boolean
   field :start_year, type: Integer
   field :end_year, type: Integer
@@ -625,13 +626,11 @@ class SearchQuery
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
         params['search_soundex'] = { '$elemMatch' => name_params }
       else
+
         name_params['first_name'] = first_name.downcase if first_name
-        name_params['last_name'] = last_name.downcase if last_name.present?
-        #possible_surname_params['first_name'] = first_name.downcase if first_name.present?
-        name_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present?
-        other_params['first_name'] = first_name.downcase if first_name.present?
-        other_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present?
-        params['search_names'] = { '$elemMatch': {"$or": [name_params, other_params]}}
+        name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname.present?
+        name_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present? && self.no_surname.present?
+        params['search_names'] = { '$elemMatch': name_params }
       end
     end
     params
