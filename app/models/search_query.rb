@@ -628,7 +628,9 @@ class SearchQuery
         name_params['last_name'] = last_name.downcase if last_name.present?
         #possible_surname_params['first_name'] = first_name.downcase if first_name.present?
         name_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present?
-        params['search_names'] = { '$elemMatch': name_params}
+        other_params['first_name'] = first_name.downcase if first_name
+        other_params['possible_last_names'] = {'$in': [last_name.downcase]} if last_name.present?
+        params['search_names'] = { '$elemMatch': {"$or": [name_params, other_params]}}
       end
     end
     params
