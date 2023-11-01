@@ -182,9 +182,9 @@ class UseridDetailsController < ApplicationController
   end #end method
 
   def list_users_handle_communications
-    COMM_ROLES = ['website_coordinator', 'volunteer_coordinator', 'publicity_coordinator', 'contacts_coordinator', 'general_communication_coordinator', 'genealogy_coordinator', 'project_manager']
-    @primary = UseridDetail.where(primary_role: COMM_ROLES)
-    @secondary = UseridDetail.where(secondary_roles: {'$in' =>  COMM_ROLES })
+    comm_roles = ['website_coordinator', 'volunteer_coordinator', 'publicity_coordinator', 'contacts_coordinator', 'general_communication_coordinator', 'genealogy_coordinator', 'project_manager']
+    @primary = UseridDetail.where(primary_role: comm_roles)
+    @secondary = UseridDetail.where(secondary_roles: {'$in' =>  comm_roles })
     @userids =[@primary, @secondary]
   end
 
