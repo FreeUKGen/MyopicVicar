@@ -113,13 +113,11 @@ class SiteStatistic
     end
     def record_type_counts_per_county
       result = Hash.new
-      baptism_records_count = 0
-      burial_records_count = 0
-      marraiage_records_count = 0
-
       ChapmanCode.merge_counties.each do |county|
         records_for_county_count = Array.new
-
+        baptism_records_count = 0
+        burial_records_count = 0
+        marraiage_records_count = 0
         Freereg1CsvFile.where(county: county).no_timeout.each do |file|
           case
           when file.record_type == "ba"
