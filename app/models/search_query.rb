@@ -841,7 +841,7 @@ class SearchQuery
 
   def possible_last_names_params
     params = {}
-    params[:possible_last_names] = { '$in' => last_name } if last_name.present? && self.no_surname
+    params[:possible_last_names] = { '$in' => [last_name] } if last_name.present? && self.no_surname
     params
   end
 
