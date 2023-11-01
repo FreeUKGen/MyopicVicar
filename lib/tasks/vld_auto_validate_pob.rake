@@ -136,9 +136,9 @@ namespace :freecen do
           report_csv  += output_csv_line(chapman_code, file.file_name, entry)
         end
         message = "Processed #{chapman_code} - #{file.file_name} - #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs"
-        message += "***** vld file not correctly linked to individuals collection - please report to System Administartor" if num_individuals == num_invalid_pobs
+        message += ' ***** vld file not correctly linked to freecen_individuals collection - please report to System Administrator' if num_individuals == num_invalid_pobs
         p message
-        message += "\n"
+        message += '\n'
 
         report += message
       end
@@ -169,6 +169,7 @@ namespace :freecen do
       end
       num_invalid_pobs = num_individuals - num_valid
       report = "Processed #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs"
+      report += ' ***** vld file not correctly linked to freecen_individuals collection - please report to System Administrator' if num_invalid_pobs == num_individuals
       unless vld_err_messages.empty?
         report += "The following processing error messages were reported:\n"
         vld_err_messages.each do |msg|
@@ -176,6 +177,7 @@ namespace :freecen do
         end
       end
       output_to_log(log_file, report)
+
       return if userid.blank?
 
       scope = "#{chapman_code} - #{vld_file.file_name}"
