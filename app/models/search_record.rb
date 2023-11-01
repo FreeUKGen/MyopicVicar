@@ -924,7 +924,7 @@ class SearchRecord
       else
         person_gender = gender_from_role(person_role)
       end
-      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender, possible_last_names, get_last_name)
+      name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender, possible_last_names)
       search_names << name if name
     end
   end
@@ -938,7 +938,7 @@ class SearchRecord
     last_name
   end
 
-  def search_name(first_name, last_name, person_type, person_role, person_gender, possible_last_names, get_last_name,source = Source::TRANSCRIPT)
+  def search_name(first_name, last_name, person_type, person_role, person_gender, possible_last_names,source = Source::TRANSCRIPT)
     name = nil
     unless last_name.blank?
       name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name),possible_last_names: possible_last_names, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
