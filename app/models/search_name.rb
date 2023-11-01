@@ -8,7 +8,7 @@ class SearchName
   field :type, type: String
   field :possible_last_names, type: Array
 
-  index({ possible_last_names: "2d" }
+  index({ possible_last_names: "2d" })
 
 
 
