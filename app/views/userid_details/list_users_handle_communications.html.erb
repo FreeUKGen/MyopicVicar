@@ -1,0 +1,32 @@
+<div class="grid__item ">
+  <% unless @userids.blank? %>
+    <section class="island ">
+      <div class="scrollable ">
+        <table class=" table--bordered my-width table--data just--left">
+          <thead >
+            <tr>
+              <th class='sticky-header'>UserID</th>
+              <th class='sticky-header'>Email</th>
+            </tr>
+          </thead>
+          <tbody >
+            <% @userids.each do |userid| %>
+              <% if userid.active%>
+                <tr id="<%=userid.id%>" style="color:green">
+                <% else%>
+                  <tr id="<%=userid.id%>" style="color:blue">
+                  <% end%>
+                  <td > <%= userid.userid %>  </td>
+                  <td > <%= userid.email_address %> </td>
+                  <td><%= userid.person_role %></td>
+                  <td><%= userid.secondary_roles %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    <%else%>
+      There are no members
+    <% end %>
+  </div>

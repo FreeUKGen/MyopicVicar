@@ -181,6 +181,13 @@ class UseridDetailsController < ApplicationController
     @sorted_by = session[:active]
   end #end method
 
+  def list_users_handle_communications
+    COMM_ROLES = ['website_coordinator', 'volunteer_coordinator', 'publicity_coordinator', 'contacts_coordinator', 'general_communication_coordinator', 'genealogy_coordinator', 'project_manager']
+    @primary = UseridDetail.where(primary_role: COMM_ROLES)
+    @secondary = UseridDetail.where(secondary_roles: {'$in' =>  COMM_ROLES })
+    @userids =[@primary, @secondary]
+  end
+
   def load(userid_id)
     @user = get_user
     @first_name = @user.person_forename unless @user.blank?
