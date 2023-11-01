@@ -503,7 +503,7 @@ class SearchRecord
       new_search_record.search_date = ' ' if new_search_record.search_date.nil?
       new_search_record.place_id = place.id
       new_search_record.chapman_code = place.chapman_code
-      new_search_record.possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
+      new_search_record.possible_last_names = new_search_record.transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
       new_search_record.save
       #search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
       search_record.destroy if search_record.present?
