@@ -183,9 +183,9 @@ class UseridDetailsController < ApplicationController
 
   def list_users_handle_communications
     comm_roles = ['website_coordinator', 'volunteer_coordinator', 'publicity_coordinator', 'contacts_coordinator', 'general_communication_coordinator', 'genealogy_coordinator', 'project_manager']
-    primary = UseridDetail.find(primary_role: comm_roles)
-    secondary = UseridDetail.find(secondary_roles: {'$in' =>  comm_roles })
-    @userids =[primary, secondary]
+    primary = UseridDetail.find_by(person_role: comm_roles)
+    secondary = UseridDetail.find_by(secondary_role: {'$in' =>  comm_roles })
+    @userids =[primary, secondary].compact.uniq
   end
 
   def load(userid_id)
