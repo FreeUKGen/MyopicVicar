@@ -628,8 +628,7 @@ class SearchQuery
       else
 
         name_params['first_name'] = first_name.downcase if first_name
-        name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname.present?
-        name_params['possible_last_names'] = {'$match': last_name.downcase} if last_name.present? && self.no_surname.present?
+        name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
         params['search_names'] = { '$elemMatch': name_params }
       end
     end
@@ -840,6 +839,12 @@ class SearchQuery
     params
   end
 
+  def possible_last_names_params
+    params = {}
+    params[:possible_last_names] = last_name if last_name.present? && self.no_surname
+    params
+  end
+
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
@@ -870,6 +875,7 @@ class SearchQuery
    # params.merge!(possible_name_search_params)
     params.merge!(place_search_params)
     params.merge!(record_type_params)
+    params.merge!(possible_last_names_params)
     params.merge!(date_search_params)
     params
   end
