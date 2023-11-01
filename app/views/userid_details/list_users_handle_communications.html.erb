@@ -11,11 +11,6 @@
           </thead>
           <tbody >
             <% @userids.each do |userid| %>
-              <% if userid.active%>
-                <tr id="<%=userid.id%>" style="color:green">
-                <% else%>
-                  <tr id="<%=userid.id%>" style="color:blue">
-                  <% end%>
                   <td > <%= userid.userid %>  </td>
                   <td > <%= userid.email_address %> </td>
                   <td><%= userid.person_role %></td>
