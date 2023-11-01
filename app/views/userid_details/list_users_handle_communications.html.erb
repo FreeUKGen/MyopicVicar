@@ -10,6 +10,7 @@
             </tr>
           </thead>
           <tbody >
+          <% raise @userids.inspect %>
             <% @userids.each do |userid| %>
                   <td > <%= userid.userid %>  </td>
                   <td > <%= userid.email_address %> </td>
