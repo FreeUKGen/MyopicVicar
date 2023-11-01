@@ -104,7 +104,7 @@ module UseridRole
     'Display Userids' => '/userid_details/display',
     'Display Syndicate Coordinators' => '/syndicates/display',
     'Display County Coordinators' => '/counties/display',
-    'Display Communications Coordinators' => '/userid_details/list_users_handle_communications'
+    'Display Communications Coordinators' => '/userid_details/list_users_handle_communications',
     'Syndicate Coordinators' => '/syndicates',
     'County Coordinators' => '/counties',
     'Country Coordinators' => '/countries',
