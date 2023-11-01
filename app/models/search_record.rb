@@ -255,12 +255,12 @@ class SearchRecord
       # Usewd only by a few old rake tasks. It was effectively replaced by update_create_search_record(entry, search_version, place)
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = SearchRecord.new(search_record_parameters)
-      search_record.possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
       search_record.freereg1_csv_entry = entry
       search_record.search_record_version = search_version
       search_record.transform
       search_record.place_id = place_id
       search_record.digest = search_record.cal_digest
+      search_record.possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
       search_record.save
       #p search_record
       'created'
