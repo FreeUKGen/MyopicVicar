@@ -135,8 +135,11 @@ namespace :freecen do
           report_csv  += "\n"
           report_csv  += output_csv_line(chapman_code, file.file_name, entry)
         end
-        message = "Processed #{chapman_code} - #{file.file_name} - #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs\n"
+        message = "Processed #{chapman_code} - #{file.file_name} - #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs"
+        message += "***** vld file not correctly linked to individuals collection - please report to System Administartor" if num_individuals == num_invalid_pobs
         p message
+        message += "\n"
+
         report += message
       end
 
