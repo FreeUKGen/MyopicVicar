@@ -614,8 +614,6 @@ class SearchQuery
   def name_search_params
     params = {}
     name_params = {}
-    other_params = {}
-    possible_surname_params = {}
     if query_contains_wildcard?
       name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
@@ -626,7 +624,6 @@ class SearchQuery
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
         params['search_soundex'] = { '$elemMatch' => name_params }
       else
-
         name_params['first_name'] = first_name.downcase if first_name
         name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
         name_params['last_name'] = nil if self.no_surname
