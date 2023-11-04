@@ -9,7 +9,7 @@ module Freecen
       num_pob_valid = Freecen1VldEntry.where(freecen1_vld_file_id: vld_file.id, pob_valid: true).count
 
       invalid_pob_entries.each do |vld_entry|
-        is_individual = FreecenIndividual.where(freecen1_vld_file_id: vld_file.id, freecen1_vld_entry_id: vld_entry.id)
+        is_individual = FreecenIndividual.where(freecen1_vld_entry_id: vld_entry.id)
         next if  is_individual.blank? # IE not an individual
 
         num_pob_valid += 1 if individual_pob_valid?(vld_file, vld_entry, chapman_code, vld_year, userid)
