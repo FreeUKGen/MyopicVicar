@@ -143,7 +143,7 @@ class Freecen1VldEntriesController < ApplicationController
           # #######
           @freecen1_vld_entry.add_freecen1_vld_entry_edit(@user.userid, reason, @freecen1_vld_entry.verbatim_birth_county, @freecen1_vld_entry.verbatim_birth_place, @freecen1_vld_entry.birth_county, @freecen1_vld_entry.birth_place, @freecen1_vld_entry.notes)
           @freecen1_vld_entry.update_attributes(params[:freecen1_vld_entry])
-          Freecen1VldEntry.update_linked_records_pob(@freecen1_vld_file, @freecen1_vld_entry,  params[:freecen1_vld_entry][:birth_county], params[:freecen1_vld_entry][:birth_place],  params[:freecen1_vld_entry][:notes])
+          Freecen1VldEntry.update_linked_records_pob(@freecen1_vld_entry,  params[:freecen1_vld_entry][:birth_county], params[:freecen1_vld_entry][:birth_place],  params[:freecen1_vld_entry][:notes])
         end
         @freecen1_vld_entry.update_attributes(pob_valid: result, pob_warning: warning)
         @freecen1_vld_entry.reload

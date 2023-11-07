@@ -9,23 +9,23 @@ module Freecen
       num_pob_valid = Freecen1VldEntry.where(freecen1_vld_file_id: vld_file.id, pob_valid: true).count
 
       invalid_pob_entries.each do |vld_entry|
-        is_individual = FreecenIndividual.where(freecen1_vld_file_id: vld_file.id, freecen1_vld_entry_id: vld_entry.id)
+        is_individual = FreecenIndividual.where(freecen1_vld_entry_id: vld_entry.id)
         next if  is_individual.blank? # IE not an individual
 
-        num_pob_valid += 1 if individual_pob_valid?(vld_file, vld_entry, chapman_code, vld_year, userid)
+        num_pob_valid += 1 if individual_pob_valid?(vld_entry, chapman_code, vld_year, userid)
 
       end
       num_pob_valid
     end
 
-    def individual_pob_valid?(vld_file, vld_entry, chapman_code, vld_year, userid)
+    def individual_pob_valid?(vld_entry, chapman_code, vld_year, userid)
       pob_valid = false
       pob_warning = ''
       if vld_entry.birth_place == 'UNK'
         reason = 'Automatic update of birth place UNK to hyphen'
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
         vld_entry.set(birth_place: '-')
-        Freecen1VldEntry.update_linked_records_pob(vld_file, vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
+        Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
       end
 
       pob_valid, pob_warning = valid_pob?(vld_entry, vld_year)
@@ -43,7 +43,7 @@ module Freecen
               the_notes = vld_entry.notes.blank? ? prop_rec.new_notes : "#{vld_entry.notes} #{prop_rec.new_notes}"
               vld_entry.set(notes: the_notes)
             end
-            Freecen1VldEntry.update_linked_records_pob(vld_file, vld_entry, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
+            Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
             pob_valid = true
             pob_warning = ''
           end
