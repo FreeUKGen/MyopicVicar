@@ -183,7 +183,7 @@ class UseridDetailsController < ApplicationController
 
   def list_users_handle_communications
     comm_roles = ['website_coordinator', 'volunteer_coordinator', 'publicity_coordinator', 'contacts_coordinator', 'general_communication_coordinator', 'genealogy_coordinator', 'project_manager']
-    @userids = UseridDetail.any_of({:person_role => comm_roles}, {secondary_role: {'$in' =>  comm_roles }})
+    @userids = UseridDetail.any_of({:person_role.in => comm_roles}, {secondary_role: {'$in' =>  comm_roles }})
   end
 
   def load(userid_id)
