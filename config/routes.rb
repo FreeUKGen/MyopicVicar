@@ -97,12 +97,17 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_search_statistics/export_csv', to: 'freecen2_search_statistics#export_csv', as: :export_csv_freecen2_search_statistics
   resources :freecen2_search_statistics
 
+  get 'freecen1_vld_entries/:id/override_pob_status(.:format)', :to => 'freecen1_vld_entries#override_pob_status', :as => :override_pob_status_freecen1_vld_entry
+  get 'freecen1_vld_entries/edit_pob', to: 'freecen1_vld_entries#edit_pob', as: :edit_pob_freecen1_vld_entry
+  get 'freecen1_vld_entries/propagate_pob', to: 'freecen1_vld_entries#propagate_pob', as: :propagate_pob_freecen1_vld_entry
   resources :freecen1_vld_entries
 
   get 'freecen1_vld_files/:id/entry_csv_download(.:format)', to: 'freecen1_vld_files#entry_csv_download', as: :entry_csv_download_freecen1_vld_file
   get 'freecen1_vld_files/:id/csv_download(.:format)', to: 'freecen1_vld_files#csv_download', as: :csv_download_freecen1_vld_file
   get 'freecen1_vld_files/list_invalid_civil_parishes', to: 'freecen1_vld_files#list_invalid_civil_parishes', as: :list_invalid_civil_parishes_freecen1_vld_file
   get 'freecen1_vld_files/edit_civil_parishes', to: 'freecen1_vld_files#edit_civil_parishes', as: :edit_civil_parishes_freecen1_vld_file
+  get 'freecen1_vld_files/auto_validate_pobs', to: 'freecen1_vld_files#auto_validate_pobs', as: :auto_validate_pobs_freecen1_vld_file
+  get 'freecen1_vld_files/manual_validate_pobs', to: 'freecen1_vld_files#manual_validate_pobs', as: :manual_validate_pobs_freecen1_vld_file
   get 'freecen1_vld_files/download_vld_file', to: 'freecen1_vld_files#download_vld_file', as: :download_vld_file_freecen1_vld_file
   resources :freecen1_vld_files
 

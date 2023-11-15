@@ -2,6 +2,25 @@ class Freecen1VldFilesController < ApplicationController
 
   require 'digest/md5'
 
+  def auto_validate_pobs
+    if params[:id].present?
+      vldfile = Freecen1VldFile.find(params[:id])
+    else
+      message = 'The file was not correctly linked. Have your coordinator contact the Web Master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    # seems to be able to process about 1000 records per min on local server and about 4000 per min on TEST3
+    per_min = 4000
+    run_time_estimate = (vldfile.num_individuals.to_f / per_min).to_f.round(0).to_s
+    run_time_estimate = '1' if run_time_estimate == '0'
+
+    get_user_info_from_userid
+    vldfile.auto_validate_pobs(@user.userid)
+
+    message = "Started Automatic Validation of POBs for #{vldfile.file_name} - you will receive an email when it has completed (estimated runtime = #{run_time_estimate} mins)"
+    redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+  end
+
   def create
     # Initial guards
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'You must select a file') && return if params[:freecen1_vld_file].blank? || params[:freecen1_vld_file][:uploaded_file].blank?
@@ -216,10 +235,10 @@ class Freecen1VldFilesController < ApplicationController
     @freecen1_vld_files = Freecen1VldFile.chapman(session[:chapman_code]).order_by(full_year: 1, piece: 1)
     @chapman_code = session[:chapman_code]
     session[:type] = 'vld_file_audit_index'
+    session[:vld_pob_val] = false
   end
 
-  def list_invalid_civil_parishes    # HERE HERE HERE
-
+  def list_invalid_civil_parishes
     userid = session[:userid]
     chapman_code = session[:chapman_code]
 
@@ -230,6 +249,17 @@ class Freecen1VldFilesController < ApplicationController
     redirect_to freecen1_vld_files_path
   end
 
+  def manual_validate_pobs
+    if params[:id].present?
+      @freecen1_vld_file = Freecen1VldFile.find(params[:id])
+    else
+      message = 'The file was not correctly linked. Have your coordinator contact the Web Master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    session[:vld_pob_val] = true
+    @num_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+    redirect_to(freecen1_vld_entries_path(file: @freecen1_vld_file.id, num_invalid: @num_invalid))
+  end
 
   def new
     get_user_info_from_userid
@@ -248,9 +278,6 @@ class Freecen1VldFilesController < ApplicationController
   end
 
   def update
-
-    #redirect_to(action: 'create') && return unless session[:replace].blank?
-
     @freecen1_vld_file = Freecen1VldFile.find(params[:id])
     unless Freecen1VldFile.valid_freecen1_vld_file?(params[:id])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'

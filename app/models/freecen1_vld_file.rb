@@ -192,6 +192,13 @@ class Freecen1VldFile
     self[:file_name_lower_case] = self[:file_name].downcase if self[:file_name].present?
   end
 
+  def auto_validate_pobs(email_userid)
+    mode = 'F'
+    logger.warn("FREECEN:VLD_POB_VALIDATION: Starting rake task for #{email_userid} VLD File #{file_name} in #{dir_name}")
+    pid1 = spawn("bundle exec rake freecen:vld_auto_validate_pob[#{mode},#{dir_name},#{file_name},#{email_userid}]")
+    logger.warn("FREECEN:VLD_POB_VALIDATION: rake task for #{pid1}")
+  end
+
   def chapman_code
     dir_name.sub(/-.*/, '')
   end
@@ -337,7 +344,12 @@ class Freecen1VldFile
   def add_entry_fields(rec, census_fields, year)
     line = []
     census_fields.each do |field|
-      line << rec[field.to_s]
+      if (field.to_s == 'birth_county' && rec[field.to_s] == rec['verbatim_birth_county'] && rec['birth_place'] == rec['verbatim_birth_place']) ||
+          (field.to_s == 'birth_place' && rec[field.to_s] == rec['verbatim_birth_place'] && rec['birth_county'] == rec['verbatim_birth_county'])
+        line << ''
+      else
+        line << rec[field.to_s]
+      end
     end
     line
   end
@@ -665,6 +677,9 @@ class Freecen1VldFile
     process = true
     [process, message]
   end
+
+
+
 
   def setup_batch_on_upload
     file_location = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)
