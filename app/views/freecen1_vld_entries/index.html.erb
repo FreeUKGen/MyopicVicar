@@ -12,30 +12,52 @@
       <th class='sticky-header'>Schedule number</th>
       <th class='sticky-header'>House number</th>
       <th class='sticky-header'>House or street name</th>
-      <th class='sticky-header'>Uninhabited flag</th>
-      <th class='sticky-header'>Unoccupied notes</th>
-      <th class='sticky-header'>Individual flag</th>
+      <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+        <th class='sticky-header'>Uninhabited flag</th>
+        <th class='sticky-header'>Unoccupied notes</th>
+        <th class='sticky-header'>Individual flag</th>
+      <% end %>
       <th class='sticky-header'>Surname</th>
       <th class='sticky-header'>Forenames</th>
-      <th class='sticky-header'>Name flag</th>
+      <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+        <th class='sticky-header'>Name flag</th>
+      <% end %>
       <th class='sticky-header'>Relationship</th>
       <th class='sticky-header'>Marital status</th>
       <th class='sticky-header'>Sex</th>
       <th class='sticky-header'>Age</th>
       <th class='sticky-header'>Age unit</th>
-      <th class='sticky-header'>Detail flag</th>
+      <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+        <th class='sticky-header'>Detail flag</th>
+      <% end %>
       <th class='sticky-header'>Occupation</th>
-      <th class='sticky-header'>Occupation flag</th>
-      <th class='sticky-header'>Birth county</th>
-      <th class='sticky-header'>Birth place</th>
+      <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+        <th class='sticky-header'>Occupation flag</th>
+      <% end %>
       <th class='sticky-header'>Verbatim birth county</th>
       <th class='sticky-header'>Verbatim birth place</th>
-      <th class='sticky-header'>Birth place flag</th>
+      <% if session[:vld_pob_val].present? && session[:vld_pob_val]%>
+        <th class='sticky-header'>Alternative Birth county</th>
+        <th class='sticky-header'>Alternative Birth place</th>
+      <% else %>
+        <th class='sticky-header'>Alterative Birth county</th>
+        <th class='sticky-header'>Alterative Birth place</th>
+      <% end %>
+      <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+        <th class='sticky-header'>Alterative Birth place flag</th>
+      <% end %>
       <th class='sticky-header'>Disability</th>
-      <th class='sticky-header'>Language</th>
+      <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+        <th class='sticky-header'>Language</th>
+      <% end %>
       <th class='sticky-header'>Notes</th>
-      <th class='sticky-header'>Deleted flag</th>
-      <th class='sticky-header'>Show</th>
+      <% if session[:vld_pob_val].present? && session[:vld_pob_val]%>
+        <th class='sticky-header'>POB Valid</th>
+        <th class='sticky-header'>POB Warning</th>
+      <% else %>
+        <th class='sticky-header'>Deleted flag</th>
+      <% end %>
+      <th colspan = "1" class='sticky-header '>Action</th>
     </tr>
     <% @freecen1_vld_entries.each do |freecen1_vld_entry| %>
       <tr id="<%= freecen1_vld_entry.id %>">
@@ -49,30 +71,48 @@
         <td><%= freecen1_vld_entry.schedule_number %></td>
         <td><%= freecen1_vld_entry.house_number %></td>
         <td><%= freecen1_vld_entry.house_or_street_name %></td>
-        <td><%= freecen1_vld_entry.uninhabited_flag %></td>
-        <td><%= freecen1_vld_entry.unoccupied_notes %></td>
-        <td><%= freecen1_vld_entry.individual_flag %></td>
+        <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+          <td><%= freecen1_vld_entry.uninhabited_flag %></td>
+          <td><%= freecen1_vld_entry.unoccupied_notes %></td>
+          <td><%= freecen1_vld_entry.individual_flag %></td>
+        <% end %>
         <td><%= freecen1_vld_entry.surname %></td>
         <td><%= freecen1_vld_entry.forenames %></td>
-        <td><%= freecen1_vld_entry.name_flag %></td>
+        <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+          <td><%= freecen1_vld_entry.name_flag %></td>
+        <% end %>
         <td><%= freecen1_vld_entry.relationship %></td>
         <td><%= freecen1_vld_entry.marital_status %></td>
         <td><%= freecen1_vld_entry.sex %></td>
         <td><%= freecen1_vld_entry.age %></td>
         <td><%= freecen1_vld_entry.age_unit %></td>
-        <td><%= freecen1_vld_entry.detail_flag %></td>
+        <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+          <td><%= freecen1_vld_entry.detail_flag %></td>
+        <% end %>
         <td><%= freecen1_vld_entry.occupation %></td>
-        <td><%= freecen1_vld_entry.occupation_flag %></td>
-        <td><%= freecen1_vld_entry.birth_county %></td>
-        <td><%= freecen1_vld_entry.birth_place %></td>
+        <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+          <td><%= freecen1_vld_entry.occupation_flag %></td>
+        <% end %>
         <td><%= freecen1_vld_entry.verbatim_birth_county %></td>
         <td><%= freecen1_vld_entry.verbatim_birth_place %></td>
-        <td><%= freecen1_vld_entry.birth_place_flag %></td>
+        <td><%= freecen1_vld_entry.birth_county %></td>
+        <td><%= freecen1_vld_entry.birth_place %></td>
+        <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+          <td><%= freecen1_vld_entry.birth_place_flag %></td>
+        <% end %>
         <td><%= freecen1_vld_entry.disability %></td>
-        <td><%= freecen1_vld_entry.language %></td>
+        <% unless session[:vld_pob_val].present? && session[:vld_pob_val]%>
+          <td><%= freecen1_vld_entry.language %></td>
+        <% end %>
         <td><%= freecen1_vld_entry.notes %></td>
-        <td><%= freecen1_vld_entry.deleted_flag %></td>
-        <td><%= link_to 'Show', freecen1_vld_entry_path(id: freecen1_vld_entry.id,file: @freecen1_vld_file.id) %></td>
+        <% if session[:vld_pob_val].present? && session[:vld_pob_val]%>
+          <td><%= freecen1_vld_entry.pob_valid %></td>
+          <td><%= freecen1_vld_entry.pob_warning %></td>
+          <td><%= link_to 'Edit', edit_pob_freecen1_vld_entry_path(id: freecen1_vld_entry.id) %></td>
+        <% else %>
+          <td><%= freecen1_vld_entry.deleted_flag %></td>
+          <td><%= link_to 'Show', freecen1_vld_entry_path(id: freecen1_vld_entry.id,file: @freecen1_vld_file.id) %></td>
+        <% end %>
       </tr>
     <% end %>
   </table>

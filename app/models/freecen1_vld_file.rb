@@ -192,6 +192,13 @@ class Freecen1VldFile
     self[:file_name_lower_case] = self[:file_name].downcase if self[:file_name].present?
   end
 
+  def auto_validate_pobs(email_userid)
+    mode = 'F'
+    logger.warn("FREECEN:VLD_POB_VALIDATION: Starting rake task for #{email_userid} VLD File #{file_name} in #{dir_name}")
+    pid1 = spawn("bundle exec rake freecen:vld_auto_validate_pob[#{mode},#{dir_name},#{file_name},#{email_userid}]")
+    logger.warn("FREECEN:VLD_POB_VALIDATION: rake task for #{pid1}")
+  end
+
   def chapman_code
     dir_name.sub(/-.*/, '')
   end
@@ -202,7 +209,7 @@ class Freecen1VldFile
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
     if success
       file_location = Rails.root.join('tmp', file)
-      success, message = write_csv_file(file_location, census_fields, year)
+      success, message = write_csv_file(file_location, census_fields, series, year)
     end
     [success, message, file_location, file]
   end
@@ -252,11 +259,15 @@ class Freecen1VldFile
       message = 'Scotland Code not checked'
       case year
       when '1841'
-        file = 'RS41' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1861
+        success = true
+        message = ''
+        file = 'HS4' + '_' + piece.to_s + '.csv'
+        census_fields = Freecen::CEN2_SCT_1841
       when '1851'
-        file = 'RS51' + '_' + piece.to_s + '.csv'
-        census_fields = Freecen::CEN2_SCT_1871
+        success = true
+        message = ''
+        file = 'HS5' + '_' + piece.to_s + '.csv'
+        census_fields = Freecen::CEN2_SCT_1851
       when '1861'
         file = 'RS61' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1861
@@ -286,7 +297,7 @@ class Freecen1VldFile
     [success, message, file, census_fields]
   end
 
-  def write_csv_file(file_location, census_fields, year)
+  def write_csv_file(file_location, census_fields, series, year)
     header = census_fields
     @initial_line_hash = {}
     @blank = nil
@@ -302,7 +313,7 @@ class Freecen1VldFile
         next if rec.blank?
 
         @record_number += 1
-        line = add_fields(rec, census_fields, year)
+        line = add_fields(rec, census_fields, series, year)
         csv << line
       end
     end
@@ -333,12 +344,17 @@ class Freecen1VldFile
   def add_entry_fields(rec, census_fields, year)
     line = []
     census_fields.each do |field|
-      line << rec[field.to_s]
+      if (field.to_s == 'birth_county' && rec[field.to_s] == rec['verbatim_birth_county'] && rec['birth_place'] == rec['verbatim_birth_place']) ||
+          (field.to_s == 'birth_place' && rec[field.to_s] == rec['verbatim_birth_place'] && rec['birth_county'] == rec['verbatim_birth_county'])
+        line << ''
+      else
+        line << rec[field.to_s]
+      end
     end
     line
   end
 
-  def add_fields(rec, census_fields, year)
+  def add_fields(rec, census_fields, series, year)
     line = []
     census_fields.each do |field|
       case field
@@ -357,7 +373,7 @@ class Freecen1VldFile
       when 'page_number'
         line << compute_page_number(rec)
       when 'schedule_number'
-        line << compute_schedule_number(rec, census_fields)
+        line << compute_schedule_number(rec, census_fields, series, year)
       when 'uninhabited_flag'
         line << compute_uninhabited_flag(rec)
       when 'house_or_street_name'
@@ -526,10 +542,12 @@ class Freecen1VldFile
     line
   end
 
-  def compute_schedule_number(rec, census_fields)
+  def compute_schedule_number(rec, census_fields, series, year)
     if rec['dwelling_number'] == @initial_line_hash['dwelling_number'] # NB dwelling_number holds col 5-10 from VLD file (A six digit number (leading zeros) which counts the households)
       line = @blank
     elsif !census_fields.include?('ecclesiastical_parish') || rec['uninhabited_flag'] == 'x' && rec['schedule_number'].blank?
+      line = '0'
+    elsif series == 'HS' && year == '1841' && rec['schedule_number'].blank?
       line = '0'
     else
       line = rec['schedule_number']
@@ -659,6 +677,9 @@ class Freecen1VldFile
     process = true
     [process, message]
   end
+
+
+
 
   def setup_batch_on_upload
     file_location = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)

@@ -19,7 +19,7 @@
       <%= f.hidden_field :source_feedback_id, value: params[:source_feedback_id]  if params[:source_feedback_id]%>
       <%= f.hidden_field :source_contact_id, value: params[:source_contact_id]  if params[:source_contact_id]%>
       <ul>
-        <li  class="grid__item  one-third  palm-one-whole  push--bottom" id="subject_input" >
+        <li  class="grid__item  one-third  palm-one-whole" id="subject_input" >
           <label class="label" for="subject">Subject </label>
           <%= message_subject %>
         </li>
@@ -32,7 +32,13 @@
           <input name="message[images]" type="file" >
         </li>
         <%= reply_message_email  %>
-        <li class="grid__item  one-whole  palm-one-whole push--bottom">
+        <% if params.has_key?(:id) && params.has_key?(:source) %>
+          <li class="grid__item  one-half  palm-one-whole push--bottom push--top">
+            <label>Copies to Userids<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span style="width: 900%" >Please the userids to send copies to</span></a></label>
+            <%= select_tag 'message[copies_to_userids]',options_for_select(@userids), multiple: true, prompt: 'None', class: 'select', size: 5 %>
+          </li>
+        <% end %>
+        <li class="grid__item  one-whole  palm-one-whole push--bottom push--top">
           <label>Message (a salutation is not required but a personal sign off would be nice)</label>
           <% if @message.body.nil? %>
             <textarea name="message[body]"  style="width: 100%;"  rows="8" ></textarea>

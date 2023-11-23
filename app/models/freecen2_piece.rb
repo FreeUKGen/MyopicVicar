@@ -57,6 +57,8 @@ class Freecen2Piece
 
   field :vld_files, type: Array, default: [] # used for Scotland pieces where there can be multiple files for a single piece
   field :shared_vld_file, type: String # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
+  field :admin_county, type: String # used by County Stats drilldown - can be different to chapman_code if a piece crosses county boundaries
+  validates_inclusion_of :admin_county, in: ChapmanCode.values
 
   belongs_to :freecen2_district, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
@@ -90,9 +92,9 @@ class Freecen2Piece
     end
 
     def valid_series?(series)
-      return true if %w[HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series.upcase)
+      return true if %w[HS4 HS5 HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series.upcase)
 
-      # Need to add Scotland and Ireland
+      # Need to add Scotland after 1861 -> and Ireland
       false
     end
 
@@ -122,9 +124,12 @@ class Freecen2Piece
       when 'HO107'
         year = parts[1].delete('^0-9').to_i <= 1465 ? '1841' : '1851'
         census_fields = parts[1].delete('^0-9').to_i <= 1465 ? Freecen::CEN2_1841 : Freecen::CEN2_1851
-      when 'HS51'
-        year = parts[1].delete('^0-9')[2..3] == '51' ? '1851' : '1841'
-        census_fields = parts[1].delete('^0-9')[2..3] == '51' ? Freecen::CEN2_SCT_1851 : Freecen::CEN2_SCT_1841
+      when 'HS4'
+        year = '1841'
+        census_fields = Freecen::CEN2_SCT_1841
+      when 'HS5'
+        year = '1851'
+        census_fields = Freecen::CEN2_SCT_1851
       when 'RS6'
         year = '1861'
         census_fields = Freecen::CEN2_SCT_1861
@@ -335,30 +340,30 @@ class Freecen2Piece
     end
 
     def create_csv_export_listing(chapman_code, year)
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: chapman_code, year: year).order_by('status_date DESC, number ASC')
+      @freecen2_pieces = Freecen2Piece.where(admin_county: chapman_code, year: year).order_by('status_date DESC, number ASC')
       file = "Piece_Status_#{chapman_code}_#{year}.csv"
       file_location = Rails.root.join('tmp', file)
-      success, message = write_csv_listing_file(file_location, @freecen2_pieces)
+      success, message = write_csv_listing_file(file_location, @freecen2_pieces, chapman_code)
 
       [success, message, file_location, file]
     end
 
-    def write_csv_listing_file(file_location, pieces)
+    def write_csv_listing_file(file_location, pieces, chapman_code)
       column_headers = %w(piece_number piece_name status online_vld_files incorporated_csv_fles unincorporated_csv_files)
 
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << column_headers
         pieces.each do |rec|
           line = []
-          line = add_csv_listing_fields(line, rec)
+          line = add_csv_listing_fields(line, rec, chapman_code)
           csv << line
         end
       end
       [true, '']
     end
 
-    def add_csv_listing_fields(line, record)
-      line << record.number
+    def add_csv_listing_fields(line, record, chapman_code)
+      line << record.display_piece_number(chapman_code)
       line << record.name
       if record.display_piece_status.blank?
         line << ' '
@@ -627,6 +632,17 @@ class Freecen2Piece
     [year, chapman_code, district_name, number]
   end
 
+  def display_piece_number(chap)
+    if chapman_code != admin_county
+      display_number = number + '(' + chapman_code + ')'
+    elsif chapman_code != chap
+      display_number = number + '(' + chap + ')'
+    else
+      display_number = number
+    end
+    display_number
+  end
+
   def display_piece_status
     if status.present?
       display_status = status_date.present? ? status + " (" + status_date.to_datetime.strftime("%d/%b/%Y %R") + ")" : status
@@ -654,7 +670,7 @@ class Freecen2Piece
     elsif shared_vld_file.present?
       # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
       file = Freecen1VldFile.find_by(_id: shared_vld_file)
-      file.file_name if file.present?
+      "#{file.file_name}(shared)" if file.present?
     else
       'There are no VLD files'
     end

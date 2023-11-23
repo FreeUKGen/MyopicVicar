@@ -1850,13 +1850,15 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency']
+        # ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency'] #927
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Constituency']
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency']
+        # ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency'] #927
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency']
       end
@@ -1916,8 +1918,10 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [freecen2_piece.year, disp_county, district_name, civil, enumeration_district, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         parliamentary_constituency]
+        # [freecen2_piece.year, disp_county, district_name, civil, enumeration_district, ecclesiastical, taken, freecen2_piece.number.to_s, #927
+        #  ward, parliamentary_constituency] #927
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
          parliamentary_constituency]
@@ -1925,7 +1929,9 @@ class FreecenCsvEntry
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency]
+         parliamentary_constituency]
+        # [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s, #927
+        # ward, parliamentary_constituency] #927
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          parliamentary_constituency]
@@ -1991,7 +1997,7 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Folio', 'Page', 'Dwelling Number', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
       else
         ['Folio', 'Page', 'Dwelling Number', 'House Number', 'House or Street Name']
       end
@@ -2049,7 +2055,8 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [folio_number, page_number, dwelling_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
+        # [folio_number, page_number, dwelling_number, house_number, address] #927
       else
         [folio_number, page_number, dwelling_number, house_number, address]
       end
@@ -2159,7 +2166,11 @@ class FreecenCsvEntry
   def self.individual_display_labels(year, chapman_code)
     case year
     when '1841'
-      ['Sequence', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Birth County', 'Notes']
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+      else
+        ['Sequence', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Birth County', 'Notes']
+      end
     when '1851'
       ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
     when '1861'
@@ -2237,10 +2248,15 @@ class FreecenCsvEntry
     verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
     case year
     when '1841'
-      [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_birth_county_name, note]
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
+      else
+        [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_birth_county_name, note]
+      end
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, school_children, disp_occupation]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
+        # [sequence_in_household, sur, fore, relation, marital, sx, disp_age, school_children, disp_occupation] #927
       else
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
       end
@@ -2293,6 +2309,8 @@ class FreecenCsvEntry
 
   def self.part2_individual_display_labels(year, chapman_code)
     case year
+    when '1841' && ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+      ['Birth County', 'Birth Place', 'Disability', 'Notes']
     when '1851'
       ['Nationality', 'Birth County', 'Birth Place', 'Disability', 'Notes']
     when '1861'
@@ -2361,9 +2379,12 @@ class FreecenCsvEntry
     note = notes.gsub(/\<br\>/, '') if notes.present?
     lang = Freecen::LANGUAGE[language]
     case year
+    when '1841' && ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+      [birth_county_name, birth, disability, note]
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [birth_county_name, birth,  note]
+        [nationality, birth_county_name, birth, disability, note]
+        # [birth_county_name, birth,  note] #927
       else
         [nationality, birth_county_name, birth, disability, note]
       end
