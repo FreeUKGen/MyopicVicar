@@ -113,7 +113,7 @@ class Assignment
       return assignment, count
     end
 
-    def filter_assignments_by_userid(user_id,syndicate,image_server_group_id,sort_group_name=nil)
+    def filter_assignments_by_userid(user_id,syndicate,image_server_group_id,no_sort_group_name=nil)
       if user_id.nil?
         syndicate_id = Syndicate.where(:syndicate_code=>syndicate).first
         a_ids = Assignment.where(:syndicate_id=>syndicate_id.id).pluck(:id, :source_id, :assign_date, :instructions, :userid_detail_id)
@@ -128,7 +128,7 @@ class Assignment
       i_ids = ImageServerImage.where(:assignment_id=>{'$in'=>a_ids.map(&:first)}).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
 
       (assignment_id, image_assignment_id, image_group_id, image, group_name) = prepare_for_parsing(a_ids,i_ids)
-      group_name = group_name.sort_by{ |k,v| v.scan(/\d+/).join('').to_i } if sort_group_name
+      group_name = group_name.sort_by{ |k,v| v.scan(/\d+/).join('').to_i } unless no_sort_group_name
       assignment, count = generate_parsing_assignment(assignment_id,userid,group_name,image_group_id,image_assignment_id,image)
 
       return assignment, count
