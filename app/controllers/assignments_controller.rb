@@ -138,9 +138,10 @@ class AssignmentsController < ApplicationController
     render 'list_assignment_images' if @count.length == 1
   end
 
+
   def list_assignments_of_myself
     @user = UseridDetail.where(userid: session[:userid]).first
-    @assignment, @count = Assignment.filter_assignments_by_userid([@user.id], '', '')
+    @assignment, @count = Assignment.filter_assignments_by_userid([@user.id], '', '',false)
     render 'list_assignment_images' if @count.length == 1
   end
 
