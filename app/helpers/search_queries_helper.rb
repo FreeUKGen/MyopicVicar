@@ -236,7 +236,7 @@ module SearchQueriesHelper
   end
 
   def set_field_value field_value=nil, default=nil
-    field_value.present? value = field_value : value = default
+    field_value.present? ? value = field_value : value = default
       return value
   end
 
