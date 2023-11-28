@@ -84,6 +84,7 @@ class UseridDetail
   @old_date = "2017/10/17"
   @new_date = DateTime.new(@current_year, 01, 01)
   @users_count = UseridDetail.count
+  EVENT_YEAR_ONLY = 589
 
   scope :users_marked_active, ->{ where(active: true) }
   scope :users_accepted_new_transcription_agreement, ->{ where(new_transcription_agreement: "Accepted") }
@@ -764,6 +765,12 @@ class UseridDetail
     record_hash = self.saved_entry
     record_number = BestGuessHash.where(Hash: record_hash).pluck(:RecordNumber)
     BestGuess.where(RecordNumber: record_number)
+  end
+
+  def saved_entries_as_array
+    record_hash = self.saved_entry
+    record_number = BestGuessHash.where(Hash: record_hash).pluck(:RecordNumber)
+    record_number
   end
 
   private

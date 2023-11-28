@@ -158,6 +158,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def get_user_info_if_present
+    @user = get_user
+    if @user.present?
+      @user_id = @user.id
+      @userid = @user.id
+      @user_userid = @user.userid
+      @first_name = @user.person_forename
+      @manager = manager?(@user)
+      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    end
+  end
+
   def get_user_info(userid, name)
     # old version for compatibility
     @user = get_user

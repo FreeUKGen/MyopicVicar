@@ -37,7 +37,8 @@
             <% @feedbacks.each do |feedback| %>
               <tr>
                 <td><%= feedback.title %></td>
-                <td><%= feedback.user_id %></td>
+                <td><%= feedback.user_id if feedback.user_id.present? %>
+                  <%= feedback.user_name if feedback.user_name.present? %></td>
                 <td><%= feedback.name %></td>
                 <td><%= feedback.email_address %></td>
                 <td><%= feedback.feedback_time.strftime("%d %b %Y") unless feedback.feedback_time.nil? %></td>

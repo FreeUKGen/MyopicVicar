@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 #
 class FeedbacksController < ApplicationController
+  skip_before_action :require_login, only: [:new, :create]
   require 'reply_userid_role'
 
   def archive
@@ -54,7 +55,7 @@ class FeedbacksController < ApplicationController
     redirect_back(fallback_location: new_feedback_path, notice: 'There was a problem creating your feedback!') && return if @feedback.errors.any?
 
     flash.notice = 'Thank you for your feedback!'
-    @feedback.communicate_initial_contact
+    #@feedback.communicate_initial_contact
     if session[:return_to].present?
       redirect_to session.delete(:return_to)
     else
@@ -174,11 +175,12 @@ class FeedbacksController < ApplicationController
 
   def new
     session[:return_to] ||= request.referer
-    get_user_info_from_userid
-    @feedback = Feedback.new(new_params) if params[:source_feedback_id].blank?
+    get_user_info_if_present
+    non_type_params = new_params.except(:type)
+    @feedback = Feedback.new(non_type_params) if params[:source_feedback_id].blank?
     @message = Message.new
     @message.message_time = Time.now
-    @message.userid = @user.userid
+    @message.userid = @user.userid if @user.present?
     @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
     @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
   end

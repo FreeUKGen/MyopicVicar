@@ -4,7 +4,7 @@
 Refinery::Authentication::Devise::User.class_eval do
 
   devise  :encryptable, :encryptor => :freereg
-  before_update :inform_coordinator_of_completion_and_update_userid
+  #  before_update :inform_coordinator_of_completion_and_update_userid
 
   # for more on this voodoo, see http://gistflow.com/posts/749-canceling-validations-in-activerecord
   def self.remove_email_uniq_validation
@@ -21,6 +21,7 @@ Refinery::Authentication::Devise::User.class_eval do
   def downcase_username
     self.username = self.username #no-op for case-sensitive usernames
   end
+
 
   def inform_coordinator_of_completion_and_update_userid
     if self.changed.include?('encrypted_password')

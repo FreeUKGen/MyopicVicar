@@ -22,6 +22,8 @@ class SearchQueriesController < ApplicationController
   rescue_from Timeout::Error, with: :search_taking_too_long
   autocomplete :BestGuess, :Surname, full: false,  limit: 5
   autocomplete :BestGuess, :GivenName, full: false, limit: 10
+  include DownloadAsCsv
+
   RECORDS_PER_PAGE = 100
 
   def about
@@ -74,11 +76,12 @@ class SearchQueriesController < ApplicationController
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
-      @search_results = @search_query.search_records
-      redirect_to search_query_path(@search_query, anchor: "bmd_content")
+      @search_results, success, error_type = @search_query.search_records.to_a
+      error = error_type.to_i if error_type.present?
+      redirect_to search_query_path(@search_query, anchor: "bmd_content") and return if success
+      redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
+      redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
     else
-      #message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
-      #redirect_back(fallback_location: new_search_query_path, notice: message)
       render :new
     end
   end
@@ -219,57 +222,65 @@ class SearchQueriesController < ApplicationController
   end
 
   def show
-    #raise params.inspect
-    @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
-    if params[:sort_option].present?
-      @sort_condition = params[:sort_option]
-      order_field = params[:sort_option]
-      if order_field == @search_query.order_field
-        # reverse the directions
-        @search_query.order_asc = !@search_query.order_asc unless params[:page].present?
-      else
-        @search_query.order_field = order_field
-        @search_query.order_asc = true
+    unless params[:timeout].present?
+      @timeout = false
+      @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+      if params[:sort_option].present?
+        @sort_condition = params[:sort_option]
+        order_field = params[:sort_option]
+        if order_field == @search_query.order_field
+          # reverse the directions
+          @search_query.order_asc = !@search_query.order_asc unless params[:page].present?
+        else
+          @search_query.order_field = order_field
+          @search_query.order_asc = true
+        end
+        @search_query.save!
       end
-      @search_query.save!
-    end
-    @search_results = @search_query.search_records if params[:saved_search].present?
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+      @search_results, success, error_type = @search_query.search_records.to_a if params[:saved_search].present?
+      redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
-    flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
-    redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
-    max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
-    @save_search_id = params[:saved_search] if params[:saved_search].present?
-    if @search_query.result_count >= max_result
-      @result_count = @search_query.result_count
-      @search_results = []
-      @ucf_results = []
-    else
-      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
-      response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
-      @filter_condition = params[:filter_option]
-      @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
-      #if params[:sort_option].present?
-        #if @search_query.order_asc
-         # @search_results = @search_results.order(:order_field)
-        #else
-         # @search_results = @search_results.order(order_field: :desc)
+      flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
+      redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
+      @max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS unless appname_downcase == 'freebmd'
+      @max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS if appname_downcase == 'freebmd'
+      @save_search_id = params[:saved_search] if params[:saved_search].present?
+      if @search_query.result_count >= @max_result
+        @result_count = @search_query.result_count
+        @search_results = []
+        @ucf_results = []
+      else
+        response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
+        response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+        @filter_condition = params[:filter_option]
+        @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
+        #if params[:sort_option].present?
+          #if @search_query.order_asc
+           # @search_results = @search_results.order(:order_field)
+          #else
+           # @search_results = @search_results.order(order_field: :desc)
+          #end
         #end
-      #end
-      @results_per_page = params[:results_per_page] || 20
-      total_page = @search_results.count
-      @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
-      @paginatable_array = Kaminari.paginate_array(@search_results, total_count: @search_results.count).page(params[:page]).per(@results_per_page)
-      @max_result = maximum_results
-      if !response || @search_results.nil? || @search_query.result_count.nil?
-        logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
-        flash[:notice] = 'Your search results are not available. Please repeat your search'
-        redirect_to(new_search_query_path(search_id: @search_query)) && return
+        @results_per_page = assign_value(params[:results_per_page],SearchQuery::RESULTS_PER_PAGE)
+        @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
+        @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
+        @paginatable_array = @search_query.paginate_results(@search_results, @page, @results_per_page)
+        if !response || @search_results.nil? || @search_query.result_count.nil?
+          logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
+          flash[:notice] = 'Your search results are not available. Please repeat your search'
+          redirect_to(new_search_query_path(search_id: @search_query)) && return
+        end
       end
+    else
+      @timeout=true
+      @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     end
   end
 
+  def assign_value value,default
+    value ||= default
+    value
+  end
 
   def maximum_results
     case appname_downcase
@@ -300,7 +311,7 @@ class SearchQueriesController < ApplicationController
       response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
       response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
       @paginatable_array = @search_results
-      @max_result = maximum_results
+      @max_result = max_result
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
@@ -349,7 +360,11 @@ class SearchQueriesController < ApplicationController
   def download_as_csv
     search_id = params[:id]
     @search_query = SearchQuery.find_by(id: search_id)
-    send_data @search_query.download_csv, filename: "search_results-#{Date.today}.csv"
+    page_number = params[:page]
+    results_per_page = params[:results_per_page]
+    sorted_results = @search_query.sorted_and_paged_searched_records
+    paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
+    send_data search_results_csv(paginated_array), filename: "search_results-#{Date.today}.csv"
   end
 
   def compare_search
@@ -411,4 +426,5 @@ class SearchQueriesController < ApplicationController
   def filter(results)
     results.select{|r| r["RecordTypeID"] == @filter_condition.to_i }
   end
+
 end
