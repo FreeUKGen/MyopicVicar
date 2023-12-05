@@ -52,7 +52,6 @@
   <% case appname_downcase %>
   <% when 'freereg' %>
   <%= link_to '/', class: "site__header__logo  icon__freereg" do %>
-    <h1 class="accessibility">FreeREG | Free Parish Register Records</h1>
   <% end %>
   <% when 'freecen' %>
   <%= link_to '/', class: "site__header__logo  icon__freecen" do %>
@@ -94,5 +93,14 @@
 <style>
 .myDialog::backdrop {
         background-color: rgba(0,0,0,0.5);
+    }
+    @media screen and (max-width: 800px) and (min-width: 570px) {
+      #app_main_nav_list {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        /* clear: both !important; */
+        float: none;
+      }
     }
 </style>
