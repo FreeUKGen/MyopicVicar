@@ -44,17 +44,26 @@ module Freecen1VldFilesHelper
 
   def pob_val_status(vld)
     status = ''
-    num_pob_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: vld._id, pob_valid: false).count
-    num_pob_valid = Freecen1VldEntry.where(freecen1_vld_file_id: vld._id, pob_valid: true).count
-    if num_pob_invalid.zero? && num_pob_valid.zero?
-      status = 'Not Started'
-    elsif vld.num_individuals > (num_pob_invalid + num_pob_valid)
-      status = 'Processing'
-    elsif num_pob_invalid.positive?
-      status = "#{num_pob_invalid} Invalid POBs"
+    if vld.num_invalid_pobs.present?
+      num_pob_invalid = vld.num_invalid_pobs
+      if num_pob_invalid.positive?
+        status = "#{num_pob_invalid} Invalid POBs"
+      else
+        status = 'All POBs are valid'
+      end
     else
-      status = 'All POBs are valid'
+      num_pob_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: vld._id, pob_valid: false).count
+      num_pob_valid = Freecen1VldEntry.where(freecen1_vld_file_id: vld._id, pob_valid: true).count
+      if num_pob_invalid.zero? && num_pob_valid.zero?
+        status = 'Not Started'
+      elsif vld.num_individuals > (num_pob_invalid + num_pob_valid)
+        status = 'Processing'
+      elsif num_pob_invalid.positive?
+        status = "#{num_pob_invalid} Invalid POBs"
+      else
+        status = 'All POBs are valid'
+      end
+      status
     end
-    status
   end
 end

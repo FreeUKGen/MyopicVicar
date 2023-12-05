@@ -114,6 +114,8 @@ namespace :freecen do
         previously_unvalidated_processed += 1 if previously_validated.blank?
         next if previously_unvalidated_processed > max_files && previously_validated.blank?
 
+        next if file.num_invalid_pobs.present? && file.num_invalid_pobs.zero?
+
         files_processed += 1
         begin
           num_individuals, num_valid = vld_validate_pobs(chapman_code, file, userid)
@@ -125,6 +127,10 @@ namespace :freecen do
         break unless vld_err_messages.empty?
 
         num_invalid_pobs = num_individuals - num_valid
+        if (file.num_invalid_pobs.present? && file.num_invalid_pobs != num_invalid_pobs) || file.num_invalid_pobs.blank?
+          file.set(num_invalid_pobs: num_invalid_pobs)
+        end
+
         total_individuals += num_individuals
         total_invalid_pobs += num_invalid_pobs
 
@@ -166,6 +172,9 @@ namespace :freecen do
         vld_err_messages << "#{e.backtrace.inspect}"
       end
       num_invalid_pobs = num_individuals - num_valid
+      if (vld_file.num_invalid_pobs.present? && vld_file.num_invalid_pobs != num_invalid_pobs) || vld_file.num_invalid_pobs.blank?
+        vld_file.set(num_invalid_pobs: num_invalid_pobs)
+      end
       report = "Processed #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs"
       report = 'Vld file may not be correctly linked to freecen_individuals collection - please report to System Administrator' if num_invalid_pobs == num_individuals
       unless vld_err_messages.empty?

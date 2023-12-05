@@ -11,6 +11,7 @@ class Freecen1VldEntriesController < ApplicationController
       @freecen2_piece = Freecen2Piece.find(@freecen1_vld_file.freecen2_piece_id)
       @file_name = @freecen1_vld_file.file_name
       @num_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+      @freecen1_vld_file.set(num_invalid_pobs: @num_invalid)
       @pob_status_info = @freecen1_vld_entry.pob_valid == true ? "TRUE" : "FALSE (#{@freecen1_vld_entry.pob_warning})"
       @year = @freecen1_vld_file.full_year
       @chap = @freecen1_vld_file.dir_name
@@ -60,6 +61,7 @@ class Freecen1VldEntriesController < ApplicationController
       flash[:notice] = success ? 'Propagation processed successfully' : message
       @freecen1_vld_file = Freecen1VldFile.find(@freecen1_vld_entry.freecen1_vld_file_id)
       pob_invalid_count = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+      @freecen1_vld_file.set(num_invalid_pobs: pob_invalid_count)
       if pob_invalid_count.positive?
         @freecen1_vld_entry = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false, id: {'$gt': params[:id]}).order_by(dwelling_number: 1, sequence_in_household: 1).first
         if @freecen1_vld_entry.blank?
@@ -111,6 +113,7 @@ class Freecen1VldEntriesController < ApplicationController
 
       when params[:commit]  == 'No Propagation Required'
         pob_invalid_count = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+        @freecen1_vld_file.set(num_invalid_pobs: pob_invalid_count)
         if pob_invalid_count.positive?
           @freecen1_vld_entry = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false, id: {'$gt': params[:id]}).order_by(dwelling_number: 1, sequence_in_household: 1).first
           if @freecen1_vld_entry.blank?
