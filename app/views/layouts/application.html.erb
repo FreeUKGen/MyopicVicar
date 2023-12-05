@@ -208,6 +208,12 @@
       })
     </script>
     <script>
+      if (window.innerWidth < 960) {
+        var el = document.getElementById("trigger-offcanvas");
+        document.getElementById("myDIV").style.display = "block";
+      }
+    </script>
+    <script>
       function detectAdblock(){
         console.log(window.canRunAds);
         if( window.canRunAds === undefined){

@@ -95,4 +95,59 @@
 .myDialog::backdrop {
         background-color: rgba(0,0,0,0.5);
     }
+
+    @media screen and (max-width: 800px) and (min-width: 570px) {
+    .site__header__menu-btn {
+
+    // btn reset
+    background: none;
+    border: 0;
+    padding: 0;
+
+    position: absolute;
+    top: $base-spacing-unit / 2;
+    right: $base-spacing-unit / 2;
+
+    span {
+      display: block;
+      @include font-size(16px, false);
+      text-transform: uppercase;
+      font-weight: bold;
+      color: $teal;
+      padding: ($base-spacing-unit / 6) ($base-spacing-unit / 3);
+      border: 2px solid $teal;
+      @include vendor(border-radius, 4px);
+    }
+
+    &:active span,
+    &:focus,
+    &:hover span {
+      background-color: $teal;
+      color: #fff;
+      border-color: $teal;
+    }
+
+    &:focus {
+      outline: 0;
+    }
+
+    // hide cancel initially
+    .icon__cancel {
+      display: none;
+    }
+
+  }
+
+    /**
+     * Active state
+     */
+    .site__header__menu-btn--active {
+      span {
+        display: none;
+      }
+      .icon__cancel {
+        display: block;
+      }
+    }
+  }
 </style>
