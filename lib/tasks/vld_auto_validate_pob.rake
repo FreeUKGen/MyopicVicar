@@ -139,11 +139,11 @@ namespace :freecen do
         invalid_pob_entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id).order_by(id: 1)
 
         invalid_pob_entries.each do |entry|
-          next if entry.pob_valid == true || entry.pob_valid.blank?
-
-          report_csv  += output_csv_header if report_csv.empty?
-          report_csv  += "\n"
-          report_csv  += output_csv_line(chapman_code, file.file_name, entry)
+          if entry.pob_valid == false
+            report_csv  += output_csv_header if report_csv.empty?
+            report_csv  += "\n"
+            report_csv  += output_csv_line(chapman_code, file.file_name, entry)
+          end
         end
         message = "Processed #{chapman_code} - #{file.file_name} - #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs\n"
         p message
