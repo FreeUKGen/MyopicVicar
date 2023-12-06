@@ -110,7 +110,7 @@ namespace :freecen do
 
       files.each do |file|
         previously_validated = false
-        one_entry = Freecen1VldEntry.where(freecen1_vld_file_id: file.id).first
+        one_entry = Freecen1VldEntry.where(freecen1_vld_file_id: file.id, individual_flag: '-' ).first
         previously_validated = true if one_entry.pob_valid == true || one_entry.pob_valid == false
 
         previously_unvalidated_processed += 1 if previously_validated == false
