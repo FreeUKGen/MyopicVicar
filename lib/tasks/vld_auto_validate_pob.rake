@@ -109,10 +109,12 @@ namespace :freecen do
       files = Freecen1VldFile.where(dir_name: chapman_code).order_by(full_year: 1, piece: 1)
 
       files.each do |file|
-        previously_validated = Freecen1VldEntry.where(freecen1_vld_file_id: file.id, pob_valid: false).or(Freecen1VldEntry.where(freecen1_vld_file_id: file.id, pob_valid: true)).first
+        previously_validated = false
+        one_entry = Freecen1VldEntry.where(freecen1_vld_file_id: file.id).first
+        previously_validated = true if one_entry.pob_valid == true || one_entry.pob_valid == false
 
-        previously_unvalidated_processed += 1 if previously_validated.blank?
-        next if previously_unvalidated_processed > max_files && previously_validated.blank?
+        previously_unvalidated_processed += 1 if previously_validated == false
+        next if previously_unvalidated_processed > max_files && previously_validated == false
 
         next if file.num_invalid_pobs.present? && file.num_invalid_pobs.zero?
 
@@ -134,9 +136,11 @@ namespace :freecen do
         total_individuals += num_individuals
         total_invalid_pobs += num_invalid_pobs
 
-        invalid_pob_entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id, pob_valid: false).order_by(id: 1)
+        invalid_pob_entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id).order_by(id: 1)
 
         invalid_pob_entries.each do |entry|
+          next if entry.pob_valid == true || entry.pob_valid.blank?
+
           report_csv  += output_csv_header if report_csv.empty?
           report_csv  += "\n"
           report_csv  += output_csv_line(chapman_code, file.file_name, entry)
