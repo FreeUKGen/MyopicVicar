@@ -159,7 +159,9 @@ module Freereg1Translator
     # last_name:
     # - burial_person_surname
     # - relative_surname
-    names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename||"", :last_name => entry.burial_person_surname.present? ? entry.burial_person_surname : entry.relative_surname }
+    alternate_surname = relative_surname.present? ? relative_surname : female_relative_surname
+   
+    names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename||"", :last_name => entry.burial_person_surname.present? ? entry.burial_person_surname : alternate_surname }
     # - role: fr
     # type: other
     # fields:
@@ -180,6 +182,7 @@ module Freereg1Translator
           end
         end
       end
+      
       # - role: mr
       # type: other
       # fields:
@@ -225,7 +228,7 @@ module Freereg1Translator
     # last_name:
     # - mother_surname
     # - father_surname
-    if entry.mother_forename
+    if entry.mother_forenamefemale_relative_forename
       names << { :role => 'm', :type => 'other', :first_name => entry.mother_forename, :last_name => entry.mother_surname.present? ? entry.mother_surname : entry.father_surname}
     end
     # - role: wt
