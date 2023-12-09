@@ -3,33 +3,44 @@
   <thead>
     <tr>
       <% unless print_friendly %>
-        <th >Details</th>
+        <th class='sticky-header' >Details</th>
       <% end %>
-      <th>
-        <% unless print_friendly %><%= link_to('Person or persons',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
+
+      <th class='sticky-header'>
+        <% unless print_friendly %><%= button_to 'Person or persons',
+          reorder_search_query_path, params: { id: @search_query, order_field: SearchQuery::SearchOrder::NAME},
+          method: :get, class: "btn" %>
         <% else%> Person or persons<% end%>
       </th>
-      <th>
-        <% unless print_friendly %><%= link_to('Record type',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
+
+      <th class='sticky-header'>
+        <% unless print_friendly %><%= button_to 'Record type',
+          reorder_search_query_path, params: { id: @search_query, order_field: SearchQuery::SearchOrder::TYPE},
+          method: :get, class: "btn" %>
         <% else%> Record type<% end%>
       </th>
-      <th>
-        <% unless print_friendly %><%= link_to('Event date',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
+
+      <th class='sticky-header'>
+        <% unless print_friendly %><%= button_to 'Event date',
+          reorder_search_query_path, params: { id: @search_query, order_field: SearchQuery::SearchOrder::DATE},
+          method: :get, class: "btn" %>
         <% else%> Event date<% end%>
       </th>
-      <th>
-        <% unless print_friendly %><%= link_to('County',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
+
+      <th class='sticky-header'>
+        <% unless print_friendly %><%= button_to 'County',
+          reorder_search_query_path, params: { id: @search_query, order_field: SearchQuery::SearchOrder::COUNTY},
+          method: :get, class: "btn" %>
         <% else%> County<% end%>
       </th>
-      <th>
-        <% unless print_friendly %><%= link_to("Place : Church : Register type",
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
+
+      <th class='sticky-header'>
+        <% unless print_friendly %><%= button_to "Place : Church : Register type",
+          reorder_search_query_path, params: { id: @search_query, order_field: SearchQuery::SearchOrder::LOCATION},
+          method: :get, class: "btn" %>
         <% else%> Place : Church : Register type<% end%>
       </th>
+
     </tr>
   </thead>
   <tbody>
