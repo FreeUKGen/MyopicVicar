@@ -163,13 +163,11 @@ module Freecen
   CEN2_SCT_1851 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
               school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_SCT_1861 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
-                  special_lighting_district school_board] + SCT_HOUSEHOLD + INDIVIDUAL - %w[individual_flag] + %w[school_children individual_flag] +
-    OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
+  CEN2_SCT_1861 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+              school_board] + SCT_HOUSEHOLD + INDIVIDUAL + %w[school_children] + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_SCT_1871 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district
-                  school_board] + SCT_HOUSEHOLD + INDIVIDUAL - %w[individual_flag] + %w[school_children individual_flag] + OCCUPATION - %w[industry
-                  occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
+  CEN2_SCT_1871 = LOCATION - %w[poor_law_union special_water_district scavenging_district special_lighting_district school_board
+              school_board] + SCT_HOUSEHOLD + INDIVIDUAL + %w[school_children] + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_SCT_1881 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
     SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
