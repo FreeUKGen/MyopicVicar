@@ -173,7 +173,7 @@ module Freecen
     SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
   CEN2_SCT_1891 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
-                  special_lighting_district school_board] + SCT_HOUSEHOLD - %w[rooms_with_windows] + INDIVIDUAL + OCCUPATION - %w[industry
+                  special_lighting_district school_board] + SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry
                   occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
   CEN2_SCT_1901 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
