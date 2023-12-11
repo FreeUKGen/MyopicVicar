@@ -20,6 +20,7 @@ class Freecen1VldFile
   field :num_entries, type: Integer, default: 0
   field :num_individuals, type: Integer, default: 0
   field :num_dwellings, type: Integer, default: 0
+  field :num_invalid_pobs, type: Integer
 
   field :userid, type: String
   field :action, type: String
