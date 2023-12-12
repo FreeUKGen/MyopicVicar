@@ -25,7 +25,7 @@ module FeedbacksHelper
   end
 
   def show_feedback_title(feedback)
-    show_title = "#{feedback.user_id} submitted feedback #{feedback.title} on #{feedback.feedback_time.strftime("%F")}"
+    show_title = "#{feedback.user_id} submitted feedback #{feedback.title}"
   end
 
   def show_feedback_title_line_two(feedback)

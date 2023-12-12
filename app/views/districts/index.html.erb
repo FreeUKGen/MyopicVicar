@@ -3,40 +3,42 @@
 <%= link_to "#{app_icons[:left_arrow_pink]} Back to selection".html_safe, district_alphabet_selection_path(@character), class: " btn   btn--small" %>
 <div class="grid">
   <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
-    <table class="table--bordered table--data scrollable">
-      <caption class='accessibility'>List of Districts</caption>
-      <thead>
-        <tr>
-          <th>District Detail</th>
-          <th>District</th>
-          <th>Total Transcriptions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% n = 0 %>
-        <% @districts.each do |district| %>
-          <% n = n +1 %>
-          <tr data-num="<%= district.DistrictNumber %>" data-name= "<%= district.DistrictName %>">
-            <td id="show_district_detail">
-              <%= link_to("View #{n}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber))%>
-            </td>
-            <td>
-              <dl>
-                <dt>
-                  <%= district.DistrictName %>
-                </dt>
-                <dt>
-                  Existing from <%= district.YearStart%> <%= district.YearEnd <  9999 ? "till #{district.YearEnd}" : "" %>
-                </dt>
-              </dl>
-            </td>
-            <td class="table--data">
-              <%= district.UsageCount %>
-            </td>
+    <div class='scrollable'>
+      <table class="table--bordered table--data">
+        <caption class='accessibility'>List of Districts</caption>
+        <thead>
+          <tr>
+            <th class="sticky-header">District Detail</th>
+            <th class="sticky-header">District</th>
+            <th class="sticky-header">Total Transcriptions</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% n = 0 %>
+          <% @districts.each do |district| %>
+            <% n = n +1 %>
+            <tr data-num="<%= district.DistrictNumber %>" data-name= "<%= district.DistrictName %>">
+              <td id="show_district_detail">
+                <%= link_to("View #{n}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber))%>
+              </td>
+              <td>
+                <dl>
+                  <dt>
+                    <%= district.DistrictName %>
+                  </dt>
+                  <dt>
+                    Existing from <%= district.YearStart%> <%= district.YearEnd <  9999 ? "till #{district.YearEnd}" : "" %>
+                  </dt>
+                </dl>
+              </td>
+              <td class="table--data">
+                <%= district.UsageCount %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <!--/div-->

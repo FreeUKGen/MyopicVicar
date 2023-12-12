@@ -1,0 +1,23 @@
+<div class='container push--bottom' id="bmd_content">
+  <div class="seven-tenths palm-one-whole">
+    <div class="grid">
+      <div class="grid__item five-sixths lap-one-half palm-one-half">
+        <strong class="results-header"><%= pluralize(@saved_entries.count, ' saved entries')%></strong>
+      </div>
+      <div class="grid__item one-sixth lap-one-third palm-one-half">
+        <%= select_tag "Tools", options_for_select([ ['Download as CSV', saved_entries_as_csv_path(@search_query)]]), prompt: "Tools", onchange: 'location.href= this.value'%>
+      </div>
+    </div>
+  </div>
+  <div class="seven-tenths palm-one-whole">
+    <div class="grid__item one-third lap-one-third palm-one-half float--right push--bottom">
+      <div id="myDropdown" class="dropdown-content">
+        <%#= link_to "About this Query", about_search_query_path(@search_query, :page_number => @page_number) %>
+        <%#= link_to "Printable format", show_print_version_search_query_path %>
+        <%#search_results_download_as_csv%>
+        <%= link_to "Download as CSV", search_results_download_as_csv_path(@saved_entries) %>
+      </div>
+    </div>
+  </div>
+  <hr class=' seven-tenths palm-one-whole push--top'>
+</div>

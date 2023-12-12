@@ -351,10 +351,17 @@ class Contact
 
   def obtain_coordinator
     coordinator = nil
-    search_record = SearchRecord.record_id(self.record_id).first
-    if search_record.present?
-      county = County.where(chapman_code: search_record.chapman_code).first
-      coordinator = county.county_coordinator if county.present?
+    if appname_downcase == 'freebmd'
+      coordinator = UseridDetail.role('data_manager').active(true).first
+      coordinator = UseridDetail.secondary('data_manager').active(true).first if coordinator.blank?
+      coordinator = UseridDetail.role('system_administrator').active(true).first if coordinator.blank?
+      coordinator = coordinator.userid
+    else
+      search_record = SearchRecord.record_id(self.record_id).first
+      if search_record.present?
+        county = County.where(chapman_code: search_record.chapman_code).first
+        coordinator = county.county_coordinator if county.present?
+      end
     end
     coordinator
   end

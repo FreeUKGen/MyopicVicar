@@ -6,7 +6,7 @@
       </div>
       <div class="grid__item one-sixth lap-one-third palm-one-half">
         <!--button id="tool_button" class="btn btn--small dropbtn" onclick="myFunction()" tabindex="0"><i class="fa fa-cog"></i> Tools</button-->
-        <%= select_tag "Tools", options_for_select([['About this Query', about_search_query_path(@search_query, page_number: @page_number)], ['Printable format', show_print_version_search_query_path], ['Download as CSV', search_results_download_as_csv_path(@search_query)]]), prompt: "Tools", onchange: 'location.href= this.value'%>
+        <%= select_tag "Tools", options_for_select([['About this Query', about_search_query_path(@search_query, page_number: @page_number)], ['Printable format', show_print_version_search_query_path], ['Download as CSV', search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page})]]), prompt: "Tools", onchange: 'location.href= this.value'%>
       </div>
     </div>
   </div>
@@ -16,7 +16,7 @@
           <%= link_to "About this Query", about_search_query_path(@search_query, :page_number => @page_number) %>
           <%= link_to "Printable format", show_print_version_search_query_path %>
           <%#search_results_download_as_csv%>
-          <%= link_to "Download as CSV", search_results_download_as_csv_path(@search_query) %>
+          <%= link_to "Download as CSV", search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}) %>
         </div>
       </div>
   </div>

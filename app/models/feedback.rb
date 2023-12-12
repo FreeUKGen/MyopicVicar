@@ -3,6 +3,7 @@ class Feedback
   include Mongoid::Timestamps
   field :title, type: String
   field :body, type: String
+  field :user_name, type: String
   field :feedback_time, type: DateTime
   field :user_id, type: String
   field :name, type: String
@@ -76,6 +77,7 @@ class Feedback
     self.update_attribute(:contact_action_sent_to_userid, action_person)
     return action_person
   end
+
 
   def action_recipient_copies_userids(action_person)
     action_recipient_copies_userids = Array.new
