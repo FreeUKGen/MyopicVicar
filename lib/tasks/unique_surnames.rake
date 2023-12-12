@@ -30,7 +30,7 @@ task :unique_forenames => :environment do
 end
 
 task :unique_individual_forenames => :environment do
-  require 'unique_forenames'
+  require 'unique_forename'
   puts 'Starting individual forenames'
   UniqueForename.delete_all
   n = 0
@@ -39,6 +39,8 @@ task :unique_individual_forenames => :environment do
     names = forename.split(/[^[[:word:]]]+/)
     names.each do |thisname|
       if thisname.length > 1
+        thisname = thisname.split.map!(&:capitalize).join(' ')
+        #thisname.titleize
         if UniqueForename.find_by(Name: thisname) == nil
           records = BestGuess.where(GivenName: thisname).count
           puts "#{thisname}, #{records}"
