@@ -253,7 +253,16 @@
                 
             </li>
         </ol>
-
+        <script>
+        $('#select-tools').selectize({
+            maxItems: null,
+            valueField: 'id',
+            labelField: 'title',
+            searchField: 'title',
+            options: "<%= grouped_options %>"
+            create: false
+          });
+      </script>
       <script>
           $( "#first_name" ).autocomplete({
               source: '/unique_forenames/?term='

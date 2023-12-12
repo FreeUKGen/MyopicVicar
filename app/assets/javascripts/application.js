@@ -13,4 +13,5 @@
 //= require jquery-ui
 //= require jquery.validate
 //= require jquery.validate.min
+//= require selectize
 //= require_tree .

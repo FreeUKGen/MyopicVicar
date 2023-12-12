@@ -392,6 +392,7 @@ GEM
     sawyer (0.8.2)
       addressable (>= 2.3.5)
       faraday (> 0.8, < 2.0)
+    selectize-rails (0.12.6)
     seo_meta (3.0.0)
       railties (>= 5.0.0)
     simple_form (5.0.3)
@@ -480,6 +481,7 @@ DEPENDENCIES
   rubocop-rails
   rubyzip
   sass-rails
+  selectize-rails (~> 0.12.6)
   simple_form
   text
   traceroute
