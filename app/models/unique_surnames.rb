@@ -5,5 +5,6 @@ class UniqueSurname
   field :Name, type: String
   field :count, type: Integer
   index( {Name: 1}, {background: true})
+
 end
 
