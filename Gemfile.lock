@@ -91,6 +91,11 @@ GEM
       carrierwave (>= 0.8, < 1.4)
       mongoid (>= 3.0, < 8.0)
       mongoid-grid_fs (>= 1.3, < 3.0)
+    chosen-rails (1.10.0)
+      coffee-rails (>= 3.2)
+      railties (>= 3.0)
+      sassc-rails (>= 2.1.2)
+    chunky_png (1.4.0)
     coderay (1.1.3)
     coffee-rails (4.2.2)
       coffee-script (>= 2.2.0)
@@ -99,6 +104,12 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
+    compass (0.12.2)
+      chunky_png (~> 1.2)
+      fssm (>= 0.2.7)
+      sass (~> 3.1)
+    compass-rails (2.0.0)
+      compass (>= 0.12.2)
     concurrent-ruby (1.1.7)
     crass (1.0.6)
     decorators (2.0.5)
@@ -154,6 +165,7 @@ GEM
       actionpack (>= 3.2.13)
     friendly_id (5.2.5)
       activerecord (>= 4.0.0)
+    fssm (0.2.10)
     geocoder (1.3.7)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
@@ -389,10 +401,19 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
+    sassc (2.4.0)
+      ffi (~> 1.9)
+    sassc (2.4.0-x64-mingw32)
+      ffi (~> 1.9)
+    sassc-rails (2.1.2)
+      railties (>= 4.0.0)
+      sassc (>= 2.0)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     sawyer (0.8.2)
       addressable (>= 2.3.5)
       faraday (> 0.8, < 2.0)
-    selectize-rails (0.12.6)
     seo_meta (3.0.0)
       railties (>= 5.0.0)
     simple_form (5.0.3)
@@ -443,7 +464,9 @@ DEPENDENCIES
   bourbon
   browser
   carrierwave-mongoid (= 1.2.0)
+  chosen-rails
   coffee-rails
+  compass-rails
   devise
   devise-encryptable
   email_veracity
@@ -481,7 +504,6 @@ DEPENDENCIES
   rubocop-rails
   rubyzip
   sass-rails
-  selectize-rails (~> 0.12.6)
   simple_form
   text
   traceroute
