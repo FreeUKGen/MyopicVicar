@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200819183253) do
+ActiveRecord::Schema.define(version: 20221209222347) do
 
-  create_table "accessions", primary_key: "AccessionNumber", id: :integer, unsigned: true, default: nil, force: :cascade, options: "ENGINE=MyISAM DEFAULT CHARSET=latin1" do |t|
+  create_table "Accessions", primary_key: "AccessionNumber", id: :integer, unsigned: true, default: nil, force: :cascade, options: "ENGINE=MyISAM DEFAULT CHARSET=latin1" do |t|
     t.integer "FileNumber", limit: 3, null: false, unsigned: true
     t.integer "StartLine", limit: 3, null: false, unsigned: true
     t.integer "Count", limit: 3, unsigned: true
@@ -662,5 +662,4 @@ ActiveRecord::Schema.define(version: 20200819183253) do
     t.integer "count"
     t.index ["Name"], name: "Names"
   end
-
 end
