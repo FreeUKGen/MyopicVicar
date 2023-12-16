@@ -1,5 +1,5 @@
 desc "Update VLD Records, and Individual recs and Search recs POB county WAL to WLS"
-task :update_vld_recs_POB_wal_to_wls, [:limit, :fix, :email, :restriction] => :environment do |t, args|
+task :update_vld_recs_POB_WAL_to_WLS, [:limit, :fix, :email, :restriction] => :environment do |t, args|
 
   require 'user_mailer'
 
@@ -32,33 +32,25 @@ task :update_vld_recs_POB_wal_to_wls, [:limit, :fix, :email, :restriction] => :e
   end
 
   def self.update_individual_record(year, rec, fix, listing)
-    county_update = false
     if rec.verbatim_birth_county == 'WAL'
       rec.set(verbatim_birth_county: 'WLS') if fix
-      county_update = true
       write_csv_line(listing, year, 'FreecenIndividual', rec._id, "#{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update WAL -> WLS')
     end
     if rec.birth_county == 'WAL'
       rec.set(birth_county: 'WLS') if fix
-      county_update = true
       write_csv_line(listing, year, 'FreecenIndividual', rec._id, "#{rec.forenames} #{rec.surname}", 'Birth_county update WAL -> WLS')
     end
-    return unless county_update
   end
 
   def self.update_vld_entry_record(year, rec, fix, listing)
-    county_update = false
     if rec.verbatim_birth_county == 'WAL'
       rec.set(verbatim_birth_county: 'WLS') if fix
-      county_update = true
       write_csv_line(listing, year, 'Freecen1VldEntry', rec._id, "#{rec.forenames} #{rec.surname}", 'Verbatim_birth_county update WAL -> WLS')
     end
     if rec.birth_county == 'WAL'
       rec.set(birth_county: 'WLS') if fix
-      county_update = true
       write_csv_line(listing, year, 'Freecen1VldEntry', rec._id, "#{rec.forenames} #{rec.surname}", 'Birth_county update WAL -> WLS')
     end
-    return unless county_update
   end
 
 
@@ -126,10 +118,10 @@ task :update_vld_recs_POB_wal_to_wls, [:limit, :fix, :email, :restriction] => :e
       next unless one_year == false || census_year == single_year
 
       if one_county
-        num_search_recs_to_update = SearchRecord.where(record_type: census_year, chapman_code: single_county, birth_chapman_code: 'WAL', freecen_individual_id: {'$ne'=> ''}).count
+        num_search_recs_to_update = SearchRecord.where(record_type: census_year, chapman_code: single_county, birth_chapman_code: 'WAL', freecen_individual_id: {'$ne'=> nil}, freecen_csv_file_id: {'$eq'=> nil}).count
         message = num_search_recs_to_update.zero? ? "Census Year #{census_year} for #{single_county} has 0 records to process" : "Working on Census Year #{census_year} for #{single_county} - #{num_search_recs_to_update} to process"
       else
-        num_search_recs_to_update = SearchRecord.where(record_type: census_year, birth_chapman_code: 'WAL', freecen_individual_id: {'$ne'=> ''}).count
+        num_search_recs_to_update = SearchRecord.where(record_type: census_year, birth_chapman_code: 'WAL', freecen_individual_id: {'$ne'=> nil}, freecen_csv_file_id: {'$eq'=> nil}).count
         message = num_search_recs_to_update.zero? ? "Census Year #{census_year} has 0 records to process" : "Working on Census Year #{census_year} - #{num_search_recs_to_update} to process"
       end
 
@@ -137,9 +129,9 @@ task :update_vld_recs_POB_wal_to_wls, [:limit, :fix, :email, :restriction] => :e
       next if num_search_recs_to_update.zero?
 
       if one_county
-        search_recs_to_update = SearchRecord.where(record_type: census_year, chapman_code: single_county, birth_chapman_code: 'WAL', freecen_individual_id: {'$ne'=> ''})
+        search_recs_to_update = SearchRecord.where(record_type: census_year, chapman_code: single_county, birth_chapman_code: 'WAL', freecen_individual_id: {'$ne'=> nil}, freecen_csv_file_id: {'$eq'=> nil})
       else
-        search_recs_to_update = SearchRecord.where(record_type: census_year, birth_chapman_code: 'WAL', freecen_individual_id: {'$ne'=> ''})
+        search_recs_to_update = SearchRecord.where(record_type: census_year, birth_chapman_code: 'WAL', freecen_individual_id: {'$ne'=> nil}, freecen_csv_file_id: {'$eq'=> nil})
       end
 
       if record_limit.positive?
