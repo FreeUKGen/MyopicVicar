@@ -171,6 +171,8 @@ class Freecen2Place
       case county
       when 'Yorkshire'
         county_codes = %w[ERY NRY WRY]
+      when 'Channel Islands'
+        county_codes = ChapmanCode::CODES['Islands'].values
       when 'England'
         county_codes = ChapmanCode::CODES['England'].values
       when 'Ireland'
