@@ -877,7 +877,7 @@ class SearchQuery
    # params.merge!(possible_name_search_params)
     params.merge!(place_search_params)
     params.merge!(record_type_params)
-    params.merge!(possible_last_names_params)
+   # params.merge!(possible_last_names_params)
     params.merge!(date_search_params)
     params
   end

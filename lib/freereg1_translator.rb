@@ -160,8 +160,20 @@ module Freereg1Translator
     # - burial_person_surname
     # - relative_surname
     alternate_surname = entry.relative_surname.present? ? entry.relative_surname : entry.female_relative_surname
+    # handle entries with no surname
+    case
+    when entry.burial_person_surname.blank? && entry.relative_surname.present? && entry.female_relative_surname.blank?
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.relative_surname }
+    when entry.burial_person_surname.blank? && entry.relative_surname.blank? && entry.female_relative_surname.present?
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.female_relative_surname }
+    when entry.burial_person_surname.blank? && entry.relative_surname.blank? && entry.female_relative_surname.present?
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.relative_surname }
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.female_relative_surname }
+    when entry.burial_person_surname.present?
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.burial_person_surname }
+    end
    
-    names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename||"", :last_name => entry.burial_person_surname.present? ? entry.burial_person_surname : alternate_surname }
+   # names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename||"", :last_name => entry.burial_person_surname.present? ? entry.burial_person_surname : alternate_surname }
     # - role: fr
     # type: other
     # fields:
