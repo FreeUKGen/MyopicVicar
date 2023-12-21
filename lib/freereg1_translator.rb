@@ -166,7 +166,7 @@ module Freereg1Translator
       names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.relative_surname }
     when entry.burial_person_surname.blank? && entry.relative_surname.blank? && entry.female_relative_surname.present?
       names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.female_relative_surname }
-    when entry.burial_person_surname.blank? && entry.relative_surname.blank? && entry.female_relative_surname.present?
+    when entry.burial_person_surname.blank? && entry.relative_surname.present? && entry.female_relative_surname.present?
       names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.relative_surname }
       names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.female_relative_surname }
     when entry.burial_person_surname.present?
