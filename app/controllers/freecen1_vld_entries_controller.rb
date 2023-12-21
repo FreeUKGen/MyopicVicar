@@ -65,7 +65,7 @@ class Freecen1VldEntriesController < ApplicationController
       if pob_invalid_count.positive?
         @freecen1_vld_entry = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false, id: {'$gt': params[:id]}).order_by(dwelling_number: 1, sequence_in_household: 1).first
         if @freecen1_vld_entry.blank?
-          redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
+          redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_file.id)) && return
 
         else
           redirect_to(edit_pob_freecen1_vld_entry_path(id: @freecen1_vld_entry.id)) && return
@@ -117,7 +117,7 @@ class Freecen1VldEntriesController < ApplicationController
         if pob_invalid_count.positive?
           @freecen1_vld_entry = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false, id: {'$gt': params[:id]}).order_by(dwelling_number: 1, sequence_in_household: 1).first
           if @freecen1_vld_entry.blank?
-            redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)) && return
+            redirect_to(manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_file.id)) && return
 
           else
             redirect_to(edit_pob_freecen1_vld_entry_path(id: @freecen1_vld_entry.id)) && return
