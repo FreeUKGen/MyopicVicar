@@ -251,7 +251,7 @@ module Freereg1Translator
     # last_name:
     # - mother_surname
     # - father_surname
-    if entry.mother_forenamefemale_relative_forename
+    if entry.mother_forename
       names << { :role => 'm', :type => 'other', :first_name => entry.mother_forename, :last_name => entry.mother_surname.present? ? entry.mother_surname : entry.father_surname}
     end
     # - role: wt
