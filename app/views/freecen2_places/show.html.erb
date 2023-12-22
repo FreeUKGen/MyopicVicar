@@ -12,6 +12,9 @@
       <% if %w[system_administrator].include?(@user.person_role)%>
         <%= link_to 'Change Freecen2 Place Name', rename_freecen2_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Change the name of the place within its county'  %>
       <% end%>
+      <% if %w[system_administrator data_manager].include?(@user.person_role)%>
+        <%= link_to 'Move Freecen2 Place', move_freecen2_place_path(@place), method: :get,data: { confirm: 'Are you sure you want to Move Linkages for this Place?' }, :class => "btn   btn--small", title: 'Move all links to this place to another place'  %>
+      <% end%>
       <div class="grid__item  ">
         <table class="table--bordered table--data " >
           <colgroup >

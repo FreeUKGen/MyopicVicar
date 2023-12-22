@@ -2164,6 +2164,10 @@ crumb :create_freecen2_place do |county, place|
     parent :search_names
   end
 end
+crumb :move_freecen2_place do |county, place|
+  link 'Move Freecen2 Place', move_freecen2_place_path
+  parent :show_freecen2_place, county, place
+end
 crumb :rename_freecen2_place do |county, place|
   link 'Rename Freecen2 Place', rename_freecen2_place_path
   parent :show_freecen2_place, county, place

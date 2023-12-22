@@ -179,8 +179,6 @@ class Freecen2PlacesController < ApplicationController
     end
   end
 
-
-
   def index
     get_user_info_from_userid
     @chapman_code = session[:chapman_code]
@@ -259,6 +257,50 @@ class Freecen2PlacesController < ApplicationController
     @chapman_code = @place.chapman_code
     @county = ChapmanCode.has_key(@place.chapman_code)
     @first_name = session[:first_name]
+  end
+
+  def move
+    load(params[:id])
+    redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
+
+    get_user_info_from_userid
+    @county = session[:county]
+    @chapman_code = @place.chapman_code
+    @all_counties = Freecen2Place.where(disabled: 'false').distinct('chapman_code').sort_by(&:downcase)
+    @counties = {}
+    @counties = { '' => 'Select a County ... ' }
+    @all_counties.each { |county| @counties[county] = county }
+    case
+    when params[:commit] == 'Move'
+      @new_county = params[:county_new]
+      @new_place = params[:place_new]
+      flash[:notice] = "The Rake task for move of #{@place_name} in #{ChapmanCode.name_from_code(@chapman_code)} (#{@chapman_code}) linkages to #{@new_place} in #{ChapmanCode.name_from_code(@new_county)} (#{@new_county} ) has been initiated. You will be notified by Email when the task has completed"
+      redirect_to(action: 'show')
+    end
+    return
+  end
+
+  def move_place_names
+    county_new = params[:county_new]
+    if county_new.present?
+      @county_places = Freecen2Place.where(chapman_code: county_new, disabled: 'false').order_by(place_name: 1)
+      county_places_hash = { '' => "Select a Place in #{county_new} ..." }
+      @county_places.each { |place|
+      county_places_hash[place.place_name] = place.place_name }
+      if county_places_hash.present? && county_places_hash.length > 1
+        respond_to do |format|
+          format.json do
+            render json: county_places_hash
+          end
+        end
+      else
+        flash[:notice] = 'An Error was encountered: No places found'
+      end
+    else
+      flash[:notice] = 'County not found'
+      redirect_back(fallback_location: move_freecen2_places_path) && return
+
+    end
   end
 
   def new
