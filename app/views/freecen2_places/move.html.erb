@@ -1,37 +1,31 @@
-<div>
-  <% breadcrumb :move_freecen2_place,  @county, @place%>
-  <h3 style="text-align: center">Move all linkages for <b> <%= @place_name %></b> in <b><%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>)</b> to another Place<br>
-  </h3>
-  <%= render 'flash_notice' %>
-  <div style="text-align: center">
-    <%= simple_form_for  :move_fc2_place, method: :get do |f| %>
-      <div class="form-inputs">
-        <p style='text-align: center'>Select New Place to move linkages <i>(Note: The new Place must already exist in the Gazetteer)</i></p>
-        <label class="label ttip" tabindex="0" for="county_new" >
-          New County
-          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-          <span class="ttip__text">Required. <br>
-            Only Counties with places in the Gazetteer are included.</span> </label>
-        <select class="select" id="county_new"  name="county_new" required="required" style="width: 20%">
-          <% @counties.each do |key, value| %>
-            <option value="<%=key%>" ><%=value%></option>
-          <% end %>
-        </select>
-        <label class="label ttip" tabindex="0" for="place_new" >
-          New Place
-          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-          <span class="ttip__text">List fills when New County is selected. Only Places in the Gazetteer are included.</span> </label>
-        <select class="select" id="place_new" name="place_new" required="required" style="width: 35%">
-          <option value="">List fills when you select a New County</option>
-        </select>
-        <div class="form-actions">
-          <%= f.submit 'Move',  :class => "btn   btn--small"%>
-        </div>
-      </div>
-    <% end %>
-    <p style="color:red">After clicking Move a background task will be initiated to process the conversion of all freecen2_place linkages ie. Pieces, Districts, Parishes, Search Records (including POBs). </b></p>
-</div>
-</div>
+<%breadcrumb :move_freecen2_place, @county, @place%>
+<h3 style="text-align: center">Move all linkages for <%=@place_name%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) to another Place</h3>
+<%= render 'flash_notice' %>
+<%= simple_form_for  :move_fc2_place, method: :get do |f| %>
+  <div class="form-inputs" style="text-align: center">
+    <%= f.hidden_field :place, :value => @place %>
+    <p style='text-align: center'>Select County and Place to move linkages to <i>(Note: The Place must already exist in the Gazetteer)</i></p>
+    <label class="label ttip" tabindex="0" for="county_new">New County
+      <span class="weight--normal" style="display: inline-block;"> (required) <%= image_tag 'png/info.png', alt: 'Info', height: '16' %></span>
+      <span class="ttip__text">Only Counties with places in the Gazetteer are included</span></label>
+    <select class="select" id='county_new'  name='county_new' required='required' style="width: 20%">
+      <% @counties.each do |key, value| %>
+        <option value="<%=key%>" ><%=value%></option>
+      <% end %>
+    </select>
+    <label class="label ttip" tabindex="0" for="place_new">New Place
+      <span class="weight--normal" style="display: inline-block;"> (required) <%= image_tag 'png/info.png', alt: 'Info', height: '16' %></span>
+      <span class="ttip__text">List fills when County is selected. Only Places in the Gazetteer are included.</span></label>
+    <select class="select" id="place_new" name="place_new" required="required" style="width: 35%">
+      <option value="">List fills when you select a New County</option>
+    </select>
+    <p style="color:red"> <b>Please click on Review Details, where you can check that the Place details are the ones you require before proceeding. </b></p>
+    <div class="form-actions">
+      <%= f.submit 'Review Details',  :class => "btn   btn--small"%>
+    </div>
+    <%= link_to 'Cancel', freecen2_place_path(@place) %>
+  </div>
+<% end %>
 <% if true %>
   <script type="text/javascript" charset="utf-8" >
     (function($) {$("#place_new").remoteChained({

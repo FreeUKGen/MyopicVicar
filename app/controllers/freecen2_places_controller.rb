@@ -1,4 +1,4 @@
-# Copyright 2012 Trustees of FreeBMD
+#review Copyright 2012 Trustees of FreeBMD
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -270,12 +270,16 @@ class Freecen2PlacesController < ApplicationController
     @counties = {}
     @counties = { '' => 'Select a County ... ' }
     @all_counties.each { |county| @counties[county] = county }
-    case
-    when params[:commit] == 'Move'
-      @new_county = params[:county_new]
-      @new_place = params[:place_new]
-      flash[:notice] = "The Rake task for move of #{@place_name} in #{ChapmanCode.name_from_code(@chapman_code)} (#{@chapman_code}) linkages to #{@new_place} in #{ChapmanCode.name_from_code(@new_county)} (#{@new_county} ) has been initiated. You will be notified by Email when the task has completed"
-      redirect_to(action: 'show')
+    session[:move_new_county] = ''
+    session[:move_new_place] = ''
+    if params[:commit] == 'Review Details'
+
+      session[:move_old_county] = @place.chapman_code
+      session[:move_old_place] = @place.place_name
+      session[:move_new_county] = params[:county_new]
+      session[:move_new_place] = params[:place_new]
+      redirect_to review_move_freecen2_place_path
+
     end
     return
   end
@@ -360,6 +364,26 @@ class Freecen2PlacesController < ApplicationController
     if @records.present? && @records.to_i >= max_records
       flash[:notice] = 'There are too many records for an on-line relocation'
       redirect_to(action: 'show') && return
+    end
+  end
+
+  def review_move
+    #load(params[:id])
+    #redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
+
+    get_user_info_from_userid
+    county_from = session[:move_old_county]
+    place_from = session[:move_old_place]
+    @place_from_rec = Freecen2Place.find_by(chapman_code: county_from, place_name: place_from)
+    county_to = session[:move_new_county]
+    place_to = session[:move_new_place]
+    @place_to_rec = Freecen2Place.find_by(chapman_code: county_to, place_name: place_to)
+    if params[:commit] == 'Move Place Linkages'
+      #
+      # PUT RAKE TASK HERE <-------------
+      #
+      flash[:notice] = "The Rake task for move of linkages for #{place_from} in #{ChapmanCode.name_from_code(county_from)} (#{county_from}) to #{place_to} in #{ChapmanCode.name_from_code(county_to)} (#{county_to}) has been initiated. You will be notified by Email when the task has completed."
+      redirect_to freecen2_place_path(@place_from_rec)
     end
   end
 

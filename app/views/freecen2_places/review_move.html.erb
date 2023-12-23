@@ -1,0 +1,62 @@
+<%= render 'flash_notice' %>
+<%= simple_form_for  :review_move_fc2_place, method: :get do |f| %>
+  <div class="grid">
+    <section class="island ">
+      <h4 style="text-align: center">Freecen2 Place Linkages Move Details</h4>
+      <div class="grid__item  ">
+        <table class="table--bordered table--data " >
+          <colgroup >
+            <col class=t40>
+            <col class=t30>
+            <col class=t30>
+          </colgroup>
+          <tr>
+            <th class="caps">Field</th>
+            <th  class="caps">Old Place</th>
+            <th  class="caps">New Place</th>
+          </tr>
+          <tr>
+            <td title="The Standard name is the one used for equivalecy testing">Place Name [Standard Name]: </td>
+            <td class="weight--semibold"><%= @place_from_rec.place_name %>  [<%= @place_from_rec.standard_place_name %>]</td>
+            <td class="weight--semibold"><%= @place_to_rec.place_name %>  [<%= @place_to_rec.standard_place_name %>]</td>
+          </tr>
+          <tr>
+            <td>County:</td>
+            <td class="weight--semibold"><%= @place_from_rec.chapman_code %></td>
+            <td class="weight--semibold"><%= @place_to_rec.chapman_code %></td>
+          </tr>
+          <tr>
+            <td>Notes about the place :</td>
+            <td class="weight--semibold"><%= @place_from_rec.place_notes %> </td>
+            <td class="weight--semibold"><%= @place_to_rec.place_notes %> </td>
+          </tr>
+          <tr>
+            <td>Data present for this place:</td>
+            <td class="weight--semibold"> <%= @place_from_rec.data_present %></td>
+            <td class="weight--semibold"> <%= @place_to_rec.data_present %></td>
+          </tr>
+          <tr>
+            <td>Census years present for this place:</td>
+            <td class="weight--semibold"> <%= cen_years(@place_from_rec.cen_data_years) %></td>
+            <td class="weight--semibold"> <%= cen_years(@place_to_rec.cen_data_years) %></td>
+          </tr>
+          <tr>
+            <td>Number of search records online for this place:</td>
+            <td class="weight--semibold"> <%= number_with_delimiter(@place_from_rec.search_records.count) %></td>
+            <td class="weight--semibold"> <%= number_with_delimiter(@place_to_rec.search_records.count) %></td>
+          </tr>
+          <tr>
+            <td>Number of pieces for this place:</td>
+            <td class="weight--semibold"> <%= number_with_delimiter(@place_from_rec.freecen2_pieces.count) %></td>
+            <td class="weight--semibold"> <%= number_with_delimiter(@place_to_rec.freecen2_pieces.count) %></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+<div style="text-align: center">
+  <%= f.submit 'Move Place Linkages',  :class => "btn   btn--small"%> <br>
+  <%= link_to 'Cancel', move_freecen2_place_path(@place_from_rec) %>
+</div>
+<% end %>
