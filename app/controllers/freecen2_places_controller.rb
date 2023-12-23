@@ -385,7 +385,7 @@ class Freecen2PlacesController < ApplicationController
       #
       # PUT RAKE TASK HERE <-------------
       #
-      flash[:notice] = "The Rake task for move of linkages for #{place_from} in #{ChapmanCode.name_from_code(county_from)} (#{county_from}) to #{place_to} in #{ChapmanCode.name_from_code(county_to)} (#{county_to}) has been initiated. You will be notified by Email when the task has completed."
+      flash[:notice] = "The Rake task (with Run Mode = #{params[:review_move_fc2_place][:mode]}) for move of linkages for #{place_from} in #{ChapmanCode.name_from_code(county_from)} (#{county_from}) to #{place_to} in #{ChapmanCode.name_from_code(county_to)} (#{county_to}) has been initiated. You will be notified by Email when the task has completed."
       redirect_to freecen2_place_path(@place_from_rec)
     end
   end

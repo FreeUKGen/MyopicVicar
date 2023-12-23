@@ -52,11 +52,23 @@
           </tr>
         </table>
       </div>
-    </div>
-  </section>
-</div>
-<div style="text-align: center">
-  <%= f.submit 'Move Place Linkages',  :class => "btn   btn--small"%> <br>
-  <%= link_to 'Cancel', move_freecen2_place_path(@place_from_rec) %>
-</div>
+    </section>
+  </div>
+  <div style="text-align: center">
+    <fieldset class="input" style="text-align: center">
+      <legend><b> Rake Run Mode: </b><i>select one</i></legend>
+      NOTE: Report just reports on linkages that would be changed. Update reports and makes the actual changes.<br>
+      <i>(It is recommended to run the Rake in Report mode first and then if the log in the Email looks ok, run again in Update mode.)</i>
+      <ol class="grid">
+        <li class="grid__item one-half lap-one-half palm-one-whole" id="mode_report_input">
+          <%= f.radio_button :mode, 'Report', :checked =>true %> Report
+        </li>
+        <li class="grid__item one-half lap-one-half palm-one-whole" id="mode_update_input">
+          <%= f.radio_button :mode, 'Update', :checked =>false %> Update
+        </li>
+      </ol>
+    </fieldset>
+    <%= f.submit 'Move Place Linkages',  :class => "btn   btn--small"%>
+    <%= link_to 'Cancel', move_freecen2_place_path(@place_from_rec) %>
+  </div>
 <% end %>
