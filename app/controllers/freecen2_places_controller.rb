@@ -15,6 +15,9 @@ class Freecen2PlacesController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, with: :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, with: :record_validation_errors
 
+  require 'chapman_code'
+  require 'freecen_constants'
+
   skip_before_action :require_login, only: [:for_search_form, :for_freereg_content_form, :for_freecen2_piece_form]
 
   def active_index
