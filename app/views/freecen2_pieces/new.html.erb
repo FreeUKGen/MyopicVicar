@@ -10,6 +10,7 @@
   <% end %>
   <%= f.input :number, label: 'Piece Number (e.g. RG10_2349)',  required: true, :input_html => {:class => ' simple_form_bgcolour  ',  :size => 40 }%>
   <%= f.input :name ,  label: 'Piece (Subdistrict) name:',  required: true, input_html: {:class => ' simple_form_bgcolour  ',  :size => 40 }%>
+  <%= f.input :admin_county,  label: 'Admin County:', selected:   @freecen2_piece.admin_county, include_blank: false, required: true,collection: ChapmanCode.values, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
   <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false,  required: true, collection: @places, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
   <% unless @scotland %>
     <%= f.input :tnaid,:label => 'TNA link (enter None if no link)',  required: true, :input_html => {:class => ' simple_form_bgcolour  ',:size => 10 }%>
