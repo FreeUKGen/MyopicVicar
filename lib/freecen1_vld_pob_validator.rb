@@ -21,18 +21,24 @@ module Freecen
     def individual_pob_valid?(vld_entry, chapman_code, vld_year, userid)
       pob_valid = false
       pob_warning = ''
-      if vld_entry.birth_place == 'UNK'
-        reason = 'Automatic update of birth place UNK to hyphen'
+      reason = ''
+      @linked_records_updated = false
+
+      reason = 'Automatic update of birth place UNK to hyphen' if vld_entry.birth_place == 'UNK'
+      reason = 'Automatic update of birth place missing to hyphen' if vld_entry.birth_place.blank?
+      if reason.present?
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
         vld_entry.set(birth_place: '-')
         Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
+        @linked_records_updated = true
+        vld_entry.reload
       end
 
       pob_valid, pob_warning = valid_pob?(vld_entry, vld_year)
 
       unless pob_valid
         propagation_matches = Freecen1VldEntryPropagation.where(match_verbatim_birth_county: vld_entry.verbatim_birth_county, match_verbatim_birth_place: vld_entry.verbatim_birth_place)
-        unless propagation_matches.blank?
+        if propagation_matches.present?
 
           propagation_matches.each do |prop_rec|
             in_scope = Freecen1VldEntry.in_propagation_scope?(prop_rec, chapman_code, vld_year)
@@ -46,14 +52,17 @@ module Freecen
               vld_entry.set(notes: the_notes)
             end
             Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
+            @linked_records_updated = true
             pob_valid = true
             pob_warning = ''
-
           end
         end
       end
 
       vld_entry.set(pob_valid: pob_valid, pob_warning: pob_warning)
+      # VLD files processed by the monthly upload do not set the birth_place on the search record (manually uploaded VLD files do)
+      # only do if update_linked_records_pob has not been called  as that method will do it
+      Freecen1VldEntry.set_search_record_pob_place(vld_entry, vld_entry.birth_place) unless @linked_records_updated == true
       pob_valid
     end
 
