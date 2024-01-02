@@ -506,6 +506,10 @@
             vol_and_page_display_controller();
             aad_selection_function();
 
+            $('#search_query_districts').change(fuction(){
+                vol_and_page_display_controller();
+            });
+
             //$('#death_select_box').prop('disabled', 'disabled');
             $('.checkboxtag, .checkAll').change(function() {
                 hide_all_death_options();
