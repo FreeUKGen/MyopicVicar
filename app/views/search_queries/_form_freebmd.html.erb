@@ -491,6 +491,19 @@
                 }
             };
 
+            var vol_and_page_display_controller = function() {
+                var district_val = $('#search_query_districts').val()
+                if (district_val) {
+                    $('.volumes').show();
+                    $('.pages').show();
+                } else {
+                    $('.volumes').val('');
+                    $('.pages').val('');
+                    $('.volumes').hide();
+                    $('.pages').hide();
+                }
+            }
+            vol_and_page_display_controller();
             aad_selection_function();
 
             //$('#death_select_box').prop('disabled', 'disabled');
