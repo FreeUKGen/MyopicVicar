@@ -493,7 +493,7 @@
 
             var vol_and_page_display_controller = function() {
                 var district_val = $('#search_query_districts').val();
-                if (district_val) {
+                if (district_val.length != 0) {
                     $('.volumes').show();
                     $('.pages').show();
                 } else {
