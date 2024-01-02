@@ -181,6 +181,8 @@ class Freecen2Place
         county_codes = ChapmanCode::CODES['Scotland'].values
       when 'Wales'
         county_codes = ChapmanCode::CODES['Wales'].values
+        # Add Herefordshire to Wales as lots of border places - story 1617
+        county_codes << ChapmanCode.values_at('Herefordshire')
       else
         county_codes << ChapmanCode.values_at(county)
       end
