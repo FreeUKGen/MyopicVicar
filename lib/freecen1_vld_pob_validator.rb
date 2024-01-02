@@ -24,7 +24,7 @@ module Freecen
       reason = ''
       @linked_records_updated = false
 
-      reason = 'Automatic update of birth place UNK to hyphen' if vld_entry.birth_place == 'UNK'
+      reason = 'Automatic update of birth place UNK to hyphen' if vld_entry.birth_place.upcase == 'UNK'
       reason = 'Automatic update of birth place missing to hyphen' if vld_entry.birth_place.blank?
       if reason.present?
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
