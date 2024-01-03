@@ -53,14 +53,14 @@ task :update_search_recs_vld_birth_place, [:county, :limit, :fix, :email] => :en
 
   message = "Finished Update Search records with birth_place from the vld entry rec - County = #{county} - fix = #{fixit}  - rec limit = #{@rec_limit} - run time = #{run_time}"
   output_to_log(file_for_log, message)
-  p "Processed #{total_recs_processed} VLD Entry records - see log/update_search_recs_vld_birth_place_YYYYMMDDHHMM.log for output"
+  p "Processed #{recs_processed} VLD Entry records - see log/update_search_recs_vld_birth_place_YYYYMMDDHHMM.log for output"
 
   if @send_email
     user_rec = UseridDetail.userid(@email_to).first
     p "Sending email to #{user_rec.email_address}"
     subject_line_length = length_start_message - 8
     email_subject = "FREECEN:: #{start_message[8, subject_line_length]}"
-    email_body = "Processed #{total_recs_processed} records"
+    email_body = "Processed #{recs_processed} records"
     report_name = "update_search_recs_vld_birth_place_#{county}_#{start_time.strftime('%Y%m%d%H%M')}.log"
     UserMailer.report_for_data_manager(email_subject, email_body, @report_log, report_name, user_rec.email_address).deliver_now
   end
