@@ -22,48 +22,36 @@ task :update_search_recs_vld_birth_place, [:county, :limit, :fix, :email] => :en
   FileUtils.mkdir_p(File.dirname(file_for_log)) unless File.exist?(file_for_log)
   file_for_log = File.new(file_for_log, 'w')
   county = args.county.to_s
-  @file_limit = args.limit.to_i
+  @rec_limit = args.limit.to_i
   fixit = args.fix.to_s == 'Y'
   @report_log = ''
 
-  initial_message = "Started Update Search records with birth_place from the vld entry rec - County = #{county} - fix = #{fixit} - vld file limit = #{@file_limit}"
+  initial_message = "Started Update Search records with birth_place from the vld entry rec - County = #{county} - fix = #{fixit} - record limit = #{@rec_limit}"
   start_message = initial_message
   output_to_log(file_for_log, start_message)
   length_start_message = start_message.length
   recs_processed = 0
-  vld_files_processed = 0
-  total_recs_processed = 0
-  @vld_file_name = 'xxxx'
 
-  SearchRecord.where(chapman_code: county, freecen1_vld_file_id: { '$ne' => nil }, birth_place: { '$eq' => nil }).order_by(freecen1_vld_file_id: 1).each do |search_rec|
-
-    vld_file_rec = Freecen1VldFile.find_by(_id: search_rec.freecen1_vld_file_id)
-    if vld_file_rec.file_name != @vld_file_name
-      output_to_log(file_for_log, "Processed #{recs_processed} records") if @vld_file_name != 'xxxx'
-      recs_processed = 0
-      vld_files_processed += 1
-      break if vld_files_processed > @file_limit
-
-      @vld_file_name = vld_file_rec.file_name
-      output_to_log(file_for_log, "Processing VLD file #{vld_file_rec.file_name}")
-    end
+  SearchRecord.where(chapman_code: county, freecen_csv_file_id: { '$eq' => nil }, freecen1_vld_file_id: { '$eq' => nil }, birth_place: { '$eq' => nil }).order_by(_id: 1).each do |search_rec|
 
     individual_rec = FreecenIndividual.find_by(_id: search_rec.freecen_individual_id)
     next if individual_rec.blank?
 
     birth_place = individual_rec.birth_place.presence || individual_rec.verbatim_birth_place
     search_rec.set(birth_place: birth_place) if fixit
+    unless fixit
+      output_to_log(file_for_log, "Search rec #{search_rec._id} - Search rec birth_place #{search_rec.birth_place} will update to #{birth_place}")
+    end
     recs_processed += 1
-    total_recs_processed += 1
+    break if recs_processed >= @rec_limit
 
   end
-  output_to_log(file_for_log, "Processed #{recs_processed} records") if @vld_file_name != 'xxxx' && vld_files_processed <= @file_limit
-  output_to_log(file_for_log, "Total records processed #{total_recs_processed}")
+  output_to_log(file_for_log, "Processed #{recs_processed} records")
 
   end_time = Time.current
   run_time = end_time - start_time
 
-  message = "Finished Update Search records with birth_place from the vld entry rec - County = #{county} - fix = #{fixit}  - vld file limit = #{@file_limit} - run time = #{run_time}"
+  message = "Finished Update Search records with birth_place from the vld entry rec - County = #{county} - fix = #{fixit}  - rec limit = #{@rec_limit} - run time = #{run_time}"
   output_to_log(file_for_log, message)
   p "Processed #{total_recs_processed} VLD Entry records - see log/update_search_recs_vld_birth_place_YYYYMMDDHHMM.log for output"
 
