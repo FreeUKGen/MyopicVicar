@@ -1,54 +1,34 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-<table class="table--bordered table--striped table--data ">
-  <thead>
-    <tr>
-      <% unless print_friendly %>
-        <th >Details</th>
-      <% end %>
-      <th >
-        Person or persons
-      </th>
-      <th >
-        Record type
-      </th >
-      <th >
-        Event date
-      </th>
-      <th >
-        County
-      </th>
-      <th >
-        Place : Church : Register type
-      </th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% n = 0 %>
-    <% search_results.each do |search_record| %>
-      <% n = n + 1 %>
-
-      <tr id="<%= search_record.id %>">
-        <%= render partial: "display_freereg_search_record_desktop",
-        locals: {
-          search_record: search_record,
-          print_friendly: print_friendly,
-          n: n
-        } %>
-      </tr>
-
-    <% end %>
-
-    <% if ucf_results && ucf_results.length > 0 %>
-
+<div class="table-scroll">
+  <table class="table--bordered table--striped table--data ">
+    <thead>
       <tr>
-        <td colspan="6">
-          Additional possible matches with records containing Uncertain Character Formatting
-        </td>
+        <% unless print_friendly %>
+          <th>Details</th>
+        <% end %>
+        <th>
+          Person or persons
+        </th>
+        <th>
+          Record type
+        </th>
+        <th>
+          Event date
+        </th>
+        <th>
+          County
+        </th>
+        <th>
+          Place : Church : Register type
+        </th>
       </tr>
+    </thead>
 
-      <% ucf_results.each do |search_record| %>
+    <tbody>
+      <% n = 0 %>
+      <% search_results.each do |search_record| %>
         <% n = n + 1 %>
+
         <tr id="<%= search_record.id %>">
           <%= render partial: "display_freereg_search_record_desktop",
           locals: {
@@ -59,6 +39,26 @@
         </tr>
       <% end %>
 
-    <% end %>
-  </tbody>
-</table>
+      <% if ucf_results && ucf_results.length > 0 %>
+        <tr>
+          <td colspan="6">
+            Additional possible matches with records containing Uncertain Character
+            Formatting
+          </td>
+        </tr>
+
+        <% ucf_results.each do |search_record| %>
+          <% n = n + 1 %>
+          <tr id="<%= search_record.id %>">
+            <%= render partial: "display_freereg_search_record_desktop",
+            locals: {
+              search_record: search_record,
+              print_friendly: print_friendly,
+              n: n
+            } %>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>
