@@ -22,7 +22,6 @@ module Freecen
       pob_valid = false
       pob_warning = ''
       reason = ''
-      @linked_records_updated = false
 
       if vld_entry.birth_place.blank?
         reason = 'Automatic update of birth place missing to hyphen'
@@ -34,7 +33,6 @@ module Freecen
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
         vld_entry.set(birth_place: '-')
         Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
-        @linked_records_updated = true
         vld_entry.reload
       end
 
@@ -56,7 +54,6 @@ module Freecen
               vld_entry.set(notes: the_notes)
             end
             Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
-            @linked_records_updated = true
             pob_valid = true
             pob_warning = ''
           end
@@ -64,9 +61,6 @@ module Freecen
       end
 
       vld_entry.set(pob_valid: pob_valid, pob_warning: pob_warning)
-      # VLD files processed by the monthly upload do not set the birth_place on the search record (manually uploaded VLD files do)
-      # only do if update_linked_records_pob has not been called  as that method will do it
-      Freecen1VldEntry.set_search_record_pob_place(vld_entry, vld_entry.birth_place) unless @linked_records_updated == true
       pob_valid
     end
 
