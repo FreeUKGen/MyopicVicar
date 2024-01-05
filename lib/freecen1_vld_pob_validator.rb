@@ -33,7 +33,6 @@ module Freecen
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
         vld_entry.set(birth_place: '-')
         Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
-        vld_entry.reload
       end
 
       pob_valid, pob_warning = valid_pob?(vld_entry, vld_year)

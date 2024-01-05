@@ -32,10 +32,10 @@ task :update_search_recs_vld_birth_place, [:county, :limit, :fix, :email] => :en
   length_start_message = start_message.length
   recs_processed = 0
 
-  recs_to_process = SearchRecord.where(chapman_code: county, freecen_csv_file_id: { '$eq' => nil }, freecen1_vld_file_id: { '$eq' => nil }, record_type: { 'ne' => '1841'} birth_place: { '$eq' => nil }).count
+  recs_to_process = SearchRecord.where(chapman_code: county, freecen_csv_file_id: { '$eq' => nil }, freecen1_vld_file_id: { '$eq' => nil }, record_type: { '$ne' => '1841'}, birth_place: { '$eq' => nil }).count
   output_to_log(file_for_log, "Found #{recs_to_process} records to process")
 
-  SearchRecord.where(chapman_code: county, freecen_csv_file_id: { '$eq' => nil }, freecen1_vld_file_id: { '$eq' => nil }, record_type: { 'ne' => '1841'} birth_place: { '$eq' => nil }).order_by(_id: 1).each do |search_rec|
+  SearchRecord.where(chapman_code: county, freecen_csv_file_id: { '$eq' => nil }, freecen1_vld_file_id: { '$eq' => nil }, record_type: { '$ne' => '1841'}, birth_place: { '$eq' => nil }).order_by(_id: 1).each do |search_rec|
 
     individual_rec = FreecenIndividual.find_by(_id: search_rec.freecen_individual_id)
     next if individual_rec.blank?
@@ -43,7 +43,7 @@ task :update_search_recs_vld_birth_place, [:county, :limit, :fix, :email] => :en
     birth_place = individual_rec.birth_place.presence || individual_rec.verbatim_birth_place
     search_rec.set(birth_place: birth_place) if fixit
     unless fixit
-      output_to_log(file_for_log, "Search rec #{search_rec._id} - Search rec birth_place #{search_rec.birth_place} will update to #{birth_place}")
+      output_to_log(file_for_log, "Search rec #{search_rec._id} - birth_place will update to #{birth_place}")
     end
     recs_processed += 1
     break if recs_processed >= @rec_limit
@@ -54,7 +54,7 @@ task :update_search_recs_vld_birth_place, [:county, :limit, :fix, :email] => :en
   end_time = Time.current
   run_time = end_time - start_time
 
-  message = "Finished Update Search records with birth_place from the vld entry rec - County = #{county} - fix = #{fixit}  - rec limit = #{@rec_limit} - run time = #{run_time}"
+  message = "Finished Update Search records with birth_place from the vld entry rec - County = #{county} - fix = #{fixit}  - record limit = #{@rec_limit} - run time = #{run_time}"
   output_to_log(file_for_log, message)
   p "Processed #{recs_processed} VLD Entry records - see log/update_search_recs_vld_birth_place_YYYYMMDDHHMM.log for output"
 
