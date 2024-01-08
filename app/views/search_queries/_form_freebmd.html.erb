@@ -211,26 +211,6 @@
                 
             </li>
 
-            <li class="grid__item desk-wide-one-eighth desk-one-quarter lap-one-half palm-one-whole volumes">
-                <div class='labels'>
-                    <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
-                        <%= "Volume".html_safe %>
-                        <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
-                    <% end %>
-                </div>
-                <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
-            </li>
-
-            <li class="grid__item desk-wide-one-eighth desk-one-quarter lap-one-half palm-one-whole pages">
-                <div class='labels'>
-                    <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
-                        <%= "Page".html_safe %>
-                        <span class="ttip__text"><%#= info_tag_text[:page]%></span>
-                    <% end %>
-                </div>
-                <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
-            </li>
-
             <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole countiess">
                 <div class='labels'>
                     <div class="countieslabel">
@@ -262,6 +242,25 @@
                 <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
                 
             </li>
+            <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole volumes">
+            <div class='labels'>
+                <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
+                    <%= "Volume".html_safe %>
+                    <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
+                <% end %>
+            </div>
+            <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
+        </li>
+
+        <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole pages">
+            <div class='labels'>
+                <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
+                    <%= "Page".html_safe %>
+                    <span class="ttip__text"><%#= info_tag_text[:page]%></span>
+                <% end %>
+            </div>
+            <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
+        </li>
         </ol>
     </fieldset>
     <fieldset class="input" id="advanced_search">
@@ -506,7 +505,7 @@
             vol_and_page_display_controller();
             aad_selection_function();
 
-            $('#search_query_districts').change(fuction(){
+            $('#search_query_districts').change(function(){
                 vol_and_page_display_controller();
             });
 
