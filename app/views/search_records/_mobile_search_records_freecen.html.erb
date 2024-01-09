@@ -1,5 +1,6 @@
 <section>
-  <%= render 'nav_header_freecen' if  @show_navigation %>
+  <%= render 'nav_dwelling_freecen' if  @show_navigation %>
+  <%= render 'nav_individual_freecen' if  @show_navigation %>
 </section>
 <section>
   <div class="fullwidth_adsense_freecen cen_unit cen_unit_fullwidth">
@@ -11,8 +12,12 @@
   </div>
   <section>
     <% if @dwelling %>
+      <% if 0 != @dwelling_offs      et %>
       <% if 0 != @dwelling_offset %>
-        <p class="text--center">
+      <p class="text--center">
+        <%= dwelling_offset_message(@dwelling_offset) %>
+      </p>
+    <% end %>        <p class="text--center">
           <%= dwelling_offset_message(@dwelling_offset) %>
         </p>
       <% end %>
