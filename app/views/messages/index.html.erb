@@ -14,6 +14,7 @@
   <%= index_header_list_link %>
 </p>
 <%= index_partial_render(@messages) %>
-<% if @comments.present? %>
-  <%= index_partial_render(@comments) %>
+<% if @comments.count.present? %>
+  <% explanation = "Below listed are the comments."%>
+  <%= index_partial_render(@comments, explanation) %>
 <% end %>
