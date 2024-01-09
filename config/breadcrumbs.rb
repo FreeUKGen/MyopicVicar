@@ -1596,6 +1596,10 @@ crumb :freecen1_vld_file_audits do |county, file|
   parent :freecen1_vld_files, session[:county], file
 end
 
+crumb :freecen1_vld_file_manual_pob_val do |county, file|
+  link 'Manual POB Validation', freecen1_vld_files_path(county: county, anchor: file)
+  parent :freecen1_vld_files, session[:county], file
+end
 
 #  .........................................................................freecen2_districts...........................................
 

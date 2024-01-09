@@ -363,13 +363,13 @@ module MessagesHelper
   def message_subject
     case
     when !@respond_to_feedback.blank?
-      text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => 'text-input', readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
+      text_field_tag 'message[subject]', "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}", :class => 'text-input flush--bottom', readonly: true, title: "Re: Thank you for your feedback. Reference #{@respond_to_feedback.identifier}"
     when !@respond_to_contact.blank?
-      text_field_tag 'message[subject]', contact_subject(@respond_to_contact), :class => 'text-input', readonly: true, title: contact_subject(@respond_to_contact)
+      text_field_tag 'message[subject]', contact_subject(@respond_to_contact), :class => 'text-input flush--bottom', readonly: true, title: contact_subject(@respond_to_contact)
     when !@respond_to_message.blank?
-      text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => 'text-input', readonly: true
+      text_field_tag 'message[subject]', "Re: #{@respond_to_message.subject}", :class => 'text-input flush--bottom', readonly: true
     when @message.subject.blank? && @respond_to_message.blank? && @respond_to_feedback.blank?
-      text_field_tag 'message[subject]', nil, :class => 'text-input', placeholder: 'Mandatory', required: true
+      text_field_tag 'message[subject]', nil, :class => 'text-input flush--bottom', placeholder: 'Mandatory', required: true
     when @message.subject.present? && @respond_to_message.blank? && @respond_to_feedback.blank?
       text_field_tag 'message[subject]', "#{@message.subject}", :class => 'text-input'
     end

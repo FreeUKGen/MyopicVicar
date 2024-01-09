@@ -258,6 +258,7 @@ class ContactsController < ApplicationController
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
+    @userids = array_of_userids
   end
 
   def return_after_archive(source, id)
