@@ -5,20 +5,12 @@
 			<h1 id="body_content_title"><%= @title %></h1>
 		</div>
 		<div class='grid__item one-third'>
-			<% if  session[:userid_detail_id].present?%>
-				<div  style="float:right;">
-				  <%= form_tag(suggestion_url, :method=>:get) do %>
-				    <% suggestion_options.each_pair do |name, value| %>
-				      <%= hidden_field_tag(name, value)%>
-				    <% end %>
-				    <input type="submit" value="Make a suggestion"  class = "btn  btn--small"/>
-				  <% end %>
-				</div>
-			<% end %>
+			<%= link_to "Make a suggestion", handbook_feedback_path %>
 		</div>
 	</div>
 	<section id='body'>
 		<%= @page %>
 	</section>
 </section>
+
 

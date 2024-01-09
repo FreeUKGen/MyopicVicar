@@ -184,6 +184,19 @@ class FeedbacksController < ApplicationController
     @handbook_feedback = true if @feedback.feedback_type = 'freecen handbook feedback'
   end
 
+  def new_handbook_feedback
+    session[:return_to] ||= request.referer
+    get_user_info_from_userid
+    @feedback = Feedback.new(new_params) if params[:source_feedback_id].blank?
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+    @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
+    @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
+    render 'new'
+  end
+
+
   def restore
     @feedback = Feedback.find(params[:id])
     redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?

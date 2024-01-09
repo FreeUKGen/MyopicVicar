@@ -19,9 +19,13 @@
   <%= f.input :problem_page_url,  :as => :hidden %>
   <%= f.input :previous_page_url, :as => :hidden %>
   <%= f.input :feedback_type, :as => :hidden %>
+  <% suggestion_options.each_pair do |name, value| %>
+    <%= hidden_field_tag(name, value)%>
+  <% end %>
   <% if @handbook_feedback %>
     <%= f.button :submit, 'Submit handbook feedback'   %>
   <% else %>
     <%= f.button :submit, 'Submit Problem Report'   %>
   <% end %>
 <% end %>
+
