@@ -212,6 +212,7 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/:id/feedback_reply_messages', to: 'feedbacks#feedback_reply_messages', as: :feedback_reply_messages
   get 'feedbacks/:id/keep',  :to => 'feedbacks#keep', :as => :keep_feedback
   get 'feedbacks/:id/unkeep',  :to => 'feedbacks#unkeep', :as => :unkeep_feedback
+  get 'feedbacks/new_handbook_feedback', to: 'feedback#new_handbook_feedback', as: handbook_feedback
 
   resources :feedbacks
 
