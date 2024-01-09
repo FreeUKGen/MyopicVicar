@@ -1,0 +1,8 @@
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<h1 style="text-align: center">FreeCen Handbook Suggestion</h1>
+<p> If you find an error or problem in one of the Handbook Parts, please let us know here.</p>
+<%= render 'form' %>
