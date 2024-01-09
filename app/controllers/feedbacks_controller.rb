@@ -187,7 +187,7 @@ class FeedbacksController < ApplicationController
   def new_handbook_feedback
     session[:return_to] ||= request.referer
     get_user_info_from_userid
-    @feedback = Feedback.new(new_params) if params[:source_feedback_id].blank?
+    @feedback = Feedback.new if params[:source_feedback_id].blank?
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
