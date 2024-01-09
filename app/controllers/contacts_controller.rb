@@ -32,7 +32,7 @@ class ContactsController < ApplicationController
 
     get_user_info_from_userid
     @messages = Message.where(source_contact_id: params[:id], :sub_nature.ne => 'comment').all
-    @comments = @messages.where(sub_nature: 'comment').all if @messages.present?
+    @comments = Message.where(source_contact_id: params[:id], sub_nature: 'comment').all if @messages.present?
     @links = false
     render 'messages/index'
   end

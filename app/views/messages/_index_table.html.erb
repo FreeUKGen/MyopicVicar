@@ -1,10 +1,10 @@
-<p style='text-align: center'><%= index_explanation %></p>
+<p style='text-align: center'><%= explanation.present? ? explanation : index_explanation %></p>
 <section class='island   ' >
   <div class='scrollable'>
     <div class='table-wrapper'>
       <div class='grid'>
         <div class='grid__item one-whole' >
-          <%if @messages.present?%>
+          <%if messages.present?%>
             <div class="scrollable ">
               <table class='table--bordered table--data '>
                 <tr>
@@ -20,7 +20,7 @@
                   <th class='sticky-header'>Message begins</th>
                   <th class='sticky-header'>Action</th>
                 </tr>
-                <% @messages.each do |message| %>
+                <% messages.each do |message| %>
                   <tr class='<%= sent(message) %>'>
                     <td><%= source(message) %></td>
                     <td><%= message.subject %></td>
