@@ -20,15 +20,12 @@
   <%= f.input :title, :label => "Summary" , :input_html => {:class => "simple_form_bgcolour ", :size => 40 }%>
   <%= f.input :body, :label =>"Description" ,as: :text, :input_html => { :class => "simple_form_bgcolour ",:rows => 10, :cols =>60 , :placeholder => "Enter your comments"}%>
   <%= f.input :screenshot, :label => "Screenshot: Only jpg, jpeg, png or gif file" %>
-  <%= f.input :feedback_time, :as => :hidden %>
-  <%= f.input :user_id , :as => :hidden %>
-  <%= f.input :session_id, :as => :hidden %>
-  <%= f.input :problem_page_url,  :as => :hidden %>
-  <%= f.input :previous_page_url, :as => :hidden %>
-  <%= f.input :feedback_type, :as => :hidden %>
-  <% suggestion_options.each_pair do |name, value| %>
-    <%= hidden_field_tag(name, value)%>
-  <% end %>
+  <%= f.input :feedback_time, Time.now.utc,:as => :hidden %>
+  <%= f.input :user_id , session[:userid],:as => :hidden %>
+  <%= f.input :session_id, request.session['session_id'],:as => :hidden %>
+  <%= f.input :problem_page_url, request.env['REQUEST_URI'], :as => :hidden %>
+  <%= f.input :previous_page_url, request.env['REQUEST_URI'],:as => :hidden %>
+  <%= f.input :feedback_type, 'freecen handbook feedback',:as => :hidden %>
 <%= f.button :submit, 'Submit handbook feedback'   %>
 <% end %>
 
