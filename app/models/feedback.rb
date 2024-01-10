@@ -68,6 +68,10 @@ class Feedback
     UserMailer.acknowledge_feedback(self).deliver_now
   end
 
+  def acknowledge_handbook_feedback
+    UserMailer.acknowledge_handbook_feedback(self).deliver_now
+  end
+
   def action_recipient_userid
     role = 'website_coordinator'
     person = UseridDetail.role(role).active(true).first
@@ -206,7 +210,7 @@ class Feedback
   end
 
   def communicate_handbook_feedback
-    self.acknowledge_feedback
+    self.acknowledge_handbook_feedback
     self.handbook_feedback_communication
   end
 
