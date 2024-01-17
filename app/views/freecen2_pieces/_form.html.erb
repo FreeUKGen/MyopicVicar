@@ -9,6 +9,7 @@
   <% end %>
   <%= f.input :number, label: 'Piece Number: e.g. HS_100 or RG_1234', value: @freecen2_piece.number,required: true, :input_html => {:class => ' simple_form_bgcolour  ',  :size => 40 } if %w[data_manager system_administrator].include?(@user.person_role)%>
   <%= f.input :name ,  label: 'Piece (Subdistrict) name (Allows this piece to be merged into another piece. If in doubt talk to the data manager): as used in the search', selected: @freecen2_piece.name, include_blank: false, required: true,collection: @freecen2_pieces, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }  if %w[data_manager system_administrator].include?(@user.person_role)%>
+  <%= f.input :admin_county,  label: 'Admin County:', selected:   @freecen2_piece.admin_county, include_blank: false, required: true,collection: ChapmanCode.values, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 } if %w[data_manager system_administrator].include?(@user.person_role)%>
   <% if @records %>
     Search records exist therefore place name cannot be changed with simple edit. Please ask system administrator to make the change <br>
     <br>

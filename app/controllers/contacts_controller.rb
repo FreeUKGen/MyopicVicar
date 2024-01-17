@@ -195,7 +195,7 @@ class ContactsController < ApplicationController
 
   def new
     @contact = Contact.new
-    @options = FreeregOptionsConstants::ISSUES
+    @options = FreeregOptionsConstants::ISSUES - ['Thank-you']
     @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
     #flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?
@@ -257,6 +257,7 @@ class ContactsController < ApplicationController
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
+    @userids = array_of_userids
   end
 
   def return_after_archive(source, id)

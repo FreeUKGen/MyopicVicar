@@ -17,7 +17,10 @@
             <i><strong>Subject: </strong> <%= reply.subject %></i>
             <%= content_tag :p, class: "strong" do %>
               On <%= Message.formatted_time(reply)%>, Userid: <%= reply.userid%> wrote:<br/>
-              <%= reply.body %>
+              <%= reply.body %><br>
+              <% if reply.copies_to_userids.present? %>
+                <strong>ccs: <%= reply.copies_to_userids %></strong>
+              <% end %>
             <% end %>
           <% end %>
         <% end %>
