@@ -480,8 +480,8 @@ class SearchQuery
       include_record = include_record_for_type(search_name)
     elsif last_name.blank? && first_name.present? && Text::Soundex.soundex(first_name) == Text::Soundex.soundex(search_name[:first_name])
       include_record = include_record_for_type(search_name)
-    elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
-      include_record = include_record_for_type(search_name)
+    #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
+     # include_record = include_record_for_type(search_name)
     end
     include_record
   end
@@ -496,8 +496,8 @@ class SearchQuery
       include_record = include_record_for_type(search_name)
     elsif last_name.blank? && first_name.present? && first_name.downcase == search_name_first_name
       include_record = include_record_for_type(search_name)
-    elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
-      include_record = include_record_for_type(search_name)
+    #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
+     # include_record = include_record_for_type(search_name)
     end
     include_record
   end
