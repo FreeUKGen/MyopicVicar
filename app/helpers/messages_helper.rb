@@ -317,7 +317,7 @@ module MessagesHelper
   end
 
   
-  def index_partial_render(messages=nil, explanation=nil, source=nil)
+  def index_partial_render(messages=nil, explanation=nil, source_type=nil)
     controller.controller_name
     if controller.controller_name == 'contacts' || controller.controller_name == 'feedbacks'
       render 'messages/index_table', messages:messages, explanation: explanation

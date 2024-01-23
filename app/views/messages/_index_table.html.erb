@@ -22,7 +22,7 @@
                 </tr>
                 <% messages.each do |message| %>
                   <tr class='<%= sent(message) %>'>
-                    <td><%= source.present? ? source :  source(message) %></td>
+                    <td><%= source_type.present? ? source_type :  source(message) %></td>
                     <td><%= message.subject %></td>
                     <td><%= message.userid %></td>
                     <td><%= message.message_time.strftime('%d %b %Y') unless message.message_time.nil?%></td>
