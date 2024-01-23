@@ -16,5 +16,5 @@
 <%= index_partial_render(@messages) %>
 <% if @comments.count.present? %>
   <% explanation = "Below listed are the comments."%>
-  <%= index_partial_render(@comments, explanation) %>
+  <%= index_partial_render(@comments, explanation,'Contact Reply') %>
 <% end %>
