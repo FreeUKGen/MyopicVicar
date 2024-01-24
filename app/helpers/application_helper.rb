@@ -99,7 +99,7 @@ module ApplicationHelper
   end
 
   def nav_freecen_gazetteer
-    link_to('Gazetteer', '/freecen2_places/search_names', title: 'Search for an existing place name; opens in a new tab') if
+    link_to('Gazetteer', '/freecen2_places/search_names', title: 'Search for an existing place name; Right click to open in new tab') if
     appname.downcase == 'freecen' && session[:userid_detail_id].present?
   end
 
