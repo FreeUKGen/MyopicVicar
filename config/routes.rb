@@ -16,6 +16,8 @@ MyopicVicar::Application.routes.draw do
 
 
 
+  resources :my_actions
+  resources :roles
   root :to => 'search_queries#new'
   resources :reminder_to_donate
   resources :donate_cta_feedback

@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @my_action.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @my_action.description %>
+</p>
+
+<p>
+  <strong>Child of:</strong>
+  <%= @my_action.child_of %>
+</p>
+
+<%= link_to 'Edit', edit_my_action_path(@my_action) %> |
+<%= link_to 'Back', my_actions_path %>
