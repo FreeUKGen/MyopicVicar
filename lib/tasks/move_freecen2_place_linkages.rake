@@ -13,7 +13,9 @@ namespace :freecen do
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
     message_file = File.new(file_for_warning_messages, 'w')
     message_line = "Starting Move of freecen2_place linkages from  #{old_place} (#{old_place_entry.chapman_code}) to #{new_place} (#{new_place_entry.chapman_code}) at #{start_time} with fix #{fixit}"
+    #
     # take out all p commands !!!!!!!!!!!!!!!!!!!
+    #
     p message_line
     message_file.puts message_line
     message_line = 'Before Linkages Move'
@@ -64,7 +66,7 @@ namespace :freecen do
       message_line = "Old Place Districts count = #{old_freecen2_districts}"
       message_file.puts message_line
       p message_line
-      if !old_freecen2_districts.zero? && fixit
+      if old_freecen2_districts.positive? && fixit
         districts_updated = Freecen2District.collection.update_many({ freecen2_place_id: old_place_entry._id }, '$set' => { freecen2_place_id: new_place_entry._id })
         message_line = districts_updated
         message_file.puts message_line
@@ -77,7 +79,7 @@ namespace :freecen do
       message_line = "Old Place Pieces count = #{old_freecen2_districts}"
       message_file.puts message_line
       p message_line
-      if !old_freecen2_pieces.zero? && fixit
+      if old_freecen2_pieces.positive? && fixit
         pieces_updated = Freecen2Piece.collection.update_many({ freecen2_place_id: old_place_entry._id }, '$set' => { freecen2_place_id: new_place_entry._id})
         message_line = pieces_updated
         message_file.puts message_line
@@ -90,7 +92,7 @@ namespace :freecen do
       message_line = "Old Place Civil Parishes count = #{old_freecen2_civil_parishes}"
       message_file.puts message_line
       p message_line
-      if !old_freecen2_civil_parishes.zero? && fixit
+      if old_freecen2_civil_parishes.positive? && fixit
         parishes_updated = Freecen2CivilParish.collection.update_many({ freecen2_place_id: old_place_entry._id }, '$set' => { freecen2_place_id: new_place_entry._id})
         message_line = parishes_updated
         message_file.puts message_line
@@ -103,11 +105,11 @@ namespace :freecen do
       message_line = "Old Place Search Records count = #{old_search_records}"
       message_file.puts message_line
       p message_line
-      csv_records_present = true if !search_records.zero? && SearchRecord.where(freecen2_place_id: old_place_entry._id).first.freecen_csv_file_id.present?
+      csv_records_present = true if search_records.positive? && SearchRecord.where(freecen2_place_id: old_place_entry._id).first.freecen_csv_file_id.present?
       message_line = "Old Place Search Records - CSV File(s) = #{csv_records_present}"
       message_file.puts message_line
       p message_line
-      vld_records_present = true if !search_records.zero? && SearchRecord.where(freecen2_place_id: old_place_entry._id).first.freecen1_vld_file_id.present?
+      vld_records_present = true if search_records.positive? && SearchRecord.where(freecen2_place_id: old_place_entry._id).first.freecen1_vld_file_id.present?
       message_line = "Old Place Search Records - VLD File(s) = #{vld_records_present}"
       message_file.puts message_line
       p message_line
@@ -116,12 +118,27 @@ namespace :freecen do
       message_line = "Old Place Search Records POBs count = #{old_search_records_pobs}"
       message_file.puts message_line
       p message_line
+      message_line = '** Dwellings **'
+      message_file.puts message_line
+      p message_line
+      old_dwellings = Dwelling.where(freecen2_place_id: old_place_entry._id).count
+      message_line = "Old Dwelling Records count = #{old_dwellings}"
+      message_file.puts message_line
 
       # UPDATE Search recs for Place Id
 
-      if !old_search_records.zero? && fixit
+      if old_search_records.positive? && fixit
         records_updated = SearchRecord.collection.update_many({ freecen2_place_id: old_place_entry._id }, '$set' => { freecen2_place_id: new_place_entry._id, location_names: [new_place_entry.place_name] })
         message_line = "Search Records updated = #{records_updated.inspect}"
+        message_file.puts message_line
+        p message_line
+      end
+
+      # UPDATE Dwellings recs Place Id
+
+      if old_dwellings.positive? && fixit
+        records_updated = Dwelling.collection.update_many({ freecen2_place_id: old_place_entry._id }, '$set' => { freecen2_place_id: new_place_entry._id})
+        message_line = "Dwellings updated = #{records_updated.inspect}"
         message_file.puts message_line
         p message_line
       end
@@ -132,63 +149,69 @@ namespace :freecen do
         csv_pob_recs = SearchRecord.where(birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name).freecen_csv_file_id.present?
         csv_pob_recs.each do |csv_search_record|
           recs_to_update = FreecenCsvEntry.where(birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name, freecen_csv_file_id: csv_search_record.freecen_csv_file_id).count
-          unless recs_to_update.zero?
+          if recs_to_update.positive?
             csv_entry_recs_updated = FreecenCsvEntry.collection.update_many({freecen_csv_file_id: csv_search_record.freecen_csv_file_id, birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name }, '$set' => { birth_county: new_place_entry.chapman_code, birth_place: new_place_entry.place_name })
             message_line = "Search Records CSV Entry POBs updated = #{csv_entry_recs_updated.inspect}"
             message_file.puts message_line
             p message_line
           end
+          recs_to_update = FreecenIndividual.where(birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name, freecen_csv_file_id: csv_search_record.freecen_individual_id).count
+          next if recs_to_update.zero?
+
+          csv_individ_recs_updated = FreecenIndividual.collection.update_many({_id: csv_search_record.freecen_individual_id, birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name }, '$set' => { birth_county: new_place_entry.chapman_code, birth_place: new_place_entry.place_name })
+          message_line = "Search Records CSV Individual POBs updated = #{csv_individ_recs_updated.inspect}"
+          message_file.puts message_line
+          p message_line
         end
         csv_pob_records_updated = SearchRecord.collection.update_many({birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name, freecen_csv_file_id: { '$ne' => nil } }, '$set' => { birth_county: new_place_entry.chapman_code, birth_place: new_place_entry.place_name })
         message_line = "Search Records CSV POBs updated = #{csv_pob_records_updated.inspect}"
         message_file.puts message_line
         p message_line
       end
-    end
 
-    # UPDATE POBs for VLD recs
+      # UPDATE POBs for VLD recs
 
-    if vld_records_present && fixit
-      vld_search_pob_recs = SearchRecord.where(birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name).freecen1_vld_file_id.present?
-      vld_search_pob_recs.each do |vld_search_record|
-        recs_to_update = Freecen1VldEntry.where(birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name, freecen1_vld_file_id: vld_search_record.freecen1_vld_file_id).count
-        unless recs_to_update.zero?
-          vld_entry_recs_updated = Freecen1VldEntry.collection.update_many({freecen1_vld_file_id: vld_search_record.freecen1_vld_file_id, birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name }, '$set' => { birth_county: new_place_entry.chapman_code, birth_place: new_place_entry.place_name })
-          message_line = "Search Records VLD Entry POBs updated = #{vld_entry_recs_updated.inspect}"
-          message_file.puts message_line
-          p message_line
-        end
-        recs_to_update = FreecenIndividual.where(birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name, freecen1_vld_file_id: vld_search_record.freecen_individual_id).count
-        unless recs_to_update.zero?
+      if vld_records_present && fixit
+        vld_search_pob_recs = SearchRecord.where(birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name).freecen1_vld_file_id.present?
+        vld_search_pob_recs.each do |vld_search_record|
+          recs_to_update = Freecen1VldEntry.where(birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name, freecen1_vld_file_id: vld_search_record.freecen1_vld_file_id).count
+          if recs_to_update.positive?
+            vld_entry_recs_updated = Freecen1VldEntry.collection.update_many({freecen1_vld_file_id: vld_search_record.freecen1_vld_file_id, birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name }, '$set' => { birth_county: new_place_entry.chapman_code, birth_place: new_place_entry.place_name })
+            message_line = "Search Records VLD Entry POBs updated = #{vld_entry_recs_updated.inspect}"
+            message_file.puts message_line
+            p message_line
+          end
+          recs_to_update = FreecenIndividual.where(birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name, freecen1_vld_file_id: vld_search_record.freecen_individual_id).count
+          next if recs_to_update.zero?
+
           vld_individ_recs_updated = FreecenIndividual.collection.update_many({_id: vld_search_record.freecen_individual_id, birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name }, '$set' => { birth_county: new_place_entry.chapman_code, birth_place: new_place_entry.place_name })
           message_line = "Search Records VLD Individual POBs updated = #{vld_individ_recs_updated.inspect}"
           message_file.puts message_line
           p message_line
         end
+        vld_pob_records_updated = SearchRecord.collection.update_many({birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name, freecen1_vld_file_id: { '$ne': nil } }, '$set' => { birth_county: new_place_entry.chapman_code, birth_place: new_place_entry.place_name })
+        message_line = "Search Records VLD POBs updated = #{vld_pob_records_updated.inspect}"
+        message_file.puts message_line
+        p message_line
       end
-      vld_pob_records_updated = SearchRecord.collection.update_many({birth_county: old_place_entry.chapman_code, birth_place: old_place_entry.place_name, freecen1_vld_file_id: { '$ne': nil } }, '$set' => { birth_county: new_place_entry.chapman_code, birth_place: new_place_entry.place_name })
-      message_line = "Search Records VLD POBs updated = #{vld_pob_records_updated.inspect}"
+
+      new_place_entry.update_attributes(cen_data_years: updated_new_cen_data_years, data_present: updated_cen_data_present) if fixit
+      old_place_entry.update_attributes(data_present: false, cen_data_years: []) if fixit
+      message_line = 'Updated places'
+      message_file.puts message_line
+      p message_line
+      message_line = "#{old_place_entry.inspect}"
+      message_file.puts message_line
+      p message_line
+      message_line = "#{new_place_entry.inspect}"
       message_file.puts message_line
       p message_line
     end
-
-    new_place_entry.update_attributes(cen_data_years: updated_new_cen_data_years, data_present: updated_cen_data_present) if fixit
-    old_place_entry.update_attributes(data_present: false, cen_data_years: []) if fixit
-    message_line = 'Updated places'
-    message_file.puts message_line
-    p message_line
-    message_line = "#{old_place_entry.inspect}"
-    message_file.puts message_line
-    p message_line
-    message_line = "#{new_place_entry.inspect}"
+    Freecen2PlaceCache.refresh(new_place_entry.chapman_code) if fixit
+    running_time = Time.now - start_time
+    message = 'Finished' if message.blank?
+    message_line = "#{message} after #{running_time}"
     message_file.puts message_line
     p message_line
   end
-  Freecen2PlaceCache.refresh(new_place_entry.chapman_code) if fixit
-  running_time = Time.now - start_time
-  message = 'Finished' if message.blank?
-  message_line = "#{message} after #{running_time}"
-  message_file.puts message_line
-  p message_line
-end
 end
