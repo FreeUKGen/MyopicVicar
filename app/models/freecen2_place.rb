@@ -303,6 +303,7 @@ class Freecen2Place
       params = {}
       params[:chapman_code] = { '$eq' => county }
       params["alternate_freecen2_place_names.standard_alternate_name"] = { '$eq' => place }
+      params[:disabled] = { '$eq' => 'false' }
       place_alternate = Freecen2Place.collection.find(params)
       place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
       place_id = place_alternate.first if place_alternate.present?
