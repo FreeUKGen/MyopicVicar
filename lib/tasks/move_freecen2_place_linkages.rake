@@ -11,7 +11,7 @@ namespace :freecen do
       @report_email_log += "\n"
       @report_email_log += message_line
       message_file.puts message_line.to_s
-      p message_line.to_s
+      # p message_line.to_s
     end
 
     # START
@@ -37,6 +37,7 @@ namespace :freecen do
       move_info = "Move of freecen2_place linkages from  #{old_place_record.place_name} (#{old_place_record.chapman_code}) to #{new_place_record.place_name} (#{new_place_record.chapman_code}) in #{mode} mode"
       message_line = "Starting #{move_info} at #{start_time}"
       output_to_log(message_file, message_line)
+      p message_line
       message_line = 'Before Linkages Move'
       output_to_log(message_file, message_line)
       message_line = "*** Old Place record *** = #{old_place_record.inspect}"
@@ -69,7 +70,7 @@ namespace :freecen do
       output_to_log(message_file, message_line)
       if old_freecen2_districts.positive? && fixit
         districts_updated = Freecen2District.collection.update_many({ freecen2_place_id: old_place_record._id }, '$set' => { freecen2_place_id: new_place_record._id })
-        message_line = districts_updated
+        message_line = districts_updated.inspect
         output_to_log(message_file, message_line)
       end
       message_line = '** Pieces **'
@@ -79,7 +80,7 @@ namespace :freecen do
       output_to_log(message_file, message_line)
       if old_freecen2_pieces.positive? && fixit
         pieces_updated = Freecen2Piece.collection.update_many({ freecen2_place_id: old_place_record._id }, '$set' => { freecen2_place_id: new_place_record._id})
-        message_line = pieces_updated
+        message_line = pieces_updated.inspect
         output_to_log(message_file, message_line)
       end
       message_line = '** Civil Parishes **'
@@ -89,7 +90,7 @@ namespace :freecen do
       output_to_log(message_file, message_line)
       if old_freecen2_civil_parishes.positive? && fixit
         parishes_updated = Freecen2CivilParish.collection.update_many({ freecen2_place_id: old_place_record._id }, '$set' => { freecen2_place_id: new_place_record._id})
-        message_line = parishes_updated
+        message_line = parishes_updated.inspect
         output_to_log(message_file, message_line)
       end
       message_line = '** Search Records **'
@@ -108,6 +109,53 @@ namespace :freecen do
       old_search_records_pobs = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, birth_place: old_place_record.place_name).count
       message_line = "Old Place name used in Search Records Place Of Birth count = #{old_search_records_pobs}"
       output_to_log(message_file, message_line)
+      csv_files_list = '['
+      vld_files_list = '['
+      if old_search_records_pobs.positive?
+        # get CSV file names where OLd Place is used as a Birth Place
+        csv_file_ids = SortedSet.new
+        csv_files = SearchRecord.where(:birth_chapman_code => old_place_record.chapman_code, :birth_place => old_place_record.place_name, :freecen_csv_file_id.ne => nil)
+        csv_files.each do |search_rec|
+          csv_file_ids << search_rec.freecen_csv_file_id
+        end
+        unless csv_file_ids.size.zero?
+          csv_file_ids.each do |csv_file_id|
+            csv_file = FreecenCsvFile.find_by(_id: csv_file_id)
+            csv_files_list += "(#{csv_file.chapman_code}) #{csv_file.file_name}, " if csv_file.present?
+          end
+        end
+        unless csv_files_list == '['
+          csv_files_list_info = csv_files_list[0..-3] + ']'
+          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info}, **** these files will need to be updated and reloaded after the linkages have been moved in UPDATE mode"
+          output_to_log(message_file, message_line)
+        end
+
+        # get VLD file names where OLd Place is used as a Birth Place
+        individ_file_ids = SortedSet.new
+        vld_file_ids = SortedSet.new
+        individ_files = SearchRecord.where(:birth_chapman_code =>  old_place_record.chapman_code, :birth_place =>  old_place_record.place_name, :freecen_csv_file_id => nil, :freecen_individual_file_id.ne => nil )
+        individ_files.each do |search_rec|
+          individ_file_ids << search_rec.freecen_individual_file_id
+        end
+        unless individ_file_ids.size.zero?
+          individ_file_ids.each do |individ_file_id|
+            individ_file_rec = FreecenIndividual.find_by(_id: individ_file_id)
+            vld_files_ids  << individ_file_rec.freecen_vld_file_id if individ_file_rec.present?
+          end
+          unless vld_file_ids.size.zero?
+            vld_file_ids.each do |vld_file_id|
+              vld_file = Freecen1VldFile.find_by(_id: vld_file_id)
+              vld_files_list += "(#{vld_file.dir_name}) #{vld_file.file_name}, " if vld_file.present?
+            end
+          end
+          unless vld_files_list == '['
+            vld_files_list_info = vld_files_list[0..-3] + ']'
+            message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info}, **** these files will need to be downloaded as CSVProc files, updated and reloaded after the linkages have been moved in UPDATE mode"
+            output_to_log(message_file, message_line)
+          end
+        end
+      end
+
       alternative_names = SortedSet.new
       alternative_names_list = '['
       if old_place_record.alternate_freecen2_place_names.present?
@@ -134,12 +182,8 @@ namespace :freecen do
         output_to_log(message_file, message_line)
       end
       if old_search_records_pobs.positive? && fixit
-        records_updated = SearchRecord.collection.update_many({ birth_county: old_place_record.chapman_code, birth_place: old_place_record.place_name }, '$set' => { birth_county: new_place_record.chapman_code, birth_place: new_place_record.place_name })
+        records_updated = SearchRecord.collection.update_many({ birth_chapman_code: old_place_record.chapman_code, birth_place: old_place_record.place_name }, '$set' => { birth_chapman_code: new_place_record.chapman_code, birth_place: new_place_record.place_name })
         message_line = "Search Records Places Of Birth updated = #{records_updated.inspect}"
-        output_to_log(message_file, message_line)
-      end
-      if !alternative_names_list == '' && fixit
-        message_line = "** Search Records Places Of Birth for old place used the following Alternate Place Names which should be added to the New Place if not already present: [#{alternative_names_list}] **"
         output_to_log(message_file, message_line)
       end
       if fixit
@@ -153,12 +197,31 @@ namespace :freecen do
         output_to_log(message_file, message_line)
         Freecen2PlaceCache.refresh(new_place_record.chapman_code)
       end
+      if fixit && !(csv_files_list == '[' && vld_files_list == '[' && alternative_names_list == '[')
+        message_line = '**** ACTION REQUIRED ****'
+        output_to_log(message_file, message_line)
+        unless csv_files_list == '['
+          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info}, **** these files will need to be updated and reloaded."
+          output_to_log(message_file, message_line)
+        end
+        unless vld_files_list == '['
+          message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info}, **** these files will need to be downloaded as CSVProc files, updated and reloaded."
+          output_to_log(message_file, message_line)
+        end
+        unless alternative_names_list == '['
+          message_line = "Old Place Alternate Place Names used in Search Records Place of Birth = #{alternative_names_used_list}, **** these should be added to #{new_place_record.place_name} as Alternative names."
+          output_to_log(message_file, message_line)
+        end
+        message_line = '**** -------------- ****'
+        output_to_log(message_file, message_line)
+      end
     end
 
     running_time = Time.now - start_time
     message = "Finished - #{mode} mode run" if message.blank?
     message_line = "#{message} after #{running_time}s"
     output_to_log(message_file, message_line)
+    p message_line
     unless userid == 'NA'
       user_rec = UseridDetail.userid(userid).first
 
