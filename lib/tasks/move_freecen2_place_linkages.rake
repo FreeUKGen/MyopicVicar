@@ -105,22 +105,23 @@ namespace :freecen do
       output_to_log(message_file, message_line)
       message_line = '** Search Records Places Of Birth **'
       output_to_log(message_file, message_line)
-      old_search_records_pobs = SearchRecord.where(birth_county: old_place_record.chapman_code, birth_place: old_place_record.place_name).count
+      old_search_records_pobs = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, birth_place: old_place_record.place_name).count
       message_line = "Old Place name used in Search Records Place Of Birth count = #{old_search_records_pobs}"
       output_to_log(message_file, message_line)
       alternative_names = SortedSet.new
-      alternative_names_list = ''
+      alternative_names_list = '['
       if old_place_record.alternate_freecen2_place_names.present?
         old_place_record.alternate_freecen2_place_names.each do |alt_name|
-          alt_name_used = SearchRecord.where(birth_county: old_place_record.chapman_code, birth_place: alt_name).present?
-          alternative_names << alt_name if alt_name_used
+          alt_name_used = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, birth_place: alt_name.alternate_name).count
+          alternative_names << alt_name.alternate_name if alt_name_used.positive?
         end
         unless alternative_names.size.zero?
           alternative_names.each do |alt_pob|
-            alternative_names_list += "#{alt_pob} "
+            alternative_names_list += "#{alt_pob}, "
           end
+          alternative_names_used_list = alternative_names_list[0..-3] + ']'
         end
-        alt_names_info = alternative_names_list == '' ? 'None' : alternative_names_list
+        alt_names_info = alternative_names_list == '[' ? 'None' : alternative_names_used_list
         message_line = "Old Place Alternate Place Names used in Search Records Place of Birth = #{alt_names_info}"
         output_to_log(message_file, message_line)
       end
@@ -142,13 +143,13 @@ namespace :freecen do
         output_to_log(message_file, message_line)
       end
       if fixit
-        new_place_record.update_attributes(cen_data_years: updated_new_cen_data_years, data_present: updated_cen_data_present)
+        new_place_record.update_attributes(cen_data_years: updated_new_cen_data_years, data_present: updated_search_data_present)
         old_place_record.update_attributes(disabled: 'true', data_present: false, cen_data_years: [])
-        message_line = 'Updated places'
+        message_line = 'Freecen2_place Records after update'
         output_to_log(message_file, message_line)
-        message_line = "#{old_place_record.inspect}"
+        message_line = "*** Old Place record *** = #{old_place_record.inspect}"
         output_to_log(message_file, message_line)
-        message_line = "#{new_place_record.inspect}"
+        message_line = "*** New Place record *** = #{new_place_record.inspect}"
         output_to_log(message_file, message_line)
         Freecen2PlaceCache.refresh(new_place_record.chapman_code)
       end

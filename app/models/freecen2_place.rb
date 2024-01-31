@@ -430,13 +430,11 @@ class Freecen2Place
 
         alternate_names_set << Freecen2Place.standard_place(value[:alternate_name])
         entries += 1
-        unless  Freecen2Place.where(:place_name=> this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-          if Freecen2Place.where(:chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-            dup_place_set << value[:alternate_name]
-          end
-          if Freecen2Place.where(:place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-            dup_place_set << value[:alternate_name]
-          end
+        if Freecen2Place.where(:place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+          dup_place_set << value[:alternate_name]
+        end
+        if Freecen2Place.where(:chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+          dup_place_set << value[:alternate_name]
         end
       end
     end
@@ -449,7 +447,7 @@ class Freecen2Place
         end
         display_dups = "#{dups[0...-1]})"
         display_exist = dup_place_set.length > 1 ? 'already exist' : 'already exists'
-        err_msg = "Other Names for Place cannot be duplicated - #{display_dups} #{display_exist}"
+        err_msg = "Other Names for Place cannot be duplicated - #{display_dups} #{display_exist} "
       else
         err_msg = 'Other Names for Place cannot be duplicated'
       end
