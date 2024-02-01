@@ -38,11 +38,15 @@ namespace :freecen do
       message_line = "Starting #{move_info} at #{start_time}"
       output_to_log(message_file, message_line)
       p message_line
-      message_line = 'Before Linkages Move'
+      message_line = '*** Before Linkages Move ***'
       output_to_log(message_file, message_line)
-      message_line = "*** Old Place record *** = #{old_place_record.inspect}"
+      message_line = '*** Old Place record ***'
       output_to_log(message_file, message_line)
-      message_line = "*** New Place record *** = #{new_place_record.inspect}"
+      message_line = "#{old_place_record.inspect}"
+      output_to_log(message_file, message_line)
+      message_line = '*** New Place record ***'
+      output_to_log(message_file, message_line)
+      message_line = "#{new_place_record.inspect}"
       output_to_log(message_file, message_line)
       message_line = '** Census years **'
       output_to_log(message_file, message_line)
@@ -126,7 +130,7 @@ namespace :freecen do
         end
         unless csv_files_list == '['
           csv_files_list_info = csv_files_list[0..-3] + ']'
-          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info}, **** these files will need to be updated and reloaded after the linkages have been moved in UPDATE mode"
+          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info}, **** these files MAY need to be updated and reloaded after the linkages move has been run in UPDATE mode"
           output_to_log(message_file, message_line)
         end
 
@@ -150,7 +154,7 @@ namespace :freecen do
           end
           unless vld_files_list == '['
             vld_files_list_info = vld_files_list[0..-3] + ']'
-            message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info}, **** these files will need to be downloaded as CSVProc files, updated and reloaded after the linkages have been moved in UPDATE mode"
+            message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info}, **** these files MAY need to be downloaded as CSVProc files, updated and reloaded after the linkages move has been run in UPDATE mode"
             output_to_log(message_file, message_line)
           end
         end
@@ -189,23 +193,27 @@ namespace :freecen do
       if fixit
         new_place_record.update_attributes(cen_data_years: updated_new_cen_data_years, data_present: updated_search_data_present)
         old_place_record.update_attributes(disabled: 'true', data_present: false, cen_data_years: [])
-        message_line = 'Freecen2_place Records after update'
+        message_line = '*** Freecen2_place Records after update ***'
         output_to_log(message_file, message_line)
-        message_line = "*** Old Place record *** = #{old_place_record.inspect}"
+        message_line = '*** Old Place record ***'
         output_to_log(message_file, message_line)
-        message_line = "*** New Place record *** = #{new_place_record.inspect}"
+        message_line = "#{old_place_record.inspect}"
+        output_to_log(message_file, message_line)
+        message_line = '*** New Place record ***'
+        output_to_log(message_file, message_line)
+        message_line = "#{new_place_record.inspect}"
         output_to_log(message_file, message_line)
         Freecen2PlaceCache.refresh(new_place_record.chapman_code)
       end
       if fixit && !(csv_files_list == '[' && vld_files_list == '[' && alternative_names_list == '[')
-        message_line = '**** ACTION REQUIRED ****'
+        message_line = '**** ACTION MAY BE REQUIRED ****'
         output_to_log(message_file, message_line)
         unless csv_files_list == '['
-          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info}, **** these files will need to be updated and reloaded."
+          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info}, **** these files MAY need to be updated and reloaded."
           output_to_log(message_file, message_line)
         end
         unless vld_files_list == '['
-          message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info}, **** these files will need to be downloaded as CSVProc files, updated and reloaded."
+          message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info}, **** these files MAY need to be downloaded as CSVProc files, updated and reloaded."
           output_to_log(message_file, message_line)
         end
         unless alternative_names_list == '['
