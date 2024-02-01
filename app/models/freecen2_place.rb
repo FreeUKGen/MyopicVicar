@@ -181,6 +181,11 @@ class Freecen2Place
         county_codes = ChapmanCode::CODES['Scotland'].values
       when 'Wales'
         county_codes = ChapmanCode::CODES['Wales'].values
+        # Add Herefordshire to Wales as lots of border places - story 1617
+        county_codes << ChapmanCode.values_at('Herefordshire')
+      when 'London (City)'
+        # add Kent, Middlesex and Surrey to London - story 1627
+        county_codes = %w[LND KEN MDX SRY]
       else
         county_codes << ChapmanCode.values_at(county)
       end
@@ -427,10 +432,10 @@ class Freecen2Place
 
         alternate_names_set << Freecen2Place.standard_place(value[:alternate_name])
         entries += 1
-        if Freecen2Place.where(:chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+        if Freecen2Place.where(:disabled => 'false', :place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
           dup_place_set << value[:alternate_name]
         end
-        if Freecen2Place.where(:place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+        if Freecen2Place.where(:disabled => 'false', :chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
           dup_place_set << value[:alternate_name]
         end
       end
