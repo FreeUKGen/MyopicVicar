@@ -422,7 +422,7 @@ class Freecen2Place
     [true, '']
   end
 
-  def check_alternate_names(alternate_freecen2_place_names_attributes, chapman_code, this_place_name)
+  def check_alternate_names(alternate_freecen2_place_names_attributes, chapman_code, this_place_id)
     alternate_names_set = SortedSet.new
     entries = 0
     dup_place_set = SortedSet.new
@@ -432,7 +432,7 @@ class Freecen2Place
 
         alternate_names_set << Freecen2Place.standard_place(value[:alternate_name])
         entries += 1
-        if Freecen2Place.where(:disabled => 'false', :place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+        if Freecen2Place.where(:disabled => 'false', :id.ne => this_place_id, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
           dup_place_set << value[:alternate_name]
         end
         if Freecen2Place.where(:disabled => 'false', :chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
