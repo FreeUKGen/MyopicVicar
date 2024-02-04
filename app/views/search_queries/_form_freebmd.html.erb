@@ -72,7 +72,7 @@
                         </div>
                         <div class="flex_item">
                             <label class="accessibility" for="from_year">Start Year</label>
-                            <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                            <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
                         </div>
                     </div>
                 </fieldset>
@@ -88,7 +88,7 @@
                             </div>
                         <div class="flex_item">
                             <label class="accessibility" for="to_year">To Year</label>
-                            <%= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+                            <%= number_field_tag 'search_query[end_year]', set_value_or_default(1993, @search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
                             </div>
                     </div>
                 </fieldset>
@@ -232,8 +232,10 @@
                 </div>
 
                 <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
+                <% raise grouped_options.values.first.values.inspect %>
                 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-                <%= f.select :chapman_codes, raw("<marquee>#{grouped_options_for_select(grouped_options, selected_key = key)}</marquee>"), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0", style:"overflow-x: scroll !important"} %>
+                <%#= f.select :chapman_codes, raw("<marquee>#{grouped_options_for_select(grouped_options, selected_key = key)}</marquee>"), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0", style:"overflow-x: scroll !important"} %>
+                <%= text_field_tag 'chapman_codes', class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', :autocomplete => '/select_counties', tabindex: "0" %>
                 <%#= f.select(:chapman_codes, {}, multiple: true) do %>
                     <%#= grouped_options_for_select(grouped_options, selected_key = key)%>
                 <%# end %>
@@ -261,6 +263,9 @@
           $( "#last_name" ).autocomplete({
               source: '/unique_surnames/?term='
           });
+          $("#search_query_chapman_codes").autocomplete({
+                source: '/select_counties'
+          })
       </script>
 
     </fieldset>

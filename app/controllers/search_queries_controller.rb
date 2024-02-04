@@ -417,6 +417,14 @@ class SearchQueriesController < ApplicationController
     records
   end
 
+  def select_counties
+    prefix = params[:prefix].downcase
+    counties_group = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    counties_array = counties_group.values.first.keys
+    counties = counties_array.select { |s| s.include?(prefix) }
+    render :json => counties
+  end
+
   private
 
   def search_params
