@@ -414,7 +414,7 @@
             });
             var counties = $("#search_query_chapman_codes").val();
 
-            function(){
+            var auto_populate_districts = function(){
                 $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
                     type: "GET",
@@ -423,6 +423,7 @@
                     }
                 })
             }
+            auto_populate_districts();
 
             $("#from_year").change(function() {
                 var year = $("#from_year").val();
