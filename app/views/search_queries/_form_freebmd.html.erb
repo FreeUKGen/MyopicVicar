@@ -26,7 +26,7 @@
 <div class="bmd_search_form">
     <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="input">
-          <legend>Search fields</legend>
+          <legend class="label">Search fields</legend>
         <ol class="grid search_form">
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">
                 <div class='labels'>
@@ -243,7 +243,7 @@
 
                 <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
                 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-                <%= f.select :chapman_codes, raw("<marquee>#{grouped_options_for_select(grouped_options, selected_key = key)}</marquee>"), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0", style:"overflow-x: scroll !important"} %>
+                <%= f.select :chapman_codes, raw("<marquee>#{grouped_options_for_select(grouped_options, selected_key = key)}</marquee>"), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0", class: "text-input", style:"overflow-x: scroll !important"} %>
                 <%#= f.select(:chapman_codes, {}, multiple: true) do %>
                     <%#= grouped_options_for_select(grouped_options, selected_key = key)%>
                 <%# end %>
@@ -259,7 +259,7 @@
                     </div>
                 </div>
                 <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
+                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', class: "text-input", tabindex: "0"} %>
                 
             </li>
         </ol>
