@@ -412,18 +412,21 @@
                     }
                 });
             });
-            $("#search_query_chapman_codes").keypress(function() {
-                var counties =  $('#search_query_chapman_codes').val();
+            $("#search_query_chapman_codes").on( "keypress", function( event ) {
+                if ( event.which == 13 ) {
+                    event.preventDefault();
+                    var counties =  $('#search_query_chapman_codes').val();
                 //$.each($("#search_query_chapman_codes option:selected"), function() {
                   //  counties.push($(this).val())
                 //});
-                $.ajax({
-                    url: "/search_queries/districts_of_selected_counties",
-                    type: "GET",
-                    data: {
-                        selected_counties: counties
-                    }
-                });
+                    $.ajax({
+                        url: "/search_queries/districts_of_selected_counties",
+                        type: "GET",
+                        data: {
+                            selected_counties: counties
+                        }
+                    });
+                }
             });
 
             $("#from_year").change(function() {
