@@ -426,8 +426,9 @@ class SearchQueriesController < ApplicationController
   def select_counties
     prefix = params[:prefix].split(',').pop.strip.downcase
     @counties_group = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
-    counties_array = @counties_group.values.first.keys
-    @counties = counties_array.select { |s| s.downcase.include?(prefix) }
+    county_keys = []
+    counties_array = @counties_group.each{|ctry, county| county_keys << county.keys }
+    @counties = county_keys.flatten.select { |s| s.downcase.include?(prefix) }
     respond_to do |format|
       format.html
       format.json {
