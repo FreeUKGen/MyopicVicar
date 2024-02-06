@@ -412,10 +412,8 @@
                     }
                 });
             });
-            $("#search_query_chapman_codes").on( "keypress", function( event ) {
-                if ( event.which == 13 ) {
-                    event.preventDefault();
-                    var counties =  $('#search_query_chapman_codes').val();
+            $("#search_query_chapman_codes").change(function( event ) {
+                    var counties =  $(this).val();
                 //$.each($("#search_query_chapman_codes option:selected"), function() {
                   //  counties.push($(this).val())
                 //});
