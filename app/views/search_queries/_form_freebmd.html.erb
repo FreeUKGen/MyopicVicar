@@ -235,7 +235,8 @@
                 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
                 <%#= f.select :chapman_codes, raw("<marquee>#{grouped_options_for_select(grouped_options, selected_key = key)}</marquee>"), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0", style:"overflow-x: scroll !important"} %>
                 <%#= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', :autocomplete => autocomplete_BestGuess_Surname_search_queries_path, tabindex: "0"%>
-                <%= text_field_tag 'chapman_codes','',class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', autocomplete: 'search_queries/select_counties', tabindex: "0" %>
+                <%= autocomplete_field_tag 'chapman_codes','','/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
+                <%#= f.input :chapman_codes, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
                 <%#= f.select(:chapman_codes, {}, multiple: true) do %>
                     <%#= grouped_options_for_select(grouped_options, selected_key = key)%>
                 <%# end %>
@@ -251,7 +252,7 @@
                     </div>
                 </div>
                 <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
+                <%#= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
                 
             </li>
         </ol>
@@ -263,9 +264,42 @@
           $( "#last_name" ).autocomplete({
               source: '/unique_surnames/?term='
           });
-          $("#search_query_chapman_codes").autocomplete({
-                source: 'search_queries/select_counties'
-          })
+          function split( val ) {
+      return val.split( /,\s*/ );
+          }
+
+
+          $('#search_query_chapman_codes').autocomplete({
+              source: function (request, response) {
+                $.ajax({
+                  autoFocus: true,
+                  source: ["c++", "java", "php", "coldfusion", "javascript", "asp", "ruby"],
+                  url: "/search_queries/select_counties/", // should be with '/'
+                  dataType: 'json',
+                  data: { prefix: request.term },
+                  success: function(data) {
+                    // call response to return the result to autocomplete box
+                    console.log(data);
+                    response(data);
+                  }
+                });
+              },
+              focus: function() {
+                // prevent value inserted on focus
+                  return false;
+              },
+              select: function( event, ui ) {
+                  var terms = split( this.value );
+                  // remove the current input
+                  terms.pop();
+                  // add the selected item
+                  terms.push( ui.item.value );
+                  // add placeholder to get the comma-and-space at the end
+                  terms.push( "" );
+                  this.value = terms.join( ", " );
+                  return false;
+             }
+            });
       </script>
 
     </fieldset>
@@ -366,11 +400,23 @@
     <script>
         $('#search_query_districts').empty();
         $(document).ready(function() {
-            $("#search_query_chapman_codes").change(function() {
+            $("#search_query_chapman_codess").change(function() {
                 var counties = [];
                 $.each($("#search_query_chapman_codes option:selected"), function() {
                     counties.push($(this).val())
                 });
+                $.ajax({
+                    url: "/search_queries/districts_of_selected_counties",
+                    type: "GET",
+                    data: {
+                        selected_counties: counties
+                    }
+                });
+            });
+
+            $("#search_query_chapman_codes").change(function() {
+                var counties = [];
+                counties.push($(this).val())
                 $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
                     type: "GET",
