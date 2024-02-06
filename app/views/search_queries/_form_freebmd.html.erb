@@ -478,22 +478,6 @@
                 };
             };
 
-            
-            if ($("#search_query_chapman_codes option:selected").length) {
-                var counties = [];
-                $.each($("#search_query_chapman_codes option:selected"), function() {
-                    counties.push($(this).val())
-                });
-                $.ajax({
-                    url: "/search_queries/districts_of_selected_counties",
-                    type: "GET",
-                    data: {
-                        selected_counties: counties
-                    }
-                });
-            };
-
-
             var aad_value = $('#death_select_box').val();
             var aad_selection = document.getElementById('death_select_box');
             var aad_select_value = aad_selection.options[0].value
