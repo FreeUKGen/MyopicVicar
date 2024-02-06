@@ -338,8 +338,11 @@ class SearchQueriesController < ApplicationController
 
   def districts_of_selected_counties
     districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
+    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    selected_counties = params[:selected_counties].split(',').reject { |e| e.to_s.empty? }
+    county_codes = county_hash.dig("England and Wales").select {|k,v| selected_counties.include? v}.keys
     @districts = Hash.new
-    params[:selected_counties].reject { |c| c.empty? }.each { |c|
+    county_codes.reject { |c| c.to_s.empty? }.each { |c|
       @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
