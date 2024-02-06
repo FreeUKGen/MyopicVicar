@@ -273,7 +273,6 @@
               source: function (request, response) {
                 $.ajax({
                   autoFocus: true,
-                  source: ["c++", "java", "php", "coldfusion", "javascript", "asp", "ruby"],
                   url: "/search_queries/select_counties/", // should be with '/'
                   dataType: 'json',
                   data: { prefix: request.term },
@@ -416,7 +415,9 @@
 
             $("#search_query_chapman_codes").change(function() {
                 var counties = [];
-                counties.push($(this).val())
+                 $.each($("#search_query_chapman_codes option"), function() {
+                    counties.push($(this).val())
+                });
                 $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
                     type: "GET",
