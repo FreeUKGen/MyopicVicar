@@ -252,7 +252,7 @@
                     </div>
                 </div>
                 <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-                <%#= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
+                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
                 
             </li>
         </ol>
