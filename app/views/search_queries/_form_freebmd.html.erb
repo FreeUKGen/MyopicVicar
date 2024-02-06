@@ -414,13 +414,15 @@
             });
             var counties = $("#search_query_chapman_codes").val();
 
-            $("#search_query_chapman_codes").ajax({
+            function(){
+                $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
                     type: "GET",
                     data: {
                         selected_counties: counties
                     }
-                });
+                })
+            }
 
             $("#from_year").change(function() {
                 var year = $("#from_year").val();
