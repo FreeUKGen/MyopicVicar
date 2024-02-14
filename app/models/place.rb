@@ -670,7 +670,9 @@ class Place
     valid_files = []
     updated_list.keys.each {|key|
       file = Freereg1CsvFile.find(key)
-      valid_files << key if file.county == self.chapman_code && file.place == self.place_name
+      if file.present?
+        valid_files << key if file.county == self.chapman_code && file.place == self.place_name
+      end
     }
     updated_list = updated_list.keep_if{|k,v| valid_files.include? k}
     self.update_attributes(ucf_list: updated_list, old_ucf_list: old_list)
