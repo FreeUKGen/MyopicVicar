@@ -211,8 +211,7 @@ module UseridRole
     'List by uploaded date (descending)' => '/freereg1_csv_files/selection?option=List by uploaded date (descending)',
     'List files waiting to be processed' => '/freereg1_csv_files/selection?option=List files waiting to be processed',
     'Review Specific Batch' => '/freereg1_csv_files/selection?option=Review Specific Batch'
-  }  get 'manage_counties/clean_ucf_list_for_all_places', :to =>'manage_counties#clean_ucf_list_for_all_places', :as => :clean_ucf_list_manage_counties
-
+}
   case MyopicVicar::Application.config.template_set
   when 'freereg'
     COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place', 'Places with Unapproved Names', 'Review Batches with Errors',
@@ -253,7 +252,6 @@ module UseridRole
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
     'Locate Pieces' => '/freecen2_pieces/enter_number',
     'Clean Places UCF list' => '/clean_ucf_list_for_all_places'
-
   }
   COUNTY_OPTIONS_TITLES = {
     'All Places' => 'Lists all possible places in the county',
