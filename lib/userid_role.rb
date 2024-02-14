@@ -251,7 +251,7 @@ module UseridRole
     'Manage FreeCEN1 Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
     'Locate Pieces' => '/freecen2_pieces/enter_number',
-    'Clean Places UCF list' => '/clean_ucf_list_for_all_places'
+    'Clean Places UCF list' => '/manage_counties/clean_ucf_list_for_all_places'
   }
   COUNTY_OPTIONS_TITLES = {
     'All Places' => 'Lists all possible places in the county',

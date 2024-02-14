@@ -360,7 +360,7 @@ class ManageCountiesController < ApplicationController
     @county = session[:county]
     @places = Place.where(chapman_code: @chapman_code).all
     if @places.present?
-      @places.each {|place| place.clean_up_ucf_list }
+      @places.each {|place| place.clean_up_ucf_list if place.ucf_list.count > 0}
     end
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Update Completed') #&& return if @source_ids.blank? || @source_id.blank? || @group_id.blank?
   end
