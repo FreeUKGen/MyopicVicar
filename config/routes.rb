@@ -420,6 +420,7 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
   get 'manage_counties/selection', :to =>'manage_counties#select_year', :as => :select_year_manage_counties
   get 'manage_counties/piece_statistics', :to =>'manage_counties#piece_statistics', :as => :piece_statistics_manage_counties
+  get 'manage_counties/clean_ucf_list_for_all_places', :to =>'manage_counties#clean_ucf_list_for_all_places', :as => :clean_ucf_list_manage_counties
 
   resources :manage_counties
 
