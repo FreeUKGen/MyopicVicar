@@ -354,6 +354,17 @@ class ManageCountiesController < ApplicationController
     end
   end
 
+  def clean_ucf_list_for_all_places
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @county = session[:county]
+    @places = Place.where(chapman_code: @chapman_code).all
+    if @places.present?
+      @places.each {|place| place.clean_up_ucf_list }
+    end
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Update Completed') #&& return if @source_ids.blank? || @source_id.blank? || @group_id.blank?
+  end
+
   def places_with_unapproved_names
     get_user_info_from_userid
     session[:select_place] = true
