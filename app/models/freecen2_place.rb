@@ -181,6 +181,11 @@ class Freecen2Place
         county_codes = ChapmanCode::CODES['Scotland'].values
       when 'Wales'
         county_codes = ChapmanCode::CODES['Wales'].values
+        # Add Herefordshire to Wales as lots of border places - story 1617
+        county_codes << ChapmanCode.values_at('Herefordshire')
+      when 'London (City)'
+        # add Kent, Middlesex and Surrey to London - story 1627
+        county_codes = %w[LND KEN MDX SRY]
       else
         county_codes << ChapmanCode.values_at(county)
       end
