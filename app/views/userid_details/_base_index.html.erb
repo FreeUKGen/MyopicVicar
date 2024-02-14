@@ -15,7 +15,7 @@
                 <th class='sticky-header'>Last Upload</th>
                 <th class='sticky-header'>Files </th>
               <% end %>
-              <th colspan="4" class='sticky-header'>Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>SH: Show profile details; ED: Edit the profile; LB: List their batches; IN: Inactivate the userid OR ACT:Activate the userid. (You will have either IN or ACT in the field)</span></a></th>
+              <th colspan="5" class='sticky-header'>Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>SH: Show profile details; ED: Edit the profile; LB: List their batches; IN: Inactivate the userid OR ACT:Activate the userid. (You will have either IN or ACT in the field)</span></a></th>
             </tr>
           </thead>
           <tbody >
@@ -39,7 +39,9 @@
                   <td ><%= link_to 'ED', edit_userid_detail_path(userid), method: :get  %></td>
                   <td ><%= link_to 'LB', by_userid_freereg1_csv_file_path(userid), method: :get , title: "List the batches uploaded by the user; they will no longer be able to log into the system"%></td>
                   <% if %w[system_administrator executive_director].include?(@user.person_role) %>
-                    <td ><%= link_to ' Destroy', userid_detail_path(userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete, :class => "btn  btn--small " if userid.syndicate == 'To be Destroyed'%></td>
+                    <td ><%= link_to ' Destroy', userid_detail_path(userid), data: { confirm: 'Are you absolutely sure?' }, method: :delete  if userid.syndicate == 'To be Destroyed'%>
+                      
+                    </td>
                   <% end %>
                   <% if userid.active %>
                     <td ><%= link_to 'IN', disable_userid_detail_path(userid), data: { confirm: 'Are you sure?' }, method: :get  , title: "Disable the user; they will no longer be able to log into the system"%></td>
