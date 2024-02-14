@@ -675,7 +675,8 @@ class Place
       end
     }
     updated_list = updated_list.keep_if{|k,v| valid_files.include? k}
-    self.update_attributes(ucf_list: updated_list, old_ucf_list: old_list)
+    self.update_attribute(:old_ucf_list, old_list)
+    self.update_attribute(:ucf_list, updated_list)
   end
 
 end
