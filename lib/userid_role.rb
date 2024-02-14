@@ -211,7 +211,8 @@ module UseridRole
     'List by uploaded date (descending)' => '/freereg1_csv_files/selection?option=List by uploaded date (descending)',
     'List files waiting to be processed' => '/freereg1_csv_files/selection?option=List files waiting to be processed',
     'Review Specific Batch' => '/freereg1_csv_files/selection?option=Review Specific Batch'
-  }
+  }  get 'manage_counties/clean_ucf_list_for_all_places', :to =>'manage_counties#clean_ucf_list_for_all_places', :as => :clean_ucf_list_manage_counties
+
   case MyopicVicar::Application.config.template_set
   when 'freereg'
     COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place', 'Places with Unapproved Names', 'Review Batches with Errors',
@@ -235,7 +236,7 @@ module UseridRole
     'Review Batches being Validated' => '/manage_counties/selection?option=Being Validated',
     'Review Incorporated Batches' => '/manage_counties/selection?option=Incorporated',
     'Review Batches by Filename' => '/manage_counties/selection?option=Review Batches by Filename',
-    'Review Batches by Userid then Filename' => '/manage_counties/selection?option=Review Batches by Userid then Filename',
+    'Review Batches by Userid then Filename' => '/manage_cmanage_countiesounties/selection?option=Review Batches by Userid then Filename',
     'Review Batches by Most Recent Date of Change' => '/manage_counties/selection?option=Review Batches by Most Recent Date of Change',
     'Review Batches by Oldest Date of Change' => '/manage_counties/selection?option=Review Batches by Oldest Date of Change',
     'Review Specific Batch' => '/manage_counties/selection?option=Review Specific Batch',
@@ -251,7 +252,7 @@ module UseridRole
     'Manage FreeCEN1 Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
     'Locate Pieces' => '/freecen2_pieces/enter_number',
-    'Clean Places UCF list' => 'manage_counties/clean_ucf_list_for_all_places'
+    'Clean Places UCF list' => '/clean_ucf_list_for_all_places'
 
   }
   COUNTY_OPTIONS_TITLES = {
