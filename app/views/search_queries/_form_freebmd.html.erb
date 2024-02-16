@@ -10,7 +10,6 @@
             <legend>Error List</legend>
             <h2 class="gamma">Following <%= pluralize(@search_query.errors.count, 'error') %> prohibited this search from being processed:</h2>
             <ol class="validation-list">
-                <%# raise @search_query.errors.inspect %>
                 <% @search_query.errors.messages.each do |key, msg| %>
                     <% msg.each do |m| %>
                         <li>
@@ -23,6 +22,11 @@
     </div>
 <% end %>
 
+<script
+    src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+    integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
+    crossorigin="anonymous"></script>
+
 <div class="bmd_search_form">
     <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="input">
@@ -34,7 +38,8 @@
                         <%="First name(s)".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0" %>
+              <%#= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', :autocomplete => autocomplete_BestGuess_GivenName_search_queries_path, tabindex: "0" %>
+              <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0" %>
                 <label>
                     <small>
                         <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
@@ -43,13 +48,13 @@
                 </label>
             </li>
 
-            <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
+          <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
                 <div class='labels'>
                     <%= label_tag 'last_name', "Surname".html_safe, class: "ttip" do %>
                         <%= "Surname".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name)  , class: 'text-input flush--bottom', id: 'last_name', placeholder: 'Enter Surname here', tabindex: "0"%>
+                <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', placeholder: 'Enter Surname here', :autocomplete => autocomplete_BestGuess_Surname_search_queries_path, tabindex: "0"%>
                 <label>
                     <small class="ttip__text">
                         <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
@@ -73,8 +78,8 @@
                     </div>
                     <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
                         <label class="accessibility" for="from_year">Start Year</label>
-                        <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, step: 10 }, class: 'select_year_start date_years text-input', name: 'search_query[start_year]', id: 'from_year', tabindex: "0") %>
-                        <%#= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), within: 1837..1992, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                        <%#= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, step: 10 }, class: 'select_year_start date_years text-input', name: 'search_query[start_year]', id: 'from_year', tabindex: "0") %>
+                        <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
                     </div>
                 </div>
             </li>
@@ -89,12 +94,12 @@
                 </div>
                 <div class="grid">
                     <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
-                        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
+                        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Dec', 4], ['Sep', 3], ['Jun', 2], ['Mar', 1]], set_value(@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
                     </div>
                     <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
                         <label class="accessibility" for="end_year">Finish Year</label>
-                        <%= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_years text-input', name: 'search_query[end_year]', id: 'end_year', tabindex: "0") %>
-                        <%#= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), within: 1837..1992, class: 'text-input', id: 'end_year', tabindex: "0", placeholder: 'YYYY' %>
+                        <%#= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_years text-input', name: 'search_query[end_year]', id: 'end_year', tabindex: "0") %>
+                        <%= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'end_year', tabindex: "0", placeholder: 'YYYY'%>
                     </div>
                 </div>
             </li>
@@ -263,25 +268,35 @@
                 
             </li>
         </ol>
+
+      <script>
+          $( "#first_name" ).autocomplete({
+              source: '/unique_forenames/?term='
+          });
+          $( "#last_name" ).autocomplete({
+              source: '/unique_surnames/?term='
+          });
+      </script>
+
     </fieldset>
-    <fieldset class="input" id="advanced_search">
+    <!--fieldset class="input" id="advanced_search">
       <legend>Additional search options</legend>
       <div class="text--center push-half--bottom">
         <i><small> Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small></i>
       </div>
       <ol class="grid">
         <li class="grid__item one-third lap-one-half palm-one-whole">
-            <%= label_tag "wildcard_field",'Choose the Name field ' , class: "ttip" %>
+            <%#= label_tag "wildcard_field",'Choose the Name field ' , class: "ttip" %>
             <%#= f.select :wildcard_field, ["First Name", "Second Name", "Surname"], {include_hidden: false}, {multiple: true, tabindex: "0"} %>
-            <%= select_tag( 'search_query[wildcard_field]', options_for_select(Constant::NAME, set_value(@search_query.wildcard_field)), prompt: "None chosen", class: 'text-input', tabindex: "0", id: "wildcard_field") %>
+            <%#= select_tag( 'search_query[wildcard_field]', options_for_select(Constant::NAME, set_value(@search_query.wildcard_field)), prompt: "None chosen", class: 'text-input', tabindex: "0", id: "wildcard_field") %>
         </li>
         <li class="grid__item one-third lap-one-half palm-one-whole">
-            <%= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip" %>
-            <%= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "None", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
+            <%#= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip" %>
+            <%#= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "None", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
         </li>
       </ol>
       <%#= Add any option to search for the name in any of the person's names%>
-    </fieldset>
+    </fieldset-->
     <div class="grid action">
         <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
         <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
@@ -319,23 +334,7 @@
     #search_query_chapman_codes optgroup option:hover {
         position: relative;
     }
-        /*animation: slide 10s linear infinite;
-}
-@keyframes slide {
-  0% {
-    transform-origin: translatex(-0%)
-  }
-
-  100% {
-    transform: translatex(-100%)
-  }
-}*?
-
-    
 </style>
-    <script type="text/javascript">
-
-    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
     <script type="text/javascript">
@@ -360,7 +359,6 @@
     <script>
         $('#search_query_districts').empty();
         $(document).ready(function() {
-
             $("#search_query_chapman_codes").change(function() {
                 var counties = [];
                 $.each($("#search_query_chapman_codes option:selected"), function() {
@@ -372,6 +370,14 @@
                     data: {
                         selected_counties: counties
                     }
+                });
+            });
+
+            $("#from_year").change(function() {
+                var year = $("#from_year").val();
+                $("#end_year").val(year);
+                $("#end_year").attr({
+                    "min" : year
                 });
             });
 

@@ -535,8 +535,8 @@ MyopicVicar::Application.routes.draw do
   post 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
   get 'search_queries/:id/compare_search/:saved_search_id', to: 'search_queries#compare_search', as: :compare_search
   resources :search_queries do
-    #get :autocomplete_BestGuess_Surname, :on => :collection
-    #get :autocomplete_BestGuess_GivenName, :on => :collection
+    get :autocomplete_BestGuess_Surname, :on => :collection
+    get :autocomplete_BestGuess_GivenName, :on => :collection
   end
 
   resources :postems
@@ -626,6 +626,13 @@ MyopicVicar::Application.routes.draw do
   get "entry-information/:id/show", :to => 'best_guess_hash#show', :as => :citation_url
   get "/cgi/information.pl", :to => 'best_guess_hash#bmd1_url'
   resources :best_guess_hash
+
+  get 'unique_forenames/:prefix/', :to => 'best_guess#unique_forenames'
+  get 'unique_surnames/:prefix/', :to => 'best_guess#unique_surnames'
+
+  resources :unique_forenames
+
+  resources :unique_surnames
 
 
   # This line mounts Refinery's routes at the root of your application.

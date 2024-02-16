@@ -21,8 +21,8 @@ class SearchQueriesController < ApplicationController
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
   rescue_from Timeout::Error, with: :search_taking_too_long
   include DownloadAsCsv
-  #autocomplete :BestGuess, :Surname, full: false,  limit: 5
-  #autocomplete :BestGuess, :GivenName, full: false, limit: 5
+  autocomplete :BestGuess, :Surname, full: false,  limit: 5
+  autocomplete :BestGuess, :GivenName, full: false, limit: 10
   RECORDS_PER_PAGE = 100
 
   def about
@@ -342,6 +342,10 @@ class SearchQueriesController < ApplicationController
       @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
+  end
+
+  def end_year_val
+    @end_year = params[:year]
   end
 
   def wildcard_options_dropdown

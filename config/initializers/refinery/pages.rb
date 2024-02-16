@@ -76,5 +76,5 @@ Refinery::Pages.configure do |config|
   # (https://github.com/flavorjones/loofah/blob/v2.0.3/lib/loofah/html5/whitelist.rb#L152)
   # config.add_whitelist_attributes = ["kind", "srclang", "placeholder", "controls"]
   Loofah::HTML5::SafeList::ALLOWED_CSS_PROPERTIES.merge(['position'])
-  config.add_whitelist_attributes = ["scoped", "role", "aria-label", "aria-labelledby"]
+  config.add_whitelist_attributes =  ["scoped", "role", "aria-label", "aria-labelledby"]
 end
