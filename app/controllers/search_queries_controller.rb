@@ -120,7 +120,10 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    page = Refinery::Page.where(slug: 'message').first
+    test_page = Refinery::Page.where(slug: 'test_message').first
+    beta_page = Refinery::Page.where(slug: 'beta_message').first
+    url = request.original_url
+    url.include?('beta') ? page = beta_page : page= test_page
     @page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
 
     @search_query = SearchQuery.new
