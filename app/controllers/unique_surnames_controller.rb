@@ -2,7 +2,9 @@ class UniqueSurnamesController < ApplicationController
   skip_before_action :require_login
 
   def index
-    @surnames = UniqueSurnames.where("name LIKE '" + params[:term] + "%'")
+    require 'unique_surnames'
+    @term_in_context = "^"+params[:term]
+    @surnames = UniqueSurname.where({"Name": {"$regex": @term_in_context, "$options": "i"}}).limit(10)
     render :json => get_search_names_hash(@surnames)
   end
 
@@ -11,7 +13,7 @@ class UniqueSurnamesController < ApplicationController
     output_array = []
     names.each do |name|
       output_array << name.Name
-    end
+    end unless names.nil? or names.blank?
     output_array
   end
 
