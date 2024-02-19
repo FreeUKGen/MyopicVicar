@@ -454,7 +454,10 @@ fieldset.choices {
   margin: 0;
   padding: 14px 0 0 0;
 }
-legend.label { font-weight: bold; }
+legend.label {
+  font-weight: bold;
+  color: #444;
+}
 ol.choices-group { list-style-type: none; margin-right: 0; }
 li.choice label { font-weight: normal; margin-bottom: 7px; }
 
