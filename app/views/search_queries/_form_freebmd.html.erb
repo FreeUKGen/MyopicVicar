@@ -72,7 +72,7 @@
                         </div>
                         <div class="flex_item">
                             <label class="accessibility" for="from_year">Start Year</label>
-                            <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                            <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
                         </div>
                     </div>
                 </fieldset>
@@ -88,7 +88,7 @@
                             </div>
                         <div class="flex_item">
                             <label class="accessibility" for="to_year">To Year</label>
-                            <%= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+                            <%= number_field_tag 'search_query[end_year]', set_value_or_default(1993, @search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
                             </div>
                     </div>
                 </fieldset>
