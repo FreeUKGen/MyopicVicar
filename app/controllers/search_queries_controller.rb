@@ -20,9 +20,10 @@ class SearchQueriesController < ApplicationController
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
   rescue_from Timeout::Error, with: :search_taking_too_long
+  autocomplete :BestGuess, :Surname, full: false,  limit: 5
+  autocomplete :BestGuess, :GivenName, full: false, limit: 10
   include DownloadAsCsv
-  #autocomplete :BestGuess, :Surname, full: false,  limit: 5
-  #autocomplete :BestGuess, :GivenName, full: false, limit: 5
+
   RECORDS_PER_PAGE = 100
 
   def about
@@ -119,7 +120,10 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    page = Refinery::Page.where(slug: 'message').first
+    test_page = Refinery::Page.where(slug: 'test_message').first
+    beta_page = Refinery::Page.where(slug: 'beta_message').first
+    url = request.original_url
+    url.include?('beta') ? page = beta_page : page= test_page
     @page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
 
     @search_query = SearchQuery.new
@@ -342,6 +346,10 @@ class SearchQueriesController < ApplicationController
       @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
+  end
+
+  def end_year_val
+    @end_year = params[:year]
   end
 
   def wildcard_options_dropdown
