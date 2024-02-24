@@ -19,7 +19,7 @@ $(document).ready(function() {
     };
   };
 */
-  /*donate cta*/
+  /*donate cta
   window.setBigGiveCookie = function(name,value) {
     var expires = "";
     var date = new Date();
