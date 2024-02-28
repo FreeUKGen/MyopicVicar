@@ -1,0 +1,8 @@
+
+<h2>Forenames beginning with <%= params[:prefix] %></h2>
+<ul>
+  <% @forenames.each do |forename| %>
+  <li><%= forename.Name %></li>
+  <% end %>
+</ul>
+

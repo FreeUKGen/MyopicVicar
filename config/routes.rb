@@ -194,7 +194,7 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/list_by_identifier',  :to => 'feedbacks#list_by_identifier', :as => :list_by_identifier_feedbacks
   get 'feedbacks/list_archived',  :to => 'feedbacks#list_archived', :as => :list_archived_feedbacks
   get 'feedbacks/select_by_identifier',  :to => 'feedbacks#select_by_identifier', :as => :select_by_identifier_feedbacks
-  post 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
+  get 'feedbacks/:id/convert_to_issue(.:format)', :to => 'feedbacks#convert_to_issue', :as => :convert_feedback_to_issue
   get 'feedbacks/userid_feedbacks', :to => 'feedbacks#userid_feedbacks', :as => :userid_feedbacks
   get 'feedbacks/userid_feedbacks_with_replies', :to => 'feedbacks#userid_feedbacks_with_replies', :as => :userid_feedbacks_with_replies
   get 'feedbacks/:id/force_destroy',  :to => 'feedbacks#force_destroy', :as => :force_destroy_feedback
@@ -536,8 +536,8 @@ MyopicVicar::Application.routes.draw do
   post 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
   get 'search_queries/:id/compare_search/:saved_search_id', to: 'search_queries#compare_search', as: :compare_search
   resources :search_queries do
-    #get :autocomplete_BestGuess_Surname, :on => :collection
-    #get :autocomplete_BestGuess_GivenName, :on => :collection
+    get :autocomplete_BestGuess_Surname, :on => :collection
+    get :autocomplete_BestGuess_GivenName, :on => :collection
   end
 
   resources :postems
@@ -614,6 +614,7 @@ MyopicVicar::Application.routes.draw do
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
   resources :gap_reasons
 
+  get "/entry-information/:id/hash", :to => 'best_guess_hash#show'
   get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
   get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_non_search
   get ':search_id/:entry_id/marriage_details/', :to => 'best_guess#show_marriage', :as => :show_marriage_details
@@ -623,8 +624,16 @@ MyopicVicar::Application.routes.draw do
   get ':entry_id/marriage_details', to: 'best_guess#show_marriage', as: :show_marriage_details_non_search
   resources :best_guess
   post 'entry-information/:id/save_entry', to: 'best_guess#save_entry', as: :save_entry
-  get "entry-information/cite=:id&scan=1", :to => 'best_guess_hash#show', :as => :citation_url
+  get "entry-information/:id/show", :to => 'best_guess_hash#show', :as => :citation_url
+  get "/cgi/information.pl", :to => 'best_guess_hash#bmd1_url'
   resources :best_guess_hash
+
+  get 'unique_forenames/:prefix/', :to => 'best_guess#unique_forenames'
+  get 'unique_surnames/:prefix/', :to => 'best_guess#unique_surnames'
+
+  resources :unique_forenames
+
+  resources :unique_surnames
 
 
   # This line mounts Refinery's routes at the root of your application.

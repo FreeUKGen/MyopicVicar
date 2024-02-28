@@ -10,7 +10,6 @@
             <legend>Error List</legend>
             <h2 class="gamma">Following <%= pluralize(@search_query.errors.count, 'error') %> prohibited this search from being processed:</h2>
             <ol class="validation-list">
-                <%# raise @search_query.errors.inspect %>
                 <% @search_query.errors.messages.each do |key, msg| %>
                     <% msg.each do |m| %>
                         <li>
@@ -23,18 +22,23 @@
     </div>
 <% end %>
 
+<script
+    src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+    integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
+    crossorigin="anonymous"></script>
+
 <div class="bmd_search_form">
     <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="input">
           <legend>Main search options</legend>
         <ol class="grid search_form">
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">
-                <div class='labels'>
+                <div class='labels push-half--bottom'>
                     <%= label_tag 'first_name','' , class: "ttip", id: 'firstname'  do %>
                         <%="First name(s)".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', placeholder: 'Enter first name(s) here', role: 'textbox', id: 'first_name', tabindex: "0" %>
+                <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0" %>
                 <label>
                     <small>
                         <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
@@ -43,13 +47,13 @@
                 </label>
             </li>
 
-            <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
-                <div class='labels'>
+          <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
+                <div class='labels push-half--bottom'>
                     <%= label_tag 'last_name', "Surname".html_safe, class: "ttip" do %>
                         <%= "Surname".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name)  , class: 'text-input flush--bottom', id: 'last_name', placeholder: 'Enter Surname here', tabindex: "0"%>
+                <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', :autocomplete => autocomplete_BestGuess_Surname_search_queries_path, tabindex: "0"%>
                 <label>
                     <small class="ttip__text">
                         <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
@@ -59,81 +63,67 @@
             </li>
 
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
-                <div class='labels'>
-                    <div class="datereangefromlabel">
-                        <%= label_tag 'from_quarter', "Date range from #{app_icons[:info]}".html_safe, class: "ttip" do %>
-                            <%= "From Quarter/Year".html_safe %>
-                        <% end %>
+                <fieldset class="choices" id="">
+                    <legend class="label">From Quarter & Year</legend>
+                    <div class='flex_container'>
+                        <div class="flex_item">
+                            <label class="accessibility" for="from_quarter">Start Quarter</label>
+                            <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0") %>
+                        </div>
+                        <div class="flex_item">
+                            <label class="accessibility" for="from_year">Start Year</label>
+                            <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                        </div>
                     </div>
-                </div>
-                <div class="grid">
-                    <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
-                        <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0")%>
-                        <%#= month_field_tag('search_query[start_quarter]', set_value(@search_query.start_quarter), min: 1, max:12, step:3 , class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0")%>
-                    </div>
-                    <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangefromgrid">
-                        <label class="accessibility" for="from_year">Start Year</label>
-                        <%= select_year(set_value(@search_query.start_year), { start_year: 1837, end_year: 1992, step: 10 }, class: 'select_year_start date_years text-input', name: 'search_query[start_year]', id: 'from_year', tabindex: "0") %>
-                        <%#= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), within: 1837..1992, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
-                    </div>
-                </div>
+                </fieldset>
             </li>
 
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangetogrid">
-                <div class='labels'>
-                    <div class="todaterangelabel">
-                        <%= label_tag 'to_quarter', "Date range to #{app_icons[:info]}".html_safe, class: "ttip" do %>
-                            <%= "To Quarter/Year".html_safe %>
-                        <% end %>
+                <fieldset class="choices" id="">
+                    <legend class="label">To Quarter & Year</legend>
+                    <div class='flex_container'>
+                        <div class="flex_item">
+                            <label class="accessibility" for="to_quarter">To Quarter</label>
+                            <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value_or_default(4,@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
+                            </div>
+                        <div class="flex_item">
+                            <label class="accessibility" for="to_year">To Year</label>
+                            <%= number_field_tag 'search_query[end_year]', set_value_or_default(1993, @search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+                            </div>
                     </div>
-                </div>
-                <div class="grid">
-                    <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
-                        <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
-                    </div>
-                    <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half daterangetogrid">
-                        <label class="accessibility" for="end_year">Finish Year</label>
-                        <%= select_year(set_value(@search_query.end_year), {start_year: 1992, end_year: 1837 }, class: 'select_year_end date_years text-input', name: 'search_query[end_year]', id: 'end_year', tabindex: "0") %>
-                        <%#= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), within: 1837..1992, class: 'text-input', id: 'end_year', tabindex: "0", placeholder: 'YYYY' %>
-                    </div>
-                </div>
+                </fieldset>
             </li>
 
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole recordTypeGrid">
-                <div class='labels'>
-                    <div class="recordtypelabel">
-                        <%= label_tag 'record_type', "Record Type".html_safe, class: "ttip" do %>
-                            <%= "Record Type".html_safe %>
-                        <% end %>
-                    </div>
-                </div>
-                <ol class="grid">
-                    <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole ">
-                        <%= f.label :bmd_record_type_all, { :class => "header_label rule", id: 'all_record_types_label'} do %>
-                            <%= check_box_tag 'search_query[bmd_record_type][]', '0',set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '0'),{ multiple: true, class: 'checkAll', id: 'search_query_bmd_record_type_all', tabindex: "0" } %>
-                            Select All
-                           <%#= content_text(:optional_checkbox_label, 'Select All') %>
-                        <% end %>
-                    </li>
-                    <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
-                        <%= f.label :bmd_record_type_birth, { :class => "optional_attributes", id: 'birth_record_type_label'} do %>
-                            <%= check_box_tag 'search_query[bmd_record_type][]', 1,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '1'),{ multiple: true, class: 'checkboxtag birth', id: 'search_query_bmd_record_type_birth', tabindex: "0" } %>
-                            <%= content_text(:optional_checkbox_label, 'Birth') %>
-                        <% end %>
-                    </li>
-                    <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
-                        <%= f.label :bmd_record_type_death, { :class => "optional_attributes", id: 'death_record_type_label'} do %>
-                            <%= check_box_tag 'search_query[bmd_record_type][]', 2,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '2'),{ multiple: true, class: 'checkboxtag death', id: 'search_query_bmd_record_type_death', tabindex: "0" } %>
-                            <%= content_text(:optional_checkbox_label, 'Death') %>
-                        <% end %>
-                    </li>
-                    <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
-                        <%= f.label :bmd_record_type_marriage, { :class => "optional_attributes", id: 'marriage_record_type_label'} do %>
-                            <%= check_box_tag 'search_query[bmd_record_type][]', 3,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '3'),{ multiple: true, class: 'checkboxtag marriage' , id: 'search_query_bmd_record_type_marriage', tabindex: "0"} %>
-                            <%= content_text(:optional_checkbox_label, 'Marriage') %>
-                        <% end %>
-                    </li>
-                </ol>
+                <fieldset class="choices" id="">
+                    <legend class="label">Record Type</legend>
+                    <ol class="choices-group">
+                        <li class="choice">
+                            <%= f.label :bmd_record_type_all, { :class => "optional_attributes rule", id: 'all_record_types_label'} do %>
+                                <%= check_box_tag 'search_query[bmd_record_type][]', '0',set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '0'),{ multiple: true, class: 'checkAll', id: 'search_query_bmd_record_type_all', tabindex: "0" } %>
+                                <%= content_text(:optional_checkbox_label, 'Select All') %>
+                            <% end %>
+                        </li>
+                        <li class="choice">
+                            <%= f.label :bmd_record_type_birth, { :class => "optional_attributes", id: 'birth_record_type_label'} do %>
+                                <%= check_box_tag 'search_query[bmd_record_type][]', 1,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '1'),{ multiple: true, class: 'checkboxtag birth', id: 'search_query_bmd_record_type_birth', tabindex: "0" } %>
+                                <%= content_text(:optional_checkbox_label, 'Birth') %>
+                            <% end %>
+                        </li>
+                        <li class="choice">
+                            <%= f.label :bmd_record_type_death, { :class => "optional_attributes", id: 'death_record_type_label'} do %>
+                                <%= check_box_tag 'search_query[bmd_record_type][]', 2,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '2'),{ multiple: true, class: 'checkboxtag death', id: 'search_query_bmd_record_type_death', tabindex: "0" } %>
+                                <%= content_text(:optional_checkbox_label, 'Death') %>
+                            <% end %>
+                        </li>
+                        <li class="choice">
+                            <%= f.label :bmd_record_type_marriage, { :class => "optional_attributes", id: 'marriage_record_type_label'} do %>
+                                <%= check_box_tag 'search_query[bmd_record_type][]', 3,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '3'),{ multiple: true, class: 'checkboxtag marriage' , id: 'search_query_bmd_record_type_marriage', tabindex: "0"} %>
+                                <%= content_text(:optional_checkbox_label, 'Marriage') %>
+                            <% end %>
+                        </li>
+                    </ol>
+                </fieldset>
             </li>
 
             <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
@@ -142,7 +132,7 @@
                         <%= "Spouse's first name(s)".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input flush--bottom', placeholder: 'Enter spouse first name(s) here', id: 'spouse_first_name', tabindex: "0"%>
+                <%= text_field_tag 'search_query[spouse_first_name]', set_value(@search_query.spouse_first_name), class: 'text-input flush--bottom', id: 'spouse_first_name', tabindex: "0"%>
                 <label>
                     <small>
                         <%= check_box_tag 'search_query[identifiable_spouse_only]', set_value(@search_query.identifiable_spouse_only), set_value(@search_query.identifiable_spouse_only), tabindex: "0" %>
@@ -157,7 +147,7 @@
                         <%= "Spouse/Mothers surname".html_safe %>
                     <% end %>
                 </div>
-                <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', placeholder: '', id: 'spouses_mother_surname'%>
+                <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', id: 'spouses_mother_surname'%>
             </li>
             
             <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
@@ -170,17 +160,17 @@
                 <div id="death_age_and_dob">
                     <div id="death_age">
                         <label class="accessibility" for="search_query_age_at_death">Age at death</label>
-                        <%= number_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), placeholder: 'Enter Age', class: 'text-input flush--bottom', tabindex: "0" %>
+                        <%= number_field_tag 'search_query[age_at_death]', set_value(@search_query.age_at_death), class: 'text-input flush--bottom', tabindex: "0" %>
                     </div>
                     <div id="death_age_range">
                         <div class="grid">
                             <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                 <label class="accessibility" for="search_query_min_age_at_death">Start Age</label>
-                                <%= number_field_tag 'search_query[min_age_at_death]', set_value(@search_query.min_age_at_death), placeholder: 'min age', class: 'text-input', tabindex: "0" %>
+                                <%= number_field_tag 'search_query[min_age_at_death]', set_value(@search_query.min_age_at_death), class: 'text-input', tabindex: "0" %>
                             </div>
                             <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                 <label class="accessibility" for="search_query_max_age_at_death">Finish Age</label>
-                                <%= number_field_tag 'search_query[max_age_at_death]', set_value(@search_query.max_age_at_death), placeholder: 'max age', class: 'text-input',  tabindex: "0" %>
+                                <%= number_field_tag 'search_query[max_age_at_death]', set_value(@search_query.max_age_at_death), class: 'text-input',  tabindex: "0" %>
                             </div>
                         </div>
                     </div>
@@ -192,11 +182,11 @@
                         <div class="grid">
                             <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                 <label class="accessibility" for="search_query_min_dob_at_death">Start Birth Year</label>
-                                <%= number_field_tag 'search_query[min_dob_at_death]', set_value(@search_query.min_dob_at_death), { class: 'text-input', placeholder: 'start year', tabindex: "0" } %>
+                                <%= number_field_tag 'search_query[min_dob_at_death]', set_value(@search_query.min_dob_at_death), { class: 'text-input', tabindex: "0" } %>
                             </div>
                             <div class="grid__item desk-wide-one-half desk-one-half lap-one-half palm-one-half">
                                 <label class="accessibility" for="search_query_max_dob_at_death">Finish Birth Year</label>
-                                <%= number_field_tag 'search_query[max_dob_at_death]', set_value(@search_query.max_dob_at_death), { class: 'text-input', placeholder: 'end year', tabindex: "0" } %>
+                                <%= number_field_tag 'search_query[max_dob_at_death]', set_value(@search_query.max_dob_at_death), { class: 'text-input', tabindex: "0" } %>
                             </div>
                             
                         </div>
@@ -209,26 +199,6 @@
                     </small>
                 </label>
                 
-            </li>
-
-            <li class="grid__item desk-wide-one-eighth desk-one-quarter lap-one-half palm-one-whole volumes">
-                <div class='labels'>
-                    <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
-                        <%= "Volume".html_safe %>
-                        <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
-                    <% end %>
-                </div>
-                <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
-            </li>
-
-            <li class="grid__item desk-wide-one-eighth desk-one-quarter lap-one-half palm-one-whole pages">
-                <div class='labels'>
-                    <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
-                        <%= "Page".html_safe %>
-                        <span class="ttip__text"><%#= info_tag_text[:page]%></span>
-                    <% end %>
-                </div>
-                <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
             </li>
 
             <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole countiess">
@@ -262,26 +232,55 @@
                 <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
                 
             </li>
+            <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole volumes">
+            <div class='labels'>
+                <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
+                    <%= "Volume".html_safe %>
+                    <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
+                <% end %>
+            </div>
+            <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
+        </li>
+
+        <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole pages">
+            <div class='labels'>
+                <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
+                    <%= "Page".html_safe %>
+                    <span class="ttip__text"><%#= info_tag_text[:page]%></span>
+                <% end %>
+            </div>
+            <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
+        </li>
         </ol>
+
+      <script>
+          $( "#first_name" ).autocomplete({
+              source: '/unique_forenames/?term='
+          });
+          $( "#last_name" ).autocomplete({
+              source: '/unique_surnames/?term='
+          });
+      </script>
+
     </fieldset>
-    <fieldset class="input" id="advanced_search">
+    <!--fieldset class="input" id="advanced_search">
       <legend>Additional search options</legend>
       <div class="text--center push-half--bottom">
         <i><small> Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small></i>
       </div>
       <ol class="grid">
         <li class="grid__item one-third lap-one-half palm-one-whole">
-            <%= label_tag "wildcard_field",'Choose the Name field ' , class: "ttip" %>
+            <%#= label_tag "wildcard_field",'Choose the Name field ' , class: "ttip" %>
             <%#= f.select :wildcard_field, ["First Name", "Second Name", "Surname"], {include_hidden: false}, {multiple: true, tabindex: "0"} %>
-            <%= select_tag( 'search_query[wildcard_field]', options_for_select(Constant::NAME, set_value(@search_query.wildcard_field)), prompt: "None chosen", class: 'text-input', tabindex: "0", id: "wildcard_field") %>
+            <%#= select_tag( 'search_query[wildcard_field]', options_for_select(Constant::NAME, set_value(@search_query.wildcard_field)), prompt: "None chosen", class: 'text-input', tabindex: "0", id: "wildcard_field") %>
         </li>
         <li class="grid__item one-third lap-one-half palm-one-whole">
-            <%= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip" %>
-            <%= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "None", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
+            <%#= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip" %>
+            <%#= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "None", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
         </li>
       </ol>
       <%#= Add any option to search for the name in any of the person's names%>
-    </fieldset>
+    </fieldset-->
     <div class="grid action">
         <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
         <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
@@ -319,23 +318,24 @@
     #search_query_chapman_codes optgroup option:hover {
         position: relative;
     }
-        /*animation: slide 10s linear infinite;
-}
-@keyframes slide {
-  0% {
-    transform-origin: translatex(-0%)
-  }
+    .flex_container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        column-gap: 25px;
+    }
 
-  100% {
-    transform: translatex(-100%)
-  }
-}*?
+    .flex_item {
+        flex-grow: 2;
+    }
+    #all_record_types_label {
+        color: inherit;
+    }
 
-    
+    .search_form li {
+        margin-bottom: 5px;
+    }
 </style>
-    <script type="text/javascript">
-
-    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
     <script type="text/javascript">
@@ -360,11 +360,15 @@
     <script>
         $('#search_query_districts').empty();
         $(document).ready(function() {
-
             $("#search_query_chapman_codes").change(function() {
                 var counties = [];
+                function pushValue(item) {
+                    counties.push(item);
+                };
+
                 $.each($("#search_query_chapman_codes option:selected"), function() {
-                    counties.push($(this).val())
+                    var valuesArray = $(this).val().split(" ");
+                    valuesArray.forEach(pushValue);
                 });
                 $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
@@ -372,6 +376,14 @@
                     data: {
                         selected_counties: counties
                     }
+                });
+            });
+
+            $("#from_year").change(function() {
+                var year = $("#from_year").val();
+                $("#to_year").val(year);
+                $("#to_year").attr({
+                    "min" : year
                 });
             });
 
@@ -419,8 +431,12 @@
             
             if ($("#search_query_chapman_codes option:selected").length) {
                 var counties = [];
+                function pushValue(item) {
+                    counties.push(item);
+                };
                 $.each($("#search_query_chapman_codes option:selected"), function() {
-                    counties.push($(this).val())
+                    var valuesArray = $(this).val().split(" ");
+                    valuesArray.forEach(pushValue);
                 });
                 $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
@@ -491,7 +507,24 @@
                 }
             };
 
+            var vol_and_page_display_controller = function() {
+                var district_val = $('#search_query_districts').val();
+                if (district_val.length != 0) {
+                    $('.volumes').show();
+                    $('.pages').show();
+                } else {
+                    $('#volume').val('');
+                    $('#page').val('');
+                    $('.volumes').hide();
+                    $('.pages').hide();
+                }
+            };
+            vol_and_page_display_controller();
             aad_selection_function();
+
+            $('#search_query_districts').change(function(){
+                vol_and_page_display_controller();
+            });
 
             //$('#death_select_box').prop('disabled', 'disabled');
             $('.checkboxtag, .checkAll').change(function() {
@@ -502,7 +535,6 @@
                 if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
                     $('#spouses_mother_surname').prop('disabled', false);
                     $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
-                    $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here");
                     $('.spouse_or_mother_surname_label').attr('tabindex', '0');
                     $('.spouse_or_mother_surname_label').text("Mother's Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s name before marriage</span>')
@@ -517,15 +549,12 @@
                     $('#spuse_checkbox').show();
                     $('#spouses_mother_surname').prop('disabled', false)
                     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                    $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                     $('.spouse_or_mother_surname_label').text("Spouse's Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').val([]);
                     aad_selection_function();
-                    $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
                     $('#spouse_first_name').prop('disabled', false)
-                    $('#spouse_first_name').prop('placeholder', "Enter Spouse's First Name(s) here")
                     $('#age_at_death_or_date_of_birth_div').hide();
                 } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
                     $('#age_at_death_or_date_of_birth_div').show();
@@ -544,7 +573,6 @@
 
             if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
                 //$('#spouses_mother_surname').prop('disabled', false)
-              //  $('#spouses_mother_surname').prop('placeholder', "Enter Mother's surname here")
                 $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
                 $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                 $('.spouse_or_mother_surname_label').attr('tabindex', '0');
@@ -561,8 +589,6 @@
             } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
                 //$('#spouses_mother_surname').prop('disabled', false)
                // $('#spouse_first_name').prop('disabled', false)
-                //$('#spouse_first_name').prop('placeholder', "Enter Spouse First Name(s) here ")
-               // $('#spouses_mother_surname').prop('placeholder', "Enter Spouse's surname here")
                 $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
                 $('.spouse_or_mother_surname_label').text("Spouses Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
                 //$('#spouses_mother_surname').css('background', 'white');
@@ -579,7 +605,6 @@
                 $('#death_select_box').prop('disabled', false);
                 //$('#spouses_mother_surname').val('').prop('disabled', true)
                 //$('#spouses_mother_surname').css('background', '#ccc');
-                //$('#spouses_mother_surname').prop('placeholder', '');
                 //$('#spouses_mother_surname').prop('name', '');
                 aad_selection_function();
                 //$('#death_select_box').css('background', 'white');
@@ -596,7 +621,6 @@
                 $('#age_at_death_or_date_of_birth_div').hide();
                 $('#spouse_first_name').val('');
                 //$('#spouses_mother_surname').val('').prop('disabled', true)
-                //$('#spouses_mother_surname').prop('placeholder', '')
                 //$('#spouses_mother_surname').prop('name', '');
                 //$('#death_select_box').prop('disabled', 'disabled');
                 //$('#death_select_box').css('background', '#ccc');
@@ -605,7 +629,6 @@
                 $('#death_select_box').val([]);
                 aad_selection_function();
                 //$('#spouse_first_name').prop('disabled', true)
-                //$('#spouse_first_name').prop('placeholder', "")
                 //$('#spouse_first_name').css('background', '#ccc');
             };
 

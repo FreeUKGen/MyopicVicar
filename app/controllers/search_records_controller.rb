@@ -50,6 +50,7 @@ class SearchRecordsController < ApplicationController
 
   def show_freebmd
     # common code for the three show versions show print and citation
+    @surname = @search_record.Surname
   end
 
   def show_freecen
