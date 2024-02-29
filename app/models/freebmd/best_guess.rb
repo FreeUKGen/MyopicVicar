@@ -29,6 +29,8 @@ class BestGuess < FreebmdDbBase
 
     # then the record types
     particles << RecordType.display_name(self.RecordTypeID)
+    # then quarter
+    particles << self.event_quarter
     # then county name
     county_code = self.CountyCombos.County if self.CountyCombos.present?
     particles << ChapmanCode.name_from_code(county_code) if county_code.present?

@@ -25,9 +25,11 @@
         District
       </th>
       <td>
-        <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
+        <% district = District.where(DistrictName: record.District).first %>
+        <%# district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
         <% if district.present? %>
-          <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
+          <%= link_to "#{district.DistrictName}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
+          <%#= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
         <% else %>
           <%= record.display_district_name %>
         <% end %>

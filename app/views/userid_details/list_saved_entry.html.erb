@@ -33,7 +33,14 @@
               <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
             </dt>
             <dt>
-              <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record[:District].downcase}.html", target: "_blank" %>
+              <% district = District.where(DistrictName: search_record[:District]).first %>
+              <% if district.present? %>
+                <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
+                <%#= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><!--span class="accessibility"><%#= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span-->
+              <% else %>
+                <%= search_record[:District] %>
+              <% end %>
+              <%#= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record[:District].downcase}.html", target: "_blank" %>
             </dt>
             <dt>
                <%#= render partial: 'best_guess/more_information' %>

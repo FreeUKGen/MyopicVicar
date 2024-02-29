@@ -11,6 +11,11 @@
       <% end %>
       <th>Individual</th>
       <th>Record Type</th>
+      <% unless old_search_results %>
+        <th>New</th>
+      <% else %>
+        <th>Removed</th>
+      <% end %>
     </tr>
   </thead>
   <tbody>
@@ -45,7 +50,13 @@
                 <%= search_record[:District] %>
               <% else %>
                 <% if search_record.district_linkable? %>
-                  <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><span class="accessibility"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                  <%#= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><span class="accessibility"><%= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span>
+                  <% district = District.where(DistrictName: search_record[:District]).first %>
+                  <% if district.present? %>
+                    <%= link_to "#{district.DistrictName}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
+                  <% else %>
+                    <%= search_record[:District] %>
+                  <% end %>
                 <% else %>
                   <%= search_record[:District] %>
                 <% end %>
@@ -55,6 +66,17 @@
         </td>
         <td>
           <center><%= "#{record_type}" %></center>
+        </td>
+        <td>
+          <% unless old_search_results %>
+            <% unless other_search_results.find { |rec| rec.id == search_record.id }  %>
+             NEW
+            <% end %>
+          <% else %>
+            <% unless other_search_results.find { |rec| rec.id == search_record.id } %>
+              REMOVED
+            <% end %>
+          <% end %>
         </td>
       </tr>
     <% end %>

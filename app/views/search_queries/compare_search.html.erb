@@ -42,7 +42,7 @@
 		    	<% if @search_results.present? %>
 			    	<strong><%= pluralize(@search_results.count, 'results')%></strong>
 			    	<div class="scrollable">
-				      <%= render(partial: "compare_search_table", locals: { search_results: @search_results, old_search_results: false })  %>
+				      <%= render(partial: "compare_search_table", locals: { search_results: @search_results, other_search_results: @save_search_results, old_search_results: false })  %>
 			    	</div>
 			    	<% else%>
 			    		Not Available
@@ -52,7 +52,7 @@
 		  	<% if @save_search_results.present? %>
 			  	<strong><%= pluralize(@save_search_results.count, 'saved search results')%></strong>
 			    <div class="scrollable">
-			      <%= render(partial: "compare_search_table", locals: { search_results: @save_search_results, old_search_results: true })  %>
+			      <%= render(partial: "compare_search_table", locals: { search_results: @save_search_results, other_search_results: @search_results, old_search_results: true })  %>
 			    </div>
 			  <% else %>
 			    Not Available
