@@ -40,7 +40,7 @@
 	  <div class="grid">
 		    <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
 		    	<% if @search_results.present? %>
-			    	<strong><%= pluralize(@search_results.count, 'results')%></strong>
+			    	<strong><%= pluralize(@search_results.count, 'results')%> (<%= @new_search_results.count %> new)</strong>
 			    	<div class="scrollable">
 				      <%= render(partial: "compare_search_table", locals: { search_results: @search_results, new_search_results: @new_search_results, other_search_results: @save_search_results, old_search_results: false })  %>
 			    	</div>
@@ -50,7 +50,7 @@
 		  </div>
 		  <div class="grid__item one-half lap-one-half palm-one-whole " id='bmd_results'>
 		  	<% if @save_search_results.present? %>
-			  	<strong><%= pluralize(@save_search_results.count, 'saved search results')%></strong>
+			  	<strong><%= pluralize(@save_search_results.count, 'saved search results')%> (<%= @removed_from_search_results.count %> removed)</strong>
 			    <div class="scrollable">
 			      <%= render(partial: "compare_search_table", locals: { search_results: @save_search_results, removed_search_results: @removed_from_search_results, other_search_results: @search_results, old_search_results: true })  %>
 			    </div>

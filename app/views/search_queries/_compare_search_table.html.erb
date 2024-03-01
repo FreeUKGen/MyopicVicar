@@ -70,11 +70,11 @@
         </td>
         <td>
           <% unless old_search_results %>
-            <% if new_search_results.find { |rec| rec.id == search_record.id }  %>
+            <% if new_search_results.find { |rec| rec.id == search_record[:id] }  %>
              NEW
             <% end %>
           <% else %>
-            <% if removed_search_results.find { |rec| rec.id == search_record.id } %>
+            <% if removed_search_results.find { |rec| rec.id == search_record[:id] } %>
               REMOVED
             <% end %>
           <% end %>
