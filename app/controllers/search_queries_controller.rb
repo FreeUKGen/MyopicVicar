@@ -381,6 +381,8 @@ class SearchQueriesController < ApplicationController
     saved_search_response, saved_search_results, @ucf_save_results, @save_result_count = @saved_search.get_bmd_saved_search_results
     @save_search_results = @search_query.sort_results(saved_search_results)
     response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results
+    @new_search_results = new_search_results
+    @removed_from_search_results = removed_from_search_results
     if params[:filter_option].present?
       @filter_condition = params[:filter_option]
       @search_results = filtered_search_results #if filtered_search_results.present?
@@ -417,6 +419,20 @@ class SearchQueriesController < ApplicationController
       result = @saved_search.saved_search_result.records.select{|k,v| select_hash.include?(k)}
       records = result.values.map{|h| BestGuess.new(h)}#BestGuess.get_best_guess_records(select_hash)
     end
+    records
+  end
+
+  def new_search_results
+    select_hash = @search_query.search_result.records.keys - @saved_search_result_hash
+    result = @search_query.search_result.records.select{|k,v| select_hash.include?(k)}
+    records = result.values.map{|h| BestGuess.new(h)}
+    records
+  end
+
+  def removed_from_search_results
+    select_hash = @saved_search_result_hash - @search_query.search_result.records.keys
+    result = @saved_search.saved_search_result.records.select{|k,v| select_hash.include?(k)}
+    records = result.values.map{|h| BestGuess.new(h)}#BestGuess.get_best_guess_records(select_hash)
     records
   end
 

@@ -25,7 +25,7 @@
 	      <%= select_tag(:filter_option, options_for_select([['Births', "1"], ['Deaths', "2"], ['Marriages', "3"],["Newly Added", "4"],["Removed", "5"]], selected: @filter_condition), {:prompt => "Filter By", id: 'compare_filter_results', tabindex: "0"}) %>
 	    </div>
 	    <div class="grid__item desk-wide-one-third desk-one-third lap-one-whole palm-one-whole">
-	      <%= button_tag 'Update Comparision', class: 'spinner-controller ladda-button push--top update_results' , id: 'filter_form_submit', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
+	      <%= button_tag 'Update Comparison', class: 'spinner-controller ladda-button push--top update_results' , id: 'filter_form_submit', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
 	    </div>
 	  </div>
 	<% end %>
@@ -42,7 +42,7 @@
 		    	<% if @search_results.present? %>
 			    	<strong><%= pluralize(@search_results.count, 'results')%></strong>
 			    	<div class="scrollable">
-				      <%= render(partial: "compare_search_table", locals: { search_results: @search_results, other_search_results: @save_search_results, old_search_results: false })  %>
+				      <%= render(partial: "compare_search_table", locals: { search_results: @search_results, new_search_results: @new_search_results, other_search_results: @save_search_results, old_search_results: false })  %>
 			    	</div>
 			    	<% else%>
 			    		Not Available
@@ -52,7 +52,7 @@
 		  	<% if @save_search_results.present? %>
 			  	<strong><%= pluralize(@save_search_results.count, 'saved search results')%></strong>
 			    <div class="scrollable">
-			      <%= render(partial: "compare_search_table", locals: { search_results: @save_search_results, other_search_results: @search_results, old_search_results: true })  %>
+			      <%= render(partial: "compare_search_table", locals: { search_results: @save_search_results, removed_search_results: @removed_from_search_results, other_search_results: @search_results, old_search_results: true })  %>
 			    </div>
 			  <% else %>
 			    Not Available
