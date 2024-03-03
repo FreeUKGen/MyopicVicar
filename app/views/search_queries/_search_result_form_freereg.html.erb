@@ -6,11 +6,7 @@
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
           <%= form.label :filter_results, "Filter By" %>
           <%= form.select :filter_option,
-                      # options_for_select([['Baptism','ba'],
-                      # ['Marriage','ma'],
-                      # ['Burial', 'bu']
-                      # ]),
-                      ['Baptism', 'Marriage', 'Burial', 'Clear Filter'],
+                      ["Baptism", "Marriage", "Burial", "Clear Filter"],
                       selected: @filter_condition,
                       prompt: "Filter By",
                       id: "filter_results",
@@ -20,13 +16,7 @@
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
           <%= form.label "sort_results", "Sort By" %>
           <%= form.select :sort_option,
-                      ['Person', 'Record Type', 'Event Date', 'County', 'Place'],
-                      # options_for_select([['Person','transcript_names'],
-                      # ['Record Type','record_type'],
-                      # ['Event Date', 'search_date'],
-                      # ['County','chapman_code'],
-                      # ['Place:Church','location']
-                      # ]),
+                      ["Person", "Record Type", "Event Date", "County", "Place"],
                       selected: @sort_condition,
                       prompt: "Sort By",
                       id: "sort_results",
@@ -34,8 +24,8 @@
         </div>
 
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
-          <%#= form.label "results_per_page", "Show" %>
-          <%#= form.select :results_per_page,
+          <%= form.label "results_per_page", "Show" %>
+          <%= form.select :results_per_page,
                       [5, 20, 40, 60, 80, 100],
                       selected: @results_per_page,
                       prompt: "Results per Page",
@@ -44,10 +34,8 @@
         </div>
 
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
-
           <%= form.submit "Update Results",
-                      class: "spinner-controller ladda-button push--top update_results",
-                      id: "filter_form_submit",
+                      class: "spinner-controller ladda-button push--top40 ",
                       data: {
                         :style => "zoom-out",
                         :color => appname.downcase,
