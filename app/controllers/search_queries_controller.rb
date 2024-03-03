@@ -286,6 +286,7 @@ class SearchQueriesController < ApplicationController
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
     end
+    create_paginatable_array
   end
 
   def show_print_version
@@ -307,6 +308,7 @@ class SearchQueriesController < ApplicationController
         flash[:notice] = 'Your search results are not available. Please repeat your search'
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
+      create_paginatable_array
     end
     render 'show', layout: false
   end
@@ -327,6 +329,17 @@ class SearchQueriesController < ApplicationController
   end
 
   private
+
+  def assign_value(value, default)
+    value ||= default
+    value
+  end
+
+  def create_paginatable_array
+    @results_per_page = assign_value(params[:results_per_page], SearchQuery::RESULTS_PER_PAGE)
+    @page = assign_value(params[:page], SearchQuery::DEFAULT_PAGE)
+    @paginatable_array = @search_query.paginate_results(@search_results, @page, @results_per_page)
+  end
 
   def search_params
     params.require(:search_query).permit!
