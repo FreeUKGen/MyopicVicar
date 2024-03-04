@@ -1,7 +1,9 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
     <h1 class="accessibility">Search Results</h1>
       <table class="table--bordered table--data">
-        <% unless print_friendly %>
+        <% if print_friendly %>
+          <caption class='accessibility'>You can print these results or download them to PDF, using your right-click or browser menu.</caption>
+          <% else %>
           <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
         <% end %>
         <thead>
@@ -47,7 +49,7 @@
                   <dt>
                     <% if print_friendly %>
                       <%= search_record[:District] %>
-                      <span class="ttip__text"> <%="Volume #{search_record[:Volume]} Page #{search_record[:Page]}"%></span>
+                      <span class="ttip__text"> <%=" (Volume #{search_record[:Volume]} Page #{search_record[:Page]})"%></span>
                     <% else %>
                         <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
                         <% if district.present? %>
