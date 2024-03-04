@@ -1,5 +1,8 @@
 <section>
-  <%= render 'nav_header_freecen' if  @show_navigation %>
+  <% if  @show_navigation %>
+    <%= render 'nav_dwelling_freecen'  %>
+    <%= render 'nav_individual_freecen' %>
+  <% end %>
 </section>
 <section>
   <div class="fullwidth_adsense_freecen cen_unit cen_unit_fullwidth">
