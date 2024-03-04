@@ -357,17 +357,17 @@ class Freecen2Place
 
     def search_records_birth_places?(place)
       exist = false
-      place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => place.place_name).first
+      place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => place.place_name).no_timeout.first
       if place_used.present?
         exist = true
       elsif place.original_place_name.present?
-        original_place_used _= SearchRecord.where(:birth_chapman_code => place.original_chapman_code, :birth_place => place.original_place_name).first
+        original_place_used _= SearchRecord.where(:birth_chapman_code => place.original_chapman_code, :birth_place => place.original_place_name).no_timeout.first
         if original_place_used.present?
           exist = true
         end
       elsif place.alternate_freecen2_place_names.present?
         place.alternate_freecen2_place_names.each do |alt_place|
-          alternate_place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => alt_place.alternate_name).first
+          alternate_place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => alt_place.alternate_name).no_timeout.first
           if alternate_place_used.present?
             exist = true
             break

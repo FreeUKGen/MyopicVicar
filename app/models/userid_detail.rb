@@ -758,6 +758,12 @@ class UseridDetail
     total_records
   end
 
+  def user_roles
+    all_roles = self.secondary_role
+    all_roles << self.person_role
+    all_roles.uniq
+  end
+
   private
 
   def filter_users
