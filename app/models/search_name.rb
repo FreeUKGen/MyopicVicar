@@ -8,7 +8,6 @@ class SearchName
   field :type, type: String
 
 
-
   def contains_wildcard_ucf?
     result = UcfTransformer.contains_wildcard_ucf?(self.first_name) || UcfTransformer.contains_wildcard_ucf?(self.last_name)
     result
