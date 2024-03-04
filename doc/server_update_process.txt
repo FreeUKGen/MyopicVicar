@@ -1,0 +1,90 @@
+
+Create release notes:
+Update the release note for each project: 
+a. cd ~local_path_to_project_folder/MyopicVicar/app/views/manage_resources
+Update FreeReg release notes file: _freereg_release_notes.html.erb
+Update FreeCen release notes file: _freecen_release_notes.html.erb
+
+Write the task that you worked  following format:
+<p>Release Notes: Date of code deployment</p># Updated by person doing the deployment
+<p>progect_name#issue_number: Issue description</p>
+Example:
+<p>Release Notes: 11 December 2023</p>
+<ul>
+  <li>FreeCen#1587: Improves validation of vld collection.</li>
+</ul>
+
+Deployment of code to production:
+Our production servers: basil, curry, fennel, ginseng, colobus
+
+On each server in turn, replacing server name where appropriate
+Step 1: on basil
+Update FreeReg code:
+cd  /home/apache/hosts/freereg2/production
+copy any new configuration files to the server using Filezilla or equivalent ( Rarely required)
+f2rake tmp:cache:clear # do occasionally (Once every quarter)
+git status # just to make sure we are on master
+git stash # to remove any local change (there should not be any)
+sudo rm -R public/assets # only required when there is a restructuring of assets
+sudo bash /root/bin/update-freereg2
+
+Step 2:
+Update FreeCen code:
+cd  /home/apache/hosts/freecen2/production
+copy any new configuration files to the server using Filezilla or equivalent
+f2rake tmp:cache:clear # do occasionally
+git status #just to make sure we are on master
+git stash # to remove any local change (there should not be any)
+sudo rm -R public/assets # only required when there is a restructuring of assets
+sudo bash /root/bin/update-freecen2
+
+
+Back to Step 1,2 repeat for next server
+
+When complete update refinery
+
+Refinery transfer https://docs.google.com/document/d/1ozrJbHY074xYvwCB3j6NodDdPFPnWU4WySdnZCMeWUw/edit
+https://rundeck.freeukgen.org.uk/
+
+
+alias f2rake='sudo -u webserv bundle exec rake RAILS_ENV=production'
+
+
+Update code in test servers:
+To keep the test servers up-to-date with master we also need to update the test code base. This can be done after every production codebase update.
+Test server: night
+Environments: production and development
+Production(staging) needs to in sync with latest master.
+Updating staging code:
+Step 1: Update FreeReg code
+cd /home/apache/hosts/freereg2/production
+git status #just to make sure we are on master
+git stash # to remove any local change (there should not be any)
+sudo rm -R public/assets # only required when there is a restructuring of assets
+sudo bash /root/bin/update-freereg2
+
+Step 2: Update FreeCen code
+cd /home/apache/hosts/freecen2/production
+git status #just to make sure we are on master
+git stash # to remove any local change (there should not be any)
+sudo rm -R public/assets # only required when there is a restructuring of assets
+sudo bash /root/bin/update-freecen2
+
+Updating development code:
+Step 1: Update FreeReg code
+cd /home/apache/hosts/freereg2/development
+git status #just to make sure we are on master
+git stash # to remove any local change (there should not be any)
+sudo rm -R public/assets # only required when there is a restructuring of assets
+sudo bash /root/bin/update-freereg2-development
+sudo -u webserv bundle exec rake RAILS_ENV=production assets:precompile
+sudo touch tmp/restart.txt
+
+Step 2: Update FreeCen code
+cd /home/apache/hosts/freecen2/development
+git status #just to make sure we are on master
+git stash # to remove any local change (there should not be any)
+sudo rm -R public/assets # only required when there is a restructuring of assets
+sudo bash /root/bin/update-freecen2-development
+sudo -u webserv bundle exec rake RAILS_ENV=production assets:precompile
+sudo touch tmp/restart.txt

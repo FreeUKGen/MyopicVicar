@@ -30,6 +30,7 @@ class Freecen1VldFilesController < ApplicationController
     @vldfile = Freecen1VldFile.find_by(dir_name: session[:chapman_code], file_name: params[:freecen1_vld_file][:uploaded_file].original_filename)
     if @vldfile.present?
       @vldfile.update_attributes(freecen1_vld_file_params)
+      @vldfile.set(num_invalid_pobs: nil)
     else
       @vldfile = Freecen1VldFile.new(freecen1_vld_file_params)
     end
@@ -257,7 +258,11 @@ class Freecen1VldFilesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
     session[:vld_pob_val] = true
-    @num_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+    if @freecen1_vld_file.num_invalid_pobs.present?
+      @num_invalid = @freecen1_vld_file.num_invalid_pobs
+    else
+      @num_invalid = Freecen1VldEntry.where(freecen1_vld_file_id: @freecen1_vld_file._id, pob_valid: false).count
+    end
     redirect_to(freecen1_vld_entries_path(file: @freecen1_vld_file.id, num_invalid: @num_invalid))
   end
 

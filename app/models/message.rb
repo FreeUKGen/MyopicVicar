@@ -20,6 +20,7 @@ class Message
   field :keep, type: Boolean, default: false
   field :syndicate, type: String
   field :nature, type: String
+  field :sub_nature, type: String
   field :copies_to_userids, type: Array, default: []
   field :copies_to_roles, type: Array, default: []
   attr_accessor :action, :inactive_reasons, :active

@@ -109,10 +109,14 @@ namespace :freecen do
       files = Freecen1VldFile.where(dir_name: chapman_code).order_by(full_year: 1, piece: 1)
 
       files.each do |file|
-        previously_validated = Freecen1VldEntry.where(freecen1_vld_file_id: file.id, pob_valid: false).or(Freecen1VldEntry.where(freecen1_vld_file_id: file.id, pob_valid: true)).first
+        previously_validated = false
+        one_entry = Freecen1VldEntry.where(freecen1_vld_file_id: file.id, individual_flag: '-' ).first
+        previously_validated = true if one_entry.pob_valid == true || one_entry.pob_valid == false
 
-        previously_unvalidated_processed += 1 if previously_validated.blank?
-        next if previously_unvalidated_processed > max_files && previously_validated.blank?
+        previously_unvalidated_processed += 1 if previously_validated == false
+        next if previously_unvalidated_processed > max_files && previously_validated == false
+
+        next if file.num_invalid_pobs.present? && file.num_invalid_pobs.zero?
 
         files_processed += 1
         begin
@@ -125,15 +129,21 @@ namespace :freecen do
         break unless vld_err_messages.empty?
 
         num_invalid_pobs = num_individuals - num_valid
+        if (file.num_invalid_pobs.present? && file.num_invalid_pobs != num_invalid_pobs) || file.num_invalid_pobs.blank?
+          file.set(num_invalid_pobs: num_invalid_pobs)
+        end
+
         total_individuals += num_individuals
         total_invalid_pobs += num_invalid_pobs
 
-        invalid_pob_entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id, pob_valid: false).order_by(id: 1)
+        invalid_pob_entries = Freecen1VldEntry.where(freecen1_vld_file_id: file.id).order_by(id: 1)
 
         invalid_pob_entries.each do |entry|
-          report_csv  += output_csv_header if report_csv.empty?
-          report_csv  += "\n"
-          report_csv  += output_csv_line(chapman_code, file.file_name, entry)
+          if entry.pob_valid == false
+            report_csv  += output_csv_header if report_csv.empty?
+            report_csv  += "\n"
+            report_csv  += output_csv_line(chapman_code, file.file_name, entry)
+          end
         end
         message = "Processed #{chapman_code} - #{file.file_name} - #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs\n"
         p message
@@ -166,6 +176,9 @@ namespace :freecen do
         vld_err_messages << "#{e.backtrace.inspect}"
       end
       num_invalid_pobs = num_individuals - num_valid
+      if (vld_file.num_invalid_pobs.present? && vld_file.num_invalid_pobs != num_invalid_pobs) || vld_file.num_invalid_pobs.blank?
+        vld_file.set(num_invalid_pobs: num_invalid_pobs)
+      end
       report = "Processed #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs"
       report = 'Vld file may not be correctly linked to freecen_individuals collection - please report to System Administrator' if num_invalid_pobs == num_individuals
       unless vld_err_messages.empty?

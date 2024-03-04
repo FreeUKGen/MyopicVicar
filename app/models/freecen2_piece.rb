@@ -433,6 +433,7 @@ class Freecen2Piece
       new_piece_params[:notes] = params['notes']
       new_piece_params[:prenote] = params['prenote']
       new_piece_params[:freecen2_place_id] = Freecen2Place.place_id(params['chapman_code'], params[:freecen2_place_id])
+      new_piece_params[:admin_county] = params['chapman_code']
       new_piece_params
     end
 

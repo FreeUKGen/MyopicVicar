@@ -14,7 +14,7 @@
           <th>Civil Parish</th>
           <th>ED</th>
           <th>Page</th>
-          <th>Dwelling</th>
+          <th>Schedule Number</th>
           <th>Seq</th>
           <th>Forenames</th>
           <th>Surname</th>
@@ -27,7 +27,7 @@
         <td ><%= @freecen1_vld_entry.civil_parish %></td>
         <td ><%= @freecen1_vld_entry.enumeration_district %></td>
         <td ><%= @freecen1_vld_entry.page_number %></td>
-        <td ><%= @freecen1_vld_entry.dwelling_number %></td>
+        <td ><%= @freecen1_vld_entry.schedule_number %></td>
         <td ><%= @freecen1_vld_entry.sequence_in_household %></td>
         <td ><%= @freecen1_vld_entry.forenames %></td>
         <td ><%= @freecen1_vld_entry.surname %></td>
@@ -54,17 +54,19 @@
   <div  style='text-align: center'>
     <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
       <p><b> PROPAGATE: </b></p>
-      <%= f.submit 'Alternative',  :class => "btn btn--small", title: 'Propagate Alternative POB values only'%>
-      <%= f.submit 'Notes',  :class => "btn btn--small", title: 'Propagate Notes only'%>
-      <%= f.submit 'Both',  :class =>  "btn btn--small", title: 'Propagate Alternative POB values & Notes'%>
+      <%= f.submit 'Alternative',  :class => 'btn btn--small', title: 'Propagate Alternative POB values only'%>
+      <%= f.submit 'Notes',  :class => 'btn btn--small', title: 'Propagate Notes only'%>
+      <%= f.submit 'Both',  :class =>  'btn btn--small', title: 'Propagate Alternative POB values & Notes'%>
     <% else%>
-      <%= f.submit 'Submit',  :class => "btn btn--small", data: { confirm: 'Are you sure you want to Save the changes?'}, title: 'Saves changes.'%>
-      <%= f.submit 'Accept',  :class => "btn btn--small", data: { confirm: 'Are you sure you want to Override warnings?'}, title: 'Saves changes and overrides warnings.'%>
+      <%= f.submit 'Submit',  :class => 'btn btn--small', data: { confirm: 'Are you sure you want to Save the changes?'}, title: 'Saves changes.'%>
+      <%= f.submit 'Accept',  :class => 'btn btn--small', data: { confirm: 'Are you sure you want to Override warnings?'}, title: 'Saves changes and overrides warnings.'%>
+      <br>
+      <%= skip_record(@freecen1_vld_entry.freecen1_vld_file_id, @freecen1_vld_entry._id) %>
     <% end%>
   </div>
   <div style='text-align: center'>
     <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
-      <%= f.submit 'No Propagation Required',  class: "btn btn--small", title: 'No Propagation Required'%>
+      <%= f.submit 'No Propagation Required',  class: 'btn btn--small', title: 'No Propagation Required'%>
     <% else%>
       <%= link_to 'Cancel', manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)%>
     <% end %>

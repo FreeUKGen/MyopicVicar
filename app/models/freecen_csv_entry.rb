@@ -2029,7 +2029,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
@@ -2088,7 +2088,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms_with_windows]
       else
-        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms]
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)

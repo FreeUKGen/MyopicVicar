@@ -1,0 +1,15 @@
+<section>
+  <% if @search_query.present? %>
+    <p class="text--center">
+      <%= link_to "Previous Dwelling", search_record_path(@search_record, :page_number => @page_number, :dwel => @cen_prev_dwelling), :class => "btn  btn--small" unless @cen_prev_dwelling.nil?%>
+      <%= link_to "Next Dwelling", search_record_path(@search_record, :page_number => @page_number, :dwel => @cen_next_dwelling), :class => "btn  btn--small" unless @cen_next_dwelling.nil?%>
+      <%#= link_to "Printable Format", show_print_version_search_record_path(@search_record), :class => "btn  btn--small"%>
+      <% if params[:dwel].present? %>
+        <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, dwel: params[:dwel]), :class => "btn  btn--small"%>
+      <% else %>
+        <%= link_to "Printable Format", show_print_version_search_record_path(@search_record), :class => "btn  btn--small" %>
+      <% end %>
+      <!-- If user looks at next/previous dwellings, hide the generate citation -->
+    </p>
+  <% end%>
+</section>
