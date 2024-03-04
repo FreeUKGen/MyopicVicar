@@ -53,6 +53,16 @@ class Freecen1VldEntry
       search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place)
     end
 
+    def set_search_record_pob_place(vld_entry, birth_place)
+      individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
+      return if individual_rec.blank?
+
+      search_rec = SearchRecord.find_by(freecen_individual_id: individual_rec._id)
+      return if search_rec.blank?
+
+      search_rec.set(birth_place: birth_place) if search_rec.birth_place.blank?
+    end
+
     def in_propagation_scope?(prop_rec, chapman_code, vld_year)
       result = false
       result = true if (prop_rec.scope_year == 'ALL' && prop_rec.scope_county == 'ALL') ||

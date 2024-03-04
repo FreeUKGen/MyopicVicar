@@ -94,7 +94,8 @@ class UseridDetailsController < ApplicationController
     else
       flash[:notice] = 'The destruction of the profile failed'
     end
-    redirect_to(options_userid_details_path)
+    #redirect_to(options_userid_details_path)
+    redirect_to userid_details_path
   end
 
   def disable

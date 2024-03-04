@@ -21,8 +21,15 @@ module Freecen
     def individual_pob_valid?(vld_entry, chapman_code, vld_year, userid)
       pob_valid = false
       pob_warning = ''
-      if vld_entry.birth_place == 'UNK'
+      reason = ''
+
+      if vld_entry.birth_place.blank?
+        reason = 'Automatic update of birth place missing to hyphen'
+      elsif vld_entry.birth_place.upcase == 'UNK'
         reason = 'Automatic update of birth place UNK to hyphen'
+      end
+
+      if reason.present?
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
         vld_entry.set(birth_place: '-')
         Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
@@ -32,7 +39,7 @@ module Freecen
 
       unless pob_valid
         propagation_matches = Freecen1VldEntryPropagation.where(match_verbatim_birth_county: vld_entry.verbatim_birth_county, match_verbatim_birth_place: vld_entry.verbatim_birth_place)
-        unless propagation_matches.blank?
+        if propagation_matches.present?
 
           propagation_matches.each do |prop_rec|
             in_scope = Freecen1VldEntry.in_propagation_scope?(prop_rec, chapman_code, vld_year)
@@ -48,7 +55,6 @@ module Freecen
             Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
             pob_valid = true
             pob_warning = ''
-
           end
         end
       end
