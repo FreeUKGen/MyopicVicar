@@ -137,14 +137,14 @@ namespace :freecen do
         # get VLD file names where OLd Place is used as a Birth Place
         individ_file_ids = SortedSet.new
         vld_file_ids = SortedSet.new
-        individ_files = SearchRecord.where(:birth_chapman_code =>  old_place_record.chapman_code, :birth_place =>  old_place_record.place_name, :freecen_csv_file_id => nil, :freecen_individual_file_id.ne => nil )
-        individ_files.each do |search_rec|
-          individ_file_ids << search_rec.freecen_individual_file_id
+        individ_recs = SearchRecord.where(:birth_chapman_code =>  old_place_record.chapman_code, :birth_place =>  old_place_record.place_name, :freecen_csv_file_id => nil, :freecen_individual_id.ne => nil )
+        individ_recs.each do |search_rec|
+          individ_file_ids << search_rec.freecen_individual_id
         end
         unless individ_file_ids.size.zero?
           individ_file_ids.each do |individ_file_id|
-            individ_file_rec = FreecenIndividual.find_by(_id: individ_file_id)
-            vld_files_ids  << individ_file_rec.freecen_vld_file_id if individ_file_rec.present?
+            individ_rec = FreecenIndividual.find_by(_id: individ_file_id)
+            vld_file_ids  << individ_rec.freecen1_vld_file_id if individ_rec.present?
           end
           unless vld_file_ids.size.zero?
             vld_file_ids.each do |vld_file_id|
@@ -165,6 +165,8 @@ namespace :freecen do
       if old_place_record.alternate_freecen2_place_names.present?
         old_place_record.alternate_freecen2_place_names.each do |alt_name|
           alt_name_used = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, birth_place: alt_name.alternate_name).count
+          alternative_names << alt_name.alternate_name if alt_name_used.positive?
+          alt_name_used = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, birth_place: alt_name.alternate_name.downcase.titleize).count
           alternative_names << alt_name.alternate_name if alt_name_used.positive?
         end
         unless alternative_names.size.zero?
@@ -220,8 +222,6 @@ namespace :freecen do
           message_line = "Old Place Alternate Place Names used in Search Records Place of Birth = #{alternative_names_used_list}, **** these should be added to #{new_place_record.place_name} as Alternative names."
           output_to_log(message_file, message_line)
         end
-        message_line = '**** -------------- ****'
-        output_to_log(message_file, message_line)
       end
     end
 
