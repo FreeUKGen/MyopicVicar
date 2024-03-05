@@ -245,6 +245,7 @@ module SearchQueriesHelper
   end
 
   def set_checkbox_checked_value field_value:, value: nil
+    return true if field_value.blank?
     return field_value.include?value
   end
 
