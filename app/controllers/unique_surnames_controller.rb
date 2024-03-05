@@ -12,7 +12,7 @@ class UniqueSurnamesController < ApplicationController
   def get_search_names_hash(names)
     output_array = []
     names.each do |name|
-      output_array << name.Name
+      output_array << name.Name.split.map!(&:capitalize).join(' ')
     end unless names.nil? or names.blank?
     output_array
   end
