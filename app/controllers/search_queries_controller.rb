@@ -342,16 +342,20 @@ class SearchQueriesController < ApplicationController
   def districts_of_selected_counties
     districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
     county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
-    selected_counties = params[:selected_counties].split(',').reject { |e| e.to_s.empty? }
+    selected_counties = params[:selected_counties].split(',').compact
+    selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
     county_codes = []
     county_hash.each {|country, counties|
-      county_codes << county_hash.dig(country).values_at(*selected_counties)
-    }#.dig("England").values_at(*selected_counties)
+      selected_counties.each{|c|
+        county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
+      }
+    }
     @districts = Hash.new
     county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
       @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
+    @districts = {} if selected_counties.include?("All England (AVN BDF etc.)") || selected_counties.include?("All Wales (AGY BRE etc.)")
   end
 
   def end_year_val
