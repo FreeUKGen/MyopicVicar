@@ -69,45 +69,12 @@
           </div>
         <% end %>
       <% end %>
-      <!--div class="one-tenth lap-up-one-eighth lap-one-seventh palm-one-third" style=""-->
-        <%= image_tag 'png/beta.png', alt: "this is beta version of FreeBMD", class:  "one-tenth lap-up-one-eighth lap-one-seventh palm-one-third", style: "transform: rotate(-10deg) scale(1.15); margin-left: 3.8em;"%>
-      <!--/div-->
+      <%= image_tag 'png/beta.png', alt: "this is beta version of FreeBMD", class:  "one-tenth lap-up-one-eighth lap-one-seventh palm-one-quarter", style: "transform: rotate(-10deg) scale(1.15);"%>
     </div>
-      
-      <!--div class="grid">
-        <div class="grid__item one-eighth lap-one-fifth palm-one-third" >
-          
-        </div>
-        <div class="grid__item seven-eighths lap-five-sixths palm-three-quarters"-->
-          <% unless device_type == :mobile %>
-            <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
-              <!--div class="bnner-horz bmd_adsense header_ad">
-                <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">
-                  <%#= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
-                </a>
-                <%#= advert_code("header", "horz") %>
-              </div-->
-              <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
-                <div class="cookieConsent island island--teal flush--bottom">
-                  <div id="cookieText" >
-                    We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
-                  </div>
-                  <div class = "cookieAcceptButton">
-                    <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
-                  </div>
-                </div>
-              <% end %>
-            <% end %>
-          <% end %>
-        </div>
-      <!--/div-->
-    </div>
-    <div id="trigger-offcanvas-old">
-      <button type="button"  class="site__header__menu-btn">
-        <span>Menu</span>
-          <i class="icon__cancel" aria-hidden="true"></i>
-      </button>
-    </div>
+    <button type="button"  class="site__header__menu-btn" id="trigger-offcanvas-old">
+      <span>Menu</span>
+        <i class="icon__cancel" aria-hidden="true"></i>
+    </button>
   </header>
 <% end %>
 <%# unless browser.safari? && browser.full_version.to_f < 15.4 %>

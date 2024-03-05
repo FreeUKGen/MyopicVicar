@@ -7,22 +7,27 @@
 <% end%>
 <% case appname_downcase %>
 <% when 'freereg' %>
-<h1 class="title text--center">Search our Parish Registers</h1>
-<%= render 'form_freereg' %>
+  <h1 class="title text--center">Search our Parish Registers</h1>
+  <%= render 'form_freereg' %>
 <% when 'freecen' %>
-<h1 class="title text--center">Search our Census Records</h1>
-<% if Rails.application.config.freecen2_place_cache %>
-  <%= render 'form_freecen_freecen2' %>
-<% else%>
-  <%= render 'form_freecen' %>
-<% end%>
+  <h1 class="title text--center">Search our Census Records</h1>
+  <% if Rails.application.config.freecen2_place_cache %>
+    <%= render 'form_freecen_freecen2' %>
+  <% else%>
+    <%= render 'form_freecen' %>
+  <% end%>
 <% when 'freebmd' %>
-<h1 class="title bmd_search_header" id="search_header">Search our Birth/Marriage/Death Records</h1>
+  <!--h1 class="title bmd_search_header" id="search_header">Search our Birth/Marriage/Death Records</h1-->
+  <h1 class="title" id="search_header">Search our Birth, Marriage and Death Records</h1>
 <% end %>
 <%= render app_specific_partial('form') %>
-<%# raise device_type.inspect%>
 <%if appname_downcase="freebmd" && device_type == :mobile%>
 	<script>
 		$('#search_header').addClass('push--top');
 	</script>
+  <style>
+    .title {
+      font-size: 2.5rem;
+    }
+  </style>
 <% end %>
