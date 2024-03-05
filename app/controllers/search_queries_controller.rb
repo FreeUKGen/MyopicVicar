@@ -71,7 +71,16 @@ class SearchQueriesController < ApplicationController
   def create
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
-
+    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    selected_counties = search_params['chapman_codes'].split(',').compact
+    selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
+    county_codes = []
+    county_hash.each {|country, counties|
+      selected_counties.each{|c|
+        county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
+      }
+    }
+    search_params['chapman_codes'] = county_codes
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
     if @search_query.save

@@ -213,13 +213,7 @@
 
                 <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
                 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-                <%#= f.select :chapman_codes, raw("<marquee>#{grouped_options_for_select(grouped_options, selected_key = key)}</marquee>"), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0", style:"overflow-x: scroll !important"} %>
-                <%#= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', :autocomplete => autocomplete_BestGuess_Surname_search_queries_path, tabindex: "0"%>
-                <%= autocomplete_field_tag 'chapman_codes','','/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
-                <%#= f.input :chapman_codes, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
-                <%#= f.select(:chapman_codes, {}, multiple: true) do %>
-                    <%#= grouped_options_for_select(grouped_options, selected_key = key)%>
-                <%# end %>
+                <%= autocomplete_field_tag 'search_query[chapman_codes]',format_chapman_code_values(@search_query.chapman_codes),'/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
             </li>
 
             <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
