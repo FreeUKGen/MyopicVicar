@@ -78,7 +78,7 @@ class SearchQueriesController < ApplicationController
       session[:query] = @search_query.id
       @search_results, success, error_type = @search_query.search_records.to_a
       error = error_type.to_i if error_type.present?
-      redirect_to search_query_path(@search_query, anchor: "bmd_content") and return if success
+      redirect_to search_query_path(@search_query) and return if success
       redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
       redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
     else
