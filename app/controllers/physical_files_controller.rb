@@ -271,7 +271,7 @@ class PhysicalFilesController < ApplicationController
   def upload_report
     @start_date = params[:period_from].present? ? params[:period_from].to_datetime : '01/01/2020'.to_datetime
     @end_date = params[:period_to].present? ? params[:period_to].to_datetime : Date.today.to_datetime
-    uploaded_files = PhysicalFile.where(c_at: start_date..end_date)
+    uploaded_files = PhysicalFile.where(c_at: @start_date..@end_date)
     uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
     uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
     uploders_role = uploaders.pluck(:person_role)
