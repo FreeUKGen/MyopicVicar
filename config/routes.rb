@@ -193,6 +193,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
   get 'physical_files/:id/download(.:format)', :to => 'physical_files#download', :as => :download_physical_file
   get 'physical_files/:id/remove(.:format)', :to => 'physical_files#remove', :as => :remove_physical_file
+  get 'physical_files/upload_report', to: 'physical_files#upload_report', as: upload_report_physical_file
   resources :physical_files
 
   resources :search_statistics
