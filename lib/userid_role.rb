@@ -59,7 +59,7 @@ module UseridRole
                                    'Syndicate Coordinators', 'Profile', 'RefineryCMS', 'Roadmap', 'Gazetteer', 'System Documentation',
                                    'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
 
-      'executive_director' => ['Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Gazetteer',
+      'executive_director' => ['Upload Report','Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Gazetteer',
                                'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Statistics', 'Search Performance', 'Site Statistics',
                                'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'TNA Change Logs', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'genealogy_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'Gazetteer', 'System Documentation', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies', 'Display County Coordinators', 'Display Syndicate Coordinators'],
