@@ -1,21 +1,4 @@
 <%= render 'flash_notice' %>
-<div id = "upload_report_form">
-  <%= form_tag upload_report_physical_file_path, method: :get do |f| %>
-    <fieldset class="inputs">
-      <ol class="grid">
-        <li class="grid__item one-third palm-one-whole">
-          <%= f.label :period_from, "Start Date: " %>
-          <%= f.date_select :period_from, 'c_at', use_short_month: true, start_year: 2020 %>
-        </li>
-        <li class="grid__item one-third palm-one-whole">
-          <%= f.label :period_to, "End Date: " %>
-          <%= f.date_select :period_to, 'c_at', use_short_month: true, start_year: 2020 %>
-        </li>
-      </ol>
-      <%= f.submit 'Update', :class => "btn   btn--small", title: 'Update Report',data: { disable_with: false } %>
-    </fieldset>
-  <% end %>
-</div>
 <table>
   <tr>
     <th>Perod</th>
