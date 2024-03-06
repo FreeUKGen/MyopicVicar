@@ -8,8 +8,8 @@
   <tr>
     <td><%= "#{@start_date} - #{@end_date}" %></td>
     <% @uploaders_count.each do |u| %>
-        <td><%= u.key %></td>
-        <td><%= u.value %></td>
+        <td><%= u[0] %></td>
+        <td><%= u[1] %></td>
     <% end %>
   </tr>
 </table>
