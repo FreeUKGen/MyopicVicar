@@ -1,9 +1,17 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
     <h1 class="accessibility">Search Results</h1>
+    <% if print_friendly %>
+  <style type="text/css">
+    @media print {
+        .accessibility { display:none; }
+    }
+  </style>
+      <div style="border: 1px solid black; margin-bottom: 10px;">
+        <p class='accessibility'>You can print these results or download them to PDF, using your right-click or browser menu.</p>
+      </div>
+    <% end %>
       <table class="table--bordered table--data">
-        <% if print_friendly %>
-          <caption class='accessibility'>You can print these results or download them to PDF, using your right-click or browser menu.</caption>
-          <% else %>
+        <% unless print_friendly %>
           <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
         <% end %>
         <thead>
