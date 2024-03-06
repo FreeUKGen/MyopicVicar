@@ -134,7 +134,7 @@ module UseridRole
     'Transcriber Statistics' => '/userid_details/transcriber_statistics',
     'FreeCEN Handbook' => '/cms/freecen-handbook',
     'Place Edit Reasons' => '/place_edit_reasons',
-    'Upload Report' => '/physical_files/upload_report'
+    'Upload Report' => '/physical_files/upload_report',
     'Place Sources' => '/freecen2_place_sources'
   }
 
