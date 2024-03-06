@@ -276,4 +276,5 @@ class PhysicalFilesController < ApplicationController
     uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
     uploders_role = uploaders.pluck(:person_role)
     @uploaders_count = uploders_role.group_by(&:itself).transform_values(&:count)
+  end
 end
