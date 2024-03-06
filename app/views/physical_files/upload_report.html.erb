@@ -7,9 +7,10 @@
   </tr>
   <tr>
     <td><%= "#{@start_date.to_date} - #{@end_date.to_date}" %></td>
+    <td>
     <% @uploaders_count.each do |u| %>
-        <td><%= u[0] %></td>
-        <td><%= u[1] %></td>
+        <dt><%= u[0] : u[1] %></dt>
     <% end %>
+    </td>
   </tr>
 </table>
