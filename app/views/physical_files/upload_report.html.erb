@@ -1,6 +1,6 @@
 <%= render 'flash_notice' %>
-<div id = "csvdownload">
-  <%= form_tag upload_report_physical_file_path, method: :get) do |f| %>
+<div id = "upload_report_form">
+  <%= form_tag upload_report_physical_file_path, method: :get do |f| %>
     <fieldset class="inputs">
       <ol class="grid">
         <li class="grid__item one-third palm-one-whole">
