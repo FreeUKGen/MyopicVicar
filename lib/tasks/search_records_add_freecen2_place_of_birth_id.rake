@@ -2,7 +2,7 @@ namespace :freecen do
 
   desc 'FREECEN Add freecen2_place_id for birth_place to search_records'
   task :search_records_add_freecen2_place_of_birth_id, [:county, :limit, :fix] => [:environment] do |t, args|
-    time_start = Time.now
+    start_time = Time.now
     county = args.county.to_str
     limit = args.limit.to_i
     already_set = 0
@@ -10,7 +10,7 @@ namespace :freecen do
     not_settable = 0
     records_updated = 0
     fixit = args.fix.to_str == 'Y'
-    file_for_warning_messages = "log/search_records_add_freecen2_place_of_birth_id_#{county}_#{time_start.strftime('%Y%m%d%H%M')}.log"
+    file_for_warning_messages = "log/search_records_add_freecen2_place_of_birth_id_#{county}_#{start_time.strftime('%Y%m%d%H%M')}.log"
     FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
     message_file = File.new(file_for_warning_messages, 'w')
     info_message =  "Run parameters = #{county}, #{limit}, #{fixit}"
@@ -46,7 +46,7 @@ namespace :freecen do
 
       records = records_updated + not_settable
       if records == (records / 10000) * 10000
-        time_diff = Time.now - time_start
+        time_diff = Time.now - start_time
         average = time_diff * 1000 / records
         info_message = "Average Process Time at #{records} records is #{average.round(2)} msecs per record"
         p info_message
@@ -56,7 +56,7 @@ namespace :freecen do
       break if records_updated >= limit
     end
 
-    time_diff = Time.now - time_start
+    time_diff = Time.now - start_time
     average = time_diff * 1000 / (already_set + birth_place_empty + not_settable + records_updated)
 
     message_file.puts info_message
@@ -72,9 +72,12 @@ namespace :freecen do
     info_message = fixit ? "Records updated #{records_updated}" : "Records to update #{records_updated}"
     p info_message
     message_file.puts info_message
-
     info_message = "Final Records Processed  = #{already_set + birth_place_empty + not_settable + records_updated}, Average Process Time = #{average.round(2)} msecs per record"
     p info_message
-
+    end_time = Time.now
+    run_time = ((end_time - start_time).to_f / 60).round(2).to_s
+    info_message = "Run time = #{run_time} mins"
+    p info_message
+    message_file.puts info_message
   end
 end
