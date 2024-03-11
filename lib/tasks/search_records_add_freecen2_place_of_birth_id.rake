@@ -59,7 +59,6 @@ namespace :freecen do
     time_diff = Time.now - start_time
     average = time_diff * 1000 / (already_set + birth_place_empty + not_settable + records_updated)
 
-    message_file.puts info_message
     info_message = "Records already set #{already_set}"
     p info_message
     message_file.puts info_message
