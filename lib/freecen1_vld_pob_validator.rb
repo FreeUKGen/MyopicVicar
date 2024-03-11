@@ -37,7 +37,17 @@ module Freecen
 
       pob_valid, pob_warning = valid_pob?(vld_entry, vld_year)
 
-      unless pob_valid
+      if pob_valid
+        individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
+        if individual_rec.present?
+          search_rec = SearchRecord.find_by(freecen_individual_id: individual_rec._id)
+          if search_rec.present?
+            place = vld_entry.birth_place.presence || vld_entry.verbatim_birth_place
+            valid_pob, place_id = Freecen2Place.valid_place(vld_entry.birth_county, place)
+            valid_pob ? search_rec.set(freecen2_place_of_birth: place_id) : search_rec.set(freecen2_place_of_birth: nil)
+          end
+        end
+      else
         propagation_matches = Freecen1VldEntryPropagation.where(match_verbatim_birth_county: vld_entry.verbatim_birth_county, match_verbatim_birth_place: vld_entry.verbatim_birth_place)
         if propagation_matches.present?
 
