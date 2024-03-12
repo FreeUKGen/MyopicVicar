@@ -31,6 +31,7 @@ class ManageResourcesController < ApplicationController
   def is_ok_to_render_actions?
     continue = true
     @user = get_user
+    @user_roles = get_user_roles
     if @user.present?
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}" if appname_downcase == 'freereg'

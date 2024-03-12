@@ -149,6 +149,13 @@ class ApplicationController < ActionController::Base
     user
   end
 
+  def get_user_roles
+    user = get_user
+    all_roles = user.secondary_role
+    all_roles << user.person_role
+    all_roles.uniq
+  end
+
   def get_user_info_from_userid
     @user = get_user
     if @user.blank?
