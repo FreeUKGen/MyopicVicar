@@ -32,6 +32,7 @@ class ManageResourcesController < ApplicationController
     continue = true
     @user = get_user
     @user_roles = get_user_roles
+    @role = params[:user_role].present? ? params[:user_role] : @user.person_role
     if @user.present?
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}" if appname_downcase == 'freereg'
@@ -51,10 +52,10 @@ class ManageResourcesController < ApplicationController
     when !@user.active
       flash[:notice] = 'You are not active, if you believe this to be a mistake please contact your coordinator'
       continue = false
-    when @user.person_role == "researcher" || @user.person_role == 'pending'
+    when @role == "researcher" || @role == 'pending'
       flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
       continue = false
-    when !Rails.application.config.member_open && !(@user.person_role == "system_administrator" || @user.person_role == 'technical')
+    when !Rails.application.config.member_open && !(@role == "system_administrator" || @role == 'technical')
       #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
       continue = false
@@ -118,12 +119,12 @@ class ManageResourcesController < ApplicationController
     @userid = @user.userid
     @first_name = @user.person_forename if @user.present?
     @manager = manager?(@user)
-    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    @roles = UseridRole::OPTIONS.fetch(@role)
     session[:userid] = @userid
     session[:user_id] = @user_id
     session[:first_name] = @first_name
     session[:manager] = manager?(@user)
-    session[:role] = @user.person_role
+    session[:role] = @role
     logger.warn "FREEREG::USER user #{@user.userid}"  if appname_downcase == 'freereg'
     logger.warn "FREECEN::USER user #{@user.userid}"  if appname_downcase == 'freecen'
   end
@@ -142,7 +143,7 @@ class ManageResourcesController < ApplicationController
   end
 
   def user_is_computer?
-    @user.person_role == 'computer' ? result = true : result = false
+    @role == 'computer' ? result = true : result = false
     result
   end
 
