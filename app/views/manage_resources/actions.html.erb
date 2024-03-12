@@ -20,7 +20,7 @@
     <fieldset class="inputs">
       <legend>Change Role</legend>
           <%= label_tag 'user_role', 'Change Role' %>
-          <%= select_tag :user_role, options_for_select(@user_roles, @session_role), :onchange => "this.form.submit()" %>
+          <%= select_tag :user_role, options_for_select(@user_roles, @current_role), :onchange => "this.form.submit()" %>
           <%#= submit_tag "Update Role" %>
     </fieldset>
   <% end %>
