@@ -16,9 +16,18 @@
   <%= link_to 'Instructional Videos', '/cms/instructional-videos', target: '_blank' %>, ( opens in new tab)<br>
 <% end %>
 <% if @user_roles.count > 1 %>
-<%= form_tag({}, {:method => :get}) do %>
-  <%= select_tag :user_role, options_for_select(@user_roles, @user.person_role), :onchange => "this.form.submit();" %>
-<% end %>
+  <%= form_tag({}, {:method => :get}) do %>
+    <fieldset class="inputs">
+      <legend>Search fields</legend>
+      <ul>
+        <li>
+          <%= label_tag 'user_role', 'Change Role' %>
+          <%= select_tag :user_role, options_for_select(@user_roles, @user.person_role), :onchange => "this.form.submit();" %>
+          <%= submit_tag "Update Role" %>
+        </li>
+      </ul>
+    </fieldset>
+  <% end %>
 <% end %>
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>
