@@ -26,7 +26,7 @@ module ApplicationHelper
   def nav_actions_page_link
     return if session[:userid_detail_id].blank?
 
-    link_to 'Your Actions', main_app.new_manage_resource_path
+    link_to 'Your Actions', main_app.new_manage_resource_path(current_role: session[:role])
   end
 
   def nav_about_page_link
