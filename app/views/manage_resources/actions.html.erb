@@ -15,6 +15,11 @@
 <% if appname_downcase == 'freecen' %>
   <%= link_to 'Instructional Videos', '/cms/instructional-videos', target: '_blank' %>, ( opens in new tab)<br>
 <% end %>
+<% if @user_roles.count > 1 %>
+<%= form_tag({}, {:method => :get}) do %>
+  <%= select_tag :user_role, options_for_select(@user_roles, @user.person_role), :onchange => "this.form.submit();" %>
+<% end %>
+<% end %>
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>
   <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
