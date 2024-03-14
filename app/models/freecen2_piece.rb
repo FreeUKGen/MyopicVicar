@@ -58,6 +58,8 @@ class Freecen2Piece
   field :vld_files, type: Array, default: [] # used for Scotland pieces where there can be multiple files for a single piece
   field :shared_vld_file, type: String # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
   field :admin_county, type: String # used by County Stats drilldown - can be different to chapman_code if a piece crosses county boundaries
+  field :piece_availablity, type: String, default: 'Y'
+  field :piece_digitised, type: String, default: 'N'
   validates_inclusion_of :admin_county, in: ChapmanCode.values
 
   belongs_to :freecen2_district, optional: true, index: true
@@ -751,6 +753,15 @@ class Freecen2Piece
     success = place.save
     message = 'Failed to update place' unless success
     [success, message]
+  end
+
+  def transcription_status
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    if csv_files.present?
+      inprogress_csv_files = csv_files.where(validation: false, incorporated: false).count
+      validatation_in_progress_files = csv_files(validation: true, incorporated: false).count
+    end
   end
 
   def piece_search_records

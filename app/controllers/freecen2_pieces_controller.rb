@@ -310,6 +310,12 @@ class Freecen2PiecesController < ApplicationController
     @scotland = scotland_county?(@chapman_code)
   end
 
+  def cap_report
+    @county = session [:county]
+    @chapman_code = session[:chapman_code]
+    @pieces = Freecen2Piece.where(admin_county: @chapman_code)
+  end
+
   def stats_index
     @county = session[:county]
     @chapman_code = session[:chapman_code]

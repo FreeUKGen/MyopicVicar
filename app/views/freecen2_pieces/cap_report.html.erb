@@ -1,0 +1,30 @@
+<% breadcrumb :freecen2_stats_pieces,  @county%>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width" >
+    <thead >
+      <tr>
+        <th class='sticky-header'>Piece Number (Chapman Code) </th>
+        <th class='sticky-header'>Registration District </th>
+        <th class='sticky-header'>Piece Name </th>
+        <th class='sticky-header'>Civil Parishes</th>
+        <th class='sticky-header'>Piece Exists</th>
+        <th class='sticky-header'>Digital Image Available</th>
+        <th class='sticky-header'>Transcription Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @pieces.each do |piece| %>
+        <tr>
+          <td><%= piece.display_piece_number(@chapman_code) %></td>
+          <td><%= piece.freecen2_district.name %></td>
+          <td><%= piece.name %></td>
+          <td><%= piece.civil_parish_names %></td>
+          <td><%= piece.piece_availablity %></td>
+          <td><%= piece.piece_digitised %></td>
+          <td><%= piece.transcription_status %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<br>
