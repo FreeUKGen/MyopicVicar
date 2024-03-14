@@ -1,29 +1,34 @@
 <% unless print_friendly %>
   <td>
-    <%= link_to("View #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url),rel:"nofollow", :class => "btn  btn--small" )%>
+    <%= link_to(
+      "View #{n}",
+      friendly_search_record_path(search_record.id, search_record.friendly_url),
+      rel: "nofollow",
+      class: "btn  btn--small"
+    ) %>
     <i><br>
-      <%= viewed(@search_query,search_record) %></i>
+      <%= viewed(@search_query, search_record) %></i>
   </td>
 <% end %>
-<td  >
+<td>
   <% search_record[:transcript_names].uniq.each_with_index do |name, i| %>
     <% if  name['type'] == 'primary' %>
       <% if i > 0 %>
-        <br />
-      <% end%>
+        <br/>
+      <% end %>
       <%= "#{name['first_name']} #{name['last_name']} " %>
     <% end %>
-  <% end%>
+  <% end %>
 </td>
-<td  >
+<td>
   <%= RecordType::display_name(search_record.record_type) %>
 </td>
-<td  >
+<td>
   <%= transcript_date(search_record) %>
 </td>
-<td  >
+<td>
   <%= county(search_record) %>
 </td>
-<td  >
+<td>
   <%= format_location(search_record) %>
 </td>

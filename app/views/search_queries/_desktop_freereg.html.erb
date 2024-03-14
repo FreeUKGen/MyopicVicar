@@ -1,55 +1,68 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+
 <table class="table--bordered table--striped table--data ">
   <thead>
     <tr>
       <% unless print_friendly %>
-        <th >Details</th>
+        <th class='sticky-header-freereg'>Details</th>
       <% end %>
-      <th>
-        <% unless print_friendly %><%= link_to('Person or persons',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::NAME)) %>
-        <% else%> Person or persons<% end%>
+      <th class='sticky-header-freereg'>
+        Person or persons
       </th>
-      <th>
-        <% unless print_friendly %><%= link_to('Record type',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::TYPE)) %>
-        <% else%> Record type<% end%>
+      <th class='sticky-header-freereg'>
+        Record type
       </th>
-      <th>
-        <% unless print_friendly %><%= link_to('Event date',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DATE)) %>
-        <% else%> Event date<% end%>
+      <th class='sticky-header-freereg'>
+        Event date
       </th>
-      <th>
-        <% unless print_friendly %><%= link_to('County',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
-        <% else%> County<% end%>
+      <th class='sticky-header-freereg'>
+        County
       </th>
-      <th>
-        <% unless print_friendly %><%= link_to("Place : Church : Register type",
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
-        <% else%> Place : Church : Register type<% end%>
+      <th class='sticky-header-freereg'>
+        Place : Church : Register type
       </th>
     </tr>
   </thead>
+
   <tbody>
     <% n = 0 %>
     <% search_results.each do |search_record| %>
       <% n = n + 1 %>
-      <tr id="<%=search_record.id%>">
-        <%= render partial: 'display_freereg_search_record_desktop', :locals => {:search_record => search_record, :print_friendly => print_friendly, :n => n}%>
+
+      <tr id="<%= search_record.id %>">
+        <%= render partial: "display_freereg_search_record_desktop",
+        locals: {
+          search_record: search_record,
+          print_friendly: print_friendly,
+          n: n
+        } %>
       </tr>
     <% end %>
+
     <% if ucf_results && ucf_results.length > 0 %>
       <tr>
-        <td colspan="6"> Additional possible matches with records containing Uncertain Character Formatting </td>
+        <td colspan="6">
+          Additional possible matches with records containing Uncertain Character Formatting
+        </td>
       </tr>
+
       <% ucf_results.each do |search_record| %>
         <% n = n + 1 %>
-        <tr id="<%=search_record.id%>">
-          <%= render partial: 'display_freereg_search_record_desktop', :locals => {:search_record => search_record, :print_friendly => print_friendly, :n => n}%>
+        <tr id="<%= search_record.id %>">
+          <%= render partial: "display_freereg_search_record_desktop",
+          locals: {
+            search_record: search_record,
+            print_friendly: print_friendly,
+            n: n
+          } %>
         </tr>
       <% end %>
     <% end %>
   </tbody>
 </table>
+
+<% unless print_friendly %>
+  <div class='text--center inline-block'>
+    <%= paginate @paginatable_array if @paginatable_array.present? %>
+  </div>
+<% end %>
