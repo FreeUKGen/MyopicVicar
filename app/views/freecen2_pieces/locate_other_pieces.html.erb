@@ -40,9 +40,9 @@
 <%= form_tag update_piece_status_freecen2_piece_path, :html => { :class => 'grid'} do %>
   <%= hidden_field_tag 'pieces[]', @freecen2_pieces %>
   <% label_tag 'piece_availablity', 'Piece Exists'%>
-  <%= select_tag :piece_availablity ,['Y',' N', 'P'] , {class: ' simple_form_bgcolour', id: 'piece_availablity' } %>
+  <%= select_tag :piece_availablity ,options_for_select(['Y',' N', 'P']) , class: ' simple_form_bgcolour', id: 'piece_availablity' %>
   <% label_tag 'piece_digitised', 'Digital images available'%>
-  <%= select_tag :piece_digitised , ['Y', 'P', 'F', 'N'], { class: ' simple_form_bgcolour', id: 'piece_digitised'} %>
+  <%= select_tag :piece_digitised , options_for_select(['Y', 'P', 'F', 'N']), class: ' simple_form_bgcolour', id: 'piece_digitised' %>
   <div  style="text-align: center">
     <%= submit_tag 'Update Piece', :class => 'ladda-button' , data: {'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff' } %>
     <%#= f.action :submit,  :as => :button,  :label =>  'Update Piece', :button_html => {name: 'commit', value: 'Update Number', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
