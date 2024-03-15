@@ -45,12 +45,12 @@
     <% end %>
     <ol>
       <li class="grid__item one-half lap-one-half palm-one-whole">
-        <%= label_tag 'piece_availablity', 'Piece Exists'%>
+        <label class="ttip" for="piece_availablity" tabindex="0">Piece Exists</label>
         <%= select_tag :piece_availablity ,options_for_select(['Y',' N', 'P']) , class: ' simple_form_bgcolour simple_form_position overide_selection_field_width', id: 'piece_availablity' %>
       </li>
       <li class="grid__item one-half lap-one-half palm-one-whole">
-        <%= label_tag 'piece_digitised', 'Digital images available'%>
-        <%= select_tag :piece_digitised , options_for_select(['Y', 'P', 'F', 'N']), class: ' simple_form_bgcolour simple_form_position overide_selection_field_width', id: 'piece_digitised' %>
+        <label class="ttip" for="piece_digitised" tabindex="0">Digital images available</label>
+        <%= select_tag :piece_digitised , options_for_select(['Y', 'P', 'F', 'N']), class: 'select', id: 'piece_digitised' %>
       </li>
     </ol>
     <div  style="text-align: center">
