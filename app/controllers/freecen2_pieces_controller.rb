@@ -170,6 +170,10 @@ class Freecen2PiecesController < ApplicationController
     end
   end
 
+  def update_piece_status
+    raise params.inspect
+  end
+
   def index_district_year
     get_user_info_from_userid
     if session[:chapman_code].present?
