@@ -37,7 +37,7 @@
 <br>
 <br>
 <h2 style="text-align: center">Update Piece Availablity and Piece  Digitised status</h2>
-<%= form_tag update_piece_status_freecen2_piece_path, :html => { :class => 'grid'}  %>
+<%= form_tag update_piece_status_freecen2_piece_path, :html => { :class => 'grid'} do %>
   <%= hidden_field_tag 'pieces[]', @freecen2_pieces %>
   <% label_tag 'piece_availablity', 'Piece Exists'%>
   <%= select_tag :piece_availablity ,['Y',' N', 'P'] , {class: ' simple_form_bgcolour', id: 'piece_availablity' } %>
