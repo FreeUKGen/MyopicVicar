@@ -43,18 +43,18 @@
     <% @freecen2_pieces.each do |piece| %>
       <%= hidden_field_tag "pieces[]", piece.id %>
     <% end %>
-    <ul>
-      <li>
+    <ol>
+      <li class="grid__item one-half lap-one-half palm-one-whole">
         <%= label_tag 'piece_availablity', 'Piece Exists'%>
         <%= select_tag :piece_availablity ,options_for_select(['Y',' N', 'P']) , class: ' simple_form_bgcolour simple_form_position overide_selection_field_width', id: 'piece_availablity' %>
       </li>
-      <li>
+      <li class="grid__item one-half lap-one-half palm-one-whole">
         <%= label_tag 'piece_digitised', 'Digital images available'%>
         <%= select_tag :piece_digitised , options_for_select(['Y', 'P', 'F', 'N']), class: ' simple_form_bgcolour simple_form_position overide_selection_field_width', id: 'piece_digitised' %>
       </li>
-    </ul>
+    </ol>
     <div  style="text-align: center">
-      <%= submit_tag 'Update Piece', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+      <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
     </div>
   <% end %>
 </fieldset>
