@@ -58,7 +58,7 @@ class Freecen2Piece
   field :vld_files, type: Array, default: [] # used for Scotland pieces where there can be multiple files for a single piece
   field :shared_vld_file, type: String # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
   field :admin_county, type: String # used by County Stats drilldown - can be different to chapman_code if a piece crosses county boundaries
-  field :piece_availablity, type: String, default: 'Y'
+  field :piece_availability, type: String, default: 'Y'
   field :piece_digitised, type: String, default: 'N'
   validates_inclusion_of :admin_county, in: ChapmanCode.values
 
