@@ -1045,18 +1045,6 @@ class SearchQuery
   end
 
   # new method for new UI 2023-12-28
-  def searched_records
-    search_result.records.values
-  end
-
-  # new method for new UI 2023-12-28
-  def sorted_and_paged_searched_records
-    search_results = self.searched_records
-    search_results = self.sort_results(search_results) unless search_results.nil?
-    search_results
-  end
-
-  # new method for new UI 2023-12-28
   def paginate_results(results,page_number,results_per_page)
     page_number ||= DEFAULT_PAGE
     results_per_page ||= RESULTS_PER_PAGE
