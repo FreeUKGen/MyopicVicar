@@ -210,22 +210,22 @@ class SearchQueriesController < ApplicationController
 
   def show
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    check_sort_by
+
+    @search_results, success, error_type = @search_query.search_records.to_a if params[:saved_search].present?
+    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     if @search_query.result_count.blank?
       flash[:notice] = 'Your search results are not available. Please repeat your search'
       redirect_back(fallback_location: new_search_query_path) && return
     end
 
-    @search_results, success, error_type = @search_query.search_records.to_a if params[:saved_search].present?
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
-
-    @save_search_id = params[:saved_search] if params[:saved_search].present?
-
     if appname_downcase == 'freebmd'
       @max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS
     else
       @max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
     end
+    @save_search_id = params[:saved_search] if params[:saved_search].present?
 
     if @search_query.result_count >= @max_result
       @result_count = @search_query.result_count
@@ -238,18 +238,15 @@ class SearchQueriesController < ApplicationController
         response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
       end
     end
-    
+
+    check_filter_by
+    create_paginatable_array(query: @search_query, results: @search_results)
+
     if !response || @search_results.nil? || @search_query.result_count.nil?
       logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
       flash[:notice] = 'Your search results are not available. Please repeat your search'
       redirect_to(new_search_query_path(search_id: @search_query)) && return
     end
-
-    check_sort_by
-
-    check_filter_by
-
-    create_paginatable_array(query: @search_query, results: @search_results)
   end
 
   def show_print_version
@@ -260,19 +257,27 @@ class SearchQueriesController < ApplicationController
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
 
     @printable_format = true
+
     if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
     else
-      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+
+      if MyopicVicar::Application.config.template_set == 'freebmd'
+        response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results 
+      else
+        response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      end
+
+      @paginatable_array = @search_results
+
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
-
-      create_paginatable_array(query: @search_query, results: @search_results) if appname_downcase == 'freereg'  
+ 
     end
     render 'show', layout: false
   end
