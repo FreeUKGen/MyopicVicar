@@ -156,6 +156,8 @@ module FreeregOptionsConstants
 
   DATERANGE_MINIMUM = 1530
 
+  DEFAULT_PAGE = 1
+
   END_FIELDS = ['transcribed_by', 'credit', 'file_line_number', 'film', 'film_number', 'line_id', 'processed_date']
 
   ENTRY_ORDER_DEFINITION = { 'ba' => {
@@ -316,6 +318,8 @@ module FreeregOptionsConstants
 
   REGISTER_TYPE_ORDER = ['Parish Register', "Archdeacon's Transcript", "Bishop's Transcript", 'Other Register', 'Extract of a Register',
                          'Other Document', "Phillimore's Transcript", "Dwelly's Transcript", 'Other Transcript', 'Memorial Inscription', 'Unknown', 'Unspecified']
+
+  RESULTS_PER_PAGE = 20
 
   SOURCE_NAME = ['Image Server', 'Other Server1', 'Other Server2', 'Other Server3']
 

@@ -1044,6 +1044,14 @@ class SearchQuery
     end
   end
 
+  # new method for new UI 2023-12-28
+  def paginate_results(results,page_number,results_per_page)
+    page_number ||= DEFAULT_PAGE
+    results_per_page ||= RESULTS_PER_PAGE
+    total = results.count
+    Kaminari.paginate_array(results, total_count: total).page(page_number).per(results_per_page)
+  end
+
   private
 
   def selected_sort_fields

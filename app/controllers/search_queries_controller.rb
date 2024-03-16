@@ -210,21 +210,42 @@ class SearchQueriesController < ApplicationController
 
   def show
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    check_sort_by
+
+    @search_results, success, error_type = @search_query.search_records.to_a if params[:saved_search].present?
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
-    flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
-    redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
-    if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    if @search_query.result_count.blank?
+      flash[:notice] = 'Your search results are not available. Please repeat your search'
+      redirect_back(fallback_location: new_search_query_path) && return
+    end
+
+    if appname_downcase == 'freebmd'
+      @max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS
+    else
+      @max_result = FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    end
+    @save_search_id = params[:saved_search] if params[:saved_search].present?
+
+    if @search_query.result_count >= @max_result
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
     else
-      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
-      if !response || @search_results.nil? || @search_query.result_count.nil?
-        logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
-        flash[:notice] = 'Your search results are not available. Please repeat your search'
-        redirect_to(new_search_query_path(search_id: @search_query)) && return
+      if MyopicVicar::Application.config.template_set == 'freebmd'
+        response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results
+      else
+        response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
       end
+    end
+
+    check_filter_by
+    create_paginatable_array(query: @search_query, results: @search_results)
+
+    if !response || @search_results.nil? || @search_query.result_count.nil?
+      logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
+      flash[:notice] = 'Your search results are not available. Please repeat your search'
+      redirect_to(new_search_query_path(search_id: @search_query)) && return
     end
   end
 
@@ -236,17 +257,27 @@ class SearchQueriesController < ApplicationController
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
 
     @printable_format = true
+
     if @search_query.result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
       @result_count = @search_query.result_count
       @search_results = []
       @ucf_results = []
     else
-      response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+
+      if MyopicVicar::Application.config.template_set == 'freebmd'
+        response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results 
+      else
+        response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display
+      end
+
+      @paginatable_array = @search_results
+
       if !response || @search_results.nil? || @search_query.result_count.nil?
         logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
         flash[:notice] = 'Your search results are not available. Please repeat your search'
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
+ 
     end
     render 'show', layout: false
   end
@@ -268,7 +299,77 @@ class SearchQueriesController < ApplicationController
 
   private
 
+
+  def assign_value(value, default)
+    value ||= default
+    value
+  end
+
+  def create_paginatable_array(query:, results:)
+    @results_per_page = assign_value(params[:results_per_page], FreeregOptionsConstants::RESULTS_PER_PAGE)
+    @page = assign_value(params[:page], FreeregOptionsConstants::DEFAULT_PAGE)
+    @paginatable_array = query.paginate_results(results, @page, @results_per_page)
+    @paginatable_array
+  end
+
+  def check_filter_by
+    if params[:filter_option].present?
+      if params[:filter_option] == 'Clear Filter'
+        params[:filter_option] = nil
+      else
+        @filter_condition = params[:filter_option]
+        case appname_downcase
+        when 'freereg'
+          freereg_filterby = { 'Baptism' => 'ba',
+                                'Marriage' => 'ma',
+                                'Burial' => 'bu'}
+          @reg_record_type = freereg_filterby[params[:filter_option]]
+          @search_results = filtered_results_freereg
+
+          if @search_results.blank?
+            flash[:notice] = 'Your filter request found no records. Please select a different filter'
+          end
+        when 'freebmd'
+          @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
+        end
+      end
+    end
+  end
+
+  def check_sort_by
+    if params[:sort_option].present?
+      @sort_condition = params[:sort_option]
+      case appname_downcase
+      when 'freereg'
+        freereg_sortby = { 'Person' => 'transcript_names',
+                           'Record Type' => 'record_type',
+                           'Event Date' => 'search_date',
+                           'County' => 'chapman_code',
+                           'Place' => 'location'}
+        order_field = freereg_sortby[params[:sort_option]]
+      when 'freebmd'
+        order_field = params[:sort_option]
+      end
+      sort_objects(condition: order_field, query: @search_query)
+    end
+  end
+
+  def filtered_results_freereg
+    @search_results.select { |r| r['record_type'] == @reg_record_type }
+  end
+
   def search_params
     params.require(:search_query).permit!
+  end
+
+  def sort_objects(condition:, query:)
+    if condition == query.order_field
+      # reverse the directions
+      query.order_asc = !query.order_asc unless params[:page].present?
+    else
+      query.order_field = condition
+      query.order_asc = true
+    end
+    query.save!
   end
 end
