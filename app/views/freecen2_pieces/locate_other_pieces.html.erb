@@ -56,7 +56,12 @@
           <%= select_tag :piece_digitised , options_for_select(['Y', 'P', 'F', 'N']), class: 'select', id: 'piece_digitised', tabindex: 0 %>
         </li>
       </ol>
-      <p>Please note: The following pieces will be updated: <strong><%= pieces.join(',') %></strong></p>
+      <p>Please note: The following pieces will be updated:</p>
+      <ol>
+        <% pieces.each |piece| do %>
+        <li>piece.number</li>
+        <% end %>
+      </ol>
       <div  style="text-align: center">
         <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
       </div>
