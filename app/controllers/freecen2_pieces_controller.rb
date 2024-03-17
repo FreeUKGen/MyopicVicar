@@ -205,6 +205,7 @@ class Freecen2PiecesController < ApplicationController
     session[:type] = 'locate_other_pieces'
     find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
     @freecen2_pieces = get_pieces(piece, year)
+    @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
     @associated_pieces = get_pieces(piece_name, year) if find_associated_pieces
   end
 
