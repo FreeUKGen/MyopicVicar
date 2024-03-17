@@ -36,28 +36,33 @@
 </div>
 <br>
 <br>
-<h2 style="text-align: center">Update piece status</h2>
-<fieldset>
-  <legend>Update piece status</legend>
-  <%= form_tag update_piece_status_freecen2_piece_path, class: 'grid' do %>
-    <% @freecen2_pieces.each do |piece| %>
-      <%= hidden_field_tag "pieces[]", piece.id %>
+<% if @freecen2_pieces.reject!(&:blank?).present? %>
+  <h3 style="text-align: center">Update piece status</h2>
+  <fieldset>
+    <legend>Update piece status</legend>
+    <% pieces = @associated_pieces.present? ? @associated_pieces : @freecen2_pieces %>
+    <%= form_tag update_piece_status_freecen2_piece_path, class: 'grid' do %>
+      <% pieces.each do |piece| %>
+        <%= hidden_field_tag "pieces[]", piece.id %>
+      <% end %>
+      <%= hidden_field_tag :current_piece_number, @number  %>
+      <ol>
+        <li class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="ttip" for="piece_availablity" tabindex="0">Piece exists</label>
+          <%= select_tag :piece_availability ,options_for_select(['Y',' N', 'P']) , class: ' select', id: 'piece_availablity' , tabindex: 0 %>
+        </li>
+        <li class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="ttip" for="piece_digitised" tabindex="0">Digital images available</label>
+          <%= select_tag :piece_digitised , options_for_select(['Y', 'P', 'F', 'N']), class: 'select', id: 'piece_digitised', tabindex: 0 %>
+        </li>
+      </ol>
+      <p>Please note: The following pieces will be updated: <strong><%= pieces.join(',') %></strong></p>
+      <div  style="text-align: center">
+        <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+      </div>
     <% end %>
-    <ol>
-      <li class="grid__item one-half lap-one-half palm-one-whole">
-        <label class="ttip" for="piece_availablity" tabindex="0">Piece Exists</label>
-        <%= select_tag :piece_availablity ,options_for_select(['Y',' N', 'P']) , class: ' select', id: 'piece_availablity' %>
-      </li>
-      <li class="grid__item one-half lap-one-half palm-one-whole">
-        <label class="ttip" for="piece_digitised" tabindex="0">Digital images available</label>
-        <%= select_tag :piece_digitised , options_for_select(['Y', 'P', 'F', 'N']), class: 'select', id: 'piece_digitised' %>
-      </li>
-    </ol>
-    <div  style="text-align: center">
-      <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
-    </div>
-  <% end %>
-</fieldset>
+  </fieldset>
+<% end %>
 <script type='text/javascript'>
   Ladda.bind( 'button[type=submit]' );
 </script>

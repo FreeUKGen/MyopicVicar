@@ -155,6 +155,19 @@ class Freecen2Piece
       [year, piece, census_fields]
     end
 
+    def check_piece_parts(piece)
+      piece_parts = piece.split('_')
+      continue = true
+      if piece_parts.count > 1
+        part = piece_parts[1].delete('^0-9')
+        continue = piece_parts[1] != part
+        piece = "#{piece_parts[0]_part}"
+      else
+        continue = false
+      end
+      [continue, piece]
+    end
+
     def before_year_totals(time)
       last_id = BSON::ObjectId.from_time(time)
       totals_pieces = {}

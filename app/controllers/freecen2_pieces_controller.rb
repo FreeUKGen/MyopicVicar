@@ -171,7 +171,19 @@ class Freecen2PiecesController < ApplicationController
   end
 
   def update_piece_status
-    raise params.inspect
+    piece_ids = params[:pieces]
+    current_piece_number = params[:current_piece_number]
+    piece_ids.each do |piece_id|
+      piece = Freecen2Piece.find(piece_id)
+      piece.update_attributes(piece_availability: params[:piece_availability], piece_digitised: params[:piece_digitised])
+      if piece.errors.any?
+        flash[:notice] = "The update of the piece name failed #{piece.errors.full_messages}."
+        redirect_back(fallback_location: locate_other_pieces_freecen2_piece_path(current_piece_number)) && return
+      else
+        flash[:notice] = 'Update was successful'
+        redirect_to locate_other_pieces_freecen2_piece_path(current_piece_number)
+      end
+    end
   end
 
   def index_district_year
@@ -191,12 +203,21 @@ class Freecen2PiecesController < ApplicationController
     @number = params[:number]
     year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(params[:number], '')
     @freecen2_pieces = []
+    @associated_pieces = []
     session[:type] = 'locate_other_pieces'
-    Freecen2Piece.year(year).order_by(number: 1).each do |test_piece|
-      next unless test_piece.number.include?(piece)
+    find_associated_pieces?, piece_number = Freecen2Piece.check_piece_parts(piece)
+    @freecen2_pieces = get_pieces(piece)
+    @associated_pieces = get_pieces(piece_name) if find_associated_pieces?
+  end
 
-      @freecen2_pieces << test_piece
+  def get_pieces(piece_number)
+    pieces = []
+    Freecen2Piece.year(year).order_by(number: 1).each do |test_piece|
+      next unless test_piece.number.include?(piece_number)
+
+      pieces << test_piece
     end
+    pieces
   end
 
   def missing_place
