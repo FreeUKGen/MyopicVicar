@@ -205,10 +205,10 @@ class Freecen2PiecesController < ApplicationController
     session[:type] = 'locate_other_pieces'
     find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
     @freecen2_pieces = get_pieces(piece)
-    @associated_pieces = get_pieces(piece_name) if find_associated_pieces
+    @associated_pieces = get_pieces(piece_name, year) if find_associated_pieces
   end
 
-  def get_pieces(piece_number)
+  def get_pieces(piece_number, year)
     pieces = []
     Freecen2Piece.year(year).order_by(number: 1).each do |test_piece|
       next unless test_piece.number.include?(piece_number)
