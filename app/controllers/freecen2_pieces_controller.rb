@@ -177,11 +177,11 @@ class Freecen2PiecesController < ApplicationController
       piece = Freecen2Piece.find(piece_id)
       piece.update_attributes(piece_availability: params[:piece_availability], piece_digitised: params[:piece_digitised])
       if piece.errors.any?
-        flash[:notice] = "The update of the piece name failed #{piece.errors.full_messages}."
+        flash[:notice] = "The update of the piece status failed #{piece.errors.full_messages}."
         redirect_back(fallback_location: locate_other_pieces_freecen2_piece_path(current_piece_number)) && return
       else
         flash[:notice] = 'Update was successful'
-        redirect_to locate_other_pieces_freecen2_piece_path(current_piece_number)
+        redirect_to locate_other_pieces_freecen2_piece_path(current_piece_number) && return
       end
     end
   end
