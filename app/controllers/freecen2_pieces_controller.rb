@@ -206,7 +206,7 @@ class Freecen2PiecesController < ApplicationController
     find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
     @freecen2_pieces = get_pieces(piece, year)
     @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
-    @associated_pieces = get_pieces(piece_name, year) if find_associated_pieces
+    @associated_pieces = get_pieces(piece_number, year) if find_associated_pieces
   end
 
   def get_pieces(piece_number, year)
