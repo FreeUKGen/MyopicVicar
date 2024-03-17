@@ -161,7 +161,7 @@ class Freecen2Piece
       if piece_parts.count > 1
         part = piece_parts[1].delete('^0-9')
         continue = piece_parts[1] != part
-        piece = "#{piece_parts[0]_part}"
+        piece = "#{piece_parts[0]}_#{part}"
       else
         continue = false
       end
