@@ -202,12 +202,10 @@ class Freecen2PiecesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
     @number = params[:number]
     year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(params[:number], '')
-    @freecen2_pieces = []
-    @associated_pieces = []
     session[:type] = 'locate_other_pieces'
-    find_associated_pieces?, piece_number = Freecen2Piece.check_piece_parts(piece)
+    find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
     @freecen2_pieces = get_pieces(piece)
-    @associated_pieces = get_pieces(piece_name) if find_associated_pieces?
+    @associated_pieces = get_pieces(piece_name) if find_associated_pieces
   end
 
   def get_pieces(piece_number)
