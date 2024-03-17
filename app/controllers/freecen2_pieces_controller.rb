@@ -204,7 +204,7 @@ class Freecen2PiecesController < ApplicationController
     year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(params[:number], '')
     session[:type] = 'locate_other_pieces'
     find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
-    @freecen2_pieces = get_pieces(piece)
+    @freecen2_pieces = get_pieces(piece, year)
     @associated_pieces = get_pieces(piece_name, year) if find_associated_pieces
   end
 
