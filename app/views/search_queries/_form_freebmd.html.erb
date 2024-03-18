@@ -72,7 +72,7 @@
                         </div>
                         <div class="flex_item">
                             <label class="accessibility" for="from_year">Start Year</label>
-                            <%= number_field_tag 'search_query[start_year]', set_value(@search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                            <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
                         </div>
                     </div>
                 </fieldset>
@@ -88,7 +88,7 @@
                             </div>
                         <div class="flex_item">
                             <label class="accessibility" for="to_year">To Year</label>
-                            <%= number_field_tag 'search_query[end_year]', set_value(@search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+                            <%= number_field_tag 'search_query[end_year]', set_value_or_default(1993, @search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
                             </div>
                     </div>
                 </fieldset>
@@ -201,42 +201,19 @@
                 
             </li>
 
-            <li class="grid__item desk-wide-one-eighth desk-one-quarter lap-one-half palm-one-whole volumes">
-                <div class='labels'>
-                    <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
-                        <%= "Volume".html_safe %>
-                        <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
-                    <% end %>
-                </div>
-                <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', tabindex: "0" %>
-            </li>
-
-            <li class="grid__item desk-wide-one-eighth desk-one-quarter lap-one-half palm-one-whole pages">
-                <div class='labels'>
-                    <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
-                        <%= "Page".html_safe %>
-                        <span class="ttip__text"><%#= info_tag_text[:page]%></span>
-                    <% end %>
-                </div>
-                <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', tabindex: "0"%>
-            </li>
-
             <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole countiess">
                 <div class='labels'>
                     <div class="countieslabel">
-                        <%= label_tag 'search_query_chapman_codes', "Counties".html_safe, class: "ttip" do %>
-                            <%= "Counties".html_safe %>
-                            <small class="additional">Select none, one or more Counties (hold Ctrl for multiple)</small>
+                        <%= label_tag 'search_query_chapman_codes', "Counties/Country".html_safe, class: "ttip" do %>
+                            <%= "Counties/Country".html_safe %>
+                            <small class="additional">Start typing county or country names</small>
                         <% end %>
                     </div>
                 </div>
 
                 <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
                 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-                <%= f.select :chapman_codes, raw("<marquee>#{grouped_options_for_select(grouped_options, selected_key = key)}</marquee>"), {include_blank: 'All Counties', include_hidden: false}, {multiple: true, id: 'search_query_chapman_codes', tabindex: "0", style:"overflow-x: scroll !important"} %>
-                <%#= f.select(:chapman_codes, {}, multiple: true) do %>
-                    <%#= grouped_options_for_select(grouped_options, selected_key = key)%>
-                <%# end %>
+                <%= autocomplete_field_tag 'search_query[chapman_codes]','','/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
             </li>
 
             <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
@@ -252,6 +229,25 @@
                 <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
                 
             </li>
+            <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole volumes">
+            <div class='labels'>
+                <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
+                    <%= "Volume".html_safe %>
+                    <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
+                <% end %>
+            </div>
+            <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
+        </li>
+
+        <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole pages">
+            <div class='labels'>
+                <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
+                    <%= "Page".html_safe %>
+                    <span class="ttip__text"><%#= info_tag_text[:page]%></span>
+                <% end %>
+            </div>
+            <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
+        </li>
         </ol>
 
       <script>
@@ -261,6 +257,41 @@
           $( "#last_name" ).autocomplete({
               source: '/unique_surnames/?term='
           });
+          function split( val ) {
+      return val.split( /,\s*/ );
+          }
+
+
+          $('#search_query_chapman_codes').autocomplete({
+              source: function (request, response) {
+                $.ajax({
+                  autoFocus: true,
+                  url: "/search_queries/select_counties/", // should be with '/'
+                  dataType: 'json',
+                  data: { prefix: request.term },
+                  success: function(data) {
+                    // call response to return the result to autocomplete box
+                    console.log(data);
+                    response(data);
+                  }
+                });
+              },
+              focus: function() {
+                // prevent value inserted on focus
+                  return false;
+              },
+              select: function( event, ui ) {
+                  var terms = split( this.value );
+                  // remove the current input
+                  terms.pop();
+                  // add the selected item
+                  terms.push( ui.item.value );
+                  // add placeholder to get the comma-and-space at the end
+                  terms.push( "" );
+                  this.value = terms.join( ", " );
+                  return false;
+             }
+            });
       </script>
 
     </fieldset>
@@ -361,10 +392,14 @@
     <script>
         $('#search_query_districts').empty();
         $(document).ready(function() {
-            $("#search_query_chapman_codes").change(function() {
+            $("#search_query_chapman_codess").change(function() {
                 var counties = [];
+                function pushValue(item) {
+                    counties.push(item);
+                };
                 $.each($("#search_query_chapman_codes option:selected"), function() {
-                    counties.push($(this).val())
+                    var valuesArray = $(this).val().split(" ");
+                    valuesArray.forEach(pushValue);
                 });
                 $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
@@ -373,6 +408,19 @@
                         selected_counties: counties
                     }
                 });
+            });
+            $("#search_query_chapman_codes").change(function(event) {
+                    var counties =  $(this).val();
+                //$.each($("#search_query_chapman_codes option:selected"), function() {
+                  //  counties.push($(this).val())
+                //});
+                    $.ajax({
+                        url: "/search_queries/districts_of_selected_counties",
+                        type: "GET",
+                        data: {
+                            selected_counties: counties
+                        }
+                    });
             });
 
             $("#from_year").change(function() {
@@ -423,22 +471,6 @@
                     });
                 };
             };
-
-            
-            if ($("#search_query_chapman_codes option:selected").length) {
-                var counties = [];
-                $.each($("#search_query_chapman_codes option:selected"), function() {
-                    counties.push($(this).val())
-                });
-                $.ajax({
-                    url: "/search_queries/districts_of_selected_counties",
-                    type: "GET",
-                    data: {
-                        selected_counties: counties
-                    }
-                });
-            };
-
 
             var aad_value = $('#death_select_box').val();
             var aad_selection = document.getElementById('death_select_box');
@@ -499,7 +531,24 @@
                 }
             };
 
+            var vol_and_page_display_controller = function() {
+                var district_val = $('#search_query_districts').val();
+                if (district_val.length != 0) {
+                    $('.volumes').show();
+                    $('.pages').show();
+                } else {
+                    $('#volume').val('');
+                    $('#page').val('');
+                    $('.volumes').hide();
+                    $('.pages').hide();
+                }
+            };
+            vol_and_page_display_controller();
             aad_selection_function();
+
+            $('#search_query_districts').change(function(){
+                vol_and_page_display_controller();
+            });
 
             //$('#death_select_box').prop('disabled', 'disabled');
             $('.checkboxtag, .checkAll').change(function() {

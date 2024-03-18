@@ -71,14 +71,23 @@ class SearchQueriesController < ApplicationController
   def create
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
-
+    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    selected_counties = search_params['chapman_codes'].split(',').compact
+    selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
+    county_codes = []
+    county_hash.each {|country, counties|
+      selected_counties.each{|c|
+        county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
+      }
+    }
+    search_params['chapman_codes'] = county_codes
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
       @search_results, success, error_type = @search_query.search_records.to_a
       error = error_type.to_i if error_type.present?
-      redirect_to search_query_path(@search_query, anchor: "bmd_content") and return if success
+      redirect_to search_query_path(@search_query) and return if success
       redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
       redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
     else
@@ -341,11 +350,21 @@ class SearchQueriesController < ApplicationController
 
   def districts_of_selected_counties
     districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
+    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    selected_counties = params[:selected_counties].split(',').compact
+    selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
+    county_codes = []
+    county_hash.each {|country, counties|
+      selected_counties.each{|c|
+        county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
+      }
+    }
     @districts = Hash.new
-    params[:selected_counties].reject { |c| c.empty? }.each { |c|
+    county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
       @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
+    @districts = {} if selected_counties.include?("All England (AVN BDF etc.)") || selected_counties.include?("All Wales (AGY BRE etc.)")
   end
 
   def end_year_val
@@ -418,6 +437,20 @@ class SearchQueriesController < ApplicationController
       records = result.values.map{|h| BestGuess.new(h)}#BestGuess.get_best_guess_records(select_hash)
     end
     records
+  end
+
+  def select_counties
+    prefix = params[:prefix].split(',').pop.strip.downcase
+    @counties_group = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    county_keys = []
+    counties_array = @counties_group.each{|ctry, county| county_keys << county.keys }
+    @counties = county_keys.flatten.select { |s| s.downcase.include?(prefix) }
+    respond_to do |format|
+      format.html
+      format.json {
+        render json: @counties
+      }
+    end
   end
 
   private

@@ -240,7 +240,12 @@ module SearchQueriesHelper
       return value
   end
 
+  def set_value_default field_value=nil, default
+    field_value.present? ? field_value : default
+  end
+
   def set_checkbox_checked_value field_value:, value: nil
+    return true if field_value.blank?
     return field_value.include?value
   end
 
