@@ -179,11 +179,10 @@ class Freecen2PiecesController < ApplicationController
       if piece.errors.any?
         flash[:notice] = "The update of the piece status failed #{piece.errors.full_messages}."
         redirect_back(fallback_location: locate_other_pieces_freecen2_piece_path(current_piece_number)) && return
-      else
-        flash[:notice] = 'Update was successful'
-        redirect_to locate_other_pieces_freecen2_piece_path(current_piece_number) && return
       end
     end
+    flash[:notice] = 'Update was successful'
+    redirect_to locate_other_pieces_freecen2_piece_path(current_piece_number)
   end
 
   def index_district_year
