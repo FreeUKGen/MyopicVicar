@@ -182,7 +182,7 @@ class Freecen2PiecesController < ApplicationController
       end
     end
     flash[:notice] = 'Update was successful'
-    redirect_to locate_other_pieces_freecen2_piece_path(current_piece_number)
+    redirect_to locate_other_pieces_freecen2_piece_path(number: current_piece_number)
   end
 
   def index_district_year
