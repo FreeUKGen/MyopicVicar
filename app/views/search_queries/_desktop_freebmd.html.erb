@@ -51,7 +51,7 @@
                       <% if district.present? %>
                         <% district_number = District.where(DistrictName: search_record[:District]).first.DistrictNumber %>
                         <%#= link_to "#{search_record[:District]}", "/districts/#{district_number}/" %>
-                        <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
+                        <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: params[:id]) %>
                         <%#= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><!--span class="accessibility"><%#= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span-->
                       <% else %>
                         <%= search_record[:District] %>
