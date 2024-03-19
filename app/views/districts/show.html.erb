@@ -1,6 +1,6 @@
 <%#= link_to "#{app_icons[:left_arrow_pink]} Back".html_safe, "/districts/districts_list?params=#{@district.DistrictName.first}", class: " btn   btn--small" %>
 <%#= link_to "Back to selection".html_safe, district_alphabet_selection_path(@district.DistrictName.first), class: " btn   btn--small" %>
-<%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
+<%= show_page_back_link(link_to_hash: {district: @district, search_query: @search_query, search_record: @search_record})%>
 <div class="grid">
   <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
     <h1 class="beta push-half--top flush--bottom">District Information: <%= "#{@district.district_name_display_format}"%></h1>
