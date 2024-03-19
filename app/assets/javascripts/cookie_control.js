@@ -10,7 +10,7 @@ $(document).ready(function() {
     }
   };
 /*
-  // Switch Cookie checkbox value
+  /// Switch Cookie checkbox value
   var toggleCookieCheckbox = function() {
     if (getCookie('userAcceptance') == 1) {
       $('#cookie_check_box').prop('checked', true);
@@ -19,7 +19,7 @@ $(document).ready(function() {
     };
   };
 */
-  /*donate cta
+  /*donate cta*/
   window.setBigGiveCookie = function(name,value) {
     var expires = "";
     var date = new Date();
