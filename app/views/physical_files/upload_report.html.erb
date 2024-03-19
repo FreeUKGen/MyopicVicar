@@ -1,17 +1,17 @@
 <%= render 'flash_notice' %>
 <div id = "csvdownload">
-  <%= form_for(:upload_report, url: upload_report_physical_file_path, method: :get, data: { confirm: "You sure you want to download a CSV file?"}) do |f| %>
+  <%= form_for(:upload_report, url: upload_report_physical_file_path, method: :get) do |f| %>
     <fieldset class="inputs">
       <legend>Select timeframe for the report</legend>
       <p ></p>
       <ol class="grid">
         <li class="grid__item one-third palm-one-whole">
           <%= f.label :period_from, "Start Date: " %>
-          <%= f.date_field :period_from, min: '2020-01-01', max: Date.today %>
+          <%= f.date_field :period_from, @start_date,min: '2020-01-01', max: Date.today %>
         </li>
         <li class="grid__item one-third palm-one-whole">
           <%= f.label :period_to, "End Date: " %>
-          <%= f.date_field :period_to, max: Date.today, min: '2020-01-01' %>
+          <%= f.date_field :period_to, @end_date,max: Date.today, min: '2020-01-01' %>
         </li>
             <%= f.submit 'Update', :class => "btn   btn--small", title: 'Update timeframe of the report',data: { disable_with: false } %>
           </fieldset>
@@ -19,17 +19,17 @@
       </div>
 <table>
   <tr>
-    <th>Perod</th>
+    <th>Time Perod</th>
     <th>Roles</th>
     <th>Upload Count</th>
   </tr>
-  <% @uploaders_count.each do |u| %>
   <tr>
-    <td><%= "#{@start_date.to_date} - #{@end_date.to_date}" %></td>
-    <td>
-        <%= u[0] %>
-    </td>
-    <td><%= u[1] %></td>
+    <td><%= "#{@start_date.to_date.strftime("%B, %d, %Y")} - #{@end_date.to_date.strftime("%B, %d, %Y")}" %></td>
+    <% @uploaders_count.each do |u| %>
+      <td>
+          <%= u[0] %>
+      </td>
+      <td><%= u[1] %></td>
+     <% end %>
   </tr>
-  <% end %>
 </table>

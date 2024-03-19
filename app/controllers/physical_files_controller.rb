@@ -269,8 +269,13 @@ class PhysicalFilesController < ApplicationController
   end
 
   def upload_report
-    @start_date = params['upload_report']['period_from'].present? ? params['upload_report']['period_from'].to_datetime : '01/01/2020'.to_datetime
-    @end_date = params['upload_report']['period_to'].present? ? params['upload_report']['period_to'].to_datetime : Date.today.to_datetime
+    @start_date = '01/01/2020'.to_datetime
+    @end_date = Date.today.to_datetime
+    upload_report_params = params['upload_report']
+    if upload_report_params.present?
+      @start_date = upload_report_params['period_from'].to_datetime if upload_report_params['period_from'].present?
+      @end_date = upload_report_params['period_to'].to_datetime if upload_report_params['period_to'].present?
+    end
     uploaded_files = PhysicalFile.where(c_at: @start_date..@end_date)
     uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
     uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
