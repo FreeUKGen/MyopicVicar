@@ -23,13 +23,13 @@
     <th>Roles</th>
     <th>Upload Count</th>
   </tr>
-  <tr>
-    <td><%= "#{@start_date.to_date.strftime("%B, %d, %Y")} - #{@end_date.to_date.strftime("%B, %d, %Y")}" %></td>
-    <% @uploaders_count.each do |u| %>
+  <% @uploaders_count.each do |u| %>
+    <tr>
+      <td><%= "#{@start_date.to_date.strftime("%B, %d, %Y")} - #{@end_date.to_date.strftime("%B, %d, %Y")}" %></td>
       <td>
           <%= u[0] %>
       </td>
       <td><%= u[1] %></td>
-     <% end %>
-  </tr>
+    </tr>
+  <% end %>
 </table>
