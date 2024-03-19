@@ -210,10 +210,9 @@
                         <% end %>
                     </div>
                 </div>
-
                 <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
                 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-                <%= autocomplete_field_tag 'search_query[chapman_codes]','','/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
+                <%= autocomplete_field_tag 'search_query[chapman_codes]',set_county_value(@search_query.chapman_codes),'/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
             </li>
 
             <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
