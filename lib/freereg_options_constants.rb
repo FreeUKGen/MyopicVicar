@@ -261,7 +261,7 @@ module FreeregOptionsConstants
 
   HEADER_FLAG = /\A\#\z/
 
-  ISSUES = ['Data Question', 'Website Problem', 'Volunteering Question', 'Genealogical Question', 'Enhancement Suggestion', 'Thank-you' , 'General Comment']
+  ISSUES = ['Data Question', 'Website Problem', 'Volunteering Question', 'Genealogical Question', 'Enhancement Suggestion', 'Thank you' , 'General Comment']
 
   LOCATION_FIELDS = ['county', 'place', 'church_name', 'register_type']
 

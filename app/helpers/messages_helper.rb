@@ -724,7 +724,7 @@ module MessagesHelper
       'Data Problem' => 'RE: Thank you for reporting a problem with our data',
       'Volunteering Question' => 'RE: Thank you for question about volunteering',
       'General Comment' => 'RE: Thank you for the general comment',
-      'Thank-you' => 'RE: Thank you for your review',
+      'Thank you' => 'RE: Thank you for your review',
       'Genealogical Question' => 'RE: Thank you for a genealogical question',
       'Enhancement Suggestion' => 'RE: Thank you for the suggested enhancement'
     }
