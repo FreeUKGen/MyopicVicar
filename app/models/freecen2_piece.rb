@@ -773,7 +773,7 @@ class Freecen2Piece
     vld_files = self.freecen1_vld_files
     if csv_files.present?
       inprogress_csv_files = csv_files.where(validation: false, incorporated: false).count
-      validatation_in_progress_files = csv_files(validation: true, incorporated: false).count
+      validatation_in_progress_files = csv_files.where(validation: true, incorporated: false).count
     end
   end
 
