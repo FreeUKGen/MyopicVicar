@@ -37,6 +37,7 @@ class SearchRecord
   belongs_to :freecen1_vld_file, index: true, optional: true
   belongs_to :place, index: true, optional: true
   belongs_to :freecen2_place, index: true, optional: true
+  belongs_to :freecen2_place_of_birth, index: true, class_name: 'Freecen2Place', optional: true
 
   field :annotation_ids, type: Array # , :typecast => 'ObjectId'
 

@@ -136,6 +136,7 @@ class UseridDetailsController < ApplicationController
     @current_user = get_user
     @syndicates = Syndicate.get_syndicates
     @appname = appname_downcase
+    @authourised_roles = ['system_administrator', 'volunteer_coordinator']
   end
 
   def general
