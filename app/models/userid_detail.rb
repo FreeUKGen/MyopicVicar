@@ -387,6 +387,12 @@ class UseridDetail
     return @userids.sort_by(&:downcase)
   end
 
+  def get_roles
+    all_roles = self.secondary_role
+    all_roles << self.person_role
+    all_roles.uniq
+  end
+
   def send_invitation_to_create_password
     type = self.person_role
     UserMailer.invitation_to_register_researcher(self).deliver if type == 'researcher'

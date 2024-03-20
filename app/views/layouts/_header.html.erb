@@ -1,12 +1,14 @@
-<header class="site__header" >
+<header class="site__header" style='padding-top: 20px;' >
   <div class="container">
     <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
       <% case appname_downcase %>
       <% when 'freecen' %>
       <% unless device_type == :mobile%>
-        <div class="bnner-horz cen_unit_headers cen_unit">
-          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
-          <%= my_heritage_720_90_cen %>
+        <div class="bnner-horz cen_unit_headers cen_unit" style="box-shadow: none;">
+          <fieldset style="padding:5px;">
+            <legend align="center">Advertisement</legend>
+              <%= my_heritage_720_90_cen %>
+          </fieldset>
         </div>
         <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
           <div class="cookieConsent island island--teal flush--bottom">
@@ -21,10 +23,12 @@
       <% end %>
       <% when 'freereg' %>
       <% unless device_type == :mobile%>
-        <div class="bnner-horz reg_adsense reg_unit reg_header">
-          <a href ="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/?_ga=2.145101431.251616756.1548792447-1735478806.1548792447"><%= image_tag 'png/header-donate.png', class: "donations", alt: "Donations - FreeUKGenealogy" %></a>
-          <%= my_heritage_720_90_first %>
-          </div>
+        <div class="bnner-horz reg_adsense reg_unit reg_header" style="box-shadow: none;">
+          <fieldset style="padding:5px;">
+            <legend align="center">Advertisement</legend>
+              <%= my_heritage_720_90_first %>
+          </fieldset>
+        </div>
         <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
           <div class="cookieConsent island island--teal flush--bottom">
             <div id="cookieText" >

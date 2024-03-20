@@ -50,7 +50,12 @@ class Freecen1VldEntry
       search_rec = SearchRecord.find_by(freecen_individual_id: individual_rec._id)
       return if search_rec.blank?
 
-      search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place)
+      valid_pob, place_id = Freecen2Place.valid_place(birth_county, birth_place)
+      if valid_pob
+        search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place, freecen2_place_of_birth: place_id)
+      else
+        search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place, freecen2_place_of_birth: nil)
+      end
     end
 
     def set_search_record_pob_place(vld_entry, birth_place)
