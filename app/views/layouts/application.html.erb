@@ -226,9 +226,10 @@
     </script>
     <script type="text/javascript">
       var el = document.getElementById("trigger-offcanvas-old");
+      var elm = document.getElementById("menu_container");
       var switchOffCanvas = function() {
         classie.toggle(document.body, 'offcanvas--active');
-        classie.toggle(el, 'site__header__menu-btn--active');
+        classie.toggle(elm, 'site__header__menu-btn--active');
       }
       if (el.addEventListener) {
         el.addEventListener('click', switchOffCanvas, false);

@@ -368,6 +368,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
   get 'userid_details/list_saved_entry', to: 'userid_details#list_saved_entry', :as => :list_saved_entries_userid_details
   get 'userid_details/:id/saved_entries_as_csv' => 'userid_details#saved_entries_as_csv', as: :saved_entries_as_csv
+  get 'userid_details/:id/saved_entries_as_gedcom' => 'userid_details#saved_entries_as_gedcom', as: :saved_entries_as_gedcom
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do
@@ -528,6 +529,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/report(.:format)', :to => 'search_queries#report', :as => :search_query_report
   get 'search_queries/selection',  :to => 'search_queries#selection', :as => :select_search_query_report
   get 'search_queries/districts_of_selected_counties' => 'search_queries#districts_of_selected_counties'
+  get 'search_queries/select_counties' => 'search_queries#select_counties'#, defaults: { format: 'json'}
   get 'search_queries/wildcard_options_dropdown' => 'search_queries#wildcard_options_dropdown'
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   get 'search_queries/:id/download_as_csv' => 'search_queries#download_as_csv', as: :search_results_download_as_csv
@@ -535,8 +537,8 @@ MyopicVicar::Application.routes.draw do
   post 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
   get 'search_queries/:id/compare_search/:saved_search_id', to: 'search_queries#compare_search', as: :compare_search
   resources :search_queries do
-    #get :autocomplete_BestGuess_Surname, :on => :collection
-    #get :autocomplete_BestGuess_GivenName, :on => :collection
+    get :autocomplete_BestGuess_Surname, :on => :collection
+    get :autocomplete_BestGuess_GivenName, :on => :collection
   end
 
   resources :postems
@@ -626,6 +628,13 @@ MyopicVicar::Application.routes.draw do
   get "entry-information/:id/show", :to => 'best_guess_hash#show', :as => :citation_url
   get "/cgi/information.pl", :to => 'best_guess_hash#bmd1_url'
   resources :best_guess_hash
+
+  get 'unique_forenames/:prefix/', :to => 'best_guess#unique_forenames'
+  get 'unique_surnames/:prefix/', :to => 'best_guess#unique_surnames'
+
+  resources :unique_forenames
+
+  resources :unique_surnames
 
 
   # This line mounts Refinery's routes at the root of your application.
