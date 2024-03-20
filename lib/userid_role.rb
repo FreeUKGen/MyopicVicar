@@ -221,7 +221,7 @@ module UseridRole
                                  'Upload New Batch', 'Offline Reports', 'Manage Images']
   when 'freecen'
     COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Civil Parishes',
-                                 'Locate Pieces', 'Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated',
+                                 'Locate Pieces', 'CAP Report','Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated',
                                  'Review Incorporated Batches', 'Review Specific Batch', 'Upload New Batch', 'County Statistics',
                                  'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places']
   when 'freebmd'
@@ -251,7 +251,8 @@ module UseridRole
     'Manage VLD Files' => '/freecen1_vld_files',
     'Manage FreeCEN1 Places' => '/places',
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
-    'Locate Pieces' => '/freecen2_pieces/enter_number'
+    'Locate Pieces' => '/freecen2_pieces/enter_number',
+    'CAP Report' => '/freecen2_pieces/cap_report'
 
   }
   COUNTY_OPTIONS_TITLES = {
