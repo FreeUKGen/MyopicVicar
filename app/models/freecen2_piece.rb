@@ -772,9 +772,18 @@ class Freecen2Piece
     csv_files = self.freecen_csv_files
     vld_files = self.freecen1_vld_files
     if csv_files.present?
-      inprogress_csv_files = csv_files.where(validation: false, incorporated: false).count
+      inprogress_csv_files = csv_files.where(validation: false, incorporated: false)
+    end
+    inprogress_status = 'In Progress' if inprogress_csv_files.present?
+  end
+
+  def validation_status
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    if csv_files.present?
       validatation_in_progress_files = csv_files.where(validation: true, incorporated: false).count
     end
+    inprogress_status = 'In Progress' if inprogress_csv_files.present?
   end
 
   def piece_search_records
