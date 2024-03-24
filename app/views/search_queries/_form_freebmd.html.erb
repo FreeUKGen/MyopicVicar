@@ -30,7 +30,7 @@
 <div class="bmd_search_form">
     <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="input">
-          <legend>Main search options</legend>
+        <legend>Main search options</legend>
         <ol class="grid search_form">
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">
                 <div class='labels push-half--bottom'>
@@ -210,6 +210,7 @@
                         <% end %>
                     </div>
                 </div>
+
                 <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
                 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
                 <%= autocomplete_field_tag 'search_query[chapman_codes]',set_county_value(@search_query.chapman_codes),'/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
