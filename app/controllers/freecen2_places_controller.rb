@@ -366,11 +366,17 @@ class Freecen2PlacesController < ApplicationController
     @county = session[:county]
     @chapman_code = @place.chapman_code
     @records = @place.search_records.count
+    @search_pobs_exist = Freecen2PLace.search_records_birth_places(@place)
     max_records = get_max_records(@user)
-    return unless  @records.present? && @records.to_i >= max_records
-
-    flash[:notice] = 'There are too many records for an on-line relocation'
-    redirect_to(action: 'show') && return
+    if @search_pobs_exist
+      flash[:notice] = 'Place is used in Search Record Places of Birth so must be renamed via Move Search Links process'
+      redirect_to(action: 'show') && return
+    end
+    if @records.present? && @records.to_i >= max_records
+      flash[:notice] = 'There are too many records for an on-line relocation'
+      redirect_to(action: 'show') && return
+    end
+    return
   end
 
   def review_move
