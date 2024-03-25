@@ -168,7 +168,7 @@ namespace :freecen do
         output_to_log(message_file, message_line)
       end
       if old_search_records_pobs.positive? && fixit
-        records_updated = SearchRecord.collection.update_many({freecen2_place_of_birth_id: old_place_record.id}, '$set' => { birth_chapman_code: new_place_record.chapman_code, birth_place: new_place_record.place_name  freecen2_place_of_birth_id: new_place_record.id})
+        records_updated = SearchRecord.collection.update_many({freecen2_place_of_birth_id: old_place_record.id}, '$set' => {birth_chapman_code: new_place_record.chapman_code, birth_place: new_place_record.place_name, freecen2_place_of_birth_id: new_place_record.id})
         message_line = "Search Records Places Of Birth updated = #{records_updated.inspect}"
         output_to_log(message_file, message_line)
       end
