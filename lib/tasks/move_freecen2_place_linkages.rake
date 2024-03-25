@@ -102,15 +102,15 @@ namespace :freecen do
       old_search_records = SearchRecord.where(freecen2_place_id: old_place_record._id).count
       message_line = "Old Place Search Records count = #{old_search_records}"
       output_to_log(message_file, message_line)
-      csv_records_present = old_search_records.positive? && SearchRecord.where(freecen2_place_id: old_place_record._id).first.freecen_csv_file_id.present? ? true : false
+      csv_records_present = old_search_records.positive? && SearchRecord.where(freecen2_place_id: old_place_record._id).first.freecen_csv_file_id.exists? ? true : false
       message_line = "Old Place Search Records - CSV File(s) = #{csv_records_present}"
       output_to_log(message_file, message_line)
-      vld_records_present = old_search_records.positive? && SearchRecord.where(freecen2_place_id: old_place_record._id).first.freecen1_vld_file_id.present? ? true : false
+      vld_records_present = old_search_records.positive? && SearchRecord.where(freecen2_place_id: old_place_record._id).first.freecen1_vld_file_id.exists? ? true : false
       message_line = "Old Place Search Records - VLD File(s) = #{vld_records_present}"
       output_to_log(message_file, message_line)
       message_line = '** Search Records Places Of Birth **'
       output_to_log(message_file, message_line)
-      old_search_records_pobs = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, birth_place: old_place_record.place_name).count
+      old_search_records_pobs = SearchRecord.where(freecen2_place_of_birth_id: old_place_record.id).count
       message_line = "Old Place name used in Search Records Place Of Birth count = #{old_search_records_pobs}"
       output_to_log(message_file, message_line)
       csv_files_list = '['
@@ -118,7 +118,7 @@ namespace :freecen do
       if old_search_records_pobs.positive?
         # get CSV file names where OLd Place is used as a Birth Place
         csv_file_ids = SortedSet.new
-        csv_files = SearchRecord.where(:birth_chapman_code => old_place_record.chapman_code, :birth_place => old_place_record.place_name, :freecen_csv_file_id.ne => nil)
+        csv_files = SearchRecord.where(:freecen2_place_of_birth_id => old_place_record.id, :freecen_csv_file_id.ne => nil)
         csv_files.each do |search_rec|
           csv_file_ids << search_rec.freecen_csv_file_id
         end
@@ -137,7 +137,7 @@ namespace :freecen do
         # get VLD file names where OLd Place is used as a Birth Place
         individ_file_ids = SortedSet.new
         vld_file_ids = SortedSet.new
-        individ_recs = SearchRecord.where(:birth_chapman_code =>  old_place_record.chapman_code, :birth_place =>  old_place_record.place_name, :freecen_csv_file_id => nil, :freecen_individual_id.ne => nil )
+        individ_recs = SearchRecord.where(:freecen2_place_of_birth_id => old_place_record.id, :freecen_csv_file_id => nil, :freecen_individual_id.ne => nil )
         individ_recs.each do |search_rec|
           individ_file_ids << search_rec.freecen_individual_id
         end
@@ -160,26 +160,6 @@ namespace :freecen do
         end
       end
 
-      alternative_names = SortedSet.new
-      alternative_names_list = '['
-      if old_place_record.alternate_freecen2_place_names.present?
-        old_place_record.alternate_freecen2_place_names.each do |alt_name|
-          alt_name_used = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, birth_place: alt_name.alternate_name).count
-          alternative_names << alt_name.alternate_name if alt_name_used.positive?
-          alt_name_used = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, birth_place: alt_name.alternate_name.downcase.titleize).count
-          alternative_names << alt_name.alternate_name if alt_name_used.positive?
-        end
-        unless alternative_names.size.zero?
-          alternative_names.each do |alt_pob|
-            alternative_names_list += "#{alt_pob}, "
-          end
-          alternative_names_used_list = alternative_names_list[0..-3] + ']'
-        end
-        alt_names_info = alternative_names_list == '[' ? 'None' : alternative_names_used_list
-        message_line = "Old Place Alternate Place Names used in Search Records Place of Birth = #{alt_names_info}"
-        output_to_log(message_file, message_line)
-      end
-
       # UPDATE Search recs for Place Id
 
       if old_search_records.positive? && fixit
@@ -188,7 +168,7 @@ namespace :freecen do
         output_to_log(message_file, message_line)
       end
       if old_search_records_pobs.positive? && fixit
-        records_updated = SearchRecord.collection.update_many({ birth_chapman_code: old_place_record.chapman_code, birth_place: old_place_record.place_name }, '$set' => { birth_chapman_code: new_place_record.chapman_code, birth_place: new_place_record.place_name })
+        records_updated = SearchRecord.collection.update_many({freecen2_place_of_birth_id: old_place_record.id}, '$set' => { birth_chapman_code: new_place_record.chapman_code, birth_place: new_place_record.place_name  freecen2_place_of_birth_id: new_place_record.id})
         message_line = "Search Records Places Of Birth updated = #{records_updated.inspect}"
         output_to_log(message_file, message_line)
       end

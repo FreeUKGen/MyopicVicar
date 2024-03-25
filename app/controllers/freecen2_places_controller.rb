@@ -389,10 +389,6 @@ class Freecen2PlacesController < ApplicationController
     @place_to_rec = Freecen2Place.find_by(chapman_code: county_to, place_name: place_to)
     return unless params[:commit] == 'Move Place Linkages'
 
-    #
-    # RAKE TASK HERE
-    #
-
     userid = @user.userid
     logger.warn("FREECEN:MOVE_FREECEN2_PLACE_LINKAGES: Starting rake task for #{userid} county #{county_from} place #{place_from}")
     if params[:review_move_fc2_place][:mode] == 'Update'
