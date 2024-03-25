@@ -50,25 +50,30 @@
             <td class="weight--semibold"> <%= number_with_delimiter(@place_from_rec.freecen2_pieces.count) %></td>
             <td class="weight--semibold"> <%= number_with_delimiter(@place_to_rec.freecen2_pieces.count) %></td>
           </tr>
-        </table>
-      </div>
-    </section>
-  </div>
-  <div style="text-align: center">
-    <fieldset class="input" style="text-align: center">
-      <legend><b> Rake Run Mode: </b><i>select one</i></legend>
-      NOTE: Review just reports on linkages that would be changed. Update reports and makes the actual changes.<br>
-      <i>(It is <b>strongly</b> recommended to run the Rake in Review mode first and then if the log in the Email looks ok, run again in Update mode.)</i>
-      <ol class="grid">
-        <li class="grid__item one-half lap-one-half palm-one-whole" id="mode_review_input">
-          <%= f.radio_button :mode, 'Review', :checked =>true %> Review
-        </li>
-        <li class="grid__item one-half lap-one-half palm-one-whole" id="mode_update_input">
-          <%= f.radio_button :mode, 'Update', :checked =>false %> Update
-        </li>
-      </ol>
-    </fieldset>
-    <%= f.submit 'Move Place Linkages',  :class => "btn   btn--small"%>
-    <%= link_to 'Cancel', move_freecen2_place_path(@place_from_rec) %>
-  </div>
+          tr>
+          <td>Used as Place of Birth in Search Records:</td>
+          <td class="weight--semibold"> <%= @place_from_used_as_pob %></td>
+          <td class="weight--semibold"> <%= -@place_to_used_as_pob%></td>
+        </tr>
+      </table>
+    </div>
+  </section>
+</div>
+<div style="text-align: center">
+  <fieldset class="input" style="text-align: center">
+    <legend><b> Rake Run Mode: </b><i>select one</i></legend>
+    NOTE: Review just reports on linkages that would be changed. Update reports and makes the actual changes.<br>
+    <i>(It is <b>strongly</b> recommended to run the Rake in Review mode first and then if the log in the Email looks ok, run again in Update mode.)</i>
+    <ol class="grid">
+      <li class="grid__item one-half lap-one-half palm-one-whole" id="mode_review_input">
+        <%= f.radio_button :mode, 'Review', :checked =>true %> Review
+      </li>
+      <li class="grid__item one-half lap-one-half palm-one-whole" id="mode_update_input">
+        <%= f.radio_button :mode, 'Update', :checked =>false %> Update
+      </li>
+    </ol>
+  </fieldset>
+  <%= f.submit 'Move Place Linkages',  :class => "btn   btn--small"%>
+  <%= link_to 'Cancel', move_freecen2_place_path(@place_from_rec) %>
+</div>
 <% end %>

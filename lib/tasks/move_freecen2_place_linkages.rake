@@ -130,21 +130,21 @@ namespace :freecen do
         end
         unless csv_files_list == '['
           csv_files_list_info = csv_files_list[0..-3] + ']'
-          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info}, **** these files MAY need to be updated and reloaded after the linkages move has been run in UPDATE mode"
+          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info} - these files MAY need to be updated and reloaded after the linkages move has been run in UPDATE mode"
           output_to_log(message_file, message_line)
         end
 
         # get VLD file names where OLd Place is used as a Birth Place
         individ_file_ids = SortedSet.new
         vld_file_ids = SortedSet.new
-        individ_recs = SearchRecord.where(:freecen2_place_of_birth_id => old_place_record.id, :freecen_csv_file_id => nil, :freecen_individual_id.ne => nil )
+        individ_recs = SearchRecord.where(:freecen2_place_of_birth_id => old_place_record.id, :freecen_csv_file_id => nil, :freecen_individual_id.ne => nil)
         individ_recs.each do |search_rec|
           individ_file_ids << search_rec.freecen_individual_id
         end
         unless individ_file_ids.size.zero?
           individ_file_ids.each do |individ_file_id|
             individ_rec = FreecenIndividual.find_by(_id: individ_file_id)
-            vld_file_ids  << individ_rec.freecen1_vld_file_id if individ_rec.present?
+            vld_file_ids << individ_rec.freecen1_vld_file_id if individ_rec.present?
           end
           unless vld_file_ids.size.zero?
             vld_file_ids.each do |vld_file_id|
@@ -154,10 +154,23 @@ namespace :freecen do
           end
           unless vld_files_list == '['
             vld_files_list_info = vld_files_list[0..-3] + ']'
-            message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info}, **** these files MAY need to be downloaded as CSVProc files, updated and reloaded after the linkages move has been run in UPDATE mode"
+            message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info} - these files MAY need to be downloaded as CSVProc files, updated and reloaded after the linkages move has been run in UPDATE mode"
             output_to_log(message_file, message_line)
           end
         end
+        alternative_names_used = SortedSet.new
+        place_name_titleized = old_place_record.place_name.titleize
+        birth_places_used = SearchRecord.where(freecen2_place_of_birth_id: old_place_record.id, birth_place: { '$ne': place_name_titleized }).pluck(:birth_place)
+
+        birth_places_used.each do |birth_place|
+          alternative_names_used << birth_place
+        end
+        alternative_names_list = '['
+        alternative_names_used.each do |alt_name|
+          alternative_names_list += "#{alt_name}, "
+        end
+        alternative_names_info = alternative_names_list[0..-3] + ']'
+
       end
 
       # UPDATE Search recs for Place Id
@@ -168,7 +181,7 @@ namespace :freecen do
         output_to_log(message_file, message_line)
       end
       if old_search_records_pobs.positive? && fixit
-        records_updated = SearchRecord.collection.update_many({freecen2_place_of_birth_id: old_place_record.id}, '$set' => {birth_chapman_code: new_place_record.chapman_code, birth_place: new_place_record.place_name, freecen2_place_of_birth_id: new_place_record.id})
+        records_updated = SearchRecord.collection.update_many({ freecen2_place_of_birth_id: old_place_record.id }, '$set' => { birth_chapman_code: new_place_record.chapman_code, birth_place: new_place_record.place_name, freecen2_place_of_birth_id: new_place_record.id })
         message_line = "Search Records Places Of Birth updated = #{records_updated.inspect}"
         output_to_log(message_file, message_line)
       end
@@ -191,15 +204,15 @@ namespace :freecen do
         message_line = '**** ACTION MAY BE REQUIRED ****'
         output_to_log(message_file, message_line)
         unless csv_files_list == '['
-          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info}, **** these files MAY need to be updated and reloaded."
+          message_line = "Old Place Place of Birth is used in the following CSVProc Files #{csv_files_list_info} -  these files MAY need to be updated and reloaded."
           output_to_log(message_file, message_line)
         end
         unless vld_files_list == '['
-          message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info}, **** these files MAY need to be downloaded as CSVProc files, updated and reloaded."
+          message_line = "Old Place Place of Birth is used in the following VLD Files #{vld_files_list_info} - these files MAY need to be downloaded as CSVProc files, updated and reloaded."
           output_to_log(message_file, message_line)
         end
         unless alternative_names_list == '['
-          message_line = "Old Place Alternate Place Names used in Search Records Place of Birth = #{alternative_names_used_list}, **** these should be added to #{new_place_record.place_name} as Alternative names."
+          message_line = "Old Place Alternate Place Names used in Search Records Place of Birth = #{alternative_names_info} - these should be added to #{new_place_record.place_name} as Alternative names."
           output_to_log(message_file, message_line)
         end
       end

@@ -111,7 +111,7 @@ class Freecen2PlacesController < ApplicationController
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent districts, sub districts or civil parishes') && return
     else
       used_as_birth_place = Freecen2Place.search_records_birth_places?(@place)
-      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent search record birth places') && return if used_as_birth_place
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are search records with this place recorded as birth place') && return if used_as_birth_place
 
     end
     # @place.update_attributes(disabled: 'true', data_present: false) - disabled flag is now obsolete 2022/11
@@ -366,10 +366,10 @@ class Freecen2PlacesController < ApplicationController
     @county = session[:county]
     @chapman_code = @place.chapman_code
     @records = @place.search_records.count
-    @search_pobs_exist = Freecen2PLace.search_records_birth_places(@place)
+    @search_pobs_exist = Freecen2Place.search_records_birth_places?(@place)
     max_records = get_max_records(@user)
     if @search_pobs_exist
-      flash[:notice] = 'Place is used in Search Record Places of Birth so must be renamed via Move Search Links process'
+      flash[:notice] = 'Place is used in Search Record Places of Birth so must be renamed via Move Freecen2 Place process'
       redirect_to(action: 'show') && return
     end
     if @records.present? && @records.to_i >= max_records
@@ -384,9 +384,11 @@ class Freecen2PlacesController < ApplicationController
     county_from = session[:move_old_county]
     place_from = session[:move_old_place]
     @place_from_rec = Freecen2Place.find_by(chapman_code: county_from, place_name: place_from)
+    @place_from_used_as_pob = Freecen2Place.search_records_birth_places?(@place_from_rec) ? 'Yes' : 'No'
     county_to = session[:move_new_county]
     place_to = session[:move_new_place]
     @place_to_rec = Freecen2Place.find_by(chapman_code: county_to, place_name: place_to)
+    @place_to_used_as_pob = Freecen2Place.search_records_birth_places?(@place_to_rec) ? 'Yes' : 'No'
     return unless params[:commit] == 'Move Place Linkages'
 
     userid = @user.userid
