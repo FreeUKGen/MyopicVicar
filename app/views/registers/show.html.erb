@@ -2,7 +2,7 @@
 <p style="text-align: center">Details of the <b><%= @register_type %></b> register for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
 </p>
 <%= render 'flash_notice' %>
-<%= render 'nav_header' unless @user.person_role == "contacts_coordinator" %>
+<%= render 'nav_header' unless session[:role] == "contacts_coordinator" %>
 <br>
 <%if @register.nil? %>
   <p> There is no register with that document number.</p>

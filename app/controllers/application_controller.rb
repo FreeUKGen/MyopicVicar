@@ -167,7 +167,7 @@ class ApplicationController < ActionController::Base
       @user_userid = @user.userid
       @first_name = @user.person_forename
       @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+      @roles = UseridRole::OPTIONS.fetch(session[:role])
     end
   end
 
@@ -176,7 +176,7 @@ class ApplicationController < ActionController::Base
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     @userid = @user.id
-    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    @roles = UseridRole::OPTIONS.fetch(session[:role])
   end
 
   def get_userids_and_transcribers

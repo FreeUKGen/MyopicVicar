@@ -61,7 +61,7 @@ class CountiesController < ApplicationController
   def selection
     @user = get_user
     @first_name = @user.person_forename if @user.present?
-    session[:county] = 'all' if @user.person_role == 'system_administrator'
+    session[:county] = 'all' if session[:role] == 'system_administrator'
     case params[:county]
     when 'Browse counties'
       @counties = County.application_counties

@@ -8,7 +8,7 @@
 <div class="text--center push--bottom">
   <%= link_to "Revise Search", search_names_freecen2_place_path, :class => "btn   btn--small " %>
   <%= link_to "New Search", search_names_freecen2_place_path(new_search: true), :class => "btn   btn--small  " %>
-  <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
+  <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(session[:role]) %>
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path(name:session[:search_names][:search]), method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
   <% end%>
 </div>
@@ -25,7 +25,7 @@
           <small> Opens new tab</small></th>
         <th class='sticky-header t20'>Source:</th>
         <th class='sticky-header t20'>Notes<br>
-          <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(@user.person_role) %>
+          <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(session[:role]) %>
             <th class='sticky-header '>Action<br>
             </tr>
           <% end%>
@@ -42,7 +42,7 @@
                 <td > <%= locate(place.latitude,place.longitude) %></td>
                 <td class='t20'> <%= place.source%></td>
                 <td class='t20'> <%= place.place_notes%></td>
-                <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(@user.person_role) %>
+                <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(session[:role]) %>
                   <td ><%= link_to 'Edit', edit_freecen2_place_path(place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %></td>
                 </tr>
               <% end%>

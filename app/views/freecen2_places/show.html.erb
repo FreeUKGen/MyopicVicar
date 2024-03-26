@@ -4,12 +4,12 @@
   <section class="island ">
     <h4 style="text-align: center">The Freecen2 Place <%= @place.place_name%> in <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h4>
     <div style="text-align: center">
-      <% if %w[data_manager system_administrator county_coordinator country_coordinator validator master_county_coordinator executive_director project_manager].include?(@user.person_role)%>
+      <% if %w[data_manager system_administrator county_coordinator country_coordinator validator master_county_coordinator executive_director project_manager].include?(session[:role])%>
         <%= link_to 'Edit Freecen2 Place Information', edit_freecen2_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %>
         <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place'  %>
         <%= link_to 'Delete Freecen2 Place', freecen2_place_path(@place), method: :delete,  data: { confirm: 'Are you sure you want to delete this Place? It will not happen if there are dependants!' }, :class => "btn   btn--small", title: 'Deletes this place'  %>
       <% end%>
-      <% if %w[system_administrator].include?(@user.person_role)%>
+      <% if %w[system_administrator].include?(session[:role])%>
         <%= link_to 'Change Freecen2 Place Name', rename_freecen2_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Change the name of the place within its county'  %>
       <% end%>
       <div class="grid__item  ">

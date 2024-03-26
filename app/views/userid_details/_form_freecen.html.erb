@@ -5,13 +5,13 @@
     <%= f.input :email_address,:label => "Email address (Required)", :hint => 'Please be extremely careful to make sure this is correct. An incorrect one means that reports and messages will not be received nor will the password reset work.', :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <%= f.input :alternate_email_address,:label => "Alternate email address (Desirable)", :input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <%= f.input :address,:label => "Physical location",:hint => "Just a country will do",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
-    <% unless @user.person_role == 'researcher' %>
+    <% unless session[:role] == 'researcher' %>
       <%= f.input :telephone_number,:label => "Telephone number (Desirable)",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
       <%= f.input :fiche_reader, :as => :boolean,:label => " Have a Fiche Reader"%>
     <% end%>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>
       <%= f.input :userid,:label => "UserID (Required)",:input_html => { :class => "simple_form_bgcolour",:size => 40 }%>
-      <% if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator') && !session[:my_own] %>
+      <% if (session[:role] == 'system_administrator' || session[:role] == 'volunteer_coordinator') && !session[:my_own] %>
         <%= f.input :syndicate,:label => "Syndicate  (Required)",:include_blank => false, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
         <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in #{appname} (Required)", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
         <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: false, :hint => "Hold Ctrl or Shift to select multiple roles" %>
@@ -33,10 +33,10 @@
           <!--span>I hereby prefer not to sign, the <%#= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br /-->
         </div>
       <% end %>
-      <% if %w[system_administrator executive_director county_coordinator master_county_coordinator syndicate_coordinator volunteer_coordinator].include?(@user.person_role) && !session[:my_own] %>
+      <% if %w[system_administrator executive_director county_coordinator master_county_coordinator syndicate_coordinator volunteer_coordinator].include?(session[:role]) && !session[:my_own] %>
         <%= f.input :syndicate,:label => "Syndicate",:include_blank => false,  :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
       <% end%>
-      <% if %w[system_administrator executive_director county_coordinator master_county_coordinator syndicate_coordinator].include?(@user.person_role) && !session[:my_own] %>
+      <% if %w[system_administrator executive_director county_coordinator master_county_coordinator syndicate_coordinator].include?(session[:role]) && !session[:my_own] %>
         <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 } %>
         <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: true, :hint => "Hold Ctrl or Shift to select multiple roles" unless appname.downcase == 'freecen'%>
       <% end %>

@@ -43,14 +43,14 @@ module ApplicationHelper
   def nav_help_pages_link
     if session[:userid_detail_id].present? || controller_name == 'sessions'
       get_user_info_from_userid
-      if @user.present? && @user.person_role.present?
-        if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'
+      if @user.present? && session[:role].present?
+        if session[:role] == 'transcriber' || session[:role] == 'trainee' || session[:role] == 'pending'
           if controller_name == 'pages'
             link_to 'Help', '/cms/help'
           else
             link_to 'Help', '/cms/information-for-transcribers'
           end
-        elsif @user.person_role == 'researcher'
+        elsif session[:role] == 'researcher'
           if controller_name == 'pages'
             link_to 'Help', '/cms/help'
           else
@@ -162,7 +162,7 @@ module ApplicationHelper
       @user_id = @user.id
       @userid = @user.id
       @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+      @roles = UseridRole::OPTIONS.fetch(session[:role])
     end
   end
 
