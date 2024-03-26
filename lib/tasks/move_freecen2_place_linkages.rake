@@ -44,9 +44,13 @@ namespace :freecen do
       output_to_log(message_file, message_line)
       message_line = "#{old_place_record.inspect}"
       output_to_log(message_file, message_line)
+      message_line = "#{old_place_record.alternate_freecen2_place_names.inspect}"
+      output_to_log(message_file, message_line)
       message_line = '*** New Place record ***'
       output_to_log(message_file, message_line)
       message_line = "#{new_place_record.inspect}"
+      output_to_log(message_file, message_line)
+      message_line = "#{new_place_record.alternate_freecen2_place_names.inspect}"
       output_to_log(message_file, message_line)
       message_line = '** Census years **'
       output_to_log(message_file, message_line)
@@ -115,6 +119,7 @@ namespace :freecen do
       output_to_log(message_file, message_line)
       csv_files_list = '['
       vld_files_list = '['
+      alternative_names_list = '['
       if old_search_records_pobs.positive?
         # get CSV file names where OLd Place is used as a Birth Place
         csv_file_ids = SortedSet.new
@@ -159,13 +164,12 @@ namespace :freecen do
           end
         end
         alternative_names_used = SortedSet.new
-        place_name_titleized = old_place_record.place_name.titleize
-        birth_places_used = SearchRecord.where(freecen2_place_of_birth_id: old_place_record.id, birth_place: { '$ne': place_name_titleized }).pluck(:birth_place)
-
+        old_place_name_titleized = old_place_record.place_name.titleize
+        new_place_name_titleized = new_place_record.place_name.titleize
+        birth_places_used = SearchRecord.where(freecen2_place_of_birth_id: old_place_record.id, birth_place: { '$ne': old_place_name_titleized }).pluck(:birth_place)
         birth_places_used.each do |birth_place|
-          alternative_names_used << birth_place
+          alternative_names_used << birth_place unless birth_place.titleize == new_place_name_titleized || birth_place.titleize == old_place_name_titleized
         end
-        alternative_names_list = '['
         alternative_names_used.each do |alt_name|
           alternative_names_list += "#{alt_name}, "
         end
@@ -194,9 +198,13 @@ namespace :freecen do
         output_to_log(message_file, message_line)
         message_line = "#{old_place_record.inspect}"
         output_to_log(message_file, message_line)
+        message_line = "#{old_place_record.alternate_freecen2_place_names.inspect}"
+        output_to_log(message_file, message_line)
         message_line = '*** New Place record ***'
         output_to_log(message_file, message_line)
         message_line = "#{new_place_record.inspect}"
+        output_to_log(message_file, message_line)
+        message_line = "#{new_place_record.alternate_freecen2_place_names.inspect}"
         output_to_log(message_file, message_line)
         Freecen2PlaceCache.refresh(new_place_record.chapman_code)
       end
