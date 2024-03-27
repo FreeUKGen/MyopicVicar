@@ -81,18 +81,18 @@
             </div>
           </div>
           <% when 'freebmd'%>
-          <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
-        <% end%>
-      <% else %>
-        <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results, :ucf_results =>  @ucf_results}) %>
-      <% end %>
-    <% end%>
-    <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-      <br>
-      <%= render 'nav_header' %>
+            <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
+          <% end%>
+        <% else %>
+          <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results, :ucf_results =>  @ucf_results}) %>
+        <% end %>
+      <% end%>
     <% end %>
+  </section>
+  <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+    <br>
+    <%= render 'nav_header' %>
   <% end %>
-</section>
 <% else %>
     <%= render 'no_results' %>
 <% end %>
