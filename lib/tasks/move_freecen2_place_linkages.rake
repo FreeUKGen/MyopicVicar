@@ -11,7 +11,7 @@ namespace :freecen do
       @report_email_log += "\n"
       @report_email_log += message_line
       message_file.puts message_line.to_s
-      # p message_line.to_s
+      p message_line.to_s
     end
 
     # START
