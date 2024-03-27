@@ -22,7 +22,7 @@
     <p style="color:red"> <b>Please click on Review Details, where you can check that the Place details are the ones you intend before proceeding.</b></p>
     <p  <b>NOTE: It may take some time to gather the information.</b></p>
   <div class="form-actions">
-    <%= f.submit 'Review Details',  :class => "btn   btn--small"%>
+    <%= f.submit 'Review Details',  :class => "btn   btn--small", data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Reviewing Details" }%>
   </div>
   <%= link_to 'Cancel', freecen2_place_path(@place) %>
 </div>

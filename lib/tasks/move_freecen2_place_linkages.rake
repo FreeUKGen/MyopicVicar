@@ -1,7 +1,7 @@
 namespace :freecen do
   desc 'Moves freecen2 place linkages from one place to another'
 
-  task :move_freecen2_place_linkages, [:userid, :old, :new, :fix] => :environment do |_t, args|
+  task :move_freecen2_place_linkages, [:userid, :old, :new, :fix, :debug] => :environment do |_t, args|
     # based on freecen:convert_freecen2_place_id rake task
     # Print the time before start the process
 
@@ -11,7 +11,10 @@ namespace :freecen do
       @report_email_log += "\n"
       @report_email_log += message_line
       message_file.puts message_line.to_s
-      p message_line.to_s
+      return unless @debug_output
+
+      time_now = Time.now.strftime('%Y%m%d%H%M%S')
+      p "Time: #{time_now} - #{message_line}"
     end
 
     # START
@@ -20,6 +23,7 @@ namespace :freecen do
     old_place = args.old.to_s
     new_place = args.new.to_s
     fixit = args.fix.to_s == 'Y'
+    @debug_output = args.debug.present?
     mode = fixit ? 'UPDATE' : 'REVIEW only'
     userid = args.userid.present? ? args.userid.to_s : 'NA'
     file_for_warning_messages = "log/move_freecen2_place_#{userid}_#{start_time.strftime('%Y%m%d%H%M')}.log"
