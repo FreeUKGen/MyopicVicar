@@ -50,6 +50,11 @@
             <td class="weight--semibold"> <%= number_with_delimiter(@place_from_rec.freecen2_pieces.count) %></td>
             <td class="weight--semibold"> <%= number_with_delimiter(@place_to_rec.freecen2_pieces.count) %></td>
           </tr>
+          <tr>
+            <td>Used as Place of Birth in Search Records:</td>
+            <td class="weight--semibold"> <%= @place_from_used_as_pob %></td>
+            <td class="weight--semibold"> <%= -@place_to_used_as_pob%></td>
+          </tr>
         </table>
       </div>
     </section>

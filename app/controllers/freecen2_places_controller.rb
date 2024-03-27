@@ -384,11 +384,11 @@ class Freecen2PlacesController < ApplicationController
     county_from = session[:move_old_county]
     place_from = session[:move_old_place]
     @place_from_rec = Freecen2Place.find_by(chapman_code: county_from, place_name: place_from)
-    #@place_from_used_as_pob = Freecen2Place.search_records_birth_places?(@place_from_rec) ? 'Yes' : 'No' - needs index for this to work
+    @place_from_used_as_pob = Freecen2Place.search_records_birth_places?(@place_from_rec) ? 'Yes' : 'No'
     county_to = session[:move_new_county]
     place_to = session[:move_new_place]
     @place_to_rec = Freecen2Place.find_by(chapman_code: county_to, place_name: place_to)
-    #@place_to_used_as_pob = Freecen2Place.search_records_birth_places?(@place_to_rec) ? 'Yes' : 'No' - needs index for this to work
+    @place_to_used_as_pob = Freecen2Place.search_records_birth_places?(@place_to_rec) ? 'Yes' : 'No'
     return unless params[:commit] == 'Move Place Linkages'
 
     userid = @user.userid
@@ -400,6 +400,8 @@ class Freecen2PlacesController < ApplicationController
     end
     logger.warn("FREECEN:MOVE_FREECEN2_PLACE_LINKAGES: rake task for #{pid1}")
     flash[:notice] = "The background task (with Run Mode = #{params[:review_move_fc2_place][:mode]}) for move of linkages for #{place_from} in #{ChapmanCode.name_from_code(county_from)} (#{county_from}) to #{place_to} in #{ChapmanCode.name_from_code(county_to)} (#{county_to}) has been initiated. You will be notified by email when the task has completed."
+    return unless params[:review_move_fc2_place][:mode] == 'Update'
+
     redirect_to freecen2_place_path(@place_from_rec)
   end
 
