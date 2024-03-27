@@ -36,6 +36,10 @@
                     <%= render 'please_donate' %>
                     <!-- GAM 71161633/FRBMD_freeregorg/freereg_hrec_3-->
                     <div data-fuse="22945846128"></div>
+                    <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+                      <br>
+                      <%= render 'nav_header' %>
+                    <% end %>
                   <% end %>
                 </div>
               </div>
@@ -89,10 +93,6 @@
       <% end%>
     <% end %>
   </section>
-  <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-    <br>
-    <%= render 'nav_header' %>
-  <% end %>
 <% else %>
     <%= render 'no_results' %>
 <% end %>
