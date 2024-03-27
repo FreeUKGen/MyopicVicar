@@ -356,11 +356,11 @@ class Freecen2Place
     end
 
     def search_records_birth_places?(place)
-      SearchRecord.where(birth_chapman_code: place.chapman_code, freecen2_place_of_birth_id: place.id).exists?
+      SearchRecord.where(birth_chapman_code: place.chapman_code, freecen2_place_of_birth_id: place.id).no_timeout.exists?
     end
 
     def search_records_birth_places_alternate?(chapman_code, place_id, alternate_place)
-      SearchRecord.where(birth_chapman_code: chapman_code, freecen2_place_of_birth_id: place_id, birth_place: alternate_place).exists?
+      SearchRecord.where(birth_chapman_code: chapman_code, freecen2_place_of_birth_id: place_id, birth_place: alternate_place).no_timeout.exists?
     end
 
   end
