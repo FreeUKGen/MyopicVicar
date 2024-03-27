@@ -10,52 +10,47 @@
       <%= render 'too_many_results' %>
     <% else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
-      <div class="grid">
-        <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
-          <%= render 'no_results' %>
-        </div>
-         <% unless device_type == :mobile%>
-          <div class="grid__item desk-one-fifth lap-one-third palm-one-whole float--right push--bottom">
-            <span class=''>Advertisement</span><br>
-            <%= mh_160_600 %>
+        <div class="grid">
+          <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
+            <%= render 'no_results' %>
           </div>
-        <% end %>
-      </div>
+           <% unless device_type == :mobile%>
+            <div class="grid__item desk-one-fifth lap-one-third palm-one-whole float--right push--bottom">
+              <span class=''>Advertisement</span><br>
+              <%= mh_160_600 %>
+            </div>
+          <% end %>
+        </div>
       <% else %>
         <% if device_type == :desktop || device_type == :tablet %>
           <% case MyopicVicar::Application.config.template_set%>
           <% when 'freereg'%>
           <div class="container">
-            <div class="grid" style="display:flex; overflow: unset;">
-                <div class= '' id='results_table'>
+            <div class="grid" style="overflow: unset;">
+              <div class= '' id='results_table'>
+                <div class="grid__item one-whole">
+                  <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
+                </div>
+                <div class="grid__item one-whole">
+                  <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+                    <%= render 'please_donate' %>
+                    <!-- GAM 71161633/FRBMD_freeregorg/freereg_hrec_3-->
+                    <div data-fuse="22945846128"></div>
+                  <% end %>
+                </div>
+              </div>
+              <% unless device_type == :mobile%>
+                <div  id='results_table_ad' class='float--right text--center push--bottom'>
+                  <span class=''>Advertisement</span><br>
                   <div class="grid__item one-whole">
-                    <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
+                    <%= mh_160_600 %>
                   </div>
-                  <div class="grid__item one-whole">
-                    <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-                      <%= render 'please_donate' %>
-                      <!--div class="grid__item one-whole">
-                        <div class = "adsense_box push--ends reg_adsense">
-                          <p class = "text--center">Advertisement</p>
-                          <!-- GAM 71161633/FRBMD_freeregorg/freereg_hrec_3-->
-                          <div data-fuse="22945846128"></div>
-                        </div>
-                      </div-->
-                    <% end %>
+                  <div class="grid__item one-whole push--top" style="position: sticky; top:0; align-self: start;">
+                    <!-- GAM 71161633/FRBMD_freeregorg/freereg_vrec_1 -->
+                    <div data-fuse="22945846137"></div>
                   </div>
                 </div>
-                <% unless device_type == :mobile%>
-                  <div  id='results_table_ad' class='float--right text--center push--bottom'>
-                    <span class=''>Advertisement</span><br>
-                    <div class="grid__item one-whole">
-                      <%= mh_160_600 %>
-                    </div>
-                    <div class="grid__item one-whole push--top" style="position: sticky; top:0; align-self: start;">
-                      <!-- GAM 71161633/FRBMD_freeregorg/freereg_vrec_1 -->
-                      <div data-fuse="22945846137"></div>
-                    </div>
-                  </div>
-                <% end %>
+              <% end %>
             </div>
           </div>
           <% when 'freecen'%>
