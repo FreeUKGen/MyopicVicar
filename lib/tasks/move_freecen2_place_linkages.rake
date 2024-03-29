@@ -174,6 +174,8 @@ namespace :freecen do
         new_place_name_titleized = new_place_record.place_name.titleize
         birth_places_used = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, freecen2_place_of_birth_id: old_place_record.id, birth_place: { '$ne': old_place_name_titleized }).pluck(:birth_place)
         birth_places_used.each do |birth_place|
+          next if birth_place.blank?
+
           alternative_names_used << birth_place unless birth_place.titleize == new_place_name_titleized || birth_place.titleize == old_place_name_titleized
         end
         alternative_names_used.each do |alt_name|

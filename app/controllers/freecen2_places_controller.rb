@@ -114,7 +114,7 @@ class Freecen2PlacesController < ApplicationController
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are search records with this place recorded as birth place') && return if used_as_birth_place
 
     end
-    # @place.update_attributes(disabled: 'true', data_present: false) - disabled flag is now obsolete 2022/11
+    # @place.update_attributes(disabled: 'true', data_present: false) - disabled flag is obsolete when deleting/destroying a place but is used in Move Place linkages 2024/03
     place_name_deleted = @place.place_name
     @place.delete
     if @place.errors.any?
