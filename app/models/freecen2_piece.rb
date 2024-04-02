@@ -785,7 +785,9 @@ class Freecen2Piece
     if csv_files.present?
       validatation_in_progress_files = csv_files.where(validation: true, incorporated: false).count
     end
-    inprogress_status = 'In Progress' if inprogress_csv_files.present?
+    inprogress_status = 'In Progress' if validatation_in_progress_files.present?
+    userids = validatation_in_progress_files.pluck(:userid) if validatation_in_progress_files.present?
+    [inprogress_status, userids]
   end
 
   def piece_search_records

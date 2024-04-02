@@ -29,7 +29,10 @@
               <%= piece.transcription_status[0] %><br>
               <%= piece.transcription_status[1] %>
             </td>
-            <td><%= piece.transcription_status %></td>
+            <td>
+              <%= piece.validation_status[0] %><br>
+              <%= piece.validation_status[1] %>
+            </td>
             <td><%= piece.transcription_status %></td>
           </tr>
         <% end %>
