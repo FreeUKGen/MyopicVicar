@@ -10,10 +10,6 @@
         <th class='sticky-header'>Civil Parishes</th>
         <th class='sticky-header'>Piece Exists</th>
         <th class='sticky-header'>Digital Image Available</th>
-        <th class='sticky-header' colspan="3">Status</th>
-      </tr>
-      <tr>
-        <td class='sticky-header' colspan='6'></td>
         <th class='sticky-header'>Transcription Status</th>
         <th class='sticky-header'>Validation Status</th>
         <th class='sticky-header'>Incorporated</th>
@@ -29,6 +25,11 @@
             <td><%= piece.civil_parish_names %></td>
             <td><%= piece.piece_availability %></td>
             <td><%= piece.piece_digitised %></td>
+            <td>
+              <%= piece.transcription_status[0] %><br>
+              <%= piece.transcription_status[1] %>
+            </td>
+            <td><%= piece.transcription_status %></td>
             <td><%= piece.transcription_status %></td>
           </tr>
         <% end %>
