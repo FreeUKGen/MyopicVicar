@@ -3,9 +3,7 @@ task :unique_surnames => :environment do
   require 'unique_surnames'
   puts 'Starting surnames'
   UniqueSurname.delete_all
-  n = 0
-  BestGuess.distinct.pluck(:Surname).sort.each do |surname|
-    n += 1
+  BestGuess.distinct.pluck(:Surname).uniq.sort.each do |surname|
     records = BestGuess.where(Surname: surname).count
     puts "#{surname}, #{records}"
     UniqueSurname.create(:Name => surname, :count => records)

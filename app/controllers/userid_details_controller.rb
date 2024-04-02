@@ -599,6 +599,7 @@ class UseridDetailsController < ApplicationController
     saved_entries = BestGuess.where(RecordNumber: record_number).map(&:attributes)
     send_data search_results_csv(saved_entries), filename: "saved_entries-#{Date.today}.csv"
     #send_data @search_query.saved_entries_csv(@userid), filename: "saved_entries-#{Date.today}.csv"
+  end
 
   def saved_entries_as_gedcom
     search_id = params[:search_id]
