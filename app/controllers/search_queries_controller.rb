@@ -444,7 +444,9 @@ class SearchQueriesController < ApplicationController
     @counties_group = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
     county_keys = []
     counties_array = @counties_group.each{|ctry, county| county_keys << county.keys }
-    county_keys = ['All England', 'All Wales'] if params[:prefix].strip.include?'All England' || params[:prefix].strip.include?'All Wales'
+    if params[:prefix].strip.include?'All England' || params[:prefix].strip.include?'All Wales'
+      county_keys = ['All England', 'All Wales']
+    end
     @counties = county_keys.flatten.select { |s| s.downcase.include?(prefix) }
     respond_to do |format|
       format.html
