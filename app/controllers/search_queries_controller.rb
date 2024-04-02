@@ -364,7 +364,7 @@ class SearchQueriesController < ApplicationController
       @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
-    @districts = {} if selected_counties.include?("All England (AVN BDF etc.)") || selected_counties.include?("All Wales (AGY BRE etc.)")
+    @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales")
   end
 
   def end_year_val
@@ -444,6 +444,7 @@ class SearchQueriesController < ApplicationController
     @counties_group = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
     county_keys = []
     counties_array = @counties_group.each{|ctry, county| county_keys << county.keys }
+    county_keys = ['All England', 'All Wales'] if params[:prefix].strip.include?'All England' || params[:prefix].strip.include?'All Wales'
     @counties = county_keys.flatten.select { |s| s.downcase.include?(prefix) }
     respond_to do |format|
       format.html
