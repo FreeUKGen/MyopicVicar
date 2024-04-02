@@ -386,8 +386,9 @@ class SearchQueriesController < ApplicationController
     page_number = params[:page]
     results_per_page = params[:results_per_page]
     sorted_results = @search_query.sorted_and_paged_searched_records
-    paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
-    send_data search_results_csv(paginated_array), filename: "search_results-#{Date.today}.csv"
+    first_fifty_records = sorted_results.take(50)
+    #paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
+    send_data search_results_csv(first_fifty_records), filename: "search_results-#{Date.today}.csv"
   end
 
   def compare_search
