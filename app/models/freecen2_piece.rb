@@ -790,6 +790,16 @@ class Freecen2Piece
     [inprogress_status, userids]
   end
 
+  def incorpoation_status
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    incorporated_and_complete = csv_files.where(incorporated: true, completes_piece: true)
+    incorporated_and_part_complete = csv_files.where(incorporated: true, completes_piece: false)
+    status = 'Yes' if incorporated_and_complete.present?
+    status = 'Part' if  incorporated_and_part_complete.present?
+    status
+  end
+
   def piece_search_records
     records = 0
     freecen1_vld_files.each do |file|
