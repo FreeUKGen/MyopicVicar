@@ -783,7 +783,7 @@ class Freecen2Piece
     csv_files = self.freecen_csv_files
     vld_files = self.freecen1_vld_files
     if csv_files.present?
-      validatation_in_progress_files = csv_files.where(validation: true, incorporated: false).count
+      validatation_in_progress_files = csv_files.where(validation: true, incorporated: false)
     end
     inprogress_status = 'In Progress' if validatation_in_progress_files.present?
     userids = validatation_in_progress_files.pluck(:userid) if validatation_in_progress_files.present?
