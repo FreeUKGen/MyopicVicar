@@ -1,7 +1,7 @@
 <% breadcrumb :freecen2_stats_pieces,  @county%>
 <fieldset>
   <legend>Choose the census year</legend>
-  <%= form_tag cap_report_freecen2_pieces_url, class: 'grid' do %>
+  <%= form_tag cap_report_freecen2_pieces_url, class: 'grid', method: 'get' do %>
     <ol>
       <li class="grid__item one-half lap-one-half palm-one-whole">
         <label class="ttip" for="census_year" tabindex="0">Choose the census year</label>
@@ -9,7 +9,7 @@
       </li>
       <li class="grid__item one-whole lap-one-whole palm-one-whole">
         <div  style="text-align: center">
-          <%= submit_tag 'Update Report', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+          <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
         </div>
       </li>
     </ol>
@@ -48,12 +48,12 @@
             <td><%= piece.piece_digitised %></td>
             <td>
               <%= piece.transcription_status[0] %><br>
-              <%= "Number of Csv Files #{piece.transcription_status[2]}" %><br>
+              <%= "Csv files count: #{piece.transcription_status[2]}" %><br>
               <%= piece.transcription_status[1] %><br>
             </td>
             <td>
               <%= piece.validation_status[0] %><br>
-              <%= "Number of Csv Files #{piece.validation_status[2]}" %><br>
+              <%= "Csv files count: #{piece.validation_status[2]}" %><br>
               <%= piece.validation_status[1] %>
             </td>
             <td><%= piece.incorpoation_status %></td>
