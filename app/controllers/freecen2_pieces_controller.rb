@@ -338,7 +338,7 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = session[:chapman_code]
     @census_year = params[:census_year] if params[:census_year].present?
     @pieces = Freecen2Piece.where(chapman_code: @chapman_code)
-    @pieces = @pieces.where(year: census_year) if @census_year.present?
+    @pieces = @pieces.where(year: @census_year) if @census_year.present?
   end
 
   def stats_index
