@@ -774,9 +774,12 @@ class Freecen2Piece
     if csv_files.present?
       inprogress_csv_files = csv_files.where(validation: false, incorporated: false)
     end
-    inprogress_status = 'In Progress' if inprogress_csv_files.present?
-    userids = inprogress_csv_files.pluck(:userid) if inprogress_csv_files.present?
-    [inprogress_status, userids]
+    if inprogress_csv_files.present?
+      inprogress_status = 'In Progress'
+      userids = inprogress_csv_files.pluck(:userid)
+      count = inprogress_csv_files.count
+    end
+    [inprogress_status, userids, count]
   end
 
   def validation_status
@@ -785,9 +788,12 @@ class Freecen2Piece
     if csv_files.present?
       validatation_in_progress_files = csv_files.where(validation: true, incorporated: false)
     end
-    inprogress_status = 'In Progress' if validatation_in_progress_files.present?
-    userids = validatation_in_progress_files.pluck(:userid) if validatation_in_progress_files.present?
-    [inprogress_status, userids]
+    if validatation_in_progress_files.present?
+      inprogress_status = 'In Progress'
+      userids = validatation_in_progress_files.pluck(:userid)
+      count = validatation_in_progress_files.count
+    end
+    [inprogress_status, userids, count]
   end
 
   def incorpoation_status

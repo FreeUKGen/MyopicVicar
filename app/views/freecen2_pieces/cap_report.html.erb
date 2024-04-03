@@ -27,10 +27,12 @@
             <td><%= piece.piece_digitised %></td>
             <td>
               <%= piece.transcription_status[0] %><br>
-              <%= piece.transcription_status[1] %>
+              <%= "Number of Csv Files #{piece.transcription_status[2]}" %><br>
+              <%= piece.transcription_status[1] %><br>
             </td>
             <td>
               <%= piece.validation_status[0] %><br>
+              <%= "Number of Csv Files #{piece.validation_status[2]}" %><br>
               <%= piece.validation_status[1] %>
             </td>
             <td><%= piece.incorpoation_status %></td>
