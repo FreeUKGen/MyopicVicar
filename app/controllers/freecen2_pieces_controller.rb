@@ -334,7 +334,7 @@ class Freecen2PiecesController < ApplicationController
   end
 
   def cap_report
-    @county = session [:county]
+    @county = session[:county]
     @chapman_code = session[:chapman_code]
     census_year = params[:census_year] if params[:census_year].present?
     @pieces = Freecen2Piece.where(chapman_code: @chapman_code)
