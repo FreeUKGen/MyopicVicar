@@ -1,18 +1,25 @@
 <% breadcrumb :freecen2_stats_pieces,  @county%>
 <fieldset>
   <legend>Choose the census year</legend>
-  <%= form_tag cap_report_freecen2_pieces_path, class: 'grid' do %>
+  <%= form_tag cap_report_freecen2_pieces_url, class: 'grid' do %>
     <ol>
       <li class="grid__item one-half lap-one-half palm-one-whole">
         <label class="ttip" for="census_year" tabindex="0">Choose the census year</label>
-        <%= select_tag :census_year ,options_for_select(Freecen::CENSUS_YEARS_ARRAY) , class: ' select', id: 'select_census_year' , tabindex: 0 %>
+        <%= select_tag :census_year ,options_for_select(Freecen::CENSUS_YEARS_ARRAY) , class: ' select', id: 'select_census_year' , tabindex: 0, include_blank: true, prompt: 'Census Year' %>
+      </li>
+      <li class="grid__item one-whole lap-one-whole palm-one-whole">
+        <div  style="text-align: center">
+          <%= submit_tag 'Update Report', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+        </div>
       </li>
     </ol>
-    <div  style="text-align: center">
-      <%= submit_tag 'Update Report', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
-    </div>
   <% end %>
 </fieldset>
+<% if @census_year.present? %>
+  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county} for year: #{@census_year}" %></h2>
+<% else%>
+  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county}" %></h2>
+<% end %>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width" >
     <caption>CAP Report</caption>
