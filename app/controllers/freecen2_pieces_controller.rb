@@ -337,7 +337,7 @@ class Freecen2PiecesController < ApplicationController
     @county = session [:county]
     @chapman_code = session[:chapman_code]
     census_year = params[:census_year] if params[:census_year].present?
-    @pieces = Freecen2Piece.where(admin_county: @chapman_code)
+    @pieces = Freecen2Piece.where(chapman_code: @chapman_code)
     @pieces = @pieces.where(year: census_year) if census_year.present?
   end
 
