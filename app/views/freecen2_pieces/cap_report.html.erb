@@ -1,4 +1,20 @@
 <% breadcrumb :freecen2_stats_pieces,  @county%>
+<fieldset>
+    <legend>Choose the census year</legend>
+    <% pieces = @associated_pieces.present? ? @associated_pieces : @freecen2_pieces %>
+    <%= form_tag cap_report_path, class: 'grid' do %>
+      <ol>
+        <li class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="ttip" for="piece_availablity" tabindex="0">Choose the census year</label>
+          <%= select_tag :census_year ,options_for_select(Freecen::CENSUS_YEARS_ARRAY) , class: ' select', id: 'select_census_year' , tabindex: 0 %>
+        </li>
+      </ol>
+      <p>Please note: The following pieces will be updated:</p>
+      <div  style="text-align: center">
+        <%= submit_tag 'Update Report', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+      </div>
+    <% end %>
+  </fieldset>
 <div class='scrollable'>
   <table  class="table--bordered table--data table--striped my-width" >
     <caption>CAP Report</caption>
