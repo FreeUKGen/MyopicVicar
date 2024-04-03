@@ -16,7 +16,7 @@
   <% end %>
 </fieldset>
 <% if @census_year.present? %>
-  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county} for year: #{@census_year}" %></h2>
+  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county} for the year: #{@census_year}" %></h2>
 <% else%>
   <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county}" %></h2>
 <% end %>
