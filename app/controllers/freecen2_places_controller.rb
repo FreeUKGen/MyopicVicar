@@ -429,7 +429,7 @@ class Freecen2PlacesController < ApplicationController
         return
       end
 
-      error_message = @place.check_alternate_names(params[:freecen2_place][:alternate_freecen2_place_names_attributes], @place.chapman_code, params[:freecen2_place][:place_name])
+      error_message = @place.check_alternate_names(params[:freecen2_place][:alternate_freecen2_place_names_attributes], @place.chapman_code, params[:id])
       unless error_message == 'None'
         flash[:notice] = error_message
         get_reasons

@@ -356,17 +356,17 @@ class Freecen2Place
 
     def search_records_birth_places?(place)
       exist = false
-      place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => place.place_name).first
+      place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => place.place_name).no_timeout.first
       if place_used.present?
         exist = true
       elsif place.original_place_name.present?
-        original_place_used _= SearchRecord.where(:birth_chapman_code => place.original_chapman_code, :birth_place => place.original_place_name).first
+        original_place_used _= SearchRecord.where(:birth_chapman_code => place.original_chapman_code, :birth_place => place.original_place_name).no_timeout.first
         if original_place_used.present?
           exist = true
         end
       elsif place.alternate_freecen2_place_names.present?
         place.alternate_freecen2_place_names.each do |alt_place|
-          alternate_place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => alt_place.alternate_name).first
+          alternate_place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => alt_place.alternate_name).no_timeout.first
           if alternate_place_used.present?
             exist = true
             break
@@ -422,7 +422,7 @@ class Freecen2Place
     [true, '']
   end
 
-  def check_alternate_names(alternate_freecen2_place_names_attributes, chapman_code, this_place_name)
+  def check_alternate_names(alternate_freecen2_place_names_attributes, chapman_code, this_place_id)
     alternate_names_set = SortedSet.new
     entries = 0
     dup_place_set = SortedSet.new
@@ -432,13 +432,11 @@ class Freecen2Place
 
         alternate_names_set << Freecen2Place.standard_place(value[:alternate_name])
         entries += 1
-        unless  Freecen2Place.where(:place_name=> this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-          if Freecen2Place.where(:chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-            dup_place_set << value[:alternate_name]
-          end
-          if Freecen2Place.where(:place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-            dup_place_set << value[:alternate_name]
-          end
+        if Freecen2Place.where(:disabled => 'false', :id.ne => this_place_id, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+          dup_place_set << value[:alternate_name]
+        end
+        if Freecen2Place.where(:disabled => 'false', :chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+          dup_place_set << value[:alternate_name]
         end
       end
     end
