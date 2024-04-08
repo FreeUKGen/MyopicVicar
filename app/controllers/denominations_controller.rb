@@ -36,8 +36,8 @@ class DenominationsController < ApplicationController
     redirect_back(fallback_location: { action: 'index' }, notice: 'The denomination was not found ') && return if @denomination.blank?
 
     get_user_info_from_userid
-    reject_access(@user, 'Denomination') unless @user.person_role == 'data_manager' ||
-      @user.person_role == 'system_administrator' || @user.person_role == 'county_coordinator' || @user.person_role == 'data_manager'
+    reject_access(@user, 'Denomination') unless session[:role] == 'data_manager' ||
+      session[:role] == 'system_administrator' || session[:role] == 'county_coordinator' #|| session[:role] == 'data_manager'
   end
 
   def index
@@ -47,8 +47,8 @@ class DenominationsController < ApplicationController
 
   def new
     get_user_info_from_userid
-    reject_access(@user, 'Denomination') unless @user.person_role == 'data_manager' ||
-      @user.person_role == 'system_administrator' || @user.person_role == 'county_coordinator' || @user.person_role == 'data_manager'
+    reject_access(@user, 'Denomination') unless session[:role] == 'data_manager' ||
+      session[:role] == 'system_administrator' || session[:role] == 'county_coordinator' #|| session[:role] == 'data_manager'
     @denomination = Denomination.new
   end
 

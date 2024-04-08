@@ -3,7 +3,7 @@
 <div class="grid">
   <%= simple_form_for @csvfile do |f| %>
     <%case%>
-    <% when @user.person_role == "trainee" %>
+    <% when session[:role] == "trainee" %>
     <%= f.input :process,  :collection => ["Just check for errors"],:include_blank => false,:label => "How to process the file", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3 }, :selected =>  "Just check for errors" %>
     <%  when @processing_time < 100 %>
     <%= f.input :process,  :collection => [ "As soon as you can", "Process tonight"],:include_blank => false,:label => "How to process the file", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3 }, :selected =>  "Process tonight" %>

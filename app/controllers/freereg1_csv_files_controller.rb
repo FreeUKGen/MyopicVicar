@@ -353,7 +353,7 @@ class Freereg1CsvFilesController < ApplicationController
     redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
 
     session[:records] = @records
-    if @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
+    if session[:role] == 'system_administrator' || session[:role] == 'data_manager'
       @county = session[:county]
       locations
       # setting these means that we are a DM
@@ -479,7 +479,7 @@ class Freereg1CsvFilesController < ApplicationController
 
   def update_places
     get_user_info_from_userid
-    if (@user.person_role == 'system_administrator' || @user.person_role == 'data_manager')
+    if (session[:role] == 'system_administrator' || session[:role] == 'data_manager')
       if update_places_not_ok?(params[:county])
         flash[:notice] = 'You made an incorrect county selection '
         redirect_to(relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id])) && return

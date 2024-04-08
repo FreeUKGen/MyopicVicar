@@ -41,7 +41,7 @@ module ContactsHelper
 
   def use_communicate_action_reminder
     get_user_info_from_userid
-    if @user.present? && @user.person_role == 'transcriber'
+    if @user.present? && session[:role] == 'transcriber'
       content_tag(:span, content_tag(:strong, "For transcribing queries, please contact your Syndicate Coordinator using the #{communicate_link}".html_safe))
     end
   end

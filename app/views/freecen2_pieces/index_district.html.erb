@@ -21,7 +21,7 @@
           <td ><%= freecen2_piece.name %></td>
           <td ><%= freecen2_piece.district_name%></td>
           <td ><%= link_to 'Show', freecen2_piece_path(freecen2_piece,type: @type) , :class => "btn   btn--small"%></td>
-          <% if %w[data_manager system_administrator].include?(@user.person_role)%>
+          <% if %w[data_manager system_administrator].include?(session[:role])%>
             <td ><%= link_to 'Edit', edit_freecen2_piece_path(freecen2_piece,type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers and system administrators'%></td>
           <% else%>
             <td> </td>

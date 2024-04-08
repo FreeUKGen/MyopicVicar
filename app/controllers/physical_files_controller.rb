@@ -22,7 +22,7 @@ class PhysicalFilesController < ApplicationController
     @batches = PhysicalFile.all.order_by(userid: 1,batch_name: 1)
     @number =  @batches.length
     @number =  @batches.length
-    @has_access = ((@user.person_role == 'data_manager') || (@user.person_role == 'system_administrator'))
+    @has_access = ((session[:role] == 'data_manager') || (session[:role] == 'system_administrator'))
     @paginate = true
     render 'index'
   end
@@ -86,7 +86,7 @@ class PhysicalFilesController < ApplicationController
     @user = get_user
     session[:by_userid] = false
     session[:who] = @user.userid
-    @has_access = ((@user.person_role == 'data_manager') || (@user.person_role == 'system_administrator'))
+    @has_access = ((session[:role] == 'data_manager') || (session[:role] == 'system_administrator'))
     render 'index'
   end
 
@@ -94,7 +94,7 @@ class PhysicalFilesController < ApplicationController
     session[:physical_index_page] = params[:page] if params[:page]
     session[:sorted_by].blank? ? @sorted_by = 'All files by userid then batch name' : @sorted_by = session[:sorted_by]
     get_user_info_from_userid
-    @has_access = ((@user.person_role == 'data_manager') || (@user.person_role == 'system_administrator'))
+    @has_access = ((session[:role] == 'data_manager') || (session[:role] == 'system_administrator'))
     case
     when @sorted_by ==  'All files by userid then batch name' && @has_access && !session[:by_userid]
       @batches = PhysicalFile.all.order_by(userid: 1, file_name: 1)
@@ -264,7 +264,7 @@ class PhysicalFilesController < ApplicationController
     @number =  @batches.length
     @paginate = false
     @user = get_user
-    @has_access = ((@user.person_role == 'data_manager') || (@user.person_role == 'system_administrator'))
+    @has_access = ((session[:role] == 'data_manager') || (session[:role] == 'system_administrator'))
     render 'index'
   end
 

@@ -431,7 +431,7 @@ class FreecenCsvFilesController < ApplicationController
     redirect_back(fallback_location: freecen_csv_file_path(@freecen_csv_file), notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
 
     session[:records] = @records
-    if @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
+    if session[:role] == 'system_administrator' || session[:role] == 'data_manager'
       @county = session[:county]
       locations
       # setting these means that we are a DM
