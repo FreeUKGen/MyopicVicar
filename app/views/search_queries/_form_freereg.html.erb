@@ -51,7 +51,7 @@
             <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
           </label>
           <% if @search_query.start_year.nil? %>
-            <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
+            <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional" autocomplete="off">
           <% else %>
             <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
           <% end %>
@@ -63,7 +63,7 @@
             <span class="ttip__text">Optional, YYYY. The last year you want to search</span>
           </label>
           <% if @search_query.end_year.nil? %>
-            <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
+            <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional" autocomplete="off">
           <% else %>
             <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
           <% end %>
