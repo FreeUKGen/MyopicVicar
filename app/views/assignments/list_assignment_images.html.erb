@@ -14,7 +14,10 @@
 
 <div class="grid">
   <section class="island">
-		<%#= render 'assignment_list' %>
-    <%= render 'assignment_images' %>
+    <% if @image_listing_partial.present? %>
+      <%= render 'assignment_images' %>
+    <% else %>
+      <%= render 'assignment_list' %>
+    <% end %>
 	</section>
 </div>
