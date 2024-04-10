@@ -160,9 +160,9 @@ class UseridDetail
       if user.present?
         friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>"
       elsif MyopicVicar::Application.config.template_set == 'freereg'
-        friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+        friendly_email = 'no-reply@freereg.org.uk'#'FreeREG Servant <freereg-contacts@freereg.org.uk>'
       elsif MyopicVicar::Application.config.template_set == 'freecen'
-        friendly_email = 'FreeCEN Servant <freecen-contacts@freecen.org.uk>'
+        friendly_email = 'no-reply@freecen.org.uk'#'FreeCEN Servant <freecen-contacts@freecen.org.uk>'
       end
       friendly_email
     end

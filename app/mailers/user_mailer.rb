@@ -467,14 +467,14 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of syndicate") unless @coordinator.blank?
+    mail(:from => "no-reply@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of syndicate") unless @coordinator.blank?
   end
 
   def send_change_of_email_notification_to_sc(user)
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of email") unless @coordinator.blank?
+    mail(:from => "no-reply@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of email") unless @coordinator.blank?
   end
 
   def send_message(mymessage, ccs, from, host)
