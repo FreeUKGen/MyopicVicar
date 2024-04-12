@@ -13,6 +13,7 @@ Rails.application.configure do
   config.assets.precompile += %w[styles/scss/ie.scss]
   config.assets.precompile += %w[styles/scss/palm.scss]
   config.assets.precompile += %w[styles/scss/ladda.scss]
+  config.assets.precompile += %w[styles/scss/print.scss]
   config.assets.precompile += %w[favicon.ico]
   config.assets.precompile += %w[styles/css/icons.data.svg.css]
   config.assets.precompile += %w[styles/css/donate_icon.css]
