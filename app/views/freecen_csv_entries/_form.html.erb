@@ -1,7 +1,7 @@
 <%= semantic_form_for @freecen_csv_entry, :html => { :class => 'grid'}   do |f| %>
   <%= f.hidden_field :record_number, :value=>@freecen_csv_entry.record_number %>
   <%= f.hidden_field :year, :value=>@freecen_csv_entry.year %>
-  <% if %w[validator county_coordinator master_county_coordinator country_coordinator data_manager system_administrator executive_director project_manager].include?(@user.person_role) && @freecen_csv_file.validation%>
+  <% if %w[validator county_coordinator master_county_coordinator country_coordinator data_manager system_administrator executive_director project_manager].include?(session[:role]) && @freecen_csv_file.validation%>
     <%= f.input :warning_messages, :label => 'Warning Messages', :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',  :size => '50x5' } if  @freecen_csv_entry.warning_messages.present?%>
     <%= f.input :error_messages , :label => 'Error Messages', :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',  :size => '50x5' } if  @freecen_csv_entry.error_messages.present?%>
     <%= f.input :info_messages , :label => 'Information Messages', :as => :text, :input_html => {:class => ' simple_form_bgcolour  ',  :size => '50x5' } if  @freecen_csv_entry.info_messages.present?%>
@@ -50,7 +50,7 @@
      <%= link_to 'Cancel', freecen_csv_entry_path(@freecen_csv_entry), method: :get, class: "btn btn--gamma", title: 'Cancels the Editing session.'%>
    </div>
    <div style='text-align: center'>
-    <% if %w[validator county_coordinator master_county_coordinator country_coordinator data_manager system_administrator executive_director project_manager].include?(@user.person_role) && @freecen_csv_file.validation%>
+    <% if %w[validator county_coordinator master_county_coordinator country_coordinator data_manager system_administrator executive_director project_manager].include?(session[:role]) && @freecen_csv_file.validation%>
       <%= f.submit 'Override warnings', class: "btn btn--small", data: { confirm: 'Are you sure you want to Override warnings?'}, title: 'Saves changes and overrides warnings.'%>
     <% end %>
   </div>

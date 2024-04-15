@@ -4,7 +4,7 @@
     <%= link_to 'View image', view_image_server_image_path(:object => @image_server_image[:_id]), method: :get,:target => "_blank", :class => "btn  btn--small" %>
     <%= link_to 'Download image', download_image_server_image_path(:object => @image_server_image[:_id]), method: :get,:target => "_blank",  :class => "btn  btn--small" %>
   <% end %>
-  <% if session[:manage_user_origin] == 'manage county' && @user.person_role == 'system_administrator' %>
+  <% if session[:manage_user_origin] == 'manage county' && session[:role] == 'system_administrator' %>
     <%= link_to 'Delete Image', image_server_image_path(@image_server_image), data: { confirm: 'Are you sure you want to delete IS image '+@image_server_image[:image_file_name]}, method: :delete, :class => "btn  btn--small" %>
   <% end %>
   <%= link_to 'List All Images In the Same Image Group', index_image_server_image_path(@image_server_image[:image_server_group_id]), method: :get, :class => "btn  btn--small" %>

@@ -2,8 +2,8 @@
   <% if session[:edit_userid] %>
     <%= list_userid_files %>
     <%= link_to 'Edit', edit_userid_detail_path(@userid, page_name: @page_name), method: :get, :class => "btn  btn--small " %>
-    <% if %w[system_administrator executive_director syndicate_coordinator volunteer_coordinator county_coordinator master_county_coordinator country_coordinator ].include?(@user.person_role)%>
-      <%= link_to " Send password change request", change_password_userid_detail_path(@userid, page_name: @page_name), data: { confirm: 'You are sending a password reset email to the user. Do you wish to proceed?' }, method: :get, class: "btn   btn--small ", title: 'The person will receive an email within a minute or 2. If they do not get them to check their spam folder and check their email address' unless @user.person_role == 'executive_director'%>
+    <% if %w[system_administrator executive_director syndicate_coordinator volunteer_coordinator county_coordinator master_county_coordinator country_coordinator ].include?(session[:role])%>
+      <%= link_to " Send password change request", change_password_userid_detail_path(@userid, page_name: @page_name), data: { confirm: 'You are sending a password reset email to the user. Do you wish to proceed?' }, method: :get, class: "btn   btn--small ", title: 'The person will receive an email within a minute or 2. If they do not get them to check their spam folder and check their email address' unless session[:role] == 'executive_director'%>
       <% if (%w[system_administrator executive_director syndicate_coordinator] & (@user.user_roles)).present? %>
         <%= link_to ' Move to inactive syndicate', move_userid_detail_path(@userid), data: { confirm: 'Are you absolutely sure?' }, method: :get, :class => "btn  btn--small " unless @userid.syndicate == 'To be Destroyed' || @userid.syndicate == 'technical'%>
       <% end %>

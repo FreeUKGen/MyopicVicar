@@ -14,7 +14,7 @@
             <% if session[:manage_user_origin] == 'manage syndicate' %>
               <span>SH: Show Source Properties</span>
             <% else %>
-              <% if @user.person_role == 'system_administrator' %>
+              <% if session[:role] == 'system_administrator' %>
                 <span>SH: Show Source Properties;<br>
                   ED: Edit Source Properties;<br>
                   DE: Delete Source</span>
@@ -40,7 +40,7 @@
               <%= link_to 'SH', source_path(x) %>
               <% if session[:manage_user_origin] == 'manage county' %>
                 <%= link_to 'ED', edit_source_path(x) %>
-                <% if @user.person_role = 'system_administrator' %>
+                <% if session[:role] = 'system_administrator' %>
                   <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
                 <% end %>
               <% end %>
@@ -48,7 +48,7 @@
               <%= link_to 'SH', source_path(x) %>
               <% if session[:manage_user_origin] == 'manage county' %>
                 <%= link_to 'ED', edit_source_path(x) %>
-                <% if @user.person_role = 'system_administrator' %>
+                <% if session[:role] = 'system_administrator' %>
                   <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
                 <% end %>
               <% end %>
@@ -56,7 +56,7 @@
               <%= link_to 'SH', source_path(x) %>
               <% if session[:manage_user_origin] == 'manage county' %>
                 <%= link_to 'ED', edit_source_path(x) %>
-                <% if @user.person_role = 'system_administrator' %>
+                <% if session[:role] = 'system_administrator' %>
                   <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
                 <% end %>
               <% end %>
@@ -64,7 +64,7 @@
               <%= link_to 'SH', source_path(x) %>
               <% if session[:manage_user_origin] == 'manage county' %>
                 <%= link_to 'ED', edit_source_path(x) %>
-                <% if @user.person_role = 'system_administrator' %>
+                <% if session[:role] = 'system_administrator' %>
                   <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
                 <% end %>
               <% end %>

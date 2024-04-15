@@ -1,7 +1,7 @@
 <% breadcrumb :countries%>
 <h2 class=" text--center">Listing of all Countries</h2>
 <%= render 'flash_notice' %>
-<% if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(@user.person_role) %>
+<% if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(session[:role]) %>
   <div  class=" text--center push--bottom">
     <%= link_to 'Add Country', new_country_path,:class => "btn btn--small", method: :get %>
   </div>
@@ -23,7 +23,7 @@
             <td > <%= country.country_coordinator %>  </td>
             <td > <%= country_coordinator_agreement(country.country_coordinator) %>  </td>
             <td><%= link_to 'Show', country_path(country), method: :get, :class => "btn btn--small" %>  </td>
-            <% if @user.person_role == 'system_administrator' %>
+            <% if session[:role] == 'system_administrator' %>
               <td><%= link_to 'Edit details', edit_country_path(country), method: :get  , :class => "btn btn--small" %></td>
             <% end %>
           </tr>

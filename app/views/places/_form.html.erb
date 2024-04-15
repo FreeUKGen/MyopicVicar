@@ -1,7 +1,7 @@
 <div class="island  island--light">
   <%= render 'flash_notice' %>
   <%= simple_form_for @place, :html => { :class => "grid"}  do |f| %>
-    <%  if appname_downcase == 'freecen' && (@user.person_role == 'data_manager' ||   @user.person_role == 'system_administrator')%>
+    <%  if appname_downcase == 'freecen' && (session[:role] == 'data_manager' || session[:role] == 'system_administrator')%>
       <%= f.input :place_name, :label => "Enter the Place Name",:hint => "Please take extreme care with the Place Name to get it correct!" ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
     <% end%>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>

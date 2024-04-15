@@ -5,9 +5,9 @@ class UserMailer < ActionMailer::Base
   reg_website = MyopicVicar::Application.config.website == 'https://www.freereg.org.uk' ? '' : 'Test'
   cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: "#{reg_website} FreeREG Servant <freereg-processing@freereg.org.uk>"
+    default from: "#{reg_website} FreeREG Servant <no-reply@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{cen_website} FreeCEN Servant <freecen-processing@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN Servant <no-reply@freecen.org.uk>"
   end
 
   def appname
@@ -475,14 +475,14 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of syndicate") unless @coordinator.blank?
+    mail(:from => "no-reply@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of syndicate") unless @coordinator.blank?
   end
 
   def send_change_of_email_notification_to_sc(user)
     @appname = appname
     @user = user
     get_coordinator_name
-    mail(:from => "#{appname.downcase}-registration@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of email") unless @coordinator.blank?
+    mail(:from => "no-reply@#{appname.downcase}.org.uk",:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} change of email") unless @coordinator.blank?
   end
 
   def send_message(mymessage, ccs, from, host)
@@ -527,7 +527,7 @@ class UserMailer < ActionMailer::Base
     # attachments["report.log"] = report
     @person_forename = user.person_forename
     @email_address = user.email_address
-    mail(:from => "freecen-processing@freecen.org.uk",:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCEN update processing report")
+    mail(:from => "no-reply@freecen.org.uk",:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCEN update processing report")
   end
 
   private
@@ -567,7 +567,7 @@ class UserMailer < ActionMailer::Base
     if userid_object.present?
       email_address = userid_object.email_address
     else
-      email_address = "#{appname} Servant <#{appname}-processing@#{appname}.org.uk>"
+      email_address = "#{appname} Servant <no-reply@#{appname.downcase}.org.uk>"
     end
     email_address
   end
@@ -577,7 +577,7 @@ class UserMailer < ActionMailer::Base
     if userid.present?
       friendly_email = "#{userid.person_forename} #{userid.person_surname} <#{userid.email_address}>"
     else
-      friendly_email = "#{appname} Servant <#{appname}-processing@#{appname}.org.uk>"
+      friendly_email = "#{appname} Servant <no-reply@#{appname.downcase}.org.uk>"
     end
     [userid, friendly_email]
   end

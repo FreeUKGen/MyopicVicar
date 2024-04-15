@@ -140,7 +140,7 @@ class Freereg1CsvEntriesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     display_info
 
-    @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
+    @embargo_permitted = (session[:role] == 'system_administrator' || session[:role] == 'executive_director') ? true : false
     @freereg1_csv_entry.embargo_records.build if @embargo_permitted
     @date = DateTime.now
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
@@ -160,7 +160,7 @@ class Freereg1CsvEntriesController < ApplicationController
 
     display_info
 
-    @embargo_permitted = (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director') ? true : false
+    @embargo_permitted = (session[:role] == 'system_administrator' || session[:role] == 'executive_director') ? true : false
     @freereg1_csv_entry.embargo_records.build if @embargo_permitted
     @date = DateTime.now
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
@@ -241,7 +241,7 @@ class Freereg1CsvEntriesController < ApplicationController
     display_info
     session[:from] = 'file' if params[:from].present? && params[:from] == 'file'
     @embargoed = @freereg1_csv_entry.embargo_records.present? ? true : false
-    @embargo_permitted = (@user.present? && (@user.person_role == 'system_administrator' || @user.person_role == 'executive_director' || @user.person_role == 'data_manager')) ? true : false
+    @embargo_permitted = (@user.present? && (session[:role] == 'system_administrator' || session[:role] == 'executive_director' || session[:role] == 'data_manager')) ? true : false
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
     @search_record = @freereg1_csv_entry.search_record
     @forenames = []
