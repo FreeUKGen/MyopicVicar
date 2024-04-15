@@ -8,7 +8,7 @@
   <p><b>You may change the following parameters but do so with care as they will change where the batch is located. You are changing <%= session[:records]%> records so it may take some time.  </b></p>
   Please wait for selection boxes to fill after selecting the preceding option. You MUST select an option even if there is only one.
   <%= semantic_form_for @freecen_csv_file,:html => { :class =>  "grid", novalidate: "novalidate"} do |f| %>
-    <% if  @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'%>
+    <% if  session[:role] == 'system_administrator' || session[:role] == 'data_manager'%>
       <%= f.input :country,:label => "Select country from following list",
     :required => true, :collection =>  options_for_select(@countries,'Select Country'),
     :input_html => {:class => " simple_form_bgcolour large_selection_field_width",'onchange' =>   @update_counties_location,:size => 5} %>

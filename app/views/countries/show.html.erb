@@ -1,7 +1,7 @@
 <% breadcrumb :show_countries,  @country%>
 <h2 class=" text--center">Details for a Country </h2>
 <%= render 'flash_notice' %>
-<% if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(@user.person_role) %>
+<% if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(session[:role]) %>
   <div style="text-align: center"> <%= link_to 'Edit Country' , edit_country_path(@country), method: :get , :class => "btn btn--small" %> </div>
 <% end%>
 <div id="main"style="color:black">

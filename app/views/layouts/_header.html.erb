@@ -10,16 +10,6 @@
               <%= my_heritage_720_90_cen %>
           </fieldset>
         </div>
-        <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
-          <div class="cookieConsent island island--teal flush--bottom">
-            <div id="cookieText" >
-              We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
-            </div>
-            <div class = "cookieAcceptButton">
-              <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
-            </div>
-          </div>
-        <% end %>
       <% end %>
       <% when 'freereg' %>
       <% unless device_type == :mobile%>
@@ -29,16 +19,6 @@
               <%= my_heritage_720_90_first %>
           </fieldset>
         </div>
-        <% unless GdprCountries::FOLLOWED_COUNTRIES.include?(user_location)%>
-          <div class="cookieConsent island island--teal flush--bottom">
-            <div id="cookieText" >
-              We use cookies to ensure you get the best experience with our website. This includes carefully chosen third-party cookies for analysing traffic and advertising. Please select ‘Accept Cookies’ if you consent and wish to continue using the site. <strong><a tabindex = "1" href="/cms/about/cookie-policy" class="cookie_policy_link" id="cookie_policy">More options and information.</a></strong>
-            </div>
-            <div class = "cookieAcceptButton">
-              <input class="btn btn--small accept_cookies" tabindex="3" type="submit" name="accept_cookies" id="accept_cookies" value="Accept Cookies" />
-            </div>
-          </div>
-        <% end %>
       <% end %>
       <% when 'freebmd' %>
       <% unless device_type == :mobile%>

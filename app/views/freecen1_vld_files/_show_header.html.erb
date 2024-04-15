@@ -2,17 +2,17 @@
 <h1 style="text-align: center">Listing of <%= @freecen1_vld_file.file_name %> for <%= @chapman_code%></h1>
 <%= render 'flash_notice' %>
 <div style="text-align: center">
-  <% if %w[data_manager executive_director county_coordinator country_coordinator master_county_coordinator system_administrator].include?(@user.person_role)%>
+  <% if %w[data_manager executive_director county_coordinator country_coordinator master_county_coordinator system_administrator].include?(session[:role])%>
     <%= edit_freecen1_vld_file %>
     <%= edit_cp_freecen1_vld_file %>
     <%= link_to 'Download file as CSVPro', csv_download_freecen1_vld_file_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" %>
-    <% if %w[data_manager system_administrator].include?(@user.person_role)%>
+    <% if %w[data_manager system_administrator].include?(session[:role])%>
       <%= link_to 'Download vld entry file as CSV ', entry_csv_download_freecen1_vld_file_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" %>
     <% end%>
     <%= link_to 'Delete Vld File', freecen1_vld_file_path(@freecen1_vld_file), method: :delete, data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Deleting", confirm: 'Are you sure you want to delete this Vld File? It may take some time to process, you will receive a message when the file delete has completed.' } , :class => "btn  btn--small"%>
-    <% if %w[data_manager country_coordinator system_administrator].include?(@user.person_role)%>
+    <% if %w[data_manager country_coordinator system_administrator].include?(session[:role])%>
       <%= link_to 'Download VLD file', download_vld_file_freecen1_vld_file_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" %>
     <% end%>
   <% end%>
-  <%= link_to 'Show entries ', freecen1_vld_entries_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" if %w[data_manager country_coordinator system_administrator].include?(@user.person_role)%>
+  <%= link_to 'Show entries ', freecen1_vld_entries_path(file: @freecen1_vld_file.id) , :class => "btn btn--small" if %w[data_manager country_coordinator system_administrator].include?(session[:role])%>
 </div>

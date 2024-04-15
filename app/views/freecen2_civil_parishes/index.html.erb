@@ -3,7 +3,7 @@
 <h4 style="text-align: center"> Please note that some of these action may take upwards of a minute or longer to complete. Please be patient</h4>
 <%= render 'flash_notice' %>
 <% if %w[project_manager executive_director county_coordinator master_county_coordinator country_coordinator data_manager system_administrator
-         executive_director project_manager].include?(@user.person_role)%>
+         executive_director project_manager].include?(session[:role])%>
 <div style="text-align: center">
   <%= link_to 'Display a Specific Civil Parish', selection_by_name_freecen2_civil_parishes_path,  :class => "btn   btn--small"%>
   <%= link_to 'List Civil Parishes for a Specific Year', selection_by_year_freecen2_civil_parishes_path, :class => "btn   btn--small"%>

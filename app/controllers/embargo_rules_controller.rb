@@ -20,7 +20,7 @@ class EmbargoRulesController < ApplicationController
                   notice: 'The embargo rule was not found ') && return if @rule.blank?
     extract_location_from_params(params)
     get_user_info_from_userid
-    reject_access(@user, 'Embargo Reason') unless @user.person_role == 'system_administrator' || @user.person_role == 'executive_director'
+    reject_access(@user, 'Embargo Reason') unless session[:role] == 'system_administrator' || session[:role] == 'executive_director'
 
     @rule.destroy
     flash[:notice] = 'The destruction of the embargo rule was successful'
@@ -36,7 +36,7 @@ class EmbargoRulesController < ApplicationController
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
     @edit = true
     get_user_info_from_userid
-    reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(@user.person_role)
+    reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(session[:role])
   end
 
   def extract_location_from_params(param)
@@ -62,7 +62,7 @@ class EmbargoRulesController < ApplicationController
   def new
     extract_location_from_params(params)
     get_user_info_from_userid
-    reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(@user.person_role)
+    reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(session[:role])
 
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
     rules = []

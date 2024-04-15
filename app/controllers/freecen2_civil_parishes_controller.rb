@@ -19,7 +19,7 @@ class Freecen2CivilParishesController < ApplicationController
 
     @freecen2_civil_parish = Freecen2CivilParish.new(@new_civil_parish_params)
     get_user_info_from_userid
-    @freecen2_civil_parish.reason_changed = "Created by #{@user.person_role} (#{@user.userid})" if @freecen2_civil_parish.reason_changed.blank?
+    @freecen2_civil_parish.reason_changed = "Created by #{session[:role]} (#{@user.userid})" if @freecen2_civil_parish.reason_changed.blank?
 
     @freecen2_civil_parish.save
     if @freecen2_civil_parish.errors.any?
@@ -288,7 +288,7 @@ class Freecen2CivilParishesController < ApplicationController
       @freecen2_civil_parish.update_attributes(freecen2_civil_parish_params)
       if @freecen2_civil_parish.reason_changed.blank?
         get_user_info_from_userid
-        @freecen2_civil_parish.reason_changed = "Updated by #{@user.person_role} (#{@user.userid})"
+        @freecen2_civil_parish.reason_changed = "Updated by #{session[:role]} (#{@user.userid})"
         @freecen2_civil_parish.save
       end
       if @freecen2_civil_parish.errors.any?

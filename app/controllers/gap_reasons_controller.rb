@@ -46,7 +46,7 @@ class GapReasonsController < ApplicationController
 
   def new
     get_user_info_from_userid
-    reject_access(@user, 'gap_reason') unless @user.person_role == 'system_administrator'
+    reject_access(@user, 'gap_reason') unless session[:role] == 'system_administrator'
     @gap_reason = GapReason.new
   end
 
