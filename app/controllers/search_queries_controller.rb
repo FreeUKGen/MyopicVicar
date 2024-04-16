@@ -80,7 +80,7 @@ class SearchQueriesController < ApplicationController
         county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
       }
     }
-    search_params['chapman_codes'] = county_codes
+    search_params['chapman_codes'] = county_codes.flatten
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
     if @search_query.save
@@ -266,13 +266,6 @@ class SearchQueriesController < ApplicationController
         response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
         @filter_condition = params[:filter_option]
         @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
-        #if params[:sort_option].present?
-          #if @search_query.order_asc
-           # @search_results = @search_results.order(:order_field)
-          #else
-           # @search_results = @search_results.order(order_field: :desc)
-          #end
-        #end
         @results_per_page = assign_value(params[:results_per_page],SearchQuery::RESULTS_PER_PAGE)
         @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
@@ -349,22 +342,33 @@ class SearchQueriesController < ApplicationController
   end
 
   def districts_of_selected_counties
+    @selected_districts = params[:selected_districts]
     districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
     county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
-    selected_counties = params[:selected_counties].split(',').compact
+    selected_counties = params[:selected_counties]
+    selected_counties = selected_counties.split(',').compact unless selected_counties.kind_of?(Array)
     selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
-    county_codes = []
-    county_hash.each {|country, counties|
-      selected_counties.each{|c|
-        county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
+    whole_england = ChapmanCode::ALL_ENGLAND.values.flatten
+    whole_wales = ChapmanCode::ALL_WALES.values.flatten
+    check_whole_england = whole_england - selected_counties
+    check_whole_wales = whole_wales - selected_counties
+    codes = params[:county_code]
+    unless codes.present?
+      county_codes = []
+      county_hash.each {|country, counties|
+        selected_counties.each{|c|
+          county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
+        }
       }
-    }
+    else
+      county_codes = selected_counties
+    end
     @districts = Hash.new
     county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
       @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
-    @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales")
+    @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales") || check_whole_england.empty? || check_whole_wales.empty?
   end
 
   def end_year_val

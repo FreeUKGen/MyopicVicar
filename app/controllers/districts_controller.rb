@@ -8,6 +8,7 @@ class DistrictsController < ApplicationController
 	def show
 		id = params[:id]
 		@district = District.where(DistrictNumber: id).first if id.present?
+		@search_record = BestGuess.find(params[:entry_id]) if params[:entry_id].present?
 		birth_uniq_name = DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 1).first
 		marriage_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 3).first
 		death_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 2).first

@@ -233,7 +233,6 @@
             <div class='labels'>
                 <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
                     <%= "Volume".html_safe %>
-                    <span class="ttip__text"><%#= info_tag_text[:volume].html_safe %></span>
                 <% end %>
             </div>
             <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
@@ -295,47 +294,13 @@
       </script>
 
     </fieldset>
-    <!--fieldset class="input" id="advanced_search">
-      <legend>Additional search options</legend>
-      <div class="text--center push-half--bottom">
-        <i><small> Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small></i>
-      </div>
-      <ol class="grid">
-        <li class="grid__item one-third lap-one-half palm-one-whole">
-            <%#= label_tag "wildcard_field",'Choose the Name field ' , class: "ttip" %>
-            <%#= f.select :wildcard_field, ["First Name", "Second Name", "Surname"], {include_hidden: false}, {multiple: true, tabindex: "0"} %>
-            <%#= select_tag( 'search_query[wildcard_field]', options_for_select(Constant::NAME, set_value(@search_query.wildcard_field)), prompt: "None chosen", class: 'text-input', tabindex: "0", id: "wildcard_field") %>
-        </li>
-        <li class="grid__item one-third lap-one-half palm-one-whole">
-            <%#= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip" %>
-            <%#= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "None", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
-        </li>
-      </ol>
-      <%#= Add any option to search for the name in any of the person's names%>
-    </fieldset-->
     <div class="grid action">
         <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
         <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
     </div>
-        <!--div class="sticky_buttons_css" id="sticky_buttons">
-            <ol class="grid">
-                <li class="grid__item one-half palm-one-half">
-                    <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
-                </li>
-                <li class="grid__item one-half palm-one-half search_button">
-                    <%#= button_tag 'Search', type: 'submit', class: 'spinner-controller ladda-button' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
-                </li>
-            </ol>
-        </div-->
-            <!--li class="grid__item one-half palm-one-half">
-                <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
-            </li-->
-            <%#= button_tag 'Search', type: 'submit', class: 'floating_action_buttons' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
-            <div class="small_screen_actions">
-                <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
-            </div>
-
-            <!--button class="floating_action_buttons" id="small_screen_search_button"><%= app_icons[:search].html_safe%></button-->
+    <div class="small_screen_actions">
+        <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
+    </div>
     <% end %>
 </div>
 <%# end %>
@@ -422,6 +387,19 @@
                         }
                     });
             });
+
+            var chapman_codes = <%= raw @search_query.chapman_codes %>;
+            if (chapman_codes) {
+                $.ajax({
+                    url: "/search_queries/districts_of_selected_counties",
+                    type: "GET",
+                    data: {
+                      selected_counties: chapman_codes,
+                      county_code: true,
+                      selected_districts: <%= raw @search_query.districts %>
+                    }
+                });
+            }
 
             $("#from_year").change(function() {
                 var year = $("#from_year").val();
@@ -532,7 +510,7 @@
             };
 
             var vol_and_page_display_controller = function() {
-                var district_val = $('#search_query_districts').val();
+                var district_val = <%= raw @search_query.districts %>;
                 if (district_val.length != 0) {
                     $('.volumes').show();
                     $('.pages').show();
@@ -662,114 +640,6 @@
             });
 
 
-            /*var validate_death_age = function() {
-                var min_age_value = $('#search_query_min_age_at_death').val();
-                var min_age = parseInt(min_age_value);
-                var max_age_value = $('#search_query_max_age_at_death').val();
-                var max_age = parseInt(max_age_value);
-                
-                if (max_age < min_age) {
-                    $('#search_query_max_age_at_death')[0].setCustomValidity('Max death age should not less than Min death age');
-
-                } else {
-                    $('#search_query_max_age_at_death')[0].setCustomValidity('');
-                }
-            };
-             var validate_nonphonetic_wildcard_search = function() {
-                var lastnameValue = $('#last_name').val();
-                var fuzzyValue = $('#search_query_fuzzy').is(":checked")
-                var hasWildcard = lastnameValue.includes('*') || lastnameValue.includes('?')
-                if (hasWildcard && fuzzyValue) {
-                    $('#search_query_fuzzy')[0].setCustomValidity('Phonetic Search can not be used with wildcards');
-                } else {
-                    $('#search_query_fuzzy')[0].setCustomValidity('');
-                }
-            };
-
-            var validate_death_dob = function() {
-                var min_dob = new Date($('#search_query_min_dob_at_death').val()).getTime();
-                var max_dob = new Date($('#search_query_max_dob_at_death').val()).getTime();
-
-                if (max_dob < min_dob) {
-                    $('#search_query_max_dob_at_death')[0].setCustomValidity('Max death date should not be less than Min death date');
-                } else {
-                    $('#search_query_max_dob_at_death')[0].setCustomValidity('');
-                }
-            };
-
-            jQuery.validator.addMethod("validateAgeAtDeathRange", function() {
-                var min_age_value = $('#search_query_min_age_at_death').val();
-                var min_age = parseInt(min_age_value);
-                var max_age_value = $('#search_query_max_age_at_death').val();
-                var max_age = parseInt(max_age_value);
-                return max_age >= min_age;
-            }, "Max Age at Death should be greater than Min Age at Death");
-
-            jQuery.validator.addMethod("validateNonphoneticWildcardSearch", function() {
-                var lastnameValue = $('#last_name').val();
-                var fuzzyValue = $('#search_query_fuzzy').is(":checked")
-                var hasWildcard = lastnameValue.includes('*') || lastnameValue.includes('?')
-                return !(hasWildcard && fuzzyValue);
-            }, "Phonetic Search can not be used with wildcard");
-
-            jQuery.validator.addMethod("validateDateofbirthRange", function() {
-                var min_dob = parseInt($('#search_query_min_dob_at_death').val());
-                var max_dob = parseInt($('#search_query_max_dob_at_death').val());
-                return max_dob >= min_dob;
-            }, "Max Year of Birth should be greater than Min Year of Birth");
-
-            var validator = $("#new_search_query").validate({
-               
-                rules: {
-                  "search_query[max_age_at_death]": {
-                    validateAgeAtDeathRange: true,
-                    range: [0, 199],
-                  },
-                  "search_query[min_age_at_death]": { range: [0, 199] },
-                  "search_query[last_name]" : { validateNonphoneticWildcardSearch: true },
-                  "search_query[max_dob_at_death]": { validateDateofbirthRange: true }
-                  },
-                messages: {
-                  "search_query[max_age_at_death]": {
-                    range: "Max Age should be between 0 to 199",
-                   },
-                  "search_query[min_age_at_death]": {
-                    range: "Min Age should be between 0 to 199",
-                   },
-                },
-                errorLabelContainer: "#errors", 
-                wrapper: "li"
-            });*/
-
-            /*$('#search_form_submit').click( function() {
-                var l = Ladda.create(document.querySelector('.ladda-button'));
-                l.stop();
-                if ($("#new_search_query").valid()) {
-                    l.start();
-                   $('#new_search_query').submit()
-                } 
-            });
-
-            var width = $(window).width()
-
-            if (width >= 576) {
-                if ($('#search_form_submit_small_screen').hasClass('ladda-button')) {
-                    $('#search_form_submit_small_screen').removeClass('ladda-button');
-                }
-                if (!$('#search_form_submit').hasClass('ladda-button')) {
-                    $('#search_form_submit').addClass('ladda-button');
-                }
-            }
-
-            if (width < 576 ) {
-                if ($('#search_form_submit').hasClass('ladda-button')) {
-                    $('#search_form_submit').removeClass('ladda-button');
-                }
-                if (!$('#search_form_submit_small_screen').hasClass('ladda-button')) {
-                    $('#search_form_submit_small_screen').addClass('ladda-button');
-                }
-            }
-            */
 
             $('#search_form_submit').click( function() {
                 var l = Ladda.create(document.querySelector('.ladda-button'));
@@ -789,25 +659,6 @@
                 }
             });
 
-           /* if ( $( "#search_form_submit" ).length ) {
-                 $('#search_form_submit').addClass('ladda-button')
-            } else {
-                 $('#search_form_submit').removeClass('ladda-button')
-            }
-
-            if ( $( "#search_form_submit_small_screen" ).length ) {
-                 $('#search_form_submit_small_screen').addClass('ladda-button')
-
-            } else {
-                 $('#search_form_submit_small_screen').removeClass('ladda-button')
-            }
-
-            if ( $( "#search_form_submit_small_screen" ).length ) {
-                 $('#search_form_submit_small_screen').addClass('ladda-button')
-
-            } else {
-                 $('#search_form_submit_small_screen').removeClass('ladda-button')
-            }*/
 
             $('#search_query_first_name_exact_match, #search_query_fuzzy').change(function() {
                 if ($("#search_query_first_name_exact_match").is(":checked") || $('#search_query_fuzzy').is(':checked')) {
@@ -826,21 +677,6 @@
                     $("#advanced_search").show();
                 };
 
-
-
-
-
-           
-
-            /*$('#search_form_submit').click(function() {
-                validate_death_age();
-                validate_death_dob();
-                validate_nonphonetic_wildcard_search();
-            });*/
-
-
-
-
             $('#bmd_record_type_death').change(function() {
                 var aad_disabled = $('#death_select_box').prop('disabled');
                 var aad_selection = document.getElementById('death_select_box');
@@ -853,15 +689,6 @@
                     //$('#death_select_box').css('background', 'white')
                 }
             });
-
-           /* var aad_disable = $('#death_select_box').prop('disabled');
-            if (aad_disable === true) {
-               // $('#death_select_box').css('background', '#ccc');
-                $('#death_select_box').val([]);
-            } else {
-                //$('#death_select_box').val(aad_selection);
-                //$('#death_select_box').css('background', 'white');
-            }*/
 
             $('.clear_form').click(function() {
                 hide_all_death_options();

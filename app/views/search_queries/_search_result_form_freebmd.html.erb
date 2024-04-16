@@ -2,10 +2,13 @@
   <div class="desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole">
     <%= form_tag search_query_path(@search_query), method: :get, id: 'filter_form' do %>
       <div class="grid">
-        <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
-          <%= label_tag 'filter_results', 'Filter By' %>
-          <%= select_tag(:filter_option, options_for_select([['Births', "1"], ['Deaths', "2"], ['Marriages', "3"]], selected: @filter_condition), {:prompt => "Filter By", id: 'filter_results', tabindex: "0"}) %>
-        </div>
+        <% if @search_query.bmd_record_type.count > 1 %>
+          <% filter_hash = RecordType::FREEBMD_TYPES.select{|k, v| @search_query.bmd_record_type.include? v }%>
+          <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
+            <%= label_tag 'filter_results', 'Filter By' %>
+            <%= select_tag(:filter_option, options_for_select(filter_hash.to_a, selected: @filter_condition), {:prompt => "Filter By", id: 'filter_results', tabindex: "0"}) %>
+          </div>
+        <% end %>
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
           <%= label_tag 'sort_results', 'Sort By' %>
           <%#= select_tag(:sort_option, options_for_select([['First Name(s)', "GivenName"], ['Surname', "Surname"], ['Record Type', "RecordTypeID"], ['Quarter', "QuarterNumber"], ['District', "District"]], selected: @sort_condition), {:prompt => "Sort By", id: 'sort_results', tabindex: "0"}) %>

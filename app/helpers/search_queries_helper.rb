@@ -253,13 +253,31 @@ module SearchQueriesHelper
     return value if value.blank?
     county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
     selected_counties = value.collect(&:strip).reject{|c| c.empty? }
+    whole_england = ChapmanCode::ALL_ENGLAND.values.flatten
+    whole_wales = ChapmanCode::ALL_WALES.values.flatten
+    check_whole_england = whole_england - selected_counties
+    check_whole_wales = whole_wales - selected_counties
     county_names = []
+    if check_whole_england.empty?
+      county_names << 'All England'
+      selected_counties = selected_counties - whole_england
+    end
+    logger.warn(selected_counties)
+    if check_whole_wales.empty?
+      county_names << 'All Wales'
+      selected_counties = selected_counties - whole_wales
+    end
     county_hash.each {|country, counties|
       selected_counties.each{|chapman_code|
         county_names << county_hash.dig(country).key(chapman_code) if county_hash.dig(country).values.include?chapman_code
       }
     }
     county_names
+    county_names.join(', ')
+  end
+
+  def set_district value=nil
+    return value
   end
 
   def set_district_value county_codes=nil, value=nil

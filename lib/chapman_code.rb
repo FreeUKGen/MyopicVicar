@@ -25,8 +25,8 @@ module ChapmanCode
       hsh = {}
       hash.each_pair do |key, value|
         hsh[key] = Hash[value.map { |k, v|
-          if v.include?(" ")
-            ["#{k} (#{v[0..6]} etc.)", v]
+          if ['All England', 'All Wales'].include? k
+           [k, v]
           else
             ["#{k} (#{v})", v]
           end
