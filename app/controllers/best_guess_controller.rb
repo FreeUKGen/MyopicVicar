@@ -157,11 +157,29 @@ class BestGuessController < ApplicationController
     record_hash = @entry.record_hash
     user.saved_entry << record_hash
     user.save
-    flash[:notice] = user.save ? "The entry is saved. Use 'View Saved Searches' action in Your Actions list to view your saved searches list." : 'unsuccessful'
+    flash[:notice] = user.save ? "The entry is saved. Use 'View Saved Entries' action in Your Actions list to view your saved searches list." : 'unsuccessful'
     if params[:search_id].present?
-      redirect_to friendly_bmd_record_details_path(params[:search_id],entry_id, @entry.friendly_url) 
+      redirect_to friendly_bmd_record_details_url(params[:search_id],entry_id, @entry.friendly_url)
+      return
     else
-      redirect_to best_guess_path(@entry.RecordNumber)
+      redirect_to best_guess_path(@entry.RecordNumber) && return
+    end
+  end
+
+  def unsave_entry
+    entry_id = params[:rec_id]
+    user = UseridDetail.where(id: cookies.signed[:userid]).first
+    @entry = BestGuess.where(RecordNumber: entry_id).first
+    record_hash = @entry.record_hash
+    user.saved_entry.delete(record_hash)
+    user.save
+    flash[:notice] = user.save ? "The record is unsaved" : 'unsuccessful'
+    if params[:search_id].present?
+      redirect_to friendly_bmd_record_details_path(params[:search_id],entry_id, @entry.friendly_url)
+      return
+    else
+       redirect_to best_guess_path(@entry.RecordNumber)
+      return
     end
   end
 

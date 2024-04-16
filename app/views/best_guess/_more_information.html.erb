@@ -36,18 +36,12 @@
   <% if cookies.signed[:userid].present?%>
   	<% unless @user.saved_entry.include?(@search_record.record_hash)%>
 		      <div class="idk_d">
-            <%= link_to save_entry_path(@search_record.RecordNumber,search_id: params[:search_id]) , method: :post,  disable_with: "Processing..." , alt: 'Save Entry', class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link save_link" do%>
-        			<%= app_icons[:heart].html_safe %>
-        			<span class="accessibility">Save Entry</span>
-        		<% end %>
+		      	<%= link_to app_icons[:heart].html_safe, favourite_entry_path(@search_record.RecordNumber,search_id: params[:search_id]) , data: {turbo_method: :post},  disable_with: "Processing..." , alt: 'Save Entry', class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link save_link" %>
 		      </div>
 		  <% else %>
 		      <div class="idk_d">
-		          <div class="grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link saved_link">
-		            <%= app_icons[:heart_filled].html_safe %>
-		            <span class="accessibility">You have marked this Entry favourite</span>
-		          </div>
-		        </div>
+		        <%= link_to app_icons[:heart_filled].html_safe, remove_favourite_path(@search_record.RecordNumber, search_id: params[:search_id]), data: {turbo_method: :post}, disable_with: 'Processing', alt: 'Unsave Entry', class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link" %>
+		      </div>
 		  <% end %>
   <% end %>
 </div>
