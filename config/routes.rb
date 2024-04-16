@@ -534,7 +534,7 @@ MyopicVicar::Application.routes.draw do
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   get 'search_queries/:id/download_as_csv' => 'search_queries#download_as_csv', as: :search_results_download_as_csv
   #get 'search_queries/:id/saved_entries_as_csv' => 'search_queries#saved_entries_as_csv', as: :saved_entries_as_csv
-  post 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
+  get 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
   get 'search_queries/:id/compare_search/:saved_search_id', to: 'search_queries#compare_search', as: :compare_search
   resources :search_queries do
     get :autocomplete_BestGuess_Surname, :on => :collection
@@ -623,8 +623,9 @@ MyopicVicar::Application.routes.draw do
   get ':search_id/:entry_id/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries
   get ':entry_id/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries_non_search
   get ':entry_id/marriage_details', to: 'best_guess#show_marriage', as: :show_marriage_details_non_search
+  get ':rec_id/mark-favourite', to: 'best_guess#save_entry', as: :favourite_entry
+  get ':rec_id/remove-favourite', to: 'best_guess#unsave_entry', as: :remove_favourit
   resources :best_guess
-  post 'entry-information/:id/save_entry', to: 'best_guess#save_entry', as: :save_entry
   get "entry-information/:id/show", :to => 'best_guess_hash#show', :as => :citation_url
   get "/cgi/information.pl", :to => 'best_guess_hash#bmd1_url'
   resources :best_guess_hash
