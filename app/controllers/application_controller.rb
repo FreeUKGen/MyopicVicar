@@ -165,6 +165,7 @@ class ApplicationController < ActionController::Base
       @userid = @user.id
       @user_userid = @user.userid
       @first_name = @user.person_forename
+      @last_name = @user.person_surname
       @manager = manager?(@user)
       @roles = UseridRole::OPTIONS.fetch(@user.person_role)
     end
