@@ -782,6 +782,16 @@ class Freecen2Piece
     [inprogress_status, userids, count]
   end
 
+  def piece_being_transcribed
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    if csv_files.present?
+      inprogress_csv_files = csv_files.where(incorporated: false, "userid" => {'$ne': null})
+    end
+    inprogress_status = inprogress_csv_files.present? ? 'Yes' : ''
+    [inprogress_status]
+  end
+
   def validation_status
     csv_files = self.freecen_csv_files
     vld_files = self.freecen1_vld_files

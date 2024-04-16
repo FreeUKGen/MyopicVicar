@@ -1,0 +1,68 @@
+<% breadcrumb :freecen2_stats_pieces,  @county%>
+<fieldset>
+  <legend>Choose the census year</legend>
+  <%= form_tag gap_report_freecen2_pieces_url, class: 'grid', method: 'get' do %>
+    <ol>
+      <li class="grid__item one-half lap-one-half palm-one-whole">
+        <label class="ttip" for="census_year" tabindex="0">Choose the census year</label>
+        <%= select_tag :census_year ,options_for_select(Freecen::CENSUS_YEARS_ARRAY) , class: ' select', id: 'select_census_year' , tabindex: 0, include_blank: true, prompt: 'Census Year' %>
+      </li>
+      <li class="grid__item one-whole lap-one-whole palm-one-whole">
+        <div  style="text-align: center">
+          <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+        </div>
+      </li>
+    </ol>
+  <% end %>
+</fieldset>
+<% if @census_year.present? %>
+  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county} for the year: #{@census_year}" %></h2>
+<% else%>
+  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county}" %></h2>
+<% end %>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width" >
+    <caption>GAP Report</caption>
+    <thead >
+      <tr>
+        <th class='sticky-header'>Piece Number (Chapman Code) </th>
+        <th class='sticky-header'>Registration District </th>
+        <th class='sticky-header'>Piece Name </th>
+        <th class='sticky-header'>Civil Parishes</th>
+        <th class='sticky-header'>Piece Exists</th>
+        <th class='sticky-header'>Digital Image Available</th>
+        <th class='sticky-header'>Being Transcribed</th>
+        <th class='sticky-header'>Validation Status</th>
+        <th class='sticky-header'>Available to search</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @pieces.present? %>
+        <% @pieces.each do |piece| %>
+          <tr>
+            <td><%= piece.display_piece_number(@chapman_code) %></td>
+            <td><%= piece.freecen2_district.name %></td>
+            <td><%= piece.name %></td>
+            <td><%= piece.civil_parish_names %></td>
+            <td><%= piece.piece_availability %></td>
+            <td><%= piece.piece_digitised %></td>
+            <td>
+              <%= piece.transcription_status[0] %><br>
+              <%#= "Csv files count: #{piece.transcription_status[2]}" %><br>
+              <%= piece.transcription_status[1] %><br>
+            </td>
+            <td>
+              <%= piece.validation_status[0] %><br>
+              <%#= "Csv files count: #{piece.validation_status[2]}" %><br>
+              <%= piece.validation_status[1] %>
+            </td>
+            <td><%= piece.incorpoation_status %></td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>No piece found</tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<br>

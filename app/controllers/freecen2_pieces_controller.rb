@@ -341,6 +341,12 @@ class Freecen2PiecesController < ApplicationController
     @pieces = @pieces.where(year: @census_year) if @census_year.present?
   end
 
+  def gap_report
+    @census_year = params[:census_year] if params[:census_year].present?
+    @pieces = Freecen2Piece.all
+    @pieces = @pieces.where(year: @census_year) if @census_year.present?
+  end
+
   def stats_index
     @county = session[:county]
     @chapman_code = session[:chapman_code]
