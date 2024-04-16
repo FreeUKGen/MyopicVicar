@@ -17,8 +17,7 @@
     <%= render 'form_freecen' %>
   <% end%>
 <% when 'freebmd' %>
-  <!--h1 class="title bmd_search_header" id="search_header">Search our Birth/Marriage/Death Records</h1-->
-  <h1 class="title" id="search_header">Search our Birth, Marriage and Death Records</h1>
+  <h1 class="title text--center bmd_search_header" id="search_header"><span class="bmd_long_header">Search our Birth/Marriage/Death Records</span><span class="bmd_short_header">Search our BMD records</span></h1>
 <% end %>
 <%= render app_specific_partial('form') %>
 <%if appname_downcase="freebmd" && device_type == :mobile%>

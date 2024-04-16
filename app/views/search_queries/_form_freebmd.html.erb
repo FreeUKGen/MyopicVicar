@@ -294,48 +294,13 @@
       </script>
 
     </fieldset>
-    <!--fieldset class="input" id="advanced_search">
-      <legend>Additional search options</legend>
-      <div class="text--center push-half--bottom">
-        <i><small> Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small></i>
-      </div>
-      <ol class="grid">
-        <li class="grid__item one-third lap-one-half palm-one-whole">
-            <%#= label_tag "wildcard_field",'Choose the Name field ' , class: "ttip" %>
-            <%#= f.select :wildcard_field, ["First Name", "Second Name", "Surname"], {include_hidden: false}, {multiple: true, tabindex: "0"} %>
-            <%#= select_tag( 'search_query[wildcard_field]', options_for_select(Constant::NAME, set_value(@search_query.wildcard_field)), prompt: "None chosen", class: 'text-input', tabindex: "0", id: "wildcard_field") %>
-        </li>
-        <li class="grid__item one-third lap-one-half palm-one-whole">
-            <%#= label_tag "wildcard_options_dropdown",'Select one of the following' , class: "ttip" %>
-            <%#= select_tag('search_query[wildcard_option]', options_for_select([], set_value(@search_query.wildcard_option)), prompt: "None", class: 'text-input', tabindex: "0", multiple: false, id: "wildcard_options_dropdown") %>
-        </li>
-      </ol>
-      <%#= Add any option to search for the name in any of the person's names%>
-    </fieldset-->
     <div class="grid action">
-        <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
         <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
     </div>
-        <!--div class="sticky_buttons_css" id="sticky_buttons">
-            <ol class="grid">
-                <li class="grid__item one-half palm-one-half">
-                    <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
-                </li>
-                <li class="grid__item one-half palm-one-half search_button">
-                    <%#= button_tag 'Search', type: 'submit', class: 'spinner-controller ladda-button' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
-                </li>
-            </ol>
-        </div-->
-            <!--li class="grid__item one-half palm-one-half">
-                <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form_small_screen' %>
-            </li-->
-            <%#= button_tag 'Search', type: 'submit', class: 'floating_action_buttons' , id: 'search_form_submit_small_screen', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => '#C84182'}%>
-            <div class="small_screen_actions">
-                <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
-            </div>
-
-            <!--button class="floating_action_buttons" id="small_screen_search_button"><%= app_icons[:search].html_safe%></button-->
-    <% end %>
+    <div class="small_screen_actions">
+        <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
+    </div>
+<% end %>
 </div>
 <%# end %>
 <style>
