@@ -218,7 +218,7 @@ module UseridRole
     COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place', 'Places with Unapproved Names', 'Review Batches with Errors',
                                  'Review Batches with Zero Dates', 'Review Batches by Filename', 'Review Batches by Userid then Filename',
                                  'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change', 'Review Specific Batch',
-                                 'Upload New Batch', 'Offline Reports', 'Manage Images', 'Clean Places UCF list']
+                                 'Upload New Batch', 'Offline Reports', 'Clean Places UCF list', 'Manage Images']
   when 'freecen'
     COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Civil Parishes',
                                  'Locate Pieces', 'Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated',
