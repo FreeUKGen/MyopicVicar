@@ -1,6 +1,6 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% unless print_friendly %>
-  <%= render(partial: 'count_and_tools_menu') %>
+  <%#= render(partial: 'count_and_tools_menu') %>
   <%= render(partial: app_specific_partial("search_result_form")) %>
 <% end %>
 <div class="container">
