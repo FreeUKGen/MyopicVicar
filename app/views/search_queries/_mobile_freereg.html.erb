@@ -1,8 +1,10 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-  <div class="grid__item one-whole push--top" style="display:flex;position:sticky;top:0;align-self:start;padding-top:25px;">
-    <!-- GAM 71161633/FRBMD_freeregorg/freereg_hrec_1 -->
-    <div data-fuse="22945846128"></div>
-  </div>
+<div class="grid">
+<div class="grid__item one-whole push--top islet islet--light soft--left hard--bottom" style="display:flex;position:sticky;top:0;align-self:start;padding-top:25px;">
+  <!-- GAM 71161633/FRBMD_freeregorg/freereg_hrec_1 -->
+  <div data-fuse="22945846128"></div>
+</div>
+<div class="grid__item one-whole">
 <h3 class="epsilon flush--bottom"><%= pluralize(@result_count, ' Exact Result', ' Exact Results') %>
   <small class="additional">
     Each link in the <q>Detail</q> column opens a page with all the information we have for that record.</small>
@@ -80,3 +82,5 @@
     </div>
   <% end%>
 <% end%>
+</div>
+</div>
