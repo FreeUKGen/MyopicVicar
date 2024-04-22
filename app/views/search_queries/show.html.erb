@@ -90,16 +90,7 @@
             <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
           <% end%>
         <% else %>
-          <div class="container">
-            <div class="grid" style="display: flex; overflow: unset;">
-                <span class=''>Advertisement</span><br>
-                <div class="grid__item one-whole push--top" style="display:flex;position:sticky;top:0;align-self:start;padding-top:25px;">
-                  <!-- GAM 71161633/FRBMD_freeregorg/freereg_hrec_1 -->
-                  <div data-fuse="22945846128"></div>
-                </div>
-              <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results, :ucf_results =>  @ucf_results}) %>
-            </div>
-          </div>
+          <%= render(:partial => app_specific_partial("mobile"), :locals => {:search_results => @search_results, :ucf_results =>  @ucf_results}) %>
         <% end %>
       <% end%>
     <% end %>
