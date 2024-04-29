@@ -26,7 +26,7 @@
           <% case MyopicVicar::Application.config.template_set%>
           <% when 'freereg'%>
           <div class="container">
-            <div class="grid" style="">
+            <div class="grid" style="display: flex; overflow: unset;">
               <div class= '' id='results_table' style="padding-left: 0;">
                 <div class="grid__item one-whole">
                   <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
@@ -44,12 +44,12 @@
                 </div>
               </div>
               <% unless device_type == :mobile%>
-                <div  id='results_table_ad' class='float--right text--center push--bottom'>
+                <div  id='results_table_ad' class='float--right text--center push--bottom' style='flex-direction: column;'>
                   <span class=''>Advertisement</span><br>
                   <div class="grid__item one-whole">
                     <%= mh_160_600 %>
                   </div>
-                  <div class="grid__item one-whole push--top" style="position: sticky; top:0; align-self: start;">
+                  <div class="grid__item one-whole push--top" style="display:flex;position:sticky;top:0;align-self:start;padding-top:25px;">
                     <!-- GAM 71161633/FRBMD_freeregorg/freereg_vrec_1 -->
                     <div data-fuse="22945846137"></div>
                   </div>
@@ -117,7 +117,7 @@
 </script>
 <style type="text/css">
   @media only screen and (max-width: 1000px) {
-  .advert_div {
+  #results_table_ad {
     display: none !important;
   }
   }
