@@ -107,14 +107,14 @@ namespace :freecen do
       end
       message_line = '** Search Records **'
       output_to_log(message_file, message_line)
-      old_search_records = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, freecen2_place_id: old_place_record._id).count
+      old_search_records = SearchRecord.where(chapman_code: old_place_record.chapman_code, freecen2_place_id: old_place_record._id).count
       message_line = "Old Place Search Records count = #{old_search_records}"
       output_to_log(message_file, message_line)
-      csv_record_found = old_search_records.positive? && SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, freecen2_place_id: old_place_record._id).first.freecen_csv_file_id
+      csv_record_found = old_search_records.positive? && SearchRecord.where(chapman_code: old_place_record.chapman_code, freecen2_place_id: old_place_record._id).first.freecen_csv_file_id
       csv_records_present = csv_record_found.present? ? true : false
       message_line = "Old Place Census Search Records - CSV File(s) = #{csv_records_present}"
       output_to_log(message_file, message_line)
-      vld_record_found = old_search_records.positive? && SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, freecen2_place_id: old_place_record._id).first.freecen1_vld_file_id
+      vld_record_found = old_search_records.positive? && SearchRecord.where(chapman_code: old_place_record.chapman_code, freecen2_place_id: old_place_record._id).first.freecen1_vld_file_id
       vld_records_present = vld_record_found.present? ? true : false
       message_line = "Old Place Census Search Records - VLD File(s) = #{vld_records_present}"
       output_to_log(message_file, message_line)
@@ -188,7 +188,7 @@ namespace :freecen do
       # UPDATE Search recs for Place Id
 
       if old_search_records.positive? && fixit
-        records_updated = SearchRecord.collection.update_many({ birth_chapman_code: old_place_record.chapman_code, freecen2_place_id: old_place_record._id }, '$set' => { freecen2_place_id: new_place_record._id, location_names: [new_place_record.place_name] })
+        records_updated = SearchRecord.collection.update_many({ chapman_code: old_place_record.chapman_code, freecen2_place_id: old_place_record._id }, '$set' => { chapman_code: new_place_record.chapman_code, freecen2_place_id: new_place_record._id, location_names: [new_place_record.place_name] })
         message_line = "Search Records updated = #{records_updated.inspect}"
         output_to_log(message_file, message_line)
       end
