@@ -397,7 +397,7 @@ class SearchQueriesController < ApplicationController
     results_per_page = params[:results_per_page]
     sorted_results = @search_query.sorted_and_paged_searched_records
     paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
-    send_data search_results_gedcom(paginated_array).join("\n"), filename: "search_results-#{Date.today}.ged"
+    send_data @search_query.search_results_gedcom(paginated_array,@user).join("\n"), filename: "search_results-#{Date.today}.ged"
   end
 
   def compare_search

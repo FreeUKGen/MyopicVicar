@@ -249,6 +249,19 @@ module SearchQueriesHelper
     return field_value.include?value
   end
 
+  def set_county_value value=nil
+    return value if value.blank?
+    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    selected_counties = value.collect(&:strip).reject{|c| c.empty? }
+    county_names = []
+    county_hash.each {|country, counties|
+      selected_counties.each{|chapman_code|
+        county_names << county_hash.dig(country).key(chapman_code) if county_hash.dig(country).values.include?chapman_code
+      }
+    }
+    county_names
+  end
+
   def bmd_record_type_name search_record_type
     search_record_type.map do |rec_type|
       next if rec_type == '0'
