@@ -343,7 +343,7 @@ class Freecen2PiecesController < ApplicationController
   end
 
   def gap_report
-    @census_year = params[:census_year] if params[:census_year].present?
+    @census_year = params[:census_year].present? ? params[:census_year] : '1841'
     @pieces = Freecen2Piece.all
     @pieces = @pieces.where(year: @census_year) if @census_year.present?
   end
