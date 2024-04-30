@@ -7,18 +7,18 @@
       <ol class="grid">
         <li class="grid__item one-third palm-one-whole">
           <%= f.label :period_from, "Start Date: " %>
-          <%= f.date_field :period_from, value: @start_date,min: '2020-01-01', max: Date.today %>
+          <%= f.date_field :period_from, value: @start_date.strftime('%F'),min: '2020-01-01', max: Date.today %>
         </li>
         <li class="grid__item one-third palm-one-whole">
           <%= f.label :period_to, "End Date: " %>
-          <%= f.date_field :period_to, value: @end_date,max: Date.today, min: '2020-01-01' %>
+          <%= f.date_field :period_to, value: @end_date.strftime('%F'),max: Date.today, min: '2020-01-01' %>
         </li>
         <%= f.submit 'Update', :class => "btn   btn--small", title: 'Update timeframe of the report',data: { disable_with: false } %>
       </ol>
     </fieldset>
   <% end %>
 </div>
-<table>
+<table class="my-width-min flush--bottom">
   <caption>
     Basic information in the selected time period
   </caption>
