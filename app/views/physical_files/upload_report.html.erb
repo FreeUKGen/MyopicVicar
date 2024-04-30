@@ -18,45 +18,52 @@
     </fieldset>
   <% end %>
 </div>
-<table class="my-width-min flush--bottom">
-  <caption>
-    Basic information in the selected time period
-  </caption>
-  <thead>
-    <tr>
-      <th scope="col">Detail</th>
-      <th scope="col">Count</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">Total Transcribers</th>
-      <td><%= @transcribers_count %></td>
-    </tr>
-    <tr>
-      <th scope="row">Total active transcribers</th>
-      <td><%= @active_transcribers_count %></td>
-    </tr>
-    <tr>
-      <th scope="row">Number of transcribers with their email address confirmed in this period</th>
-      <td><%= @email_confimed %></td>
-    </tr>
-  </tbody>
-</table>
+<div class="scrollable">
+  <table class="table--bordered table--data table--striped my-width">
+    <caption>
+      Basic information in the selected time period
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Detail</th>
+        <th scope="col">Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Total Transcribers</th>
+        <td><%= @transcribers_count %></td>
+      </tr>
+      <tr>
+        <th scope="row">Total active transcribers</th>
+        <td><%= @active_transcribers_count %></td>
+      </tr>
+      <tr>
+        <th scope="row">Number of transcribers with their email address confirmed in this period</th>
+        <td><%= @email_confimed %></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<table>
-  <tr>
-    <th>Time Period</th>
-    <th>Roles</th>
-    <th>Upload Count</th>
-  </tr>
-  <% @uploaders_count.each do |u| %>
+<div class="scrollable">
+  <table class="table--bordered table--data table--striped my-width">
+    <caption>
+      Upload report by members
+    </caption>
     <tr>
-      <td><%= "#{@start_date.to_date.strftime("%B, %d, %Y")} - #{@end_date.to_date.strftime("%B, %d, %Y")}" %></td>
-      <td>
-          <%= u[0] %>
-      </td>
-      <td><%= u[1] %></td>
+      <th>Time Period</th>
+      <th>Roles</th>
+      <th>Upload Count</th>
     </tr>
-  <% end %>
-</table>
+    <% @uploaders_count.each do |u| %>
+      <tr>
+        <td><%= "#{@start_date.to_date.strftime("%B, %d, %Y")} - #{@end_date.to_date.strftime("%B, %d, %Y")}" %></td>
+        <td>
+            <%= u[0] %>
+        </td>
+        <td><%= u[1] %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
