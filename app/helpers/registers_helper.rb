@@ -1,6 +1,6 @@
 module RegistersHelper
   def which_embargo_rule_link(rules)
-    if ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(@user.person_role)
+    if ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(session[:role])
       if rules
         link_to 'Embargo Rules', embargo_rules_path(county: @county, place: @place, church: @church, register: @register),
           method: :get, class: 'btn   btn--small'

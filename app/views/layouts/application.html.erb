@@ -9,7 +9,7 @@
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
     <!-- Publift fuse tag-->
-    <script async src='<%#= fuse_tags_source %>' type="text/javascript"></script>
+    <script async src='<%= fuse_tags_source %>' type="text/javascript"></script>
     <!-- Google Tag Manager -->
     <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -92,7 +92,7 @@
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %> 
-    <%= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
+    <%#= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
     <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
     <% end %>
@@ -155,7 +155,7 @@
     <!-- TODO fix above this -->
     <!-- example offcanvas switching code -->
     <script type="text/javascript">
-      var el = document.getElementById("trigger-offcanvas");
+      var el = document.getElementById("trigger-offcanvas-old");
       var elm = document.getElementById("menu_container");
       var cancel = document.getElementById("trigger-offcanvas-cancel");
       var switchOffCanvas = function() {
@@ -174,7 +174,7 @@
 
     </script>
     <script type="text/javascript">
-      var el = document.getElementById("trigger-offcanvas-old");
+      var el = document.getElementById("trigger-offcanvas");
       var switchOffCanvas = function() {
         classie.toggle(document.body, 'offcanvas--active');
         classie.toggle(el, 'site__header__menu-btn--active');

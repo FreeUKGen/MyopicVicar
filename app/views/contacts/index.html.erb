@@ -1,5 +1,5 @@
 <% breadcrumb :contacts %>
-<% if @user.person_role == 'county_coordinator' || @user.person_role == 'country_coordinator'%>
+<% if session[:role] == 'county_coordinator' || session[:role] == 'country_coordinator'%>
   <h2 class=" text--center">List of your data problem reports</h2>
   <p style="text-align: center"> <%= @county%></p>
 <%else%>

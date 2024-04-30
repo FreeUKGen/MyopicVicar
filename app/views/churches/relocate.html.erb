@@ -3,7 +3,7 @@
 <%= render 'flash_notice' %>
 <section class="island  island--light">
   <%= simple_form_for  @church do |f| %>
-    <% if @user.person_role == 'data_manager' || @user.person_role == 'system_administrator' %>
+    <% if session[:role] == 'data_manager' || session[:role] == 'system_administrator' %>
       <b> Please be sure to select the correct Place from the following list. </b>
       <p>
         <%= f.input :place_name, { :as => :select,  :collection => @places, :label => "Select Place in which Church is to be located :", :required => true,:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 10 } }%>

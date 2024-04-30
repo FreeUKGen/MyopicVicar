@@ -214,10 +214,10 @@ class UseridDetailsController < ApplicationController
     session[:type] = 'add'
     get_user_info_from_userid
     @role = session[:role]
-    if @user.person_role == 'syndicate_coordinator'
+    if @role == 'syndicate_coordinator'
       @syndicates = []
       @syndicates[0] = session[:syndicate]
-    elsif ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@user.person_role)
+    elsif ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@role)
       @syndicates = Syndicate.get_syndicates
     else
       @syndicates = Syndicate.get_syndicates_open_for_transcription
