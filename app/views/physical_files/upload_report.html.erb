@@ -13,13 +13,40 @@
           <%= f.label :period_to, "End Date: " %>
           <%= f.date_field :period_to, value: @end_date,max: Date.today, min: '2020-01-01' %>
         </li>
-            <%= f.submit 'Update', :class => "btn   btn--small", title: 'Update timeframe of the report',data: { disable_with: false } %>
-          </fieldset>
-        <% end %>
-      </div>
+        <%= f.submit 'Update', :class => "btn   btn--small", title: 'Update timeframe of the report',data: { disable_with: false } %>
+      </ol>
+    </fieldset>
+  <% end %>
+</div>
+<table>
+  <caption>
+    Basic information in the selected time period
+  </caption>
+  <thead>
+    <tr>
+      <th scope="col">Detail</th>
+      <th scope="col">Count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Total Transcribers</th>
+      <td><%= @transcribers_count %></td>
+    </tr>
+    <tr>
+      <th scope="row">Total active transcribers</th>
+      <td><%= @active_transcribers_count %></td>
+    </tr>
+    <tr>
+      <th scope="row">Number of transcribers with their email address confirmed in this period</th>
+      <td><%= @email_confimed %></td>
+    </tr>
+  </tbody>
+</table>
+
 <table>
   <tr>
-    <th>Time PeriSod</th>
+    <th>Time Period</th>
     <th>Roles</th>
     <th>Upload Count</th>
   </tr>

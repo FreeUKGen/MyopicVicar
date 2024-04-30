@@ -275,22 +275,6 @@ class PhysicalFilesController < ApplicationController
       end_date = upload_report_params['period_to']
     end
     @uploaders_count, @email_confirmed, @users_count = upload_report_data(start_date, end_date)
-  end
-
-  def download_as_csv
-    start_date = params[:csvdownload][:period_from].to_datetime
-    end_date = params[:csvdownload][:period_to].to_datetime
-
-    success, message, file_location, file_name = SiteStatistic.create_csv_file(start_date, end_date)
-
-    if success
-      if File.file?(file_location)
-        flash[:notice] = message unless message.empty?
-        send_file(file_location, filename: file_name, x_sendfile: true) && return
-      end
-    else
-      flash[:notice] = 'There was a problem downloading the CSV file'
-    end
-    redirect_back(fallback_location: new_manage_resource_path)
+    @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcribers_stats
   end
 end

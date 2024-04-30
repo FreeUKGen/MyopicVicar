@@ -248,25 +248,6 @@ class PhysicalFile
     [uploaders_count, email_confirmed, users_count]
   end
 
-  def write_csv_file(file_location, stats_array, extra_array=nil)
-      column_headers = %w(year month day searches records baptisms marriages burials added-records added-baptisms added-marriages added-burials)
-
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
-        csv << column_headers
-        stats_array.each do |rec|
-          line = []
-          line = SiteStatistic.add_fields(line, rec)
-          csv << line
-        end
-        if extra_array.present?
-          extra_array.each do |a|
-            csv << a
-          end
-        end
-      end
-      [true, '']
-    end
-
   private
 
   def format_date_for_report date, default
