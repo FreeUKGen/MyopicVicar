@@ -21,8 +21,15 @@ module Freecen
     def individual_pob_valid?(vld_entry, chapman_code, vld_year, userid)
       pob_valid = false
       pob_warning = ''
-      if vld_entry.birth_place == 'UNK'
+      reason = ''
+
+      if vld_entry.birth_place.blank?
+        reason = 'Automatic update of birth place missing to hyphen'
+      elsif vld_entry.birth_place.upcase == 'UNK'
         reason = 'Automatic update of birth place UNK to hyphen'
+      end
+
+      if reason.present?
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
         vld_entry.set(birth_place: '-')
         Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
@@ -30,9 +37,19 @@ module Freecen
 
       pob_valid, pob_warning = valid_pob?(vld_entry, vld_year)
 
-      unless pob_valid
+      if pob_valid
+        individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
+        if individual_rec.present?
+          search_rec = SearchRecord.find_by(freecen_individual_id: individual_rec._id)
+          if search_rec.present?
+            place = vld_entry.birth_place.presence || vld_entry.verbatim_birth_place
+            valid_pob, place_id = Freecen2Place.valid_place(vld_entry.birth_county, place)
+            valid_pob ? search_rec.set(freecen2_place_of_birth: place_id) : search_rec.set(freecen2_place_of_birth: nil)
+          end
+        end
+      else
         propagation_matches = Freecen1VldEntryPropagation.where(match_verbatim_birth_county: vld_entry.verbatim_birth_county, match_verbatim_birth_place: vld_entry.verbatim_birth_place)
-        unless propagation_matches.blank?
+        if propagation_matches.present?
 
           propagation_matches.each do |prop_rec|
             in_scope = Freecen1VldEntry.in_propagation_scope?(prop_rec, chapman_code, vld_year)
@@ -48,7 +65,6 @@ module Freecen
             Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
             pob_valid = true
             pob_warning = ''
-
           end
         end
       end

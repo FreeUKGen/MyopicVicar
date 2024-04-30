@@ -193,6 +193,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
   get 'physical_files/:id/download(.:format)', :to => 'physical_files#download', :as => :download_physical_file
   get 'physical_files/:id/remove(.:format)', :to => 'physical_files#remove', :as => :remove_physical_file
+  get 'physical_files/upload_report', to: 'physical_files#upload_report', as: :upload_report_physical_file
   resources :physical_files
 
   resources :search_statistics
@@ -420,6 +421,7 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
   get 'manage_counties/selection', :to =>'manage_counties#select_year', :as => :select_year_manage_counties
   get 'manage_counties/piece_statistics', :to =>'manage_counties#piece_statistics', :as => :piece_statistics_manage_counties
+  get 'manage_counties/clean_ucf_list_for_all_places', :to =>'manage_counties#clean_ucf_list_for_all_places', :as => :clean_ucf_list_manage_counties
 
   resources :manage_counties
 

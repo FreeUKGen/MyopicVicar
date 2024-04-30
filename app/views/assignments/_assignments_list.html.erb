@@ -56,7 +56,7 @@
                     <% when 'submitted_review' %>
                     <%= link_to 'LS', list_assignment_images_assignment_path(x[:id], :assignment_filter_list=>'submitted_review', :source_id=>x[:source_id], :image_server_group_id=>x[:group_id]), :title=>'list images in this assignment', method: :get %>
                   <% else %>
-                    <%= link_to 'LS', list_assignment_images_assignment_path(x[:id], :assignment_filter_list=>'', :source_id=>x[:source_id], :image_server_group_id=>x[:group_id]), :title=>'list images in this assignment', method: :get %>
+                    <%= link_to 'LS', list_assignment_images_assignment_path(x[:id], :assignment_filter_list=>'', :source_id=>x[:source_id], :image_server_group_id=>x[:group_id], images_listing: true), :title=>'list images in this assignment', method: :get %>
                   <% end %>
                   <% if !session[:my_own] %>
                     <% if params[:assignment].nil? %>

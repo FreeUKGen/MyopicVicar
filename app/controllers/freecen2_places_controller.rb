@@ -136,7 +136,7 @@ class Freecen2PlacesController < ApplicationController
 
     get_user_info_from_userid
     permitted = %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator
-                   executive_director project_manager].include?(@user.person_role) ? true : false
+                   executive_director project_manager].include?(session[:role]) ? true : false
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'You are not permitted to edit a place') && return unless permitted
 
     @county = @place.county
@@ -145,11 +145,11 @@ class Freecen2PlacesController < ApplicationController
       lnd_county_coord = County.find_by(chapman_code: @chapman_code)
       message = 'Only system administrators, data administrator and LND county coordinator can edit LND'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
-      %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
+      %w[system_administrator data_manager].include?(session[:role]) || @user.userid == lnd_county_coord.county_coordinator
     elsif @chapman_code == 'WLS'
       message = 'Only system administrators and data administrator can edit WLS'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
-      %w[system_administrator data_manager].include?(@user.person_role)
+      %w[system_administrator data_manager].include?(session[:role])
     end
     @place_name = @place.place_name
     @place.alternate_freecen2_place_names.build
@@ -264,7 +264,7 @@ class Freecen2PlacesController < ApplicationController
   def new
     get_user_info_from_userid
     permitted = %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator
-                   executive_director project_manager].include?(@user.person_role) ? true : false
+                   executive_director project_manager].include?(session[:role]) ? true : false
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'You are not permitted to create a new place') && return unless permitted
 
     @place_name = params[:place] if params[:place].present?
@@ -279,8 +279,8 @@ class Freecen2PlacesController < ApplicationController
     counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Channel Islands' } # GitHub story 1495
     counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Overseas British' } # GitHub story 1310 (note: includes #1526 mods too so that there are no conflicts when deployed)
     lnd_county_coord = County.find_by(chapman_code: 'LND')
-    counties_for_select << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
-    counties_for_select << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
+    counties_for_select << 'London (City)' if %w[system_administrator data_manager].include?(session[:role]) || @user.userid == lnd_county_coord.county_coordinator
+    counties_for_select << 'Wales' if %w[system_administrator data_manager].include?(session[:role])
     @counties = counties_for_select.sort
     get_sources
   end
@@ -429,7 +429,7 @@ class Freecen2PlacesController < ApplicationController
         return
       end
 
-      error_message = @place.check_alternate_names(params[:freecen2_place][:alternate_freecen2_place_names_attributes], @place.chapman_code, params[:freecen2_place][:place_name])
+      error_message = @place.check_alternate_names(params[:freecen2_place][:alternate_freecen2_place_names_attributes], @place.chapman_code, params[:id])
       unless error_message == 'None'
         flash[:notice] = error_message
         get_reasons

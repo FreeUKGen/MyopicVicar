@@ -10,11 +10,11 @@
       <th class='sticky-header '>Loaded At</th>
       <th class='sticky-header '>Uploaded By</th>
       <th class='sticky-header '>Transcriber</th>
-      <% if  %w[system_administrator data_manager].include?(@user.person_role)%>
+      <% if  %w[system_administrator data_manager].include?(session[:role])%>
         <th colspan = "4" class="sticky-header">POB Validation<a href="#" class="left_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
             <span>Refresh the page to update the POB Status Information</span></a></th>
       <% end%>
-      <% if %w[system_administrator data_manager executive_director county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
+      <% if %w[system_administrator data_manager executive_director county_coordinator country_coordinator master_county_coordinator].include?(session[:role])%>
         <th colspan = "8" class='sticky-header '>Actions</th>
       <% else%>
         <th colspan = "1" class='sticky-header '>Actions</th>
@@ -31,7 +31,7 @@
           <td><%= loaded_at(freecen1_vld_file) %></td>
           <td><%= freecen1_vld_file.userid %></td>
           <td><%= freecen1_vld_file.transcriber_name %></td>
-          <% if %w[system_administrator data_manager].include?(@user.person_role)%>
+          <% if %w[system_administrator data_manager].include?(session[:role])%>
             <td><%= pob_val_status(freecen1_vld_file)  %></td>
             <% if pob_val_status(freecen1_vld_file) != 'All POBs are valid'%>
               <td><%= link_to 'Auto Val', auto_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Run Auto POB Validation for '+freecen1_vld_file.file_name+'?'} %></td>
@@ -46,8 +46,8 @@
                 <% end %>
               <% end %>
               <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
-              <% if %w[system_administrator data_manager executive_director county_coordinator country_coordinator master_county_coordinator].include?(@user.person_role)%>
-                <% if %w[system_administrator data_manager country_coordinator].include?(@user.person_role)%>
+              <% if %w[system_administrator data_manager executive_director county_coordinator country_coordinator master_county_coordinator].include?(session[:role])%>
+                <% if %w[system_administrator data_manager country_coordinator].include?(session[:role])%>
                   <td><%= link_to 'Download', download_vld_file_freecen1_vld_file_path(file: freecen1_vld_file.id), title: 'Download VLD file',data: { confirm: 'Are you sure you want to download '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
                   <td><%= link_to 'Replace', new_freecen1_vld_file_path(replace: freecen1_vld_file.file_name), data: { confirm: 'Are you sure you want to Replace '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
                 <% end%>

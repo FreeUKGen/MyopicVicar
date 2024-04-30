@@ -1,36 +1,44 @@
 <% breadcrumb :counties%>
 <h2 class=" text--center">All Active Counties</h2>
 <%= render 'flash_notice' %>
-<div  class=" text--center push--bottom">
-  <%= link_to 'Activate Empty County', new_county_path,:class => "btn btn--small", method: :get %>
-</div>
+<% if session[:role] == "system_administrator" #|| @user.secondary_role.include?('system_administrator') %>
+  <div  class=" text--center push--bottom">
+    <%= link_to 'Activate Empty County', new_county_path,:class => "btn btn--small", method: :get %>
+  </div>
+<% end %>
 <div id="main" style="color:black">
   <table class="table--bordered table--data ">
     <tr>
       <th class="t8">County</th>
       <th class="t15">County Coordinator</th>
       <th class="t22">email address</th>
-      <th class="3" title="Transcriber Agreement Accepted">Open</th>
-      <th class="t8">Files</th>
-      <th class="t8">Total Records</th>
-      <th class="t6">Baptisms</th>
-      <th class="t6">Burials</th>
-      <th class="t6">Marriages</th>
-      <th class="t20">Action</th>
+      <% if session[:role] == "system_administrator" %>
+        <th class="3" title="Transcriber Agreement Accepted">Open</th>
+        <th class="t8">Files</th>
+        <th class="t8">Total Records</th>
+        <th class="t6">Baptisms</th>
+        <th class="t6">Burials</th>
+        <th class="t6">Marriages</th>
+        <th class="t20">Action</th>
+      <% end %>
     </tr>
     <% @counties.each do |county| %>
       <tr id="<%=county.id%>">
         <td > <%= county.chapman_code %> <%= ChapmanCode::name_from_code(county.chapman_code)%> </td>
         <td > <%= county.county_coordinator %>  </td>
         <td > <%= email_address(county.county_coordinator) %>  </td>
+        <% if session[:role] == "system_administrator"%>
         <td > <%= county_coordinator_agreement(county.county_coordinator) %>  </td>
         <td > <%= county.files %>  </td>
         <td > <%= county.total_records %>  </td>
         <td > <%= county.baptism_records %>  </td>
         <td > <%= county.burial_records %>  </td>
         <td > <%= county.marriage_records %>  </td>
-        <% if @user.person_role == "system_administrator"%>
-          <td><%= link_to 'Show', county_path(county), :class => "btn btn--small",method: :get  %> <%= link_to 'Edit', edit_county_path(county),:class => "btn btn--small", method: :get %> </td>
+        <%# if @user.person_role == "system_administrator"%>
+          <td>
+            <%= link_to 'Show', county_path(county), :class => "btn btn--small",method: :get  %> 
+            <%= link_to 'Edit', edit_county_path(county),:class => "btn btn--small", method: :get %> 
+          </td>
         <% end%>
       </tr>
     <% end %>

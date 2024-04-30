@@ -58,13 +58,13 @@ class SyndicatesController < ApplicationController
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     case
-    when @user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator'
+    when session[:role] == 'system_administrator' || session[:role] == 'volunteer_coordinator'
       @userids = UseridDetail.all.order_by(userid_lower_case: 1)
-    when  @user.person_role == 'country_cordinator'
+    when  session[:role] == 'country_cordinator'
       @userids = UseridDetail.where(syndicate: @user.syndicate).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
-    when  @user.person_role == 'county_coordinator'
+    when  session[:role] == 'county_coordinator'
       @userids = UseridDetail.where(syndicate: @user.syndicate).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
-    when  @user.person_role == 'sydicate_coordinator'
+    when  session[:role] == 'sydicate_coordinator'
       @userids = UseridDetail.where(syndicate: @user.syndicate).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
     else
       @userids = @user
@@ -110,7 +110,7 @@ class SyndicatesController < ApplicationController
 
   def selection
     get_user_info_from_userid
-    session[:syndicate] = 'all' if @user.person_role == 'system_administrator'
+    session[:syndicate] = 'all' if session[:role] == 'system_administrator'
     case params[:synd]
     when 'Browse syndicates'
       @syndicates = Syndicate.all.order_by(syndicate_code: 1)
