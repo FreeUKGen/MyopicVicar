@@ -88,7 +88,7 @@ namespace :freecen do
       message_line = '** Pieces **'
       output_to_log(message_file, message_line)
       old_freecen2_pieces = Freecen2Piece.where(freecen2_place_id: old_place_record._id).count
-      message_line = "Old Place Pieces count = #{old_freecen2_districts}"
+      message_line = "Old Place Pieces count = #{old_freecen2_pieces}"
       output_to_log(message_file, message_line)
       if old_freecen2_pieces.positive? && fixit
         pieces_updated = Freecen2Piece.collection.update_many({ freecen2_place_id: old_place_record._id }, '$set' => { freecen2_place_id: new_place_record._id})
