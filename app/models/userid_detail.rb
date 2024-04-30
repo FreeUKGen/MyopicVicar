@@ -200,15 +200,11 @@ class UseridDetail
     end
 
     def get_transcriber_stats(start_date,end_date)
-       transcribers = members.where(person_role: 'transcriber')
+      transcribers = UseridDetail.where(person_role: 'transcriber')
       transcribers_registered = transcribers.where(c_at: start_date..end_date)
       active_transcribers = transcribers.where(active: true)
       email_address_confimed = transcribers.where(email_address_last_confirmned: start_date..end_date)
       [transcribers.count, active_transcribers.count, email_address_confimed.count]
-    end
-
-    def format_date_for_report date, default
-    formatted_date = date.present? ? date.to_datetime : default.to_datetime
     end
   end
 
