@@ -274,7 +274,7 @@ class PhysicalFilesController < ApplicationController
       start_date = upload_report_params['period_from']
       end_date = upload_report_params['period_to']
     end
-    @uploaders_count, @email_confirmed, @users_count = upload_report_data(start_date, end_date)
+    @uploaders_count, @email_confirmed, @users_count = PhysicalFile.upload_report_data(start_date, end_date)
     @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcribers_stats
   end
 end

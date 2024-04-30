@@ -237,7 +237,7 @@ class PhysicalFile
 
   def upload_report_data(start_date, end_date)
     start_date = format_date_for_report(start_date,'01/01/2020')
-    end_date = format_date_for_report(end_date, Date.today.to_datetime)
+    end_date = format_date_for_report(end_date, Date.today)
     uploaded_files = PhysicalFile.where(c_at: @start_date..@end_date)
     uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
     uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
