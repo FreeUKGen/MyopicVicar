@@ -274,7 +274,15 @@ class PhysicalFilesController < ApplicationController
       start_date = upload_report_params['period_from']
       end_date = upload_report_params['period_to']
     end
+    @start_date = format_date_for_report(start_date,'01/01/2020')
+    @end_date = format_date_for_report(end_date, Date.today)
     @uploaders_count, @email_confirmed, @users_count = PhysicalFile.new.upload_report_data(start_date, end_date)
-    @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcribers_stats
+    @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcribers_stats(start_date, end_date)
+  end
+
+  private
+  def format_date_for_report date, default
+    formatted_date = date.present? ? date.to_datetime : default.to_datetime
+    formatted_date
   end
 end
