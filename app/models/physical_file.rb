@@ -234,4 +234,42 @@ class PhysicalFile
     self.update_attribute(:userid, new_userid)
   end
 
+
+  def upload_report_data(start_date, end_date)
+    start_date = format_date_for_report(start_date,'01/01/2020')
+    end_date = format_date_for_report(end_date, Date.today.to_datetime)
+    uploaded_files = PhysicalFile.where(c_at: @start_date..@end_date)
+    uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
+    uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
+    uploders_role = uploaders.pluck(:person_role)
+    uploaders_count = uploders_role.group_by(&:itself).transform_values(&:count)
+    email_confirmed = UseridDetail.where(email_address_last_confirmned: @start_date..@end_date)
+    users_count = UseridDetail.where(c_at: @start_date..@end_date)
+    [uploaders_count, email_confirmed, users_count]
+  end
+
+  def write_csv_file(file_location, stats_array, extra_array=nil)
+      column_headers = %w(year month day searches records baptisms marriages burials added-records added-baptisms added-marriages added-burials)
+
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << column_headers
+        stats_array.each do |rec|
+          line = []
+          line = SiteStatistic.add_fields(line, rec)
+          csv << line
+        end
+        if extra_array.present?
+          extra_array.each do |a|
+            csv << a
+          end
+        end
+      end
+      [true, '']
+    end
+
+  private
+
+  def format_date_for_report date, default
+    formatted_date = date.present? ? date.to_datetime : default.to_datetime
+  end
 end
