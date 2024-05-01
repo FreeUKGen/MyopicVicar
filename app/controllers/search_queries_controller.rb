@@ -30,6 +30,8 @@ class SearchQueriesController < ApplicationController
     @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
     @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
     @search_query['chapman_codes'] = ['', 'ERY', 'NRY', 'WRY'] if @search_query['chapman_codes'][1].eql?('YKS')
+    test_chapman_codes = [''] + ChapmanCode::CODES['England'].values
+    p "Chapman Codes ENG = #{test_chapman_codes}"
     @search_query['birth_chapman_codes'] = ['', 'ERY', 'NRY', 'WRY'] if @search_query['birth_chapman_codes'][1].eql?('YKS')
     @search_query['chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['chapman_codes'][1].eql?('CHI')
     @search_query['birth_chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['birth_chapman_codes'][1].eql?('CHI')
