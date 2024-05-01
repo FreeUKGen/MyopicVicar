@@ -1,4 +1,3 @@
-<% breadcrumb :freecen2_stats_pieces,  @county%>
 <fieldset>
   <legend>Choose the census year</legend>
   <%= form_tag gap_report_freecen2_pieces_url, class: 'grid', method: 'get' do %>
@@ -23,13 +22,20 @@
     </ol>
   <% end %>
 </fieldset>
-<% if @census_year.present? %>
-  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county} for the year: #{@census_year}" %></h2>
-<% else%>
-  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county}" %></h2>
-<% end %>
+  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} for the year: #{@census_year}" %></h2>
 <div class='scrollable'>
-  <table  class="table--bordered table--data table--striped my-width" >
+  <table  class="table--bordered table--data table--striped my-width" style='table-layout: fixed;'>
+    <colgroup>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t30'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+    </colgroup>
     <caption>GAP Report</caption>
     <thead >
       <tr>
@@ -40,7 +46,6 @@
         <th class='sticky-header'>Piece Exists</th>
         <th class='sticky-header'>Digital Image Available</th>
         <th class='sticky-header'>Being Transcribed</th>
-        <th class='sticky-header'>Validation Status</th>
         <th class='sticky-header'>Available to search</th>
       </tr>
     </thead>
@@ -48,21 +53,14 @@
       <% if @pieces.present? %>
         <% @pieces.each do |piece| %>
           <tr>
-            <td><%= piece.display_piece_number(@chapman_code) %></td>
+            <td><%= piece.display_piece_number(piece.chapman_code) %></td>
             <td><%= piece.freecen2_district.name %></td>
             <td><%= piece.name %></td>
             <td><%= piece.civil_parish_names %></td>
             <td><%= piece.piece_availability %></td>
             <td><%= piece.piece_digitised %></td>
             <td>
-              <%= piece.transcription_status[0] %><br>
-              <%#= "Csv files count: #{piece.transcription_status[2]}" %><br>
-              <%= piece.transcription_status[1] %><br>
-            </td>
-            <td>
-              <%= piece.validation_status[0] %><br>
-              <%#= "Csv files count: #{piece.validation_status[2]}" %><br>
-              <%= piece.validation_status[1] %>
+              <%= piece.piece_being_transcribed[0] %><br>
             </td>
             <td><%= piece.incorpoation_status %></td>
           </tr>
