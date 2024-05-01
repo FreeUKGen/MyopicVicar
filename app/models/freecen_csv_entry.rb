@@ -2296,7 +2296,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, category, industry, home]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, category, industry, home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, category, industry, home]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, religion, read_and_write, disp_occupation, category]
       elsif  %w[CHI ALD GSY JSY].include?(chapman_code)
@@ -2431,7 +2431,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [nationality, birth_county_name, birth, disability, lang, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [nationality, birth_county_name, birth, disability, diability_notes, lang, note]
+        [nationality, birth_county_name, birth, disability, disability_notes, lang, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [birth_county_name, birth, disability, lang, note]
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)

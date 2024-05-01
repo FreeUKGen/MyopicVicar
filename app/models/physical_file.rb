@@ -234,4 +234,15 @@ class PhysicalFile
     self.update_attribute(:userid, new_userid)
   end
 
+
+  def upload_report_data(start_date, end_date)
+    uploaded_files = PhysicalFile.where(c_at: start_date..end_date)
+    uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
+    uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
+    uploders_role = uploaders.pluck(:person_role)
+    uploaders_count = uploders_role.group_by(&:itself).transform_values(&:count)
+    email_confirmed = UseridDetail.where(email_address_last_confirmned: start_date..end_date)
+    users_count = UseridDetail.where(c_at: start_date..end_date)
+    [uploaders_count, email_confirmed, users_count]
+  end
 end
