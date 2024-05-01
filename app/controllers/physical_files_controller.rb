@@ -269,18 +269,20 @@ class PhysicalFilesController < ApplicationController
   end
 
   def upload_report
-    @start_date = '01/01/2020'.to_datetime
-    @end_date = Date.today.to_datetime
     upload_report_params = params['upload_report']
     if upload_report_params.present?
-      @start_date = upload_report_params['period_from'].to_datetime if upload_report_params['period_from'].present?
-      @end_date = upload_report_params['period_to'].to_datetime if upload_report_params['period_to'].present?
+      start_date = upload_report_params['period_from']
+      end_date = upload_report_params['period_to']
     end
-    uploaded_files = PhysicalFile.where(c_at: @start_date..@end_date)
-    uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
-    uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
-    uploders_role = uploaders.pluck(:person_role)
-    @uploaders_count = uploders_role.group_by(&:itself).transform_values(&:count)
+    @start_date = format_date_for_report(start_date,'01/01/2020')
+    @end_date = format_date_for_report(end_date, Date.today)
+    @uploaders_count, @email_confirmed, @users_count = PhysicalFile.new.upload_report_data(@start_date, @end_date)
+    @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcriber_stats(@start_date, @end_date)
   end
 
+  private
+  def format_date_for_report date, default
+    formatted_date = date.present? ? date.to_datetime : default.to_datetime
+    formatted_date
+  end
 end
