@@ -344,7 +344,7 @@ class Freecen2PiecesController < ApplicationController
 
   def gap_report
     @census_year = params[:census_year].present? ? params[:census_year] : '1841'
-    @chapman_code = params[:chapman_code].present? ? params[:census_year] : 'BRK'
+    @chapman_code = params[:chapman_code].present? ? params[:chapman_code] : 'BRK'
     @pieces = Freecen2Piece.all
     @pieces = @pieces.where(year: @census_year, chapman_code: @chapman_code) #if @census_year.present?
   end
