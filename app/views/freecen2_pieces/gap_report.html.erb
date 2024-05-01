@@ -9,7 +9,7 @@
       <li class="grid__item one-half lap-one-half palm-one-whole">
         <label class="ttip" for="chapman_code" tabindex="0">Choose the census year</label>
         <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-        <select class="select" id="chapman_code" multiple="multiple" name="chapman_code">
+        <select class="select" id="chapman_code" name="chapman_code">
           <option value="" id="default">All Counties</option>
           <%= grouped_options_for_select(grouped_options) %>
         </select>
