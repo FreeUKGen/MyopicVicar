@@ -3,7 +3,7 @@
 </h3>
 <%= render 'flash_notice' %>
 <div style="text-align: center">
-  <% if !@place.error_flag.nil? && (@user.person_role == 'data_manager' ||   @user.person_role == 'system_administrator')%>
+  <% if !@place.error_flag.nil? && (session[:role] == 'data_manager' || session[:role] == 'system_administrator')%>
     <%= link_to 'Remove Unapproved Flag', approve_place_path, method: :get, :class => "btn   btn--small" %>
   <% end%>
 </div>

@@ -3,7 +3,7 @@
 <div class="grid">
   <section class="island ">
     <h4 style="text-align: center">The Place <%= @place.place_name%> in <%=@county%></h4>
-    <% if @user.person_role == 'data_manager' ||   @user.person_role == 'system_administrator'%>
+    <% if session[:role] == 'data_manager' || session[:role] == 'system_administrator'%>
       <%= link_to 'Edit Place Information', edit_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" %>
     <% end%>
     <div class="grid__item  ">

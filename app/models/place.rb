@@ -45,6 +45,7 @@ class Place
   field :cen_data_years, type: Array, default: [] #Cen: fullyears with data here
   field :alternate, type: String, default: ""
   field :ucf_list, type: Hash, default: {}
+  field :old_ucf_list, type: Hash, default: {}
   field :records, type: String
   field :datemin, type: String
   field :datemax, type: String
@@ -661,6 +662,21 @@ class Place
     self.ucf_list[file.id.to_s] = ids if ids && ids.size > 0
     file.ucf_list = ids if ids && ids.size > 0
     file.ucf_updated = DateTime.now.to_date
+  end
+
+  def clean_up_ucf_list
+    old_list = self.ucf_list
+    updated_list = self.ucf_list
+    valid_files = []
+    updated_list.keys.each {|key|
+      file = Freereg1CsvFile.find(key)
+      if file.present?
+        valid_files << key if file.county == self.chapman_code && file.place == self.place_name
+      end
+    }
+    updated_list = updated_list.keep_if{|k,v| valid_files.include? k}
+    self.update_attribute(:old_ucf_list, old_list)
+    self.update_attribute(:ucf_list, updated_list)
   end
 
 end

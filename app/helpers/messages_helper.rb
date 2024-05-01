@@ -489,9 +489,9 @@ module MessagesHelper
 
   def reply_action(message)
     case
-    when ReplyUseridRole::GENERAL_REPLY_ROLES.include?(@user.person_role)
+    when ReplyUseridRole::GENERAL_REPLY_ROLES.include?(session[:role])
       link_to 'Reply', reply_messages_path(message.id), method: :get, :class => 'btn btn--small' if message.source_message_id.blank?
-    when session[:syndicate].present? &&  ReplyUseridRole::COORDINATOR_ROLES.include?(@user.person_role)
+    when session[:syndicate].present? &&  ReplyUseridRole::COORDINATOR_ROLES.include?(session[:role])
       link_to 'Reply', reply_messages_path(message.id), method: :get, :class => 'btn btn--small' if message.source_message_id.blank?
     end
   end
@@ -710,7 +710,7 @@ module MessagesHelper
 
   def message_synicate_coordinator_first_reminder
     get_user_info_from_userid
-    if @user.present? && @user.person_role == 'transcriber'
+    if @user.present? && session[:role] == 'transcriber'
       content_tag :span, "Have you already tried contacting your Syndicate Coordinator?"
     end
   end

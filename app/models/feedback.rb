@@ -416,7 +416,7 @@ class Feedback
   private
 
   def permitted_person_role
-    ReplyUseridRole::FEEDBACK_REPLY_ROLE.include?(@user.person_role)
+    ReplyUseridRole::FEEDBACK_REPLY_ROLE.include?(session[:role])
   end
 
   def permitted_secondary_role

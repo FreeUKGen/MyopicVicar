@@ -2,19 +2,19 @@
 <% unless session[:type] == 'locate_other_pieces' %>
   <h3 style="text-align: center"> Name changes will normally be done with the Edit Piece Name action and extremely rarely using the main Edit action</h3>
   <%= render 'flash_notice' %>
-  <% if %w[executive_director project_manager county_coordinator master_county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
+  <% if %w[executive_director project_manager county_coordinator master_county_coordinator country_coordinator data_manager system_administrator].include?(session[:role])%>
     <div style="text-align: center">
       <%= link_to 'Edit Piece', edit_freecen2_piece_path(@freecen2_piece, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Edit of all fields; note the edit of a piece name functions as a merge of this piece into another piece'%>
     </div>
   <% end%>
-  <% if %w[data_manager system_administrator].include?(@user.person_role)%>
+  <% if %w[data_manager system_administrator].include?(session[:role])%>
     <div style="text-align: center">
       <%= link_to 'Refresh Civil Parish list', refresh_civil_parish_list_freecen2_piece_path(@freecen2_piece, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Refreshing the list is restricted to data managers and system administrators'%>
       <%= link_to 'Edit Piece Name', edit_name_freecen2_piece_path(@freecen2_piece, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Edit of the name allows a correction but will NOT permit a rename to a piece with the new name'%>
       <%= link_to 'Delete Piece', freecen2_piece_path(@freecen2_piece), method: :delete, data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependants!' } , :class => "btn  btn--small"%>
     </div>
   <% end%>
-  <% if %w[data_manager system_administrator].include?(@user.person_role) or (%w[county_coordinator master_county_coordinator executive_director].include?(@user.person_role) and ("1901" "1911").include?(@freecen2_piece.year))%>
+  <% if %w[data_manager system_administrator].include?(session[:role]) or (%w[county_coordinator master_county_coordinator executive_director].include?(session[:role]) and ("1901" "1911").include?(@freecen2_piece.year))%>
     <div style="text-align: center">
       <%= link_to 'Add Civil Parish', new_freecen2_civil_parish_path(piece: @freecen2_piece, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Adding a Civil Parish is restricted to data managers and system administrators. For 1901 and 1911 this is also possible for county coordinators'%>
     </div>
