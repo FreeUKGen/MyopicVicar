@@ -384,7 +384,7 @@ class Freecen2PlacesController < ApplicationController
     county_from = session[:move_old_county]
     place_from = session[:move_old_place]
     @place_from_rec = Freecen2Place.find_by(chapman_code: county_from, place_name: place_from)
-    @place_from_used_as_pob = Freecen2Place.search_records_birth_places?(@place_from_rec) ? 'Yes' : 'No'
+    # @place_from_used_as_pob = Freecen2Place.search_records_birth_places?(@place_from_rec) ? 'Yes' : 'No' - too slow but may improve when indexes created
     county_to = session[:move_new_county]
     place_to = session[:move_new_place]
     @place_to_rec = Freecen2Place.find_by(chapman_code: county_to, place_name: place_to)
