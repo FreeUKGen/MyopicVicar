@@ -388,7 +388,7 @@ class Freecen2PlacesController < ApplicationController
     county_to = session[:move_new_county]
     place_to = session[:move_new_place]
     @place_to_rec = Freecen2Place.find_by(chapman_code: county_to, place_name: place_to)
-    @place_to_used_as_pob = Freecen2Place.search_records_birth_places?(@place_to_rec) ? 'Yes' : 'No'
+    # @place_to_used_as_pob = Freecen2Place.search_records_birth_places?(@place_to_rec) ? 'Yes' : 'No' - too slow but may improve when indexes created
     return unless params[:commit] == 'Move Place Linkages'
 
     userid = @user.userid
