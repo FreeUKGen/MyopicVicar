@@ -25,14 +25,18 @@ module Freecen
 
       if vld_entry.birth_place.blank?
         reason = 'Automatic update of birth place missing to hyphen'
+        new_birth_place = '-'
       elsif vld_entry.birth_place.upcase == 'UNK'
         reason = 'Automatic update of birth place UNK to hyphen'
+        new_birth_place = '-'
+      else
+        new_birth_place, reason = replace_chars_with_space(vld_entry.birth_place)
       end
 
       if reason.present?
         vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
-        vld_entry.set(birth_place: '-')
-        Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, '-', vld_entry.notes)
+        vld_entry.set(birth_place: new_birth_place)
+        Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, new_birth_place, vld_entry.notes)
       end
 
       pob_valid, pob_warning = valid_pob?(vld_entry, vld_year)
@@ -71,6 +75,22 @@ module Freecen
 
       vld_entry.set(pob_valid: pob_valid, pob_warning: pob_warning)
       pob_valid
+    end
+
+    def replace_chars_with_space(place_of_birth)
+      updated_place_of_birth = place_of_birth
+      update_reason = ''
+      has_char = false
+      chars = ',.'
+      chars.each_char do |char|
+        has_char = true if place_of_birth.include?(char)
+        break if has_char
+      end
+      if has_char
+        updated_place_of_birth = place_of_birth.tr(',.', ' ').squeeze(' ')
+        update_reason = "Automatic update of birth place replacing #{chars} with space"
+      end
+      [updated_place_of_birth, update_reason]
     end
 
     def valid_pob?(vld_entry, vld_year)
