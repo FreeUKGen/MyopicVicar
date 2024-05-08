@@ -88,7 +88,8 @@ module Freecen
       end
       if has_char
         updated_place_of_birth = place_of_birth.tr(',.', ' ').squeeze(' ')
-        update_reason = "Automatic update of birth place replacing #{chars} with space"
+        update_reason = "Automatic update of birth place replacing #{chars} with space/UNK"
+        updated_place_of_birth = 'UNK' if (updated_place_of_birth == ' ' || updated_place_of_birth.blank?)
       end
       [updated_place_of_birth, update_reason]
     end
