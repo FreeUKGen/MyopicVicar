@@ -22,6 +22,7 @@ module Freecen
       pob_valid = false
       pob_warning = ''
       reason = ''
+      verbatim_reason = ''
 
       if vld_entry.birth_place.blank?
         reason = 'Automatic update of birth place missing to hyphen'
@@ -31,12 +32,20 @@ module Freecen
         new_birth_place = '-'
       else
         new_birth_place, reason = replace_chars_with_space(vld_entry.birth_place)
+        new_verbatim_birth_place, verbatim_reason = replace_chars_with_space(vld_entry.verbatim_birth_place)
       end
 
-      if reason.present?
-        vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
-        vld_entry.set(birth_place: new_birth_place)
-        Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, new_birth_place, vld_entry.notes)
+      if reason.present? || verbatim_reason.present?
+        if reason.present?
+          vld_entry.add_freecen1_vld_entry_edit(userid, reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
+          vld_entry.set(birth_place: new_birth_place)
+          Freecen1VldEntry.update_linked_records_pob(vld_entry, vld_entry.birth_county, new_birth_place, vld_entry.notes)
+        end
+        if verbatim_reason.present?
+          vld_entry.add_freecen1_vld_entry_edit(userid, verbatim_reason, vld_entry.verbatim_birth_county, vld_entry.verbatim_birth_place, vld_entry.birth_county, vld_entry.birth_place, vld_entry.notes)
+          vld_entry.set(verbatim_birth_place: new_verbatim_birth_place)
+          Freecen1VldEntry.update_linked_individual_rec_verbatim_pob(vld_entry, new_verbatim_birth_place)
+        end
       end
 
       pob_valid, pob_warning = valid_pob?(vld_entry, vld_year)
@@ -89,7 +98,7 @@ module Freecen
       if has_char
         updated_place_of_birth = place_of_birth.tr(',.', ' ').squeeze(' ')
         update_reason = "Automatic update of birth place replacing #{chars} with space/UNK"
-        updated_place_of_birth = 'UNK' if (updated_place_of_birth == ' ' || updated_place_of_birth.blank?)
+        updated_place_of_birth = '-' if (updated_place_of_birth == ' ' || updated_place_of_birth.blank?)
       end
       [updated_place_of_birth, update_reason]
     end
