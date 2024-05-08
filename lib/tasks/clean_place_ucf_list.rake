@@ -7,6 +7,7 @@ namespace :freereg do
     p "Starting at #{start_time}"
     number = 0
     Place.no_timeout.each do |place|
+      p "Started #{place.place_name}"
       number += 1
       old_list = place.ucf_list
       updated_list = place.ucf_list
@@ -20,6 +21,7 @@ namespace :freereg do
       updated_list = updated_list.keep_if{|k,v| valid_files.include? k}
       place.update_attribute(:old_ucf_list, old_list)
       place.update_attribute(:ucf_list, updated_list)
+      p "Completed #{place.place_name}"
     end
     running_time = Time.now - start_time
     p "Processed #{number} places"
