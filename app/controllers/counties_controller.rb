@@ -44,6 +44,7 @@ class CountiesController < ApplicationController
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     @counties = County.application_counties
+    @control_access_roles =  ['system_administrator', 'data_manager']
   end
 
   def load(id)

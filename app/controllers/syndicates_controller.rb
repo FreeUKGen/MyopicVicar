@@ -81,6 +81,7 @@ class SyndicatesController < ApplicationController
     end
     get_user_info_from_userid
     @syndicates = Syndicate.all.order_by(syndicate_code: 1)
+    @control_access_roles = ['system_administrator', 'data_manager']
   end
 
   def load(id)
