@@ -44,6 +44,7 @@ class SyndicatesController < ApplicationController
   def display
     @syndicates = Syndicate.all.order_by(syndicate_code: 1)
     get_user_info_from_userid
+    @control_access_roles =  ['system_administrator', 'data_manager']
     render action: :index
   end
 
