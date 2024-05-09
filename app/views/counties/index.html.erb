@@ -27,7 +27,7 @@
         <td > <%= county.chapman_code %> <%= ChapmanCode::name_from_code(county.chapman_code)%> </td>
         <td > <%= county.county_coordinator %>  </td>
         <td > <%= email_address(county.county_coordinator) %>  </td>
-        <% @control_access_roles.include?session[:role]%>
+        <% if @control_access_roles.include?session[:role] %>
           <td > <%= county_coordinator_agreement(county.county_coordinator) %>  </td>
           <td > <%= county.files %>  </td>
           <td > <%= county.total_records %>  </td>
