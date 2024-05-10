@@ -14,7 +14,7 @@
           <th class="t8">Syndicate</th>
           <th class="t8">Syndicate Coordinator</th>
           <th class="t8">email address</th>
-          <% if session[:role] == "system_administrator"%>
+          <% if @control_access_roles.include?(session[:role]) %>
             <th class="15">Transcriber Agreement Accepted</th>
             <th class="t8">Accepting Transcribers?</th>
             <th class="t8">Show</th>
@@ -26,7 +26,7 @@
             <td > <%= syndicate.syndicate_code %>  </td>
             <td > <%= syndicate.syndicate_coordinator %>  </td>
             <td > <%= email_address(syndicate.syndicate_coordinator) %>  </td>
-            <% if session[:role] == "system_administrator" %>
+            <% if @control_access_roles.include?(session[:role]) %>
               <td > <%= syndicate_coordinator_agreement(syndicate.syndicate_coordinator) %>  </td>
               <td > <%= syndicate.accepting_transcribers %>  </td>
               <td><%= link_to 'Show', syndicate_path(syndicate), method: :get , :class => "btn  btn--small" %></td>
