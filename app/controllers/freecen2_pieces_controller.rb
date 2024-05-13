@@ -201,12 +201,17 @@ class Freecen2PiecesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
     @number = params[:number]
     year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(params[:number], '')
-    piece_chapman_code = Freecen2Piece.where(number: piece).first.chapman_code
-    session[:type] = 'locate_other_pieces'
-    find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
-    @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
-    @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
-    @associated_pieces = get_pieces(piece_number, year) if find_associated_pieces
+    piece_information = Freecen2Piece.where(number: piece).first
+    if piece_information.present?
+      piece_chapman_code = piece_information.chapman_code
+      session[:type] = 'locate_other_pieces'
+      find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
+      @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
+      @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
+      @associated_pieces = get_pieces(piece_number, year) if find_associated_pieces
+    else
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return
+    end
   end
 
   def get_pieces(piece_number, year,piece_chapman_code)
