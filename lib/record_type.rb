@@ -95,4 +95,10 @@ module RecordType
     'MARRIAGE' => MARRIAGES
   }
 
+  FREEBMD_TYPES = {
+     'Births' => '1',
+    'Deaths' => '2',
+    'Marriages' => '3'
+  }
+
 end
