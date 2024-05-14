@@ -13,7 +13,7 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
   <div class="grid">
     <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
-      <h1 class="beta push-half--top flush--bottom"><%= "Entry Information: #{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}" %></h1>
+      <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s record" %></h1>
       <hr>
       <section>
         <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
