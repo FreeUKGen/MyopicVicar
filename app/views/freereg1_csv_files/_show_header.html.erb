@@ -15,12 +15,12 @@
     <%= which_file_gaps_link(@gaps) %>
     <br>
     <% if ['county_coordinator', 'country_coordinator', 'county_coordinator', 'system_administrator',
-         'data_manager'].include?(@user.person_role) %>
+         'data_manager'].include?(session[:role]) %>
     <%= relocate_batch  %>
     <%= merge_batches %>
     <%= reprocess_batch %>
   <% end%>
-  <% if ['system_administrator','data_manager'].include?(@user.person_role) %>
+  <% if ['system_administrator','data_manager'].include?(session[:role]) %>
     <%= delete_file %>
     <%= change_owner  %>
   <% end%>

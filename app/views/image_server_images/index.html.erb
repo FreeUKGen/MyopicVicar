@@ -31,7 +31,7 @@
         <th class="t15">Transcriber</th>
         <th class="t15">Reviewer</th>
         <th class="t15">Action <a href="#" class="left_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '14' %>
-            <% if @user.person_role == 'system_administrator' %>     <%# system_administrator from manage_counties %>
+            <% if session[:role] == 'system_administrator' %>     <%# system_administrator from manage_counties %>
               <span>SH: Show Image Properties;<br>
                 ED: Edit Image Properties;<br>
                 VW: View Original Image;<br>
@@ -64,7 +64,7 @@
                 <%= link_to 'VW', view_image_server_image_path(:object => x[:_id]), :title=>'view original image', method: :get,:target => "_blank" %>
                 <%= link_to 'DL', download_image_server_image_path(:object => x[:_id]), :title=>'download original image', method: :get,:target => "_blank" %>
               <% end %>
-              <% if session[:manage_user_origin] == 'manage county' && @user.person_role == 'system_administrator' %>
+              <% if session[:manage_user_origin] == 'manage county' && session[:role] == 'system_administrator' %>
                 <%= link_to 'DE', image_server_image_path(x), :title=>'delete image info from FR', data: { confirm: 'Are you sure you want to delete IS image '+x[:image_file_name]}, method: :delete %>
               <% end %>
             </td>

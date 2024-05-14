@@ -97,6 +97,7 @@ class SearchQuery
   #  validates_inclusion_of :chapman_codes, :in => ChapmanCode::values+[nil]
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
+  field :no_surname, type: Boolean
   field :witness, type: Boolean
   field :start_year, type: Integer
   field :end_year, type: Integer
@@ -479,6 +480,8 @@ class SearchQuery
       include_record = include_record_for_type(search_name)
     elsif last_name.blank? && first_name.present? && Text::Soundex.soundex(first_name) == Text::Soundex.soundex(search_name[:first_name])
       include_record = include_record_for_type(search_name)
+    #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
+     # include_record = include_record_for_type(search_name)
     end
     include_record
   end
@@ -493,6 +496,8 @@ class SearchQuery
       include_record = include_record_for_type(search_name)
     elsif last_name.blank? && first_name.present? && first_name.downcase == search_name_first_name
       include_record = include_record_for_type(search_name)
+    #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
+     # include_record = include_record_for_type(search_name)
     end
     include_record
   end
@@ -601,6 +606,15 @@ class SearchQuery
     errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
   end
 
+  def possible_name_search_params
+    params = {}
+    possible_surname_params = {}
+    possible_surname_params['first_name'] = first_name.downcase if first_name.present?
+    possible_surname_params['possible_last_names'] = last_name.downcase if last_name.present?
+    params['search_names'] = { '$elemMatch': possible_surname_params}
+    params
+  end
+
   def name_search_params
     params = {}
     name_params = {}
@@ -615,8 +629,9 @@ class SearchQuery
         params['search_soundex'] = { '$elemMatch' => name_params }
       else
         name_params['first_name'] = first_name.downcase if first_name
-        name_params['last_name'] = last_name.downcase if last_name.present?
-        params['search_names'] = { '$elemMatch' => name_params }
+        name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
+        name_params['last_name'] = nil if self.no_surname
+        params['search_names'] = { '$elemMatch': name_params }
       end
     end
     params
@@ -826,13 +841,19 @@ class SearchQuery
     params
   end
 
+  def possible_last_names_params
+    params = {}
+    params[:possible_last_names] = { '$in' => [last_name.downcase] } #if last_name.present? && self.no_surname
+    params
+  end
+
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attribute(:search_index, @search_index)
-    records = SearchRecord.collection.find(@search_parameters)#.hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
@@ -846,15 +867,17 @@ class SearchQuery
     # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
-    secondary_records = SearchRecord.collection.find(@secondary_search_params)#.hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
 
   def search_params
     params = {}
     params.merge!(name_search_params)
+   # params.merge!(possible_name_search_params)
     params.merge!(place_search_params)
     params.merge!(record_type_params)
+   # params.merge!(possible_last_names_params)
     params.merge!(date_search_params)
     params
   end

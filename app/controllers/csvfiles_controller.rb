@@ -129,7 +129,7 @@ class CsvfilesController < ApplicationController
       @userids = UseridDetail.syndicate(syndicate).all.order_by(userid_lower_case: 1)
       load_people(@userids)
     elsif %w[county_coordinator master_county_coordinator syndicate_coordinator country_coordinator system_administrator technical data_manager
-             volunteer_coordinator documentation_coordinator executive_director project_manager].include?(@user.person_role)
+             volunteer_coordinator documentation_coordinator executive_director project_manager].include?(session[:role])
       @userids = UseridDetail.all.order_by(userid_lower_case: 1)
       load_people(@userids)
     else

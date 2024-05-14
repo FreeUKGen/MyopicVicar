@@ -94,7 +94,8 @@ class UseridDetailsController < ApplicationController
     else
       flash[:notice] = 'The destruction of the profile failed'
     end
-    redirect_to(options_userid_details_path)
+    #redirect_to(options_userid_details_path)
+    redirect_to userid_details_path
   end
 
   def disable
@@ -135,6 +136,7 @@ class UseridDetailsController < ApplicationController
     @current_user = get_user
     @syndicates = Syndicate.get_syndicates
     @appname = appname_downcase
+    @authourised_roles = ['system_administrator', 'volunteer_coordinator']
   end
 
   def general
@@ -181,6 +183,11 @@ class UseridDetailsController < ApplicationController
     @sorted_by = session[:active]
   end #end method
 
+  def list_users_handle_communications
+    comm_roles = ['website_coordinator', 'volunteer_coordinator', 'publicity_coordinator', 'contacts_coordinator', 'general_communication_coordinator', 'genealogy_coordinator', 'project_manager']
+    @userids = UseridDetail.any_of({:person_role.in => comm_roles}, {secondary_role: {'$in' =>  comm_roles }})
+  end
+
   def load(userid_id)
     @user = get_user
     @first_name = @user.person_forename unless @user.blank?
@@ -207,10 +214,10 @@ class UseridDetailsController < ApplicationController
     session[:type] = 'add'
     get_user_info_from_userid
     @role = session[:role]
-    if @user.person_role == 'syndicate_coordinator'
+    if @role == 'syndicate_coordinator'
       @syndicates = []
       @syndicates[0] = session[:syndicate]
-    elsif ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@user.person_role)
+    elsif ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@role)
       @syndicates = Syndicate.get_syndicates
     else
       @syndicates = Syndicate.get_syndicates_open_for_transcription

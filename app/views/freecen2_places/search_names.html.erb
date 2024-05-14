@@ -2,7 +2,7 @@
 <div  class="text--center push--bottom">
   <%= button_tag "Clear County", type: 'button', onclick: "clearCounty()", class: "btn btn--small", title: 'Clear County'%>
   <%= search_names_clear_form %>
-  <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(@user.person_role) %>
+  <% if %w[data_manager system_administrator county_coordinator master_county_coordinator validator executive_director project_manager].include?(session[:role]) %>
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
   <% end%>
 </div>
@@ -54,7 +54,7 @@
     <div id="ChooseCounty">
       <fieldset class="inputs" class="input" style="text-align: center">
         <legend><b>County to be searched</b></legend>
-        <%= f.input :county, selected: @county, label: 'Click in box for county options. Previous selection preloaded. ',hint: 'Leave empty to search all Counties.',include_blank: true,collection: @counties, input_html:  {class: 'simple_form_bgcolour simple_form_position overide_selection_field_width'} %>
+        <%= f.input :county, selected: @county, label: 'Click in box for county options. Previous selection preloaded. Leave empty to search all counties. ',hint: 'Select Channel Islands, England, Ireland, Scotland or Wales to search all counties in that region/country. Note: To accommodate historical border changes Herefordshire is included in Wales searches. Also Kent, Middlesex and Surrey are included in London (City) searches.',include_blank: true,collection: @counties, input_html:  {class: 'simple_form_bgcolour simple_form_position overide_selection_field_width'} %>
         <%= f.hidden_field :disabled, :value=> false %>
       </fieldset>
     </div>

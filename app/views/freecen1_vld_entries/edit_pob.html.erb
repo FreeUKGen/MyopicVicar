@@ -1,0 +1,74 @@
+<% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
+  <h3  style="text-align: center"><%= @chap%> - <%= @year%> - <%= @file_name%> (<%= @num_invalid%> invalid POBs) - Specify Propagation Requirements</h3>
+<% else%>
+  <h3 style="text-align: center"><%= @chap%> - <%= @year%> - <%= @file_name%> (<%= @num_invalid%> invalid POBs) - Entry Edit POB</h3>
+<% end%>
+<%= render 'flash_notice' %>
+<%= semantic_form_for @freecen1_vld_entry, :html => { :class => 'grid'}   do |f| %>
+  <div class="grid__item one-whole" >
+    <table  class="table--bordered   table--data">
+      <thead >
+        <tr>
+          <th>Piece</th>
+          <th>Piece Name</th>
+          <th>Civil Parish</th>
+          <th>ED</th>
+          <th>Page</th>
+          <th>Schedule Number</th>
+          <th>Seq</th>
+          <th>Forenames</th>
+          <th>Surname</th>
+          <th>Age</th>
+        </tr>
+      </thead>
+      <tr>
+        <td ><%= @freecen2_piece.number %></td>
+        <td ><%= @freecen2_piece.name %></td>
+        <td ><%= @freecen1_vld_entry.civil_parish %></td>
+        <td ><%= @freecen1_vld_entry.enumeration_district %></td>
+        <td ><%= @freecen1_vld_entry.page_number %></td>
+        <td ><%= @freecen1_vld_entry.schedule_number %></td>
+        <td ><%= @freecen1_vld_entry.sequence_in_household %></td>
+        <td ><%= @freecen1_vld_entry.forenames %></td>
+        <td ><%= @freecen1_vld_entry.surname %></td>
+        <td ><%= @freecen1_vld_entry.age %><%=  @freecen1_vld_entry.age_unit %></td>
+      </tr>
+    </table>
+  </div>
+  <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
+    <p style='text-align: center'><b>POB Validation status : <%= @pob_status_info%></b></p>
+    <%= f.input :verbatim_birth_county , label: 'Verbatim Birth County:', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 3, :readonly => true}%>
+    <%= f.input :verbatim_birth_place, label: 'Verbatim Birth Place:', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30, :readonly => true}%>
+    <%= f.input :birth_county, label: 'Alternative Birth County:', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 3, :readonly => true}%>
+    <%= f.input :birth_place, label: 'Alternative Birth Place:', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30, :readonly => true}%>
+    <%= f.input :notes, label: 'Notes:', :as => :text, :input_html => {:class => 'simple_form control-label simple_form_bgcolour ',   :placeholder => 'Notes about entry in census',  :size => '40x3', :readonly => true}%>
+  <% else%>
+    <p style='text-align: center'><b>POB Validation status : <%= @pob_status_info%></b><br>
+      <small class="additional"><i>NB: Verbatim Birth County and Place are defaulted into Alternative Birth County and Place, if Alternatives were not specified.</small></i></p>
+    <%= f.input :verbatim_birth_county , label: 'Verbatim Birth County; current value highlighted', selected: @freecen1_vld_entry.verbatim_birth_county, collection: @counties, include_blank: false, :input_html =>{:class => ' simple_form_bgcolour small_selection_field_width', :size => 3}, required: true %>
+    <%= f.input :verbatim_birth_place, label: 'Verbatim Birth Place:', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 }, required: true%>
+    <%= f.input :birth_county, label: 'Alterative Birth County; current value highlighted',selected: @freecen1_vld_entry.birth_county, collection: @counties, include_blank: false, :input_html =>{:class => ' simple_form_bgcolour small_selection_field_width', :size => 3}, required: true%>
+    <%= f.input :birth_place, label: 'Alterative Birth Place:', :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 }, required: true %>
+    <%= f.input :notes,  label: 'Notes:', :as => :text, :input_html => {:class => 'simple_form control-label simple_form_bgcolour ',   :placeholder => 'Notes about entry in census',  :size => '40x3' }%>
+  <% end%>
+  <div  style='text-align: center'>
+    <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
+      <p><b> PROPAGATE: </b></p>
+      <%= f.submit 'Alternative',  :class => 'btn btn--small', title: 'Propagate Alternative POB values only'%>
+      <%= f.submit 'Notes',  :class => 'btn btn--small', title: 'Propagate Notes only'%>
+      <%= f.submit 'Both',  :class =>  'btn btn--small', title: 'Propagate Alternative POB values & Notes'%>
+    <% else%>
+      <%= f.submit 'Submit',  :class => 'btn btn--small', data: { confirm: 'Are you sure you want to Save the changes?'}, title: 'Saves changes.'%>
+      <%= f.submit 'Accept',  :class => 'btn btn--small', data: { confirm: 'Are you sure you want to Override warnings?'}, title: 'Saves changes and overrides warnings.'%>
+      <br>
+      <%= skip_record(@freecen1_vld_entry.freecen1_vld_file_id, @freecen1_vld_entry._id) %>
+    <% end%>
+  </div>
+  <div style='text-align: center'>
+    <% if session[:propagate_pob].present? && session[:propagate_pob] == @freecen1_vld_entry.id%>
+      <%= f.submit 'No Propagation Required',  class: 'btn btn--small', title: 'No Propagation Required'%>
+    <% else%>
+      <%= link_to 'Cancel', manual_validate_pobs_freecen1_vld_file_path(id: @freecen1_vld_entry.freecen1_vld_file_id)%>
+    <% end %>
+  </div>
+<% end %>

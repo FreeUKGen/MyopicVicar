@@ -251,6 +251,7 @@ class FeedbacksController < ApplicationController
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
+    @userids = array_of_userids
   end
 
   def select_by_identifier

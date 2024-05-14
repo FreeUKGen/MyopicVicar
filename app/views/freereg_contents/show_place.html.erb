@@ -3,8 +3,7 @@
   <section class="island ">
     <div class="text--center">
       <%= link_to 'County Selection', new_freereg_content_path, method: :get, :class => "btn   btn--small"%>
-      <%= link_to 'Another Place in this County', freereg_contents_path, method: :get, :class => "btn   btn--small"%>
-      <%= link_to 'Names', unique_place_names_path(@place.id), method: :get, :class => "btn   btn--small"%>
+      <%= link_to 'Choose new Place', freereg_contents_path, method: :get, :class => "btn   btn--small"%>
     </div>
     <%= render 'flash_notice' %>
     <br>

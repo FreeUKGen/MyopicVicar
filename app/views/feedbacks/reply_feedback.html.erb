@@ -63,7 +63,10 @@
                 </strong>
               <% end%>
             <% end %>
-            <%= reply.body %>
+            <%= reply.body %><br>
+            <% if reply.copies_to_userids.present? %>
+              <strong>ccs: <%= reply.copies_to_userids %></strong>
+            <% end %>
             <% if reply.attachment.present?%>
               <br/>
               <span>Attachment: </span>

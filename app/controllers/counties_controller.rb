@@ -30,6 +30,7 @@ class CountiesController < ApplicationController
   def display
     get_user_info_from_userid
     @counties = County.application_counties
+    @control_access_roles =  ['system_administrator', 'data_manager']
     render action: :index
   end
 
@@ -44,6 +45,7 @@ class CountiesController < ApplicationController
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     @counties = County.application_counties
+    @control_access_roles =  ['system_administrator', 'data_manager']
   end
 
   def load(id)
@@ -61,7 +63,7 @@ class CountiesController < ApplicationController
   def selection
     @user = get_user
     @first_name = @user.person_forename if @user.present?
-    session[:county] = 'all' if @user.person_role == 'system_administrator'
+    session[:county] = 'all' if session[:role] == 'system_administrator'
     case params[:county]
     when 'Browse counties'
       @counties = County.application_counties

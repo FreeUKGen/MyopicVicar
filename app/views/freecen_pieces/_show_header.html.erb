@@ -3,10 +3,10 @@
 <h1 style="text-align: center">Details of FreeCen Piece <%= @freecen_piece.piece_number%> for <%=@chapman_code%> in <%= @freecen_piece.year%></h1>
 <%= render 'flash_notice' %>
 <div style="text-align: center">
-  <% if  %w[system_administrator data_manager].include?(@user.person_role)%>
+  <% if  %w[system_administrator data_manager].include?(session[:role])%>
     <%= link_to 'Edit Piece Information', edit_freecen_piece_path(@freecen_piece.id), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small"  %>
     <%= link_to 'Create New Piece', piece_new_freecen_piece_path(chapman_code: @chapman_code), method: :get, :class => "btn   btn--small" %>
-    <% if  %w[system_administrator data_manager].include?(@user.person_role)%>
+    <% if  %w[system_administrator data_manager].include?(session[:role])%>
       <%= link_to 'Destroy Piece', freecen_piece_path(@freecen_piece.id), method: :delete,  data: { confirm: 'Are you sure you want to destroy this Piece.? It will not happen if there are dependants!' }, :class => "btn   btn--small" %>
     <% end%>
   <% end%>

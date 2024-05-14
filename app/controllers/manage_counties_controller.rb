@@ -146,6 +146,7 @@ class ManageCountiesController < ApplicationController
     render 'freereg1_csv_files/index'
   end
 
+
   def files
     get_user_info_from_userid
     @county = session[:county]
@@ -174,7 +175,7 @@ class ManageCountiesController < ApplicationController
     @countries = @user.country_groups
     roles = %w[volunteer_coordinator contacts_coordinator data_manager master_county_coordinator system_administrator documentation_coordinator SNDManager CENManager REGManager country_coordinator executive_director project_manager]
     roles << "county_coordinator" if appname_downcase == 'freecen'
-    if roles.include?(@user.person_role)
+    if roles.include?(session[:role])
       @countries = []
       counties = County.application_counties
       counties.each do |county|
@@ -352,6 +353,17 @@ class ManageCountiesController < ApplicationController
     else
       render 'places/index'
     end
+  end
+
+  def clean_ucf_list_for_all_places
+    get_user_info_from_userid
+    @chapman_code = session[:chapman_code]
+    @county = session[:county]
+    @places = Place.where(chapman_code: @chapman_code).all
+    if @places.present?
+      @places.each {|place| place.clean_up_ucf_list if place.ucf_list.count > 0}
+    end
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Update Completed') #&& return if @source_ids.blank? || @source_id.blank? || @group_id.blank?
   end
 
   def places_with_unapproved_names

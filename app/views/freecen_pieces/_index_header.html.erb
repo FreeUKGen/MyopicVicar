@@ -2,7 +2,7 @@
 <% session[:page] = params[:page]%>
 <h1 style="text-align: center">Listing of FreeCen Pieces for <%=@chapman_code%></h1>
 <div style="text-align: center">
-  <% if  %w[system_administrator data_manager].include?(@user.person_role)%>
+  <% if  %w[system_administrator data_manager].include?(session[:role])%>
     <%= link_to 'Create New Piece', piece_new_freecen_piece_path(chapman_code: @chapman_code), method: :get, :class => "btn   btn--small" %>
   <% end%>
   <%= render 'flash_notice' %>

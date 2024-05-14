@@ -15,6 +15,16 @@
 <% if appname_downcase == 'freecen' %>
   <%= link_to 'Instructional Videos', '/cms/instructional-videos', target: '_blank' %>, ( opens in new tab)<br>
 <% end %>
+<% if @user_roles.count > 1 %>
+  <%= form_tag({}, {:method => :get}) do %>
+    <fieldset class="inputs">
+      <legend>Change Role</legend>
+          <%= label_tag 'user_role', 'Change Role' %>
+          <%= select_tag :user_role, options_for_select(@user_roles, @current_role), :onchange => "this.form.submit()" %>
+          <%#= submit_tag "Update Role" %>
+    </fieldset>
+  <% end %>
+<% end %>
 <% count = @user.count_not_checked_messages %>
 <% if count != 0 %>
   <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px; max-width: 20em;">
@@ -22,10 +32,6 @@
   </div>
 <% end %>
 <%= @page %>
-<h2>Recent Changes</h2>
-<p>Release Notes: 05 July 2023</p>
-<ul>
-  <li>MyopicVicar#2631: Added the 'Keep until I say so' button to the list level of Contacts actions.</li>
-  <li>FreeUKRegProductIssues#1502: Updated Main help page - description of "Nearby Places". </li>
-</ul>
+<%= render "#{appname_downcase}_release_notes" %>
+
 <%= render "resource_sidebar" %>

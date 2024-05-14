@@ -160,9 +160,9 @@ class UseridDetail
       if user.present?
         friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>"
       elsif MyopicVicar::Application.config.template_set == 'freereg'
-        friendly_email = 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+        friendly_email = 'no-reply@freereg.org.uk'#'FreeREG Servant <freereg-contacts@freereg.org.uk>'
       elsif MyopicVicar::Application.config.template_set == 'freecen'
-        friendly_email = 'FreeCEN Servant <freecen-contacts@freecen.org.uk>'
+        friendly_email = 'no-reply@freecen.org.uk'#'FreeCEN Servant <freecen-contacts@freecen.org.uk>'
       end
       friendly_email
     end
@@ -197,6 +197,14 @@ class UseridDetail
         transcribers += 1 if userid.present? && userid.person_role == 'transcriber'
       end
       [users, transcribers]
+    end
+
+    def get_transcriber_stats(start_date,end_date)
+      transcribers = UseridDetail.where(person_role: 'transcriber')
+      transcribers_registered = transcribers.where(c_at: start_date..end_date)
+      active_transcribers = transcribers.where(active: true)
+      email_address_confimed = transcribers.where(email_address_last_confirmned: start_date..end_date)
+      [transcribers.count, active_transcribers.count, email_address_confimed.count]
     end
   end
 
@@ -385,6 +393,12 @@ class UseridDetail
       @userids << name
     end
     return @userids.sort_by(&:downcase)
+  end
+
+  def get_roles
+    all_roles = self.secondary_role
+    all_roles << self.person_role
+    all_roles.uniq
   end
 
   def send_invitation_to_create_password
@@ -756,6 +770,12 @@ class UseridDetail
       total_records += count.number_of_records
     end
     total_records
+  end
+
+  def user_roles
+    all_roles = self.secondary_role
+    all_roles << self.person_role
+    all_roles.uniq
   end
 
   private

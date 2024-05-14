@@ -9,8 +9,8 @@ $(document).ready(function() {
          ';expires=Thu, 01-Jan-1970 00:00:01 GMT';
     }
   };
-
-  // Switch Cookie checkbox value
+/*
+  /// Switch Cookie checkbox value
   var toggleCookieCheckbox = function() {
     if (getCookie('userAcceptance') == 1) {
       $('#cookie_check_box').prop('checked', true);
@@ -18,8 +18,8 @@ $(document).ready(function() {
       $('#cookie_check_box').prop('checked', false);
     };
   };
-
-  /*donate cta*/
+*/
+  /*donate cta
   window.setBigGiveCookie = function(name,value) {
     var expires = "";
     var date = new Date();
@@ -84,7 +84,7 @@ $(document).keyup(function(evt) {
   elem.className = "float--right";
 }
 /*CTA code changes ends */
-
+/*
   // Switch Adsense checkbox value
   var toggleAdsenseCheckbox = function() {
     if (getCookie('userAdPersonalization') == 1) {
@@ -198,4 +198,5 @@ $(document).keyup(function(evt) {
     setCookie('userAdPersonalization', 0, 365);
     $('.cookieConsent').remove();
   });
+  */
 });

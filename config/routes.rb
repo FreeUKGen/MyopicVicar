@@ -97,12 +97,17 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_search_statistics/export_csv', to: 'freecen2_search_statistics#export_csv', as: :export_csv_freecen2_search_statistics
   resources :freecen2_search_statistics
 
+  get 'freecen1_vld_entries/:id/override_pob_status(.:format)', :to => 'freecen1_vld_entries#override_pob_status', :as => :override_pob_status_freecen1_vld_entry
+  get 'freecen1_vld_entries/edit_pob', to: 'freecen1_vld_entries#edit_pob', as: :edit_pob_freecen1_vld_entry
+  get 'freecen1_vld_entries/propagate_pob', to: 'freecen1_vld_entries#propagate_pob', as: :propagate_pob_freecen1_vld_entry
   resources :freecen1_vld_entries
 
   get 'freecen1_vld_files/:id/entry_csv_download(.:format)', to: 'freecen1_vld_files#entry_csv_download', as: :entry_csv_download_freecen1_vld_file
   get 'freecen1_vld_files/:id/csv_download(.:format)', to: 'freecen1_vld_files#csv_download', as: :csv_download_freecen1_vld_file
   get 'freecen1_vld_files/list_invalid_civil_parishes', to: 'freecen1_vld_files#list_invalid_civil_parishes', as: :list_invalid_civil_parishes_freecen1_vld_file
   get 'freecen1_vld_files/edit_civil_parishes', to: 'freecen1_vld_files#edit_civil_parishes', as: :edit_civil_parishes_freecen1_vld_file
+  get 'freecen1_vld_files/auto_validate_pobs', to: 'freecen1_vld_files#auto_validate_pobs', as: :auto_validate_pobs_freecen1_vld_file
+  get 'freecen1_vld_files/manual_validate_pobs', to: 'freecen1_vld_files#manual_validate_pobs', as: :manual_validate_pobs_freecen1_vld_file
   get 'freecen1_vld_files/download_vld_file', to: 'freecen1_vld_files#download_vld_file', as: :download_vld_file_freecen1_vld_file
   resources :freecen1_vld_files
 
@@ -188,6 +193,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
   get 'physical_files/:id/download(.:format)', :to => 'physical_files#download', :as => :download_physical_file
   get 'physical_files/:id/remove(.:format)', :to => 'physical_files#remove', :as => :remove_physical_file
+  get 'physical_files/upload_report', to: 'physical_files#upload_report', as: :upload_report_physical_file
   resources :physical_files
 
   resources :search_statistics
@@ -379,6 +385,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
+  get 'userid_details/list_users_handle_communications', :to =>'userid_details#list_users_handle_communications', :as => :list_users_handle_communications_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do
@@ -418,6 +425,7 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
   get 'manage_counties/selection', :to =>'manage_counties#select_year', :as => :select_year_manage_counties
   get 'manage_counties/piece_statistics', :to =>'manage_counties#piece_statistics', :as => :piece_statistics_manage_counties
+  get 'manage_counties/clean_ucf_list_for_all_places', :to =>'manage_counties#clean_ucf_list_for_all_places', :as => :clean_ucf_list_manage_counties
 
   resources :manage_counties
 

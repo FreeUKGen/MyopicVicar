@@ -36,6 +36,10 @@ class ApplicationController < ActionController::Base
     MyopicVicar::Application.config.cta_display_status
   end
 
+  def array_of_userids
+    UseridDetail.all.pluck(:userid).sort
+  end
+
   def appname_upcase
     appname.upcase
   end
@@ -56,7 +60,7 @@ class ApplicationController < ActionController::Base
           last_midnight = Time.new(time.year, time.month, time.day)
           @site_stat = SiteStatistic.collection.find({ interval_end: last_midnight }, 'projection' => { interval_end: 0, year: 0, month: 0, day: 0, _id: 0 }).first
         end
-        session[:site_stats] = @site_stat
+        session[:site_stats] = @site_stat.id if @site_stats.present?
       when 'freecen'
         site_stat = Freecen2SiteStatistic.order_by(interval_end: -1).first
         session[:site_stats] = {}
@@ -145,6 +149,13 @@ class ApplicationController < ActionController::Base
     user
   end
 
+  def get_user_roles
+    user = get_user
+    all_roles = user.secondary_role
+    all_roles << user.person_role
+    all_roles.uniq
+  end
+
   def get_user_info_from_userid
     @user = get_user
     if @user.blank?
@@ -156,7 +167,7 @@ class ApplicationController < ActionController::Base
       @user_userid = @user.userid
       @first_name = @user.person_forename
       @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+      @roles = UseridRole::OPTIONS.fetch(session[:role])
     end
   end
 
@@ -165,7 +176,7 @@ class ApplicationController < ActionController::Base
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     @userid = @user.id
-    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    @roles = UseridRole::OPTIONS.fetch(session[:role])
   end
 
   def get_userids_and_transcribers
