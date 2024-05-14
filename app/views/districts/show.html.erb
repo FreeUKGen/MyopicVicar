@@ -39,8 +39,10 @@
               <th rowspan="<%= @district.DistrictToCounty.count + 1%>">County</th>
             </tr>
             <% @district.DistrictToCounty.each do |d| %>
+              <% eng_county = ChapmanCode::FREEBMD_CODES['England'].key(d.County) %>
+              <% wales_county = ChapmanCode::FREEBMD_CODES['Wales'].key(d.County) unless eng_county.present? %>
               <tr>
-                <td><%= ChapmanCode::FREEBMD_CODES['England and Wales'].key(d.County) %></td>
+                <td><%= eng_county || wales_county %></td>
                 <td><%= "From #{QuarterDetails.quarter_human(d.StartQN)}" %> <%= QuarterDetails.quarter_year(d.EndQN) > 1993 ? "" : "to #{QuarterDetails.quarter_human(d.EndQN)}" %></td>
               </tr>
             <% end %>
