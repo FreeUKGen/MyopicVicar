@@ -5,7 +5,9 @@
 		<%= link_to "Search Criteria", '#', class: "btn   btn--small" , id: "view_search_criteria"%>
 	    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
 	    <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small white_button" %>
-		<%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %>
+	    <% if @page <= 50 %>
+		  <%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %>
+		<% end %>
 		<%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %>
 		<%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %>
 
