@@ -300,6 +300,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def show_print_version
+    @timeout = false
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
@@ -393,6 +394,16 @@ class SearchQueriesController < ApplicationController
     send_data search_results_csv(paginated_array), filename: "search_results-#{Date.today}.csv"
   end
 
+  def download_as_gedcom
+    search_id = params[:id]
+    get_user_info_if_present
+    @search_query = SearchQuery.find_by(id: search_id)
+    page_number = params[:page]
+    results_per_page = params[:results_per_page]
+    sorted_results = @search_query.sorted_and_paged_searched_records
+    paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
+    send_data @search_query.search_results_gedcom(paginated_array,@user).join("\n"), filename: "search_results-#{Date.today}.ged"
+  end
   def compare_search
     #raise params.inspect
     get_user_info_from_userid

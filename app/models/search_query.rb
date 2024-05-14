@@ -2129,6 +2129,39 @@ class SearchQuery
     gedcom
   end
 
+  def search_results_gedcom(search_results, user)
+    gedcom = []
+    gedcom << anon_gedcom_header(user)
+    i = 0
+    f = 0
+    search_results.each do |rec|
+      qn = rec[:QuarterNumber]
+      quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
+      surname = rec[:Surname]
+      given_names = rec[:GivenName].split(' ')
+      given_name = given_names[0]
+      given_names.shift()
+      other_given_names = given_names.join(' ') if given_names.present?
+      i = i+1
+      f = f+1 if rec[:RecordTypeID] == 3
+      entry = BestGuess.where(RecordNumber: rec[:RecordNumber]).first
+      gedcom << ''
+      gedcom << '0 @'+i.to_s+'@ INDI'
+      gedcom << '1 NAME '+given_name+' /'+surname+'/'
+      gedcom << '2 SURN '+surname
+      gedcom << '2 GIVN '+given_name
+      gedcom << '2 _MIDN '+other_given_names if other_given_names.present?
+      #   gedcom << '1 SEX '+saved_record[:sex]
+      gedcom << '1 BIRT' if rec[:RecordTypeID] == 1
+      gedcom << '1 DEAT' if rec[:RecordTypeID] == 2
+      gedcom << '1 MARR' if rec[:RecordTypeID] == 3
+      gedcom << '2 DATE '+quarter
+      gedcom << '2 PLAC '+rec[:District]
+      gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
+    end
+    gedcom
+  end
+
   private
 
   def selected_sort_fields
@@ -2144,17 +2177,41 @@ class SearchQuery
     today = Date.today
     now = Time.now.strftime('%T')
     arr = ['0 HEAD', '1 SOUR freebmd.org.uk',
-    '2 NAME Free UK Genealogy FreeBMD project',
-    '1 DATE '+today.to_s,
-    '2 TIME '+now+' UTC',
-    '1 CHAR UTF-8',
-    '1 FILE '+today.to_s+'.ged',
-    '1 GEDC',
-    '2 VERS 5.5.1',
-    '2 FORM LINEAGE-LINKED',
-    '1 NOTE This file contains private information and may not be redistributed, published, or made public.',
-    '0 @SUBM@ SUBM',
-    '1 NAME '+userid[:person_forename]+' /'+userid[:person_surname]+'/']
+           '2 NAME Free UK Genealogy FreeBMD project',
+           '1 DATE '+today.to_s,
+           '2 TIME '+now+' UTC',
+           '1 CHAR UTF-8',
+           '1 FILE '+today.to_s+'.ged',
+           '1 GEDC',
+           '2 VERS 5.5.1',
+           '2 FORM LINEAGE-LINKED',
+           '1 NOTE This file contains private information and may not be redistributed, published, or made public.']
+    if (userid)
+      arr << '0 @SUBM@ SUBM'
+      arr << '1 NAME '+userid[:person_forename]+' /'+userid[:person_surname]+'/'
+    end
+    arr
+  end
+
+  def anon_gedcom_header(user)
+    today = Date.today
+    now = Time.now.strftime('%T')
+    arr = ['0 HEAD', '1 SOUR freebmd.org.uk',
+           '2 NAME Free UK Genealogy FreeBMD project',
+           '1 DATE '+today.to_s,
+           '2 TIME '+now+' UTC',
+           '1 CHAR UTF-8',
+           '1 FILE '+today.to_s+'.ged',
+           '1 GEDC',
+           '2 VERS 5.5.1',
+           '2 FORM LINEAGE-LINKED',
+           '1 NOTE This file contains private information and may not be redistributed, published, or made public.']
+    arr << '0 @SUBM@ SUBM'
+    if user.present?
+      arr << '1 NAME '+user[:person_forename]+' /'+user[:person_surname]+'/'
+    else
+      arr << '1 NAME Not logged in /Anonymous/'
+    end
     arr
   end
 end

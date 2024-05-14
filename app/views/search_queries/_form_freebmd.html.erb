@@ -30,7 +30,7 @@
 <div class="bmd_search_form">
     <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="input">
-        <legend>Main search options</legend>
+        <legend>Search options</legend>
         <ol class="grid search_form">
             <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">
                 <div class='labels push-half--bottom'>
@@ -295,13 +295,12 @@
 
     </fieldset>
     <div class="grid action">
-        <%#= button_tag 'Clear Form', type: :reset, class: 'clear_form kittumani' %>
         <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
     </div>
     <div class="small_screen_actions">
         <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
     </div>
-    <% end %>
+  <% end %>
 </div>
 <%# end %>
 <style>

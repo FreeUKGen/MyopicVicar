@@ -1,7 +1,19 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
     <h1 class="accessibility">Search Results</h1>
+    <% if print_friendly %>
+  <style type="text/css">
+    @media print {
+        .accessibility { display:none; }
+    }
+  </style>
+      <div style="border: 1px solid black; margin-bottom: 10px;">
+        <p class='accessibility'>You can print these results or download them to PDF, using your right-click or browser menu.</p>
+      </div>
+    <% end %>
       <table class="table--bordered table--data">
-        <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
+        <% unless print_friendly %>
+          <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
+        <% end %>
         <thead>
           <tr>
             <% unless print_friendly %>
@@ -37,7 +49,6 @@
                   <strong>
                     <dt class="ttip">
                       <%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
-                      <span class="ttip__text"><%="#{search_record[:Volume]} #{search_record[:Page]}"%></span>
                     </dt>
                   
                   <dt>
@@ -46,14 +57,14 @@
                   <dt>
                     <% if print_friendly %>
                       <%= search_record[:District] %>
+                      <span class="ttip__text"> <%=" (Volume #{search_record[:Volume]} Page #{search_record[:Page]})"%></span>
                     <% else %>
-                        <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
-                        <% if district.present? %>
-                          <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
-                        <%#= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><!--span class="accessibility"><%#= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span-->
-                      <% else %>
-                        <%= search_record[:District] %>
-                      <% end %>
+                      <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
+                      <% if district.present? %>
+                        <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
+                     <% else %>
+                       <%= search_record[:District] %>
+                     <% end %>
                       Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
                     <% end %>
                   </dt>
@@ -62,7 +73,7 @@
                   </dt>
                 </dl>
               </td>
-              <td>
+              <td <% if print_friendly %> valign="top" <% end %> >
                 <center><%= "#{record_type}" %></center>
               </td>
             </tr>
