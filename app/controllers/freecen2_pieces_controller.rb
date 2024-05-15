@@ -210,7 +210,7 @@ class Freecen2PiecesController < ApplicationController
       @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
       @associated_pieces = get_pieces(piece_number, year) if find_associated_pieces
     else
-      redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'The piece number does not exist') && return
     end
   end
 
