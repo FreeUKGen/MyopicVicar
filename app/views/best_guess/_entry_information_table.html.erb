@@ -1,3 +1,29 @@
+<script>
+    function copy(elm) {
+        var button = event.currentTarget || event.srcElement;
+        var btnText = button.innerHTML;
+        var target = document.getElementsByClassName(elm)[0];
+        var range, select;
+        if (document.createRange) {
+            range = document.createRange();
+            range.selectNode(target)
+            select = window.getSelection();
+            select.removeAllRanges();
+            select.addRange(range);
+            document.execCommand('copy');
+            select.removeAllRanges();
+        } else {
+            range = document.body.createTextRange();
+            range.moveToElementText(target);
+            range.select();
+            document.execCommand('copy');
+        }
+        button.innerHTML = "Copied"
+        setTimeout(function(){
+            button.innerHTML = btnText;
+        }, 1000);
+    }
+</script>
 <table class="table--bordered table--data">
   <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
   <tbody>
@@ -110,6 +136,16 @@
         <% if record.transcribers.blank? %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Persistent URL for entry
+      </th>
+      <td>
+        <% url = 'https://www.freebmd.org.uk/entry-information/'+record.record_hash+'/hash' %>
+        <a class="pUrl" href="<%= url %>"><%= url %></a>
+        <a class="btn btn--small" href="#" onclick=copy("pUrl") style="cursor: pointer">Copy URL</a>
       </td>
     </tr>
     <% if search == true %>
