@@ -181,7 +181,6 @@ class FeedbacksController < ApplicationController
     @message.userid = @user.userid
     @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
     @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
-    @handbook_feedback = true if @feedback.feedback_type = 'freecen handbook feedback'
   end
 
   def new_handbook_feedback

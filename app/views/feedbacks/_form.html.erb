@@ -19,9 +19,6 @@
   <%= f.input :problem_page_url,  :as => :hidden %>
   <%= f.input :previous_page_url, :as => :hidden %>
   <%= f.input :feedback_type, :as => :hidden %>
-  <% suggestion_options.each_pair do |name, value| %>
-    <%= hidden_field_tag(name, value)%>
-  <% end %>
   <%= f.button :submit, 'Submit Problem Report'   %>
 <% end %>
 
