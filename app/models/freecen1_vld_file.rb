@@ -400,7 +400,7 @@ class Freecen1VldFile
       when 'verbatim_birth_county'
         line << verbatim_birth_county(rec)
       when 'verbatim_birth_place'
-        line << rec['verbatim_birth_place']
+        line << replace_chars_with_space(rec['verbatim_birth_place'])
       when 'birth_county'
         county, place = compute_alternate(rec)
         line << county
@@ -430,7 +430,7 @@ class Freecen1VldFile
       place = @blank
     else
       county = rec['birth_county'].present? && rec['birth_county'].downcase == 'wal' ? 'WLS' : rec['birth_county']
-      place =  rec['birth_place']
+      place =  replace_chars_with_space(rec['birth_place'])
     end
     [county, place]
   end
@@ -679,8 +679,20 @@ class Freecen1VldFile
     [process, message]
   end
 
-
-
+def replace_chars_with_space(place_of_birth)
+      updated_place_of_birth = place_of_birth
+      has_char = false
+      chars = ',.'
+      chars.each_char do |char|
+        has_char = true if place_of_birth.include?(char)
+        break if has_char
+      end
+      if has_char
+        updated_place_of_birth = place_of_birth.tr(',.', ' ').squeeze(' ')
+        updated_place_of_birth = '-' if (updated_place_of_birth == ' ' || updated_place_of_birth.blank?)
+      end
+      updated_place_of_birth
+    end
 
   def setup_batch_on_upload
     file_location = File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)
