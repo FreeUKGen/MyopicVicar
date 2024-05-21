@@ -82,7 +82,7 @@
             Birth County
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text"><small>These are grouped into sections for England, Ireland, Islands, Scotland, Wales and a Special category (including overseas, out of county, ships and military). If you select more than one county, <em>all</em> places within those counties will be searched</small></span>
-            <small class="additional">Select one to three (hold Ctrl for multiple)</small>
+            <small class="additional">Select one or more (hold Ctrl for multiple)</small>
           </label>
           <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.codes_for_cen_county)%>
           <select class="select" id="search_query_birth_chapman_codes" multiple="multiple" name="search_query[birth_chapman_codes][]">
@@ -106,7 +106,7 @@
             Census County
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text"><small>These are grouped into sections for England, Ireland, Islands, Scotland, Wales and a Special category. Only counties with data are included. If you select more than one county, <em>all</em> places within those counties will be searched</small></span>
-            <small class="additional">Select one to three (hold Ctrl for multiple)</small>
+            <small class="additional">Select one or more (hold Ctrl for multiple)</small>
           </label>
           <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.codes_for_cen_county_search) %>
           <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]">
