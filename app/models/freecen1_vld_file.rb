@@ -681,9 +681,19 @@ class Freecen1VldFile
 
   def replace_chars_in_pob(place_of_birth)
     updated_place_of_birth = place_of_birth
-    updated_place_of_birth.gsub(',.', ' ').squeeze(' ')
-    updated_place_of_birth.delete("'")
-    updated_place_of_birth = '-' if updated_place_of_birth == ' ' || updated_place_of_birth.blank?
+    if updated_place_of_birth.present?
+      has_char = false
+      chars = ",.'"
+      chars.each_char do |char|
+        has_char = true if place_of_birth.include?(char)
+        break if has_char
+      end
+      if has_char
+        updated_place_of_birth = place_of_birth.tr(',.', ' ').squeeze(' ')
+        updated_place_of_birth = updated_place_of_birth.tr("'", '')
+        updated_place_of_birth = '-' if updated_place_of_birth == ' ' || updated_place_of_birth.blank?
+      end
+    end
     updated_place_of_birth
   end
 
