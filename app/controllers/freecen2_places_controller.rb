@@ -389,6 +389,18 @@ class Freecen2PlacesController < ApplicationController
     place_to = session[:move_new_place]
     @place_to_rec = Freecen2Place.find_by(chapman_code: county_to, place_name: place_to)
     # @place_to_used_as_pob = Freecen2Place.search_records_birth_places?(@place_to_rec) ? 'Yes' : 'No' - too slow but may improve when indexes created
+    @place_from_alternates_list = '['
+    @place_from_rec.alternate_freecen2_place_names.each do |alt_name|
+      @place_from_alternates_list += "#{alt_name.alternate_name}, "
+    end
+    @place_from_alternates_list = @place_from_alternates_list == '[' ? ' ' : @place_from_alternates_list[0..-3] + ']'
+
+    @place_to_alternates_list = '['
+    @place_to_rec.alternate_freecen2_place_names.each do |alt_name|
+      @place_to_alternates_list += "#{alt_name.alternate_name}, "
+    end
+    @place_to_alternates_list = @place_to_alternates_list == '[' ? ' ' : @place_to_alternates_list[0..-3] + ']'
+
     return unless params[:commit] == 'Move Place Linkages'
 
     userid = @user.userid

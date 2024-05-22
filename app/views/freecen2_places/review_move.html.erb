@@ -16,7 +16,7 @@
             <th  class="caps">New Place</th>
           </tr>
           <tr>
-            <td title="The Standard name is the one used for equivalecy testing">Place Name [Standard Name]: </td>
+            <td title="The Standard name is the one used for equivalency testing">Place Name [Standard Name]: </td>
             <td class="weight--semibold"><%= @place_from_rec.place_name %>  [<%= @place_from_rec.standard_place_name %>]</td>
             <td class="weight--semibold"><%= @place_to_rec.place_name %>  [<%= @place_to_rec.standard_place_name %>]</td>
           </tr>
@@ -24,6 +24,11 @@
             <td>County:</td>
             <td class="weight--semibold"><%= @place_from_rec.chapman_code %></td>
             <td class="weight--semibold"><%= @place_to_rec.chapman_code %></td>
+          </tr>
+          <tr>
+            <td>Alternate Names:</td>
+            <td class="weight--semibold"><%= @place_from_alternates_list %></td>
+            <td class="weight--semibold"><%= @place_to_alternates_list %></td>
           </tr>
           <tr>
             <td>Notes about the place:</td>
