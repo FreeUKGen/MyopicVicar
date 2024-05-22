@@ -48,6 +48,13 @@ class UserMailer < ActionMailer::Base
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
   end
 
+  def acknowledge_handbook_feedback(original)
+    @appname = appname
+    @communication = original
+    get_attachment(@communication)
+    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
+  end
+
   def add_emails(ccs)
     ccs_emails = []
     ccs.each do |cc|
@@ -561,6 +568,7 @@ class UserMailer < ActionMailer::Base
     end
     array_of_email_addresses
   end
+
 
   def get_email_address_from_userid(userid)
     userid_object = UseridDetail.userid(userid).first

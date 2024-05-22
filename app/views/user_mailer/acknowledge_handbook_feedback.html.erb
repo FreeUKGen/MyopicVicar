@@ -1,0 +1,10 @@
+<p> Dear <%= @communication.name %>;</p>
+<p>Thank you for your feedback at <%= @communication.feedback_time.strftime("%H:%M on %F") unless @communication.feedback_time.nil?%>. Please quote the following number <%= @communication.identifier %> in any subsequent communication with us on this matter.</p>
+<p>Thank you for your suggestion about the FreeCEN Handbook. Our team will review your suggestion and someone will reply to you as soon as they can. If the team decides that the Handbook needs changing, then we will include that change in the next version of the Handbook. We will let you know the outcome of your feedback in due course.</p>
+<p>The following is the information you submitted.</p>
+<p>  <b><%= @communication.feedback_type %>:</b></p>
+<p>  <%= @communication.body %></p>
+<% if @communication.screenshot_url.present?%>
+  <p>A copy of any attachment is provided.</p>
+<% end%>
+<p>The <%= @appname %> Team</p>

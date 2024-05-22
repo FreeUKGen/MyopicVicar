@@ -2,6 +2,7 @@
 <div class="text--center push-half--bottom">
   <%= link_to 'Choose new County', new_freereg_content_path, :class => "btn  btn--small" %>
   <%= link_to 'Choose new Place', freereg_contents_path, :class => "btn  btn--small", :title => "in this county"%>
+  <%= link_to 'Names', unique_place_names_path(@place.id), method: :get, :class => "btn   btn--small"%>
 </div>
 <h1 class="title text--center"><%= @county %></h1>
 <%= render 'flash_notice' %>

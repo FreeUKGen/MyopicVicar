@@ -218,6 +218,7 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/:id/feedback_reply_messages', to: 'feedbacks#feedback_reply_messages', as: :feedback_reply_messages
   get 'feedbacks/:id/keep',  :to => 'feedbacks#keep', :as => :keep_feedback
   get 'feedbacks/:id/unkeep',  :to => 'feedbacks#unkeep', :as => :unkeep_feedback
+  get 'feedbacks/new_handbook_feedback', to: 'feedbacks#new_handbook_feedback', as: 'handbook_feedback'
 
   resources :feedbacks
 
@@ -358,6 +359,9 @@ MyopicVicar::Application.routes.draw do
   get 'manage_resources/logout', :to =>'manage_resources#logout', :as => :logout_manage_resources
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
+
+  get 'manage_documents/freecen_handbook', :to => 'manage_document#freecen_handbook', :as => :freecen_handbook_manage_documents
+  resources :manage_documents
 
 
   get 'userid_details/confirm_email_address', :to =>'userid_details#confirm_email_address', :as => :confirm_email_address_userid_details
