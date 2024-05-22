@@ -184,13 +184,15 @@ namespace :freecen do
         output_to_log(message_file, message_line)
       end
       if fixit
+        new_place_record.update_attributes(cen_data_years: updated_new_cen_data_years, data_present: updated_search_data_present)
         if old_place_record.alternate_freecen2_place_names.present?
           old_place_record.alternate_freecen2_place_names.each do |old_alternate|
-            edit = Freecen2PlaceEdit.new(editor: userid, reason: 'Added by Move Place Linkages')
+            edit = Freecen2PlaceEdit.new(editor: userid, reason: 'Move FreeCen2 Place Process')
             edit[:previous_alternate_place_names] = []
             new_place_record.alternate_freecen2_place_names.each do |alternate|
               edit[:previous_alternate_place_names] << alternate.alternate_name
             end
+            edit[:created] = new_place_record.u_at
             new_place_record.freecen2_place_edits << edit
 
             new_alt = AlternateFreecen2PlaceName.new
@@ -198,7 +200,6 @@ namespace :freecen do
             new_place_record.alternate_freecen2_place_names << new_alt
           end
         end
-        new_place_record.update_attributes(cen_data_years: updated_new_cen_data_years, data_present: updated_search_data_present)
         old_place_record.update_attributes(disabled: 'true', data_present: false, cen_data_years: [])
         message_line = '*** Freecen2_place Records after update ***'
         output_to_log(message_file, message_line)
