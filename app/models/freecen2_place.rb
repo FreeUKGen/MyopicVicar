@@ -359,10 +359,6 @@ class Freecen2Place
       SearchRecord.where(birth_chapman_code: place.chapman_code, freecen2_place_of_birth_id: place.id).no_timeout.exists?
     end
 
-    def search_records_birth_places_alternate?(chapman_code, place_id, alternate_place)
-      SearchRecord.where(birth_chapman_code: chapman_code, freecen2_place_of_birth_id: place_id, birth_place: alternate_place).no_timeout.exists?
-    end
-
   end
 
 
@@ -443,12 +439,6 @@ class Freecen2Place
 
           if value[:alternate_name].blank?
             err_msg = 'Other Name for Place cannot be empty with Destroy box checked'
-          else
-            used_as_birth_place = Freecen2Place.search_records_birth_places_alternate?(chapman_code, this_place_id, value[:alternate_name])
-            if used_as_birth_place
-              err_msg = "The Other Name for Place (#{value[:alternate_name]}) cannot be deleted because there are dependent search record birth places"
-              break
-            end
           end
         end
       end
