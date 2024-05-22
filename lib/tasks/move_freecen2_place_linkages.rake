@@ -3,7 +3,6 @@ namespace :freecen do
 
   task :move_freecen2_place_linkages, [:userid, :old, :new, :fix, :debug] => :environment do |_t, args|
     # based on freecen:convert_freecen2_place_id rake task
-    # Print the time before start the process
 
     require 'user_mailer'
 
@@ -125,7 +124,7 @@ namespace :freecen do
       output_to_log(message_file, message_line)
       csv_files_list = '['
       vld_files_list = '['
-      alternative_names_list = '['
+      # alternative_names_list = '['
       if old_search_records_pobs.positive?
         # get CSV file names where OLd Place is used as a Birth Place
         csv_file_ids = SortedSet.new
@@ -169,19 +168,6 @@ namespace :freecen do
             output_to_log(message_file, message_line)
           end
         end
-        alternative_names_used = SortedSet.new
-        old_place_name_titleized = old_place_record.place_name.titleize
-        new_place_name_titleized = new_place_record.place_name.titleize
-        birth_places_used = SearchRecord.where(birth_chapman_code: old_place_record.chapman_code, freecen2_place_of_birth_id: old_place_record.id, birth_place: { '$ne': old_place_name_titleized }).pluck(:birth_place)
-        birth_places_used.each do |birth_place|
-          next if birth_place.blank?
-
-          alternative_names_used << birth_place unless birth_place.titleize == new_place_name_titleized || birth_place.titleize == old_place_name_titleized
-        end
-        alternative_names_used.each do |alt_name|
-          alternative_names_list += "#{alt_name}, "
-        end
-        alternative_names_info = alternative_names_list[0..-3] + ']'
 
       end
 
@@ -198,6 +184,20 @@ namespace :freecen do
         output_to_log(message_file, message_line)
       end
       if fixit
+        if old_place_record.alternate_freecen2_place_names.present?
+          old_place_record.alternate_freecen2_place_names.each do |old_alternate|
+            edit = Freecen2PlaceEdit.new(editor: userid, reason: 'Added by Move Place Linkages')
+            edit[:previous_alternate_place_names] = []
+            new_place_record.alternate_freecen2_place_names.each do |alternate|
+              edit[:previous_alternate_place_names] << alternate.alternate_name
+            end
+            new_place_record.freecen2_place_edits << edit
+
+            new_alt = AlternateFreecen2PlaceName.new
+            new_alt[:alternate_name] = old_alternate.alternate_name
+            new_place_record.alternate_freecen2_place_names << new_alt
+          end
+        end
         new_place_record.update_attributes(cen_data_years: updated_new_cen_data_years, data_present: updated_search_data_present)
         old_place_record.update_attributes(disabled: 'true', data_present: false, cen_data_years: [])
         message_line = '*** Freecen2_place Records after update ***'
@@ -216,7 +216,7 @@ namespace :freecen do
         output_to_log(message_file, message_line)
         Freecen2PlaceCache.refresh(new_place_record.chapman_code)
       end
-      if fixit && !(csv_files_list == '[' && vld_files_list == '[' && alternative_names_list == '[')
+      if fixit && !(csv_files_list == '[' && vld_files_list == '[')
         message_line = '**** ACTION MAY BE REQUIRED ****'
         output_to_log(message_file, message_line)
         unless csv_files_list == '['
@@ -225,10 +225,6 @@ namespace :freecen do
         end
         unless vld_files_list == '['
           message_line = "Old Place as Place of Birth is used in the following VLD Files #{vld_files_list_info} - these files MAY need to be downloaded as CSVProc files, updated and reloaded."
-          output_to_log(message_file, message_line)
-        end
-        unless alternative_names_list == '['
-          message_line = "Old Place Alternate Place Names used in Search Records as Place of Birth = #{alternative_names_info} - these should be added to #{new_place_record.place_name} as Alternative names."
           output_to_log(message_file, message_line)
         end
       end
