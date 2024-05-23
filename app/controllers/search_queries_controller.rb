@@ -210,7 +210,7 @@ class SearchQueriesController < ApplicationController
 
   def show
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
-    check_sort_by
+    set_sort_by
 
     @search_results, success, error_type = @search_query.search_records.to_a if params[:saved_search].present?
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
@@ -336,7 +336,7 @@ class SearchQueriesController < ApplicationController
     end
   end
 
-  def check_sort_by
+  def set_sort_by
     if params[:sort_option].present?
       @sort_condition = params[:sort_option]
       case appname_downcase
@@ -350,7 +350,7 @@ class SearchQueriesController < ApplicationController
       when 'freebmd'
         order_field = params[:sort_option]
       end
-      sort_objects(condition: order_field, query: @search_query)
+      set_sort_field_and_order(query: @search_query, condition: order_field)
     end
   end
 
@@ -362,7 +362,7 @@ class SearchQueriesController < ApplicationController
     params.require(:search_query).permit!
   end
 
-  def sort_objects(condition:, query:)
+  def set_sort_field_and_order(query:, condition:)
     if condition == query.order_field
       # reverse the directions
       query.order_asc = !query.order_asc unless params[:page].present?
