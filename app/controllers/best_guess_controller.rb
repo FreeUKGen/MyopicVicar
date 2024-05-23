@@ -272,4 +272,5 @@ class BestGuessController < ApplicationController
   def clean_session_for_saved_entry
     session.delete(:search_entry_number)
   end
+
 end

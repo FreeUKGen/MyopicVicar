@@ -1,0 +1,46 @@
+<% unless defined?(@printable_format) && @printable_format %>
+  <% @search_record = @current_record %>
+  <div id="citation-dropdown" class="citation-dropdown no-javascript">
+    <div class="text--center">
+      <p>Please choose the format for one of these citation types. It will appear in a new tab below and may be copied.
+        <br>
+        Once you have copied your citation clicking the Generate Citation button above again will close these instructions.</p>
+      <%= link_to "WikiTree", show_citation_record_path(params[:search_entry], :citation_type => "wikitree"), :class => "btn  btn--small " %>
+      <%#= link_to "Family Tree Maker", show_citation_record_path(@current_record[:_id], :citation_type => "familytreemaker"), :class => "btn  btn--small " , :target => "_blank" %>
+      <%#= link_to "Legacy Family Tree", show_citation_record_path(@current_record[:_id], :citation_type => "legacyfamilytree"), :class => "btn  btn--small " , :target => "_blank" %>
+      <%#= link_to "MLA", show_citation_record_path(@current_record[:_id], :citation_type => "mla"), :class => "btn  btn--small " , :target => "_blank" %>
+      <%#= link_to "Chicago", show_citation_record_path(@current_record[:_id], :citation_type => "chicago"), :class => "btn  btn--small " , :target => "_blank" %>
+      <%#= link_to "Evidence Explained", show_citation_record_path(@current_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small " , :target => "_blank" %>
+      <%#= link_to "Wikipedia", show_citation_record_path(@current_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small " , :target => "_blank" %>
+    </div>
+  </div>
+  <div id="citation-dropdown" class="citation-dropdown javascript">
+    <div class="text--center">
+      <p>Choose the format and the citation will appear below and may be copied. Select Generate Citation button above to close this selection:</p>
+      <%= link_to "WikiTree", show_citation_record_path(params[:search_entry], :citation_type => "wikitree"), :class => "btn  btn--small " %>
+      <%#= link_to "WikiTree", friendly_search_record_path(@current_record[:_id], :citation_type => "wikitree"), :class => "btn  btn--small " %>
+      <%#= link_to "Family Tree Maker", friendly_search_record_path(@current_record[:_id], :citation_type => "familytreemaker"), :class => "btn  btn--small " %>
+      <%#= link_to "Legacy Family Tree", friendly_search_record_path(@current_record[:_id], :citation_type => "legacyfamilytree"), :class => "btn  btn--small " %>
+      <%#= link_to "MLA", friendly_search_record_path(@current_record[:_id], :citation_type => "mla"), :class => "btn  btn--small " %>
+      <%#= link_to "Chicago", friendly_search_record_path(@current_record[:_id], :citation_type => "chicago"), :class => "btn  btn--small " %>
+      <%#= link_to "Evidence Explained", friendly_search_record_path(@current_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small " %>
+      <%#= link_to "Wikipedia", friendly_search_record_path(@current_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small " %>
+    </div>
+    <% if params[:citation_type].present? %>
+      <br>
+      <span id = "citation_section">
+        <%= render params[:citation_type] + '_' + appname.downcase + '_citation'%>
+        <div class = "text--center">
+          <button class = "btn  btn--small ", onclick = copy("citation_container") style = "cursor: pointer">Copy</button>
+          <button class = "btn  btn--small ", onclick = this.parentElement.parentElement.remove() style = "cursor: pointer">Close</button>
+        </div>
+      </span>
+    <% end%>
+  </div>
+<% end%>
+
+<style type="text/css">
+    #citation-dropdown {
+        display: none;
+    }
+</style>

@@ -32,8 +32,12 @@ class SearchRecordsController < ApplicationController
     proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
-    @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?) ? true : false
     @appname = appname_downcase
+    if @appname == 'freebmd'
+      @show_navigation = true
+    else
+      @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?) ? true : false
+    end
     @page_number = params[:page_number].to_i
     if @appname == 'freebmd'
       show_freebmd
@@ -330,13 +334,18 @@ class SearchRecordsController < ApplicationController
 
   # implementation of the citation generator
   def show_citation
-    proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+    # proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
+    # redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
     @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?) ? true : false
     @appname = appname_downcase
     case @appname
     when 'freebmd'
+      # variables declared by RBL as a work-round: they should already have been assigned by the controller:
+      # (this would mean that we don't need to comment out the proceed test and redirect command above!)
+      @search_id = params[:id]
+      @search_record = BestGuess.find(@search_id)
+      @entry = @search_record
       show_freebmd
     when 'freecen'
       @display_date = true
