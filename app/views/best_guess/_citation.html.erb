@@ -1,0 +1,4 @@
+<% citation_types = ['wikitree','familytree'] %>
+<% citation_types.each do |cite| %>
+	<%= render partial: "#{cite}_freebmd_citation", locals: {entry: @current_record} %>
+<% end %>

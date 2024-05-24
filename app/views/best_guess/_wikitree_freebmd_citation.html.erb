@@ -1,0 +1,25 @@
+<section>
+  <% @entry = entry %>
+  <h4>Citation (embedded Wikitree reference):</h4>
+  <p class = "citation_container">
+    &lt;ref&gt;"<%=appname%> Search", online database. GRO Index of <%= format_record_type_for_scan_url(@entry)%>s,
+    <%= format_quarter(@entry['QuarterNumber']) %>, <%=@entry['District']%> Registration District, Volume <%=@entry['Volume']%> Page <%=@entry['Page']%>
+    <%= '[https://www.freebmd.org.uk/entry-information/'+@entry.record_hash+'/hash ' %>
+    <%= format_record_type_for_scan_url(@entry) %> of <%= @entry['GivenName'] %> <%= @entry['OtherNames'] %> <%= @entry['Surname'] %>
+    <% if @entry[:RecordTypeID] == 1 %>
+      <% if @entry['AssociateName'].present? %>
+      : Mother's maiden name <%= @entry['AssociateName'] %>
+      <% end %>
+    <% elsif @entry[:RecordTypeID] == 2 %>
+      <% if @entry['AgeAtDeath'].present? %>
+        : Age at death <%= @entry['AgeAtDeath'].to_s %>
+      <% end %>
+    <% elsif @entry[:RecordTypeID] == 3 %>
+      <% if @entry['AssociateName'].present? %>
+        : Spouse's surname <%= @entry['AssociateName'] %>
+      <% end %>
+    <% end %>
+    ]. Viewed <%=Date.today.strftime("%e %b %Y")%>
+    &lt;/ref&gt;
+  </p>
+</section>
