@@ -19,7 +19,7 @@
       <p>Choose the format and the citation will appear below and may be copied. Select Generate Citation button above to close this selection:</p>
       <%#= link_to "WikiTree", show_citation_record_path(params[:search_entry], :citation_type => "wikitree"), :class => "btn  btn--small " %>
       <%= render partial: "citation", locals: {entry: @current_record} %>
-      <button onclick="citationSwitch(wikitree)">Wikitree</button>
+      <button onclick="citationSwitch(`wikitree`)">Wikitree</button>
       <%#= link_to "WikiTree", friendly_search_record_path(@current_record[:_id], :citation_type => "wikitree"), :class => "btn  btn--small " %>
       <%#= link_to "Family Tree Maker", friendly_search_record_path(@current_record[:_id], :citation_type => "familytreemaker"), :class => "btn  btn--small " %>
       <%#= link_to "Legacy Family Tree", friendly_search_record_path(@current_record[:_id], :citation_type => "legacyfamilytree"), :class => "btn  btn--small " %>
