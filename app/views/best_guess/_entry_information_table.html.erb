@@ -1,7 +1,7 @@
 <script>
     document.getElementById("citation-toggle").addEventListener("click", citationToggle);
     /*Hide citation blocks unless citation type is selected*/
-     const citations = ['wikitree', 'familytree'];
+     const citations = ['wikitree_inline', 'wikitree_ref', 'familytree'];
     function hide_citation_block(cite){
       cite_element =  document.getElementById(`${cite}_citation_container`);
       if (cite_element) {
@@ -30,18 +30,19 @@
         for(let i = 0; i < javascript_elements.length; i++){
             javascript_elements[i].style.display = "block";
         }
-        if(!document.getElementById("citation_section")){
+        //if(!document.getElementById("citation_section")){
             document.getElementById("citation-dropdown").style.display = "none";
-        }
+        //}
     })
     function copy(elm) {
         var button = event.currentTarget || event.srcElement;
         var btnText = button.innerHTML;
-        var target = document.getElementsByClassName(elm)[0];
+        var target = document.getElementById(elm);
+        var citation = target.querySelectorAll('.citation_container')[0];
         var range, select;
         if (document.createRange) {
             range = document.createRange();
-            range.selectNode(target)
+            range.selectNode(citation);
             select = window.getSelection();
             select.removeAllRanges();
             select.addRange(range);
@@ -49,7 +50,7 @@
             select.removeAllRanges();
         } else {
             range = document.body.createTextRange();
-            range.moveToElementText(target);
+            range.moveToElementText(citation);
             range.select();
             document.execCommand('copy');
         }
@@ -59,6 +60,9 @@
         }, 1000);
     }
 </script>
+<style type="text/css">
+  .citation_container {border: 1px solid black; padding: 5px;}
+</style>
 <table class="table--bordered table--data">
   <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
   <tbody>
