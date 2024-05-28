@@ -26,6 +26,7 @@
       <%#= link_to "MLA", friendly_search_record_path(@current_record[:_id], :citation_type => "mla"), :class => "btn  btn--small " %>
       <%#= link_to "Chicago", friendly_search_record_path(@current_record[:_id], :citation_type => "chicago"), :class => "btn  btn--small " %>
       <%#= link_to "Evidence Explained", friendly_search_record_path(@current_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small " %>
+      <button class="btn btn--small" onclick="citationSwitch(`evidence_explained`)">Evidence explained</button>
       <%#= link_to "Wikipedia", friendly_search_record_path(@current_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small " %>
       <button class="btn btn--small" onclick="citationSwitch(`wikipedia`)">Wikipedia</button>
     </div>
