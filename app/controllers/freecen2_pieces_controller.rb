@@ -171,8 +171,10 @@ class Freecen2PiecesController < ApplicationController
   end
 
   def update_piece_status
-    piece_ids = params[:pieces]
+    piece_ids = params[:all_pieces]
     current_piece_number = params[:current_piece_number]
+    form_pieces = current_piece_number.split(',')
+    form_pieces = form_pieces.map(&:squish)
     piece_ids.each do |piece_id|
       piece = Freecen2Piece.find(piece_id)
       piece.update_attributes(piece_availability: params[:piece_availability], piece_digitised: params[:piece_digitised])
@@ -217,7 +219,6 @@ class Freecen2PiecesController < ApplicationController
     end
     @piece_hash
   end
-
 
   def get_pieces(piece_number, year,piece_chapman_code)
     pieces = []

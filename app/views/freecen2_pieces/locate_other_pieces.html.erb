@@ -2,8 +2,8 @@
 <div style="text-align: center">
   <%= render 'flash_notice' %>
 </div>
-<% @piece_hash.each do |number| %>
-<h2 style="text-align: center">FreeCen2 Pieces for <%= number.key%> </h2>
+<% @piece_hash.each do |number, value| %>
+<h2 style="text-align: center">FreeCen2 Pieces for <%= number %> </h2>
 <% freecen2_pieces = @piece_hash.dig(number, :freecen2_piece)%>
 <div class="scrollable ">
   <table class="table--bordered table--data just--left table--striped">
@@ -45,34 +45,35 @@
   <legend>Update piece status</legend>
   <% pieces = @associated_pieces.present? ? @associated_pieces : @freecen2_pieces %>
   <%= form_tag update_piece_status_freecen2_piece_path, class: 'grid' do %>
-  <% pieces = [] %>
-  <% @piece_hash.each do |number| %>
-    <% freecen2_pieces = @piece_hash.dig(number, :freecen2_piece) %>
-    <% associated_pieces = @piece_hash.dig(number, :associated_piece)%>
-    <% pieces << associated_pieces.present? ? associated_pieces : freecen2_pieces %>
-    <% pieces.each do |piece| %>
-      <%= hidden_field_tag "pieces[]", piece.id %>
-    <% end %>
-    <%= hidden_field_tag :current_piece_number, @number  %>
-    <p>Please note: The following pieces will be updated:</p>
-    <ol>
+    <% @piece_hash.each do |number,value| %>
+      <% freecen2_pieces = value[:freecen2_piece] %>
+      <% associated_pieces = value[:associated_piece] %>
+      <% %>
+      <% associated_pieces.present? ? pieces << associated_pieces : pieces << freecen2_pieces %>
+      <% pieces = pieces.flatten %>
       <% pieces.each do |piece| %>
-        <li><%= piece.number %></li>
+        <%= hidden_field_tag "#{number}_pieces[]", piece.id %>
       <% end %>
-    </ol>
-    <ol>
-      <li class="grid__item one-third lap-one-third palm-one-whole">
-        <label class="ttip" for="piece_availablity" tabindex="0">Piece exists</label>
-        <%= select_tag :piece_availability ,options_for_select(['Y',' N', 'P']) , class: ' select', id: 'piece_availablity' , tabindex: 0 %>
-      </li>
-      <li class="grid__item one-third lap-one-third palm-one-whole">
-        <label class="ttip" for="piece_digitised" tabindex="0">Digital images available</label>
-        <%= select_tag :piece_digitised , options_for_select(['Y', 'P', 'F', 'N']), class: 'select', id: 'piece_digitised', tabindex: 0 %>
-      </li>
-      <li class="grid__item one-third lap-one-third palm-one-whole"></li>
-        <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
-    </ol>
-  <% end %>
+      <%= hidden_field_tag :current_piece_number, @number  %>
+      <p>Please note: The following pieces will be updated:</p>
+      <ol>
+        <% pieces.each do |piece| %>
+          <li><%= piece.number %></li>
+        <% end %>
+      </ol>
+      <ol>
+        <li class="grid__item one-third lap-one-third palm-one-whole">
+          <label class="ttip" for="piece_availablity" tabindex="0">Piece exists</label>
+          <%= select_tag "#{number}_piece_availability" ,options_for_select(['Y',' N', 'P']) , class: ' select', id: 'piece_availablity' , tabindex: 0 %>
+        </li>
+        <li class="grid__item one-third lap-one-third palm-one-whole">
+          <label class="ttip" for="piece_digitised" tabindex="0">Digital images available</label>
+          <%= select_tag "#{number}_piece_digitised" , options_for_select(['Y', 'P', 'F', 'N']), class: 'select', id: 'piece_digitised', tabindex: 0 %>
+        </li>
+        <li class="grid__item one-third lap-one-third palm-one-whole"></li>
+          <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+      </ol>
+    <% end %>
     <p>Please note: The following pieces will be updated:</p>
     <ol>
       <% pieces.each do |piece| %>
