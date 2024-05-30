@@ -101,6 +101,19 @@
         <% end %>
       </td>
     </tr>
+    <% if search %>
+    <% event_registration_number = record.event_registration_number %>
+    <% if event_registration_number.present?%>
+      <tr>
+        <th scope="row">
+          Registration number
+        </th>
+        <td >
+          <%= event_registration_number %>
+        </td>
+      </tr>
+    <% end %>
+  <% end %>
     <tr>
       <th scope="row">
         Transcriber

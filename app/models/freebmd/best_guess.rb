@@ -389,6 +389,12 @@ class BestGuess < FreebmdDbBase
     submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
     submissions.Registered if submissions.present?
   end
+  def event_registration_number
+    if Submission.column_names.include?('RegistrationNumber')
+      submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
+      submissions.RegistrationNumber if submissions.present?
+    end
+  end
 
   def self.get_birth_unique_names birth_records
     entries = Hash.new
