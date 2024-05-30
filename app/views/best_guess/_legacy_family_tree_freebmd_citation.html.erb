@@ -1,0 +1,18 @@
+<section>
+  <div id="legacy_family_tree_citation_container" style="display: none;">
+    <% @entry = entry %>
+    <h4>Citation (Legacy Family Tree):</h4>
+    <p class = "citation_container"><b>Footnote/Endnote Citation:</b><br/>
+      Free UK Genealogy, "GRO Index of <%= format_record_type_for_scan_url(@entry) %>s" database, <%=appname%>
+      (<%= 'https://www.freebmd.org.uk/entry-information/'+@entry.record_hash+'/hash' %>: viewed <%=Date.today.strftime("%e %b %Y")%>),
+      <%= format_record_type_for_scan_url(@entry) %> of <%= @entry['GivenName'] %> <%= @entry['OtherNames'] %> <%= @entry['Surname'] %>, <%= format_quarter(@entry['QuarterNumber']) %>, <%=@entry['District']%>, Vol.<%=@entry['Volume']%>/<%=@entry['Page']%>, citing General Register Office, Southport<br/><br/>
+      <b>Subsequent citation:</b><br/>
+      Free UK Genealogy, "GRO Index of <%= format_record_type_for_scan_url(@entry) %>s" database for <%= format_record_type_for_scan_url(@entry) %> of <%= @entry['GivenName'] %> <%= @entry['OtherNames'] %> <%= @entry['Surname'] %><br/><br/>
+      <b>Bibliography:</b><br/>
+      Free UK Genealogy, "GRO Index of <%= format_record_type_for_scan_url(@entry) %>s" Database. <%=appname%> <%= 'https://www.freebmd.org.uk/entry-information/'+@entry.record_hash+'/hash' %>: <%=Date.today.strftime("%e %b %Y")%>
+    </p>
+    <div class = "text--center">
+      <button class = "btn  btn--small ", onclick = copy("legacy_family_tree_citation_container") style = "cursor: pointer">Copy</button>
+      <button class = "btn  btn--small ", onclick = this.parentElement.parentElement.style.display='none' style = "cursor: pointer">Close</button>
+    </div>
+</section>

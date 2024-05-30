@@ -21,14 +21,18 @@
       <button class="btn btn--small" onclick="citationSwitch(`wikitree_inline`)">Wikitree inline</button>
       <button class="btn btn--small" onclick="citationSwitch(`wikitree_ref`)">Wikitree reference</button>
       <%#= link_to "WikiTree", friendly_search_record_path(@current_record[:_id], :citation_type => "wikitree"), :class => "btn  btn--small " %>
+      <button class="btn btn--small" onclick="citationSwitch(`family_tree_maker`)">Family Tree Maker</button>
       <%#= link_to "Family Tree Maker", friendly_search_record_path(@current_record[:_id], :citation_type => "familytreemaker"), :class => "btn  btn--small " %>
+      <button class="btn btn--small" onclick="citationSwitch(`legacy_family_tree`)">Legacy Family Tree</button>
       <%#= link_to "Legacy Family Tree", friendly_search_record_path(@current_record[:_id], :citation_type => "legacyfamilytree"), :class => "btn  btn--small " %>
+      <button class="btn btn--small" onclick="citationSwitch(`mla`)">MLA</button>
       <%#= link_to "MLA", friendly_search_record_path(@current_record[:_id], :citation_type => "mla"), :class => "btn  btn--small " %>
+      <button class="btn btn--small" onclick="citationSwitch(`chicago`)">Chicago</button>
       <%#= link_to "Chicago", friendly_search_record_path(@current_record[:_id], :citation_type => "chicago"), :class => "btn  btn--small " %>
-      <%#= link_to "Evidence Explained", friendly_search_record_path(@current_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small " %>
       <button class="btn btn--small" onclick="citationSwitch(`evidence_explained`)">Evidence explained</button>
-      <%#= link_to "Wikipedia", friendly_search_record_path(@current_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small " %>
+      <%#= link_to "Evidence Explained", friendly_search_record_path(@current_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small " %>
       <button class="btn btn--small" onclick="citationSwitch(`wikipedia`)">Wikipedia</button>
+      <%#= link_to "Wikipedia", friendly_search_record_path(@current_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small " %>
     </div>
     <%# if params[:citation_type].present? %>
       <br>

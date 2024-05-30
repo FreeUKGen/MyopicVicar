@@ -1,7 +1,7 @@
 <script>
     document.getElementById("citation-toggle").addEventListener("click", citationToggle);
     /*Hide citation blocks unless citation type is selected*/
-     const citations = ['wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
+     const citations = ['wikitree_inline', 'wikitree_ref', 'family_tree_maker', 'legacy_family_tree', 'mla', 'chicago', 'evidence_explained', 'wikipedia'];
     function hide_citation_block(cite){
       cite_element =  document.getElementById(`${cite}_citation_container`);
       if (cite_element) {

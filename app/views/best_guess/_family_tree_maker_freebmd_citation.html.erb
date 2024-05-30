@@ -1,0 +1,14 @@
+<section>
+  <div id="family_tree_maker_citation_container" style="display: none;">
+    <% @entry = entry %>
+    <h4>Citation (Family Tree Maker):</h4>
+    <p class = "citation_container">Source title: <%=appname%> - "GRO Index of <%= format_record_type_for_scan_url(@entry) %>s" database<br/>
+      Repository: General Register Office, Southport<br/>
+      Citation detail: GRO Index of <%= format_record_type_for_scan_url(@entry) %>s<br/>
+      Citation text: <%= format_record_type_for_scan_url(@entry) %> of <%= @entry['GivenName'] %> <%= @entry['OtherNames'] %> <%= @entry['Surname'] %>, <%= format_quarter(@entry['QuarterNumber']) %>, <%=@entry['District']%>, Vol.<%=@entry['Volume']%>/<%=@entry['Page']%><br/>
+      Web address: <%= 'https://www.freebmd.org.uk/entry-information/'+@entry.record_hash+'/hash' %> viewed <%=Date.today.strftime("%e %b %Y")%></p>
+    <div class = "text--center">
+      <button class = "btn  btn--small ", onclick = copy("family_tree_maker_citation_container") style = "cursor: pointer">Copy</button>
+      <button class = "btn  btn--small ", onclick = this.parentElement.parentElement.style.display='none' style = "cursor: pointer">Close</button>
+    </div>
+</section>

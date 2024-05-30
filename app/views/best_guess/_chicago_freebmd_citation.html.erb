@@ -1,0 +1,11 @@
+<section>
+  <div id="chicago_citation_container" style="display: none;">
+    <% @entry = entry %>
+    <h4>Citation (Chicago):</h4>
+    <p class = "citation_container">"GRO Index of <%= format_record_type_for_scan_url(@entry) %>s". <i><%=appname%></i> database
+      <i><%= 'https://www.freebmd.org.uk/entry-information/'+@entry.record_hash+'/hash' %></i>. Free UK Genealogy (accessed <%=Date.today.strftime("%e %b %Y")%>).</p>
+    <div class = "text--center">
+      <button class = "btn  btn--small ", onclick = copy("chicago_citation_container") style = "cursor: pointer">Copy</button>
+      <button class = "btn  btn--small ", onclick = this.parentElement.parentElement.style.display='none' style = "cursor: pointer">Close</button>
+    </div>
+</section>

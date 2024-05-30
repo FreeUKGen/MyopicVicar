@@ -152,7 +152,7 @@
         </div>
       <% end %>
       <div class="grid__item two-thirds lap-two-thirds palm-one-whole text--center push--top ">
-          <%= link_to 'Report an Error in this Data', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
+          <%= link_to 'Suggest a correction to this data', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
         </div>
     </div>
     <% unless print_friendly %>
