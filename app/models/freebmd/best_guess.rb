@@ -17,8 +17,13 @@ class BestGuess < FreebmdDbBase
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
   ENTRY_REFERENCE = 512
-  DISTRICT_MISSPELT = 2
   DISTRICT_ALIAS = 1
+  DISTRICT_MISSPELT = 2
+  DISTRICT_UNKNOWN = 4
+  BAD_VOLUME_FOR_DISTRICT = 8
+  BAD_DATE_FOR_DISTRICT = 16
+  PAGE_OUTSIDE_EXECTED_RANGE_FOR_DISTRICT = 32
+  PAGE_RANGE_NOT_CHECKED = 64
   EVENT_YEAR_ONLY = 589
 
   def friendly_url
@@ -341,6 +346,34 @@ class BestGuess < FreebmdDbBase
     (self.DistrictFlag & DISTRICT_MISSPELT).zero?
   end
 
+  def district_alternative_form
+    not (self.DistrictFlag & DISTRICT_ALIAS).zero?
+  end
+
+  def district_misspelt
+    not (self.DistrictFlag & DISTRICT_MISSPELT).zero?
+  end
+
+  def district_invented
+    not (self.DistrictFlag & DISTRICT_UNKNOWN).zero?
+  end
+
+  def bad_volume_for_district
+    not (self.DistrictFlag & BAD_VOLUME_FOR_DISTRICT).zero?
+  end
+
+  def bad_date_for_district
+    not (self.DistrictFlag & BAD_DATE_FOR_DISTRICT).zero?
+  end
+
+  def bad_page_range_for_district
+    not (self.DistrictFlag & PAGE_OUTSIDE_EXECTED_RANGE_FOR_DISTRICT).zero?
+  end
+
+  def page_range_not_checked
+    not (self.DistrictFlag & PAGE_RANGE_NOT_CHECKED).zero?
+  end
+
   def non_alias_district
     (self.DistrictFlag & DISTRICT_ALIAS).zero?
     #$primaryDistrictFlag & $BMD::Const::DistrictAlias && $primaryDistrictName ne $canDistrictName
@@ -434,4 +467,5 @@ class BestGuess < FreebmdDbBase
   def self.get_best_guess_records(hash_array)
     hash_array.map{|h| BestGuessHash.find_by(Hash: h).best_guess}
   end
+
 end

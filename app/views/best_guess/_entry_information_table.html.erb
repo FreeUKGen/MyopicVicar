@@ -39,6 +39,7 @@
         <% if record.District.blank? %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
+        <% if record.district_misspelt or record.district_invented %>  &dagger; <% end %>
       </td>
     </tr>
     <% if entry_type == "marriage" %>
@@ -82,6 +83,7 @@
       </th>
       <td>
         <%= "#{ record.Volume }" %>
+        <% if record.bad_volume_for_district %> &dagger; <% end %>
       </td>
     </tr>
     <tr>
@@ -95,10 +97,11 @@
           <% else %>
             <%= link_to "#{record.Page}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: original_record.RecordNumber) %>
           <% end %>
-          <br>
+          <!--br-->
         <% else%>
           <%= record.Page %>
         <% end %>
+        <% if record.bad_page_range_for_district or record.page_range_not_checked %> &dagger; <% end %>
       </td>
     </tr>
     <tr>
@@ -187,5 +190,15 @@
     <%# end %>
   </tbody>
 </table>
+<% if record.DistrictFlag > 0 %>
+  <p>&dagger;
+    <% if record.district_misspelt  %> The District name is a misspelt alternative form of the official name.<% end %>
+    <%= 'District name is not an official name or a recognized alternative form of name.' if record.district_invented %>
+    <% if record.bad_volume_for_district %> The volume number does not have one of the expected values for this District/Quarter.<% end %>
+    <% if record.bad_date_for_district %> The date does not fall within the range of dates when this District was active.<% end %>
+    <% if record.bad_page_range_for_district %> The page number does not have one of the expected values for this District/Quarter.<% end %>
+    <% if record.page_range_not_checked %> The page range cannot be checked because the data provided is not sufficiently precise.<% end %>
+  </p>
+<% end %>
 <p>Do you need help with this? There is information about quarters, districts, and how to find the partner in a marriage in the Help section. Use the link in the menu at the top of the page.</p>
 <%#= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? %>
