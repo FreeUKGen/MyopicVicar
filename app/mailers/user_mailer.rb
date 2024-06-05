@@ -275,10 +275,12 @@ class UserMailer < ActionMailer::Base
     @appname = appname
     @user = user
     manager = nil
+    all_managers = nil
     if appname.downcase == 'freereg'
       manager = UseridDetail.userid("REGManager").first
+      all_managers = UseridDetail.where(person_role: 'system_administrator').all.pluck(:email_address) |  UseridDetail.where(secondary_role: {'$in' => ['system_administrator']}).all.pluck(:email_address)
       get_coordinator_name
-      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => all_managers, :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     elsif appname.downcase == 'freecen'
       get_coordinator_name
       mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
@@ -288,18 +290,22 @@ class UserMailer < ActionMailer::Base
   def notification_of_transcriber_creation(user)
     @appname = appname
     @user = user
+    all_managers = nil
+    all_managers = UseridDetail.where(person_role: 'system_administrator').all.pluck(:email_address) |  UseridDetail.where(secondary_role: {'$in' => ['system_administrator']}).all.pluck(:email_address) if appname.downcase == 'freereg'
     get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
+    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", cc: all_managers,:subject => "#{appname} userid creation") unless @coordinator.nil?
   end
 
   def notification_of_transcriber_registration(user)
     @appname = appname
     @user = user
     manager = nil
+    all_managers = nil
     if appname.downcase == 'freereg'
       manager = UseridDetail.userid("REGManager").first
+      all_managers = UseridDetail.where(person_role: 'system_administrator').all.pluck(:email_address) |  UseridDetail.where(secondary_role: {'$in' => ['system_administrator']}).all.pluck(:email_address)
       get_coordinator_name
-      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => all_managers, :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     elsif appname.downcase == 'freecen'
       get_coordinator_name
       mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
