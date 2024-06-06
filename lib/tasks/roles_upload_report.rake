@@ -1,7 +1,7 @@
 desc "Upload report for each role"
 task :roles_upload_report => :environment do
   start_time = Time.now
-  
+
   def prepare_report_dates
     current_month_start_date = Date.today.beginning_of_month
     start_date = current_month_start_date - 1.month
@@ -17,6 +17,6 @@ task :roles_upload_report => :environment do
   end
 
   start_date, end_date = prepare_report_dates
-  UserMailer.send_upload_stats(start_date, end_date)
+  UserMailer.send_upload_stats(start_date, end_date).deliver_now
 
 end
