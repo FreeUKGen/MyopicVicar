@@ -29,7 +29,7 @@ class SearchQueriesController < ApplicationController
   def adjust_search_query_parameters
     @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
     @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
-    composite_counties = %w[CHI ENG IRL SCT WLS YKS]
+    composite_counties = %w[CHI ENG IRL LND SCT WLS YKS]
     if (composite_counties & @search_query['chapman_codes']).any?
       @search_query['chapman_codes'] |= expand_search_query_composite_chapman_codes(composite_counties, @search_query['chapman_codes'])
     end
@@ -95,10 +95,15 @@ class SearchQueriesController < ApplicationController
       case comp
       when 'CHI'
         expanded_codes |= %w[ALD GSY JSY SRK]
+      when 'LND'
+        expanded_codes |= %w[KEN LND MDX SRY]
       when 'YKS'
         expanded_codes |= %w[ERY NRY WRY]
       else
         expanded_codes |= ChapmanCode::CODES[name].values
+      end
+      if comp == 'WLS'
+        expanded_codes |= %w[HEF]
       end
     end
     expanded_codes
