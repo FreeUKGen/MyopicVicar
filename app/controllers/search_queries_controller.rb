@@ -239,7 +239,7 @@ class SearchQueriesController < ApplicationController
       end
     end
 
-    check_filter_by
+    set_filter_by
     create_paginatable_array(query: @search_query, results: @search_results)
 
     if !response || @search_results.nil? || @search_query.result_count.nil?
@@ -312,7 +312,7 @@ class SearchQueriesController < ApplicationController
     @paginatable_array
   end
 
-  def check_filter_by
+  def set_filter_by
     if params[:filter_option].present?
       if params[:filter_option] == 'Clear Filter'
         params[:filter_option] = nil
