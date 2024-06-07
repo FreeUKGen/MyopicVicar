@@ -285,6 +285,7 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rbtree3 (0.6.0)
+    redcarpet (3.6.0)
     refinerycms (4.0.3)
       refinerycms-core (= 4.0.3)
       refinerycms-images (= 4.0.3)
@@ -472,6 +473,7 @@ DEPENDENCIES
   pry
   pry-byebug
   rails
+  redcarpet
   refinerycms
   refinerycms-authentication-devise
   refinerycms-county_pages!
