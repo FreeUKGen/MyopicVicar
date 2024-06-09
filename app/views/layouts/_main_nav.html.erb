@@ -14,9 +14,11 @@
         <% if nav_volunteer_page_link.present?%>
           <li><%=nav_volunteer_page_link%></li>
         <% end%>
-        <% if nav_member_page_link.present?%>
-          <li><%=nav_member_page_link%></li>
-        <% end%>
+        <% unless MyopicVicar::Application.config.server_upgrade %>
+          <% if nav_member_page_link.present?%>
+            <li><%=nav_member_page_link%></li>
+          <% end%>
+        <% end %>
         <% if nav_actions_page_link.present?%>
           <li><%=nav_actions_page_link%></li>
         <% end%>
