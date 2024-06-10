@@ -1,6 +1,6 @@
 <html>
-<p>Hello,</p>
-<p>Please find the upload stats</p>
+<p>Hello Everyone,</p>
+<p>Please find the upload report for the month of <%= @start_date.strftime('%B')%></p>
 <div class="scrollable">
   <table style="border: 1px solid black;">
     <caption>
@@ -13,10 +13,6 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <th scope="row" style="border: 1px solid black;">Total Transcribers</th>
-        <td style="border: 1px solid black;"><%= @transcribers_count %></td>
-      </tr>
       <tr>
         <th scope="row" style="border: 1px solid black;">Total active transcribers</th>
         <td style="border: 1px solid black;"><%= @active_transcribers_count %></td>
@@ -43,11 +39,11 @@
       <tr>
         <td style="border: 1px solid black;"><%= "#{@start_date.to_date.strftime("%B, %d, %Y")} - #{@end_date.to_date.strftime("%B, %d, %Y")}" %></td>
         <td style="border: 1px solid black;">
-            <%= u[0] %>
+            <%= u[0].split('_').map(&:titlecase).join(' ') %>
         </td>
         <td style="border: 1px solid black;"><%= u[1] %></td>
       </tr>
     <% end %>
   </table>
 </div>
-</html>
+</html> 

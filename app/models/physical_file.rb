@@ -250,7 +250,7 @@ class PhysicalFile
     uploaded_files = PhysicalFile.where(c_at: start_date..end_date)
     uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
     uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
-    exclude_roles = ['system_administrator', 'executive_director']
+    exclude_roles = ['system_administrator', 'executive_director', 'technical']
     uploders_role = uploaders.pluck(:person_role)
     uploders_role = uploders_role.reject{|role| exclude_roles.include?(role)}
     uploaders_count = uploders_role.group_by(&:itself).transform_values(&:count)
