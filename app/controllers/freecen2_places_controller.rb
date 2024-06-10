@@ -359,15 +359,18 @@ class Freecen2PlacesController < ApplicationController
       @type_head = 'Soundex'
       @results = Freecen2Place.sound_search(place_soundex, search_county)
     when 'starts_with'
-      regexp = BSON::Regexp::Raw.new('^' + search_place.strip.squeeze(' '))
+      place_starts = search_place.downcase == 'saint' ? 'st ' : Freecen2Place.standard_place(search_place)
+      regexp = BSON::Regexp::Raw.new('^' + place_starts)
       @type_head = 'Starts with'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     when 'contains'
-      regexp = BSON::Regexp::Raw.new(search_place.strip.squeeze(' '))
+      place_contains = search_place.downcase == 'saint' ? ' st ' : Freecen2Place.standard_place(search_place)
+      regexp = BSON::Regexp::Raw.new(place_contains)
       @type_head = 'Contains string'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     when 'ends_with'
-      regexp = BSON::Regexp::Raw.new(search_place.strip.squeeze(' ') + '$')
+      place_ends = search_place.downcase == 'saint' ? ' st ' : Freecen2Place.standard_place(search_place)
+      regexp = BSON::Regexp::Raw.new(place_ends + '$')
       @type_head = 'Ends with'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     else
