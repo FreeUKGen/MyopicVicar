@@ -268,6 +268,8 @@ class Freecen2Place
     end
 
     def valid_place(county, place_name)
+      return [true, nil] if place_name == '-'
+
       standard_place_name = Freecen2Place.standard_place(place_name)
       case county
       when 'YKS'
