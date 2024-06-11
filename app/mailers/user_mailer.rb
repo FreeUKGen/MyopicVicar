@@ -48,6 +48,13 @@ class UserMailer < ActionMailer::Base
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
   end
 
+  def acknowledge_handbook_feedback(original)
+    @appname = appname
+    @communication = original
+    get_attachment(@communication)
+    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
+  end
+
   def add_emails(ccs)
     ccs_emails = []
     ccs.each do |cc|
@@ -498,6 +505,14 @@ class UserMailer < ActionMailer::Base
     mail(bcc: ccs, subject: subjects, body: body_message)
   end
 
+  def send_upload_stats(start_date, end_date)
+    @start_date = start_date
+    @end_date = end_date
+    @uploaders_count, @email_confirmed, @users_count = PhysicalFile.new.upload_report_mail(@start_date, @end_date)
+    @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcriber_stats(@start_date, @end_date)
+    mail(from: "no-reply@freereg.org.uk", to: 'Denise Colbert <denise.colbert@freeukgenealogy.org.uk>',cc: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Upload report stats")
+  end
+
   def embargo_process_completion_email(rule_id, ccs)
     @rule = EmbargoRule.find_by(id: rule_id)
     @register = @rule.register
@@ -553,6 +568,7 @@ class UserMailer < ActionMailer::Base
     end
     array_of_email_addresses
   end
+
 
   def get_email_address_from_userid(userid)
     userid_object = UseridDetail.userid(userid).first

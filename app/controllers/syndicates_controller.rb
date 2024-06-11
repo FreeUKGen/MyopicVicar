@@ -44,6 +44,7 @@ class SyndicatesController < ApplicationController
   def display
     @syndicates = Syndicate.all.order_by(syndicate_code: 1)
     get_user_info_from_userid
+    @control_access_roles =  ['system_administrator', 'data_manager']
     render action: :index
   end
 
@@ -58,7 +59,7 @@ class SyndicatesController < ApplicationController
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     case
-    when session[:role] == 'system_administrator' || session[:role] == 'volunteer_coordinator'
+    when session[:role] == 'system_administrator' || session[:role] == 'data_manager' || session[:role] == 'volunteer_coordinator'
       @userids = UseridDetail.all.order_by(userid_lower_case: 1)
     when  session[:role] == 'country_cordinator'
       @userids = UseridDetail.where(syndicate: @user.syndicate).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
@@ -81,6 +82,7 @@ class SyndicatesController < ApplicationController
     end
     get_user_info_from_userid
     @syndicates = Syndicate.all.order_by(syndicate_code: 1)
+    @control_access_roles = ['system_administrator', 'data_manager']
   end
 
   def load(id)

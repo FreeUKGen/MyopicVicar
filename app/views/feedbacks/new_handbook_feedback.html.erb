@@ -1,0 +1,31 @@
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<h1 style="text-align: center">FreeCen Handbook Suggestion</h1>
+<p> If you find an error or problem in one of the Handbook Parts, please let us know here.</p>
+<% if @feedback.errors.any? %>
+  <div id="error_explanation" style="color:red">
+    <h2><%= pluralize(@feedback.errors.count, "error") %> prohibited your feedback from being reported:</h2>
+    <ul>
+      <% @feedback.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+  <%@feedback.errors.clear%>
+<% end %>
+<%= simple_form_for(@feedback, :html => {:multipart => true}) do |f| %>
+  <%= f.input :title, :label => "Summary" , :input_html => {:class => "simple_form_bgcolour ", :size => 40 }%>
+  <%= f.input :body, :label =>"Description" ,as: :text, :input_html => { :class => "simple_form_bgcolour ",:rows => 10, :cols =>60 , :placeholder => "Enter your comments"}%>
+  <%= f.input :screenshot, :label => "Screenshot: Only jpg, jpeg, png or gif file" %>
+  <%= f.input :feedback_time, :as => :hidden, input_html: {value: Time.now.utc } %>
+  <%= f.input :user_id , :as => :hidden, input_html: {value: session[:userid] } %>
+  <%= f.input :session_id, :as => :hidden, input_html: {value: request.session['session_id'] } %>
+  <%= f.input :problem_page_url, :as => :hidden, input_html: {value: request.env['REQUEST_URI'] } %>
+  <%= f.input :previous_page_url,:as => :hidden, input_html: {value: request.env['REQUEST_URI'] } %>
+  <%= f.input :feedback_type, :as => :hidden, input_html: {value: 'freecen handbook feedback' } %>
+<%= f.button :submit, 'Submit handbook feedback'   %>
+<% end %>
+

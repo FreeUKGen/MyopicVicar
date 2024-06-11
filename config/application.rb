@@ -59,6 +59,7 @@ module MyopicVicar
     config.advert_key = app['advert_key']
     config.gtm_key = app['gtm_key']
     config.cta_display_status = app['cta_display_status']
+    config.server_upgrade = app['server_upgrade']
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
 
