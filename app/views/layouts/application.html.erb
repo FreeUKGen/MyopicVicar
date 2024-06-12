@@ -36,7 +36,16 @@
       <meta name="description" content="Search your ancestry with FreeREG. FreeREG provides free online access to transcriptions of birth, marriage and burial records from Church of England and Church of Scotland registers. You can also use FreeREG to discover: non-Conformist records from England, Scotland and Wales, Municipal Cemetary records, Memorial records and documents relating to life events out of country, at sea and in the military.  ">
     <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
       <meta name="keywords" content="genealogy,census,census records,transcriptions,indexes,family history">
-      <meta name="description" content="Use FreeCEN to access 19th Century UK Censuses online and for free. You can use FreeCEN transcriptions to discover your ancestors' occupation, family history and household information.">
+      <% if content_for?(:meta_description) %>
+        <%= yield(:meta_description) %>
+      <% else %>
+         <meta name="description" content="Find 19th & 20th Century UK census transcriptions, for free, forever.">
+      <% end %>
+      <% if content_for?(:meta_robots) %>
+        <%= yield(:meta_robots) %>
+      <% else %>
+        <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+      <% end %>
     <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
       <meta name="keywords" content="genealogy,registers,birth records,birth certificates,transcriptions,indexes,birth,marriage,death">
       <meta name="description" content="FreeBMD provides free on-line access to the GRO indexes of births, marriages and deaths for England and Wales. ">
