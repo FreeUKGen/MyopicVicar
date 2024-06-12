@@ -276,7 +276,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     manager = nil
     if appname.downcase == 'freereg'
-      manager = UseridDetail.userid("REGManager").first
+      manager = UseridDetail.userid("FR Exec Lead").first
       get_coordinator_name
       mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     elsif appname.downcase == 'freecen'
@@ -288,8 +288,14 @@ class UserMailer < ActionMailer::Base
   def notification_of_transcriber_creation(user)
     @appname = appname
     @user = user
-    get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
+    if appname.downcase == 'freereg'
+      manager = UseridDetail.userid("FR Exec Lead").first
+      get_coordinator_name
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber creation") unless @coordinator.nil?
+    elsif appname.downcase == 'freecen'
+      get_coordinator_name
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
+    end
   end
 
   def notification_of_transcriber_registration(user)
@@ -297,7 +303,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     manager = nil
     if appname.downcase == 'freereg'
-      manager = UseridDetail.userid("REGManager").first
+      manager = UseridDetail.userid("FR Exec Lead").first
       get_coordinator_name
       mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     elsif appname.downcase == 'freecen'
