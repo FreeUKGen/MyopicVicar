@@ -59,6 +59,31 @@
             button.innerHTML = btnText;
         }, 1000);
     }
+    function copy_text_node(elm) {
+        var button = event.currentTarget || event.srcElement;
+        var btnText = button.innerHTML;
+        var target = document.getElementById(elm);
+        var range;
+        if (document.createRange) {
+            range = document.createRange();
+            range.selectNode(target);
+            select = window.getSelection();
+            select.removeAllRanges();
+            select.addRange(range);
+            document.execCommand('copy');
+            select.removeAllRanges();
+        } else {
+            range = document.body.createTextRange();
+            range.moveToElementText(target);
+            range.select();
+            document.execCommand('copy');
+        }
+        button.innerHTML = "Copied"
+        setTimeout(function(){
+            button.innerHTML = btnText;
+        }, 1000);
+    }
+
 </script>
 <style type="text/css">
   .citation_container {border: 1px solid black; padding: 5px;}
@@ -183,8 +208,10 @@
       </th>
       <td>
         <% url = 'https://www.freebmd.org.uk/entry-information/'+record.record_hash+'/hash' %>
-        <a class="pUrl" href="<%= url %>"><%= url %></a>
-        <a class="btn btn--small" href="#" onclick=copy("pUrl") style="cursor: pointer">Copy URL</a>
+        <a id="pUrl" href="<%= url %>"><%= url %></a>
+        <!--a class="btn btn--small" href="#" onclick=copy("pUrl") style="cursor: pointer">Copy URL</a-->
+        &nbsp;&nbsp;&nbsp;
+        <button class="btn btn--small", onclick = copy_text_node("pUrl") style = "cursor: pointer; text-align: right;">Copy URL</button>
       </td>
     </tr>
     <% if search == true %>
