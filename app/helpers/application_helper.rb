@@ -41,7 +41,7 @@ module ApplicationHelper
   end
 
   def nav_help_pages_link
-    if session[:userid_detail_id].present? || controller_name == 'sessions'
+    if session[:userid_detail_id].present?# || controller_name == 'sessions'
       get_user_info_from_userid
       if @user.present? && session[:role].present?
         if session[:role] == 'transcriber' || session[:role] == 'trainee' || session[:role] == 'pending'
