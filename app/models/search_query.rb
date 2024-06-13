@@ -904,8 +904,8 @@ class SearchQuery
       case order_field
       when *selected_sort_fields
         order = order_field.to_sym
-        # results.each do |rec|
-        # end
+        results.each do |rec|
+        end
         # results.sort! do |x, y|
         #   if order_asc
         #     (x[order] || '') <=> (y[order] || '')
