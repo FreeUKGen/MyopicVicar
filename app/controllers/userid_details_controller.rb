@@ -145,7 +145,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def import
-    create_users = ImportUsersFromCsv.new(params[:file], params[:commit],session[:syndicate]).import
+    create_users = ImportUsersFromCsv.new(params[:file], params[:commit], session[:syndicate]).import
     flash[:notice] = "Users creation completed"
     @userids = UseridDetail.get_userids_for_display('all')
     @syndicate = 'all'
@@ -204,6 +204,7 @@ class UseridDetailsController < ApplicationController
     redirect_back(fallback_location: options_userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
     redirect_back(fallback_location: options_userid_details_path, notice: 'The removal of the userid not permitted as they have batches') && return if @userid.has_files?
+
     @userid.update_attributes(syndicate: 'To be Destroyed')
     flash[:notice] = 'Userid moved to the To be Destroyed syndicate for review'
     redirect_to(userid_detail_path(@userid.id))
@@ -474,14 +475,22 @@ class UseridDetailsController < ApplicationController
   def show
     get_user_info_from_userid
     load(params[:id])
-    redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
+    if @userid.blank?
+      redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && 
+        return
+    end
+
     session[:return_to] = request.fullpath
     @syndicate = session[:syndicate]
     @page_name = params[:page_name]
   end
 
   def technical_registration
-    redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
+    unless Rails.application.config.member_open
+      redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && 
+        return
+    end
+
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
@@ -490,9 +499,13 @@ class UseridDetailsController < ApplicationController
   end
 
   def transcriber_registration
-    redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
+    unless Rails.application.config.member_open
+      redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && 
+        return
+    end
 
-    #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+    # we set the mongo_config.yml member open flag. 
+    # true is open. false is closed We do allow technical people in
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
@@ -502,7 +515,7 @@ class UseridDetailsController < ApplicationController
     @userid = UseridDetail.new
     @userid[:honeypot] = session[:honeypot]
     @syndicates = Syndicate.get_syndicates_open_for_transcription
-    @new_transcription_agreement = ['Unknown','Accepted','Declined','Requested']
+    @new_transcription_agreement = ['Unknown', 'Accepted', 'Declined', 'Requested']
     @first_name = session[:first_name]
   end
 
