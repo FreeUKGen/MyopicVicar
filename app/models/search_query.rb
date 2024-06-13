@@ -904,8 +904,8 @@ class SearchQuery
       case order_field
       when *selected_sort_fields
         order = order_field.to_sym
-        results.each do |rec|
-        end
+        # results.each do |rec|
+        # end
         # results.sort! do |x, y|
         #   if order_asc
         #     (x[order] || '') <=> (y[order] || '')
@@ -915,9 +915,9 @@ class SearchQuery
         # end
 
         if order_asc
-          results.sort_by! { |r| [r[:order].to_s, r[:search_date].to_s] }
+          results.sort_by! { |r| [r[order].to_s, r[:search_date].to_s] }
         else
-          results.sort_by! { |r| [r[:order].to_s, r[:search_date].to_s] }.reverse!
+          results.sort_by! { |r| [r[order].to_s, r[:search_date].to_s] }.reverse!
         end
 
       when SearchOrder::DATE
@@ -946,16 +946,16 @@ class SearchQuery
 
         if order_asc
           results.sort_by! { |r|
-            [r[:location_name[0]].to_s,
-             r[:location_name[1]].to_s,
-             r[:location_name[2]].to_s,
+            [r[:location_names[0]].to_s,
+             r[:location_names[1]].to_s,
+             r[:location_names[2]].to_s,
              r[:search_date].to_s]
           }
         else
           results.sort_by! { |r|
-            [r[:location_name[0]].to_s,
-             r[:location_name[1]].to_s,
-             r[:location_name[2]].to_s,
+            [r[:location_names[0]].to_s,
+             r[:location_names[1]].to_s,
+             r[:location_names[2]].to_s,
              r[:search_date].to_s]
           }.reverse!
         end
