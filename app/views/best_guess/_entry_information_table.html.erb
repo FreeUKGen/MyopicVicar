@@ -1,5 +1,4 @@
 <script>
-    document.getElementById("citation-toggle").addEventListener("click", citationToggle);
     /*Hide citation blocks unless citation type is selected*/
      const citations = ['wikitree_inline', 'wikitree_ref', 'family_tree_maker', 'legacy_family_tree', 'mla', 'chicago', 'evidence_explained', 'wikipedia'];
     function hide_citation_block(cite){
@@ -81,7 +80,7 @@
         button.innerHTML = "Copied"
         setTimeout(function(){
             button.innerHTML = btnText;
-        }, 1000);
+        }, 4000);
     }
 
 </script>
@@ -209,7 +208,6 @@
       <td>
         <% url = 'https://www.freebmd.org.uk/entry-information/'+record.record_hash+'/hash' %>
         <a id="pUrl" href="<%= url %>"><%= url %></a>
-        <!--a class="btn btn--small" href="#" onclick=copy("pUrl") style="cursor: pointer">Copy URL</a-->
         &nbsp;&nbsp;&nbsp;
         <button class="btn btn--small", onclick = copy_text_node("pUrl") style = "cursor: pointer; text-align: right;">Copy URL</button>
       </td>
