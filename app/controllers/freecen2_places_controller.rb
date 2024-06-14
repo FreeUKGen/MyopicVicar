@@ -357,28 +357,6 @@ class Freecen2PlacesController < ApplicationController
     redirect_to freecen2_places_path
   end
 
-  def rename
-    load(params[:id])
-    redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
-
-    get_user_info_from_userid
-    places_counties_and_countries
-    @county = session[:county]
-    @chapman_code = @place.chapman_code
-    @records = @place.search_records.count
-    @search_pobs_exist = Freecen2Place.search_records_birth_places?(@place)
-    max_records = get_max_records(@user)
-    if @search_pobs_exist
-      flash[:notice] = 'Place is used in Search Record Places of Birth so must be renamed via Move Freecen2 Place process'
-      redirect_to(action: 'show') && return
-    end
-    if @records.present? && @records.to_i >= max_records
-      flash[:notice] = 'There are too many records for an on-line relocation'
-      redirect_to(action: 'show') && return
-    end
-    return
-  end
-
   def review_move
     get_user_info_from_userid
     county_from = session[:move_old_county]
@@ -548,16 +526,6 @@ class Freecen2PlacesController < ApplicationController
       else
         flash[:notice] = 'The update of the Place was unsuccessful'
         render action: 'edit'
-      end
-      return
-    when params[:commit] == 'Rename'
-      proceed, message = @place.change_name(params[:freecen2_place])
-      if proceed
-        flash[:notice] = 'The rename the Place was successful'
-        redirect_to freecen2_place_path(@place)
-      else
-        flash[:notice] = "Place rename unsuccessful; #{message}"
-        render action: 'rename'
       end
       return
     else
