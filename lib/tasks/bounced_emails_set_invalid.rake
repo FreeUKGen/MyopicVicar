@@ -40,13 +40,13 @@ namespace :freereg do
       if user != nil && user.email_address_valid
         MY_LOG.info("#{user.userid} / #{user.email_address} was bounced, because --> #{data['reason']}\n")
         if user.syndicate != nil
-          syndicate = Syndicate.syndicate_code(user.syndicate)[0]
-          if syndicate != nil
-            sc = syndicate.syndicate_coordinator
-            hash_syncate_coordinator[sc].push(user.userid)
-          else
-            obj_syndicate[user.syndicate] << user.userid
-          end
+          #syndicate = Syndicate.syndicate_code(user.syndicate)[0]
+          #if syndicate != nil
+           # sc = syndicate.syndicate_coordinator
+            #hash_syncate_coordinator[sc].push(user.userid)
+          #else
+           # obj_syndicate[user.syndicate] << user.userid
+          #end
         else
           user_with_nil_syndicate << user.userid
         end

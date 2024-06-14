@@ -1,3 +1,6 @@
+<% content_for :meta_robots do %>
+	<meta name="robots" content="noindex, nofollow" />
+<% end %>
 <h1 class="title text--center"><%= @year %> &ndash; <%= @county %> <%='('+@chapman_code+')' unless 'all'==@chapman_code%></h1>
 <br>
 <%# ----------- set up graph variables --------- %>
