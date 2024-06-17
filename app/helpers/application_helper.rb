@@ -19,6 +19,27 @@ module ApplicationHelper
       "freecen" => '5005',
       "freereg" => '5004',
     }
+
+  # redcarpet markdown
+  def markdown(text)
+    options = {
+        filter_html:     true,
+        hard_wrap:       true,
+        link_attributes: { rel: 'nofollow', target: "_blank" },
+        space_after_headers: true,
+        fenced_code_blocks: true
+    }
+    extensions = {
+        autolink:           true,
+        superscript:        true,
+        disable_indented_code_blocks: true
+    }
+
+    renderer = ::Redcarpet::Render::HTML.new(options)
+    markdown = ::Redcarpet::Markdown.new(renderer, extensions)
+    markdown.render(text).html_safe
+  end
+
   def nav_search_form_link
     link_to('Search', main_app.new_search_query_path) unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
   end
