@@ -2,7 +2,7 @@
   <section class='island '>
     <div class='grid__item  '>
       <p>
-        <textarea style='width:100%;' rows='15' readonly='readonly'><%= markdown(@message.body) %></textarea>
+        <%= markdown(@message.body) %>
       </p>
       <br>
       <p style='text-align: center'><%= message_attachment_tag(@message) %></p>
