@@ -607,7 +607,15 @@ class FreecenCsvFilesController < ApplicationController
     else
       file.update(validation: true)
       if params[:validate][:prevalidate] == 'yes'
-        message = 'The background job that pre-validates the file has been started. You will receive an email when it has been completed. File will then be ready for validation.'
+        get_user_info_from_userid
+        user = UseridDetail.id(@userid).first
+        p "Starting rake task for #{user.userid} CSV File #{file.file_name} in #{file.chapman_code}"
+        logger.warn("FREECEN:CSV_PREVALIDATE: Starting rake task for #{user.userid} CSV File #{file.file_name} in #{file.chapman_code}")
+        pid1 = spawn("bundle exec rake freecen:csv_prevalidate[#{file.file_name},#{user.userid}]")
+        logger.warn("FREECEN:CSV_PREVALIDATE: rake task for #{pid1}")
+
+        message = 'The background job that pre-validates the file has been started. You will receive an email when it has been completed. File will then be ready for validation. '
+        message += 'It has been locked so it must be downloaded before it can be replaced. Please download after pre-validation has completed.'
       else
         message = 'File is now ready for validation.'
       end
