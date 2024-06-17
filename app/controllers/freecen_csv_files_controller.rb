@@ -606,7 +606,11 @@ class FreecenCsvFilesController < ApplicationController
       message = 'File has error messages so cannot be validated'
     else
       file.update(validation: true)
-      message = 'File is now ready for validation'
+      if params[:validate][:prevalidate] == 'yes'
+        message = 'The background job that pre-validates the file has been started. You will receive an email when it has been completed. File will then be ready for validation.'
+      else
+        message = 'File is now ready for validation.'
+      end
     end
     flash[:notice] = message
     redirect_to freecen_csv_file_path(file)
