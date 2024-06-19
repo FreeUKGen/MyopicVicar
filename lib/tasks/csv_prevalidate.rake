@@ -38,7 +38,7 @@ namespace :freecen do
         csv_err_messages << "#{e.backtrace.inspect}"
       end
       if updated_records.size > 0
-        report = "Alternate POB / Notes were updated on the following entry numbers #{updated_records}."
+        report = "Alternate POB / Notes were updated on the following lines #{updated_records}."
       else
         report = 'No updates were made by Prevalidation.'
       end
