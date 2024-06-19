@@ -337,6 +337,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def set_sort_by
+    @sort_condition ||= 'Event Date'
     if params[:sort_option].present?
       @sort_condition = params[:sort_option]
       case appname_downcase
