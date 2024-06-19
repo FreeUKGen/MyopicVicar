@@ -27,7 +27,7 @@
     <% unless @freecen_csv_file.incorporation_lock || @freecen_csv_file.validation%>
       <%= button_tag "Commence Validation", type: 'button', onclick: "ShowValidationDiv()", class: "btn btn--small", id: "validatebutton", title: 'Commence Validation'%>
     <% end%>
-    <%= validate_freecen_file if @freecen_csv_file.validation%>
+    <%= validate_freecen_file if @freecen_csv_file.validation && !@freecen_csv_file.incorporation_lock %>
     <%= incorporate_freecen_file if @freecen_csv_file.validation%>
   <% end%>
   <% if ['system_administrator','data_manager'].include?(session[:role]) %>
