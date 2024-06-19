@@ -34,14 +34,16 @@
         </div>
 
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
-          <%= form.submit "Update Results",
+          <%= form.button "<i class='fas fa-sort' aria-hidden='true'></i> Update Results".html_safe,
+                      type: "submit",
                       class: "spinner-controller ladda-button push--top40 ",
                       data: {
                         :style => "zoom-out",
                         :color => appname.downcase,
                         :size => "s",
                         "spinner-color" => "#ffffff"
-                      } %>
+                      }
+                       %>
         </div>
       </div>
     <% end %>
