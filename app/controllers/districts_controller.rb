@@ -44,14 +44,21 @@ class DistrictsController < ApplicationController
     @options = FreebmdConstants::ALPHABETS[0]
     @location = 'location.href= "/districts/districts_list?params=" + this.value'
     @prompt = 'Select District Range'
-  end
+	end
+
+  def county_selection
+		@county = County.new
+		@options = ['Aberdeenshire', 'Cheshire']
+		@location = 'location.href= "/counties/show?params=" + this.value'
+		@prompt = 'Select County'
+	end
 
   def districts_list
     @character = params[:params]
     @all_districts = District.not_invented.all
     @districts = []
     @all_districts.each do |district|
-      @districts << district if district.DistrictName =~ ::Regexp.new(/^[#{@character}]/)
+      @districts << district if district.DistrictName =~ ::Regexp.new(/#{@character}/) # RBL: relaxed regex so that it matches multi-character params, anywhere in the District name.
     end
     render :index
   end

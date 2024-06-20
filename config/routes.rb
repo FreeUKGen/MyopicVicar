@@ -549,6 +549,8 @@ MyopicVicar::Application.routes.draw do
   get 'districts/:id/:friendly(.:format)', :to => 'districts#show', as: :district_friendly_url
   get 'districts/alphabet_selection', to: 'districts#alphabet_selection', as: :district_alphabet_selection
   get 'districts/districts_list', :to =>'districts#districts_list', :as => :districts_list
+  get 'districts/districts_overview', :to => 'districts#districts_overview', :as => :districts_overview
+  get 'districts/county_summary', :to => 'districts#county_summary', :as => :county_summary
 
   resources :districts
   

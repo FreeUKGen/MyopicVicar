@@ -1,0 +1,96 @@
+<h1 class="title text--center">Counties and Registration Districts</h1>
+<h2 class="accessibility">Database contents</h2>
+<p>These pages contain information about each County and Registration District in the database, showing the duration of each District,
+  and the county/ies within which it fell. There is everything from detailed
+  county and district listings right down to how many records the database holds for every year for an individual registration district.</p>
+<script
+  src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+  integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
+  crossorigin="anonymous"></script>
+
+<div class="grid">
+  <div  class="grid__item two-thirds lap-one-half palm-one-whole">
+    <p>To get started, choose a county or district from the lists below.</p>
+    <%= render(file: 'districts/county_selection') %>
+    <%#= render(partial: 'make_a_selection_form') %>
+    <!--div class="bmd_search_form">
+      <%#= semantic_form_for(@districts) do |f| %>
+      <fieldset class="input">
+        <ol class="grid search_form"-->
+
+          <!--li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole countiess">
+            <div class='labels'>
+              <div class="countieslabel">
+                <%#= label_tag 'search_query_chapman_codes', "Counties/Country".html_safe, class: "ttip" do %>
+                  <%#= "Counties/Country".html_safe %>
+                  <small class="additional">Start typing county or country names</small>
+                <%# end %>
+              </div>
+            </div>
+
+            <%# grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
+            <%# key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
+            <%#= autocomplete_field_tag 'search_query[chapman_codes]',set_county_value(@search_query.chapman_codes),'/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
+          </li-->
+
+          <!--li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
+            <div class='labels'>
+              <div class='districtslabel'>
+                <%#= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip" do %>
+                  <%#= "Districts".html_safe %>
+                  <small class="additional">Select none, one or more Districts (hold Ctrl for multiple)</small>
+                <%# end %>
+              </div>
+            </div>
+            <%# @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
+            <%#= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
+
+          </li>
+
+        </ol>
+      </fieldset-->
+        <%# end %>
+
+      <script>
+
+          $('#search_query_chapman_codes').autocomplete({
+              source: function (request, response) {
+                  $.ajax({
+                      autoFocus: true,
+                      url: "/search_queries/select_counties/", // should be with '/'
+                      dataType: 'json',
+                      data: { prefix: request.term },
+                      success: function(data) {
+                          // call response to return the result to autocomplete box
+                          console.log(data);
+                          response(data);
+                      }
+                  });
+              },
+              focus: function() {
+                  // prevent value inserted on focus
+                  return false;
+              },
+              select: function( event, ui ) {
+                  var terms = split( this.value );
+                  // remove the current input
+                  terms.pop();
+                  // add the selected item
+                  terms.push( ui.item.value );
+                  // add placeholder to get the comma-and-space at the end
+                  terms.push( "" );
+                  this.value = terms.join( ", " );
+                  return false;
+              }
+          });
+      </script>
+
+    <aside class="grid__item one-third lap-one-half palm-one-whole" style="float: right;">
+      <div class="island island--bordered">
+        <h2 class="delta push-half--bottom">Yesterday by numbers</h2>
+        <p>(Some stats go here.)</p>
+      </div>
+    </aside>
+    </div>
+  </div>
+</div>

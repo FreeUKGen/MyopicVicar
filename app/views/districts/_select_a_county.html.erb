@@ -1,0 +1,21 @@
+<div class="island text--center">
+  <%#= label_tag 'Select a county' %>
+  <%#= select_tag('selection', options_for_select(@options), { 'onchange' => @location, size: 4, required: true, class: "simple_form_bgcolour text--center overide_selection_field_width" }) %>
+  <div class="grid">
+    <div  class="grid__item two-thirds lap-one-half palm-one-whole">
+      <form id="freebmd_county_select" action="county_summary?locale=en" accept-charset="UTF-8" method="get">
+        <ol class="grid">
+          <li class="grid__item one-whole push--bottom text--center" id="freebmd_county_select_input">
+            <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
+            <select class="select" id="county_code" multiple="multiple" name="county_code">
+              <option value="" id="default">All Counties</option>
+              <% key = ChapmanCode::FREEBMD_CODES %>
+              <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+            </select>
+          </li>
+          <li class="action button_action grid__item one-whole push--bottom text--center" id="freebmd_counties_submit_action"><button name="button" type="submit" class="ladda-button" data-style="contract" data-color="freereg" data-size="s" data-spinner-color="#ffffff">Select</button></li>
+        </ol>
+      </form>
+    </div>
+  </div>
+</div>
