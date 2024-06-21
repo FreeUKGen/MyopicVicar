@@ -206,6 +206,14 @@ class UseridDetail
       email_address_confimed = transcribers.where(email_address_last_confirmned: start_date..end_date)
       [transcribers.count, active_transcribers.count, email_address_confimed.count]
     end
+
+    def options
+      if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
+        FREEREG_TECH_VOLUNTEER_OPTIONS
+      else
+        FREECEN_OPTIONS
+      end
+    end
   end
 
 
@@ -779,6 +787,14 @@ class UseridDetail
   end
 
   private
+
+  FREEREG_TECH_VOLUNTEER_OPTIONS = {
+    'Ruby/MongoDB Volunteer' => 'ruby_mongo_dev',
+    'PHP Volunteer' => 'php_dev',
+    'HTML/CSS Volunteer' => 'html_css_dev',
+    'UX/UI Volunteer' => 'ux_ui_dev',
+    'Accessibility Volunteer' => 'accessibility_dev'
+  }
 
   def filter_users
     @incompleted_registration_users = Array.new
