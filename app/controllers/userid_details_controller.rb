@@ -491,11 +491,21 @@ class UseridDetailsController < ApplicationController
         return
     end
 
+    # we set the mongo_config.yml member open flag.
+    # true is open. false is closed We do allow technical people in
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = 'technical_registration'
+    honeypot = 'agreement_' + rand.to_s[2..11]
+    session[:honeypot] = honeypot
     @userid = UseridDetail.new
+    @userid[:honeypot] = session[:honeypot]
+    # @syndicates = Syndicate.get_syndicates_open_for_transcription
+    @new_transcription_agreement = ['Unknown', 'Accepted', 'Declined', 'Requested']
+    @first_name = session[:first_name]
+    @skils_notes_label = "Please provide us with a short description of your
+          skills and interests that would be applicable to #{appname}."
   end
 
   def transcriber_registration
@@ -514,7 +524,7 @@ class UseridDetailsController < ApplicationController
     session[:honeypot] = honeypot
     @userid = UseridDetail.new
     @userid[:honeypot] = session[:honeypot]
-    @syndicates = Syndicate.get_syndicates_open_for_transcription
+    @syndicates = "Technical"
     @new_transcription_agreement = ['Unknown', 'Accepted', 'Declined', 'Requested']
     @first_name = session[:first_name]
   end
