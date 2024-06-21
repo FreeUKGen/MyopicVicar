@@ -29,7 +29,8 @@
       <h2 class="banner__title">Questions? Data?</h2>
       <p>For more information before you register, or if you have some data to contribute,
         please
-        <a href="/contacts/new">Contact Us</a>, selecting the &lsquo;Volunteer&rsquo; option in that form.</p>
+        <a href="/contacts/new">Contact Us</a>, selecting the &lsquo;Volunteering&rsquo; 
+        option on that form.</p>
     </div>
   </aside>
 
@@ -53,7 +54,6 @@
   </ul>
   <% @userid.errors.clear %>
 <% end %>
-
 
 <%= semantic_form_for @userid do |f| %>
   <div class="grid">
@@ -105,7 +105,6 @@
       </fieldset>
     </div>
   </div>
-
 
   <fieldset class="inputs">
     <legend>Your details</legend>
@@ -168,42 +167,17 @@
         id: "location",
         placeholder: @userid.address.blank? ? "Optional" : nil,
         class: "text-input" %>
-      </li>
+      </li><br>
 
-
-      <li
-        class="grid__item one-quarter lap-one-whole palm-one-whole"
-        id="search_query_record_type_input"
-      >
+      <li class="grid__item lap-one-whole palm-one-whole">
         <fieldset class="choices">
           <legend class="label">Please select your primary role</legend>
           <ol class="choices-group">
 
-            <li class="choice">
-              <label for="all">
-                <% if @search_query.record_type.blank? %>
-                  <input id="all" name="search_query[record_type]" type="radio" value="" checked>
-                <% else %>
-                  <input id="all" name="search_query[record_type]" type="radio" value="">
-                <% end %>
-                All three types
-              </label>
-            </li>
-
-            <% RecordType.options.each_pair do |name, value| %>
+            <% UseridDetail.options.each_pair do |name, value| %>
               <li class="choice">
                 <label for="<%= value %>">
-                  <% if @search_query.record_type.present? && @search_query.record_type.include?(value) %>
-                    <input
-                      id="<%= value %>"
-                      name="search_query[record_type]"
-                      type="radio"
-                      value="<%= value %>"
-                      checked
-                    >
-                  <% else %>
-                    <input id="<%= value %>" name="search_query[record_type]" type="radio" value="<%= value %>">
-                  <% end %>
+                  <input id="<%= value %>" name="user_detail[record_type]" type="radio" value="<%= value %>">
                   <%= name %>
                 </label>
               </li>
@@ -213,12 +187,9 @@
         </fieldset>
       </li>
 
-
-      <p>Please provide us with a short description of your skills and interests that would be
-        applicable to
-        <%= appname %>.</p>
-      <%= f.input :skill_notes, input_html: { size: 100 } %>
-
+      <div class="grid__item lap-one-whole palm-one-whole">
+        <%= f.input :skill_notes, label: @skils_notes_label, input_html: { size: 100 } %>
+      </div>
 
       <li class="betterstyling grid__item seven-twelfths lap-one-whole palm-one-whole">
         <label class="label ttip" for="<%= @userid[:honeypot] %>">
@@ -227,16 +198,19 @@
         <input type="text" id="<%= @userid[:honeypot] %>" name="<%= @userid[:honeypot] %>">
         <input type="hidden" id="__TIME" name="__TIME" value="<%= Time.now %>"/>
       </li>
+
       <%= f.action :submit,
                as: :input,
-               label: "Register",
+               label: "Register as Technical Volunteer",
                button_html: {
                  class: "btn",
                  type: "submit"
                },
                wrapper_html: {
-                 class: "grid__item one-whole"
+                 class: "grid__item one-whole",
+                 style: "padding-top: 20px;"
                } %>
+
     </ol>
   </fieldset>
 <% end %>
