@@ -5,16 +5,14 @@
   <div class="grid__item two-thirds lap-one-half palm-one-whole">
     <div class="read-length">
       <p>Thank you for volunteering for
-        <%= appname %>. To join one of our teams of technical volunteers, fill in this form with
-        your details. Please read our
-        <%= link_to "Privacy Notice",
-        helpful_links[:privacyNotice],
-        target: "_blank" %>
+        <%= appname %>. To join one of our teams of technical volunteers, fill in this form with your
+        details. Please read our
+        <%= link_to "Privacy Notice", helpful_links[:privacyNotice], target: "_blank" %>
         (link opens in new tab) for information on how we will protect and use your data.</p>
 
       <p>After successfully submitting the form, you will receive an email that contains a link
-        to complete the registration process. Click on that link, or copy and paste it into you
-        browser&rsquo;s address window. You must respond to the email
+        to complete the registration process. Click on that link, or copy and paste it into
+        you browser&rsquo;s address window. You must respond to the email
         <em>within 24 hours</em>. If you have not received it within a few minutes, please check your spam folder.</p>
 
       <p>If you have any questions about the documents below or about volunteering, please
@@ -27,9 +25,9 @@
     <div class="island island--navy">
       <h2 class="banner__title">Questions? Data?</h2>
       <p>For more information before you register, or if you have some data to contribute,
-        please use the 
-        <a href="/contacts/new">contact us</a> form and select the &lsquo;Volunteering&rsquo; 
-        option.</p>
+        please use the
+        <a href="/contacts/new">contact us</a>
+        form and select the &lsquo;Volunteering&rsquo; option.</p>
     </div>
   </aside>
 
@@ -105,6 +103,7 @@
     </div>
   </div>
 
+  <!--Your Details section is using standard html and erb-->
   <fieldset class="inputs">
     <legend>Your details</legend>
     <ol class="grid">
@@ -168,26 +167,34 @@
         class: "text-input" %>
       </li><br>
 
+      <!--Primary role seciton is using standard html and erb -->
       <li class="grid__item lap-one-whole palm-one-whole">
         <fieldset class="choices">
           <legend class="label">Please select your primary role</legend>
           <ol class="choices-group">
-
             <% UseridDetail.options.each_pair do |name, value| %>
               <li class="choice">
                 <label for="<%= value %>">
-                  <input id="<%= value %>" name="user_detail[record_type]" type="radio" value="<%= value %>">
+                  <input id="<%= value %>" name="userid_detail[person_role]" type="radio" value="<%= value %>" required: true>
                   <%= name %>
-                </label>
               </li>
-
             <% end %>
           </ol>
         </fieldset>
       </li>
 
       <div class="grid__item lap-one-whole palm-one-whole">
-        <%= f.input :skill_notes, label: @skils_notes_label, input_html: { size: 100 } %>
+        <%= f.input :skill_notes,
+                label:
+                  "Please provide us with a short description of your
+                  skills and interests that would be applicable to #{appname}.",
+                required: true,
+                placeholder: @userid.skill_notes.blank? ? "Required" : nil,
+                input_html: {
+                  size: 100,
+                  class: "text-input",
+                  maxlength: 100
+                } %>
       </div>
 
       <li class="betterstyling grid__item seven-twelfths lap-one-whole palm-one-whole">
@@ -209,7 +216,6 @@
                  class: "grid__item one-whole",
                  style: "padding-top: 20px;"
                } %>
-
     </ol>
   </fieldset>
 <% end %>

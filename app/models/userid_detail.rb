@@ -222,7 +222,7 @@ class UseridDetail
   def add_fields(type, syndicate)
     self.syndicate = syndicate if self.syndicate.nil?
     self.userid = self.userid.strip unless self.userid.nil?
-    self.sign_up_date =  DateTime.now
+    self.sign_up_date = DateTime.now
     self.active = true
     case
     when type == 'Register Researcher'
@@ -230,9 +230,9 @@ class UseridDetail
       self.syndicate = 'Researcher'
     when type == 'Register as Transcriber'
       self.person_role = 'transcriber'
-    when type == 'Technical Registration'
-      self.active  = false
-      self.person_role = 'technical'
+    when type == 'Register as Technical Volunteer'
+      # when type == 'Technical Registration'
+      self.active = false
       self.syndicate = 'Technical'
     end
     password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
@@ -565,7 +565,7 @@ class UseridDetail
     json_of_my_profile = Hash.new
     fields = FreeregOptionsConstants::USERID_DETAILS_MYOWN_DISPLAY
     fields.each do |field|
-      self[field].blank? ? json_of_my_profile[field.to_sym] = nil : json_of_my_profile[field.to_sym]  = self[field]
+      self[field].blank? ? json_of_my_profile[field.to_sym] = nil : json_of_my_profile[field.to_sym] = self[field]
     end
     json_of_my_profile
   end
@@ -606,11 +606,11 @@ class UseridDetail
     u.password_confirmation = 'Password' # no-op
     u.encrypted_password = self.password # actual encrypted password
     u.reset_password_token = u.generate_reset_password_token!
-    u.reset_password_sent_at =  Time.now
+    u.reset_password_sent_at = Time.now
     u.userid_detail_id = self.id.to_s
     u.add_role('Refinery')
     u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
-    u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
+    u.add_role('CountyPages') if (self.active && self.person_role =='county_coordinator')
     u.save
   end
 
@@ -621,7 +621,7 @@ class UseridDetail
       u.userid_detail_id = self.id.to_s
       u.add_role('Refinery')
       u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
-      u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
+      u.add_role('CountyPages') if (self.active && self.person_role =='county_coordinator')
       u.save
     end
   end
@@ -636,7 +636,7 @@ class UseridDetail
   def write_userid_file
     user = self
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
-    Dir.mkdir(details_dir)  unless Dir.exist?(details_dir)
+    Dir.mkdir(details_dir) unless Dir.exist?(details_dir)
     details_file = File.join(details_dir,".uDetails")
     if File.file?(details_file)
       save_to_attic

@@ -66,11 +66,11 @@ class UseridDetailsController < ApplicationController
       if @userid.save
         refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
         refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        flash[:notice] = 'Thank you for successfully submitting the form, you will now receive an email to complete the registration process'
         @userid.write_userid_file
         next_place_to_go_successful_create
       else
-        flash[:notice] = 'The registration was unsuccessful'
+        flash[:notice] = 'Sorry, the registration was unsuccessful. Please try again.'
         @syndicates = Syndicate.get_syndicates_open_for_transcription
         next_place_to_go_unsuccessful_create
       end
@@ -248,7 +248,7 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_successful_create
     @userid.finish_creation_setup if params[:commit] == 'Register as Transcriber'
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
-    @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
+    @userid.finish_technical_creation_setup if params[:commit] == 'Register as Technical Volunteer'
     if params[:commit] == 'Register as Transcriber'
       if MyopicVicar::Application.config.template_set != 'freecen'
         redirect_to(transcriber_registration_userid_detail_path) && return
@@ -278,7 +278,7 @@ class UseridDetailsController < ApplicationController
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @userid[:honeypot] = session[:honeypot]
       render action: :transcriber_registration and return
-    when 'Technical Registration'
+    when 'Register as Technical Volunteer'
       render action: :technical_registration and return
     else
       @user = get_user
@@ -497,15 +497,11 @@ class UseridDetailsController < ApplicationController
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = 'technical_registration'
-    honeypot = 'agreement_' + rand.to_s[2..11]
-    session[:honeypot] = honeypot
+    session[:honeypot] = "agreement_#{rand.to_s[2..11]}"
     @userid = UseridDetail.new
     @userid[:honeypot] = session[:honeypot]
-    # @syndicates = Syndicate.get_syndicates_open_for_transcription
-    @new_transcription_agreement = ['Unknown', 'Accepted', 'Declined', 'Requested']
+    @new_transcription_agreement = %w[Unknown Accepted Declined Requested]
     @first_name = session[:first_name]
-    @skils_notes_label = "Please provide us with a short description of your
-          skills and interests that would be applicable to #{appname}."
   end
 
   def transcriber_registration
@@ -524,7 +520,7 @@ class UseridDetailsController < ApplicationController
     session[:honeypot] = honeypot
     @userid = UseridDetail.new
     @userid[:honeypot] = session[:honeypot]
-    @syndicates = "Technical"
+    @syndicates = Syndicate.get_syndicates_open_for_transcription
     @new_transcription_agreement = ['Unknown', 'Accepted', 'Declined', 'Requested']
     @first_name = session[:first_name]
   end
