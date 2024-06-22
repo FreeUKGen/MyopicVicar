@@ -20,7 +20,6 @@ config/freeukgen_application.yml
 config/newrelic.yml
 # assets copied into app/assets/ from app/assets_free[reg/cen/bmd]
 
-
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
@@ -41,11 +40,11 @@ vendor/cache
 mongo.log
 #*.csv
 *.out
+
 # Ignore RVM-related files
 .rvmrc
 
 # Ignore Ctags
-
 tags
 
 # Rails
@@ -53,7 +52,6 @@ tags
 */.attic/*
 
 # Documentation
-
 .yardoc
 .yardopts
 coverage
@@ -112,12 +110,18 @@ capybara-*html
 # vendor/extensions dummy applications.
 vendor/extensions/**/spec/dummy
 
+# Codespace config 
+/.devcontainer
+/.github
+/.vscode
+package-lock.json
 
+# local environment files
+.env.*.local
 
 data/*
 
 .robocop.yml
-
 
 doc/design/data_flow/OneNote Table Of Contents.onetoc2
 *.onetoc2
