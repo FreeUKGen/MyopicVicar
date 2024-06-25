@@ -9,6 +9,8 @@ module DownloadAsCsv
 
   def search_results_csv(array)
     CSV.generate(headers: true) do |csv|
+      message = 'You can only download 50 results.'
+      csv << message
       csv << FIELDS
       array.each do |record|
         qn = record['QuarterNumber']
