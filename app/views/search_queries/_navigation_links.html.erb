@@ -2,19 +2,20 @@
 <% unless print_friendly %>
  	<div class="grid">
 	  <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom ">
-			<%= link_to "View Search Criteria", '#', class: "btn   btn--small" , id: "view_search_criteria"%>
+		<%= link_to "View Search Criteria", '#', class: "btn   btn--small" , id: "view_search_criteria"%>
 	    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
 	    <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small white_button" %>
-		<%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %>
-		<%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %>
-		<%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %>
-
+	    <% if @results_per_page.to_i <= 50 %>
+			<%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %>
+			<%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %>
+			<%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %>
+		<% end %>
 		<% if cookies.signed[:userid].present? %>
 	      <%= link_to "Save this search", save_search_path(@search_query.id), class: "btn   btn--small", method: "post" %>
 	      <% if @save_search_id.present? %>
 	        <%= link_to "Compare", compare_search_path(@search_query.id, saved_search_id: @save_search_id, compare_search: true), class: "btn   btn--small" %>
 	      <% end %>
 	    <% end %>
-  	</div>
+  	  </div>
 	</div>
 <% end %>
