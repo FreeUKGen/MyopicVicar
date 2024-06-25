@@ -308,6 +308,7 @@ class Freecen2Place
       params = {}
       params[:chapman_code] = { '$eq' => county }
       params["alternate_freecen2_place_names.standard_alternate_name"] = { '$eq' => place }
+      params[:disabled] = { '$eq' => 'false' }
       place_alternate = Freecen2Place.collection.find(params)
       place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
       place_id = place_alternate.first if place_alternate.present?
@@ -357,30 +358,7 @@ class Freecen2Place
     end
 
     def search_records_birth_places?(place)
-      exist = false
-      place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => place.place_name).no_timeout.first
-      if place_used.present?
-        exist = true
-      elsif place.original_place_name.present?
-        original_place_used _= SearchRecord.where(:birth_chapman_code => place.original_chapman_code, :birth_place => place.original_place_name).no_timeout.first
-        if original_place_used.present?
-          exist = true
-        end
-      elsif place.alternate_freecen2_place_names.present?
-        place.alternate_freecen2_place_names.each do |alt_place|
-          alternate_place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => alt_place.alternate_name).no_timeout.first
-          if alternate_place_used.present?
-            exist = true
-            break
-          end
-        end
-      end
-      exist
-    end
-
-    def search_records_birth_places_alternate?(chapman_code, alternate_place)
-      place_used = SearchRecord.where(birth_chapman_code: chapman_code, birth_place: alternate_place).no_timeout.first
-      place_used.present? ? true : false
+      SearchRecord.where(birth_chapman_code: place.chapman_code, freecen2_place_of_birth_id: place.id).no_timeout.exists?
     end
 
   end
@@ -463,12 +441,6 @@ class Freecen2Place
 
           if value[:alternate_name].blank?
             err_msg = 'Other Name for Place cannot be empty with Destroy box checked'
-          else
-            used_as_birth_place = Freecen2Place.search_records_birth_places_alternate?(chapman_code, value[:alternate_name])
-            if used_as_birth_place
-              err_msg = "The Other Name for Place (#{value[:alternate_name]}) cannot be deleted because there are dependent search record birth places"
-              break
-            end
           end
         end
       end

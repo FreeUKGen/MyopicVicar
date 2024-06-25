@@ -1,5 +1,4 @@
 <div class='island  island--light'>
-  <p><i>NOTE: Destroying an Alternative Name may take some time as it has to check that it is not used as a Place of Birth in Search records. You will receive a message when it has completed.</i></p>
   <%= semantic_form_for @place, :html => { :class => 'grid'}  do |f| %>
     <%= f.hidden_field :editor, :value=>@user_userid %>
     <%= f.input :reason_for_change ,:label => 'Your reason for making the change', :hint => 'Multiple reasons may be selected.' ,:multiple => true, :as => :select, :include_blank => false, :required => true, :collection =>  @reasons, :input_html => {:class => 'simple_form_bgcolour', :size => 5}%>
