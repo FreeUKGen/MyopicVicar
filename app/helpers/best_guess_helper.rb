@@ -20,6 +20,16 @@ module BestGuessHelper
     header
   end
 
+  def age_at_death_or_date_of_birth(record_type)
+    case record_type.downcase
+    when "birth"
+      header = "Date of birth"
+    when "marriage"
+      header = "Age at death"
+    end
+    header
+  end
+
   def calculate_quarter number
     (number-1)%4 + 1
   end

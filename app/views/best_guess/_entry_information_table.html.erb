@@ -128,7 +128,7 @@
 	      </td>
     	</tr>
     <% end %>
-    <% if entry_type == "birth" %>
+    <% unless entry_type == "death" %>
     	<tr>
 	      <th scope="row">
 	        <%= mother_or_spouse_surname(record_type)%>
@@ -140,6 +140,19 @@
           <% end %>
 	      </td>
     	</tr>
+    <% end %>
+    <% unless entry_type == "marriage" %>
+      <tr>
+        <th scope="row">
+          <%= age_at_death_or_date_of_birth(record_type)%>
+        </th>
+        <td>
+          <%= record.AgeAtDeath %>
+          <% if record.AgeAtDeath.blank? %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        </td>
+      </tr>
     <% end %>
     <tr>
       <th scope="row">
