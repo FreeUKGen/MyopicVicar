@@ -151,7 +151,7 @@ class BestGuessController < ApplicationController
   end
 
   def save_entry
-    entry_id = params[:id]
+    entry_id = params[:rec_id]
     user = UseridDetail.where(id: cookies.signed[:userid]).first
     @entry = BestGuess.where(RecordNumber: entry_id).first
     record_hash = @entry.record_hash
