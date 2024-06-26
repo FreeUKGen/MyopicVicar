@@ -1,15 +1,86 @@
 <%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
+<%# @district = District.where(DistrictNumber: params['district_number']).first if params['district_number'] %>
 <div class="grid">
-  <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
-    <h1 class="beta push-half--top flush--bottom">District Information: <%= "#{@district.district_name_display_format}"%></h1>
+  <div class="grid__item">
+    <h1 class="beta push-half--top flush--bottom">District: <%= "#{@district.district_name_display_format}"%></h1>
     <hr>
+    <div style="float: right; width: 45%;">
+      <div class="island island--bordered">
+        <h2>District information</h2>
+        <div class="grid__item one-whole lap-one-whole palm-one-whole hard--left">
+          <table class="table--bordered table--data">
+            <caption class="accessibility"> Statistics for <%= "#{@district.district_name_display_format} District"%>  </caption>
+            <tr>
+              <th>Births</th>
+              <td colspan="2"><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 1).count %></td>
+            </tr>
+            <tr>
+              <th>Deaths</th>
+              <td colspan="2"><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 2).count %></td>
+            </tr>
+            <tr>
+              <th>Marriages</th>
+              <td colspan="2"><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 3).count %></td>
+            </tr>
+            <tr>
+              <th rowspan="4">Unique Names</th>
+            </tr>
+            <tr>
+              <td><%= link_to 'View Birth Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "birth" ), method: :get %></td>
+              <td>
+                <dl>
+                  <dt>
+                    Forenames Count: <%= @birth_uniq_forename_count%>
+                  </dt>
+                  <dt>
+                    Surnames Count: <%= @birth_uniq_surname_count%>
+                  </dt>
+                </dl>
+              </td>
+            </tr>
+            <tr>
+              <td><%= link_to 'View Marriage Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "marriage" ), method: :get %></td>
+              <td>
+                <dl>
+                  <dt>
+                    Forenames Count: <%= @marriage_uniq_forename_count%>
+                  </dt>
+                  <dt>
+                    Surnames Count: <%= @marriage_uniq_surname_count%>
+                  </dt>
+                </dl>
+              </td>
+            </tr>
+            <tr>
+              <td><%= link_to 'View Death Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "death" ), method: :get %></td>
+              <td>
+                <dl>
+                  <dt>
+                    Forenames Count: <%= @death_uniq_forename_count%>
+                  </dt>
+                  <dt>
+                    Surnames Count: <%= @death_uniq_surname_count%>
+                  </dt>
+                </dl>
+              </td>
+            </tr>
+          </table>
+          <div>Page map for <%= "#{@district.district_name_display_format}" %></div>
+          <div>Births by year for <%= "#{@district.district_name_display_format}" %></div>
+          <div>Deaths by year for <%= "#{@district.district_name_display_format}" %></div>
+          <div>Marriages by year for <%= "#{@district.district_name_display_format}" %></div>
+          <div>Volumes by year for <%= "#{@district.district_name_display_format}" %></div>
+          <div>Volumes/year conflicts for <%= "#{@district.district_name_display_format}" %></div>
+        </div>
+      </div>
+    </div>
     <section>
-      <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
+      <div class="grid__item one-half lap-one-half palm-one-whole hard--left">
         <table class="table--bordered table--data">
           <caption class="accessibility"> Information about <%= "#{@district.district_name_display_format} District"%>  </caption>
           <tbody>
             <tr>
-              <th rowspan="7">Volume</th>
+              <th rowspan="6">Volume</th>
             </tr>
             <tr>
               <td>Year 1837 to 1851</td>
@@ -32,6 +103,7 @@
               <td><%= @district.Volume1974to1993_4 %></td>
             </tr>
             <tr>
+              <th>GRO District Number</th>
               <td>Year 1993-4 to End</td>
               <td><%= @district.Volume1993_4toEnd %></td>
             </tr>
@@ -45,47 +117,9 @@
               </tr>
             <% end %>
             <tr>
-                <th rowspan="4">Unique Names</th>
-              </tr>
-              <tr>
-                <td><%= link_to 'View Birth Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "birth" ), method: :get %></td>
-                <td>
-                  <dl>
-                    <dt>
-                      Forenames Count: <%= @birth_uniq_forename_count%>
-                    </dt>
-                    <dt>
-                      Surnames Count: <%= @birth_uniq_surname_count%>
-                    </dt>
-                  </dl>
-                </td>
-              </tr>
-              <tr>
-                <td><%= link_to 'View Marriage Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "marriage" ), method: :get %></td>
-                <td>
-                  <dl>
-                    <dt>
-                      Forenames Count: <%= @marriage_uniq_forename_count%>
-                    </dt>
-                    <dt>
-                      Surnames Count: <%= @marriage_uniq_surname_count%>
-                    </dt>
-                  </dl>
-                </td>
-              </tr>
-              <tr>
-                <td><%= link_to 'View Death Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "death" ), method: :get %></td>
-                <td>
-                  <dl>
-                    <dt>
-                      Forenames Count: <%= @death_uniq_forename_count%>
-                    </dt>
-                    <dt>
-                      Surnames Count: <%= @death_uniq_surname_count%>
-                    </dt>
-                  </dl>
-                </td>
-              </tr>
+              <th>Alternate names for District</th>
+              <td colspan="2"><% @district.DistrictPseudonym.each do |n| %><%= n.DistrictPseudonym + " " %><% end %></td>
+            </tr>
               <tr>
                 <th>UKBMD Link</th>
                 <td colspan="2">

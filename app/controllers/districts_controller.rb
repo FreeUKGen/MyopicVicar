@@ -53,7 +53,14 @@ class DistrictsController < ApplicationController
 		@prompt = 'Select County'
 	end
 
-  def districts_list
+	def district_selection
+		@districts = District.new
+		@options = districts_as_array
+		@location = 'location.href= "/districts/districts_list?params=" + this.value'
+		@prompt = 'Select District'
+	end
+
+	def districts_list
     @character = params[:params]
     @all_districts = District.not_invented.all
     @districts = []
@@ -61,5 +68,14 @@ class DistrictsController < ApplicationController
       @districts << district if district.DistrictName =~ ::Regexp.new(/#{@character}/) # RBL: relaxed regex so that it matches multi-character params, anywhere in the District name.
     end
     render :index
-  end
+	end
+
+  def districts_hash
+		@all_districts = District.not_invented.all
+		hash = Hash.new
+		@all_districts.each do |district|
+			hash[district.DistrictName] = district.DistrictNumber
+		end
+		hash
+	end
 end

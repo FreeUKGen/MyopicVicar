@@ -11,7 +11,9 @@
 <div class="grid">
   <div  class="grid__item two-thirds lap-one-half palm-one-whole">
     <p>To get started, choose a county or district from the lists below.</p>
-    <%= render(file: 'districts/county_selection') %>
+    <%#= render(file: 'districts/county_selection') %>
+    <%= render(partial: 'select_a_county') %>
+    <%= render(partial: 'select_districts') %>
     <%#= render(partial: 'make_a_selection_form') %>
     <!--div class="bmd_search_form">
       <%#= semantic_form_for(@districts) do |f| %>
