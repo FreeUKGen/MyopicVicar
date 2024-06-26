@@ -785,10 +785,25 @@ class Freecen2Piece
   def piece_being_transcribed
     csv_files = self.freecen_csv_files
     vld_files = self.freecen1_vld_files
+    uploaded_vld_files = self.freecen1_vld_files.where("userid" => {'$ne': null}) if vld_files.present?
+    if uploaded_vld_files.present?
+      unincorporated =  []
+      uploaded_vld_files.each{|vld_file|
+        next if vld_file.search_records.count > 0
+        unincorporated << vld_file.search_records.count == 0
+      }
+    end
     if csv_files.present?
       inprogress_csv_files = csv_files.where(incorporated: false, "userid" => {'$ne': null})
     end
-    inprogress_status = inprogress_csv_files.present? ? 'Yes' : ''
+    if inprogress_csv_files.present?
+      inprogress_status = 'Yes'
+    elsif unincorporated.present?
+      inprogress_status = 'Yes'
+    else
+      inprogress_status = 'No'
+    end
+    #inprogress_status = inprogress_csv_files.present? ? 'Yes' : 'No'
     [inprogress_status]
   end
 
@@ -805,6 +820,7 @@ class Freecen2Piece
     end
     [inprogress_status, userids, count]
   end
+
 
   def incorpoation_status
     csv_files = self.freecen_csv_files
