@@ -38,7 +38,10 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
 
     @freecen_csv_entry.remove_flags if @freecen_csv_entry.flag
-
+    @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
+    @freecen_csv_file.update_total_warning_messages
+    session[:propagate_alternate] = @freecen_csv_entry.id unless verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry)
+    session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present?
     flash[:notice] = 'The acceptance was successful'
     redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
   end
@@ -253,6 +256,8 @@ class FreecenCsvEntriesController < ApplicationController
     session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
     session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
     session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
+    session[:propagate_alternate] = @freecen_csv_entry.id unless verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry) || @freecen_csv_entry.record_valid == 'false'
+    session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present? && @freecen_csv_entry.record_valid == 'true'
   end
 
   def update
@@ -300,6 +305,15 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_file.error = @freecen_csv_file.batch_errors.count - 1 if session[:error_id].present?
     @freecen_csv_file.userid_detail_id = @userid
     @freecen_csv_file.save
+  end
+
+  def verbatim_place_of_birth_matches_place_of_birth(entry)
+
+    return true if entry.birth_county.blank? && entry.birth_place.blank?
+
+    return true if entry.verbatim_birth_county == entry.birth_county && entry.verbatim_birth_place == entry.birth_place
+
+    false
   end
 
   private
