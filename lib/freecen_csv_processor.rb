@@ -846,11 +846,13 @@ class CsvRecords < CsvFile
     end
 
     while line[n].present?
-      if Freecen::FIELD_NAMES_CONVERSION.key?(line[n].downcase)
-        field_specification[n] = Freecen::FIELD_NAMES_CONVERSION[line[n].downcase]
-      else
-        success = false
-        message = message + "ERROR: column header at position #{n} is invalid  #{line[n]}.<br>"
+      unless %w[pob_valid non_pob_valid].include?(line[n].downcase) && @csvfile.validation
+        if Freecen::FIELD_NAMES_CONVERSION.key?(line[n].downcase)
+          field_specification[n] = Freecen::FIELD_NAMES_CONVERSION[line[n].downcase]
+        else
+          success = false
+          message += "ERROR: column header at position #{n} is invalid  #{line[n]}.<br>"
+        end
       end
       n = n + 1
     end
@@ -863,7 +865,7 @@ class CsvRecords < CsvFile
         message = message + "ERROR: the field #{field} is missing from the #{@csvfile.year} spreadsheet.<br>"
       end
       field_specification.values.each do |value|
-        next if %w[deleted_flag record_valid].include?(value) && @csvfile.validation
+        next if %w[deleted_flag record_valid pob_valid non_pob_valid].include?(value) && @csvfile.validation
         next if @csvfile.census_fields.include?(value)
         success = false
         if  %w[deleted_flag record_valid].include?(value)
