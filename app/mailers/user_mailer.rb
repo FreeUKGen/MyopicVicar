@@ -279,6 +279,13 @@ class UserMailer < ActionMailer::Base
     mail(:to => email_addresses, :cc => cc_addresses, :subject => email_subject, :body => email_body)
   end
 
+  def communicate_github_issue_creation(feedback)
+    @feedback = feedback
+    @user = UseridDetail.where(userid: feedback.user_id).first
+    @user_email = @user.email_address
+    mail(to: @user_email, :subject => 'Notification of github issue creation')
+  end
+
   def notification_of_technical_registration(user)
     @appname = appname
     @user = user
