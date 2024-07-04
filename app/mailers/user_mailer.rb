@@ -532,7 +532,7 @@ class UserMailer < ActionMailer::Base
     @end_date = end_date
     @uploaders_count, @email_confirmed, @users_count, @records_added = PhysicalFile.new.upload_report_mail(@start_date, @end_date)
     @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcriber_stats(@start_date, @end_date)
-    mail(from: "no-reply@freereg.org.uk", to: 'Denise Colbert <denise.colbert@freeukgenealogy.org.uk>',cc: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Upload report stats")
+    mail(from: "no-reply@freereg.org.uk", to: 'FreeREG Steering Group <FreeREGSteeringGroup@freeukgenealogy.org.uk>',cc: 'trustees@freeukgenealogy.org.uk', subject: "Upload report stats")
   end
 
   def embargo_process_completion_email(rule_id, ccs)
