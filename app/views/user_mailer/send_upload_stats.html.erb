@@ -4,30 +4,6 @@
 <div class="scrollable">
   <table style="border: 1px solid black;">
     <caption>
-      <strong>Basic information</strong>
-    </caption>
-    <thead>
-      <tr>
-        <th scope="col" style="border: 1px solid black;">Detail</th>
-        <th scope="col" style="border: 1px solid black;">Count</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row" style="border: 1px solid black;">Total active transcribers</th>
-        <td style="border: 1px solid black;"><%= @active_transcribers_count %></td>
-      </tr>
-      <tr>
-        <th scope="row" style="border: 1px solid black;">Number of transcribers with their email address confirmed in this period.</th>
-        <td style="border: 1px solid black;"><%= @email_confimed %></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="scrollable">
-  <table style="border: 1px solid black;">
-    <caption>
       <strong><p>Upload report by members</p></strong>
     </caption>
     <tr>
@@ -44,6 +20,17 @@
         <td style="border: 1px solid black;"><%= u[1] %></td>
       </tr>
     <% end %>
+  </table>
+</div>
+<div>
+  <table>
+    <caption>
+      <strong><p>Database Additions</p></strong>
+    </caption>
+    <tr>
+      <thead>New Records added</thead>
+      <tbody><%= records_added %></tbody>
+    </tr>
   </table>
 </div>
 </html> 
