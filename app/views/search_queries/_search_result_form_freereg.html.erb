@@ -34,16 +34,27 @@
         </div>
 
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
-          <%= form.button "<i class='fas fa-sort' aria-hidden='true'></i> Update Results".html_safe,
-                      type: "submit",
-                      class: "spinner-controller ladda-button push--top40 ",
-                      data: {
-                        :style => "zoom-out",
-                        :color => appname.downcase,
-                        :size => "s",
-                        "spinner-color" => "#ffffff"
-                      }
-                       %>
+          <% if @search_query.order_asc %>
+            <%= form.button "<i class='fas fas fa-arrow-down' aria-hidden='true'></i> Update Results".html_safe,
+                        type: "submit",
+                        class: "spinner-controller ladda-button push--top40 ",
+                        data: {
+                          :style => "zoom-out",
+                          :color => appname.downcase,
+                          :size => "s",
+                          "spinner-color" => "#ffffff"
+                        } %>
+          <% else %>
+            <%= form.button "<i class='fas fas fa-arrow-up' aria-hidden='true'></i> Update Results".html_safe,
+                        type: "submit",
+                        class: "spinner-controller ladda-button push--top40 ",
+                        data: {
+                          :style => "zoom-out",
+                          :color => appname.downcase,
+                          :size => "s",
+                          "spinner-color" => "#ffffff"
+                        } %>
+          <% end %>
         </div>
       </div>
     <% end %>
