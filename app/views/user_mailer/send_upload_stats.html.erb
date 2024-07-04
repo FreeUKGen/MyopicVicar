@@ -1,6 +1,6 @@
 <html>
 <p>Hello Everyone,</p>
-<p>Please find the upload report for the month of <%= @start_date.strftime('%B')%></p>
+<p>Here is the upload report for the month of <%= @start_date.strftime('%B')%></p>
 <div class="scrollable">
   <table style="border: 1px solid black;">
     <caption>
@@ -29,7 +29,7 @@
     </caption>
     <tr>
       <th style="border: 1px solid black; padding: 5px;">New Records added</th>
-      <td style="border: 1px solid black; padding: 5px;"><%= @records_added %></td>
+      <td style="border: 1px solid black; padding: 5px;"><%= @records_added.number_to_human %></td>
     </tr>
   </table>
 </div>
