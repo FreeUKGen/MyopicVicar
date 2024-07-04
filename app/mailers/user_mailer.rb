@@ -89,6 +89,14 @@ class UserMailer < ActionMailer::Base
     adjust_email_recipients(subject)
   end
 
+  def communicate_github_issue_creation(feedback)
+    @feedback = feedback
+    @user = UseridDetail.where(userid: feedback.user_id).first
+    @user_email = @user.email_address
+    mail(to: @user_email, :subject => 'Notification of github issue creation')
+  end
+
+
   def contact_action_request(contact, send_to, copies_to)
     @appname = appname
     @contact = contact
@@ -522,7 +530,7 @@ class UserMailer < ActionMailer::Base
   def send_upload_stats(start_date, end_date)
     @start_date = start_date
     @end_date = end_date
-    @uploaders_count, @email_confirmed, @users_count = PhysicalFile.new.upload_report_mail(@start_date, @end_date)
+    @uploaders_count, @email_confirmed, @users_count, @records_added = PhysicalFile.new.upload_report_mail(@start_date, @end_date)
     @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcriber_stats(@start_date, @end_date)
     mail(from: "no-reply@freereg.org.uk", to: 'Denise Colbert <denise.colbert@freeukgenealogy.org.uk>',cc: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Upload report stats")
   end
