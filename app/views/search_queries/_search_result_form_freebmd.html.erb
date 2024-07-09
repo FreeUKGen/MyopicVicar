@@ -9,10 +9,6 @@
               <%= select_tag(:filter_option, options_for_select(filter_hash.to_a, selected: @filter_condition), {:prompt => "Filter By", id: 'filter_results', tabindex: "0"}) %>
             </div>
           <% end %>
-          <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
-            <%= label_tag 'filter_results', 'Filter By' %>
-            <%= select_tag(:filter_option, options_for_select(filter_hash.to_a, selected: @filter_condition), {:prompt => "Select", id: 'filter_results', tabindex: "0"}) %>
-          </div>
         <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
           <%= label_tag 'sort_results', 'Sort By' %>
           <%= select_tag(:sort_option, options_for_select([['Year', "QuarterNumber"], ['District', "District"], ['First Name(s)', "GivenName"], ['Surname', "Surname"]], selected: @sort_condition), {:prompt => "Select", id: 'sort_results', tabindex: "0"}) %>
