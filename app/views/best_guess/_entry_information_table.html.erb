@@ -1,3 +1,68 @@
+<script>
+    document.getElementById("citation-toggle").addEventListener("click", citationToggle);
+    /*Hide citation blocks unless citation type is selected*/
+     const citations = ['wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
+    function hide_citation_block(cite){
+      cite_element =  document.getElementById(`${cite}_citation_container`);
+      if (cite_element) {
+        cite_element.style.display = "none";
+      }
+    }
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function citationToggle() {
+      var x = document.getElementById("citation-dropdown");
+      //var y = document.getElementById('wikitree_citation_container');
+      citations.forEach(hide_citation_block);
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+    }
+    window.addEventListener("load", function(){
+        const no_javascript_elements = document.getElementsByClassName("no-javascript");
+        const javascript_elements = document.getElementsByClassName("javascript");
+
+        for(let i = 0; i < no_javascript_elements.length; i++){
+            no_javascript_elements[i].remove();
+        }
+        for(let i = 0; i < javascript_elements.length; i++){
+            javascript_elements[i].style.display = "block";
+        }
+        //if(!document.getElementById("citation_section")){
+            document.getElementById("citation-dropdown").style.display = "none";
+        //}
+    })
+    function copy(elm) {
+        var button = event.currentTarget || event.srcElement;
+        var btnText = button.innerHTML;
+        var target = document.getElementById(elm);
+        var citation = target.querySelectorAll('.citation_container')[0];
+        var range, select;
+        if (document.createRange) {
+            range = document.createRange();
+            range.selectNode(citation);
+            select = window.getSelection();
+            select.removeAllRanges();
+            select.addRange(range);
+            document.execCommand('copy');
+            select.removeAllRanges();
+        } else {
+            range = document.body.createTextRange();
+            range.moveToElementText(citation);
+            range.select();
+            document.execCommand('copy');
+        }
+        button.innerHTML = "Copied"
+        setTimeout(function(){
+            button.innerHTML = btnText;
+        }, 1000);
+    }
+</script>
+<style type="text/css">
+  .citation_container {border: 1px solid black; padding: 5px;}
+</style>
 <table class="table--bordered table--data">
   <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
   <tbody>
@@ -63,7 +128,7 @@
 	      </td>
     	</tr>
     <% end %>
-    <% if entry_type == "birth" %>
+    <% unless entry_type == "death" %>
     	<tr>
 	      <th scope="row">
 	        <%= mother_or_spouse_surname(record_type)%>
@@ -91,6 +156,19 @@
         </th>
         <td>
           <%= record.AgeAtDeath %>
+        </td>
+      </tr>
+    <% end %>
+    <% unless entry_type == "marriage" %>
+      <tr>
+        <th scope="row">
+          <%= age_at_death_or_date_of_birth(record_type)%>
+        </th>
+        <td>
+          <%= record.AgeAtDeath %>
+          <% if record.AgeAtDeath.blank? %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
         </td>
       </tr>
     <% end %>
@@ -128,6 +206,16 @@
         <% if record.transcribers.blank? %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Persistent URL for entry
+      </th>
+      <td>
+        <% url = 'https://www.freebmd.org.uk/entry-information/'+record.record_hash+'/hash' %>
+        <a class="pUrl" href="<%= url %>"><%= url %></a>
+        <a class="btn btn--small" href="#" onclick=copy("pUrl") style="cursor: pointer">Copy URL</a>
       </td>
     </tr>
     <% if search == true %>

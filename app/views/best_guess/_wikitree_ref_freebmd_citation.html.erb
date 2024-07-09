@@ -1,0 +1,29 @@
+<section>
+  <div id="wikitree_ref_citation_container" style="display: none;">
+    <% @entry = entry %>
+  <h4>Citation (Wikitree citation in references):</h4>
+  <p class = "citation_container">
+    * <%= format_record_type_for_scan_url(@entry) %>: "<%=appname%> Search", online database. GRO Index of <%= format_record_type_for_scan_url(@entry)%>s,
+    <%= format_quarter(@entry['QuarterNumber']) %>, <%=@entry['District']%> Registration District, Volume <%=@entry['Volume']%> Page <%=@entry['Page']%>
+    <%= '[https://www.freebmd.org.uk/entry-information/'+@entry.record_hash+'/hash ' %>
+    <%= format_record_type_for_scan_url(@entry) %> of <%= @entry['GivenName'] %> <%= @entry['OtherNames'] %> <%= @entry['Surname'] %>
+    <% if @entry[:RecordTypeID] == 1 %>
+      <% if @entry['AssociateName'].present? %>
+        : Mother's maiden name <%= @entry['AssociateName'] %>
+      <% end %>
+    <% elsif @entry[:RecordTypeID] == 2 %>
+      <% if @entry['AgeAtDeath'].present? %>
+        : Age at death <%= @entry['AgeAtDeath'].to_s %>
+      <% end %>
+    <% elsif @entry[:RecordTypeID] == 3 %>
+      <% if @entry['AssociateName'].present? %>
+        : Spouse's surname <%= @entry['AssociateName'] %>
+      <% end %>
+    <% end %>
+    ]. Viewed <%=Date.today.strftime("%e %b %Y")%>
+  </p>
+    <div class = "text--center">
+    <button class = "btn  btn--small ", onclick = copy("wikitree_ref_citation_container") style = "cursor: pointer">Copy</button>
+    <button class = "btn  btn--small ", onclick = this.parentElement.parentElement.style.display='none' style = "cursor: pointer">Close</button>
+  </div>
+</section>

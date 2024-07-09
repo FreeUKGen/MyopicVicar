@@ -625,7 +625,7 @@ MyopicVicar::Application.routes.draw do
   get ':entry_id/same_page_entries', to: 'best_guess#same_page_entries', as: :same_page_entries_non_search
   get ':entry_id/marriage_details', to: 'best_guess#show_marriage', as: :show_marriage_details_non_search
   get ':rec_id/mark-favourite', to: 'best_guess#save_entry', as: :favourite_entry
-  get ':rec_id/remove-favourite', to: 'best_guess#unsave_entry', as: :remove_favourit
+  get ':rec_id/remove-favourite', to: 'best_guess#unsave_entry', as: :remove_favourite
   resources :best_guess
   get "entry-information/:id/show", :to => 'best_guess_hash#show', :as => :citation_url
   get "/cgi/information.pl", :to => 'best_guess_hash#bmd1_url'
