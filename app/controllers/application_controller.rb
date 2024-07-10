@@ -351,6 +351,10 @@ class ApplicationController < ActionController::Base
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)
+    session.delete(:move_old_county)
+    session.delete(:move_old_place)
+    session.delete(:move_new_county)
+    session.delete(:move_new_place)
   end
 
   def clean_session_for_images
