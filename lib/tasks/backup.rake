@@ -160,7 +160,7 @@
   def validate_database
     # check to make sure the database tables exist
     begin
-      Refinery::Authentication::Devise::User.count
+      User.count
     rescue
       print "Error: Database appears to be empty.  Run rake db:setup to create tables and seed it.\n"
       exit

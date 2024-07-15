@@ -13,9 +13,9 @@ def load_users_from_mongo
   #Refinery::Authentication::Devise::User.delete_all
   n = 0
   UseridDetail.all.each do |detail|
-    u = Refinery::Authentication::Devise::User.where(:username => detail.userid).first
+    u = User.where(:username => detail.userid).first
     if u.nil?
-      u = Refinery::Authentication::Devise::User.new
+      u = User.new
       p "#{detail.userid} being added"
     end
     u.username = detail.userid

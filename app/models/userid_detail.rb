@@ -189,7 +189,7 @@ class UseridDetail
       users = 0
       transcribers = 0
       start = Time.new(2020, 12, 1).to_i
-      Refinery::Authentication::Devise::User.all.each do |user|
+      User.all.each do |user|
         next if Time.parse(user.updated_at.to_s).to_i < start
 
         userid = UseridDetail.find_by(_id: user.userid_detail_id)
@@ -488,7 +488,7 @@ class UseridDetail
   end
 
   def check_exists_in_refinery
-    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
+    refinery_user = User.where(:username => self.userid).first
     if refinery_user.nil?
       return[false,"There is no refinery entry"]
     else
@@ -505,7 +505,7 @@ class UseridDetail
   end
 
   def delete_refinery_user_and_userid_folder
-    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
+    refinery_user = User.where(:username => self.userid).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
     return if MyopicVicar::Application.config.template_set == 'freecen'
@@ -515,9 +515,9 @@ class UseridDetail
   def email_address_does_not_exist
     if self.changed.include?('email_address')
       errors.add(:email_address, "Userid email already exists on change") if
-      UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
+      UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != User.where(:username => self[:userid]))
       errors.add(:email_address, "Refinery email already exists on change") if
-      Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
+      User.where(:email => self[:email_address]).exists? && (self.userid != User.where(:username => self[:userid]))
     end
   end
 
@@ -528,7 +528,7 @@ class UseridDetail
   def self.userid_does_not_exist
     if self.changed.include?('userid')
       errors.add(:base, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-      errors.add(:base, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
+      errors.add(:base, "Refinery User Already exists") if User.where(:username => self[:userid]).exists?
     end
   end
 
@@ -588,9 +588,9 @@ class UseridDetail
 
   def save_to_refinery
     #avoid looping on password changes
-    u = Refinery::Authentication::Devise::User.where(:username => self.userid).first
+    u = User.where(:username => self.userid).first
     if u.nil?
-      u = Refinery::Authentication::Devise::User.new
+      u = User.new
     end
     u.username = self.userid
     u.email = self.email_address
@@ -607,7 +607,7 @@ class UseridDetail
   end
 
   def update_refinery
-    u = Refinery::Authentication::Devise::User.where(:username => self.userid).first
+    u = User.where(:username => self.userid).first
     unless u.nil?
       u.email = self.email_address
       u.userid_detail_id = self.id.to_s
@@ -620,9 +620,9 @@ class UseridDetail
 
   def userid_and_email_address_does_not_exist
     errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
+    errors.add(:userid, "Refinery User Already exists") if User.where(:username => self[:userid]).exists?
     errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
+    errors.add(:email_address, "Refinery email already exists") if User.where(:email => self[:email_address]).exists?
   end
 
   def write_userid_file

@@ -80,7 +80,7 @@ class CreateUseridDocs
     p "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a range #{range} that translates to #{filenames.length} userids"
 
     if type == 'recreate'
-      Refinery::Authentication::Devise::User.all.each do |user|
+      User.all.each do |user|
         user.destroy unless user.username == 'Captainkirk'
       end
     end
@@ -218,7 +218,7 @@ class CreateUseridDocs
             header[:research_agreement] = old_detail.research_agreement
             old_detail.delete
           end
-          refinery_user = Refinery::Authentication::Devise::User.where(:username => header[:userid]).first
+          refinery_user = User.where(:username => header[:userid]).first
           refinery_user.destroy unless refinery_user.nil?
         end
 

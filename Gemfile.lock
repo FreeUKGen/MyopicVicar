@@ -290,11 +290,6 @@ GEM
       refinerycms-images (= 4.0.3)
       refinerycms-pages (= 4.0.3)
       refinerycms-resources (= 4.0.3)
-    refinerycms-authentication-devise (2.0.0)
-      actionmailer (>= 5.0.0, < 5.2)
-      devise (~> 4.0, >= 4.3.0)
-      friendly_id (~> 5.2.1)
-      refinerycms-core (>= 3.0.0, < 5.0)
     refinerycms-core (4.0.3)
       actionpack (>= 5.1.0, < 5.2)
       activerecord (>= 5.1.0, < 5.2)
@@ -473,7 +468,6 @@ DEPENDENCIES
   pry-byebug
   rails
   refinerycms
-  refinerycms-authentication-devise
   refinerycms-county_pages!
   refinerycms-i18n (= 4.0.2)!
   refinerycms-wymeditor
