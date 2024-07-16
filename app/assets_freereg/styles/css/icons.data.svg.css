@@ -93,7 +93,7 @@
   zoom: 1;
 }
 
-a:focus .icon__cancel,.icon__cancel:hover,.icon__cancel:active,
+.icon__cancel,.icon__cancel:hover,.icon__cancel:active,
 .icon__cancel--inverse {
 	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2222%22%20height%3D%2222%22%20viewBox%3D%220%200%2022%2022%22%3E%0A%20%20%3Crect%20fill%3D%22%2300857E%22%20width%3D%2222%22%20height%3D%2222%22/%3E%0A%20%20%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M13.074%2011l8.64-8.64c.382-.382.382-1%200-1.382l-.69-.69c-.383-.383-1.002-.383-1.383%200L11%208.925%202.36.286c-.382-.382-1-.382-1.382%200L.286.978c-.382.382-.382%201%200%201.382L8.926%2011l-8.64%208.64c-.382.382-.382%201%200%201.382l.69.69c.383.383%201.002.383%201.384%200l8.64-8.64%208.64%208.64c.382.383%201%20.383%201.382%200l.69-.69c.383-.382.383-1%200-1.382L13.075%2011z%22/%3E%3C/svg%3E');
   background-repeat: no-repeat;
@@ -106,7 +106,7 @@ a:focus .icon__cancel,.icon__cancel:hover,.icon__cancel:active,
 }
 
 
-.icon__cancel {
+.icon__cancels {
 	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2222%22%20height%3D%2222%22%20viewBox%3D%220%200%2022%2022%22%3E%3Cpath%20fill%3D%22%2300857E%22%20d%3D%22M13.074%2011l8.64-8.64c.382-.382.382-1%200-1.382l-.69-.69c-.383-.383-1.002-.383-1.383%200L11%208.925%202.36.286c-.382-.382-1-.382-1.382%200L.286.978c-.382.382-.382%201%200%201.382L8.926%2011l-8.64%208.64c-.382.382-.382%201%200%201.382l.69.69c.383.383%201.002.383%201.384%200l8.64-8.64%208.64%208.64c.382.383%201%20.383%201.382%200l.69-.69c.383-.382.383-1%200-1.382L13.075%2011z%22/%3E%3C/svg%3E');
   background-repeat: no-repeat;
   width: 22px;
