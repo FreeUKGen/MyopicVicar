@@ -69,6 +69,10 @@ class User
     end
   end
 
+  def login
+    @login || self.username || self.email
+  end
+
   private
 
   def userid_detail_params
