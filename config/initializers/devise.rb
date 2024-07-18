@@ -1,3 +1,38 @@
+# Copyright 2012 Trustees of FreeBMD
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+require 'digest/md5'
+
+module Devise
+  module Encryptable
+    module Encryptors
+      class Freereg < Base
+        OUR_SECRET_KEY = Rails.application.config.our_secret_key
+
+        def self.digest(password, stretches, salt, pepper)
+          crypted_password = hex_to_base64_digest(OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('md5'),  OUR_SECRET_KEY, password))
+          crypted_password.sub(/==$/, '')
+        end
+
+
+        def self.hex_to_base64_digest(hexdigest)
+          [[hexdigest].pack("H*")].pack("m").strip
+        end
+
+      end
+    end
+  end
+end
 # frozen_string_literal: true
 
 # Assuming you have not yet modified this file, each configuration option below
@@ -24,8 +59,10 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
-
+  config.mailer_sender = 'no-reply@freereg.org.uk' #{}"freereg-registration@freereg.org.uk"
+  if MyopicVicar::Application.config.template_set == 'freecen'
+    config.mailer_sender = 'no-reply@freecen.org.uk'#{}"freecen-registration@freecen.org.uk"
+  end
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
 
@@ -178,7 +215,7 @@ Devise.setup do |config|
 
   # ==> Configuration for :validatable
   # Range for password length.
-  config.password_length = 6..128
+  #config.password_length = 6..128
 
   # Email regex used to validate email formats. It simply asserts that
   # one (and only one) @ exists in the given string. This is mainly
