@@ -1,0 +1,5 @@
+<p>Dear <%= @user.userid%></p>
+<p>You had submitted some feedback to <%= @appname %> reference
+  <a href="<%=Rails.application.config.website%>/feedbacks/<%=@feedback.id%>"><%= @feedback.identifier %></a>
+  to us with the title <b><%= @feedback.title%></b> at <%= @feedback.feedback_time.strftime("%H:%M on %F") unless @feedback.feedback_time.nil?%></p>
+ <p>This email is to notify you that we have created an github issue and you can monitor the progess here: <%= link_to "link to github issue", @feedback.github_issue_url %></p>

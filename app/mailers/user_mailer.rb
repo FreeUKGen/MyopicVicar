@@ -89,6 +89,14 @@ class UserMailer < ActionMailer::Base
     adjust_email_recipients(subject)
   end
 
+  def communicate_github_issue_creation(feedback)
+    @feedback = feedback
+    @user = UseridDetail.where(userid: feedback.user_id).first
+    @user_email = @user.email_address
+    mail(to: @user_email, :subject => 'Notification of github issue creation')
+  end
+
+
   def contact_action_request(contact, send_to, copies_to)
     @appname = appname
     @contact = contact
@@ -123,7 +131,7 @@ class UserMailer < ActionMailer::Base
 
   def coordinator_feedback_reply(feedback, ccs_userids, message, sender_userid)
     @appname = appname
-    @feedback = feedback
+    @feedback = feedbackappname
     @message = message
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
     sender_email_address = get_email_address_from_userid(sender_userid)
@@ -522,9 +530,11 @@ class UserMailer < ActionMailer::Base
   def send_upload_stats(start_date, end_date)
     @start_date = start_date
     @end_date = end_date
-    @uploaders_count, @email_confirmed, @users_count = PhysicalFile.new.upload_report_mail(@start_date, @end_date)
+    @uploaders_count, @email_confirmed, @users_count, @records_added = PhysicalFile.new.upload_report_mail(@start_date, @end_date)
     @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcriber_stats(@start_date, @end_date)
-    mail(from: "no-reply@freereg.org.uk", to: 'Denise Colbert <denise.colbert@freeukgenealogy.org.uk>',cc: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Upload report stats")
+    from_email = "no-reply@#{appname.downcase}.org.uk"
+    to_email, cc_email = app_specific_email_upload_stats
+    mail(from: from_email, to: to_email, cc: cc_email, subject: "Upload report stats")
   end
 
   def embargo_process_completion_email(rule_id, ccs)
@@ -567,6 +577,20 @@ class UserMailer < ActionMailer::Base
         mail(:to => @syndicate_coordinator_email, :cc => @county_coordinator_email, :subject => message)
       end
     end
+  end
+
+  def app_specific_email_upload_stats
+    to_email = ''
+    cc_email = ''
+    case appname.downcase
+    when 'freereg'
+      to_email = 'FreeREGSteeringGroup@freeukgenealogy.org.uk'
+      cc_email = "trustees@freeukgenealogy.org.uk"
+    when 'freecen'
+      to_email = 'denise.colbert@freeukgenealogy.org.uk'
+      cc_email = "vinodhini.subbu@freeukgenealogy.org.uk"
+    end
+    [to_email, cc_email]
   end
 
   def get_email_address_array_from_array_of_userids(userids)
