@@ -214,10 +214,11 @@ class FreecenCsvEntriesController < ApplicationController
     success, message = @freecen_csv_entry.propagate_alternate
     if success
       flash[:notice] = 'The propagation of the alternate fields was was successful, the file is now locked against replacement until it has been downloaded.'
+      session[:propagated_alternate] = session[:propagate_alternate]
     else
       flash[:notice] = "The propagation of the alternate fields failed because #{message}."
+      session.delete(:propagate_alternate)
     end
-    session.delete(:propagate_alternate)
     redirect_to freecen_csv_entry_path(@freecen_csv_entry)
   end
 
