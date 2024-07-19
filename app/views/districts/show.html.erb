@@ -13,7 +13,13 @@
           <li>
             <a href="#volumes">Volumes</a> </li>
           <li>
+            <a href="#pages">Pages</a> </li>
+          <li>
+            <a href="#names">Names</a> </li>
+          <li>
             <a href="#otherInfo">Other information</a> </li>
+          <li>
+            <a href="#stats">Statistics</a> </li>
         </ul>
       </div>
     </nav>
@@ -27,9 +33,10 @@
   <% end %>
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties">
-    <h2>County</h2>
+    <h2>Counties</h2>
+    <p>Counties of which <%= "#{@district.district_name_display_format}"%> Registration District has formed a part, by date.</p>
     <table>
-      <caption class="accessibility">Counties of which <%= "#{@district.district_name_display_format}"%> has formed a part, by date.</caption>
+      <caption class="accessibility">Counties of which <%= "#{@district.district_name_display_format}"%> Registration District has formed a part, by date.</caption>
       <tr>
         <th scope="col">County</th>
         <th scope="col">Date range</th>
@@ -44,123 +51,99 @@
   </div>
   <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="volumes">
     <h2>Volumes</h2>
+    <p>Volume numbers that have been assigned to <%= "#{@district.district_name_display_format}"%> Registration District, by date.</p>
     <table>
-      <caption class="accessibility">Volume numbers for <%= "#{@district.district_name_display_format}"%>, by date.</caption>
+      <caption class="accessibility">Volume numbers that have been assigned to <%= "#{@district.district_name_display_format}"%> Registration District, by date.</caption>
       <tr>
-        <th scope="col">Date range</th>
         <th scope="col">Volume</th>
+        <th scope="col">Date range</th>
       </tr>
       <% if @district.Volume1837to1851 != 'xx' %>
       <tr>
-        <td>Year 1837 to 1851</td>
         <td><%= @district.Volume1837to1851 %></td>
+        <td>Year 1837 to 1851</td>
       </tr>
       <% end %>
       <% if @district.Volume1852to1945 != 'xx' %>
       <tr>
-        <td>Year 1852 to 1945</td>
         <td><%= @district.Volume1852to1945 %></td>
+        <td>Year 1852 to 1945</td>
       </tr>
       <% end %>
       <% if @district.Volume1946to1965 != 'xx' %>
       <tr>
-        <td>Year 1946 to 1965</td>
         <td><%= @district.Volume1946to1965 %></td>
+        <td>Year 1946 to 1965</td>
       </tr>
       <% end %>
       <% if @district.Volume1966to1973 != 'xx' %>
       <tr>
-        <td>Year 1966 to 1973</td>
         <td><%= @district.Volume1966to1973 %></td>
+        <td>Year 1966 to 1973</td>
       </tr>
       <% end %>
       <% if @district.Volume1974to1993_4 != 'xx' %>
       <tr>
-        <td>Year 1974 to 1993_4</td>
         <td><%= @district.Volume1974to1993_4 %></td>
+        <td>Year 1974 to 1993_4</td>
       </tr>
       <% end %>
     </table>
+    <p>[Volumes by year for <%= "#{@district.district_name_display_format}" %> Registration District]</p>
+    <p>[Volumes/year conflicts for <%= "#{@district.district_name_display_format}" %> Registration District]</p>
+  </div>
+  <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="pages">
+    <h2>Pages</h2>
+    <p>Page info specific to District should go here.</p>
+    <p>[Page map for <%= "#{@district.district_name_display_format}" %> Registration District]</p>
+  </div>
+  <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="names">
+    <h2>Names</h2>
+    <p>Here are links to pages listing all the distinct forenames and surnames found in <%= "#{@district.district_name_display_format}"%> Registration District:</p>
+    <ul>
+      <li><%= link_to 'Birth Forenames', unique_district_names_path(id: @district.DistrictNumber, name_type: "1", record_type: "birth" ), method: :get %> (<%= @birth_uniq_forename_count%> names)</li>
+      <li><%= link_to 'Birth Surnames', unique_district_names_path(id: @district.DistrictNumber, name_type: "0", record_type: "birth" ), method: :get %> (<%= @birth_uniq_surname_count%> names)</li>
+      <li><%= link_to 'Death Forenames', unique_district_names_path(id: @district.DistrictNumber, name_type: "1", record_type: "death" ), method: :get %> (<%= @death_uniq_forename_count%> names)</li>
+      <li><%= link_to 'Death Surnames', unique_district_names_path(id: @district.DistrictNumber, name_type: "0", record_type: "death" ), method: :get %> (<%= @death_uniq_surname_count%> names)</li>
+      <li><%= link_to 'Marriage Forenames', unique_district_names_path(id: @district.DistrictNumber, name_type: "1", record_type: "marriage" ), method: :get %> (<%= @marriage_uniq_forename_count%> names)</li>
+      <li><%= link_to 'Marriage Surnames', unique_district_names_path(id: @district.DistrictNumber, name_type: "0", record_type: "marriage" ), method: :get %> (<%= @marriage_uniq_surname_count%> names)</li>
+    </ul>
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="otherInfo">
     <h2>Other information</h2>
-    <% if @district.Volume1993_4toEnd != 'xx' %>
     <dl>
+    <% if @district.Volume1993_4toEnd != 'xx' %>
       <dt>GRO District Number (post 1993)</dt>
       <dd><%= @district.Volume1993_4toEnd %></dd>
-    </dl>
     <% end %>
     <% if @district.DistrictPseudonym.present? %>
-      <h3>Alternate names for District</h3>
-      <ul>
-        <% @district.DistrictPseudonym.each do |n| %><li><%= n.DistrictPseudonym + " " %></li><% end %>
-      </ul>
+      <dt>Alternate names for District</dt>
+      <dd>
+        <% @district.DistrictPseudonym.each do |n| %><%= n.DistrictPseudonym + " " %><% end %>
+      </dd>
     <% end %>
+    </dl>
+  </div>
+  <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="stats">
+    <h2>Statistics</h2>
+    <p>Statistics specific to <%= "#{@district.district_name_display_format}"%> Registration District:</p>
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
     <table class="table--bordered table--data">
-      <caption class="accessibility"> Statistics for <%= "#{@district.district_name_display_format} District"%>  </caption>
+      <caption class="accessibility"> Statistics for <%= "#{@district.district_name_display_format} Registration District"%>  </caption>
       <tr>
-        <th>Births</th>
-        <td colspan="2"><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 1).count %></td>
+        <th scope="row">Total Births</th>
+        <td><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 1).count %></td>
       </tr>
       <tr>
-        <th>Deaths</th>
-        <td colspan="2"><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 2).count %></td>
+        <th scope="row">Total Deaths</th>
+        <td><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 2).count %></td>
       </tr>
       <tr>
-        <th>Marriages</th>
-        <td colspan="2"><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 3).count %></td>
-      </tr>
-      <tr>
-        <th rowspan="4">Unique Names</th>
-      </tr>
-      <tr>
-        <td><%= link_to 'View Birth Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "birth" ), method: :get %></td>
-        <td>
-          <dl>
-            <dt>
-              Forenames Count: <%= @birth_uniq_forename_count%>
-            </dt>
-            <dt>
-              Surnames Count: <%= @birth_uniq_surname_count%>
-            </dt>
-          </dl>
-        </td>
-      </tr>
-      <tr>
-        <td><%= link_to 'View Marriage Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "marriage" ), method: :get %></td>
-        <td>
-          <dl>
-            <dt>
-              Forenames Count: <%= @marriage_uniq_forename_count%>
-            </dt>
-            <dt>
-              Surnames Count: <%= @marriage_uniq_surname_count%>
-            </dt>
-          </dl>
-        </td>
-      </tr>
-      <tr>
-        <td><%= link_to 'View Death Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "death" ), method: :get %></td>
-        <td>
-          <dl>
-            <dt>
-              Forenames Count: <%= @death_uniq_forename_count%>
-            </dt>
-            <dt>
-              Surnames Count: <%= @death_uniq_surname_count%>
-            </dt>
-          </dl>
-        </td>
+        <th scope="row">Total Marriages</th>
+        <td><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 3).count %></td>
       </tr>
     </table>
-    <div>Page map for <%= "#{@district.district_name_display_format}" %></div>
-    <div>Births by year for <%= "#{@district.district_name_display_format}" %></div>
-    <div>Deaths by year for <%= "#{@district.district_name_display_format}" %></div>
-    <div>Marriages by year for <%= "#{@district.district_name_display_format}" %></div>
-    <div>Volumes by year for <%= "#{@district.district_name_display_format}" %></div>
-    <div>Volumes/year conflicts for <%= "#{@district.district_name_display_format}" %></div>
   </div>
 </div>
 </div>
