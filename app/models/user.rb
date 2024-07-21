@@ -11,6 +11,7 @@ class User
   field :email,              type: String, default: ""
   field :encrypted_password, type: String, default: ""
   field :password_salt, type: String
+  field :userid_detail_id, type: String
 
   ## Recoverable
   field :reset_password_token,   type: String
