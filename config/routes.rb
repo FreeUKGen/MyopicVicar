@@ -16,7 +16,12 @@ MyopicVicar::Application.routes.draw do
 
 
 
-  devise_for :users
+  devise_for :users, controllers: {sessions: 'users/sessions'} do
+    get '/users/sign_in(.:format)', to: 'users/sessions#new', as: :new_user_session
+    post '/users/sign_in(.:format)', to: 'users/sessions#create, as: :user_session'
+    delete '/users/sign_out(.:format)', to: 'users/sessions#destroy', as: :destroy_user_session
+  end
+
   root :to => 'search_queries#new'
   resources :reminder_to_donate
   resources :donate_cta_feedback

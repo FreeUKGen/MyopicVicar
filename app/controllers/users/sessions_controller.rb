@@ -5,7 +5,7 @@ class Users::SessionsController < Devise::SessionsController
         layout 'refinery/layouts/login'
         skip_before_action :require_login
         before_action :clear_unauthenticated_flash, :only => [:new]
-        before_action :force_signup_when_no_users!
+        #before_action :force_signup_when_no_users!
         skip_before_action :detect_authentication_devise_user!, only: [:create], raise: false
         after_action :detect_authentication_devise_user!, only: [:create]
 
@@ -39,7 +39,8 @@ class Users::SessionsController < Devise::SessionsController
 
           #return if refinery_users_exist?
 
-          redirect_to new_user_registration_path and return
+          #redirect_to new_user_registration_path and return
+          redirect_to new_user_session_path and return
         end
 
   # GET /resource/sign_in

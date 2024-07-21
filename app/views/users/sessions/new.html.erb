@@ -26,8 +26,8 @@
         </div>
         <% if devise_mapping.rememberable? %>
           <div class='field remember_me push--bottom'>
-            <%= f.check_box :remember_me %>
-            <%= label_tag 'authentication_devise_user_remember_me', "Keep me logged in", :class => "check-label"%>
+            <%#= f.check_box :remember_me %>
+            <%#= label_tag 'authentication_devise_user_remember_me', "Keep me logged in", :class => "check-label"%>
           </div>
         <% end %>
         <div class="form-actions">
@@ -43,7 +43,7 @@
       <h2 class="gamma">Login problems or questions?</h2>
       <p>Your <b>User name</b> (UserID) is <em>not</em> case sensitive. If you have forgotten your User name, use your email address instead. If you have forgotten both, contact your coordinator.</p>
       <p>Your <b>Password</b> <em>is</em> case sensitive. If you have forgotten your password, use the this link to receive an email to reset it:
-        <%= link_to t('.forgot_password'), refinery.new_authentication_devise_user_password_path  %>. You will receive an email within a minute or so. If you do not receive one please check your spam folder. If there is no email then your email address has likely changed. In that case or if you require assistance contact your Coordinator.</p>
+        <%#= link_to t('.forgot_password'), refinery.new_authentication_devise_user_password_path  %>. You will receive an email within a minute or so. If you do not receive one please check your spam folder. If there is no email then your email address has likely changed. In that case or if you require assistance contact your Coordinator.</p>
       <p><b>Keep me logged in</b> will keep you logged in for 2 weeks after closing the browser.</p>
     </div>
   </div>
