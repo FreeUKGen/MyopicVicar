@@ -5,11 +5,12 @@ class User
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   devise  :encryptable, :encryptor => :freereg
-
+  attr_writer :login
   ## Database authenticatable
   field :username, type: String
   field :email,              type: String, default: ""
   field :encrypted_password, type: String, default: ""
+  field :password_salt, type: String
 
   ## Recoverable
   field :reset_password_token,   type: String
