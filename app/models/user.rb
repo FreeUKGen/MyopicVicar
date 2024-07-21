@@ -5,6 +5,7 @@ class User
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   devise  :encryptable, :encryptor => :freereg
+  alias will_save_change_to_email? email_changed?
   attr_writer :login
   ## Database authenticatable
   field :username, type: String
