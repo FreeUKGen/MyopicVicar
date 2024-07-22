@@ -1,6 +1,23 @@
 class CsvfilesController < ApplicationController
   require 'digest/md5'
 
+  def active_userids_and_transcribers
+    syndicate = @user.syndicate
+    syndicate = session[:syndicate] unless session[:syndicate].nil?
+    @people = []
+    @people << @user.userid
+    if session[:manage_user_origin] == 'manage syndicate'
+      @userids = UseridDetail.syndicate(syndicate).active(true).all.order_by(userid_lower_case: 1)
+      load_people(@userids)
+    elsif %w[county_coordinator master_county_coordinator syndicate_coordinator country_coordinator system_administrator technical data_manager
+             volunteer_coordinator documentation_coordinator executive_director project_manager].include?(session[:role])
+      @userids = UseridDetail.active(true).all.order_by(userid_lower_case: 1)
+      load_people(@userids)
+    else
+      @userids = @user
+    end
+  end
+
   def create
     # Initial guards
     redirect_back(fallback_location: new_csvfile_path, notice: 'You must select a file') && return if params[:csvfile].blank? || params[:csvfile][:csvfile].blank?
@@ -99,6 +116,7 @@ class CsvfilesController < ApplicationController
     if @app == 'freecen'
       @types_of_processing = ['Information', 'All Warnings', 'No POB Warnings', 'Error']
       @type_of_processing = 'No POB Warnings'
+      active_userids_and_transcribers
     end
   end
 
@@ -116,6 +134,7 @@ class CsvfilesController < ApplicationController
     if @app == 'freecen'
       @types_of_processing = ['Information', 'All Warnings', 'No POB Warnings', 'Error']
       @type_of_processing = 'No POB Warnings'
+      active_userids_and_transcribers
     end
     @action = 'Upload'
   end
