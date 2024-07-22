@@ -16,13 +16,10 @@ MyopicVicar::Application.routes.draw do
 
 
 
-  devise_for :users, controllers: {sessions: 'users/sessions'} do
+  devise_for :users, controllers: {sessions: 'users/sessions', passwords: 'users/passwords'} do
     get '/users/sign_in(.:format)', to: 'users/sessions#new', as: :new_user_session
     post '/users/sign_in(.:format)', to: 'users/sessions#create', as: :user_session
     delete '/users/sign_out(.:format)', to: 'users/sessions#destroy', as: :destroy_user_session
-  end
-
-  devise_for :users, controllers: {passwords: 'users/passwords'} do
     get '/users/password/new(.:format)', to: 'users/passwords#new', as: :new_user_password
     get ' /users/password/edit(.:format)', to: 'users/passwords#edit', as: :edit_user_password
     patch '/users/password(.:format)', to: 'users/passwords#update', as: :user_password
