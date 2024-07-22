@@ -76,6 +76,9 @@ class User
     @login || self.username || self.email
   end
 
+  def will_save_change_to_email?
+  end
+
   private
 
   def userid_detail_params
