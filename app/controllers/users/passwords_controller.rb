@@ -17,10 +17,10 @@ class Users::PasswordsController < Devise::PasswordsController
       if user.present?
         token = user.generate_reset_password_token!
         UserMailer.reset_notification(user, request, token).deliver_now
-        redirect_to refinery.login_path,
+        redirect_to new_user_session_path,
         notice: 'Your email address exists. Please use Forgot password link to reset your password.'
       else
-        redirect_to refinery.login_path,
+        redirect_to new_user_session_path,
         notice: 'We have no record of that email address. You will likely need to register as a volunteer'
       end
 
@@ -35,7 +35,7 @@ class Users::PasswordsController < Devise::PasswordsController
 
   # GET /registrations/password/edit?reset_password_token=abcdef
   def edit
-    self.resource = User.find_or_initialize_with_error_by_reset_password_token(params[:reset_password_token])
+    self.resource = resource_class.new
     set_minimum_password_length
     resource.reset_password_token = params[:reset_password_token]
   end
@@ -45,11 +45,11 @@ class Users::PasswordsController < Devise::PasswordsController
   def give_notice
     return if resource.errors.any?
 
-    flash[:notice] = t('successful', scope: 'refinery.authentication.devise.users.reset', email: resource.email)
+    flash[:notice] = t('successful', scope: 'devise.updated_not_active', email: resource.email)
   end
 
   def store_password_reset_return_to
-    session[:return_to] = Refinery::Core.backend_path
+    session[:return_to] = new_user_session_path
   end
   # GET /resource/password/new
   # def new

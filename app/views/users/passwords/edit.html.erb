@@ -1,0 +1,25 @@
+<% content_for :header, 'Reset Password', :email => resource.email) %>
+<h2 class=" text--center">Set your <%= MyopicVicar::Application.config.freexxx_display_name %> password</h2>
+<%= form_for resource, :as => resource_name,
+:url => update_user_password_path,
+:html => { :method => :put } do |f| %>
+  <%= f.hidden_field :reset_password_token %>
+  <%= render '/refinery/admin/error_messages', :object => resource, :include_object_name => true %>
+  <div class='field'>
+    <%= f.label :password %>
+    <%= f.password_field :password, :class => 'larger widest' %>
+  </div>
+  <div class='field'>
+    <%= f.label :password_confirmation %>
+    <%= f.password_field :password_confirmation, :class => 'larger widest' %>
+  </div>
+  <p></p>
+  <%= render '/refinery/admin/form_actions', :f => f,
+:continue_editing => false,
+:submit_button_text => 'Reset Password',
+:cancel_url => refinery.login_path,
+:cancel_title => nil,
+:hide_delete => true,
+:button_html => {:class => "btn   btn--small"} %>
+  <p></p>
+<% end %>

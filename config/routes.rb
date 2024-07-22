@@ -22,6 +22,14 @@ MyopicVicar::Application.routes.draw do
     delete '/users/sign_out(.:format)', to: 'users/sessions#destroy', as: :destroy_user_session
   end
 
+  devise_for :users, controllers: {passwords: 'users/passwords'} do
+    get '/users/password/new(.:format)', to: 'users/passwords#new', as: :new_user_password
+    get ' /users/password/edit(.:format)', to: 'users/passwords#edit', as: :edit_user_password
+    patch '/users/password(.:format)', to: 'users/passwords#update', as: :user_password
+    put '/users/password(.:format)', to: 'users/passwords#update', as: :update_user_password
+    post '/users/password(.:format)', to: 'users/passwords#create', as: :create_user_password
+  end
+
   root :to => 'search_queries#new'
   resources :reminder_to_donate
   resources :donate_cta_feedback
