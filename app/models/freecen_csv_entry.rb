@@ -1815,6 +1815,8 @@ class FreecenCsvEntry
 
     return true if parameters[:birth_place].present? && parameters[:birth_place] != birth_place
 
+    return true if birth_county != verbatim_birth_county || birth_place != verbatim_birth_place
+
     false
   end
 
@@ -1824,6 +1826,8 @@ class FreecenCsvEntry
     return false unless freecen_csv_file.validation
 
     return true if parameters[:notes].present? && parameters[:notes] != notes
+
+    return true if notes.present?
 
     false
   end

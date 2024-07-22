@@ -31,12 +31,12 @@
           <td><%= loaded_at(freecen1_vld_file) %></td>
           <td><%= freecen1_vld_file.userid %></td>
           <td><%= freecen1_vld_file.transcriber_name %></td>
-          <% if %w[system_administrator data_manager].include?(session[:role])%>
+          <% if %w[system_administrator data_manager county_coordinator master_county_coordinator country_coordinator].include?(session[:role])%>
             <td><%= pob_val_status(freecen1_vld_file)  %></td>
             <% if pob_val_status(freecen1_vld_file) != 'All POBs are valid'%>
-              <td><%= link_to 'Auto Val', auto_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Run Auto POB Validation for '+freecen1_vld_file.file_name+'?'} %></td>
+              <td><%= link_to 'Pre-Validation', auto_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Run Auto POB Validation for '+freecen1_vld_file.file_name+'?'} %></td>
             <% else %>
-              <td><%= 'Auto Val N/A' %>
+              <td><%= 'Pre-Validation N/A' %>
               <% end %>
               <td><%= link_to 'List VLD Entries', entry_csv_download_freecen1_vld_file_path(id: freecen1_vld_file.id), title: 'Download VLD Entries',data: { confirm: 'Are you sure you want to download a list of entries for '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
               <% if  pob_val_status(freecen1_vld_file) != 'All POBs are valid'  && pob_val_status(freecen1_vld_file) != 'Not Started'%>
