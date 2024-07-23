@@ -1,7 +1,7 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% unless print_friendly %>
  	<div class="grid">
-	  <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom ">
+	  <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom " style="display:flex; flex-direction: row; justify-content: space-evenly;">
 		<%= link_to "View Search Criteria", '#', style: "text-decoration: underline; text-decoration-thickness: 2px; text-decoration-color: teal; " , id: "view_search_criteria"%>
 	    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), style: "text-decoration: underline; text-decoration-thickness: 2px; text-decoration-color: teal; " %>
 	    <%= link_to "New Search", new_search_query_path, style: "text-decoration: underline; text-decoration-thickness: 2px; text-decoration-color: teal; " %>
