@@ -1,0 +1,36 @@
+<html>
+<p>Hello Everyone,</p>
+<p>Here is the upload report for the month of <%= @start_date.strftime('%B')%></p>
+<div class="scrollable">
+  <table style="border: 1px solid black;">
+    <caption>
+      <strong><p>Upload report by members</p></strong>
+    </caption>
+    <tr>
+      <th style="border: 1px solid black; padding: 5px;">Time Period</th>
+      <th style="border: 1px solid black; padding: 5px;">Roles</th>
+      <th style="border: 1px solid black; padding: 5px">Upload Count</th>
+    </tr>
+    <% @uploaders_count.each do |u| %>
+      <tr>
+        <td style="border: 1px solid black; padding: 5px;"><%= "#{@start_date.to_date.strftime("%B, %d, %Y")} - #{@end_date.to_date.strftime("%B, %d, %Y")}" %></td>
+        <td style="border: 1px solid black;  padding: 5px;">
+            <%= u[0].split('_').map(&:titlecase).join(' ') %>
+        </td>
+        <td style="border: 1px solid black;  padding: 5px;"><%= u[1] %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+<div class="scrollable">
+  <table style="border: 1px solid black;">
+    <caption>
+      <strong><p>Database Additions</p></strong>
+    </caption>
+    <tr>
+      <th style="border: 1px solid black; padding: 5px;">New Records added</th>
+      <td style="border: 1px solid black; padding: 5px;"><%= number_with_delimiter(@records_added) %></td>
+    </tr>
+  </table>
+</div>
+</html> 
