@@ -1,6 +1,5 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% title "Search Results" %>
-<!--h1 class="accessibility">Search results</h1-->
 <%= render 'flash_notice' %>
 <%# show_contents_link%>
 <div class='container'>
@@ -11,6 +10,7 @@
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
   <%= render 'display_search_criteria'%>
+  <%= pluralize( @result_count, 'Results' )%>
   <section>
     <% case %>
     <% when @timeout == true %>

@@ -401,6 +401,7 @@ class SearchQueriesController < ApplicationController
     page_number = params[:page]
     results_per_page = params[:results_per_page]
     sorted_results = @search_query.sorted_and_paged_searched_records
+    results_per_page.to_i > 50 ? results_per_page = 50 : results_per_page = results_per_page
     paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
     send_data @search_query.search_results_gedcom(paginated_array,@user).join("\n"), filename: "search_results-#{Date.today}.ged"
   end
