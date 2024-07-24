@@ -59,6 +59,7 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The revalidation of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
     else
       @freecen_csv_entry.update_attributes(warning_messages: "Warning: Line #{@freecen_csv_entry.record_number}: Validator requested reprocessing", record_valid: 'false')
+      @freecen_csv_entry.reload
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
       @freecen_csv_file.update_attributes(locked_by_transcriber: true)
       flash[:notice] = 'The entry was declared false.'
@@ -158,7 +159,7 @@ class FreecenCsvEntriesController < ApplicationController
     @dwelling = Freecen::LOCATION_DWELLING
     @counties = ChapmanCode.freecen_birth_codes
     @counties.sort!
-    @freecen_csv_entry.record_valid = false
+    @freecen_csv_entry.record_valid = 'false'
     get_user_info_from_userid
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
@@ -204,39 +205,36 @@ class FreecenCsvEntriesController < ApplicationController
     @languages = FreecenValidations::VALID_LANGUAGE
   end
 
-  def propagate_alternate
-    @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
-    unless FreecenCsvEntry.valid_freecen_csv_entry?(@freecen_csv_entry)
-      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
-      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
-    end
-
-    success, message = @freecen_csv_entry.propagate_alternate
-    if success
-      flash[:notice] = 'The propagation of the alternate fields was was successful, the file is now locked against replacement until it has been downloaded.'
-      session[:propagated_alternate] = session[:propagate_alternate]
+  def propagate_pob
+    if params[:commit] == 'Submit'
+      @freecen_csv_entry = FreecenCsvEntry.find(params[:id])
+      @propagation_fields = params[:propagatepob][:propagation_fields]
+      @propagation_scope = params[:propagatepob][:propagation_scope]
+      get_user_info_from_userid
+      success, message = @freecen_csv_entry.propagate_pob(@propagation_fields, @propagation_scope, @user.userid)
+      if success
+        session[:propagated_alternate] = session[:propagate_alternate]
+      else
+        session.delete(:propagate_alternate)
+      end
+      flash[:notice] = success ? 'Propagation processed successfully' : message
+      redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     else
-      flash[:notice] = "The propagation of the alternate fields failed because #{message}."
-      session.delete(:propagate_alternate)
+      @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
+      unless FreecenCsvEntry.valid_freecen_csv_entry?(@freecen_csv_entry)
+        message = 'The entry was not correctly linked. Have your coordinator contact the web master'
+        redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+      end
+      @propagation_fields = params[:propagation_fields]
+      @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
+      @chapman_code = @freecen_csv_file.chapman_code
+      if @freecen_csv_entry.birth_county == @chapman_code || %w[OVF ENG SCT IRL WLS CHI].include?(@freecen_csv_entry.birth_county)
+        @scope = 'Collection'
+      else
+        @scope = 'File'
+      end
     end
-    redirect_to freecen_csv_entry_path(@freecen_csv_entry)
-  end
-
-  def propagate_note
-    @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
-    unless FreecenCsvEntry.valid_freecen_csv_entry?(@freecen_csv_entry)
-      message = 'The entry was not correctly linked. Have your coordinator contact the web master'
-      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
-    end
-
-    success, message = @freecen_csv_entry.propagate_note
-    if success
-      flash[:notice] = 'The propagation of the note field was was successful, the file is now locked against replacement until it has been downloaded.'
-    else
-      flash[:notice] = "The propagation of the note field failed because #{message}."
-    end
-    session.delete(:propagate_note)
-    redirect_to freecen_csv_entry_path(@freecen_csv_entry)
+    redirect_to freecen_csv_entry_path(@freecen_csv_entry) && return
   end
 
   def show
@@ -257,8 +255,9 @@ class FreecenCsvEntriesController < ApplicationController
     session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
     session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
     session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
-    session[:propagate_alternate] = @freecen_csv_entry.id unless verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry) || @freecen_csv_entry.record_valid == 'false'
-    session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present? && @freecen_csv_entry.record_valid == 'true'
+    session[:propagate_alternate] = @freecen_csv_entry.id unless verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry) || @freecen_csv_entry.record_valid.downcase == 'false'
+    session[:propagate_note] = @freecen_csv_entry.id unless @freecen_csv_entry.notes.blank? || verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry) || @freecen_csv_entry.record_valid.downcase == 'false'
+    # AEV session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present? && @freecen_csv_entry.record_valid.downcase == 'true'
   end
 
   def update
