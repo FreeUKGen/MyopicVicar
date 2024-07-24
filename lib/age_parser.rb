@@ -30,15 +30,15 @@ class AgeParser
 	  if compound_age?
 			case
 			when @age.match?('y')
-			  @age = @age.slice(0..(str.index('y')))
+			  @age = @age.slice(0..(age.index('y')))
 			  @age = @age.to_i + 1
 			  @age = "#{@age}y"
 			when @age.match?('m')
-			  @age = @age.slice(0..(str.index('m')))
+			  @age = @age.slice(0..(age.index('m')))
 			  @age = @age.to_i + 1
 			  @age = "#{@age}m"
 			when @age.match?('w')
-			  @age = @age.slice(0..(str.index('w')))
+			  @age = @age.slice(0..(age.index('w')))
 			  @age = @age.to_i + 1
 			  @age = "#{@age}w"
 			end
