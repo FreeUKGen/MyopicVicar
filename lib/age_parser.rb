@@ -28,17 +28,16 @@ class AgeParser
 	def process_age
 	  cleanse_age_unit
 	  if compound_age?
-			case @age
+			case
 			when @age.match?('y')
 			  @age = @age.slice(0..(str.index('y')))
 			  @age = @age.to_i + 1
 			  @age = "#{@age}y"
-			when @age.include?('m')
+			when @age.match?('m')
 			  @age = @age.slice(0..(str.index('m')))
 			  @age = @age.to_i + 1
 			  @age = "#{@age}m"
-			end
-			when @age.include?('w')
+			when @age.match?('w')
 			  @age = @age.slice(0..(str.index('w')))
 			  @age = @age.to_i + 1
 			  @age = "#{@age}w"
