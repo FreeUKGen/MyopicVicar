@@ -33,11 +33,11 @@ class AgeParser
 			  @age = @age.slice(0..(@age.index('y')))
 			  @age = @age.to_i + 1
 			  @age = "#{@age}y"
-			when @age.match?('m')
+			when @age.match?('m') && !@age.match?('y')
 			  @age = @age.slice(0..(@age.index('m')))
 			  @age = @age.to_i + 1
 			  @age = "#{@age}m"
-			when @age.match?('w')
+			when @age.match?('w') && !@age.match?('m') && !@age.match?('y')
 			  @age = @age.slice(0..(@age.index('w')))
 			  @age = @age.to_i + 1
 			  @age = "#{@age}w"
