@@ -131,7 +131,7 @@ class UserMailer < ActionMailer::Base
 
   def coordinator_feedback_reply(feedback, ccs_userids, message, sender_userid)
     @appname = appname
-    @feedback = feedbackappname
+    @feedback = feedback
     @message = message
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
     sender_email_address = get_email_address_from_userid(sender_userid)
