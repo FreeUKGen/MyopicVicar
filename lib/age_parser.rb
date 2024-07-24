@@ -51,7 +51,7 @@ class AgeParser
 		@age = @age.gsub(/\s+/, "")
 		unit_count = 0
 		AGE_RANK.each{|u|
-			unit_count = @age.count(u)
+			unit_count += @age.count(u)
 		}
 		unit_count > 1 
 	end
