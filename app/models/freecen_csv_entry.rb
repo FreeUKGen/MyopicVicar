@@ -2645,14 +2645,17 @@ class FreecenCsvEntry
     myage = age.to_i
     census_year = year
     adjustment = 0 # this is all we need to do for day and week age units
-    myage_unit_included = AgeParser.new(age).process_age.match?(/[A-Za-z]/) if age.present?
+    myage_with_unit = AgeParser.new(age).process_age
+    myage_unit_included = myage_with_unit.match?(/[A-Za-z]/) if age.present?
     logger.warn("myagggggggggggge = #{myage_unit_included}")
     if myage_unit_included
-      myage_unit = age[-1]
+      myage_unit = myage_with_unit[-1]
       if myage_unit == 'y'
+        myage = myage_with_unit.to_i
         adjustment = 0 - myage
       end
       if myage_unit == 'm'
+        myage = myage_with_unit.to_i
         if census_year == RecordType::CENSUS_1841
           # Census day: June 6, 1841
           #

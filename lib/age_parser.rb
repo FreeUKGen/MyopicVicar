@@ -43,6 +43,7 @@ class AgeParser
 			  @age = "#{@age}w"
 			end
 	  end
+	  logger.warn(@age)
 	  @age
 	end
 
