@@ -17,10 +17,10 @@ class AgeParser
 		@age = @age.gsub(month, 'm')
 	  }
 	  WEEK_UNIT.each{|week|
-		@age = @age.gsub(month, 'w')
+		@age = @age.gsub(week, 'w')
 	  }
 	  DAY_UNIT.each{|day|
-		@age = @age.gsub(month, 'd')
+		@age = @age.gsub(day, 'd')
 	  }
 	  @age = @age.strip
 	end
