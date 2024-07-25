@@ -12,7 +12,10 @@
     <% end %>
       <table class="table--bordered table--data">
         <% unless print_friendly %>
-          <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
+          <% if @search_query.bmd_record_type.count() > 1 %>
+            <p class="code-comment">MMN: mother's maiden name; AAD: age at death or date of birth; SS: spouse's surname.</p>
+          <% end %>
+          <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 contains mother's maiden name (births), age at death or date of birth (deaths) or spouse's surname (marriages); Column 4 can be sorted by event.</caption>
         <% end %>
         <thead>
           <tr>
@@ -57,16 +60,9 @@
                 </td>
               <% end %>
               <td class="table--data">
-                <dl>
-                  <strong>
-                    <dt class="ttip">
-                      <%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
-                    </dt>
-                  
-                  <dt>
-                    <%= format_quarter_year(search_record.QuarterNumber) %>
-                  </dt>
-                  <dt>
+                  <strong><%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
+                  <br/>
+                  <%= format_quarter_year(search_record.QuarterNumber) %>
                     <% if print_friendly %>
                       <%= search_record[:District] %>
                       <span class="ttip__text"> <%=" (Volume #{search_record[:Volume]} Page #{search_record[:Page]})"%></span>
@@ -79,11 +75,8 @@
                      <% end %>
                       Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
                     <% end %>
-                  </dt>
-                  <dt>
+                  <br/>
                      <%#= render partial: 'best_guess/more_information' %>
-                  </dt>
-                </dl>
               </td>
               <td>
                 <%= search_record.AssociateName %>
