@@ -10,16 +10,16 @@
         <%= "#{record_type}" %>
       </td>
     </tr>
-    <% if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
+    <%# if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
       <tr>
         <th scope="row">
           Date
         </th>
         <td>
-          <%= format_quarter(record.QuarterNumber) %>
+          <%= format_quarter_year(record.QuarterNumber) %>
         </td>
       </tr>
-    <% end %>
+    <%# end %>
     <tr>
       <th scope="row">
         District
@@ -76,6 +76,30 @@
 	      </td>
     	</tr>
     <% end %>
+    <% event_registration_number = record.event_registration_number %>
+    <% if event_registration_number.present? %>
+    <tr>
+      <th scope="row">
+        Registration number
+      </th>
+      <td >
+        <%= event_registration_number %>
+      </td>
+    </tr>
+    <% entry_number = record.event_registration %>
+      <tr>
+        <th scope="row">
+          Entry number
+        </th>
+        <td>
+          <% if entry_number.present?  %>
+            <%= entry_number %>
+          <% else %>
+            <%= "#{ record.Page }" %>
+          <% end %>
+        </td>
+      </tr>
+    <% else %>
     <tr>
       <th scope="row">
         Volume
@@ -101,19 +125,7 @@
         <% end %>
       </td>
     </tr>
-    <% if search %>
-    <% event_registration_number = record.event_registration_number %>
-    <% if event_registration_number.present?%>
-      <tr>
-        <th scope="row">
-          Registration number
-        </th>
-        <td >
-          <%= event_registration_number %>
-        </td>
-      </tr>
     <% end %>
-  <% end %>
     <tr>
       <th scope="row">
         Transcriber
