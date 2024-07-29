@@ -217,7 +217,10 @@ class FreecenCsvEntriesController < ApplicationController
       else
         session.delete(:propagate_alternate)
       end
-      flash[:notice] = success ? 'Propagation processed successfully' : message
+      @freecen_csv_entry.reload
+      @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
+      @freecen_csv_file.update_attributes(locked_by_transcriber: true)
+      flash[:notice] = success ? 'Propagation processed successfully, the file is now locked against replacement until it has been downloaded.' : message
       redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     else
       @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
@@ -228,7 +231,7 @@ class FreecenCsvEntriesController < ApplicationController
       @propagation_fields = params[:propagation_fields]
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
       @chapman_code = @freecen_csv_file.chapman_code
-      if @freecen_csv_entry.birth_county == @chapman_code || %w[OVF ENG SCT IRL WLS CHI].include?(@freecen_csv_entry.birth_county)
+      if @freecen_csv_entry.verbatim_birth_county == @chapman_code || %w[OVF ENG SCT IRL WLS CHI].include?(@freecen_csv_entry.verbatim_birth_county)
         @scope = 'Collection'
       else
         @scope = 'File'
@@ -257,7 +260,6 @@ class FreecenCsvEntriesController < ApplicationController
     session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
     session[:propagate_alternate] = @freecen_csv_entry.id unless verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry) || @freecen_csv_entry.record_valid.downcase == 'false'
     session[:propagate_note] = @freecen_csv_entry.id unless @freecen_csv_entry.notes.blank? || verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry) || @freecen_csv_entry.record_valid.downcase == 'false'
-    # AEV session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present? && @freecen_csv_entry.record_valid.downcase == 'true'
   end
 
   def update

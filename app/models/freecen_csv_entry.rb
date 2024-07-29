@@ -1910,13 +1910,13 @@ class FreecenCsvEntry
         add_notes = entry.notes.present? ? entry.notes + notes : notes
         entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: warning_message) unless entry.id == _id
       end
+      success = true
     when 'All'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
         warning_message = entry.warning_messages + need_review_message
         add_notes = entry.notes.present? ? entry.notes + notes : notes
         entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: warning_message) unless entry.id == _id
       end
-      success = true
       propagate_pob, propagate_notes = propagation_flags('Both')
       success = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
       error_message = success ? '' : 'Propagation successful for File but Propagation record for Whole Collection not created as it already exists.'
