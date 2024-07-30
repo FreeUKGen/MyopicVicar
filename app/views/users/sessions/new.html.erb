@@ -12,8 +12,8 @@
        <%= link_to 'Video on the login process and dealing with problems', "https://youtu.be/RCzRpnDH1tQ", target: :_blank %></p>
   </div>
   <div class="grid__item one-third lap-one-half palm-one-whole">
-    <%= form_for resource, html: {id: 'signin_form'}, :as => resource_name,
-                           :url => user_session_path do |f| %>
+    <%= form_for resource, html: {id: 'signin_form'}, as: resource_name,
+                           url: user_session_path do |f| %>
       <fieldset>
         <legend>Member login</legend>
         <div class='field session_username push--bottom'>
@@ -26,8 +26,8 @@
         </div>
         <% if devise_mapping.rememberable? %>
           <div class='field remember_me push--bottom'>
-            <%#= f.check_box :remember_me %>
-            <%#= label_tag 'authentication_devise_user_remember_me', "Keep me logged in", :class => "check-label"%>
+            <%= f.check_box :remember_me %>
+            <%= label_tag 'user_remember_me', "Keep me logged in", :class => "check-label"%>
           </div>
         <% end %>
         <div class="form-actions">
