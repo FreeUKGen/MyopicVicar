@@ -7,7 +7,7 @@ class Users::SessionsController < Devise::SessionsController
         before_action :clear_unauthenticated_flash, :only => [:new]
         #before_action :force_signup_when_no_users!
         skip_before_action :detect_authentication_devise_user!, only: [:create], raise: false
-        after_action :detect_authentication_devise_user!, only: [:create]
+       # after_action :detect_authentication_devise_user!, only: [:create]
 
         # GET /resource/sign_in
         def new
@@ -19,7 +19,7 @@ class Users::SessionsController < Devise::SessionsController
 
         def create
           super
-          rescue ::BCrypt::Errors::InvalidSalt, ::BCrypt::Errors::InvalidHash
+        rescue ::BCrypt::Errors::InvalidSalt, ::BCrypt::Errors::InvalidHash
           flash[:error] = t('password_encryption', scope: 'Incorrect Password')
           redirect_to new_user_password_path
         end

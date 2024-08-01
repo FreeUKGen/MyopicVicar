@@ -5,7 +5,7 @@ class User
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   devise  :encryptable, :encryptor => :freereg
-  alias devise_will_save_change_to_email? will_save_change_to_email?
+  #alias devise_will_save_change_to_email? will_save_change_to_email?
   attr_writer :login
   ## Database authenticatable
   field :username, type: String
@@ -46,6 +46,15 @@ class User
     _validators[:email].delete(email_uniq_validation)
     filter = _validate_callbacks.find{ |c| c.raw_filter == email_uniq_validation }
     skip_callback :validate, filter
+  end
+
+  def self.find_first_by_auth_conditions(warden_conditions)
+    conditions = warden_conditions.dup
+    if (login = conditions.delete(:login))
+      self.any_of({ :username =>  /^#{::Regexp.escape(login)}$/i }, { :email =>  /^#{::Regexp.escape(login)}$/i }).first
+    else
+      super
+    end
   end
 
   def userid_detail
