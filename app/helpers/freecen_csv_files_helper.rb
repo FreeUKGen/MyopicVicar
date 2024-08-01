@@ -6,7 +6,7 @@ module FreecenCsvFilesHelper
 
   def download_freecen_file
     link_to 'Download file', download_freecen_csv_file_path(@freecen_csv_file),
-      data: { confirm: 'Are you sure you want to download these entries?' }, method: :get, class: 'btn   btn--small', title: 'Download a copy of the file to your computer. This download WILL INCLUDE and on line changes. Downloading will remove any locks. It will be be stored in your downloads folder'
+      data: { confirm: 'Are you sure you want to download these entries?' }, method: :get, class: 'btn   btn--small', title: 'Download a copy of the file to your computer. This download WILL INCLUDE any online changes. Downloading will remove any locks. It will be be stored in your downloads folder'
   end
 
   def convert_header
@@ -106,11 +106,9 @@ module FreecenCsvFilesHelper
       title: 'Accepts all warning messages.'
   end
 
-
   def validate_freecen_file
-    validation_heading = @freecen_csv_file.validation ? 'Validation under way' : 'Commence validation'
-    link_to "#{validation_heading}", set_validation_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
-      title: 'Validation of file', data: { confirm:  'Are you sure you want to commence validation of the file?' }
+    link_to "Validation under way", set_validation_freecen_csv_file_path(@freecen_csv_file), class: 'btn   btn--small', method: :get,
+      title: 'Validation of file', data: { confirm:  'Are you sure - validation is already under way?' }
   end
 
   def incorporate_freecen_file

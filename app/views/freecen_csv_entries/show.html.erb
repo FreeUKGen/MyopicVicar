@@ -13,6 +13,7 @@
     <%= edit_entry %>
     <%= propagate_alternate%>
     <%= propagate_note%>
+    <%= propagate_both%>
     <%= accept_entry %>
     <%= reject_entry %>
   </div>
@@ -44,7 +45,7 @@
   toggle between hiding and showing the dropdown content */
   function citationToggle() {
     var x = document.getElementById("citation-dropdown");
-  
+
     if (x.style.display === "none") {
         x.style.display = "block";
     } else {
@@ -55,7 +56,7 @@
   window.addEventListener("load", function(){
     const no_javascript_elements = document.getElementsByClassName("no-javascript");
     const javascript_elements = document.getElementsByClassName("javascript");
-  
+
     for(let i = 0; i < no_javascript_elements.length; i++){
       no_javascript_elements[i].remove();
     }
