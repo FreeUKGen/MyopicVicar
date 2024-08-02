@@ -1846,24 +1846,26 @@ class FreecenCsvEntry
 
   def propagate_alternate(scope, userid)
     error_message = ''
-    need_review_message = 'Warning: Alternate fields have been adjusted and need review.'
     case scope
     when 'ED'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        warning_message = entry.warning_messages + need_review_message
-        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, warning_messages: warning_message) unless entry.id == _id
+        updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        updated_record_valid = updated_warnings.present? || entry.error_messages.present? ? 'false' : 'true'
+        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, warning_messages: updated_warnings, record_valid: updated_record_valid) unless entry.id == _id
       end
       success = true
     when 'File'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        warning_message = entry.warning_messages + need_review_message
-        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, warning_messages: warning_message) unless entry.id == _id
+        updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        updated_record_valid = updated_warnings.present? || entry.error_messages.present? ? 'false' : 'true'
+        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, warning_messages: updated_warnings, record_valid: updated_record_valid) unless entry.id == _id
       end
       success = true
     when 'All'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        warning_message = entry.warning_messages + need_review_message
-        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, warning_messages: warning_message) unless entry.id == _id
+        updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        updated_record_valid = updated_warnings.present? || entry.error_messages.present? ? 'false' : 'true'
+        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, warning_messages: updated_warnings, record_valid: updated_record_valid) unless entry.id == _id
       end
       propagate_pob, propagate_notes = propagation_flags('Alternative')
       success = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
@@ -1880,54 +1882,57 @@ class FreecenCsvEntry
     when 'ED'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
         warning_message = entry.warning_messages + need_review_message
-        add_notes = entry.notes.present? ? entry.notes + notes : notes
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
         entry.update_attributes(notes: add_notes, warning_messages: warning_message) unless entry.id == _id
       end
       success = true
     when 'File'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
         warning_message = entry.warning_messages + need_review_message
-        add_notes = entry.notes.present? ? entry.notes + notes : notes
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
         entry.update_attributes(notes: add_notes, warning_messages: warning_message) unless entry.id == _id
       end
       success = true
     when 'All'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
         warning_message = entry.warning_messages + need_review_message
-        add_notes = entry.notes.present? ? entry.notes + notes : notes
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
         entry.update_attributes(notes: add_notes, warning_messages: warning_message) unless entry.id == _id
       end
       propagate_pob, propagate_notes = propagation_flags('Notes')
       success = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
       error_message = success ? '' : 'Propagation successful for File but please note Propagation record for Collection already exists.'
-      ssuccess = true
+      success = true
     end
     [success, error_message]
   end
 
   def propagate_both(scope, userid)
     error_message = ''
-    need_review_message = 'Warning: Alternative POB and Notes fields have been adjusted and need review.'
+    notes_need_review_message = 'Warning: Notes field has been adjusted and needs review.'
     case scope
     when 'ED'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        warning_message = entry.warning_messages + need_review_message
-        add_notes = entry.notes.present? ? entry.notes + notes : notes
-        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: warning_message) unless entry.id == _id
+        updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        new_warning_message = updated_warnings + notes_need_review_message
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message) unless entry.id == _id
       end
       success = true
     when 'File'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        warning_message = entry.warning_messages + need_review_message
-        add_notes = entry.notes.present? ? entry.notes + notes : notes
-        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: warning_message) unless entry.id == _id
+        updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        new_warning_message = updated_warnings + notes_need_review_message
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message) unless entry.id == _id
       end
       success = true
     when 'All'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        warning_message = entry.warning_messages + need_review_message
-        add_notes = entry.notes.present? ? entry.notes + notes : notes
-        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: warning_message) unless entry.id == _id
+        updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        new_warning_message = updated_warnings + notes_need_review_message
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message) unless entry.id == _id
       end
       propagate_pob, propagate_notes = propagation_flags('Both')
       success = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
@@ -1958,6 +1963,14 @@ class FreecenCsvEntry
     [propagate_pob, propagate_notes]
   end
 
+  def remove_pob_warning_messages(warnings)
+    updated_warnings = ''
+    warning_message_parts = warnings.split('<br>')
+    warning_message_parts.each do |part|
+      updated_warnings += part unless part.include?('Warning:') && part.include?('Birth')
+    end
+    updated_warnings
+  end
 
   # labels/vals for dwelling page header section (body in freecen_individuals)
   def self.census_display_labels(year, chapman_code)
