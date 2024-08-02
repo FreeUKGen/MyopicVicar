@@ -231,11 +231,7 @@ class FreecenCsvEntriesController < ApplicationController
       @propagation_fields = params[:propagation_fields]
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
       @chapman_code = @freecen_csv_file.chapman_code
-      if @freecen_csv_entry.verbatim_birth_county == @chapman_code || %w[OVF ENG SCT IRL WLS CHI].include?(@freecen_csv_entry.verbatim_birth_county)
-        @scope = 'Collection'
-      else
-        @scope = 'File'
-      end
+      @scope = FreecenCsvEntry.propagation_scope(@freecen_csv_entry, @chapman_code)
     end
     redirect_to freecen_csv_entry_path(@freecen_csv_entry) && return
   end

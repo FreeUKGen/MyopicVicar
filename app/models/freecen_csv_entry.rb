@@ -174,6 +174,18 @@ class FreecenCsvEntry
       value
     end
 
+    def propagation_scope(entry, chapman_code)
+      if  entry.verbatim_birth_county == chapman_code ||
+          %w[OVF ENG SCT IRL WLS CHI].include?(entry.verbatim_birth_county) ||
+          (chapman_code == 'HAM' && %w[HAM IOW].include?(entry.verbatim_birth_county)) ||
+          (chapman_code == 'YKS' && %w[YKS ERY WRY NRY].include?(entry.verbatim_birth_county))
+        scope = 'Collection'
+      else
+        scope = 'File'
+      end
+      scope
+    end
+
     def update_parameters(params, entry)
       #clean up old null entries
       params = params.delete_if { |k, v| v == '' }
