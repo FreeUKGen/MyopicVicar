@@ -211,7 +211,7 @@ class FreecenCsvEntriesController < ApplicationController
       @propagation_fields = params[:propagatepob][:propagation_fields]
       @propagation_scope = params[:propagatepob][:propagation_scope]
       get_user_info_from_userid
-      success, message = @freecen_csv_entry.propagate_pob(@propagation_fields, @propagation_scope, @user.userid)
+      warnings_adjustment, success, message = @freecen_csv_entry.propagate_pob(@propagation_fields, @propagation_scope, @user.userid)
       if success
         session[:propagated_alternate] = session[:propagate_alternate]
       else
@@ -219,7 +219,8 @@ class FreecenCsvEntriesController < ApplicationController
       end
       @freecen_csv_entry.reload
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
-      @freecen_csv_file.update_attributes(locked_by_transcriber: true)
+      original_warning_count = @freecen_csv_file.total_warnings
+      @freecen_csv_file.adjust_total_warning_messages_and_lock(original_warning_count, warnings_adjustment)
       flash[:notice] = success ? 'Propagation processed successfully, the file is now locked against replacement until it has been downloaded.' : message
       redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     else
