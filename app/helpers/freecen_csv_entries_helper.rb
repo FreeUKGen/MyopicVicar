@@ -60,7 +60,7 @@ module FreecenCsvEntriesHelper
   end
 
   def propagate_note
-    if session[:propagate_note].present? && session[:propagate_note] == @freecen_csv_entry.id
+    if session[:propagate_note].present? && session[:propagate_note] == @freecen_csv_entry.id && @freecen_csv_entry.record_valid.downcase == 'true'
       link_to 'Propagate Notes Field', propagate_pob_freecen_csv_entry_path(id: @freecen_csv_entry._id, propagation_fields: 'Notes'), method: :get, class: "btn btn--small",
         title: 'Allows you to specify the scope of Propagation the Notes fields',
         data: { confirm: 'Are you sure you want to Propagate the Notes of this entry' }
