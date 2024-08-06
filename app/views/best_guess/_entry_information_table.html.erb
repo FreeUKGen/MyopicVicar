@@ -222,10 +222,10 @@
       <% unless (record.Confirmed & 512).zero? %>
         <tr>
           <th scope="row">
-            Refers
+            Linked records
           </th>
           <td>
-             <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+             <%= link_to "View linked record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
           </td>
         </tr>
       <% end %>
