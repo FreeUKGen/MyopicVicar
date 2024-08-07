@@ -1,3 +1,74 @@
+
+Conversation opened. 37 messages. 1 message unread.
+
+Skip to content
+Using Free UK Genealogy Mail with screen readers
+
+4 of 5,679
+Fwd: Performance query
+External
+Inbox
+
+Denise Colbert
+AttachmentsFeb 21, 2024, 8:52 AM
+Hi Vino, Could you please let me know this info for Josh? Best wishes, Denise Denise Colbert Chief Operating Officer, Free UK Genealogy CIO Registered in Englan
+34
+
+Nick Dunlop
+Attachments
+Jul 24, 2024, 5:15 AM (6 days ago)
+to Denise, me
+
+Hey Denise
+
+
+There is a big difference in ADX spend which is behind all of this. Also a big difference in CTR (click through rates) for both sites 
+
+Ad unit	Order	Total impressions	Total CPM and CPC revenue (A$)	Total average eCPM (A$)	Total CTR
+FRBMD_freebmdorguk	AdX_Fuse	5,344,592	2,283.12	0.43	0.08%
+FRBMD_freecenorguk	AdX_Fuse	70,740	70.53	1	0.48%
+FRBMD_freeregorg	AdX_Fuse	264,441	18.76	0.07	0.03%
+
+
+Buyers will direct more spend to sites where their ads are getting more clicks. 
+
+This will account for some of the difference but we also would like to update free-regs ads.txt file to make sure all demand is in place. 
+
+
+@vinod   - Can you please replace the ads.txt files on freereg and freecen with this one attached?   FreeBMD already has the latest one in place. 
+
+
+I will monitor and optimise further to help get more ADX revenue
+
+
+cheers Nick
+
+
+
+
+---- On  Tue, 23 Jul 2024 20:06:27 +1000 "Denise Colbert"<denise.colbert@freeukgenealogy.org.uk>  wrote ----
+...
+
+[Message clipped]  View entire message
+ One attachment
+  •  Scanned by Gmail
+
+Nick Dunlop
+12:59 AM (7 hours ago)
+to Denise, me
+
+Hi Vinod
+
+Can you please replace the ads.txt files on those sites asap? 
+
+
+cheers Nick
+
+---- On  Wed, 24 Jul 2024 14:15:10 +1000 Nick Dunlop<support@publift.com>  wrote ----
+...
+
+[Message clipped]  View entire message
+All done!Sure!Yes, all done.
 # Publift Fuse ads.txt #
 # Updated: July 2024 #
 # Contact: support@publift.com #

@@ -29,10 +29,13 @@ class SearchQueriesController < ApplicationController
   def adjust_search_query_parameters
     @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
     @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
-    @search_query['chapman_codes'] = ['', 'ERY', 'NRY', 'WRY'] if @search_query['chapman_codes'][1].eql?('YKS')
-    @search_query['birth_chapman_codes'] = ['', 'ERY', 'NRY', 'WRY'] if @search_query['birth_chapman_codes'][1].eql?('YKS')
-    @search_query['chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['chapman_codes'][1].eql?('CHI')
-    @search_query['birth_chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['birth_chapman_codes'][1].eql?('CHI')
+    composite_counties = %w[CHI ENG HAM IRL SCT WLS YKS]
+    if (composite_counties && @search_query['chapman_codes']).any?
+      @search_query['chapman_codes'] |= expand_search_query_composite_chapman_codes(composite_counties, @search_query['chapman_codes'])
+    end
+    if (composite_counties && @search_query['birth_chapman_codes']).any?
+      @search_query['birth_chapman_codes'] |= expand_search_query_composite_chapman_codes(composite_counties, @search_query['birth_chapman_codes'])
+    end
     @search_query.session_id = request.session_options[:id]
   end
 
@@ -81,6 +84,29 @@ class SearchQueriesController < ApplicationController
   def edit
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+  end
+
+  def expand_search_query_composite_chapman_codes(composite_counties, chapman_codes)
+    expanded_codes = []
+    composite_counties.each do |comp|
+      next unless chapman_codes.include?(comp)
+
+      name = ChapmanCode.name_from_code(comp)
+      case comp
+      when 'CHI'
+        expanded_codes |= %w[ALD GSY JSY SRK]
+      when 'YKS'
+        expanded_codes |= %w[ERY NRY WRY]
+      when 'HAM'
+        expanded_codes |= %w[IOW]
+      else
+        expanded_codes |= ChapmanCode::CODES[name].values
+      end
+      if comp == 'WLS'
+        expanded_codes |= %w[HEF]
+      end
+    end
+    expanded_codes
   end
 
   def index
