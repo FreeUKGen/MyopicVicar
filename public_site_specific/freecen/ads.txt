@@ -1,5 +1,76 @@
+
+Conversation opened. 37 messages. 1 message unread.
+
+Skip to content
+Using Free UK Genealogy Mail with screen readers
+
+4 of 5,679
+Fwd: Performance query
+External
+Inbox
+
+Denise Colbert
+AttachmentsFeb 21, 2024, 8:52 AM
+Hi Vino, Could you please let me know this info for Josh? Best wishes, Denise Denise Colbert Chief Operating Officer, Free UK Genealogy CIO Registered in Englan
+34
+
+Nick Dunlop
+Attachments
+Jul 24, 2024, 5:15 AM (6 days ago)
+to Denise, me
+
+Hey Denise
+
+
+There is a big difference in ADX spend which is behind all of this. Also a big difference in CTR (click through rates) for both sites 
+
+Ad unit	Order	Total impressions	Total CPM and CPC revenue (A$)	Total average eCPM (A$)	Total CTR
+FRBMD_freebmdorguk	AdX_Fuse	5,344,592	2,283.12	0.43	0.08%
+FRBMD_freecenorguk	AdX_Fuse	70,740	70.53	1	0.48%
+FRBMD_freeregorg	AdX_Fuse	264,441	18.76	0.07	0.03%
+
+
+Buyers will direct more spend to sites where their ads are getting more clicks. 
+
+This will account for some of the difference but we also would like to update free-regs ads.txt file to make sure all demand is in place. 
+
+
+@vinod   - Can you please replace the ads.txt files on freereg and freecen with this one attached?   FreeBMD already has the latest one in place. 
+
+
+I will monitor and optimise further to help get more ADX revenue
+
+
+cheers Nick
+
+
+
+
+---- On  Tue, 23 Jul 2024 20:06:27 +1000 "Denise Colbert"<denise.colbert@freeukgenealogy.org.uk>  wrote ----
+...
+
+[Message clipped]  View entire message
+ One attachment
+  •  Scanned by Gmail
+
+Nick Dunlop
+12:59 AM (7 hours ago)
+to Denise, me
+
+Hi Vinod
+
+Can you please replace the ads.txt files on those sites asap? 
+
+
+cheers Nick
+
+---- On  Wed, 24 Jul 2024 14:15:10 +1000 Nick Dunlop<support@publift.com>  wrote ----
+...
+
+[Message clipped]  View entire message
+All done!Sure!Yes, all done.
 # Publift Fuse ads.txt #
-# Updated: May 2024 #
+# Updated: July 2024 #
 # Contact: support@publift.com #
 
 # Publift
@@ -7,7 +78,6 @@
 OWNERDOMAIN=freebmd.org.uk
 MANAGERDOMAIN=publift.com
 publift.com, 01GVF7JDNG2YS5MGQ2VNV63ZEN, DIRECT
-
 
 # Google
 
@@ -75,7 +145,7 @@ pubmatic.com, 156212, RESELLER, 5d62403b186f2ace
 rubiconproject.com, 17960, RESELLER, 0bfd66d529a55807
 appnexus.com, 1019, RESELLER, f5ab79cb980f11d1
 video.unrulymedia.com, 2444764291, RESELLER
-contextweb.com, 558511, RESELLER,
+contextweb.com, 558511, RESELLER, 89ff185a4c4e857c
 krushmedia.com, AJxF6R572a9M6CaTvK, RESELLER,
 inmobi.com, b01aa06531c543d8a5fb9982f60afb00, RESELLER, 83e75a7ae333ca9d
 
@@ -238,7 +308,7 @@ indexexchange.com, 184081, RESELLER
 rubiconproject.com, 16414, RESELLER, 0bfd66d529a55807 #33Across #hb #tag
 rubiconproject.com, 21642, RESELLER, 0bfd66d529a55807 #33Across #hb #tag #viewable
 rubiconproject.com, 21434, RESELLER, 0bfd66d529a55807 #33Across #tag #ebda
-rubiconproject.com, 21720, RESELLER, 0bfd66d529a55807 #33Across EU #hb #tag
+rubiconproject.com, 21720, RESELLER, 0bfd66d529a55807 #33Across EU #hb #tag 
 
 # 33Across - PubMatic
 pubmatic.com, 156423, RESELLER, 5d62403b186f2ace #33Across #hb #tag #video
@@ -263,15 +333,18 @@ indexexchange.com, 191973, RESELLER, 50b1c356f2c5c8fc #33Across #hb #tag #viewab
 
 # 33Across - Conversant Media
 conversantmedia.com, 100141, RESELLER, 03113cd04947736d #hb #tag #video
-appnexus.com, 4052, RESELLER #33Across #hb
+appnexus.com, 4052, RESELLER #33Across #hb 
 contextweb.com, 561998, RESELLER, 89ff185a4c4e857c #33Across #hb
-openx.com, 540031703, RESELLER, 6a698e2ec38604c6 #33Across #hb
+openx.com, 540031703, RESELLER, 6a698e2ec38604c6 #33Across #hb 
 pubmatic.com, 158100, RESELLER, 5d62403b186f2ace #33Across #hb
 yahoo.com, 55771, RESELLER, e1a5b5b6e3255540 #33Across #hb
 lijit.com, 411121, RESELLER, fafdf38b16bf6b2b #SOVRN #hb
 admanmedia.com, 2050, RESELLER #hb
 Appnerve.com, 187287, RESELLER #hb
 rubiconproject.com, 23644, RESELLER, 0bfd66d529a55807 #hb
+smartyads.com,300045, RESELLER, fd2bde0ff2e62c5d #hb
+e-planning.net,1bf7b5d803f178c4,RESELLER,c1ba615865ed87b2
+video.unrulymedia.com, 645663965, RESELLER
 
 # 33Across - Google
 google.com, pub-9557089510405422, RESELLER, f08c47fec0942fa0 #33Across #tag
@@ -290,7 +363,7 @@ appnexus.com, 3663, RESELLER, f5ab79cb980f11d1 #33Across #tag
 yahoo.com, 55029, RESELLER, e1a5b5b6e3255540 #33Across #tag
 
 # 33Across - Pulsepoint
-contextweb.com, 561516, RESELLER, 89ff185a4c4e857c #33Across #hb #tag
+contextweb.com, 561516, RESELLER, 89ff185a4c4e857c #33Across #hb #tag 
 
 # 33Across - TripleLift
 triplelift.com, 12503, RESELLER, 6c33edb13117fd86
@@ -313,6 +386,7 @@ sharethrough.com, 6qlnf8SY, RESELLER, d53b998a7bd4ecd2
 triplelift.com, 12158, RESELLER, 6c33edb13117fd86
 rubiconproject.com, 20744, RESELLER, 0bfd66d529a55807
 pubmatic.com, 158154, RESELLER, 5d62403b186f2ace
+sonobi.com, b43e9530e7, RESELLER, d1a215d9eb5aee9e
 
 # 33Across - Unruly
 video.unrulymedia.com, 2439829435, DIRECT
@@ -513,41 +587,74 @@ sharethrough.com, OAW69Fon, RESELLER, d53b998a7bd4ecd2
 # Adagio
 
 adagio.io, 1140, DIRECT
+
+# Adagio - Magnite
 rubiconproject.com, 19116, RESELLER, 0bfd66d529a55807
+   
+# Adagio - Pubmatic
 pubmatic.com, 159110, RESELLER, 5d62403b186f2ace
+   
+# Adagio - Improve Digital
 improvedigital.com, 1790, RESELLER
+   
+# Adagio - Onetag
 onetag.com, 6b859b96c564fbe, RESELLER
+appnexus.com, 13099, RESELLER
+pubmatic.com, 161593, RESELLER, 5d62403b186f2ace
+rubiconproject.com, 11006, RESELLER, 0bfd66d529a55807
+   
+# Adagio - Index Exchange
 indexexchange.com, 194558, RESELLER
+   
+# Adagio - 33Across
 33across.com, 0015a00002oUk4aAAC, RESELLER, bbea06d9c4d2853c
 yahoo.com, 57289, RESELLER, e1a5b5b6e3255540
 appnexus.com, 10239, RESELLER, f5ab79cb980f11d1
 rubiconproject.com, 16414, RESELLER, 0bfd66d529a55807
+pubmatic.com, 156423, RESELLER, 5d62403b186f2ace
+rubiconproject.com, 21642, RESELLER, 0bfd66d529a55807
+conversantmedia.com, 100141, RESELLER
+indexexchange.com, 191973, RESELLER, 50b1c356f2c5c8fc
+triplelift.com, 12503, RESELLER, 6c33edb13117fd86
+   
+# Adagio - Equativ
+smartadserver.com, 3554, RESELLER
+pubmatic.com, 156439, RESELLER, 5d62403b186f2ace
+pubmatic.com, 154037, RESELLER, 5d62403b186f2ace
+rubiconproject.com, 16114, RESELLER, 0bfd66d529a55807
+openx.com, 537149888, RESELLER, 6a698e2ec38604c6
+appnexus.com, 3703, RESELLER, f5ab79cb980f11d1
+loopme.com, 5679, RESELLER, 6c8d5f95897a5a3b
+video.unrulymedia.com, 2564526802, RESELLER
+pubnative.net, 1006576, RESELLER, d641df8625486a7b
+admanmedia.com, 43, RESELLER
+sharethrough.com, OAW69Fon, RESELLER, d53b998a7bd4ecd2
+   
+# Adagio - Sovrn
 lijit.com, 367236, RESELLER, fafdf38b16bf6b2b
-
-
+openx.com, 538959099, RESELLER, 6a698e2ec38604c6
+pubmatic.com, 137711, RESELLER, 5d62403b186f2ace
+pubmatic.com, 156212, RESELLER, 5d62403b186f2ace
+rubiconproject.com, 17960, RESELLER, 0bfd66d529a55807
+   
+# Adagio - Freewheel
+freewheel.tv, 1568036, RESELLER
+freewheel.tv, 1568041, RESELLER
+   
 # Adagio - OpenX
 openx.com, 558899373, RESELLER, 6a698e2ec38604c6
-
+   
 # Adagio - Triplelift
 triplelift.com, 13482, RESELLER, 6c33edb13117fd86
-
+   
 # Adagio - E-Planning
 e-planning.net, 83c06e81531537f4, RESELLER, c1ba615865ed87b2
 pubmatic.com, 156631, RESELLER, 5d62403b186f2ace
 openx.com, 541031350, RESELLER, 6a698e2ec38604c6
 rubiconproject.com, 12186, RESELLER, 0bfd66d529a55807
-
-# Adagio - Equativ
-smartadserver.com, 3554, RESELLER
-pubnative.net, 1006576, RESELLER, d641df8625486a7b
-admanmedia.com, 43, RESELLER
-
-# Adagio 33Across
-conversantmedia.com, 100141, RESELLER
-
-# Adagio - Nexxen -
+   
+# Adagio - Nexxen
 video.unrulymedia.com, 5672421953199218469, RESELLER
-
 # Sharethrough
 
 sharethrough.com, EU8CIOkx, RESELLER, d53b998a7bd4ecd2
@@ -629,39 +736,34 @@ rubiconproject.com, 25198, RESELLER, 0bfd66d529a55807
 # OMS
 
 onlinemediasolutions.com, 20605, DIRECT
-pubmatic.com, 161332, RESELLER, 5d62403b186f2ace
 onetag.com, 75753f1ebcc343c, RESELLER
+pubmatic.com, 161332, RESELLER, 5d62403b186f2ace
+amxrtb.com, 105199514, RESELLER
 rubiconproject.com, 20416, RESELLER, 0bfd66d529a55807
 onomagic.com, 206051, DIRECT
-amxrtb.com, 105199514, RESELLER
-appnexus.com, 11801, RESELLER
-sovrn.com, 374814, RESELLER, fafdf38b16bf6b2b
-lijit.com, 374814, RESELLER, fafdf38b16bf6b2b
 yieldmo.com, 2757543169808605705, RESELLER
 audienciad.com, 206052, DIRECT
-pubmatic.com, 163517, RESELLER, 5d62403b186f2ace
-advibe.media, 820605, DIRECT
+appnexus.com, 11801, RESELLER
+onetag.com, 7b561459c997848, RESELLER
+sovrn.com, 374814, RESELLER, fafdf38b16bf6b2b
+lijit.com, 374814, RESELLER, fafdf38b16bf6b2b
+openx.com, 537153209, RESELLER, 6a698e2ec38604c6
+video.unrulymedia.com, 6694405583287859332, RESELLER
+aps.amazon.com, 48266a61-b3d9-4cb7-b172-553abc6a42a4, DIRECT
 rubiconproject.com, 24364, RESELLER, 0bfd66d529a55807
 getmediamx.com, 1220605, DIRECT
+indexexchange.com, 197494, RESELLER, 50b1c356f2c5c8fc
+appnexus.com, 15629, RESELLER, f5ab79cb980f11d1
+pubmatic.com, 163517, RESELLER, 5d62403b186f2ace
+advibe.media, 820605, DIRECT
 rubiconproject.com, 25722, RESELLER, 0bfd66d529a55807
 smartadserver.com, 4483, RESELLER
 limpid.tv, 920605, DIRECT
-appnexus.com, 15629, RESELLER, f5ab79cb980f11d1
-onetag.com, 7b561459c997848, RESELLER
-openx.com, 537153209, RESELLER, 6a698e2ec38604c6
-appnexus.com, 15710, RESELLER
 Media.net, 8CUB46Z7R, RESELLER
-indexexchange.com, 197494, RESELLER, 50b1c356f2c5c8fc
-smartadserver.com, 4253, RESELLER
-loopme.com, 11228, RESELLER, 6c8d5f95897a5a3b
 sonobi.com, 3aed893727, RESELLER, d1a215d9eb5aee9e
-video.unrulymedia.com, 6694405583287859332, RESELLER
 loopme.com, 12733, RESELLER, 6c8d5f95897a5a3b
-sharethrough.com, r4ScMSsf, RESELLER
-aps.amazon.com, 48266a61-b3d9-4cb7-b172-553abc6a42a4, DIRECT
 yieldmo.com, 3510470934114804386, RESELLER
-sharethrough.com, Ey4o0VpT, RESELLER, d53b998a7bd4ecd2
-richaudience.com, pbFfC4454A, RESELLER
+smartadserver.com, 4253, RESELLER
 adyoulike.com, e9a771d72c076dbe3cafc2c6477f9238, RESELLER
 
 
@@ -1036,4 +1138,4 @@ pubmatic.com, 156700, RESELLER, 5d62403b186f2ace #kiosked
 rubiconproject.com, 17960, RESELLER, 0bfd66d529a55807 #kiosked
 
 #Adsense
-#google.com, pub-5379635334920389, DIRECT, f08c47fec0942fa0
+#google.com, pub-7825403497160061, DIRECT, f08c47fec0942fa0
