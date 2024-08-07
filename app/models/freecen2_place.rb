@@ -172,7 +172,8 @@ class Freecen2Place
       when 'Yorkshire'
         county_codes = %w[ERY NRY WRY]
       when 'Channel Islands'
-        county_codes = ChapmanCode::CODES['Islands'].values
+        all_islands = ChapmanCode::CODES['Islands'].values
+        county_codes = all_islands.reject { |element| element == 'IOM' }
       when 'England'
         county_codes = ChapmanCode::CODES['England'].values
       when 'Ireland'
@@ -186,6 +187,9 @@ class Freecen2Place
       when 'London (City)'
         # add Kent, Middlesex and Surrey to London - story 1627
         county_codes = %w[LND KEN MDX SRY]
+      when 'Hampshire'
+        # Add Isle of Wight  to Hampshire - story 1800
+        county_codes = %w[HAM IOW]
       else
         county_codes << ChapmanCode.values_at(county)
       end

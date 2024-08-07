@@ -177,15 +177,16 @@ class SearchQuery
     def add_birth_place_when_absent(rec)
       return rec if rec[:birth_place].present?
 
+      birth_place = ''
       search_record = SearchRecord.find_by(_id: rec[:_id])
       if search_record.freecen_csv_entry_id.present?
         entry = FreecenCsvEntry.find_by(_id: search_record.freecen_csv_entry_id)
-        birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place
+        birth_place = entry.birth_place.present? ? entry.birth_place : entry.verbatim_birth_place if entry.present?
         search_record.set(birth_place: birth_place) if entry.present?
       else
         individual = search_record.freecen_individual_id
         actual_individual = FreecenIndividual.find_by(_id: individual) if individual.present?
-        birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place
+        birth_place = actual_individual.birth_place.present? ? actual_individual.birth_place : actual_individual.verbatim_birth_place if actual_individual.present?
         search_record.set(birth_place: birth_place) if actual_individual.present?
       end
       rec['birth_place'] = birth_place
@@ -480,8 +481,8 @@ class SearchQuery
       include_record = include_record_for_type(search_name)
     elsif last_name.blank? && first_name.present? && Text::Soundex.soundex(first_name) == Text::Soundex.soundex(search_name[:first_name])
       include_record = include_record_for_type(search_name)
-    #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
-     # include_record = include_record_for_type(search_name)
+      #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
+      # include_record = include_record_for_type(search_name)
     end
     include_record
   end
@@ -496,8 +497,8 @@ class SearchQuery
       include_record = include_record_for_type(search_name)
     elsif last_name.blank? && first_name.present? && first_name.downcase == search_name_first_name
       include_record = include_record_for_type(search_name)
-    #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
-     # include_record = include_record_for_type(search_name)
+      #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
+      # include_record = include_record_for_type(search_name)
     end
     include_record
   end
@@ -874,10 +875,10 @@ class SearchQuery
   def search_params
     params = {}
     params.merge!(name_search_params)
-   # params.merge!(possible_name_search_params)
+    # params.merge!(possible_name_search_params)
     params.merge!(place_search_params)
     params.merge!(record_type_params)
-   # params.merge!(possible_last_names_params)
+    # params.merge!(possible_last_names_params)
     params.merge!(date_search_params)
     params
   end
