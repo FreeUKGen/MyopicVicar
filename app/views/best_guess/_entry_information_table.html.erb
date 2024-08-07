@@ -203,7 +203,7 @@
   </tbody>
 </table>
 <% if record.DistrictFlag > 0 %>
-  <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip != district.DistrictName.strip %>
+  <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
     <p id="district-query">
       <% if record[:District].strip.downcase != district.DistrictName.strip.downcase %><%= " District recorded as #{record[:District]} not #{district.DistrictName}. " %><% end %>
       <% if record.district_misspelt  %> The District name is a misspelt alternative form of the official name <%= "'#{district.DistrictName.strip}'" %>.<% end %>
