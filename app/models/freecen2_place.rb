@@ -172,7 +172,8 @@ class Freecen2Place
       when 'Yorkshire'
         county_codes = %w[ERY NRY WRY]
       when 'Channel Islands'
-        county_codes = ChapmanCode::CODES['Islands'].values
+        all_islands = ChapmanCode::CODES['Islands'].values
+        county_codes = all_islands.reject { |element| element == 'IOM' }
       when 'England'
         county_codes = ChapmanCode::CODES['England'].values
       when 'Ireland'
