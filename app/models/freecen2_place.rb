@@ -187,6 +187,9 @@ class Freecen2Place
       when 'London (City)'
         # add Kent, Middlesex and Surrey to London - story 1627
         county_codes = %w[LND KEN MDX SRY]
+      when 'Hampshire'
+        # Add Isle of Wight  to Hampshire - story 1800
+        county_codes = %w[HAM IOW]
       else
         county_codes << ChapmanCode.values_at(county)
       end
