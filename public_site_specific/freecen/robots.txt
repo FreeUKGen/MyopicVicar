@@ -1,6 +1,5 @@
 # robots.txt for www.freecen.org.uk
-
-User-agent: *
+User-agent: Mediapartners-Google
 Allow: /cms/about
 Allow: /cms/donate
 Allow: /cms/help
