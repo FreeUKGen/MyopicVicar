@@ -175,12 +175,15 @@ class Freecen2PiecesController < ApplicationController
     current_piece_number = params[:current_piece_number]
     form_pieces = current_piece_number.split(',')
     form_pieces = form_pieces.map(&:squish)
-    piece_ids.each do |piece_id|
-      piece = Freecen2Piece.find(piece_id)
-      piece.update_attributes(piece_availability: params[:piece_availability], piece_digitised: params[:piece_digitised])
-      if piece.errors.any?
-        flash[:notice] = "The update of the piece status failed #{piece.errors.full_messages}."
-        redirect_back(fallback_location: locate_other_pieces_freecen2_piece_path(current_piece_number)) && return
+    form_pieces.each do |p|
+      pieces_to_be_updated =  params["#{p}_pieces"]
+      pieces_to_be_updated.each do |piece_id|
+        piece = Freecen2Piece.find(piece_id)
+        piece.update_attributes(piece_availability: params["#{p}_piece_availability"], piece_digitised: params["#{p}_piece_digitised"])
+        if piece.errors.any?
+          flash[:notice] = "The update of the piece status failed #{piece.errors.full_messages}."
+          redirect_back(fallback_location: locate_other_pieces_freecen2_piece_path(current_piece_number)) && return
+        end
       end
     end
     flash[:notice] = 'Update was successful'
@@ -200,24 +203,31 @@ class Freecen2PiecesController < ApplicationController
   end
 
    def locate_other_pieces
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
-    @number = params[:number]
-    numbers_array = params[:number].split(',')
-    @cleaned_numbers = numbers_array.map(&:squish)
-    @piece_hash = {}
-    @cleaned_numbers.each do |number|
-      year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(number, '')
-      piece_information = Freecen2Piece.where(number: piece).first
-      next unless piece_information.present?
-      piece_chapman_code = piece_information.chapman_code
-      session[:type] = 'locate_other_pieces'
-      find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
-      @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
-      @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
-      @associated_pieces = get_pieces(piece_number, year, piece_chapman_code) if find_associated_pieces
-      @piece_hash[number] = {freecen2_piece: @freecen2_pieces, associated_piece: @associated_pieces}
-    end
+   redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
+   @number = params[:number]
+   numbers_array = params[:number].split(',')
+   @cleaned_numbers = numbers_array.map(&:squish)
+   @piece_hash = {}
+   @cleaned_numbers.each do |number|
+     year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(number, '')
+     piece_information = Freecen2Piece.where(number: piece).first
+     next unless piece_information.present?
+     piece_chapman_code = piece_information.chapman_code
+     session[:type] = 'locate_other_pieces'
+     find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
+     @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
+     @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
+     @associated_pieces = get_pieces(piece_number, year, piece_chapman_code) if find_associated_pieces
+     @piece_hash[number] = {freecen2_piece: @freecen2_pieces, associated_piece: @associated_pieces}
+   end
     @piece_hash
+   @all_pieces = []
+   @piece_hash.each do|key, value|
+     freecen2_pieces = value[:freecen2_piece].present? ? value[:freecen2_piece] : []
+     associated_pieces = value[:associated_piece].present? ? value[:associated_piece] : []
+     associated_pieces.present? ? @all_pieces << associated_pieces : @all_pieces << freecen2_pieces
+   end
+   @all_pieces = @all_pieces.flatten
   end
 
   def get_pieces(piece_number, year,piece_chapman_code)

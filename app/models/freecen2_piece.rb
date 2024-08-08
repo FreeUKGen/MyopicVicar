@@ -794,7 +794,7 @@ class Freecen2Piece
       }
     end
     if csv_files.present?
-      inprogress_csv_files = csv_files.where(incorporated: false, "userid" => {'$ne': null})
+      inprogress_csv_files = csv_files.where(incorporated: false, "userid" => {'$exists': true})
     end
     if inprogress_csv_files.present?
       inprogress_status = 'Yes'
