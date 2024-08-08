@@ -65,11 +65,11 @@
                      <% else %>
                        <%= search_record[:District] %>
                      <% end %>
-                      <% registration_number = search_record.event_registration_number %>
-                      <% entry_number = search_record.event_registration %>
-                      <% if registration_number.present? %>
-                        Reg. no. <%= registration_number %>
-                        Entry no. <% if entry_number.present? %> <%= entry_number %> <% else %> <%= search_record[:Page] %> <% end %>
+                      <% if search_record.register_entry_number_format %>
+                        <% register_number = search_record.event_registration_number %>
+                        <% entry_number = search_record.event_registration %>
+                        <% if register_number.present? %> Reg. no. <%= register_number %><% end %>
+                        Entry no. <%# if entry_number.present? %> <%#= entry_number %> <%# else %> <%= search_record[:Page] %> <%# end %>
                       <% else %>
                         Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
                       <% end %>

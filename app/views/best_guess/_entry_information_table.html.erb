@@ -76,29 +76,31 @@
 	      </td>
     	</tr>
     <% end %>
-    <% event_registration_number = record.event_registration_number %>
-    <% if event_registration_number.present? %>
+    <% if record.register_entry_number_format %>
     <tr>
       <th scope="row">
-        Registration number
+        Register number
       </th>
       <td >
-        <%= event_registration_number %>
+        <% event_register_number = record.event_registration_number %>
+        <% if event_register_number.present? %>
+          <%= event_register_number  %>
+        <% end %>
       </td>
     </tr>
-    <% entry_number = record.event_registration %>
-      <tr>
-        <th scope="row">
-          Entry number
-        </th>
-        <td>
-          <% if entry_number.present?  %>
-            <%= entry_number %>
-          <% else %>
-            <%= "#{ record.Page }" %>
-          <% end %>
-        </td>
-      </tr>
+    <tr>
+      <th scope="row">
+        Entry number
+      </th>
+      <td>
+        <%# event_entry_number = record.event_registration %>
+        <%# if event_entry_number.present?  %>
+          <%#= event_entry_number %>
+        <%# else %>
+          <%= "#{ record.Page }" %>
+        <%# end %>
+      </td>
+    </tr>
     <% else %>
     <tr>
       <th scope="row">
