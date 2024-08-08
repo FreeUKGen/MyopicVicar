@@ -203,8 +203,8 @@
   </tbody>
 </table>
 <% if record.DistrictFlag > 0 %>
-  <h2>Queries relating to this entry</h2>
   <div>
+    <h2>Queries relating to this entry</h2>
   <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
       <div id="district-query">
         <h3>District name</h3>
