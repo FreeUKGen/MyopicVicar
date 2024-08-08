@@ -203,29 +203,40 @@
   </tbody>
 </table>
 <% if record.DistrictFlag > 0 %>
+  <h2>Queries relating to this entry</h2>
+  <div>
   <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
-    <p id="district-query">
-      <% if record[:District].strip.downcase != district.DistrictName.strip.downcase %><%= " District recorded as #{record[:District]} not #{district.DistrictName}. " %><% end %>
-      <% if record.district_misspelt  %> The District name is a misspelt alternative form of the official name <%= "'#{district.DistrictName.strip}'" %>.<% end %>
-      <% if record.district_invented %> The District name is not an official name or a recognized alternative form of name. <% end %>
-      <% if record.bad_date_for_district %> The date does not fall within the range of dates when this District was active.<% end %>
-      <a href="#link-to-district-query">[back to district]</a>
-    </p>
+      <div id="district-query">
+        <h3>District name</h3>
+        <p>
+          <% if record[:District].strip.downcase != district.DistrictName.strip.downcase %><%= " District recorded as #{record[:District]} not #{district.DistrictName}. " %><% end %>
+          <% if record.district_misspelt  %> The District name is a misspelt alternative form of the official name <%= "'#{district.DistrictName.strip}'" %>.<% end %>
+          <% if record.district_invented %> The District name is not an official name or a recognized alternative form of name. <% end %>
+          <% if record.bad_date_for_district %> The date does not fall within the range of dates when this District was active.<% end %>
+          <a href="#link-to-district-query">[back to district]</a>
+        </p>
+      </div>
   <% end %>
   <% if record.bad_volume_for_district %>
-    <p id="volume-query">
-      <% if record.bad_volume_for_district %> The volume number does not have one of the expected values for this District/Quarter.<% end %>
-      <a href="#link-to-volume-query">[back to volume]</a>
-    </p>
+      <div id="volume-query">
+        <h3>Volume number</h3>
+        <p>
+          <% if record.bad_volume_for_district %> The volume number does not have one of the expected values for this District/Quarter.<% end %>
+          <a href="#link-to-volume-query">[back to volume]</a>
+        </p>
+      </div>
   <% end %>
   <% if record.bad_page_range_for_district or record.page_range_not_checked %>
-    <p id="page-query">
-      <% if record.bad_page_range_for_district %> The page number does not have one of the expected values for this District/Quarter.<% end %>
-      <% if record.page_range_not_checked %> The page range cannot be checked because the data provided is not sufficiently precise.<% end %>
-      <a href="#link-to-page-query">[back to page]</a>
-    </p>
+      <div id="page-query">
+        <h3>Page number</h3>
+        <p>
+          <% if record.bad_page_range_for_district %> The page number does not have one of the expected values for this District/Quarter.<% end %>
+          <% if record.page_range_not_checked %> The page range cannot be checked because the data provided is not sufficiently precise.<% end %>
+          <a href="#link-to-page-query">[back to page]</a>
+        </p>
+      </div>
   <% end %>
-
+  </div>
 <% end %>
-<p>Do you need help with this? There is information about quarters, districts, and how to find the partner in a marriage in the Help section. Use the link in the menu at the top of the page.</p>
+<p>Do you need help with this? There is information about quarters, districts, and how to find the partner in a marriage in the <a href="/cms/help">Help section</a>.</p>
 <%#= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? %>
