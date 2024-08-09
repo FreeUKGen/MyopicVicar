@@ -21,7 +21,18 @@
   <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} of County: #{@county}" %></h2>
 <% end %>
 <div class='scrollable'>
-  <table  class="table--bordered table--data table--striped my-width" >
+  <table  class="table--bordered table--data table--striped my-width" style='table-layout: fixed;'>
+    <colgroup>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t30'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+    </colgroup>
     <caption>CAP Report</caption>
     <thead >
       <tr>
@@ -43,7 +54,7 @@
             <td><%= piece.display_piece_number(@chapman_code) %></td>
             <td><%= piece.freecen2_district.name %></td>
             <td><%= piece.name %></td>
-            <td><%= piece.civil_parish_names %></td>
+            <td style="overflow: hidden; width: 180px; text-wrap: wrap;"><%= piece.civil_parish_names %></td>
             <td><%= piece.piece_availability %></td>
             <td><%= piece.piece_digitised %></td>
             <td>
