@@ -82,6 +82,7 @@ module UseridRole
       'volunteer_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Gazetteer', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeCEN Handbook', 'Display County Coordinators', 'Display Syndicate Coordinators', 'FreeUKGenealogy  Policies'],
       'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Gazetteer', 'Message System','Place Edit Reasons', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'Display County Coordinators', 'Display Syndicate Coordinators',  'FreeUKGenealogy  Policies'],
       'newsletter_coordinator' => ['Profile', 'Contacts', 'Database Statistics','Search Statistics', 'Search Performance', 'Site Statistics', 'Transcriber Statistics','Display County Coordinators', 'Display Syndicate Coordinators',  'FreeUKGenealogy  Policies']
+    }
   end
   #'/messages/communications?source=original',
   OPTIONS_TRANSLATION = {
