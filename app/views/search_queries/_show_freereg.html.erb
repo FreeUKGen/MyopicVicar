@@ -1,6 +1,6 @@
-<% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<% print_friendly = defined?(@printable_format) && @printable_format ? true : false %>
 <% unless print_friendly %>
-  <%= render(partial: app_specific_partial("search_result_form")) %>
+  <%= render(partial: app_specific_partial('search_result_form')) %>
 <% end %>
 
 <div class="container">
@@ -8,17 +8,21 @@
     <div class='' id='results_table' style="padding-left: 0;">
       <div class="grid__item one-whole">
         <%= render(
-          partial: app_specific_partial("desktop"),
-          locals: {
-            search_results: @paginatable_array,
-            ucf_results: @ucf_results
-          }
-        ) %>
+              partial: app_specific_partial('desktop'),
+              locals: {
+                search_results: @paginatable_array,
+                inclusive: @search_query.inclusive,
+                witness: @search_query.witness,
+                first_name: @search_query.first_name,
+                last_name: @search_query.last_name,
+                ucf_results: @ucf_results
+              }
+            ) %>
       </div>
 
       <div class="grid__item one-whole">
         <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
-          <%= render "please_donate" %>
+          <%= render 'please_donate' %>
           <!-- GAM 71161633/FRBMD_freeregorg/freereg_hrec_3-->
           <div data-fuse="22945846128"></div>
         <% end %>
@@ -33,8 +37,7 @@
         </div>
         <div
           class="grid__item one-whole push--top"
-          style="position: sticky; top:0; align-self: start;"
-        >
+          style="position: sticky; top:0; align-self: start;">
           <!-- GAM 71161633/FRBMD_freeregorg/freereg_vrec_1 -->
           <div data-fuse="22945846137"></div>
         </div>
