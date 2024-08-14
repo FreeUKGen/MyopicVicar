@@ -1,59 +1,95 @@
 <div class='container push--bottom'>
-  <div class="desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole">
+  <div
+    class="
+      desk-wide-seven-tenths
+      desk-seven-tenths
+      lap-seven-tenths
+      palm-one-whole
+    ">
 
-    <%= form_with(url: search_query_path(@search_query), method: :get, local: true,  id: 'filter_form') do |form| %>
+    <%= form_with(url: search_query_path(@search_query), method: :get, local: true, id: 'filter_form') do |form| %>
       <div class="grid">
-        <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
-          <%= form.label :filter_results, "Filter By" %>
-          <%= form.select :filter_option,
-                      ["Baptism", "Marriage", "Burial", "Clear Filter"],
-                      selected: @filter_condition,
-                      prompt: "Filter By",
-                      id: "filter_results",
-                      tabindex: "0" %>
-        </div>
+        <% if @search_query.record_type.blank? %>
+          <div
+            class="
+              grid__item
+              desk-wide-one-quarter
+              desk-one-quarter
+              lap-one-half
+              palm-one-whole
+            ">
+            <%= form.label :filter_results, 'Filter By' %>
+            <%= form.select :filter_option,
+                            ['Baptism', 'Marriage', 'Burial', 'Clear Filter'],
+                            selected: @filter_condition,
+                            prompt: 'Filter By',
+                            id: 'filter_results',
+                            tabindex: '0' %>
+          </div>
+        <% end %>
 
-        <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
-          <%= form.label "sort_results", "Sort By" %>
+        <div
+          class="
+            grid__item
+            desk-wide-one-quarter
+            desk-one-quarter
+            lap-one-half
+            palm-one-whole
+          ">
+          <%= form.label 'sort_results', 'Sort By' %>
           <%= form.select :sort_option,
-                      ["Person", "Record Type", "Event Date", "County", "Place"],
-                      selected: @sort_condition,
-                      prompt: "Sort By",
-                      id: "sort_results",
-                      tabindex: "0" %>
+                          ['Person', 'Record Type', 'Event Date', 'County', 'Place'],
+                          selected: @sort_condition,
+                          prompt: 'Sort By',
+                          id: 'sort_results',
+                          tabindex: '0' %>
         </div>
 
-        <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
-          <%= form.label "results_per_page", "Show" %>
+        <div
+          class="
+            grid__item
+            desk-wide-one-quarter
+            desk-one-quarter
+            lap-one-half
+            palm-one-whole
+          ">
+          <%= form.label 'results_per_page', 'Show' %>
           <%= form.select :results_per_page,
-                      [5, 20, 40, 60, 80, 100],
-                      selected: @results_per_page,
-                      prompt: "Results per Page",
-                      id: "results_per_page",
-                      tabindex: "0" %>
+                          [5, 20, 40, 60, 80, 100],
+                          selected: @results_per_page,
+                          prompt: 'Results per Page',
+                          id: 'results_per_page',
+                          tabindex: '0' %>
         </div>
 
-        <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
+        <div
+          class="
+            grid__item
+            desk-wide-one-quarter
+            desk-one-quarter
+            lap-one-half
+            palm-one-whole
+          ">
           <% if @search_query.order_asc %>
             <%= form.button "<i class='fas fas fa-arrow-down' aria-hidden='true'></i> Update Results".html_safe,
-                        type: "submit",
-                        class: "spinner-controller ladda-button push--top40 ",
-                        data: {
-                          :style => "zoom-out",
-                          :color => appname.downcase,
-                          :size => "s",
-                          "spinner-color" => "#ffffff"
-                        } %>
+                            type: 'submit',
+                            class: 'spinner-controller ladda-button push--top40 ',
+                            data: {
+                              :style => 'zoom-out',
+                              :color => appname.downcase,
+                              :size => 's',
+                              'spinner-color' => '#ffffff'
+                            } %>
           <% else %>
             <%= form.button "<i class='fas fas fa-arrow-up' aria-hidden='true'></i> Update Results".html_safe,
-                        type: "submit",
-                        class: "spinner-controller ladda-button push--top40 ",
-                        data: {
-                          :style => "zoom-out",
-                          :color => appname.downcase,
-                          :size => "s",
-                          "spinner-color" => "#ffffff"
-                        } %>
+                            type: 'submit',
+                            class: 'spinner-controller ladda-button push--top40 ',
+                            data: {
+                              :style => 'zoom-out',
+                              :color => appname.downcase,
+                              :size => 's',
+                              'spinner-color' => '#ffffff'
+                            } %>
           <% end %>
         </div>
       </div>
