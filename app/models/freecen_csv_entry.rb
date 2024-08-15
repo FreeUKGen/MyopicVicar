@@ -1879,7 +1879,7 @@ class FreecenCsvEntry
     message = ''
     success = true
     @warnings_adjustment = 0
-    need_review_message = 'Warning: Notes field has been adjusted and needs review.'
+    need_review_message = 'Warning: Notes field has been adjusted and needs review.<br>'
     if scope == 'ED'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
         next if entry.id == _id
@@ -1911,7 +1911,7 @@ class FreecenCsvEntry
     message = ''
     @warnings_adjustment = 0
     success = true
-    notes_need_review_message = 'Warning: Notes field has been adjusted and needs review.'
+    notes_need_review_message = 'Warning: Notes field has been adjusted and needs review.<br>'
     if scope == 'ED'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
         next if entry.id == _id
@@ -1969,7 +1969,7 @@ class FreecenCsvEntry
     updated_warnings = ''
     warning_message_parts = warnings.split('<br>')
     warning_message_parts.each do |part|
-      if part.include?('Warning:') && part.include?('Birth')
+      if part.include?('Warning:') && (part.include?('Birth') || part.include?('Alternate'))
         adjust_warnings = true
       else
         updated_warnings += part
