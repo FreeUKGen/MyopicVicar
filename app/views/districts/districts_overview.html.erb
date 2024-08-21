@@ -9,49 +9,31 @@
   crossorigin="anonymous"></script>
 
 <div class="grid">
-  <div  class="grid__item two-thirds lap-one-half palm-one-whole">
-    <p>To get started, choose a county or district from the lists below.</p>
-    <%#= render(file: 'districts/county_selection') %>
-    <%= render(partial: 'select_a_county') %>
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="contentsMenu">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="contentsMenu">On this page</h2>
+        <ul class="sub-nav">
+          <li>
+            <a href="#counties">Select a County</a> </li>
+          <li>
+            <a href="#districts">Select a District</a> </li>
+          <li>
+            <a href="#years">Select a Year</a> </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <%= render(partial: 'select_a_county') %>
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <div class="island island--bordered">
+      <h2 class="delta push-half--bottom">Yesterday by numbers</h2>
+      <p>(Some stats go here.)</p>
+    </div>
+  </div>
     <%= render(partial: 'select_districts') %>
-    <%#= render(partial: 'make_a_selection_form') %>
-    <!--div class="bmd_search_form">
-      <%#= semantic_form_for(@districts) do |f| %>
-      <fieldset class="input">
-        <ol class="grid search_form"-->
-
-          <!--li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole countiess">
-            <div class='labels'>
-              <div class="countieslabel">
-                <%#= label_tag 'search_query_chapman_codes', "Counties/Country".html_safe, class: "ttip" do %>
-                  <%#= "Counties/Country".html_safe %>
-                  <small class="additional">Start typing county or country names</small>
-                <%# end %>
-              </div>
-            </div>
-
-            <%# grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
-            <%# key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-            <%#= autocomplete_field_tag 'search_query[chapman_codes]',set_county_value(@search_query.chapman_codes),'/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
-          </li-->
-
-          <!--li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
-            <div class='labels'>
-              <div class='districtslabel'>
-                <%#= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip" do %>
-                  <%#= "Districts".html_safe %>
-                  <small class="additional">Select none, one or more Districts (hold Ctrl for multiple)</small>
-                <%# end %>
-              </div>
-            </div>
-            <%# @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-            <%#= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
-
-          </li>
-
-        </ol>
-      </fieldset-->
-        <%# end %>
+    <%= render(partial: 'select_a_year') %>
 
       <script>
 
@@ -86,13 +68,4 @@
               }
           });
       </script>
-
-    <aside class="grid__item one-third lap-one-half palm-one-whole" style="float: right;">
-      <div class="island island--bordered">
-        <h2 class="delta push-half--bottom">Yesterday by numbers</h2>
-        <p>(Some stats go here.)</p>
-      </div>
-    </aside>
-    </div>
-  </div>
 </div>

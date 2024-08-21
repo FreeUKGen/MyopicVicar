@@ -80,7 +80,13 @@ class DistrictsController < ApplicationController
 	end
 
 	def district_page_map
-		id = params[:district]
+		id = params[:id]
 		@district = District.where(DistrictNumber: id).first if id.present?
+	end
+
+	def year_page_map
+		@year = params[:year]
+		@quarter = params[:quarter]
+		@event_type = params[:event_type]
 	end
 end

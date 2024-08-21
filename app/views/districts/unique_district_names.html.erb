@@ -1,6 +1,7 @@
 <div class="container">
   <section class="island ">
     <div class="text--center">
+      <%= show_back_to_district_link({district: @district})%>
     	<%= link_to 'View Birth Names', unique_district_names_path(id: @district_number, record_type: "birth" ), method: :get, :class => "btn   btn--small" unless @record_type == "birth" %>
     	<%= link_to 'View Marriage Names', unique_district_names_path(id: @district_number, record_type: "marriage" ), method: :get, :class => "btn   btn--small" unless @record_type == "marriage"%>
     	<%= link_to 'View Death Names', unique_district_names_path(id: @district_number, record_type: "death" ), method: :get, :class => "btn   btn--small" unless @record_type == "death"%>

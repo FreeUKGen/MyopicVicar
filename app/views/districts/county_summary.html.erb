@@ -1,5 +1,6 @@
 <% @county_code = params[:county_code] %>
 <% @county_name = ChapmanCode::name_from_code(@county_code) %>
+<%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
 <h2>Districts summary for <%= @county_name %></h2>
 <div class="grid">
   <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">

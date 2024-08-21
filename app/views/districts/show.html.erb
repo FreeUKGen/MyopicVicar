@@ -1,12 +1,13 @@
 <%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
 <%# @district = District.where(DistrictNumber: params['district_number']).first if params['district_number'] %>
+<% other_info_available = (@district.Volume1993_4toEnd != 'xx' || @district.DistrictPseudonym.present?) %>
 <h1 class="beta push-half--top flush--bottom">District: <%= "#{@district.district_name_display_format}"%></h1>
 <hr>
 <div class="grid">
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
     <nav aria-labelledby="contentsMenu">
       <div class="islet islet--bordered">
-        <h3 class="title-block" id="contentsMenu">On this page</h3>
+        <h2 class="title-block" id="contentsMenu">On this page</h2>
         <ul class="sub-nav">
           <li>
             <a href="#counties">Counties</a> </li>
@@ -14,10 +15,12 @@
             <a href="#volumes">Volumes</a> </li>
           <li>
             <a href="#pages">Pages</a> </li>
+          <% if other_info_available %>
+            <li>
+              <a href="#otherInfo">Other information</a> </li>
+          <% end %>
           <li>
-            <a href="#names">Names</a> </li>
-          <li>
-            <a href="#otherInfo">Other information</a> </li>
+            <a href="#names">Personal names</a> </li>
           <li>
             <a href="#stats">Statistics</a> </li>
         </ul>
@@ -27,7 +30,9 @@
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="intro">
   <p>This is the information we hold about the <%= "#{@district.district_name_display_format}"%> Registration District.</p>
   <% if @district.district_url_definable? %>
-    <p>There is  more information about <%= @district.district_name_display_format %> on the <%= link_to "UKBMD website", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%>. Please note that during the period this Registration District name was used there could be changes in which places were included within the district. The UKBMD page includes information on these changes.</p>
+    <p>There is  more information about <%= @district.district_name_display_format %> on the <%= link_to "UKBMD website", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%>.
+      Please note that during the period this Registration District name was used there could be changes in which places were included within the district.
+      The <%= link_to "UKBMD page", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%> includes information on these changes.</p>
   <% else %>
     <p>UKBMD information on <%= "#{@district.district_name_display_format}"%> is not available.</p>
   <% end %>
@@ -92,97 +97,90 @@
     <p>[Volumes by year for <%= "#{@district.district_name_display_format}" %> Registration District]</p>
     <p>[Volumes/year conflicts for <%= "#{@district.district_name_display_format}" %> Registration District]</p>
   </div>
+<div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+  <div  class="islet islet--bordered" id="names">
+    <h2>Personal names</h2>
+    <p>Here are links to pages listing all the distinct forenames and surnames found in <%= "#{@district.district_name_display_format}"%> Registration District:</p>
+    <ul>
+      <li> <% birth_forename_count = @birth_uniq_forename_count %>
+        <% if birth_forename_count != 'none' %>
+        <%= link_to 'Birth Forenames', unique_district_names_path(id: @district.DistrictNumber, name_type: "1", record_type: "birth" ), method: :get %> (<%= birth_forename_count%> names)</li>
+          <% else %>
+        <%= 'No Birth Forenames found' %>
+          <% end %>
+      <li> <% birth_surname_count = @birth_uniq_surname_count %>
+        <% if birth_surname_count != 'none' %>
+          <%= link_to 'Birth Surnames', unique_district_names_path(id: @district.DistrictNumber, name_type: "0", record_type: "birth" ), method: :get %> (<%= birth_surname_count%> names)</li>
+        <% else %>
+          <%= 'No Birth Surnames found' %>
+        <% end %>
+      <li> <% death_forename_count = @death_uniq_forename_count %>
+        <% if death_forename_count != 'none' %>
+          <%= link_to 'Death Forenames', unique_district_names_path(id: @district.DistrictNumber, name_type: "1", record_type: "death" ), method: :get %> (<%= death_forename_count%> names)</li>
+        <% else %>
+          <%= 'No Death Forenames found' %>
+        <% end %>
+      <li><% death_surname_count = @death_uniq_surname_count %>
+        <% if death_surname_count != 'none' %>
+        <%= link_to 'Death Surnames', unique_district_names_path(id: @district.DistrictNumber, name_type: "0", record_type: "death" ), method: :get %> (<%= death_surname_count%> names)</li>
+        <% else %>
+          <%= 'No Death Surnames found' %>
+        <% end %>
+      <li><% marriage_forename_count = @marriage_uniq_forename_count %>
+        <% if marriage_forename_count != 'none' %>
+          <%= link_to 'Marriage Forenames', unique_district_names_path(id: @district.DistrictNumber, name_type: "1", record_type: "marriage" ), method: :get %> (<%= marriage_forename_count%> names)</li>
+        <% else %>
+          <%= 'No Marriage Forenames found' %>
+        <% end %>
+      <li><% marriage_surname_count = @marriage_uniq_surname_count %>
+        <% if marriage_surname_count != 'none' %>
+          <%= link_to 'Marriage Surnames', unique_district_names_path(id: @district.DistrictNumber, name_type: "0", record_type: "marriage" ), method: :get %> (<%= marriage_surname_count%> names)</li>
+        <% else %>
+          <%= 'No Marriage Surnames found' %>
+        <% end %>
+    </ul>
+  </div>
+</div>
+  <div  class="grid__item two-fifths lap-one-third palm-one-whole float--right" id="stats">
+    <div class="islet islet--bordered">
+      <h2>Statistics</h2>
+      <p>Statistics specific to <%= "#{@district.district_name_display_format}"%> Registration District:</p>
+      <table class="table--bordered table--data">
+        <caption class="accessibility"> Statistics for <%= "#{@district.district_name_display_format} Registration District"%>  </caption>
+        <tr>
+          <th scope="row">Total Births</th>
+          <td><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 1).count %></td>
+        </tr>
+        <tr>
+          <th scope="row">Total Deaths</th>
+          <td><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 2).count %></td>
+        </tr>
+        <tr>
+          <th scope="row">Total Marriages</th>
+          <td><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 3).count %></td>
+        </tr>
+      </table>
+    </div>
+  </div>
   <div>
   <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="pages">
     <h2>Pages</h2>
-    <p>Page map for <%= "#{@district.district_name_display_format}" %> Registration District: <%= link_to "#{@district.district_name_display_format}", district_page_map_path(district: @district) %></p>
-    <% if File.exist?('app/html/'+@district.district_name_as_filename+'.csv') %>
-    <p>This page gives information about the range of values for <b>Page</b> for each <b>Volume</b> for a specific Quarter and Event Type (Birth, Marriage or Death).
-      These ranges have been derived from the entries included. An explanation of the headings is given at <a href="#explain">the end of this page</a>.
-      Here are links to the first <a href="#B">Birth</a>, <a href="#M">Marriage</a> and <a href="#D">Death</a> entry in the table.</p>
-    <table>
-      <tr><th colspan="4"></th><th scope="column">Page</th><th scope="column" colspan="3">Assessment data</th></tr>
-    <tr><th scope="column">Type</th><th scope="column">Year</th><th scope="column">Quarter</th><th scope="column">Volume</th><th scope="column">Lowest/Highest</th><th scope="column">Before/After</th><th scope="column">Gaps</th><th scope="column">Total</th></tr>
-      <% current_event_type = '-' %>
-    <% File.readlines('app/html/'+@district.district_name_as_filename+'.csv', chomp: true).each do | line | %>
-        <%  cells = line.split(',')
-            year = cells[0][0..3]
-            event_type = cells[0][4]
-            quarter = cells[0][5]
-        %>
-        <tr>
-        <td <% if event_type != current_event_type %> <% current_event_type = event_type %> <%= 'id="'.html_safe+event_type+'"'.html_safe %> <% end %> >
-          <%= initial_to_event_type(event_type) %></td>
-          <td><%= year %></td>
-          <td><%= brief_quarter_name(quarter) %></td>
-          <td><%= cells[1] %></td>
-          <td><%= cells[2]+'-'+cells[3] %></td>
-          <td><%= cells[4]+','+cells[5] %></td>
-          <td><%= cells[6] %></td>
-          <td><%= cells[7] %></td>
-      </tr>
-    <% end %>
-    </table>
-    <h3 id="explain">Explanation</h3>
-    <p>The page numbers in a quarter are examined and a page range is determined based on frequency and contiguousness<br />
-    <TABLE>
-      <tr><th scope="row">Lowest</th> <td>Apparent first page number in range</td></tr>
-      <tr><th scope="row">Highest&nbsp;&nbsp;&nbsp;</th> <td>Apparent last page number in range</td></tr>
-      <tr><th scope="row">Before</th> <td>Count of page numbers before start of range</td></tr>
-      <tr><th scope="row">After</th> <td>Count of page numbers after end of range</td></tr>
-      <tr><th scope="row">Gaps</th> <td>Number of page numbers missing within range</td></tr>
-      <tr><th scope="row">Total</th> <td>Total number of entries with page numbers within range</td></tr></TABLE>
-    <% else %>
-      <p>Sorry, the file <%= 'app/html/'+@district.district_name_as_filename+'.csv' %> cannot be found, so page map details are not available.</p>
-    <% end %>
+    <p>The <%= link_to "#{@district.district_name_display_format} Page Map", district_page_map_path(id: @district[:DistrictNumber]) %> shows the expected
+      volume number, and the ranges of page numbers encountered in the data, for each event type (birth, marriage and death) and quarter.</p>
   </div>
-  <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="names">
-    <h2>Names</h2>
-    <p>Here are links to pages listing all the distinct forenames and surnames found in <%= "#{@district.district_name_display_format}"%> Registration District:</p>
-    <ul>
-      <li><%= link_to 'Birth Forenames', unique_district_names_path(id: @district.DistrictNumber, name_type: "1", record_type: "birth" ), method: :get %> (<%= @birth_uniq_forename_count%> names)</li>
-      <li><%= link_to 'Birth Surnames', unique_district_names_path(id: @district.DistrictNumber, name_type: "0", record_type: "birth" ), method: :get %> (<%= @birth_uniq_surname_count%> names)</li>
-      <li><%= link_to 'Death Forenames', unique_district_names_path(id: @district.DistrictNumber, name_type: "1", record_type: "death" ), method: :get %> (<%= @death_uniq_forename_count%> names)</li>
-      <li><%= link_to 'Death Surnames', unique_district_names_path(id: @district.DistrictNumber, name_type: "0", record_type: "death" ), method: :get %> (<%= @death_uniq_surname_count%> names)</li>
-      <li><%= link_to 'Marriage Forenames', unique_district_names_path(id: @district.DistrictNumber, name_type: "1", record_type: "marriage" ), method: :get %> (<%= @marriage_uniq_forename_count%> names)</li>
-      <li><%= link_to 'Marriage Surnames', unique_district_names_path(id: @district.DistrictNumber, name_type: "0", record_type: "marriage" ), method: :get %> (<%= @marriage_uniq_surname_count%> names)</li>
-    </ul>
-  </div>
+    <% if other_info_available  %>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="otherInfo">
     <h2>Other information</h2>
-    <dl>
     <% if @district.Volume1993_4toEnd != 'xx' %>
-      <dt>GRO District Number (post 1993)</dt>
-      <dd><%= @district.Volume1993_4toEnd %></dd>
+      <h3>GRO District Number (post 1993)</h3>
+      <p><%= @district.Volume1993_4toEnd %></p>
     <% end %>
     <% if @district.DistrictPseudonym.present? %>
-      <dt>Alternate names for District</dt>
-      <dd>
-        <% @district.DistrictPseudonym.each do |n| %><%= n.DistrictPseudonym + " " %><% end %>
-      </dd>
+      <h3>Alternate names for District</h3>
+      <ul>
+        <% @district.DistrictPseudonym.each do |n| %><li><%= n.DistrictPseudonym + " " %></li><% end %>
+      </ul>
     <% end %>
-    </dl>
   </div>
-  <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="stats">
-    <h2>Statistics</h2>
-    <p>Statistics specific to <%= "#{@district.district_name_display_format}"%> Registration District:</p>
-  </div>
-  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
-    <table class="table--bordered table--data">
-      <caption class="accessibility"> Statistics for <%= "#{@district.district_name_display_format} Registration District"%>  </caption>
-      <tr>
-        <th scope="row">Total Births</th>
-        <td><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 1).count %></td>
-      </tr>
-      <tr>
-        <th scope="row">Total Deaths</th>
-        <td><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 2).count %></td>
-      </tr>
-      <tr>
-        <th scope="row">Total Marriages</th>
-        <td><%= BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 3).count %></td>
-      </tr>
-    </table>
-  </div>
-</div>
+      <% end %>
 </div>
