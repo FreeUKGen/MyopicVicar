@@ -48,6 +48,13 @@ class UserMailer < ActionMailer::Base
     mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
   end
 
+  def acknowledge_handbook_feedback(original)
+    @appname = appname
+    @communication = original
+    get_attachment(@communication)
+    mail(to: "#{@communication.email_address}", :subject => "Thank you #{@communication.name} for your feedback. Reference #{@communication.identifier}")
+  end
+
   def add_emails(ccs)
     ccs_emails = []
     ccs.each do |cc|
@@ -81,6 +88,14 @@ class UserMailer < ActionMailer::Base
     end
     adjust_email_recipients(subject)
   end
+
+  def communicate_github_issue_creation(feedback)
+    @feedback = feedback
+    @user = UseridDetail.where(userid: feedback.user_id).first
+    @user_email = @user.email_address
+    mail(to: @user_email, :subject => 'Notification of github issue creation')
+  end
+
 
   def contact_action_request(contact, send_to, copies_to)
     @appname = appname
@@ -246,6 +261,14 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def freecen_move_fc2_place_linkages_report(email_subject, email_body, report, report_name, email_to)
+    email_addresses = []
+    email_addresses << email_to
+    attachments[report_name] = { :mime_type => 'text/csv', :content => report } unless report.empty?
+
+    mail(:to => email_addresses, :subject => email_subject, :body => email_body)
+  end
+
   def freecen_vld_invalid_civil_parish_report(email_subject, email_body, report, report_name, email_to)
     email_addresses = []
     email_addresses << email_to
@@ -269,7 +292,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     manager = nil
     if appname.downcase == 'freereg'
-      manager = UseridDetail.userid("REGManager").first
+      manager = UseridDetail.userid("FR Exec Lead").first
       get_coordinator_name
       mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     elsif appname.downcase == 'freecen'
@@ -281,8 +304,14 @@ class UserMailer < ActionMailer::Base
   def notification_of_transcriber_creation(user)
     @appname = appname
     @user = user
-    get_coordinator_name
-    mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
+    if appname.downcase == 'freereg'
+      manager = UseridDetail.userid("FR Exec Lead").first
+      get_coordinator_name
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber creation") unless @coordinator.nil?
+    elsif appname.downcase == 'freecen'
+      get_coordinator_name
+      mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :subject => "#{appname} userid creation") unless @coordinator.nil?
+    end
   end
 
   def notification_of_transcriber_registration(user)
@@ -290,7 +319,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     manager = nil
     if appname.downcase == 'freereg'
-      manager = UseridDetail.userid("REGManager").first
+      manager = UseridDetail.userid("FR Exec Lead").first
       get_coordinator_name
       mail(:to => "#{@coordinator.person_forename} <#{@coordinator.email_address}>", :cc => "#{manager.person_forename} <#{manager.email_address}>", :subject => "#{appname} transcriber registration") unless @coordinator.nil?
     elsif appname.downcase == 'freecen'
@@ -498,6 +527,16 @@ class UserMailer < ActionMailer::Base
     mail(bcc: ccs, subject: subjects, body: body_message)
   end
 
+  def send_upload_stats(start_date, end_date)
+    @start_date = start_date
+    @end_date = end_date
+    @uploaders_count, @email_confirmed, @users_count, @records_added = PhysicalFile.new.upload_report_mail(@start_date, @end_date)
+    @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcriber_stats(@start_date, @end_date)
+    from_email = "no-reply@#{appname.downcase}.org.uk"
+    to_email, cc_email = app_specific_email_upload_stats
+    mail(from: from_email, to: to_email, cc: cc_email, subject: "Upload report stats")
+  end
+
   def embargo_process_completion_email(rule_id, ccs)
     @rule = EmbargoRule.find_by(id: rule_id)
     @register = @rule.register
@@ -540,6 +579,20 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def app_specific_email_upload_stats
+    to_email = ''
+    cc_email = ''
+    case appname.downcase
+    when 'freereg'
+      to_email = 'FreeREGSteeringGroup@freeukgenealogy.org.uk'
+      cc_email = "trustees@freeukgenealogy.org.uk"
+    when 'freecen'
+      to_email = 'denise.colbert@freeukgenealogy.org.uk'
+      cc_email = "vinodhini.subbu@freeukgenealogy.org.uk"
+    end
+    [to_email, cc_email]
+  end
+
   def get_email_address_array_from_array_of_userids(userids)
     array_of_email_addresses = []
     if userids.present?
@@ -553,6 +606,7 @@ class UserMailer < ActionMailer::Base
     end
     array_of_email_addresses
   end
+
 
   def get_email_address_from_userid(userid)
     userid_object = UseridDetail.userid(userid).first

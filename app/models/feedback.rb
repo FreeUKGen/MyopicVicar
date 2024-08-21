@@ -68,6 +68,10 @@ class Feedback
     UserMailer.acknowledge_feedback(self).deliver_now
   end
 
+  def acknowledge_handbook_feedback
+    UserMailer.acknowledge_handbook_feedback(self).deliver_now
+  end
+
   def action_recipient_userid
     role = 'website_coordinator'
     person = UseridDetail.role(role).active(true).first
@@ -205,6 +209,16 @@ class Feedback
     self.feedback_action_communication
   end
 
+  def communicate_handbook_feedback
+    self.acknowledge_handbook_feedback
+    self.handbook_feedback_communication
+  end
+
+  def handbook_feedback_communication
+    send_to_userid = 'GeoffJ'
+    UserMailer.feedback_action_request(self,send_to_userid,'').deliver_now
+  end
+
   def delete_replies
     replies = Message.where(source_feedback_id: id).all
     return if replies.blank?
@@ -241,6 +255,7 @@ class Feedback
       logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
+      UserMailer.communicate_github_issue_creation(self).deliver_now
     else
       logger.error("#{appname}:Tried to create an issue, but Github integration is not enabled!")
     end

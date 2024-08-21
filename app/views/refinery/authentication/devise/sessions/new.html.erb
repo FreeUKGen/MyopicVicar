@@ -12,7 +12,7 @@
        <%= link_to 'Video on the login process and dealing with problems', "https://youtu.be/RCzRpnDH1tQ", target: :_blank %></p>
   </div>
   <div class="grid__item one-third lap-one-half palm-one-whole">
-    <%= form_for resource, :as => resource_name,
+    <%= form_for resource, html: {id: 'signin_form'}, :as => resource_name,
                            :url => refinery.authentication_devise_user_session_path do |f| %>
       <fieldset>
         <legend>Member login</legend>
@@ -31,7 +31,7 @@
           </div>
         <% end %>
         <div class="form-actions">
-          <%= f.submit 'Sign in', :class => 'btn' %>
+          <%= f.submit 'Sign in', :class => 'btn', id: 'signin_button' %>
         </div>
       </fieldset>
     <% end %>

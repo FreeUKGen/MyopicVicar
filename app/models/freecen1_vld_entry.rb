@@ -58,6 +58,13 @@ class Freecen1VldEntry
       end
     end
 
+    def update_linked_individual_rec_verbatim_pob(vld_entry, verbatim_birth_place)
+      individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
+      return if individual_rec.blank?
+
+      individual_rec.set(verbatim_birth_place: verbatim_birth_place)
+    end
+
     def set_search_record_pob_place(vld_entry, birth_place)
       individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
       return if individual_rec.blank?

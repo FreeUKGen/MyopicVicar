@@ -2296,7 +2296,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, category, industry, home]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, category, industry, home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, category, industry, home]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, religion, read_and_write, disp_occupation, category]
       elsif  %w[CHI ALD GSY JSY].include?(chapman_code)
@@ -2431,7 +2431,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [nationality, birth_county_name, birth, disability, lang, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [nationality, birth_county_name, birth, disability, diability_notes, lang, note]
+        [nationality, birth_county_name, birth, disability, disability_notes, lang, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [birth_county_name, birth, disability, lang, note]
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
@@ -2641,6 +2641,53 @@ class FreecenCsvEntry
   end
 
   def translate_date
+    myage = age.to_i
+    census_year = year
+    adjustment = 0 # this is all we need to do for day and week age units
+    myage_unit_included = age[-1].match?(/[A-Za-z]/) if age.present?
+    if myage_unit_included
+      myage_unit = age[-1]
+      if myage_unit == 'y'
+        adjustment = 0 - myage
+      end
+      if myage_unit == 'm'
+        if census_year == RecordType::CENSUS_1841
+          # Census day: June 6, 1841
+          #
+          # Ages in the 1841 Census
+          #    The census takers were instructed to give the exact ages of children
+          # but to round the ages of those older than 15 down to a lower multiple of 5.
+          # For example, a 59-year-old person would be listed as 55. Not all census
+          # enumerators followed these instructions. Some recorded the exact age;
+          # some even rounded the age up to the nearest multiple of 5.
+          #
+          # Source: http://familysearch.org/learn/wiki/en/England_Census:_Further_Information_and_Description
+          adjustment = -1 if myage > 6
+        elsif census_year == RecordType::CENSUS_1851
+          # Census day: March 30, 1851
+          adjustment = -1 if myage > 3
+        elsif census_year == RecordType::CENSUS_1861
+          # Census day: April 7, 1861
+          adjustment = -1 if myage > 4
+        elsif census_year == RecordType::CENSUS_1871
+          # Census day: April 2, 1871
+          adjustment = -1 if myage > 4
+        elsif census_year == RecordType::CENSUS_1881
+          # Census day: April 3, 1881
+          adjustment = -1 if myage > 4
+        elsif census_year == RecordType::CENSUS_1891
+          # Census day: April 5, 1891
+          adjustment = -1 if myage > 4
+        end
+      end
+    else
+      adjustment = 0 - myage
+    end
+    birth_year = census_year.to_i + adjustment
+    "#{birth_year}-*-*"
+  end
+
+  def translate_date_old
     myage = age.to_i
     census_year = year
     adjustment = 0 # this is all we need to do for day and week age units
