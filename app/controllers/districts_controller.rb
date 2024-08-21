@@ -78,4 +78,9 @@ class DistrictsController < ApplicationController
 		end
 		hash
 	end
+
+	def district_page_map
+		id = params[:district]
+		@district = District.where(DistrictNumber: id).first if id.present?
+	end
 end

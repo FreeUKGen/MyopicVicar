@@ -46,6 +46,9 @@ module BestGuessHelper
     QuarterDetails.quarter_hash[calculate_quarter(quarter).to_s]
   end
 
+  def brief_quarter_name quarter
+    QuarterDetails.quarter_abbreviated_hash[quarter]
+  end
   def formatted_month quarter
     QuarterDetails.quarters.key(calculate_quarter quarter)
   end
@@ -90,4 +93,19 @@ module BestGuessHelper
     end
     image_path
   end
+
+  def initial_to_event_type event_type
+    case event_type
+    when "B"
+      result = "Births"
+    when "M"
+      result = "Marriages"
+    when "D"
+      result = "Deaths"
+    else
+      result = "Unknown Event Type #{event_type}"
+    result
+    end
+  end
+
 end

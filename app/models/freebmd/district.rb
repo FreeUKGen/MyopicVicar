@@ -51,6 +51,10 @@ class District < FreebmdDbBase
     district_name
   end
 
+  def district_name_as_filename
+    self.DistrictName.gsub(/ /, "_")
+  end
+
   def district_friendly_url
     particles = []
     # first the primary names

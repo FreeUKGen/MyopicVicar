@@ -552,6 +552,7 @@ MyopicVicar::Application.routes.draw do
   get 'districts/districts_overview', :to => 'districts#districts_overview', :as => :districts_overview
   get 'districts/county_summary', :to => 'districts#county_summary', :as => :county_summary
   get 'districts/select_district', :to => 'districts#show'
+  get 'districts/district_page_map', :to => 'districts#district_page_map', :as => :district_page_map
 
   resources :districts
   
