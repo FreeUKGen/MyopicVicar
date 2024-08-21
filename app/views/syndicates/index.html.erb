@@ -22,7 +22,7 @@
           <% end%>
         </tr>
         <% @syndicates.each do |syndicate| %>
-        <% next if syndicate.code == 'Technical'%>
+        <% next if syndicate_code == 'Technical'%>
           <tr id="<%=syndicate.id%>">
             <td > <%= syndicate.syndicate_code %>  </td>
             <td > <%= syndicate.syndicate_coordinator %>  </td>
