@@ -40,6 +40,22 @@ class ApplicationController < ActionController::Base
     UseridDetail.all.pluck(:userid).sort
   end
 
+  def userids_and_roles
+    coord_roles = ['county_coordinator', 'country_coordinator', 'syndicate_coordinator']
+    management_roles =  ['contacts_coordinator','data_manager', 'documentation_coordinator',
+            'engagement_coordinator', 'executive_director', 'genealogy_coordinator', 'general_communication_coordinator', 'project_manager',
+            'publicity_coordinator', 'system_administrator','validator', 'volunteer_coordinator', 'website_coordinator']
+    other_roles = UseridRole::VALUES - management_roles - coord_roles
+    management_roles_members = UseridDetail.where(person_role: management_roles)
+    coord_roles_members = UseridDetail.where(person_role: coord_roles).order(:person_role)
+    other_roles_members = UseridDetail.where(person_role: other_roles).order(:person_role)
+    members_array = []
+    management_roles_members.each{|m| members_array << "#{m.person_role}: #{m.userrid}"}
+    coord_roles_members.each{|m| members_array << "#{m.person_role}: #{m.userrid}"}
+    other_roles_members.each{|m| members_array << "#{m.person_role}: #{m.userrid}"}
+    members_array
+  end
+
   def appname_upcase
     appname.upcase
   end
