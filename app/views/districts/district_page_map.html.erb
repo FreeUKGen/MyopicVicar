@@ -41,6 +41,7 @@
         <tr><th scope="row">Total</th> <td>Total number of entries with page numbers within range</td></tr></TABLE>
     <% else %>
       <p>Sorry, the file <%= 'app/html/'+@district.district_name_as_filename+'.csv' %> cannot be found, so page map details are not available.</p>
+      <p>Currently in directory <%= File.basename(Dir.getwd) %> - files <%= Dir[Dir.getwd+'/*'] %></p>
     <% end %>
   </div>
 </div>
