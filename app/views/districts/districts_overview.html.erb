@@ -20,16 +20,22 @@
             <a href="#districts">Select a District</a> </li>
           <li>
             <a href="#years">Select a Year</a> </li>
+          <li>
+            <a href="#statistics">Database statistics</a> </li>
         </ul>
       </div>
     </nav>
   </div>
 
   <%= render(partial: 'select_a_county') %>
-  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right" id="statistics">
     <div class="island island--bordered">
-      <h2 class="delta push-half--bottom">Yesterday by numbers</h2>
-      <p>(Some stats go here.)</p>
+      <h2 class="delta push-half--bottom">Database statistics</h2>
+      <% active_quarter_events = Coverage.where( Percentage: 1..98) %>
+      <p>The FreeBMD database is being constantly updated with new transcriptions.
+      Work is substantially complete on all dates up to <%= format_quarter_year(active_quarter_events.first.quarter_number_event_to_quarter) %>.
+      There are <%= active_quarter_events.size.to_s %> <%= link_to "active quarters", coverage_index_path %> from this date. The latest date for which transcription work
+      has started is <%= format_quarter_year(active_quarter_events.last.quarter_number_event_to_quarter) %>.</p>
     </div>
   </div>
     <%= render(partial: 'select_districts') %>
