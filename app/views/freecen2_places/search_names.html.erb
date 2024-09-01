@@ -9,10 +9,14 @@
 <%= render 'flash_notice' %>
 <div class="island  island--light">
   <%= simple_form_for @freecen2_place, :html => { :class => "grid"}  do |f| %>
-    <%= f.input :place_name, :label => "Search for Place name(s). Previous search criteria preloaded.",:hint => "Names entered are case insensitive and should be the stem of a name e.g. ann will locate ann anns ann's anns'. Results will include both or any of the names entered and will be independent of their order." ,:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+    <fieldset class="input" style="text-align: center">
+      <%= f.input :place_name, :label => "Search for Place name(s).",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
+      <small><b>Previous search criteria preloaded.</b> Names entered are case insensitive and should be the stem of a name e.g. ann will locate ann anns ann's anns'. <br>
+        Results will include both or any of the names entered and will be independent of their order.
+      </small>
+    </fieldset>
     <fieldset class="input" style="text-align: center">
       <legend><b> Advanced Search options - </b><i>if required select one</i></legend>
-      <small> Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small>
       <ol class="grid">
         <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="soundex_search_input">
           <% if @advanced_search == 'soundex' %>
@@ -50,23 +54,24 @@
           <% end %>
         </li>
       </ol>
+      <small> Note: Only alphabetic characters are permitted in advanced searches and a minimum of 3 characters is required for partial name searches.</small>
     </fieldset>
-    <div id="ChooseCounty">
-      <fieldset class="input" style="text-align: center">
-        <legend><b>County to be searched</b></legend>
-        <%= f.input :county, selected: @county, label: 'Click in box for county options. Previous selection preloaded. Leave empty to search all counties.',include_blank: true,collection: @counties, input_html:  {class: 'simple_form_bgcolour simple_form_position overide_selection_field_width'} %>
-        <small>Note: Select Channel Islands, England, Ireland, Scotland or Wales to search all counties in that region/country. (To accommodate historical border changes Herefordshire is included in Wales; Kent, Middlesex and Surrey are included in London (City) and Isle of Wight is included in Hampshire searches.)</small>
-        <%= f.hidden_field :disabled, :value=> false %>
-      </fieldset>
-    </div>
-    <div style="text-align: center">
-      <%= f.button :submit, 'Search Place Names', :button_html => {:class => "btn" }  %>
-      <p class=" text--center"><br>
-        <small><em> [Note: The regular Place Name Search is a text search that ignores ‘stop words’. These are common words that have little actual meaning. <br>
-            A list of these words can be found <%= link_to 'HERE', "https://github.com/mongodb/mongo/blob/0e3b3ca8480ddddf5d0105d11a94bd4698335312/src/mongo/db/fts/stop_words_english.txt", target: :_blank %> (opens in new tab).<br>
-            If your search returns no results and you think it might be because it contains a ‘stop word’, please try an Advanced Search, as this does not ignore 'stop words'.]</em></small></p>
-    </div>
-  <% end %>
+    <fieldset class="input" style="text-align: center">
+      <%= f.input :county, selected: @county, label: 'County - click in box for county options.',include_blank: true,collection: @counties, input_html:  {class: "simple_form_bgcolour overide_selection_field_width"} %>
+      <small><b>Previous selection preloaded. Leave empty to search all counties.</b>
+        Note: Select Channel Islands, England, Ireland, Scotland or Wales to search all counties in that region/country. <br>
+        To accommodate historical border changes Wales includes Herefordshire; London (City) includes Kent, Middlesex and Surrey; and Hampshire includes Isle of Wight.</small>
+      <%= f.hidden_field :disabled, :value=> false %>
+    </small>
+  </fieldset>
+  <div style="text-align: center">
+    <%= f.button :submit, 'Search Place Names', :button_html => {:class => "btn" }  %>
+    <p class=" text--center"><br>
+      <small><em> [Note: The regular Place Name Search is a text search that ignores ‘stop words’. These are common words that have little actual meaning. <br>
+          A list of these words can be found <%= link_to 'HERE', "https://github.com/mongodb/mongo/blob/0e3b3ca8480ddddf5d0105d11a94bd4698335312/src/mongo/db/fts/stop_words_english.txt", target: :_blank %> (opens in new tab).<br>
+          If your search returns no results and you think it might be because it contains a ‘stop word’, please try an Advanced Search, as this does not ignore 'stop words'.]</em></small></p>
+  </div>
+<% end %>
 </div>
 <script>
   function clearCounty() {
