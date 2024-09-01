@@ -58,6 +58,8 @@ class Freecen2Piece
   field :vld_files, type: Array, default: [] # used for Scotland pieces where there can be multiple files for a single piece
   field :shared_vld_file, type: String # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
   field :admin_county, type: String # used by County Stats drilldown - can be different to chapman_code if a piece crosses county boundaries
+  field :piece_availability, type: String, default: 'Y'
+  field :piece_digitised, type: String, default: 'N'
   validates_inclusion_of :admin_county, in: ChapmanCode.values
 
   belongs_to :freecen2_district, optional: true, index: true
@@ -151,6 +153,19 @@ class Freecen2Piece
       end
       piece = parts[1].present? ? parts[0] + '_' + parts[1] : parts[0]
       [year, piece, census_fields]
+    end
+
+    def check_piece_parts(piece)
+      piece_parts = piece.split('_')
+      continue = true
+      if piece_parts.count > 1
+        part = piece_parts[1].delete('^0-9')
+        continue = piece_parts[1] != part
+        piece = "#{piece_parts[0]}_#{part}"
+      else
+        continue = false
+      end
+      [continue, piece]
     end
 
     def before_year_totals(time)
@@ -751,6 +766,70 @@ class Freecen2Piece
     success = place.save
     message = 'Failed to update place' unless success
     [success, message]
+  end
+
+  def transcription_status
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    if csv_files.present?
+      inprogress_csv_files = csv_files.where(validation: false, incorporated: false)
+    end
+    if inprogress_csv_files.present?
+      inprogress_status = 'In Progress'
+      userids = inprogress_csv_files.pluck(:userid)
+      count = inprogress_csv_files.count
+    end
+    [inprogress_status, userids, count]
+  end
+
+  def piece_being_transcribed
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    uploaded_vld_files = self.freecen1_vld_files.where("userid" => {'$ne': null}) if vld_files.present?
+    if uploaded_vld_files.present?
+      unincorporated =  []
+      uploaded_vld_files.each{|vld_file|
+        next if vld_file.search_records.count > 0
+        unincorporated << vld_file.search_records.count == 0
+      }
+    end
+    if csv_files.present?
+      inprogress_csv_files = csv_files.where(incorporated: false, "userid" => {'$exists': true})
+    end
+    if inprogress_csv_files.present?
+      inprogress_status = 'Yes'
+    elsif unincorporated.present?
+      inprogress_status = 'Yes'
+    else
+      inprogress_status = 'No'
+    end
+    #inprogress_status = inprogress_csv_files.present? ? 'Yes' : 'No'
+    [inprogress_status]
+  end
+
+  def validation_status
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    if csv_files.present?
+      validatation_in_progress_files = csv_files.where(validation: true, incorporated: false)
+    end
+    if validatation_in_progress_files.present?
+      inprogress_status = 'In Progress'
+      userids = validatation_in_progress_files.pluck(:userid)
+      count = validatation_in_progress_files.count
+    end
+    [inprogress_status, userids, count]
+  end
+
+
+  def incorpoation_status
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    incorporated_and_complete = csv_files.where(incorporated: true, completes_piece: true)
+    incorporated_and_part_complete = csv_files.where(incorporated: true, completes_piece: false)
+    status = 'Yes' if incorporated_and_complete.present?
+    status = 'Part' if  incorporated_and_part_complete.present?
+    status
   end
 
   def piece_search_records

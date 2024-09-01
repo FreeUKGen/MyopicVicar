@@ -1,36 +1,77 @@
-<h2 style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>) in <b><%= @piece.district_name %></b> of <b><%= @piece.chapman_code %></b><br>
-  </h2>
-  <p class=" text--center">Videos describing <%= link_to 'this page', "https://youtu.be/GnkkKkVGXs8", target: '_blank' %>, <%= link_to 'replace file', "https://youtu.be/XH-QBKRg9gQ" , target: '_blank' %>, <%= link_to 'download a spreadsheet file', "https://youtu.be/2ekZ_VXmTn0" , target: '_blank' %>, <%= link_to 'download message report', "https://youtu.be/f0l1tlWESII", target: '_blank' %> (all open in new tabs)<br>
-  </p>
-  <div  style="text-align: center">
-    <%= replace_freecen_file unless @freecen_csv_file.incorporation_lock %>
-    <%= convert_header %>
-    <%= download_freecen_file %>
-    <%= remove_freecen_file unless @freecen_csv_file.incorporation_lock %>
-    <%= download_messages %><br>
-    <%= list_freecen_file_flags %>
-    <%= list_freecen_file_error_entries %>
-    <%= list_freecen_file_warning_entries %>
-    <%= list_freecen_file_information_entries %>
-    <%= browse_freecen_file_civil_parishes%>
-    <%= browse_freecen_file_pages%>
-    <%= browse_freecen_file_dwellings%>
-    <%= browse_freecen_file_individuals%>
-    <br>
-    <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator executive_director project_manager].include?(session[:role]) %>
-      <%= change_freecen_file_owner unless @freecen_csv_file.incorporation_lock %>
-      <%= edit_freecen_file %>
-      <%= reprocess_freecen_file unless @freecen_csv_file.incorporation_lock %>
-      <%= accept_warnings unless @freecen_csv_file.incorporation_lock  || @freecen_csv_file.total_warnings == 0 %>
-    <% end%>
-    <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator executive_director project_manager].include?(session[:role]) %>
-      <%= validate_freecen_file unless @freecen_csv_file.incorporation_lock %>
-      <%= incorporate_freecen_file if @freecen_csv_file.validation%>
-    <% end%>
-    <% if ['system_administrator','data_manager'].include?(session[:role]) %>
-      <%= delete_freecen_file unless @freecen_csv_file.incorporation_lock %>
-    <% end%>
-  </div>
-  <div style="clear:both;"> </div>
+<h2 style="text-align: center"><b><%= file_name(@freecen_csv_file) %> (<%= userid(@freecen_csv_file) %>)</b> in <b><%= @piece.district_name %></b> of <b><%= @piece.chapman_code %></b><br>
+</h2>
+<p class=" text--center">Videos describing <%= link_to 'this page', "https://youtu.be/GnkkKkVGXs8", target: '_blank' %>, <%= link_to 'replace file', "https://youtu.be/XH-QBKRg9gQ" , target: '_blank' %>, <%= link_to 'download a spreadsheet file', "https://youtu.be/2ekZ_VXmTn0" , target: '_blank' %>, <%= link_to 'download message report', "https://youtu.be/f0l1tlWESII", target: '_blank' %> (all open in new tabs)<br>
+</p>
+<div  style="text-align: center">
+  <%= replace_freecen_file unless @freecen_csv_file.incorporation_lock %>
+  <%= convert_header %>
+  <%= download_freecen_file %>
+  <%= remove_freecen_file unless @freecen_csv_file.incorporation_lock %>
+  <%= download_messages %><br>
+  <%= list_freecen_file_flags %>
+  <%= list_freecen_file_error_entries %>
+  <%= list_freecen_file_warning_entries %>
+  <%= list_freecen_file_information_entries %>
+  <%= browse_freecen_file_civil_parishes%>
+  <%= browse_freecen_file_pages%>
+  <%= browse_freecen_file_dwellings%>
+  <%= browse_freecen_file_individuals%>
   <br>
-  <%= render partial: 'flash_notice' %>
+  <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator executive_director project_manager].include?(session[:role]) %>
+    <%= change_freecen_file_owner unless @freecen_csv_file.incorporation_lock %>
+    <%= edit_freecen_file %>
+    <%= reprocess_freecen_file unless @freecen_csv_file.incorporation_lock %>
+    <%= accept_warnings unless @freecen_csv_file.incorporation_lock  || @freecen_csv_file.total_warnings == 0 %>
+  <% end%>
+  <% if %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator executive_director project_manager].include?(session[:role]) %>
+    <% unless @freecen_csv_file.incorporation_lock || @freecen_csv_file.validation%>
+      <%= button_tag "Commence Validation", type: 'button', onclick: "ShowValidationDiv()", class: "btn btn--small", id: "validatebutton", title: 'Commence Validation'%>
+    <% end%>
+    <%= validate_freecen_file if @freecen_csv_file.validation && !@freecen_csv_file.incorporation_lock %>
+    <%= incorporate_freecen_file if @freecen_csv_file.validation%>
+  <% end%>
+  <% if ['system_administrator','data_manager'].include?(session[:role]) %>
+    <%= delete_freecen_file unless @freecen_csv_file.incorporation_lock %>
+  <% end%>
+</div>
+<div style="clear:both;"> </div>
+<div id="validate" style="display:none;">
+  <%= form_for(:validate, url: set_validation_freecen_csv_file_path(@freecen_csv_file), method: :get, data: { confirm: "Are you sure you want to Commence Validation?"}) do |f| %>
+    <fieldset class="inputs">
+      <legend>Commence Validation</legend>
+      <p>Do you wish to run Pre-validation?</p>
+      <ol class="grid">
+        <li class="grid__item one-quarter lap-one-quarter palm-one-whole" id="preval_yes">
+          <%= f.radio_button :prevalidate, 'yes', :checked =>true %> Yes
+        </li>
+        <li class="grid__item one-quarter lap-one-quarter palm-one-whole" id="preval_no">
+          <%= f.radio_button :prevalidate, 'no', :checked =>false %> No
+        </li>
+        <li class="grid__item one-whole lap-one-whole palm-one-whole" id="b_submit"><br>
+          <%= f.submit 'Submit', :class => "btn  btn--small", title: 'mark file as being validated',data: { disable_with: false } %>
+        </li>
+      </ol>
+      <p class="text--left">
+        <small>Select <b>Yes</b> to mark the file as being validated and start a background job that pre-validates the file. You will receive an email when pre-validation has been completed.</small>
+        <br>
+        <small>Select <b>No</b> to mark the file as being validated without running pre-validation.</small>
+        <br>
+        <small>Click <b>Cancel Validation</b> button above to Cancel.</small></p>
+    </fieldset>
+  <% end %>
+</div>
+<br>
+<%= render partial: 'flash_notice' %>
+<script>
+  function ShowValidationDiv() {
+    var div = document.getElementById("validate");
+    var btn = document.getElementById("validatebutton");
+    if (div.style.display === "none") {
+      div.style.display = "block";
+      btn.innerHTML = "Cancel Validation"
+    } else {
+      div.style.display = "none";
+      btn.innerHTML = "Commence Validation"
+    }
+  }
+</script>

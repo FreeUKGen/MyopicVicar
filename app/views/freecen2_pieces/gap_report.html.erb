@@ -1,0 +1,74 @@
+<fieldset>
+  <legend>Choose the census year</legend>
+  <%= form_tag gap_report_freecen2_pieces_url, class: 'grid', method: 'get' do %>
+    <ol>
+      <li class="grid__item one-half lap-one-half palm-one-whole">
+        <label class="ttip" for="census_year" tabindex="0">Choose the census year</label>
+        <%= select_tag :census_year ,options_for_select(Freecen::CENSUS_YEARS_ARRAY) , class: ' select', id: 'select_census_year' , tabindex: 0, include_blank: true, prompt: 'Census Year' %>
+      </li>
+      <li class="grid__item one-half lap-one-half palm-one-whole">
+        <label class="ttip" for="chapman_code" tabindex="0">Choose the census year</label>
+        <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
+        <select class="select" id="chapman_code" name="chapman_code">
+          <option value="" id="default">All Counties</option>
+          <%= grouped_options_for_select(grouped_options) %>
+        </select>
+      </li>
+      <li class="grid__item one-whole lap-one-whole palm-one-whole">
+        <div  style="text-align: center">
+          <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+        </div>
+      </li>
+    </ol>
+  <% end %>
+</fieldset>
+  <h2><%= "Report on  #{pluralize(@pieces.count, 'Piece')} for the year: #{@census_year}" %></h2>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width" style='table-layout: fixed;'>
+    <colgroup>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t30'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+      <col class='t5'>
+    </colgroup>
+    <caption>GAP Report</caption>
+    <thead >
+      <tr>
+        <th class='sticky-header'>Piece Number (Chapman Code) </th>
+        <th class='sticky-header'>Registration District </th>
+        <th class='sticky-header'>Piece Name </th>
+        <th class='sticky-header'>Civil Parishes</th>
+        <th class='sticky-header'>Piece Exists</th>
+        <th class='sticky-header'>Digital Image Available</th>
+        <th class='sticky-header'>Being Transcribed</th>
+        <th class='sticky-header'>Available to search</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @pieces.present? %>
+        <% @pieces.each do |piece| %>
+          <tr>
+            <td><%= piece.display_piece_number(piece.chapman_code) %></td>
+            <td><%= piece.freecen2_district.name %></td>
+            <td><%= piece.name %></td>
+            <td><%= piece.civil_parish_names %></td>
+            <td><%= piece.piece_availability %></td>
+            <td><%= piece.piece_digitised %></td>
+            <td>
+              <%= piece.piece_being_transcribed[0] %><br>
+            </td>
+            <td><%= piece.incorpoation_status %></td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>No piece found</tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<br>
