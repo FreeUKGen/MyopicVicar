@@ -35,8 +35,29 @@ class FreecenCsvEntriesController < ApplicationController
       message = 'The entry was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-    @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
 
+    pob_propagated, notes_propagated = @freecen_csv_entry.were_pob_notes_propagated(@freecen_csv_entry.warning_messages)
+    if pob_propagated || notes_propagated
+      if pob_propagated && notes_propagated
+        @propagation_fields = 'Both'
+      elsif pob_propagated
+        @propagation_fields = 'Alternative'
+      else
+        @propagation_fields = 'Notes'
+      end
+      @propagation_scope = 'File'
+      get_user_info_from_userid
+      warnings_adjustment, success, _message = @freecen_csv_entry.propagate_pob(@propagation_fields, @propagation_scope, @user.userid)
+      unless success
+        flash[:notice] = 'There was a problem propagating the POB acceptance - please report to System Administrator'
+        redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
+      end
+      @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
+      original_warning_count = @freecen_csv_file.total_warnings
+      @freecen_csv_file.adjust_total_warning_messages_and_lock(original_warning_count, warnings_adjustment)
+    end
+
+    @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
     @freecen_csv_entry.remove_flags if @freecen_csv_entry.flag
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
     @freecen_csv_file.update_total_warning_messages

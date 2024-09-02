@@ -1979,6 +1979,19 @@ class FreecenCsvEntry
     [warnings_adjustment, updated_warnings]
   end
 
+  def were_pob_notes_propagated(warnings)
+    pob_propagated = false
+    notes_propagated = false
+    warning_message_parts = warnings.split('<br>')
+    warning_message_parts.each do |part|
+      if part.include?('Warning:') && part.include?('adjusted')
+        pob_propagated = true if part.include?('Alternate')
+        notes_propagated = true if part.include?('Notes')
+      end
+    end
+    [pob_propagated, notes_propagated]
+  end
+
   # labels/vals for dwelling page header section (body in freecen_individuals)
   def self.census_display_labels(year, chapman_code)
     # 1841 doesn't have ecclesiastical parish or schedule number
