@@ -38,6 +38,7 @@ class FreecenCsvEntriesController < ApplicationController
 
     pob_propagated, notes_propagated = @freecen_csv_entry.were_pob_notes_propagated(@freecen_csv_entry.warning_messages)
     if pob_propagated || notes_propagated
+      session[:propagated_alternate] = @freecen_csv_entry.id
       if pob_propagated && notes_propagated
         @propagation_fields = 'Both'
       elsif pob_propagated
