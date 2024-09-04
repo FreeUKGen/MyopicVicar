@@ -8,7 +8,7 @@
 </div>
 <%= render 'flash_notice' %>
 <div class="island  island--light">
-  <%= simple_form_for @freecen2_place, :html => { :class => "grid"}  do |f| %>
+  <%= simple_form_for @freecen2_place do |f| %>
     <fieldset class="input" style="text-align: center">
       <%= f.input :place_name, :label => "Search for Place name(s).",:input_html => {:class => "simple_form_bgcolour", :size => 40 }%>
       <small><b>Previous search criteria preloaded.</b> Names entered are case insensitive and should be the stem of a name e.g. ann will locate ann anns ann's anns'. <br>
