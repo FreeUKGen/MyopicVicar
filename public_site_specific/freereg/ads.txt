@@ -792,13 +792,6 @@ Contextweb.com, 562926, RESELLER, 89ff185a4c4e857c
 #AdSense
 google.com, pub-7825403497160061, DIRECT, f08c47fec0942fa0
 
-#Monetizemore
-
-#adx
-google.com, pub-7620071422727774, RESELLER, f08c47fec0942fa0 #MMCAD
-google.com, pub-5278973888786334, RESELLER, f08c47fec0942fa0 #MMUSD
-google.com, pub-6190096338979886, RESELLER, f08c47fec0942fa0 #MMLATAM
-
 #amazonA9
 aps.amazon.com,2024be8e-6b4f-4c97-85c3-37bf49b988d1,DIRECT
 pubmatic.com,157150,RESELLER,5d62403b186f2ace
