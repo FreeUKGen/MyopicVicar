@@ -23,6 +23,10 @@ module DownloadAsCsv
     end
   end
 
+  def search_results_json(array)
+    render json: array
+  end
+
   def gedcom_header
     today = Date.today
     now = Time.now.strftime('%T')

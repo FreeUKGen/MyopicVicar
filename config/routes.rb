@@ -534,6 +534,7 @@ MyopicVicar::Application.routes.draw do
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   get 'search_queries/:id/download_as_csv' => 'search_queries#download_as_csv', as: :search_results_download_as_csv
   get 'search_queries/:id/download_as_gedcom' => 'search_queries#download_as_gedcom', as: :search_results_download_as_gedcom
+  get 'search_queries/:id/download_as_json' => 'search_queries#download_as_json', as: :search_results_download_as_json
   #get 'search_queries/:id/saved_entries_as_csv' => 'search_queries#saved_entries_as_csv', as: :saved_entries_as_csv
   get 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
   get 'search_queries/:id/compare_search/:saved_search_id', to: 'search_queries#compare_search', as: :compare_search
@@ -541,6 +542,8 @@ MyopicVicar::Application.routes.draw do
     get :autocomplete_BestGuess_Surname, :on => :collection
     get :autocomplete_BestGuess_GivenName, :on => :collection
   end
+
+  get 'api', to: 'api_response#api_response_as_json', as: :api_response_as_json
 
   resources :postems
   resources :saved_search

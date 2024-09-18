@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class SearchQuery
   include Mongoid::Document
+  #include Mongoid::Attributes::Dynamic
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   require 'chapman_code'
