@@ -10,7 +10,7 @@ class ApiResponseController < ApplicationController
   # and getting back a comma-separated list of District numbers
   # Need to support date-based searches, including 'fudge factor' support: done
   # Would be good to return the persistent URL for the record
-  # Support the fields parameter; provide a default set of fields
+  # Support the fields parameter; provide a default set of fields: done
   def api_response_as_json
     response = ApiResponse.new
     query = SearchQuery.new
@@ -55,7 +55,7 @@ class ApiResponseController < ApplicationController
     response.start = start
     response.limit = limit
     return_selected_range(query.search_result.records.values, start, limit, response.matches)
-    render json: response
+    render json: response.attributes.except('_id')
   end
 
   private
