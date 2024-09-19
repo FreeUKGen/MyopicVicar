@@ -15,6 +15,11 @@ class ApiResponseController < ApplicationController
     response = ApiResponse.new
     query = SearchQuery.new
     search_params = params.select{ |parm| not( parm['controller'] or parm['action'])}
+    if params[:fields].present?
+      @fields_to_display = params[:fields].split(',')
+    else
+      @fields_to_display = ["RecordNumber","Surname","GivenName","OtherNames","DistrictNumber","District","Volume","Page","RecordTypeID","QuarterNumber"]
+    end
     query.last_name = params[:LastName] if params[:LastName].present?
     query.first_name = params[:FirstName] if params[:FirstName].present?
     query.districts << params[:DistrictNumber].split(',') if params[:DistrictNumber].present?
@@ -55,12 +60,20 @@ class ApiResponseController < ApplicationController
 
   private
 
+  def output_selected_fields(record)
+    result = BestGuess.new
+    @fields_to_display.each do |field|
+      result["#{field}"] = record["#{field}"]
+    end
+    result.attributes.slice(*@fields_to_display)
+  end
+
   def return_selected_range(records, start, limit, matches)
     i = 0
     output = 0
     records.each do |record|
       output_this_one = (i >= start and output < limit)
-      matches << record if output_this_one
+      matches << output_selected_fields(record) if output_this_one
       i += 1
       output += 1 if output_this_one
     end
