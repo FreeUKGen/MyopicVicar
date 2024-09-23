@@ -11,6 +11,7 @@ class ApiResponseController < ApplicationController
   # Need to support date-based searches, including 'fudge factor' support: done
   # Would be good to return the persistent URL for the record
   # Support the fields parameter; provide a default set of fields: done
+  @server = "localhost:3000"
   def api_response_as_json
     response = ApiResponse.new
     query = SearchQuery.new
@@ -26,6 +27,9 @@ class ApiResponseController < ApplicationController
       query.districts << params[:DistrictNumber].split(',')
     elsif params[:District].present?
       district_numbers = JSON.load(URI.open("http://test3.freebmd.org.uk/api/place?District=#{params[:District]}"))
+      if search_params[:Note].present?
+        search_params[:Note] = "District numbers: #{district_numbers['matches'].to_s}"
+      end
       query.districts << district_numbers["matches"]
     end
     query.bmd_record_type << params[:RecordTypeId] if params[:RecordTypeId].present?
