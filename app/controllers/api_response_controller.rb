@@ -26,12 +26,17 @@ class ApiResponseController < ApplicationController
     if params[:DistrictNumber].present?
       query.districts << params[:DistrictNumber].split(',')
     elsif params[:District].present?
-      district_numbers = JSON.load(URI.open("https://test3.freebmd.org.uk/api/place?District=#{params[:District]}"))
-      if search_params[:Note].present?
-        search_params[:Note] = "District numbers: #{district_numbers['matches'].to_s}"
-      end
-      if district_numbers['matches'].present?
-        query.districts << district_numbers["matches"]
+      begin
+        district_numbers = JSON.load(URI.open("https://test3.freebmd.org.uk/api/place?District=#{params[:District]}"))
+      rescue Exception
+        #do nothing
+      else
+        if search_params[:Note].present?
+          search_params[:Note] = "District numbers: #{district_numbers['matches'].to_s}"
+        end
+        if district_numbers['matches'].present?
+          query.districts << district_numbers["matches"]
+        end
       end
     end
     query.bmd_record_type << params[:RecordTypeId] if params[:RecordTypeId].present?
