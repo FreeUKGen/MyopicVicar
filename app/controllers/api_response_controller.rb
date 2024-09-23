@@ -22,7 +22,12 @@ class ApiResponseController < ApplicationController
     end
     query.last_name = params[:LastName] if params[:LastName].present?
     query.first_name = params[:FirstName] if params[:FirstName].present?
-    query.districts << params[:DistrictNumber].split(',') if params[:DistrictNumber].present?
+    if params[:DistrictNumber].present?
+      query.districts << params[:DistrictNumber].split(',')
+    elsif params[:District].present?
+      district_numbers = JSON.load(URI.open("http://localhost:3000/api/place?District=#{params[:District]}"))
+      query.districts << district_numbers["matches"]
+    end
     query.bmd_record_type << params[:RecordTypeId] if params[:RecordTypeId].present?
     if params[:StartDate].present?
       query.start_year = params[:StartDate]
@@ -56,6 +61,32 @@ class ApiResponseController < ApplicationController
     response.limit = limit
     return_selected_range(query.search_result.records.values, start, limit, response.matches)
     render json: response.attributes.except('_id')
+  end
+
+  def api_place_response_as_json
+    response = ApiResponse.new
+    status = 200
+    search_params = params.select{ |parm| not( parm['controller'] or parm['action'])}
+    response.request << search_params
+    district = params[:District]
+    if !(district.blank?)
+      official_district = District.where(DistrictName: district).first
+      if official_district.present?
+        response.matches << official_district.DistrictNumber
+        response.total = 1
+      else
+        district_pseudonym = DistrictPseudonym.where(DistrictPseudonym: district.downcase)
+        if district_pseudonym.present?
+          district_pseudonym.each do |p|
+            response.matches << p.DistrictNumber
+          end
+          response.total = district_pseudonym.count
+        else
+          status = 404
+        end
+      end
+    end
+    render json: response.attributes.except('_id'), status: status
   end
 
   private

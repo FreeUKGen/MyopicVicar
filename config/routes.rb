@@ -544,6 +544,9 @@ MyopicVicar::Application.routes.draw do
   end
 
   get 'api', to: 'api_response#api_response_as_json', as: :api_response_as_json
+  post 'api', to: 'api_response#api_response_as_json'
+  get 'api/place', to: 'api_response#api_place_response_as_json', as: :api_place_response_as_json
+  post 'api/place', to: 'api_response#api_place_response_as_json'
 
   resources :postems
   resources :saved_search
