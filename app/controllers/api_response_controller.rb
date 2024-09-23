@@ -25,7 +25,7 @@ class ApiResponseController < ApplicationController
     if params[:DistrictNumber].present?
       query.districts << params[:DistrictNumber].split(',')
     elsif params[:District].present?
-      district_numbers = JSON.load(URI.open("http://localhost:3000/api/place?District=#{params[:District]}"))
+      district_numbers = JSON.load(URI.open("/api/place?District=#{params[:District]}"))
       query.districts << district_numbers["matches"]
     end
     query.bmd_record_type << params[:RecordTypeId] if params[:RecordTypeId].present?
