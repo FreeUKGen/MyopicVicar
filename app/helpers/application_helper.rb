@@ -69,6 +69,20 @@ module ApplicationHelper
     end
   end
 
+  def nav_help_bmd_context
+    suffix = ""
+    if controller_name == 'search_queries'
+      if action_name == 'new'
+        suffix = "#howToSearch"
+      else
+        suffix = "#gtkResults"
+      end
+    elsif controller_name == 'entry-information'
+      suffix = "#gtkDetails"
+    end
+    suffix
+  end
+
   def nav_member_page_link
     return if controller_name == 'sessions'
 
