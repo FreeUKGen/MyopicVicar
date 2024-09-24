@@ -77,6 +77,7 @@ class ApiResponseController < ApplicationController
     elsif !(county.blank?)
       response.matches = get_district_numbers_for_county(county)
     end
+    response.total = response.matches.count
     render json: response.attributes.except('_id'), status: status
   end
 
