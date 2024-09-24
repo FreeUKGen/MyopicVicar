@@ -25,19 +25,10 @@ class ApiResponseController < ApplicationController
     query.first_name = params[:FirstName] if params[:FirstName].present?
     if params[:DistrictNumber].present?
       query.districts << params[:DistrictNumber].split(',')
-    elsif params[:District].present?
-      begin
-        district_numbers = JSON.load(URI.open("https://test3.freebmd.org.uk/api/place?District=#{params[:District]}"))
-      rescue Exception
-        #do nothing
-      else
-        if search_params[:Note].present?
-          search_params[:Note] = "District numbers: #{district_numbers['matches'].to_s}"
-        end
-        if district_numbers['matches'].present?
-          query.districts << district_numbers["matches"]
-        end
-      end
+    elsif params[:DistrictName].present?
+      query.districts = get_district_numbers_for_district_name(params[:DistrictName])
+    elsif params[:County].present?
+      query.districts = get_district_numbers_for_county(params[:County])
     end
     query.bmd_record_type << params[:RecordTypeId] if params[:RecordTypeId].present?
     if params[:StartDate].present?
@@ -79,23 +70,12 @@ class ApiResponseController < ApplicationController
     status = 200
     search_params = params.select{ |parm| not( parm['controller'] or parm['action'])}
     response.request << search_params
-    district = params[:District]
+    district_name = params[:DistrictName]
+    county = params[:County]
     if !(district.blank?)
-      official_district = District.where(DistrictName: district).first
-      if official_district.present?
-        response.matches << official_district.DistrictNumber
-        response.total = 1
-      else
-        district_pseudonym = DistrictPseudonym.where(DistrictPseudonym: district.downcase)
-        if district_pseudonym.present?
-          district_pseudonym.each do |p|
-            response.matches << p.DistrictNumber
-          end
-          response.total = district_pseudonym.count
-        else
-          status = 404
-        end
-      end
+      response.matches = get_district_numbers_for_district_name(district_name)
+    elsif !(county.blank?)
+      response.matches = get_district_numbers_for_county(county)
     end
     render json: response.attributes.except('_id'), status: status
   end
@@ -129,6 +109,34 @@ class ApiResponseController < ApplicationController
   def year_to_end_quarter(year)
     quarter = 4*(year.to_i - 1837) + 4
     quarter
+  end
+
+  def get_district_numbers_for_district_name(name)
+    numbers = []
+    official_district = District.where(DistrictName: name).first
+    if official_district.present?
+      numbers << official_district.DistrictNumber
+    else
+      district_pseudonym = DistrictPseudonym.where(DistrictPseudonym: name.downcase)
+      if district_pseudonym.present?
+        district_pseudonym.each do |p|
+          numbers << p.DistrictNumber
+        end
+      end
+    end
+    numbers
+  end
+
+  def get_district_numbers_for_county(county)
+    numbers = []
+    county_code = ChapmanCode::code_from_name(county)
+    if county.present?
+      districts_in_chapman_county = DistrictToCounty.where(County: county_code)
+      districts_in_chapman_county.each do |district|
+        numbers << district.DistrictNumber
+      end
+    end
+    numbers
   end
 
 end
