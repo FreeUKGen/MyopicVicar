@@ -72,7 +72,7 @@ class ApiResponseController < ApplicationController
     response.request << search_params
     district_name = params[:DistrictName]
     county = params[:County]
-    if !(district.blank?)
+    if !(district_name.blank?)
       response.matches = get_district_numbers_for_district_name(district_name)
     elsif !(county.blank?)
       response.matches = get_district_numbers_for_county(county)
