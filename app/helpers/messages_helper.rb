@@ -322,7 +322,7 @@ module MessagesHelper
     if controller.controller_name == 'contacts' || controller.controller_name == 'feedbacks'
       render 'messages/index_table', messages:messages, explanation: explanation, source_type: source_type
     else
-      render 'index_table', messages:messages
+      render 'index_table', messages:messages, explanation: explanation, source_type: source_type
     end
   end
 
