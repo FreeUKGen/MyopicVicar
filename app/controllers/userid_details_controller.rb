@@ -66,11 +66,11 @@ class UseridDetailsController < ApplicationController
       if @userid.save
         refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
         refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        flash[:notice] = 'Thank you for successfully submitting the form. You will now receive an email to complete the registration process.'
         @userid.write_userid_file
         next_place_to_go_successful_create
       else
-        flash[:notice] = 'The registration was unsuccessful'
+        flash[:notice] = 'Sorry, the registration was unsuccessful. Please try again.'
         @syndicates = Syndicate.get_syndicates_open_for_transcription
         next_place_to_go_unsuccessful_create
       end
@@ -145,7 +145,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def import
-    create_users = ImportUsersFromCsv.new(params[:file], params[:commit],session[:syndicate]).import
+    create_users = ImportUsersFromCsv.new(params[:file], params[:commit], session[:syndicate]).import
     flash[:notice] = "Users creation completed"
     @userids = UseridDetail.get_userids_for_display('all')
     @syndicate = 'all'
@@ -210,6 +210,7 @@ class UseridDetailsController < ApplicationController
     redirect_back(fallback_location: options_userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
     redirect_back(fallback_location: options_userid_details_path, notice: 'The removal of the userid not permitted as they have batches') && return if @userid.has_files?
+
     @userid.update_attributes(syndicate: 'To be Destroyed')
     flash[:notice] = 'Userid moved to the To be Destroyed syndicate for review'
     redirect_to(userid_detail_path(@userid.id))
@@ -253,7 +254,7 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_successful_create
     @userid.finish_creation_setup if params[:commit] == 'Register as Transcriber'
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
-    @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
+    @userid.finish_technical_creation_setup if params[:commit] == 'Register as Technical Volunteer'
     if params[:commit] == 'Register as Transcriber'
       if MyopicVicar::Application.config.template_set != 'freecen'
         redirect_to(transcriber_registration_userid_detail_path) && return
@@ -283,7 +284,7 @@ class UseridDetailsController < ApplicationController
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @userid[:honeypot] = session[:honeypot]
       render action: :transcriber_registration and return
-    when 'Technical Registration'
+    when 'Register as Technical Volunteer'
       render action: :technical_registration and return
     else
       @user = get_user
@@ -480,25 +481,43 @@ class UseridDetailsController < ApplicationController
   def show
     get_user_info_from_userid
     load(params[:id])
-    redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
+    if @userid.blank?
+      redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && 
+        return
+    end
+
     session[:return_to] = request.fullpath
     @syndicate = session[:syndicate]
     @page_name = params[:page_name]
   end
 
   def technical_registration
-    redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
+    unless Rails.application.config.member_open
+      redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && 
+        return
+    end
+
+    # we set the mongo_config.yml member open flag.
+    # true is open. false is closed We do allow technical people in
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = 'technical_registration'
+    session[:honeypot] = "agreement_#{rand.to_s[2..11]}"
     @userid = UseridDetail.new
+    @userid[:honeypot] = session[:honeypot]
+    @new_transcription_agreement = %w[Unknown Accepted Declined Requested]
+    @first_name = session[:first_name]
   end
 
   def transcriber_registration
-    redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
+    unless Rails.application.config.member_open
+      redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && 
+        return
+    end
 
-    #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+    # we set the mongo_config.yml member open flag. 
+    # true is open. false is closed We do allow technical people in
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
@@ -508,7 +527,7 @@ class UseridDetailsController < ApplicationController
     @userid = UseridDetail.new
     @userid[:honeypot] = session[:honeypot]
     @syndicates = Syndicate.get_syndicates_open_for_transcription
-    @new_transcription_agreement = ['Unknown','Accepted','Declined','Requested']
+    @new_transcription_agreement = ['Unknown', 'Accepted', 'Declined', 'Requested']
     @first_name = session[:first_name]
   end
 
