@@ -42,10 +42,10 @@ class UseridDetail
   field :email_address_valid, type: Boolean, default: true
   field :email_address_last_confirmned, type: DateTime
   field :no_processing_messages, type: Boolean, default: false
-  field :userid_messages,type: Array, default: []
-  field :userid_feedback_replies,type: Hash, default: {}
-  field :reason_for_invalidating,type: String
-  field :new_transcription_agreement, type: String, default: "Unknown"
+  field :userid_messages, type: Array, default: []
+  field :userid_feedback_replies, type: Hash, default: {}
+  field :reason_for_invalidating, type: String
+  field :new_transcription_agreement, type: String, default: 'Unknown'
   field :email_address_validity_change_message, type: Array, default: []
   field :secondary_role, type: Array, default: []
   field :do_not_acknowledge_me, type: Boolean
@@ -54,80 +54,85 @@ class UseridDetail
   # Note if you add or change fields you may need to update the display and edit field order in /lib/freereg_options_constants
 
   attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy
+
   index({ email_address: 1 })
   index({ userid: 1, person_role: 1 })
   index({ person_surname: 1, person_forename: 1 })
-  index({syndicate: 1, active: 1}, {name: "syndicate_active"})
-  index({person_role: 1}, {name: "person_role"})
+  index({ syndicate: 1, active: 1 }, { name: 'syndicate_active' })
+  index({ person_role: 1 }, { name: 'person_role' })
 
   has_many :freereg1_csv_files, dependent: :restrict_with_error
   has_many :attic_files, dependent: :restrict_with_error
   has_many :assignments
 
-  validates_presence_of :userid,:syndicate,:email_address, :person_role, :person_surname, :person_forename,
-    :skill_level #,:new_transcription_agreement
-  validates_format_of :email_address,:with => Devise::email_regexp
+  validates :userid, :syndicate, :email_address, :person_role, :person_surname, :person_forename,
+            :skill_level, presence: true # ,:new_transcription_agreement
+  validates :email_address, format: { with: Devise.email_regexp }
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
   validate :email_address_does_not_exist, on: :update
   validate :active_with_inactive_reason, on: :update
   validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
-  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
-  after_create :save_to_refinery
+  # volunteer registration - to be updated when volunteer_role field created
+  validates :skill_notes, :previous_syndicate, presence: true
+  before_save { self.email_address = email_address.downcase }
+
   before_save :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries
-  #after_update :update_refinery
+  before_create :add_lower_case_userid, :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
+  after_create :save_to_refinery
+  # after_update :update_refinery
   before_destroy :delete_refinery_user_and_userid_folder
 
   @current_year = DateTime.now.year
-  @old_date = "2017/10/17"
-  @new_date = DateTime.new(@current_year, 01, 01)
+  @old_date = '2017/10/17'
+  @new_date = DateTime.new(@current_year, 0o1, 0o1)
   @users_count = UseridDetail.count
 
-  scope :users_marked_active, ->{ where(active: true) }
-  scope :users_accepted_new_transcription_agreement, ->{ where(new_transcription_agreement: "Accepted") }
-  scope :new_users, ->{ where(sign_up_date: {'$gte': @new_date }) }
-  scope :old_users, ->{ where(sign_up_date: {'$lt': @new_date }) }
+  scope :users_marked_active, -> { where(active: true) }
+  scope :users_accepted_new_transcription_agreement, -> { where(new_transcription_agreement: 'Accepted') }
+  scope :new_users, -> { where(sign_up_date: { '$gte': @new_date }) }
+  scope :old_users, -> { where(sign_up_date: { '$lt': @new_date }) }
   scope :user_role_transcriber, -> { where(person_role: 'transcriber') }
 
   class << self
     def syndicate(syndicate)
-      where(:syndicate => syndicate)
+      where(syndicate: syndicate)
     end
 
     def syndicate_coordinator(syndicate_coordinator)
-      where(:syndicate_coordinator => syndicate_coordinator)
+      where(syndicate_coordinator: syndicate_coordinator)
     end
 
     def userid(userid)
-      where(:userid => userid)
+      where(userid: userid)
     end
 
     def id(userid)
-      where(:id => userid)
+      where(id: userid)
     end
 
     def role(role)
-      where(:person_role => role)
+      where(person_role: role)
     end
 
     def secondary(role)
-      where(:secondary_role => role)
+      where(secondary_role: role)
     end
 
     def active(active)
-      where(:active => active)
+      where(active: active)
     end
 
     def reason(reason)
-      where(:disabled_reason_standard => reason)
+      where(disabled_reason_standard: reason)
     end
 
     def email_address_valid
-      where(:email_address_valid => true)
+      where(email_address_valid: true)
     end
 
     def transcription_agreement(transcription_agreement)
-      where(:transcription_agreement => transcription_agreement)
+      where(transcription_agreement: transcription_agreement)
     end
 
     def new_transcription_agreement(new_transcription_agreement)
@@ -160,13 +165,12 @@ class UseridDetail
       if user.present?
         friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>"
       elsif MyopicVicar::Application.config.template_set == 'freereg'
-        friendly_email = 'no-reply@freereg.org.uk'#'FreeREG Servant <freereg-contacts@freereg.org.uk>'
+        friendly_email = 'no-reply@freereg.org.uk' # 'FreeREG Servant <freereg-contacts@freereg.org.uk>'
       elsif MyopicVicar::Application.config.template_set == 'freecen'
-        friendly_email = 'no-reply@freecen.org.uk'#'FreeCEN Servant <freecen-contacts@freecen.org.uk>'
+        friendly_email = 'no-reply@freecen.org.uk' # 'FreeCEN Servant <freecen-contacts@freecen.org.uk>'
       end
       friendly_email
     end
-
 
     def uploaded_freecen_file(users, transcribers)
       uploaded = []
@@ -199,7 +203,7 @@ class UseridDetail
       [users, transcribers]
     end
 
-    def get_transcriber_stats(start_date,end_date)
+    def get_transcriber_stats(start_date, end_date)
       transcribers = UseridDetail.where(person_role: 'transcriber')
       transcribers_registered = transcribers.where(c_at: start_date..end_date)
       active_transcribers = transcribers.where(active: true)
@@ -209,89 +213,81 @@ class UseridDetail
 
     def options
       if MyopicVicar::Application.config.template_set == MyopicVicar::TemplateSet::FREEREG
-        FREEREG_TECH_VOLUNTEER_OPTIONS
+        FreeregOptionsConstants::FREEREG_TECH_VOLUNTEER_OPTIONS
       else
         FREECEN_OPTIONS
       end
     end
   end
 
-
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Instance Methods
 
   def add_fields(type, syndicate)
     self.syndicate = syndicate if self.syndicate.nil?
-    self.userid = self.userid.strip unless self.userid.nil?
+    self.userid = userid.strip unless userid.nil?
     self.sign_up_date = DateTime.now
     self.active = true
-    case
-    when type == 'Register Researcher'
+    if type == 'Register Researcher'
       self.person_role = 'researcher'
       self.syndicate = 'Researcher'
-    when type == 'Register as Transcriber'
+    elsif type == 'Register as Transcriber'
       self.person_role = 'transcriber'
-    when type == 'Register as Technical Volunteer'
+    elsif type == 'Register as Technical Volunteer'
       # when type == 'Technical Registration'
       self.active = false
       self.syndicate = 'Technical'
     end
-    password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+    password = Devise::Encryptable::Encryptors::Freereg.digest('temppasshope', nil, nil, nil)
     self.password = password
     self.password_confirmation = password
-    self.email_address_last_confirmned = self.sign_up_date
-    self.email_address_valid= true
+    self.email_address_last_confirmned = sign_up_date
+    self.email_address_valid = true
     self.email_address_last_confirmned = Time.new
-    #self.new_transcription_agreement = "Unknown"
+    # self.new_transcription_agreement = "Unknown"
   end
 
-
-
   def count_not_checked_messages
-    self.reload
-    userid_msgs = self.userid_messages
+    reload
+    userid_msgs = userid_messages
     return 0 if userid_msgs.length == 0
-    self.userid_messages.each do |msg_id|
+
+    userid_messages.each do |msg_id|
       msg = Message.id(msg_id.to_s).first
-      if msg.nil?
-        userid_msgs = userid_msgs - [msg_id]
-      end
+      userid_msgs -= [msg_id] if msg.nil?
     end
-    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
-    self.userid_messages.length
+    update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != userid_messages.length
+    userid_messages.length
   end
 
   def delete_feedback
-    self.userid_feedback_replies.each do |feedback_id, message_id|
+    userid_feedback_replies.each do |feedback_id, message_id|
       next unless message_id.empty?
+
       feedback = Feedback.id(feedback_id).first
-      if feedback.nil?
-        @userid_feedback_msgs.except!(feedback_id)
-      end
+      @userid_feedback_msgs.except!(feedback_id) if feedback.nil?
     end
   end
 
   def does_not_have_original_message?(message)
-    userid_messages.include?(message.source_message_id) ? answer = false : answer = true
-    answer
+    userid_messages.include?(message.source_message_id) ? false : true
   end
 
   def feedback_without_replies
-    self.update_userid_feedbacks
-    @feedbacks_with_no_reply = self.userid_feedback_replies.keys.select do |id|
-      self.userid_feedback_replies[id].blank?
+    update_userid_feedbacks
+    @feedbacks_with_no_reply = userid_feedback_replies.keys.select do |id|
+      userid_feedback_replies[id].blank?
     end
   end
 
   def feedback_with_replies
-    self.update_userid_feedbacks
-    @feedbacks_with_no_reply = self.userid_feedback_replies.keys.reject do |id|
-      self.userid_feedback_replies[id].blank?
+    update_userid_feedbacks
+    @feedbacks_with_no_reply = userid_feedback_replies.keys.reject do |id|
+      userid_feedback_replies[id].blank?
     end
   end
 
   def has_original_message?(message)
-    userid_messages.include?(message.source_message_id) ? answer = true : answer = false
-    answer
+    userid_messages.include?(message.source_message_id) ? true : false
   end
 
   def meets_open_status_requirement?(open_data_status)
@@ -315,11 +311,12 @@ class UseridDetail
   end
 
   def remove_checked_messages(msg_id)
-    self.reload
-    return if !(self.userid_messages.include? msg_id)
-    userid_msgs = self.userid_messages
-    userid_msgs = userid_msgs - [msg_id]
-    self.update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != self.userid_messages.length
+    reload
+    return unless userid_messages.include? msg_id
+
+    userid_msgs = userid_messages
+    userid_msgs -= [msg_id]
+    update_attribute(:userid_messages, userid_msgs) if userid_msgs.length != userid_messages.length
   end
 
   def remove_deleted_messages(date)
@@ -329,35 +326,36 @@ class UseridDetail
       removal << message_id if Message.should_be_removed_from_userid?(message_id, date)
     end
     removal.each do |message|
-      userid_msgs = userid_msgs - [message]
+      userid_msgs -= [message]
     end
     update(userid_messages: userid_msgs) if userid_msgs.length != userid_messages.length
   end
 
   def update_userid_feedbacks
-    self.reload
+    reload
     update_feedback_replies
-    @userid_feedback_msgs = self.userid_feedback_replies
+    @userid_feedback_msgs = userid_feedback_replies
     return {} if @userid_feedback_msgs.empty?
+
     delete_feedback
-    self.userid_feedback_replies.replace(@userid_feedback_msgs) if @userid_feedback_msgs.length != self.userid_feedback_replies.length
-    self.update_attribute(:userid_feedback_replies, self.userid_feedback_replies)
+    userid_feedback_replies.replace(@userid_feedback_msgs) if @userid_feedback_msgs.length != userid_feedback_replies.length
+    update_attribute(:userid_feedback_replies, userid_feedback_replies)
   end
 
   def update_feedback_replies
-    self.userid_feedback_replies.each do |key, value|
+    userid_feedback_replies.each do |key, value|
       next if value.blank?
+
       @existing_messages = value.delete_if do |v|
         Message.where(id: v).blank?
       end
-      self.userid_feedback_replies.store(key, @existing_messages) if value.length != @existing_messages
+      userid_feedback_replies.store(key, @existing_messages) if value.length != @existing_messages
     end
   end
 
-
   def self.userids_active_for_display(syndicate)
-    @userids = UseridDetail.where(:active => true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    @userids = UseridDetail.where(:syndicate => syndicate, :active => true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    @userids = UseridDetail.where(active: true).all.order_by(userid_lower_case: 1) if syndicate == 'all'
+    @userids = UseridDetail.where(syndicate: syndicate, active: true).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
     @userids
   end
 
@@ -381,8 +379,8 @@ class UseridDetail
 
   def self.get_emails_for_selection(syndicate)
     users = UseridDetail.all.order_by(email_address: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate).all.order_by(email_address: 1) unless syndicate == 'all'
-    @userids = Array.new
+    users = UseridDetail.where(syndicate: syndicate).all.order_by(email_address: 1) unless syndicate == 'all'
+    @userids = []
     @userids << ''
     users.each do |user|
       @userids << user.email_address
@@ -392,25 +390,25 @@ class UseridDetail
 
   def self.get_names_for_selection(syndicate)
     users = UseridDetail.all.order_by(person_surname: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate).all.order_by(person_surname: 1) unless syndicate == 'all'
-    @userids = Array.new
+    users = UseridDetail.where(syndicate: syndicate).all.order_by(person_surname: 1) unless syndicate == 'all'
+    @userids = []
     @userids << ''
     users.each do |user|
-      name = ""
-      name = user.person_surname + ":" + user.person_forename unless user.person_surname.nil?
+      name = ''
+      name = user.person_surname + ':' + user.person_forename unless user.person_surname.nil?
       @userids << name
     end
     return @userids.sort_by(&:downcase)
   end
 
   def get_roles
-    all_roles = self.secondary_role
-    all_roles << self.person_role
+    all_roles = secondary_role
+    all_roles << person_role
     all_roles.uniq
   end
 
   def send_invitation_to_create_password
-    type = self.person_role
+    type = person_role
     UserMailer.invitation_to_register_researcher(self).deliver if type == 'researcher'
     UserMailer.invitation_to_register_transcriber(self).deliver if type == 'transcriber'
     UserMailer.invitation_to_register_technical(self).deliver if type == 'technical'
@@ -418,40 +416,40 @@ class UseridDetail
 
   def send_invitation_to_reset_password
     UserMailer.invitation_to_reset_password(self).deliver
-
   end
 
   def save_to_attic
     return if MyopicVicar::Application.config.template_set == 'freecen'
-    #to-do unix permissions
+
+    # to-do unix permissions
     user = self
-    details_dir = File.join(Rails.application.config.datafiles,user.userid)
-    details_file = File.join(details_dir,".uDetails")
-    newdir = File.join(details_dir,'.attic')
-    Dir.mkdir(newdir) unless Dir.exists?(newdir)
-    renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
-    File.rename(details_file,renamed_file)
-    FileUtils.mv(renamed_file,newdir)
+    details_dir = File.join(Rails.application.config.datafiles, user.userid)
+    details_file = File.join(details_dir, '.uDetails')
+    newdir = File.join(details_dir, '.attic')
+    Dir.mkdir(newdir) unless Dir.exist?(newdir)
+    renamed_file = (details_file + '.' + Time.now.to_i.to_s).to_s
+    File.rename(details_file, renamed_file)
+    FileUtils.mv(renamed_file, newdir)
   end
 
   def userid_and_email_address_does_not_exist
-    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exists") if Refinery::User.where(:username => self[:userid]).exists?
-    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    errors.add(:email_address, "Refinery email already exists") if Refinery::User.where(:email => self[:email_address]).exists?
+    errors.add(:userid, 'Userid Already exists') if UseridDetail.where(userid: self[:userid]).exists?
+    errors.add(:userid, 'Refinery User Already exists') if Refinery::User.where(username: self[:userid]).exists?
+    errors.add(:email_address, 'Userid email already exists') if UseridDetail.where(email_address: self[:email_address]).exists?
+    errors.add(:email_address, 'Refinery email already exists') if Refinery::User.where(email: self[:email_address]).exists?
   end
 
-  #def userid_and_email_address_does_not_exist
+  # def userid_and_email_address_does_not_exist
   # errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-  #errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
-  #errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
-  #errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
-  #end
+  # errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
+  # errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
+  # errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
+  # end
 
   def self.get_userids_for_selection(syndicate)
     users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
-    userids = Array.new
+    users = UseridDetail.where(syndicate: syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    userids = []
     users.each do |user|
       userids << user.userid
     end
@@ -460,17 +458,13 @@ class UseridDetail
 
   def self.get_userids_for_display(syndicate)
     users = UseridDetail.all.order_by(userid_lower_case: 1) if syndicate == 'all'
-    users = UseridDetail.where(:syndicate => syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
+    users = UseridDetail.where(syndicate: syndicate).all.order_by(userid_lower_case: 1) unless syndicate == 'all'
     users
   end
 
-
-
   def remove_secondary_role_blank_entries
     secondary_role = self.secondary_role
-    if secondary_role.include? ""
-      secondary_role.delete("")
-    end
+    secondary_role.delete('') if secondary_role.include? ''
   end
 
   def add_lower_case_userid
@@ -478,55 +472,52 @@ class UseridDetail
   end
 
   def capitalize_forename
-    self.person_forename = self.person_forename.downcase.titleize
+    self.person_forename = person_forename.downcase.titleize
   end
 
   def captilaize_surname
-    self.person_surname = self.person_surname.downcase.titleize
+    self.person_surname = person_surname.downcase.titleize
   end
 
   def changed_syndicate?(new_syndicate)
-    new_syndicate.present? && self.syndicate != new_syndicate ? change = true : change = false
-    change
+    new_syndicate.present? && syndicate != new_syndicate ? true : false
   end
 
   def changed_email?(new_email)
-    new_email.present? && self.email_address != new_email ? change = true : change = false
-    change
+    new_email.present? && email_address != new_email ? true : false
   end
 
   def check_exists_in_refinery
-    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
-    if refinery_user.nil?
-      return[false,"There is no refinery entry"]
-    else
-      return[true]
-    end
+    refinery_user = Refinery::Authentication::Devise::User.where(username: userid).first
+    return [false, 'There is no refinery entry'] if refinery_user.nil?
+
+    return [true]
   end
 
   def compute_records
     count = 0
-    self.freereg1_csv_files.each do |file|
-      count = count + file.records.to_i
+    freereg1_csv_files.each do |file|
+      count += file.records.to_i
     end
     count
   end
 
   def delete_refinery_user_and_userid_folder
-    refinery_user = Refinery::Authentication::Devise::User.where(:username => self.userid).first
+    refinery_user = Refinery::Authentication::Devise::User.where(username: userid).first
     refinery_user.destroy unless refinery_user.nil?
-    details_dir = File.join(Rails.application.config.datafiles,self.userid)
+    details_dir = File.join(Rails.application.config.datafiles, userid)
     return if MyopicVicar::Application.config.template_set == 'freecen'
+
     FileUtils.rmdir(details_dir) if File.file?(details_dir)
   end
 
   def email_address_does_not_exist
-    if self.changed.include?('email_address')
-      errors.add(:email_address, "Userid email already exists on change") if
-      UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
-      errors.add(:email_address, "Refinery email already exists on change") if
-      Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists? && (self.userid != Refinery::Authentication::Devise::User.where(:username => self[:userid]))
-    end
+    return unless changed.include?('email_address')
+
+    errors.add(:email_address, 'Userid email already exists on change') if
+    UseridDetail.where(email_address: self[:email_address]).exists? && (userid != Refinery::Authentication::Devise::User.where(username: self[:userid]))
+    errors.add(:email_address, 'Refinery email already exists on change') if
+    Refinery::Authentication::Devise::User.where(email: self[:email_address]).exists? && (userid != Refinery::Authentication::Devise::User.where(username: self[:userid]))
   end
 
   def active_with_inactive_reason
@@ -534,10 +525,10 @@ class UseridDetail
   end
 
   def self.userid_does_not_exist
-    if self.changed.include?('userid')
-      errors.add(:base, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-      errors.add(:base, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
-    end
+    return unless changed.include?('userid')
+
+    errors.add(:base, 'Userid Already exists') if UseridDetail.where(userid: self[:userid]).exists?
+    errors.add(:base, 'Refinery User Already exists') if Refinery::Authentication::Devise::User.where(username: self[:userid]).exists?
   end
 
   def finish_creation_setup
@@ -547,25 +538,27 @@ class UseridDetail
   def finish_researcher_creation_setup
     UserMailer.notification_of_researcher_registration(self).deliver_now
   end
+
   def finish_transcriber_creation_setup
-    self.update_attribute(:email_address_last_confirmned, Time.now)
+    update_attribute(:email_address_last_confirmned, Time.now)
     UserMailer.notification_of_transcriber_registration(self).deliver_now
   end
+
   def finish_technical_creation_setup
     UserMailer.notification_of_technical_registration(self).deliver_now
   end
 
   def has_files?
     value = false
-    value = true if Freereg1CsvFile.where(:userid => self.userid).exists?
+    value = true if Freereg1CsvFile.where(userid: userid).exists?
     value
   end
 
   def json_of_my_profile
-    json_of_my_profile = Hash.new
+    json_of_my_profile = {}
     fields = FreeregOptionsConstants::USERID_DETAILS_MYOWN_DISPLAY
     fields.each do |field|
-      self[field].blank? ? json_of_my_profile[field.to_sym] = nil : json_of_my_profile[field.to_sym] = self[field]
+      json_of_my_profile[field.to_sym] = self[field].presence
     end
     json_of_my_profile
   end
@@ -573,76 +566,72 @@ class UseridDetail
   def need_to_confirm_email_address?
     result = false
     @user = UseridDetail.find_by(userid: userid)
-    last_date = @user.email_address_last_confirmned.blank? ? @user.sign_up_date : @user.email_address_last_confirmned
+    last_date = @user.email_address_last_confirmned.presence || @user.sign_up_date
     result = true if !@user.email_address_valid || (last_date + FreeregOptionsConstants::CONFIRM_EMAIL_ADDRESS.days < Time.now)
     result
   end
 
   def remember_search(search_query)
-    self.search_queries << search_query
+    search_queries << search_query
   end
 
   def save_to_attic
-    #to-do unix permissions
+    # to-do unix permissions
     user = self
-    details_dir = File.join(Rails.application.config.datafiles,user.userid)
-    details_file = File.join(details_dir,".uDetails")
-    newdir = File.join(details_dir,'.attic')
-    Dir.mkdir(newdir) unless Dir.exists?(newdir)
-    renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
-    File.rename(details_file,renamed_file)
-    FileUtils.mv(renamed_file,newdir)
+    details_dir = File.join(Rails.application.config.datafiles, user.userid)
+    details_file = File.join(details_dir, '.uDetails')
+    newdir = File.join(details_dir, '.attic')
+    Dir.mkdir(newdir) unless Dir.exist?(newdir)
+    renamed_file = (details_file + '.' + Time.now.to_i.to_s).to_s
+    File.rename(details_file, renamed_file)
+    FileUtils.mv(renamed_file, newdir)
   end
 
   def save_to_refinery
-    #avoid looping on password changes
-    u = Refinery::Authentication::Devise::User.where(:username => self.userid).first
-    if u.nil?
-      u = Refinery::Authentication::Devise::User.new
-    end
-    u.username = self.userid
-    u.email = self.email_address
+    # avoid looping on password changes
+    u = Refinery::Authentication::Devise::User.where(username: userid).first
+    u = Refinery::Authentication::Devise::User.new if u.nil?
+    u.username = userid
+    u.email = email_address
     u.password = 'Password' # no-op
     u.password_confirmation = 'Password' # no-op
-    u.encrypted_password = self.password # actual encrypted password
+    u.encrypted_password = password # actual encrypted password
     u.reset_password_token = u.generate_reset_password_token!
     u.reset_password_sent_at = Time.now
-    u.userid_detail_id = self.id.to_s
+    u.userid_detail_id = id.to_s
     u.add_role('Refinery')
-    u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
-    u.add_role('CountyPages') if (self.active && self.person_role =='county_coordinator')
+    u.add_role('Superuser') if (active && person_role == 'technical') || person_role == 'system_administrator'
+    u.add_role('CountyPages') if active && person_role == 'county_coordinator'
     u.save
   end
 
   def update_refinery
-    u = Refinery::Authentication::Devise::User.where(:username => self.userid).first
-    unless u.nil?
-      u.email = self.email_address
-      u.userid_detail_id = self.id.to_s
-      u.add_role('Refinery')
-      u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
-      u.add_role('CountyPages') if (self.active && self.person_role =='county_coordinator')
-      u.save
-    end
+    u = Refinery::Authentication::Devise::User.where(username: userid).first
+    return if u.nil?
+
+    u.email = email_address
+    u.userid_detail_id = id.to_s
+    u.add_role('Refinery')
+    u.add_role('Superuser') if (active && person_role == 'technical') || person_role == 'system_administrator'
+    u.add_role('CountyPages') if active && person_role == 'county_coordinator'
+    u.save
   end
 
   def userid_and_email_address_does_not_exist
-    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exists") if Refinery::Authentication::Devise::User.where(:username => self[:userid]).exists?
-    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    errors.add(:email_address, "Refinery email already exists") if Refinery::Authentication::Devise::User.where(:email => self[:email_address]).exists?
+    errors.add(:userid, 'Userid Already exists') if UseridDetail.where(userid: self[:userid]).exists?
+    errors.add(:userid, 'Refinery User Already exists') if Refinery::Authentication::Devise::User.where(username: self[:userid]).exists?
+    errors.add(:email_address, 'Userid email already exists') if UseridDetail.where(email_address: self[:email_address]).exists?
+    errors.add(:email_address, 'Refinery email already exists') if Refinery::Authentication::Devise::User.where(email: self[:email_address]).exists?
   end
 
   def write_userid_file
     user = self
-    details_dir = File.join(Rails.application.config.datafiles,user.userid)
+    details_dir = File.join(Rails.application.config.datafiles, user.userid)
     Dir.mkdir(details_dir) unless Dir.exist?(details_dir)
-    details_file = File.join(details_dir,".uDetails")
-    if File.file?(details_file)
-      save_to_attic
-    end
-    #we do not need a udetails file in the change set
-    details = File.new(details_file, "w")
+    details_file = File.join(details_dir, '.uDetails')
+    save_to_attic if File.file?(details_file)
+    # we do not need a udetails file in the change set
+    details = File.new(details_file, 'w')
     details.puts "Surname:#{user.person_surname}"
     details.puts "UserID:#{user.userid}"
     details.puts "EmailID:#{user.email_address}"
@@ -653,58 +642,59 @@ class UseridDetail
     details.puts "SyndicateName:#{user.syndicate}"
     details.puts "SignUpDate:#{user.sign_up_date}"
     details.puts "Person:#{user.person_role}"
-    unless user.active
+    if user.active
+      details.puts 'Active:1'
+      details.puts 'Disabled:0'
+    else
       details.puts "DisabledDate:#{user.disabled_date}"
       details.puts "DisabledReason:#{user.disabled_reason}"
-      details.puts "Active:0"
-      details.puts "Disabled:1"
-    else
-      details.puts "Active:1"
-      details.puts "Disabled:0"
+      details.puts 'Active:0'
+      details.puts 'Disabled:1'
     end
     details.close
   end
 
-  def list_incomplete_registrations current_user, current_syndicate
+  def list_incomplete_registrations(_current_user, current_syndicate)
     @users = get_users_by_syndicate(current_syndicate)
     filter_users
   end
 
   def full_name
-    "#{self.person_forename} #{self.person_surname}"
+    "#{person_forename} #{person_surname}"
   end
 
-  def registration_completed user
+  def registration_completed(user)
     user.password != registered_password
   end
 
   def incomplete_registration_user_lists(current_syndicate, active)
     syndicate_users = get_users_by_syndicate(current_syndicate)
-    if active.nil?
-      @users = syndicate_users
-    elsif active
-      @users = syndicate_users.where(active: true)
-    else
-      @users = syndicate_users.where(active: false)
-    end
+    @users = if active.nil?
+               syndicate_users
+             elsif active
+               syndicate_users.where(active: true)
+             else
+               syndicate_users.where(active: false)
+             end
     active_lists(get_user_ids)
   end
 
   def active_incomplete_registration_list
     @users = list_all_users
-    active_incomplete_registrations = Array.new
-    filter_users.each { |usr|
-      next if !usr.active
+    active_incomplete_registrations = []
+    filter_users.each do |usr|
+      next unless usr.active
+
       active_incomplete_registrations << usr.userid
-    }
+    end
     active_incomplete_registrations
   end
 
   def active_lists(user_lists)
     original_stdout = STDOUT.clone
-    file_name = "active_incomplete_registrations"
+    file_name = 'active_incomplete_registrations'
     ApplicationController.helpers.delete_file_if_exists(file_name)
-    STDOUT.reopen(ApplicationController.helpers.new_file(file_name), "w")
+    STDOUT.reopen(ApplicationController.helpers.new_file(file_name), 'w')
     puts user_lists
     STDOUT.reopen(original_stdout)
     puts "Total number of ids: #{user_lists.count}"
@@ -716,52 +706,44 @@ class UseridDetail
   end
 
   def incomplete_transcribers_registrations_count
-    @users = UseridDetail.where(person_role: "transcriber")
+    @users = UseridDetail.where(person_role: 'transcriber')
     return filter_users.count
   end
 
   def self.return_percentage_all_existing_users_accepted_transcriber_agreement
     total_existing_users = old_users.count.to_f
     total_existing_users_accepted = old_users.users_accepted_new_transcription_agreement.count.to_f
-    if total_existing_users == 0 || total_existing_users_accepted == 0
-      return 0
-    else
-      return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
-    end
+    return 0 if total_existing_users == 0 || total_existing_users_accepted == 0
+
+    return ((total_existing_users_accepted / total_existing_users) * 100).round(2)
   end
 
   def self.return_percentage_all_existing_active_users_accepted_transcriber_agreement
     total_existing_active_users = users_marked_active.old_users.count.to_f
     total_existing_active_users_accepted = users_marked_active.old_users.users_accepted_new_transcription_agreement.count.to_f
-    if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
-      return 0
-    else
-      return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
-    end
+    return 0 if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
+
+    return ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
   end
 
   def self.number_of_transcribers_uploaded_file_recently(month)
-    user_role_transcriber.where(last_upload: {'$gt': month.months.ago}).count
+    user_role_transcriber.where(last_upload: { '$gt': month.months.ago }).count
   end
 
   def self.return_percentage_all_users_accepted_transcriber_agreement
     total_users = @users_count.to_f
     total_users_accepted = users_accepted_new_transcription_agreement.count.to_f
-    if total_users == 0 || total_users_accepted == 0
-      return 0
-    else
-      return ((total_users_accepted / total_users) * 100).round(2)
-    end
+    return 0 if total_users == 0 || total_users_accepted == 0
+
+    return ((total_users_accepted / total_users) * 100).round(2)
   end
 
   def self.return_percentage_total_records_by_transcribers
     total_records_all = return_total_records.to_f
     total_records_open_transcribers = return_total_transcriber_records.to_f
-    if total_records_all == 0 || total_records_open_transcribers == 0
-      return 0
-    else
-      return (total_records_open_transcribers / total_records_all) * 100
-    end
+    return 0 if total_records_all == 0 || total_records_open_transcribers == 0
+
+    return (total_records_open_transcribers / total_records_all) * 100
   end
 
   def self.return_total_transcriber_records
@@ -781,32 +763,25 @@ class UseridDetail
   end
 
   def user_roles
-    all_roles = self.secondary_role
-    all_roles << self.person_role
+    all_roles = secondary_role
+    all_roles << person_role
     all_roles.uniq
   end
 
   private
 
-  FREEREG_TECH_VOLUNTEER_OPTIONS = {
-    'Ruby/MongoDB Volunteer' => 'ruby_mongo_dev',
-    'PHP Volunteer' => 'php_dev',
-    'HTML/CSS Volunteer' => 'html_css_dev',
-    'UX/UI Volunteer' => 'ux_ui_dev',
-    'Accessibility Volunteer' => 'accessibility_dev'
-  }
-
   def filter_users
-    @incompleted_registration_users = Array.new
-    @users.each { |user|
+    @incompleted_registration_users = []
+    @users.each do |user|
       next if registration_completed(user)
+
       @incompleted_registration_users << user
-    }
+    end
     @incompleted_registration_users
   end
 
   def registered_password
-    Devise::Encryptable::Encryptors::Freereg.digest('temppasshope',nil,nil,nil)
+    Devise::Encryptable::Encryptors::Freereg.digest('temppasshope', nil, nil, nil)
   end
 
   def list_all_users
@@ -822,19 +797,18 @@ class UseridDetail
   end
 
   def get_user_ids
-    filter_users.map{ |x| x[:userid] }
+    filter_users.map { |x| x[:userid] }
   end
 
   def transcription_agreement_must_accepted
-    errors.add(:base, "Transcription agreement must be accepted") if self.new_transcription_agreement == "0"
+    errors.add(:base, 'Transcription agreement must be accepted') if new_transcription_agreement == '0'
   end
 
   def transcription_agreement_value_change
-    if self.new_transcription_agreement == "1"
+    if new_transcription_agreement == '1'
       self.new_transcription_agreement = 'Accepted'
-    elsif self.new_transcription_agreement == 0
+    elsif new_transcription_agreement == 0
       self.new_transcription_agreement = 'Declined'
     end
   end
-
-end #end class
+end # end class
