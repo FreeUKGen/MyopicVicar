@@ -77,7 +77,7 @@ module ApplicationHelper
       else
         suffix = "#gtkResults"
       end
-    elsif controller_name == 'entry-information'
+    elsif controller_name == 'best_guess'
       suffix = "#gtkDetails"
     end
     suffix
