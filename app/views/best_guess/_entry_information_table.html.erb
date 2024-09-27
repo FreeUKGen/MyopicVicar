@@ -39,7 +39,7 @@
         <% if record.District.blank? %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
-        <% if record.district_misspelt or record.district_invented or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+        <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
           <a class="footnote-link" id="link-to-district-query" href="#district-query">
             [district query] <span class="accessibility">potential issue with this District name</span>
           </a>
@@ -202,7 +202,7 @@
     <%# end %>
   </tbody>
 </table>
-<% if record.DistrictFlag > 0 %>
+<% if record.DistrictFlag > 0 or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
   <div>
     <h2>Queries relating to this entry</h2>
   <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>

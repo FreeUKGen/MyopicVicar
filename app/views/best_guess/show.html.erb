@@ -12,7 +12,7 @@
 </div-->
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
   <div class="grid">
-    <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
+    <div class="seven-tenths lap-one-whole palm-one-whole ">
       <h1 class="beta push-half--top flush--bottom"><%= "Entry Information: #{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}" %></h1>
       <hr>
       <section>
@@ -30,13 +30,13 @@
         <% if params[:saved_record] %>
           <%= render partial: 'page_records_navigation_saved' %>
         <% end %>
-        <div class='push-half--top'>
-          <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
+        <div class='grid__item push-half--top'>
+          <div class="two-thirds lap-two-thirds palm-one-whole hard--left">
             <% if params[:search_id].present? %>
-              <div class='grid__item one-half lap-one-half palm-one-half text--left'>
+              <div class='one-half lap-one-half palm-one-half text--left'>
                 <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
               </div>
-              <div class='grid__item one-half lap-one-half palm-one-half text--right'>
+              <div class='one-half lap-one-half palm-one-half text--right'>
                 <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
               </div>
             <% end %>
