@@ -1,6 +1,8 @@
 <div class='container push--bottom'>
   <div class="grid">
     <div class="desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole">
+      <span class="weight--semibold">We found <%= pluralize(@result_count, ' result', ' results') %> for <%= @search_query[:first_name] %> <%= @search_query[:last_name] %></span>
+      <hr/>
       <%= form_tag search_query_path(@search_query), method: :get, id: 'filter_form' do %>
           <% if @search_query.bmd_record_type.count > 1 %>
             <% filter_hash = RecordType::FREEBMD_TYPES.select{|k, v| @search_query.bmd_record_type.include? v }%>
