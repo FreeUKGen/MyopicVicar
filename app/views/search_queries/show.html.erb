@@ -11,6 +11,7 @@
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
   <%= render 'display_search_criteria'%>
+  <%= pluralize( @result_count, 'Results' )%>
   <section>
     <% case %>
     <% when @timeout == true %>

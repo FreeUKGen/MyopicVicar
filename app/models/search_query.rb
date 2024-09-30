@@ -2185,7 +2185,8 @@ class SearchQuery
            '1 GEDC',
            '2 VERS 5.5.1',
            '2 FORM LINEAGE-LINKED',
-           '1 NOTE This file contains private information and may not be redistributed, published, or made public.']
+           '1 NOTE This file contains private information and may not be redistributed, published, or made public.',
+           '1 You can only download 50 results.']
     if (userid)
       arr << '0 @SUBM@ SUBM'
       arr << '1 NAME '+userid[:person_forename]+' /'+userid[:person_surname]+'/'
@@ -2205,7 +2206,8 @@ class SearchQuery
            '1 GEDC',
            '2 VERS 5.5.1',
            '2 FORM LINEAGE-LINKED',
-           '1 NOTE This file contains private information and may not be redistributed, published, or made public.']
+           '1 NOTE This file contains private information and may not be redistributed, published, or made public.',
+           '1 You can only download 50 results.']
     arr << '0 @SUBM@ SUBM'
     if user.present?
       arr << '1 NAME '+user[:person_forename]+' /'+user[:person_surname]+'/'

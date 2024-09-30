@@ -24,7 +24,7 @@ module BestGuessHelper
     case record_type.downcase
     when "birth"
       header = "Date of birth"
-    when "marriage"
+    when "death"
       header = "Age at death"
     end
     header

@@ -22,11 +22,12 @@ class BestGuessController < ApplicationController
     @display_date = false
     show_postem_or_scan
     return if @search_query.blank?
-
     @search_result = @search_query.search_result
     @viewed_records = @search_result.viewed_records
     @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
     @search_result.update(viewed_records: @viewed_records)
+    @scans_hash = {current_record: @current_record, scan_links: @scan_links, acc_scans: @acc_scans, acc_mul_scans: @acc_mul_scans}
+    @postems_hash = {current_record: @current_record, new_postem: @new_postem, search_query: @search_query, search: @search}
   end
 
   def current_record_number_to_display(search_record_number, page_record_number = nil)
