@@ -1,0 +1,54 @@
+<div id='scans_div'>
+  <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left push--top">
+    <h4 id='display_scans'>Scans</h4>
+  </div>
+  <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
+    <table class="table--bordered table--data ">
+      <thead>
+        <th>Scan</th>
+        <th>View Scan</th>
+      </thead>
+      <tbody>
+        <% if scan_links.present? %>
+          <% scan_links.each do |s| %>
+              <% series = s.SeriesRangeFileName %>
+              <% image_file_path = "#{scan_link_url(current_record)}#{series}" %>
+              <tr>
+                <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                <td><%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%></td>
+              </tr>
+          <% end %>
+        <% end %>
+        <% if acc_scans.present? %>
+          <% acc_scans.each do |s| %>
+              <% series = s.SeriesID %>
+              <% range = "/#{s.range.Range}" if s.Range.present?%>
+              <% file = s.Filename %>
+
+              <% image_file_path = "#{scan_link_url(current_record)}#{series}#{range}/#{file}" %>
+              <tr>
+                <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                <td><%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%></td>
+              </tr>
+          <% end %>
+        <% end %>
+        <% if acc_mul_scans.present? %>
+          <% acc_mul_scans.each do |s| %>
+              <% series = s.SeriesID %>
+              <% range = "/#{s.Range}" if s.Range.present?%>
+              <% current_record.multi_image_filenames.each do |fn| %>
+                <% image_file_path = "#{scan_link_url(current_record)}#{series}#{range}/#{fn}" %>
+                <tr>
+                  <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                  <td><%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%></td>
+                </tr>
+              <% end %>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
+    <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site (link opens in new tab)", "https://images.freebmd.org.uk/cgi/choose.pl", target: "_blank"%></p>
+  </div>
+</div>
