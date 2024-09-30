@@ -52,3 +52,4 @@ gem 'refinerycms-county_pages', :path => 'vendor/extensions'
 gem 'rubocop-rails'
 gem 'rubocop', '~> 1.23.0', require: false
 gem 'browser'
+gem "chartkick"
