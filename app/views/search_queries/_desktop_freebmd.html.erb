@@ -18,12 +18,18 @@
         <% end %>
         <thead>
           <tr>
-            <%# unless print_friendly %>
-              <th>Name</th>
-            <%# end %>
+            <th><% unless print_friendly %>
+              <%= link_to('Forename', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
+                <%= link_to('Surname', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
+            <% else %> Name <% end %></th>
             <th>Event Type</th>
-            <th>Reg. Date</th>
-            <th>Reg. District</th>
+            <th><% unless print_friendly %>
+              <%= link_to('Reg. Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
+              <% else %>
+            Reg. Date <% end %></th>
+            <th><% unless print_friendly %>
+                <%= link_to('Reg. District', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
+                <% else %>Reg. District <% end %></th>
             <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
               <th>Mother's Maiden Name</th>
             <% end %>
