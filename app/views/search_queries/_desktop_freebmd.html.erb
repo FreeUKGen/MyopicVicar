@@ -10,24 +10,29 @@
         <p class='accessibility'>You can print these results directly, or download them to PDF using your right-click or browser menu.</p>
       </div>
     <% end %>
+ <%# raise @search_query.bmd_record_type.inspect %>
+    <% included_record_types = @search_query.bmd_record_type %>
       <table class="table--bordered table--data">
         <% unless print_friendly %>
           <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
         <% end %>
         <thead>
           <tr>
-            <% unless print_friendly %>
-              <th>Detail</th>
+            <%# unless print_friendly %>
+              <th>Name</th>
+            <%# end %>
+            <th>Event Type</th>
+            <th>Reg. Date</th>
+            <th>Reg. District</th>
+            <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
+              <th>Mother's Maiden Name</th>
             <% end %>
-            <th>Individual
-              <%#= link_to_unless(print_friendly, 'Individual',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
-            </th>
-            
-            <th>Record Type
-              <%#= link_to_unless(print_friendly, 'Record Type',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
-            </th>
+            <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
+              <th>Spouse's Surname</th>
+            <% end %>
+            <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
+              <th>Age at Death/Date of Birth</th>
+            <% end %>
           </tr>
         </thead>
         <tbody>
@@ -36,25 +41,21 @@
             <% n = n +1 %>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
-              <% unless print_friendly %>
+              <%# unless print_friendly %>
                 <td>
                   <center>
-                    <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+                    <%= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
                     <i><%= seen(@search_query,search_record) %></i>
                   </center>
                 </td>
-              <% end %>
+              <%# end %>
+              <td <% if print_friendly %> valign="top" <% end %> >
+                <center><%= "#{record_type}" %></center>
+              </td>
               <td class="table--data">
-                <dl>
-                  <strong>
-                    <dt class="ttip">
-                      <%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
-                    </dt>
-                  
-                  <dt>
-                    <%= format_quarter_year(search_record.QuarterNumber) %>
-                  </dt>
-                  <dt>
+                <%= format_quarter_year(search_record.QuarterNumber) %>
+              </td>
+              <td class="table--data">
                     <% if print_friendly %>
                       <%= search_record[:District] %>
                       <span class="ttip__text"> <%=" (Volume #{search_record[:Volume]} Page #{search_record[:Page]})"%></span>
@@ -67,15 +68,22 @@
                      <% end %>
                       Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
                     <% end %>
-                  </dt>
-                  <dt>
-                     <%#= render partial: 'best_guess/more_information' %>
-                  </dt>
-                </dl>
               </td>
-              <td <% if print_friendly %> valign="top" <% end %> >
-                <center><%= "#{record_type}" %></center>
+              <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
+              <td class="table--data">
+                <%= search_record[:AssociateName] if record_type == "BIRTHS" %>
               </td>
+              <% end %>
+              <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
+              <td class="table--data">
+                <%= search_record[:AssociateName] if record_type == "MARRIAGES" %>
+              </td>
+              <% end %>
+              <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
+              <td class="table--data">
+                <%= search_record[:AgeAtDeath] %>
+              </td>
+              <% end %>
             </tr>
           <% end %>
         </tbody>
