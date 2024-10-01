@@ -1,4 +1,4 @@
-<%= render 'index_header' %>
+  <%= render 'index_header' %>
 <div class="scrollable ">
   <table class="table--bordered table--data table--striped ">
     <tr>
@@ -39,11 +39,11 @@
               <td><%= 'Pre-Validation N/A' %>
             <%# end %>
             <td><%= link_to 'List VLD Entries', entry_csv_download_freecen1_vld_file_path(id: freecen1_vld_file.id), title: 'Download VLD Entries',data: { confirm: 'Are you sure you want to download a list of entries for '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
-            <%# if  pob_val_status(freecen1_vld_file) != 'All POBs are valid'  && pob_val_status(freecen1_vld_file) != 'Not Started'%>
-              <!--td><%#= link_to 'Manual Val', manual_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Manually Validate '+freecen1_vld_file.file_name+'?'} %></td-->
-            <%# else %>
+            <% if  pob_val_status(freecen1_vld_file) != 'All POBs are valid'  && pob_val_status(freecen1_vld_file) != 'Not Started'%>
+              <td><%= link_to 'Manual Val', manual_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Manually Validate '+freecen1_vld_file.file_name+'?'} %></td>
+            <% else %>
               <td><%= 'Manual Val N/A' %>
-            <%# end %>
+            <% end %>
           <% end %>
           <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
           <% if %w[system_administrator data_manager executive_director county_coordinator country_coordinator master_county_coordinator].include?(session[:role])%>
