@@ -12,7 +12,6 @@ $(document).ready(function() {
 	toggle between hiding and showing the dropdown content */
 	function citationToggle() {
 	  var x = document.getElementById("citation-dropdown");
-	  //var y = document.getElementById('wikitree_citation_container');
 	  citations.forEach(hide_citation_block);
 	  if (x.style.display === "none") {
 	    x.style.display = "block";
