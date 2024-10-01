@@ -1,24 +1,17 @@
 $(document).ready(function() {
-	document.getElementById("citation-toggle").addEventListener("click", citationToggle);
 	/*Hide citation blocks unless citation type is selected*/
-	 const citations = ['wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
+	const citations = ['wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
 	function hide_citation_block(cite){
-	  cite_element =  document.getElementById(`${cite}_citation_container`);
-	  if (cite_element) {
-	    cite_element.style.display = "none";
-	  }
+	  $(`#${cite}_citation_container`).css("display", "none");
 	}
 	/* When the user clicks on the button,
 	toggle between hiding and showing the dropdown content */
 	function citationToggle() {
-	  var x = document.getElementById("citation-dropdown");
-	  citations.forEach(hide_citation_block);
-	  if (x.style.display === "none") {
-	    x.style.display = "block";
-	  } else {
-	    x.style.display = "none";
-	  }
+	  jQuery.each(citation, hide_citation_block);
+	  $("#citation-dropdown").toggle();
 	}
+
+	$('#citation-toggle').click(citationToggle);
 
 	function citationSwitch(type){
     var citation_container = document.getElementById(`${type}_citation_container`);
