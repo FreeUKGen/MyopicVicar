@@ -200,16 +200,45 @@
         </tr>
       <% end %>
     <% end %>
-    <% if search %>
-      <tr>
-        <th scope="row">
-          More Information
-        </th>
-        <td class="project-text-color">
-          <%= render partial: 'more_information' %>
-        </td>
-      </tr>
-    <% end %>
+    <tr>
+      <th scope="row">
+        Scan
+      </th>
+      <td>
+        <% if search %>
+          <%= link_to "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link scans_link", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
+            <%= app_icons[:camera].html_safe %>
+            <span class="accessibility">Scans</span>
+          <% end %>
+        <% else %>
+          <%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link scans_link", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
+            <%= app_icons[:camera].html_safe %>
+            <span class="accessibility">Scans</span>
+          <% end %>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Postem
+      </th>
+      <td>
+        <div class='one-whole' style="display:flex; flex-direction:row; justify-content: space-evenly;">
+          <% if @search  %>
+            <%= link_to  "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '2', anchor: "display_postems")}" , class: " grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link postems_link", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
+              <%= app_icons[:postem].html_safe %>
+              <span class="accessibility">Postems</span>
+            <% end %>
+          <% else %>
+            <%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '2')}#display_postems" , class: "project-text-color grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link postems_link", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
+              <%= app_icons[:postem].html_safe %>
+              <span class="accessibility">Postems</span>
+            <% end %>
+          <% end %>
+          <%= button_tag 'Add Postem', type: :submit, class: 'ladda-button kittumani' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+        </div>
+      </td>
+    </tr>
     <%# if more_info %>
       <!--td  colspan=2>
         <%# if  search %>
