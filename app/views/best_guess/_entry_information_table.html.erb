@@ -205,17 +205,19 @@
         Scan
       </th>
       <td>
-        <% if search %>
-          <%= link_to "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link scans_link", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
-            <%= app_icons[:camera].html_safe %>
-            <span class="accessibility">Scans</span>
+        <div class='one-whole' style="display:flex; flex-direction:row; justify-content: space-evenly;">
+          <% if search %>
+            <%= link_to "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link scans_link", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
+              <%= app_icons[:camera].html_safe %>
+              <span class="accessibility">Scans</span>
+            <% end %>
+          <% else %>
+            <%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link scans_link", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
+              <%= app_icons[:camera].html_safe %>
+              <span class="accessibility">Scans</span>
+            <% end %>
           <% end %>
-        <% else %>
-          <%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link scans_link", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
-            <%= app_icons[:camera].html_safe %>
-            <span class="accessibility">Scans</span>
-          <% end %>
-        <% end %>
+        </div>
       </td>
     </tr>
     <tr>
