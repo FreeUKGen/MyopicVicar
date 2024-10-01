@@ -1,19 +1,5 @@
 <% unless defined?(@printable_format) && @printable_format %>
   <% @search_record = @current_record %>
-  <div id="citation-dropdown-no-js" class="citation-dropdown no-javascript">
-    <div class="text--center">
-      <p>Please choose the format for one of these citation types. It will appear in a new tab below and may be copied.
-        <br>
-        Once you have copied your citation clicking the Generate Citation button above again will close these instructions.</p>
-      <%#= link_to "WikiTree", show_citation_record_path(params[:search_entry], :citation_type => "wikitree"), :class => "btn  btn--small " %>
-      <%#= link_to "Family Tree Maker", show_citation_record_path(@current_record[:_id], :citation_type => "familytreemaker"), :class => "btn  btn--small " , :target => "_blank" %>
-      <%#= link_to "Legacy Family Tree", show_citation_record_path(@current_record[:_id], :citation_type => "legacyfamilytree"), :class => "btn  btn--small " , :target => "_blank" %>
-      <%#= link_to "MLA", show_citation_record_path(@current_record[:_id], :citation_type => "mla"), :class => "btn  btn--small " , :target => "_blank" %>
-      <%#= link_to "Chicago", show_citation_record_path(@current_record[:_id], :citation_type => "chicago"), :class => "btn  btn--small " , :target => "_blank" %>
-      <%#= link_to "Evidence Explained", show_citation_record_path(@current_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small " , :target => "_blank" %>
-      <%#= link_to "Wikipedia", show_citation_record_path(@current_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small " , :target => "_blank" %>
-    </div>
-  </div>
   <div id="citation-dropdown" class="citation-dropdown javascript">
     <div class="text--center">
       <p>Choose the format and the citation will appear below and may be copied. Select Generate Citation button above to close this selection:</p>
@@ -39,3 +25,15 @@
     <%# end%>
   </div>
 <% end%>
+<script>
+  function citationSwitch(type){
+    var citation_container = document.getElementById(`${type}_citation_container`);
+    console.log(citation_container.style.display);
+    citations.forEach(hide_citation_block);
+    if (citation_container.style.display === "none") {
+      citation_container.style.display = "block";
+    } else {
+      citation_container.style.display = "none";
+    }
+  }
+</script>

@@ -44,6 +44,31 @@
         <% end %>
       </td>
     </tr>
+    <tr>
+      <th scope="row">
+        Volume
+      </th>
+      <td>
+        <%= "#{ record.Volume }" %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Page
+      </th>
+      <td>
+        <% unless record.Page.to_i == 0 %>
+          <% if @search %>
+            <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: search_id, original_record: original_record} %>
+          <% end %>
+          <% if params[:saved_record] %>
+            <%= render partial: 'page_records_navigation_saved', locals: {record: record, search_id: search_id, original_record: original_record} %>
+          <% end %>
+        <% else%>
+          <%= record.Page %>
+        <% end %>
+      </td>
+    </tr>
     <% if entry_type == "marriage" %>
     	<tr>
 	      <th scope="row">
@@ -100,31 +125,7 @@
         </td>
       </tr>
     <% end %>
-    <tr>
-      <th scope="row">
-        Volume
-      </th>
-      <td>
-        <%= "#{ record.Volume }" %>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        Page
-      </th>
-      <td>
-        <% unless record.Page.to_i == 0 %>
-          <% if @search %>
-            <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: search_id, original_record: original_record} %>
-          <% end %>
-          <% if params[:saved_record] %>
-            <%= render partial: 'page_records_navigation_saved', locals: {record: record, search_id: search_id, original_record: original_record} %>
-          <% end %>
-        <% else%>
-          <%= record.Page %>
-        <% end %>
-      </td>
-    </tr>
+    
     <tr>
       <th scope="row">
         Transcriber
@@ -153,7 +154,7 @@
             Refers
           </th>
           <td>
-             <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id), class: 'new_link_style' %><br>
+             <%= link_to "View linked Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id), class: 'new_link_style' %><br>
           </td>
         </tr>
       <% end %>
