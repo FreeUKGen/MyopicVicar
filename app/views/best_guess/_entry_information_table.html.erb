@@ -153,7 +153,7 @@
             Refers
           </th>
           <td>
-             <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+             <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id, class: 'new_link_style') %><br>
           </td>
         </tr>
       <% end %>
@@ -239,15 +239,6 @@
         </div>
       </td>
     </tr>
-    <%# if more_info %>
-      <!--td  colspan=2>
-        <%# if  search %>
-          <%#= link_to 'Complete Details', friendly_bmd_record_details_path(@search_id, record.id, record.friendly_url, search_entry: record), :rel => "nofollow", :title => "", class: 'btn btn--natural'%>
-        <%# else %>
-          <%#= link_to 'Complete Details', friendly_bmd_record_details_non_search_path(record.id, record.friendly_url, search_entry: record), class: 'btn btn--natural'%>
-        <%# end %>
-      </td-->
-    <%# end %>
   </tbody>
 </table>
 <%#= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? %>
