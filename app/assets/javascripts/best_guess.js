@@ -8,7 +8,8 @@ $(document).ready(function() {
 	toggle between hiding and showing the dropdown content */
 	function citationToggle() {
 	  jQuery.each(citations, hide_citation_block);
-	  $("#citation-dropdown").toggle();
+	  $("#citation-dropdown:visible").hide();
+	 	$("#citation-dropdown:hidden").show();
 	}
 
 	$('#citation-toggle').click(citationToggle);
@@ -18,20 +19,6 @@ $(document).ready(function() {
     $(`#${type}_citation_container`).toggle();
 	}
 
-	window.addEventListener("load", function(){
-	    const no_javascript_elements = document.getElementsByClassName("no-javascript");
-	    const javascript_elements = document.getElementsByClassName("javascript");
-
-	    for(let i = 0; i < no_javascript_elements.length; i++){
-	        no_javascript_elements[i].remove();
-	    }
-	    for(let i = 0; i < javascript_elements.length; i++){
-	        javascript_elements[i].style.display = "none";
-	    }
-	    //if(!document.getElementById("citation_section")){
-	       // document.getElementById("citation-dropdown").style.display = "none";
-	    //}
-	})
 	function copy(elm) {
 	    var button = event.currentTarget || event.srcElement;
 	    var btnText = button.innerHTML;
