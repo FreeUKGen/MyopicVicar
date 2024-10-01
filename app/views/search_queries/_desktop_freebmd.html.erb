@@ -14,7 +14,7 @@
     <% included_record_types = @search_query.bmd_record_type %>
       <table class="table--bordered table--data">
         <% unless print_friendly %>
-          <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
+          <caption class='accessibility'>Click on a column heading to sort by the contents of that column.</caption>
         <% end %>
         <thead>
           <tr>
@@ -22,7 +22,9 @@
               <%= link_to('Forename', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
                 <%= link_to('Surname', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
             <% else %> Name <% end %></th>
-            <th>Event Type</th>
+            <th><% unless print_friendly %>
+                <%= link_to('Event Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
+              <% else %>Event Type<% end %></th>
             <th><% unless print_friendly %>
               <%= link_to('Reg. Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
               <% else %>
@@ -31,13 +33,19 @@
                 <%= link_to('Reg. District', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
                 <% else %>Reg. District <% end %></th>
             <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
-              <th>Mother's Maiden Name</th>
+              <th><% unless print_friendly %>
+                  <%= link_to('Mother\'s Maiden Name', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME)) %>
+                <% else %>Mother's Maiden Name<% end %></th>
             <% end %>
             <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
-              <th>Spouse's Surname</th>
+              <th><% unless print_friendly %>
+                  <%= link_to('Spouse\'s Surname', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME)) %>
+                <% else %>Spouse's Surname<% end %></th>
             <% end %>
             <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
-              <th>Age at Death/Date of Birth</th>
+              <th><% unless print_friendly %>
+                  <%= link_to('Age at Death/Date of Birth', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_AGE_AT_DEATH)) %>
+                <% else %>Age at Death/Date of Birth<% end %></th>
             <% end %>
           </tr>
         </thead>
