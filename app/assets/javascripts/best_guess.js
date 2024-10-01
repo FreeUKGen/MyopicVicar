@@ -41,7 +41,7 @@ $(document).ready(function() {
 	        javascript_elements[i].style.display = "block";
 	    }
 	    //if(!document.getElementById("citation_section")){
-	        document.getElementById("citation-dropdown").style.display = "none";
+	       // document.getElementById("citation-dropdown").style.display = "none";
 	    //}
 	})
 	function copy(elm) {
