@@ -10,6 +10,8 @@ $(document).ready(function() {
 	  jQuery.each(citations, hide_citation_block);
 	  if($('#citation-dropdown').css('display') == 'none') {
 	  	$("#citation-dropdown").css('display', 'block');
+	  } elsif ($('#citation-dropdown').css('display') == 'block') {
+	  	$("#citation-dropdown").css('display', 'none');
 	  }
 	}
 
