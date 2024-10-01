@@ -8,11 +8,9 @@ $(document).ready(function() {
 	toggle between hiding and showing the dropdown content */
 	function citationToggle() {
 	  jQuery.each(citations, hide_citation_block);
-	  if($('#citation-dropdown').is(':visible')) {
-	  	$("#citation-dropdown").hide();
-	  } else {
-	 	$("#citation-dropdown:hidden").show();
-	 }
+	  if($('#citation-dropdown').css('display') == 'none') {
+	  	$("#citation-dropdown").css('display', 'block');
+	  }
 	}
 
 	$('#citation-toggle').click(citationToggle);
