@@ -23,7 +23,7 @@
         </tbody>
       </table>
     <% end%>
-    <div class="create_postem_div">
+    <div class="create_postem_div" id='create_postem_div'>
       <%= semantic_form_for(@new_postem) do |f| %>
         <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
         <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
