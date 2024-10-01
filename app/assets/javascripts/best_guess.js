@@ -8,8 +8,11 @@ $(document).ready(function() {
 	toggle between hiding and showing the dropdown content */
 	function citationToggle() {
 	  jQuery.each(citations, hide_citation_block);
-	  $("#citation-dropdown:visible").hide();
+	  if($('#citation-dropdown').is(':visible')) {
+	  	$("#citation-dropdown").hide();
+	  } else {
 	 	$("#citation-dropdown:hidden").show();
+	 }
 	}
 
 	$('#citation-toggle').click(citationToggle);
