@@ -13,7 +13,7 @@
 </style>
 <nav class="text--center" role="navigation" aria-label="Options for entry information">
   <ul class="nav">
-      <li><%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, anchor: @anchor_entry), class: "new_link_style" if params[:search_id].present?%></li>
+      <li><%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, anchor: @anchor_entry, class: "new_link_style") if params[:search_id].present?%></li>
       <li><a href="#" id="citation-toggle" class="new_link_style citation-toggle">Generate Citation</a></li>
       <li><%= link_to( '<i class="fas fa-print" style="padding-right:5px></i>Print'.html_safe, "#", class: "new_link_style", :onclick => 'window.print();return false;') %></li>
   </ul>
