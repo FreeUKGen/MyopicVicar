@@ -23,8 +23,8 @@
                 <%= link_to('Surname', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
             <% else %> Name <% end %></th>
             <th><% unless print_friendly %>
-                <%= link_to('Event Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
-              <% else %>Event Type<% end %></th>
+                <%= link_to('Record Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
+              <% else %>Record Type<% end %></th>
             <th><% unless print_friendly %>
               <%= link_to('Registration Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
               <% else %>
