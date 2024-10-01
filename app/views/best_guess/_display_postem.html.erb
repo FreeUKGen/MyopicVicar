@@ -23,7 +23,6 @@
         </tbody>
       </table>
     <% end%>
-    <p id="create_postem">Add a postem</p>
     <div class="create_postem_div">
       <%= semantic_form_for(@new_postem) do |f| %>
         <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
