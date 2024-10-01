@@ -153,7 +153,7 @@
             Refers
           </th>
           <td>
-             <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id, class: 'new_link_style') %><br>
+             <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id), class: 'new_link_style' %><br>
           </td>
         </tr>
       <% end %>
