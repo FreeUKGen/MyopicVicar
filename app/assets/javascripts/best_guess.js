@@ -19,6 +19,17 @@ $(document).ready(function() {
 	    x.style.display = "none";
 	  }
 	}
+
+	function citationSwitch(type){
+    var citation_container = document.getElementById(`${type}_citation_container`);
+    console.log(citation_container.style.display);
+    citations.forEach(hide_citation_block);
+    if (citation_container.style.display === "none") {
+      citation_container.style.display = "block";
+    } else {
+      citation_container.style.display = "none";
+    }
+  }
 	window.addEventListener("load", function(){
 	    const no_javascript_elements = document.getElementsByClassName("no-javascript");
 	    const javascript_elements = document.getElementsByClassName("javascript");
