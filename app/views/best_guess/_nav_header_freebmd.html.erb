@@ -39,15 +39,3 @@
     <%# end%>
   </div>
 <% end%>
-<script>
-  function citationSwitch(type){
-    var citation_container = document.getElementById(`${type}_citation_container`);
-    console.log(citation_container.style.display);
-    citations.forEach(hide_citation_block);
-    if (citation_container.style.display === "none") {
-      citation_container.style.display = "block";
-    } else {
-      citation_container.style.display = "none";
-    }
-  }
-</script>
