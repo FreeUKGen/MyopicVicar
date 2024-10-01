@@ -7,21 +7,17 @@ $(document).ready(function() {
 	/* When the user clicks on the button,
 	toggle between hiding and showing the dropdown content */
 	function citationToggle() {
-	  jQuery.each(citation, hide_citation_block);
+	  jQuery.each(citations, hide_citation_block);
 	  $("#citation-dropdown").toggle();
 	}
 
 	$('#citation-toggle').click(citationToggle);
 
 	function citationSwitch(type){
-    var citation_container = document.getElementById(`${type}_citation_container`);
     console.log(citation_container.style.display);
-    citations.forEach(hide_citation_block);
-    if (citation_container.style.display === "none") {
-      citation_container.style.display = "block";
-    } else {
-      citation_container.style.display = "none";
-    }
+    jQuery.each(citations, hide_citation_block);
+    	$(`#${type}_citation_container`).toggle();
+		}
   }
 	window.addEventListener("load", function(){
 	    const no_javascript_elements = document.getElementsByClassName("no-javascript");
