@@ -85,7 +85,8 @@ class FeedbacksController < ApplicationController
     redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
 
     get_user_info_from_userid
-    @messages = Message.where(source_feedback_id: params[:id]).all
+    @messages = Message.where(source_feedback_id: params[:id], :sub_nature.ne => 'comment').all
+    @comments = Message.where(source_feedback_id: params[:id], sub_nature: 'comment').all if @messages.present?
     @link = false
     render 'messages/index'
   end
