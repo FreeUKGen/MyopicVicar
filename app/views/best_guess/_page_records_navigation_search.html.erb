@@ -1,9 +1,9 @@
 <div class='one-whole' style="display:flex; flex-direction:row; justify-content: space-evenly;">
   <% if @previous_record_of_page.present?%>
-      <%= link_to '<i class="fa fa-chevron-left view_arrow" style="padding-right:5px"></i> Previous in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url, search_entry: @current_record), class: 'new_link_style' %>
+      <%= link_to '<i class="fa fa-chevron-left view_arrow" style="padding-right:5px"></i>Previous in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url, search_entry: @current_record), class: 'new_link_style' %>
   <% end %>
     <%= record.Page %>
   <% if @next_record_of_page.present?%>
-      <%= link_to 'Next in Page <i class="fa fa-chevron-right view_arrow" style="padding-left:5px"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record_of_page, @next_record_of_page.friendly_url, search_entry: @current_record), class: 'new_link_style' %>
+      <%= link_to 'Next in Page<i class="fa fa-chevron-right view_arrow" style="padding-left:5px"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record_of_page, @next_record_of_page.friendly_url, search_entry: @current_record), class: 'new_link_style' %>
   <% end %>
 </div>
