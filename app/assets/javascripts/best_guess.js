@@ -16,9 +16,8 @@ $(document).ready(function() {
 	function citationSwitch(type){
     console.log(citation_container.style.display);
     jQuery.each(citations, hide_citation_block);
-    	$(`#${type}_citation_container`).toggle();
-		}
-  }
+    $(`#${type}_citation_container`).toggle();
+	}
 	window.addEventListener("load", function(){
 	    const no_javascript_elements = document.getElementsByClassName("no-javascript");
 	    const javascript_elements = document.getElementsByClassName("javascript");
