@@ -26,11 +26,12 @@
                 <%= link_to('Event Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
               <% else %>Event Type<% end %></th>
             <th><% unless print_friendly %>
-              <%= link_to('Reg. Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
+              <%= link_to('Registration Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
               <% else %>
             Reg. Date <% end %></th>
             <th><% unless print_friendly %>
-                <%= link_to('Reg. District', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
+                <%= link_to('Registration District', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
+                <br/>Reference
                 <% else %>Reg. District <% end %></th>
             <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
               <th><% unless print_friendly %>
@@ -58,7 +59,7 @@
               <%# unless print_friendly %>
                 <td>
                   <center>
-                    <%= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "", class: "btn  btn--small")%>
+                    <%= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
                     <i><%= seen(@search_query,search_record) %></i>
                   </center>
                 </td>
@@ -80,7 +81,7 @@
                      <% else %>
                        <%= search_record[:District] %>
                      <% end %>
-                      Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
+                      <br/>Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
                     <% end %>
               </td>
               <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
