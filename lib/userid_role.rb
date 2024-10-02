@@ -2,7 +2,7 @@ module UseridRole
   VALUES = ['checker', 'computer', 'contacts_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'data_manager', 'documentation_coordinator',
             'engagement_coordinator', 'executive_director', 'genealogy_coordinator', 'general_communication_coordinator', 'pending', 'project_manager',
             'publicity_coordinator', 'researcher', 'syndicate_coordinator', 'system_administrator', 'technical', 'trainee', 'transcriber',
-            'validator', 'volunteer_coordinator', 'website_coordinator']
+            'validator', 'volunteer_coordinator', 'website_coordinator', 'pieces_coordinator']
   case MyopicVicar::Application.config.template_set
   when 'freereg'
     OPTIONS = {
