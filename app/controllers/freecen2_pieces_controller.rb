@@ -17,7 +17,9 @@ class Freecen2PiecesController < ApplicationController
     if params[:commit] == 'Submit Number'
       params[:freecen2_piece][:number] = params[:freecen2_piece][:number].strip
       redirect_to locate_other_pieces_freecen2_piece_path(number: params[:freecen2_piece][:number])
-
+    elsif params[:commit] == 'Submit Piece Number'
+      params[:freecen2_piece][:number] = params[:freecen2_piece][:number].strip
+      redirect_to find_pieces_freecen2_piece_path(number: params[:freecen2_piece][:number])
     else
       @new_freecen2_piece_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
       @freecen2_piece = Freecen2Piece.new(@new_freecen2_piece_params)
@@ -116,6 +118,11 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = session[:chapman_code]
   end
 
+  def enter_piece_number
+    @freecen2_piece = Freecen2Piece.new
+    @chapman_code = session[:chapman_code]
+  end
+
   def export_csv
     @chapman_code = session[:chapman_code]
     @year = params[:csvdownload][:year]
@@ -182,12 +189,12 @@ class Freecen2PiecesController < ApplicationController
         piece.update_attributes(piece_availability: params["#{p}_piece_availability"], piece_digitised: params["#{p}_piece_digitised"])
         if piece.errors.any?
           flash[:notice] = "The update of the piece status failed #{piece.errors.full_messages}."
-          redirect_back(fallback_location: locate_other_pieces_freecen2_piece_path(current_piece_number)) && return
+          redirect_back(fallback_location: find_pieces_freecen2_piece_path(current_piece_number)) && return
         end
       end
     end
     flash[:notice] = 'Update was successful'
-    redirect_to locate_other_pieces_freecen2_piece_path(number: current_piece_number)
+    redirect_to find_pieces_pieces_freecen2_piece_path(number: current_piece_number)
   end
 
   def index_district_year
@@ -202,7 +209,20 @@ class Freecen2PiecesController < ApplicationController
     end
   end
 
-   def locate_other_pieces
+  def locate_other_pieces
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
+    @number = params[:number]
+    year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(params[:number], '')
+    @freecen2_pieces = []
+    session[:type] = 'locate_other_pieces'
+    Freecen2Piece.year(year).order_by(number: 1).each do |test_piece|
+      next unless test_piece.number.include?(piece)
+
+      @freecen2_pieces << test_piece
+    end
+  end
+
+   def find_pieces
    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
    @number = params[:number]
    numbers_array = params[:number].split(',')

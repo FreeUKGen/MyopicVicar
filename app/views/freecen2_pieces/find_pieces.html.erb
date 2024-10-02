@@ -1,0 +1,107 @@
+<%# breadcrumb :locate_other_pieces, session[:chapman_code]%>
+<div style="text-align: center">
+  <%= render 'flash_notice' %>
+</div>
+<% @piece_hash.each do |number, value| %>
+<h2 style="text-align: center">FreeCen2 Pieces for <%= number %> </h2>
+<% freecen2_pieces = @piece_hash.dig(number, :freecen2_piece)%>
+<div class="scrollable ">
+  <table class="table--bordered table--data just--left table--striped">
+    <thead >
+      <tr>
+        <th class='sticky-header '>Piece Number</th>
+        <th class='sticky-header '>Chapman_code</th>
+        <th class='sticky-header '>Piece name</th>
+        <th class='sticky-header '>District</th>
+        <th class='sticky-header '>Place</th>
+        <th class='sticky-header '>Civil parishes <br>
+          <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
+        <th class='sticky-header '>Piece Exists</th>
+        <th class='sticky-header '>Digital images available</th>
+      </tr>
+    </thead>
+    <tbody >
+      <% freecen2_pieces.each do |freecen2_piece| %>
+        <tr id="<%=freecen2_piece.name%>">
+          <td ><%= freecen2_piece.number %></td>
+          <td ><%= freecen2_piece.chapman_code %></td>
+          <td ><%= freecen2_piece.name %></td>
+          <td ><%= freecen2_piece.district_name%></td>
+          <td ><%= freecen2_piece.place_place_name unless freecen2_piece.freecen2_place.blank?%></td>
+          <td ><%= freecen2_piece.civil_parish_names %></td>
+          <td><%= freecen2_piece.piece_availability %></td>
+          <td><%= freecen2_piece.piece_digitised %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table> 
+</div>
+<% end %>
+<br>
+<br>
+
+<h3 style="text-align: center">Update piece status</h2>
+<fieldset>
+  <legend>Update piece status</legend>
+  <% pieces = @associated_pieces.present? ? @associated_pieces : @freecen2_pieces %>
+  <%= form_tag update_piece_status_freecen2_piece_path, class: 'grid' do %>
+    <% @piece_hash.each do |number, value| %>
+      <div class="islet islet--bordered push--bottom" style="border-color: #895f49; border-width: 2px;">
+        <%#= form_tag update_piece_status_freecen2_piece_path, class: 'grid' %>
+        <% pieces = [] %>
+    <%logger.warn(@piece_hash)%>
+    <% freecen2_pieces = value[:freecen2_piece] %>
+    <% logger.warn(freecen2_pieces)%>
+    <% associated_pieces = value[:associated_piece] %>
+    <% logger.warn(associated_pieces)%>
+    <% associated_pieces.present? ? pieces << associated_pieces : pieces <<  freecen2_pieces %>
+    <% pieces = pieces.flatten %>
+    <% logger.warn(pieces)%>
+    <% pieces.each do |piece| %>
+      <%= hidden_field_tag "#{number}_pieces[]", piece.id %>
+    <% end %>
+    <%= hidden_field_tag :current_piece_number, @number %>
+    <p>Please note: The following pieces will be updated:</p>
+    <ol>
+      <% pieces.each do |piece| %>
+        <li><%= piece.number %></li>
+      <% end %>
+    </ol>
+    <ol>
+      <% piece_info = Freecen2Piece.where(number: number).first %>
+      <li class="grid__item one-third lap-one-third palm-one-whole">
+        <label class="ttip" for="piece_availablity" tabindex="0">Piece exists</label>
+        <%= select_tag "#{number}_piece_availability" ,options_for_select(['Y',' N', 'P'], piece_info.piece_availability) , class: ' select', id: 'piece_availablity' , tabindex: 0 %>
+      </li>
+      <li class="grid__item one-third lap-one-third palm-one-whole">
+        <label class="ttip" for="piece_digitised" tabindex="0">Digital images available</label>
+        <%= select_tag "#{number}_piece_digitised" , options_for_select(['Y', 'P', 'F', 'N'], piece_info.piece_digitised), class: 'select', id: 'piece_digitised', tabindex: 0 %>
+      </li>
+      <li class="grid__item one-third lap-one-third palm-one-whole">
+        <%= submit_tag 'Update', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+      </li>
+      <% pieces = [] %>
+    </ol>
+  <%# end %>
+      </div>
+  <% end %>
+
+  <p>Please note: The following pieces will be updated:</p>
+  <% @all_pieces.each do |piece| %>
+      <%= hidden_field_tag "pieces[]", piece.id %>
+    <% end %>
+    <ol>
+      <% @all_pieces.each do |piece| %>
+        <li><%= piece.number %></li>
+      <% end %>
+    </ol>
+    <div  style="text-align: center">
+      <%= submit_tag 'Update All', :class => 'ladda-button' , data: {'style' => 'contract' ,'color' => appname_downcase , 'size' => 's', 'spinner-color' => '#ffffff' } %>
+    </div>
+  <% end %>
+</fieldset>
+
+<script type='text/javascript'>
+  Ladda.bind( 'button[type=submit]' );
+</script>
+<br>

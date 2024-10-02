@@ -327,7 +327,9 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/district_place_name', to: 'freecen2_pieces#district_place_name', as: :district_place_name_freecen2_pieces
   get 'freecen2_pieces/missing_place', to: 'freecen2_pieces#missing_place', as: :missing_place_freecen2_pieces
   get 'freecen2_pieces/enter_number', to: 'freecen2_pieces#enter_number', as: :enter_number_freecen2_piece
+  get 'freecen2_pieces/enter_piece_number', to: 'freecen2_pieces#enter_piece_number', as: :enter_piece_number_freecen2_piece
   get 'freecen2_pieces/locate_other_pieces', to: 'freecen2_pieces#locate_other_pieces', as: :locate_other_pieces_freecen2_piece
+  get 'freecen2_pieces/find_pieces', to: 'freecen2_pieces#find_pieces', as: :find_pieces_freecen2_piece
   #get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
   get 'freecen2_pieces/chapman_year_index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
   get 'freecen2_pieces/index_district', :to => 'freecen2_pieces#index_district', :as => :freecen2_pieces_district_index
