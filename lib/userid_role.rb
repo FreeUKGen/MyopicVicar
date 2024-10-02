@@ -236,7 +236,7 @@ module UseridRole
     'Review Batches being Validated' => '/manage_counties/selection?option=Being Validated',
     'Review Incorporated Batches' => '/manage_counties/selection?option=Incorporated',
     'Review Batches by Filename' => '/manage_counties/selection?option=Review Batches by Filename',
-    'Review Batches by Userid then Filename' => '/manage_cmanage_countiesounties/selection?option=Review Batches by Userid then Filename',
+    'Review Batches by Userid then Filename' => '/manage_counties/selection?option=Review Batches by Userid then Filename',
     'Review Batches by Most Recent Date of Change' => '/manage_counties/selection?option=Review Batches by Most Recent Date of Change',
     'Review Batches by Oldest Date of Change' => '/manage_counties/selection?option=Review Batches by Oldest Date of Change',
     'Review Specific Batch' => '/manage_counties/selection?option=Review Specific Batch',
