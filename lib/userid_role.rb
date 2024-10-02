@@ -137,7 +137,7 @@ module UseridRole
     'Upload Report' => '/physical_files/upload_report',
     'Place Sources' => '/freecen2_place_sources',
     'Management' => '/userid_details/list_roles_and_assignees',
-    'Find Pieces' => '/freecen2_pieces/enter_piece_number'
+    'Find Pieces' => '/freecen2_pieces/enter_piece_number',
     'CAP Report' => '/freecen2_pieces/cap_report'
   }
 
