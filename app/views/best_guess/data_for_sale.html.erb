@@ -1,0 +1,22 @@
+<div class="data_for_sale_class" id='data_for_sale_id'>
+  <%= form_for(:data_download, url: export_data_for_sale_best_guess_path, method: :get, data: { confirm: "You sure you want to download data file?"}) do |f| %>
+    <fieldset class="inputs">
+      <legend>Download data files</legend>
+      <p>You can download <br>
+        <b>Note:</b></p>
+      <ol class="grid">
+        <li class="grid__item one-third palm-one-whole">
+          <%= f.label :start_year, "Start Year: " %>
+          <%= f.select :start_year, @start_year %>
+        </li>
+        <li class="grid__item one-third palm-one-whole">
+          <%= f.label :end_year, "End Year: " %>
+          <%= f.select :end_year, @end_year %>
+        </li>
+      </ol>
+      <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
+      <%= f.submit 'Download JSON File', :class => "btn   btn--small", title: 'Downloads JSON File',data: { disable_with: false }%>
+
+    </fieldset>
+  <% end %>
+</div>

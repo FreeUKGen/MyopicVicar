@@ -110,7 +110,7 @@ module UseridRole
       'syndicate_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap'],
       'system_administrator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Database Statistics','Feedback', 'FreeCen Errors',
                                  'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
-                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation'],
+                                 'Software Version Information', 'Syndicate Coordinators', 'Data for sale', 'System Documentation'],
       'trainee' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Profile', 'Roadmap'],
       'technical' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                       'System Documentation'],
@@ -170,7 +170,8 @@ module UseridRole
     'TNA Change Logs' => '/tna_change_logs',
     'FreeCEN Handbook' => '/cms/freecen-handbook',
     'Place Edit Reasons' => '/place_edit_reasons',
-    'Place Sources' => '/freecen2_place_sources'
+    'Place Sources' => '/freecen2_place_sources',
+    'Data for sale' => '/best_guess/data_for_sale'
   }
 
   OPTIONS_TITLES = {

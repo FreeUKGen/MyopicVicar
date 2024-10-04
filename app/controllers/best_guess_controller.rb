@@ -274,4 +274,29 @@ class BestGuessController < ApplicationController
     session.delete(:search_entry_number)
   end
 
+  def data_for_sale
+  end
+
+  def export_data_for_sale
+    start_date = params[:data_download][:start_year]
+    end_date = params[:data_download][:end_year]
+    district_number = params[:data_download][:district_number]
+
+    if start_date >= end_date
+      message = 'End Date must be after Start Date'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    success, message, file_location, file_name = BestGuess.create_csv_file(start_date, end_date, district_number)
+
+    if success
+      if File.file?(file_location)
+        flash[:notice] = message unless message.empty?
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice] = 'There was a problem downloading the CSV file'
+    end
+    redirect_back(fallback_location: new_manage_resource_path)
+  end
+
 end

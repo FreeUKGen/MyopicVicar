@@ -435,4 +435,11 @@ class BestGuess < FreebmdDbBase
     hash_array.map{|h| BestGuessHash.find_by(Hash: h).best_guess}
   end
 
+  def create_csv_file
+    records_array = []
+    BestGuess.between(QuarterNumber: start_quarter..end_quarter).order(:QuarterNumber).each do |record|
+      records_array << record
+    end 
+  end
+
 end
