@@ -203,11 +203,13 @@ class BestGuessController < ApplicationController
     end_date = params[:data_download][:end_year]
     district_number = params[:data_download][:district_number]
     record_count = params[:data_download][:record_count]
+    start_quarter = quarter_number(year: start_year)
+    end_quarter = quarter_number(year: end_year)
     if start_date >= end_date
       message = 'End Date must be after Start Date'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-    success, message, file_location, file_name = BestGuess.create_csv_file(start_date, end_date, district_number, record_count)
+    success, message, file_location, file_name = BestGuess.create_csv_file(start_quarter, end_quarter, district_number, record_count)
 
     if success
       if File.file?(file_location)
@@ -218,6 +220,10 @@ class BestGuessController < ApplicationController
       flash[:notice] = 'There was a problem downloading the CSV file'
     end
     redirect_back(fallback_location: new_manage_resource_path)
+  end
+
+  def quarter_number(year:, quarter: 1)
+    (year.to_i-1837)*4 + quarter.to_i
   end
 
   private
