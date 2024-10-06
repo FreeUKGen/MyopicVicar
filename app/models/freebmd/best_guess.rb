@@ -435,11 +435,39 @@ class BestGuess < FreebmdDbBase
     hash_array.map{|h| BestGuessHash.find_by(Hash: h).best_guess}
   end
 
-  def create_csv_file
+  def create_csv_file(start_quarter, end_quarter, district_number, record_count)
     records_array = []
-    BestGuess.between(QuarterNumber: start_quarter..end_quarter).order(:QuarterNumber).each do |record|
-      records_array << record
-    end 
+    district = District.where(DistrictNumber: district_number).first
+    n = 0
+    BestGuess.where(DistrictNumber: district_number).between(QuarterNumber: start_quarter..end_quarter).order(:QuarterNumber).limit(record_count).find_in_batches(500000).each do |record_batch|
+      n += 1
+      file = "#{district.district_name}_district_data_#{n}.csv"
+      file_location = Rails.root.join('tmp', file)
+      record_batch.pluck(:Surname, :GivenName, :AgeAtDeath, :DistrictNumber, :DistrictFlag, :District, :Volume, :Page, :QuarterNumber).each do |record|
+        record_array = []
+        record_array << record
+        county_array = []
+        record_county_codes = CountyCombo.where(CountyComboID: record.CountyComboID).pluck(:County)
+        record_county_codes.each{|code| county_array << ChapmanCode.name_from_code(county_code) } if record_county_codes.present?
+        county = county_array.reject { |c| c.to_s.empty? }.to_sentence
+        record_array << county
+        record_type = RecordType.display_name(record.RecordTypeID)
+        record_array << record_type
+        record_array
+        records_array << record_array
+      end
+      success, message = write_csv_file(file_location, records_array)
+    end
   end
 
+  def write_to_csv_file(file_location, array)
+    column_headers = %w(surname given_names  age_at_death district_number district_flag district volume page quarter_number county record_type)
+    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      csv << column_headers
+      array.each do |rec|
+        csv << rec
+      end
+    end
+    [true, '']
+  end
 end

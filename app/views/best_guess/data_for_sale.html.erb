@@ -5,18 +5,33 @@
       <p>You can download <br>
         <b>Note:</b></p>
       <ol class="grid">
-        <li class="grid__item one-third palm-one-whole">
+        <li class="grid__item one-quarter palm-one-whole">
           <%= f.label :start_year, "Start Year: " %>
-          <%= f.select :start_year, @start_year %>
+          <%#= f.select :start_year, @start_year %>
+          <%= number_field_tag :start_year, 1837, min: 1837, max:1999, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY'%>
         </li>
-        <li class="grid__item one-third palm-one-whole">
+        <li class="grid__item one-quarter palm-one-whole">
           <%= f.label :end_year, "End Year: " %>
-          <%= f.select :end_year, @end_year %>
+          <%= number_field_tag :end_year, 1999, min: 1837, max:1999, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+        </li>
+        <li class="grid__item one-quarter palm-one-whole">
+          <%= f.label :districts_number, "Districts: " %>
+          <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
+          <%= f.select :data_download, :district_number, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
+        </li>
+        <li class="grid__item one-quarter palm-one-whole">
+          <%= f.label :record_count, "Number of Records: " %>
+          <%= number_field_tag :record_count,  number_with_delimiter(1000000), class: 'text-input', id: 'record_count', tabindex: "0" %>
         </li>
       </ol>
-      <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
-      <%= f.submit 'Download JSON File', :class => "btn   btn--small", title: 'Downloads JSON File',data: { disable_with: false }%>
-
+      <ol>
+        <li class='grid__item one-third palm-one-whole'>
+          <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
+        </li>
+        <li>
+          <%= f.submit 'Download JSON File', :class => "btn   btn--small", title: 'Downloads JSON File',data: { disable_with: false }%>
+        </li>
+      </ol>
     </fieldset>
   <% end %>
 </div>
