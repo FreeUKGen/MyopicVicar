@@ -16,8 +16,7 @@
         </li>
         <li class="grid__item one-quarter palm-one-whole">
           <%= f.label :districts_number, "Districts: " %>
-          <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-          <%= f.select :data_download, :district_number, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
+          <%= f.select :district_number,  District.all.collect { |p| [ p.DistrictName, p.DistrictNumber ] }, {multiple: true, id: '', tabindex: "0"} %>
         </li>
         <li class="grid__item one-quarter palm-one-whole">
           <%= f.label :record_count, "Number of Records: " %>

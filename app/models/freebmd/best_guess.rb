@@ -445,7 +445,7 @@ class BestGuess < FreebmdDbBase
       file_location = Rails.root.join('tmp', file)
       record_batch.pluck(:Surname, :GivenName, :AgeAtDeath, :DistrictNumber, :DistrictFlag, :District, :Volume, :Page, :QuarterNumber).each do |record|
         record_array = []
-        record_array << record
+        record_array << record[0..-3]
         county_array = []
         record_county_codes = CountyCombo.where(CountyComboID: record.CountyComboID).pluck(:County)
         record_county_codes.each{|code| county_array << ChapmanCode.name_from_code(county_code) } if record_county_codes.present?
@@ -454,7 +454,7 @@ class BestGuess < FreebmdDbBase
         record_type = RecordType.display_name(record.RecordTypeID)
         record_array << record_type
         record_array
-        records_array << record_array
+        records_array << record_array.flatten!
       end
       success, message = write_csv_file(file_location, records_array)
     end
