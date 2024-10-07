@@ -205,7 +205,7 @@ class BestGuessController < ApplicationController
     record_count = params[:data_download][:record_count]
     start_quarter = quarter_number(year: start_year)
     end_quarter = quarter_number(year: end_year)
-    if start_date >= end_date
+    if start_year >= end_year
       message = 'End Date must be after Start Date'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
