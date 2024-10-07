@@ -203,7 +203,7 @@ class BestGuessController < ApplicationController
     end_year = params[:end_year]
     district_number = params[:data_download][:district_number]
     record_count = params[:record_count]
-    params[:skip_count].present? skip_count = params[:skip_count] : skip_count = 0
+    params[:skip_count].present? ? skip_count = params[:skip_count] : skip_count = 0
     start_quarter = quarter_number(year: start_year)
     end_quarter = quarter_number(year: end_year)
     if start_year >= end_year
