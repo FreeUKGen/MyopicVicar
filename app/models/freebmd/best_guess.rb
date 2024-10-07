@@ -435,7 +435,7 @@ class BestGuess < FreebmdDbBase
     hash_array.map{|h| BestGuessHash.find_by(Hash: h).best_guess}
   end
 
-  def self.create_csv_file(start_quarter, end_quarter, district_number, record_count)
+  def self.create_csv_file(start_quarter, end_quarter, district_number, record_count, skip_count)
     records_array = []
     files = []
     district = District.where(DistrictNumber: district_number).first
@@ -444,7 +444,7 @@ class BestGuess < FreebmdDbBase
     codes.each{|code| county_array << ChapmanCode.name_from_code(code) }
     county = county_array.reject { |c| c.to_s.empty? }.to_sentence
     n = 0
-    district.records.where(QuarterNumber: start_quarter.to_i..end_quarter.to_i).order(:QuarterNumber).limit(record_count.to_i).select(:Surname, :GivenName, :AgeAtDeath, :DistrictNumber, :DistrictFlag, :District, :Volume, :Page, :QuarterNumber, :RecordNumber, :CountyComboID, :RecordTypeID).find_in_batches(batch_size: 100000) do |record_batch|
+    district.records.where(QuarterNumber: start_quarter.to_i..end_quarter.to_i).order(:QuarterNumber).limit(record_count.to_i).offset(skip_count.to_i).select(:Surname, :GivenName, :AgeAtDeath, :DistrictNumber, :DistrictFlag, :District, :Volume, :Page, :QuarterNumber, :RecordNumber, :CountyComboID, :RecordTypeID).find_in_batches(batch_size: 100000) do |record_batch|
       n += 1
       file = "#{district.DistrictName}_district_data_#{n}.csv"
       file_location = Rails.root.join('tmp', file)

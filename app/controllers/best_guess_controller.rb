@@ -203,17 +203,18 @@ class BestGuessController < ApplicationController
     end_year = params[:end_year]
     district_number = params[:data_download][:district_number]
     record_count = params[:record_count]
+    params[:skip_count].present? skip_count = params[:skip_count] : skip_count = 0
     start_quarter = quarter_number(year: start_year)
     end_quarter = quarter_number(year: end_year)
     if start_year >= end_year
       message = 'End Date must be after Start Date'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-    zipfile = BestGuess.create_csv_file(start_quarter, end_quarter, district_number, record_count)
+    zipfile = BestGuess.create_csv_file(start_quarter, end_quarter, district_number, record_count, skip_count)
     logger.warn(zipfile)
     send_file "#{zipfile}"
   end
-  
+
   def quarter_number(year:, quarter: 1)
     (year.to_i-1837)*4 + quarter.to_i
   end

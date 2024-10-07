@@ -5,30 +5,31 @@
       <p>You can download <br>
         <b>Note:</b></p>
       <ol class="grid">
-        <li class="grid__item one-quarter palm-one-whole">
+        <li class="grid__item one-third palm-one-whole">
           <%= f.label :start_year, "Start Year: " %>
           <%#= f.select :start_year, @start_year %>
           <%= number_field_tag :start_year, 1837, min: 1837, max:1999, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY'%>
         </li>
-        <li class="grid__item one-quarter palm-one-whole">
+        <li class="grid__item one-third palm-one-whole">
           <%= f.label :end_year, "End Year: " %>
           <%= number_field_tag :end_year, 1999, min: 1837, max:1999, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
         </li>
-        <li class="grid__item one-quarter palm-one-whole">
+        <li class="grid__item one-third palm-one-whole">
           <%= f.label :districts_number, "Districts: " %>
           <%= f.select :district_number,  District.all.collect { |p| [ p.DistrictName, p.DistrictNumber ] }, {multiple: true, id: '', tabindex: "0"} %>
         </li>
-        <li class="grid__item one-quarter palm-one-whole">
+        <li class="grid__item one-third palm-one-whole">
           <%= f.label :record_count, "Number of Records: " %>
           <%= number_field_tag :record_count,  number_with_delimiter(1000000), class: 'text-input', id: 'record_count', tabindex: "0" %>
+        </li>
+        <li class="grid__item one-third palm-one-whole">
+          <%= f.label :skip_count, "Skip Records: " %>
+          <%= number_field_tag :skip_count,  0, class: 'text-input', id: 'record_count', tabindex: "0" %>
         </li>
       </ol>
       <ol>
         <li class='grid__item one-third palm-one-whole'>
           <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
-        </li>
-        <li>
-          <%= f.submit 'Download JSON File', :class => "btn   btn--small", title: 'Downloads JSON File',data: { disable_with: false }%>
         </li>
       </ol>
     </fieldset>
