@@ -209,19 +209,11 @@ class BestGuessController < ApplicationController
       message = 'End Date must be after Start Date'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
-    success, message, file_location, file_name = BestGuess.create_csv_file(start_quarter, end_quarter, district_number, record_count)
-
-    if success
-      if File.file?(file_location)
-        flash[:notice] = message unless message.empty?
-        send_file(file_location, filename: file_name, x_sendfile: true) && return
-      end
-    else
-      flash[:notice] = 'There was a problem downloading the CSV file'
-    end
-    redirect_back(fallback_location: new_manage_resource_path)
+    zipfile = BestGuess.create_csv_file(start_quarter, end_quarter, district_number, record_count)
+    logger.warn(zipfile)
+    send_file "#{zipfile}"
   end
-
+  
   def quarter_number(year:, quarter: 1)
     (year.to_i-1837)*4 + quarter.to_i
   end

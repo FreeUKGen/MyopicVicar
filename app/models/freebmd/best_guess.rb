@@ -437,37 +437,53 @@ class BestGuess < FreebmdDbBase
 
   def self.create_csv_file(start_quarter, end_quarter, district_number, record_count)
     records_array = []
+    files = []
     district = District.where(DistrictNumber: district_number).first
+    county_array = []
+    codes = DistrictToCounty.where(DistrictNumber: district_number).pluck(:County)
+    codes.each{|code| county_array << ChapmanCode.name_from_code(code) }
+    county = county_array.reject { |c| c.to_s.empty? }.to_sentence
     n = 0
-    BestGuess.where(DistrictNumber: district_number).between(QuarterNumber: start_quarter..end_quarter).order(:QuarterNumber).limit(record_count).find_in_batches(500000).each do |record_batch|
+    district.records.where(QuarterNumber: start_quarter.to_i..end_quarter.to_i).order(:QuarterNumber).limit(record_count.to_i).select(:Surname, :GivenName, :AgeAtDeath, :DistrictNumber, :DistrictFlag, :District, :Volume, :Page, :QuarterNumber, :RecordNumber, :CountyComboID, :RecordTypeID).find_in_batches(batch_size: 100000) do |record_batch|
       n += 1
-      file = "#{district.district_name}_district_data_#{n}.csv"
+      file = "#{district.DistrictName}_district_data_#{n}.csv"
       file_location = Rails.root.join('tmp', file)
-      record_batch.pluck(:Surname, :GivenName, :AgeAtDeath, :DistrictNumber, :DistrictFlag, :District, :Volume, :Page, :QuarterNumber).each do |record|
+      File.delete(file_location) if File.exist?(file_location)
+      record_batch.each do |record|
         record_array = []
-        record_array << record[0..-3]
-        county_array = []
-        record_county_codes = CountyCombo.where(CountyComboID: record.CountyComboID).pluck(:County)
-        record_county_codes.each{|code| county_array << ChapmanCode.name_from_code(county_code) } if record_county_codes.present?
-        county = county_array.reject { |c| c.to_s.empty? }.to_sentence
-        record_array << county
-        record_type = RecordType.display_name(record.RecordTypeID)
-        record_array << record_type
-        record_array
-        records_array << record_array.flatten!
+        records_array << record
       end
-      success, message = write_csv_file(file_location, records_array)
+      files << file
+      write_to_csv_file(file_location, records_array, county)
     end
+    zip_files(files)
   end
 
-  def self.write_to_csv_file(file_location, array)
+  def self.write_to_csv_file(file_location, array, county)
     column_headers = %w(surname given_names  age_at_death district_number district_flag district volume page quarter_number county record_type)
+    attr = %w(Surname GivenName AgeAtDeath DistrictNumber DistrictFlag District Volume Page QuarterNumber)
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << column_headers
       array.each do |rec|
-        csv << rec
+        record = attr.map{|a| rec[a]}
+        record << county
+        record_type = RecordType.display_name(rec['RecordTypeID'])
+        record << record_type
+        csv << record
       end
     end
-    [true, '']
+  end
+
+  def self.zip_files(files)
+    logger.warn(files)
+    zip_file = Rails.root.join('tmp',"downloads.zip")
+    file_path = Rails.root.join('tmp')
+    File.delete(zip_file) if File.exist?(zip_file)
+    Zip::File.open(zip_file, Zip::File::CREATE) do |zipfile|
+      files.each do |filename|
+        zipfile.add(filename, File.join(file_path, filename))
+      end
+    end
+    zip_file
   end
 end
