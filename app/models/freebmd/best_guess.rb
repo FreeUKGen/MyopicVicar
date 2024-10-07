@@ -435,7 +435,7 @@ class BestGuess < FreebmdDbBase
     hash_array.map{|h| BestGuessHash.find_by(Hash: h).best_guess}
   end
 
-  def create_csv_file(start_quarter, end_quarter, district_number, record_count)
+  def self.create_csv_file(start_quarter, end_quarter, district_number, record_count)
     records_array = []
     district = District.where(DistrictNumber: district_number).first
     n = 0
@@ -460,7 +460,7 @@ class BestGuess < FreebmdDbBase
     end
   end
 
-  def write_to_csv_file(file_location, array)
+  def self.write_to_csv_file(file_location, array)
     column_headers = %w(surname given_names  age_at_death district_number district_flag district volume page quarter_number county record_type)
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << column_headers
