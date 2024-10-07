@@ -199,10 +199,10 @@ class BestGuessController < ApplicationController
   end
 
    def export_data_for_sale
-    start_year = params[:data_download][:start_year]
-    end_year = params[:data_download][:end_year]
+    start_year = params[:start_year]
+    end_year = params[:end_year]
     district_number = params[:data_download][:district_number]
-    record_count = params[:data_download][:record_count]
+    record_count = params[:record_count]
     start_quarter = quarter_number(year: start_year)
     end_quarter = quarter_number(year: end_year)
     if start_year >= end_year
