@@ -6,7 +6,7 @@
     <% elsif role ==  'Search Place Names' %>
       <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn  btn--small" , method: :get, title: UseridRole::OPTIONS_TITLES[role], target: :_blank %>
     <% else%>
-      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role].sort, class: "btn  btn--small" , method: :get, title: UseridRole::OPTIONS_TITLES[role] %>
+      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn  btn--small" , method: :get, title: UseridRole::OPTIONS_TITLES[role] %>
     <% end%>
     <br>
   <% end%>
