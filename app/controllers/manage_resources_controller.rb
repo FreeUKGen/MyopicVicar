@@ -120,7 +120,7 @@ class ManageResourcesController < ApplicationController
     @userid = @user.userid
     @first_name = @user.person_forename if @user.present?
     @manager = manager?(@user)
-    @roles = UseridRole::OPTIONS.fetch(@current_role)
+    @roles = UseridRole::OPTIONS.fetch(@current_role).sort
     session[:userid] = @userid
     session[:user_id] = @user_id
     session[:first_name] = @first_name
