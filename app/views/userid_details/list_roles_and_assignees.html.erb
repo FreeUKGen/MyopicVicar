@@ -14,10 +14,12 @@
             <tr>
               <td><%= role %></td>
               <td>
-                <%= UseridDetail.any_of({person_role: role}, {secondary_role: role}).pluck(:userid).to_sentence %>
+                <% assignees_userids = UseridDetail.any_of({person_role: role}, {secondary_role: role}).pluck(:userid) %>
+                <%= assignees_userids.present? ? assignees_userids.to_sentence : 'N/A' %>
               </td>
               <td>
-                <%= UseridDetail.any_of({person_role: role}, {secondary_role: role}).pluck(:email_address).to_sentence %>
+                <% assignees_emails = UseridDetail.any_of({person_role: role}, {secondary_role: role}).pluck(:email_address) %>
+                <%= assignees_emails.present? ? assignees_emails.to_sentence : 'N/A' %>
               </td>
             </tr>
           <% end %>
