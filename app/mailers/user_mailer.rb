@@ -131,7 +131,7 @@ class UserMailer < ActionMailer::Base
 
   def coordinator_feedback_reply(feedback, ccs_userids, message, sender_userid)
     @appname = appname
-    @feedback = feedbackappname
+    @feedback = feedback
     @message = message
     @cc_email_addresses = get_email_address_array_from_array_of_userids(ccs_userids)
     sender_email_address = get_email_address_from_userid(sender_userid)
@@ -527,6 +527,14 @@ class UserMailer < ActionMailer::Base
     mail(bcc: ccs, subject: subjects, body: body_message)
   end
 
+  def send_embargo_logs(file, ccs, body_message, subjects)
+    @appname = appname
+    if file.present?
+      attachments[File.basename(file)] = File.read(file)
+    end
+    mail(to: 'Vinodhini.subbu@freeukgenealogy.org.uk', bcc: ccs, subject: subjects, body: body_message)
+  end
+
   def send_upload_stats(start_date, end_date)
     @start_date = start_date
     @end_date = end_date
@@ -540,7 +548,7 @@ class UserMailer < ActionMailer::Base
   def embargo_process_completion_email(rule_id, ccs)
     @rule = EmbargoRule.find_by(id: rule_id)
     @register = @rule.register
-    mail(bcc: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Embargo processing is complete")
+    mail(to: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Embargo processing is complete")
   end
 
   def update_report_to_freereg_manager(file, user)

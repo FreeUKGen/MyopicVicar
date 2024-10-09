@@ -350,6 +350,9 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/place_pieces_index', to: 'freecen2_pieces#place_pieces_index', as: :place_pieces_index_freecen2_piece
   get 'freecen2_pieces/stats_index', to: 'freecen2_pieces#stats_index', as: :stats_index_freecen2_pieces
   get 'freecen2_pieces/export_csv', to: 'freecen2_pieces#export_csv', as: :export_csv_freecen2_pieces
+  post 'freecen2_pieces/update_piece_status', to: 'freecen2_pieces#update_piece_status', as: :update_piece_status_freecen2_piece
+  get 'freecen2_pieces/cap_report', to: 'freecen2_pieces#cap_report', as: :cap_report_freecen2_pieces
+  get 'freecen2_pieces/gap_report', to: 'freecen2_pieces#gap_report', as: :gap_report_freecen2_pieces
   resources :freecen2_pieces
 
   get 'freecen2_civil_parishes/selection_by_name', to: 'freecen2_civil_parishes#selection_by_name', as: :selection_by_name_freecen2_civil_parishes
@@ -397,6 +400,7 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
   get 'userid_details/list_users_handle_communications', :to =>'userid_details#list_users_handle_communications', :as => :list_users_handle_communications_userid_details
+  get 'userid_details/list_roles_and_assignees', :to =>'userid_details#list_roles_and_assignees', :as => :list_roles_and_assignees_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do

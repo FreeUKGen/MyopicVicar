@@ -424,7 +424,7 @@ class Freecen2PlacesController < ApplicationController
     if @advanced_search.present? && @advanced_search != 'not_applicable'
       redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') && return unless search_place.match(/^[A-Za-z ]+$/)
       if @advanced_search != 'soundex'
-        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless Freecen2Place.standard_place(search_place).length >= 3
+        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless search_place.strip.squeeze(' ').length >= 3
       end
     end
     case @advanced_search
@@ -433,15 +433,18 @@ class Freecen2PlacesController < ApplicationController
       @type_head = 'Soundex'
       @results = Freecen2Place.sound_search(place_soundex, search_county)
     when 'starts_with'
-      regexp = BSON::Regexp::Raw.new('^' + Freecen2Place.standard_place(search_place))
+      place_starts = search_place.downcase == 'saint' ? 'st ' : Freecen2Place.standard_place(search_place)
+      regexp = BSON::Regexp::Raw.new('^' + place_starts)
       @type_head = 'Starts with'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     when 'contains'
-      regexp = BSON::Regexp::Raw.new(Freecen2Place.standard_place(search_place))
+      place_contains = search_place.downcase == 'saint' ? ' st ' : Freecen2Place.standard_place(search_place)
+      regexp = BSON::Regexp::Raw.new(place_contains)
       @type_head = 'Contains string'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     when 'ends_with'
-      regexp = BSON::Regexp::Raw.new(Freecen2Place.standard_place(search_place) + '$')
+      place_ends = search_place.downcase == 'saint' ? ' st ' : Freecen2Place.standard_place(search_place)
+      regexp = BSON::Regexp::Raw.new(place_ends + '$')
       @type_head = 'Ends with'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     else

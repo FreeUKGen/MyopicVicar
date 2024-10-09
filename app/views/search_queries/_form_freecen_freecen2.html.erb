@@ -81,8 +81,8 @@
           <label class="label ttip" for="search_query_birth_chapman_codes" tabindex="0">
             Birth County
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text"><small>These are grouped into sections for England, Ireland, Islands, Scotland, Wales and a Special category (including overseas, out of county, ships and military). If you select more than one county, <em>all</em> places within those counties will be searched</small></span>
-            <small class="additional">Select one to three (hold Ctrl for multiple)</small>
+            <span class="ttip__text"><small>These are grouped into sections for England, Ireland, Islands, Scotland, Wales and a Special category (including overseas, out of county, ships and military). If you select more than one county, <em>all</em> places within those counties will be searched.</small></span>
+            <small class="additional">Select one or more (hold Ctrl for multiple)</small>
           </label>
           <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.codes_for_cen_county)%>
           <select class="select" id="search_query_birth_chapman_codes" multiple="multiple" name="search_query[birth_chapman_codes][]">
@@ -105,8 +105,8 @@
           <label class="label ttip" for="search_query_chapman_codes" tabindex="0">
             Census County
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text"><small>These are grouped into sections for England, Ireland, Islands, Scotland, Wales and a Special category. Only counties with data are included. If you select more than one county, <em>all</em> places within those counties will be searched</small></span>
-            <small class="additional">Select one to three (hold Ctrl for multiple)</small>
+            <span class="ttip__text"><small>These are grouped into sections for England, Ireland, Islands, Scotland, Wales and a Special category. Only counties with data are included. If you select more than one county, <em>all</em> places within those counties will be searched.</small></span>
+            <small class="additional">Select one or more (hold Ctrl for multiple)</small>
           </label>
           <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.codes_for_cen_county_search) %>
           <select class="select" id="search_query_chapman_codes" multiple="multiple" name="search_query[chapman_codes][]">
@@ -149,7 +149,8 @@
         <li class="grid__item one-whole lap-one-whole palm-one-whole">
           <%= f.label :search_nearby_places do %>
             <%= f.check_box :search_nearby_places, {},  true, false %>
-            Nearby places. <small class="additional">Searches the nearest 100 places (with data) to the selected starting place.</small>
+            Nearby places. <small class="additional">Searches the nearest 100 places (with data) to the selected starting place.  <br>
+              <strong>Tip: </strong>If you are looking for data in Greater London we suggest you search London(City), Kent(KEN), Middlesex(MDX) and Surrey(SRY) because of boundary changes over time.</small>
           <% end %>
         </li>
       </ol>

@@ -188,6 +188,12 @@ class UseridDetailsController < ApplicationController
     @userids = UseridDetail.any_of({:person_role.in => comm_roles}, {secondary_role: {'$in' =>  comm_roles }})
   end
 
+  def list_roles_and_assignees
+    roles_not_included = ['computer', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'pending', 'researcher', 'syndicate_coordinator', 'technical', 'trainee', 'transcriber']
+    @included_roles = UseridRole::VALUES - roles_not_included
+    @userids = UseridDetail.any_of({:person_role.in => @included_roles}, {secondary_role: {'$in' =>  @included_roles }})
+  end
+
   def load(userid_id)
     @user = get_user
     @first_name = @user.person_forename unless @user.blank?

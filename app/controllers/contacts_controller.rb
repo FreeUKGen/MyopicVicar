@@ -31,7 +31,8 @@ class ContactsController < ApplicationController
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     get_user_info_from_userid
-    @messages = Message.where(source_contact_id: params[:id]).all
+    @messages = Message.where(source_contact_id: params[:id], :sub_nature.ne => 'comment').all
+    @comments = Message.where(source_contact_id: params[:id], sub_nature: 'comment').all if @messages.present?
     @links = false
     render 'messages/index'
   end
