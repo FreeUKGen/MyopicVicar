@@ -1,4 +1,4 @@
-<%= render 'index_header' %>
+  <%= render 'index_header' %>
 <div class="scrollable ">
   <table class="table--bordered table--data table--striped ">
     <tr>
@@ -33,32 +33,32 @@
           <td><%= freecen1_vld_file.transcriber_name %></td>
           <% if %w[system_administrator data_manager county_coordinator master_county_coordinator country_coordinator].include?(session[:role])%>
             <td><%= pob_val_status(freecen1_vld_file)  %></td>
-            <%# if pob_val_status(freecen1_vld_file) != 'All POBs are valid'%>
-              <!--td><%#= link_to 'Pre-Validation', auto_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Run Auto POB Validation for '+freecen1_vld_file.file_name+'?'} %></td-->
-            <%# else %>
+            <% if pob_val_status(freecen1_vld_file) != 'All POBs are valid'%>
+              <td><%= link_to 'Pre-Validation', auto_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Run Auto POB Validation for '+freecen1_vld_file.file_name+'?'} %></td>
+            <% else %>
               <td><%= 'Pre-Validation N/A' %>
-            <%# end %>
-            <td><%= link_to 'List VLD Entries', entry_csv_download_freecen1_vld_file_path(id: freecen1_vld_file.id), title: 'Download VLD Entries',data: { confirm: 'Are you sure you want to download a list of entries for '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
-            <%# if  pob_val_status(freecen1_vld_file) != 'All POBs are valid'  && pob_val_status(freecen1_vld_file) != 'Not Started'%>
-              <!--td><%#= link_to 'Manual Val', manual_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Manually Validate '+freecen1_vld_file.file_name+'?'} %></td-->
-            <%# else %>
-              <td><%= 'Manual Val N/A' %>
-            <%# end %>
+              <% end %>
+              <td><%= link_to 'List VLD Entries', entry_csv_download_freecen1_vld_file_path(id: freecen1_vld_file.id), title: 'Download VLD Entries',data: { confirm: 'Are you sure you want to download a list of entries for '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
+              <% if  pob_val_status(freecen1_vld_file) != 'All POBs are valid'  && pob_val_status(freecen1_vld_file) != 'Not Started'%>
+                <td><%= link_to 'Manual Val', manual_validate_pobs_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to Manually Validate '+freecen1_vld_file.file_name+'?'} %></td>
+              <% else %>
+                <td><%= 'Manual Val N/A' %>
+                <% end %>
+              <% end %>
+              <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
+              <% if %w[system_administrator data_manager executive_director county_coordinator country_coordinator master_county_coordinator].include?(session[:role])%>
+                <% if %w[system_administrator data_manager country_coordinator].include?(session[:role])%>
+                  <td><%= link_to 'Download', download_vld_file_freecen1_vld_file_path(file: freecen1_vld_file.id), title: 'Download VLD file',data: { confirm: 'Are you sure you want to download '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
+                  <td><%= link_to 'Replace', new_freecen1_vld_file_path(replace: freecen1_vld_file.file_name), data: { confirm: 'Are you sure you want to Replace '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
+                <% end%>
+                <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Deleting", confirm: 'Are you sure you want to delete '+freecen1_vld_file.file_name+'? It may take some time to process, you will receive a message when the file delete has completed.'}, method: :delete %></td>
+                <td><%= link_to 'Edit Transcriber', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Are you sure you want to edit Transcriber for '+freecen1_vld_file.file_name+'?'} %></td>
+                <td><%= link_to 'Edit Civil Parishes', edit_civil_parishes_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to edit Civil Parishes for for '+freecen1_vld_file.file_name+'?'} %></td>
+              <% end %>
+            </tr>
           <% end %>
-          <td><%= link_to 'Show', freecen1_vld_file_path(freecen1_vld_file) %></td>
-          <% if %w[system_administrator data_manager executive_director county_coordinator country_coordinator master_county_coordinator].include?(session[:role])%>
-            <% if %w[system_administrator data_manager country_coordinator].include?(session[:role])%>
-              <td><%= link_to 'Download', download_vld_file_freecen1_vld_file_path(file: freecen1_vld_file.id), title: 'Download VLD file',data: { confirm: 'Are you sure you want to download '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
-              <td><%= link_to 'Replace', new_freecen1_vld_file_path(replace: freecen1_vld_file.file_name), data: { confirm: 'Are you sure you want to Replace '+freecen1_vld_file.file_name+'?'}, method: :get %></td>
-            <% end%>
-            <td><%= link_to 'Delete', freecen1_vld_file_path(freecen1_vld_file), data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Deleting", confirm: 'Are you sure you want to delete '+freecen1_vld_file.file_name+'? It may take some time to process, you will receive a message when the file delete has completed.'}, method: :delete %></td>
-            <td><%= link_to 'Edit Transcriber', edit_freecen1_vld_file_path(freecen1_vld_file), method: :get, data: { confirm:  'Are you sure you want to edit Transcriber for '+freecen1_vld_file.file_name+'?'} %></td>
-            <td><%= link_to 'Edit Civil Parishes', edit_civil_parishes_freecen1_vld_file_path(id: freecen1_vld_file.id), method: :get, data: { confirm:  'Are you sure you want to edit Civil Parishes for for '+freecen1_vld_file.file_name+'?'} %></td>
-          <% end %>
-        </tr>
-      <% end %>
-    <% end %>
-  </table>
-</div>
-<br>
-<br>
+        <% end %>
+      </table>
+    </div>
+    <br>
+    <br>

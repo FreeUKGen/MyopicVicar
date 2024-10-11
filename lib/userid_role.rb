@@ -6,7 +6,7 @@ module UseridRole
   case MyopicVicar::Application.config.template_set
   when 'freereg'
     OPTIONS = {
-      'researcher' => ['Communicate', 'Profile', 'Roadmap', 'Management','FreeUKGenealogy  Policies'],
+      'researcher' => ['Communicate', 'Profile', 'Roadmap','FreeUKGenealogy  Policies'],
       'computer' => ['Profile', 'Roadmap'],
       'trainee' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Batches', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'pending' => ['Profile'],
@@ -24,7 +24,7 @@ module UseridRole
       'system_administrator' => ['Upload Report','Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Denominations',  'Display Communications Coordinators', 'GAP Reasons', 'Feedback',
                                  'Manage Counties', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap',
                                  'Search Performance', 'Site Statistics',
-                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'Management', 'FreeUKGenealogy  Policies'],
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'System Roles', 'FreeUKGenealogy  Policies'],
       'project_manager' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Denominations', 'GAP Reasons', 'Feedback',
                             'Manage Counties', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                             'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
@@ -71,7 +71,7 @@ module UseridRole
       'syndicate_coordinator' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Manage Syndicate', 'Contacts', 'Communicate', 'Display Userids', 'Profile',  'Roadmap', 'FreeUKGenealogy  Policies', 'Display County Coordinators', 'Display Syndicate Coordinators'],
       'system_administrator' => ['Upload Report','Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'Display Communications Coordinators', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Gazetteer',
                                  'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Place Edit Reasons', 'Place Sources', 'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Statistics', 'Search Performance', 'Site Statistics',
-                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'TNA Change Logs', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'TNA Change Logs', 'System Roles','FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'trainee' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'Gazetteer', 'FreeCEN Handbook','Display County Coordinators', 'Display Syndicate Coordinators', 'FreeUKGenealogy  Policies'],
       'technical' => ['Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Gazetteer', 'Profile', 'RefineryCMS', 'Roadmap','Search Statistics', 'Search Performance', 'Site Statistics',
                       'System Documentation', 'FreeCEN Handbook','Display County Coordinators', 'Display Syndicate Coordinators',  'FreeUKGenealogy  Policies'],
@@ -135,7 +135,7 @@ module UseridRole
     'Place Edit Reasons' => '/place_edit_reasons',
     'Upload Report' => '/physical_files/upload_report',
     'Place Sources' => '/freecen2_place_sources',
-    'Management' => '/userid_details/list_roles_and_assignees'
+    'System Roles' => '/userid_details/list_roles_and_assignees'
   }
 
   OPTIONS_TITLES = {

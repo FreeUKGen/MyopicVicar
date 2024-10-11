@@ -23,6 +23,7 @@ module Freecen
       pob_warning = ''
       reason = ''
       verbatim_reason = ''
+      should_be_hyphen = ['(-)', "'-'", "'-", "-'"]
 
       if vld_entry.birth_place.blank?
         reason = 'Automatic update of birth place missing to hyphen'
@@ -30,9 +31,17 @@ module Freecen
       elsif vld_entry.birth_place.upcase == 'UNK'
         reason = 'Automatic update of birth place UNK to hyphen'
         new_birth_place = '-'
+      elsif vld_entry.birth_place.in?(should_be_hyphen)
+        reason = "Automatic update of birth place #{vld_entry.birth_place} to hyphen"
+        new_birth_place = '-'
       else
         new_birth_place, reason = replace_chars_with_space(vld_entry.birth_place)
         new_verbatim_birth_place, verbatim_reason = replace_chars_with_space(vld_entry.verbatim_birth_place)
+      end
+
+      if vld_entry.verbatim_birth_place.in?(should_be_hyphen)
+        verbatim_reason = "Automatic update of verbatim birth place #{vld_entry.verbatim_birth_place} to hyphen"
+        new_verbatim_birth_place = '-'
       end
 
       if reason.present? || verbatim_reason.present?

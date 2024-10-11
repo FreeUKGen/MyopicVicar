@@ -105,7 +105,7 @@ class MoveCivilParishesToAnotherCounty
             puts "Piece #{new_piece_number} is not in  #{new_district.name}  for #{new_chapman_code} for year #{year} so creating"
             new_piece = Freecen2Piece.new(name: piece.name, chapman_code: new_chapman_code, number: new_piece_number,
                                           year: year, tnaid: original_district.tnaid, standard_name:  piece.standard_name,
-                                          code: piece.code, freecen2_district_id: new_district.id)
+                                          code: piece.code, freecen2_district_id: new_district.id, admin_county: new_chapman_code)
             new_piece.save
             new_piece.update(freecen2_place_id: piece.freecen2_place.id) if piece.freecen2_place.present?
             message_file.puts "Piece #{new_piece_number} created for #{new_district.name} in #{new_chapman_code} for year #{year}"
