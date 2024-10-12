@@ -333,12 +333,15 @@ module FreeregOptionsConstants
   TEST = { fieldset: 'mine', otherset: 'yours' }
 
   USERID_DETAILS_MYOWN_DISPLAY = %w[person_surname person_forename email_address alternate_email_address address telephone_number
-                                    syndicate skill_level fiche_reader person_role sign_up_date new_transcription_agreement
+                                    syndicate skill_level fiche_reader person_role sign_up_date new_transcription_agreement technical_agreement
                                     no_processing_messages do_not_acknowledge_me acknowledge_with_pseudo_name pseudo_name last_upload number_of_files active
                                     disabled_date disabled_reason_standard disabled_reason email_address_valid email_address_last_confirmned reason_for_invalidating
                                     email_address_validity_change_message]
 
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+
   VALID_RECORD_TYPE = %w[BAPTISMS MARRIAGES BURIALS BA MA BU]
+
   VALID_CCC_CODE = /\A[CcSs]{3,6}\z/
 
   VALID_CREDIT_CODE = %w[CREDIT Credit credit]

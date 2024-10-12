@@ -31,6 +31,7 @@ class UseridDetail
   field :disabled_reason_standard, type: String
   field :disabled_reason, type: String
   field :person_role, type: String, default: 'researcher'
+  field :volunteer_role, type: String
   field :syndicate_groups, type: Array
   field :county_groups, type: Array
   field :country_groups, type: Array
@@ -65,18 +66,23 @@ class UseridDetail
   has_many :attic_files, dependent: :restrict_with_error
   has_many :assignments
 
-  validates :userid, :syndicate, :email_address, :person_role, :person_surname, :person_forename,
-            :skill_level, presence: true # ,:new_transcription_agreement
+  validates :userid, :syndicate, :person_role, :person_surname, :person_forename,
+            :skill_level, presence: true, length: { maximum: 50 } # ,:new_transcription_agreement
+
   validates :email_address, format: { with: Devise.email_regexp }
+  validates :email_address, presence: true,
+                            length: { maximum: 255 },
+                            format: { with: FreeregOptionsConstants::VALID_EMAIL_REGEX }
+  validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
+  validates :technical_agreement, acceptance: true
+  validates :volunteer_role, length: { maximum: 50 }, presence: true
+  validates :skill_notes, length: { maximum: 150 }, presence: true
+
   validate :userid_and_email_address_does_not_exist, :transcription_agreement_must_accepted, on: :create
   validate :email_address_does_not_exist, on: :update
   validate :active_with_inactive_reason, on: :update
-  validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
-  # volunteer registration - to be updated when volunteer_role field created
-  validates :skill_notes, :previous_syndicate, presence: true
-  before_save { self.email_address = email_address.downcase }
-
+  before_save :add_lower_case_email_address
   before_save :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries
   before_create :add_lower_case_userid, :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
   after_create :save_to_refinery
@@ -469,6 +475,10 @@ class UseridDetail
 
   def add_lower_case_userid
     self[:userid_lower_case] = self[:userid].downcase
+  end
+
+  def add_lower_case_email_address
+    self.email_address = email_address.downcase
   end
 
   def capitalize_forename
