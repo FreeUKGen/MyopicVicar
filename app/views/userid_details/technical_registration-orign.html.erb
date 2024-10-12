@@ -1,0 +1,65 @@
+<p>
+  <b>
+    After successfully submitting this form you will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window)
+    WITHIN 24HRS.
+  </b></p>
+<%= semantic_form_for @userid do |f| %>
+  <div id="main"style="color:black">
+    <table class="table--bordered  table--striped  table--data">
+      <tr>
+        <th style="width:70%">Field</th>
+        <th style="width:30">Value</th>
+      </tr>
+      <tr>
+        <td>
+          Please provide us with a unique identification name. This will be used by the system to identify you at all times. The name must only contain alphabetic characters and numbers; it must NOT contain any special characters or spaces. It can be of any length. Avoid using your forename as it likely to have already been taken. <b>Mandatory</b>
+        </td>
+        <td>
+          <%= f.input :userid,:input_html => { :size => 35 }%> </td>
+      </tr>
+      <tr>
+        <td>
+          Your forename or given name
+        </td>
+        <td>
+          <%= f.input :person_forename,:input_html => { :size => 35 }%></td>
+      </tr>
+      <tr>
+        <td>Your surname</td>
+        <td>
+          <%= f.input :person_surname,:input_html => { :size => 35 }%></td>
+      </tr>
+      <tr>
+        <td>Your email address. Must be unique for your identification. <b>Mandatory</b></td>
+        <td>
+          <%= f.input :email_address,:input_html => { :size => 35 } %></td>
+      </tr>
+      <tr>
+        <td>
+          Please provide us with your physical location, i.e. Country.
+        </td>
+        <td>
+          <%= f.input :address,:input_html => { :size => 35 }%></td>
+      </tr>
+      <tr>
+        <td>
+          Please provide us with a telephone number in case we need to contact you.
+        </td>
+        <td>
+          <%= f.input :telephone_number,:input_html => { :size => 35 }%></td>
+      </tr>
+      <tr>
+        <td>
+          Please read the technical <%= link_to 'participation agreement', places_path%>  and confirm that you accept these terms.PLEASE NOTE THE AGREEMENT IS NOT THERE YET
+        </td>
+        <td>
+          <%= f.input :transcription_agreement, {:as => :select,  :collection => [false,true], :required => true,:size => 35}%></td>
+      </tr>
+    </table>
+    <p>
+      Please provide us with a short description of your skills and interests that would be applicable to <%= appname %>.</p>
+    <%= f.input :skill_notes,:input_html => { :size => 100 }%><br>
+    <p><b>After submitting this form you will be redirected to the home page and will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window) WITHIN 24HRS. Once your registration has been received a member of the management team will contact you to see how best to link you into the project. Until that time your abilities after log in will be restricted. </b></p>
+    <%= f.action :submit, :as => :input, :label => 'Technical Registration' %>
+  <% end %>
+</div>
