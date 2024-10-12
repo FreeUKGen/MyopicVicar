@@ -57,8 +57,8 @@
       <fieldset>
         <legend>Volunteer documents</legend>
         <p class="push-half--bottom">We need you to read and agree to these documents:</p>
-        <label for="userid_detail_new_transcription_agreement">
-          <%= f.check_box :new_transcription_agreement %>
+        <label for="userid_detail_technical_agreement">
+          <%= f.check_box :technical_agreement %>
           I have read and hereby sign, the
           <%= link_to "Technical Participation Agreement (pdf)",
           "https://docs.google.com/document/d/1wCvnF2SX_XzOOFAWH0g5PLC2SEYKoLeTzd1VurR_iks/edit?usp=sharing",
@@ -171,11 +171,11 @@
 
       <li class="grid__item lap-one-whole palm-one-whole">
         <fieldset class="choices" >
-          <legend class="label">Please select your volunteer role</legend>
+          <legend class="label">Please select your volunteer role*</legend>
           <ol class="choices-group">
             <% UseridDetail.options.each_pair do |name, value| %>
               <li class="choice">
-                <%= radio_button_tag "userid_detail[previous_syndicate]", value %>
+                <%= radio_button_tag 'userid_detail[volunteer_role]', value %>
                 <%= name %>
               </li>
             <% end %>
