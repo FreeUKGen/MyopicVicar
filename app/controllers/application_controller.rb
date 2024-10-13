@@ -1,4 +1,3 @@
-
 # Copyright 2012 Trustees of FreeBMD
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
