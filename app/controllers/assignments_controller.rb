@@ -135,6 +135,7 @@ class AssignmentsController < ApplicationController
     group_id = Assignment.get_group_id_for_list_assignment(params)
 
     @assignment, @count = Assignment.filter_assignments_by_userid(user_id, session[:syndicate], group_id)
+    @image_listing_partial = true
     render 'list_assignment_images' if @count.length == 1
   end
 
