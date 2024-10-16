@@ -26,7 +26,7 @@
         <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
         <span class="ttip__text">Please select your query</span>
       </label>
-      <%= select_tag "questins", options_for_select(FreebmdDataProblem::QUESTION_VALUE), prompt: "Please choose an option that closely relates your query" %>
+      <%= select_tag "questins", options_for_select(FreebmdDataProblem::QUESTION_VALUE), prompt: "Please choose an option that closely relates to your query" %>
     </li>
     <li class="grid__item one-half lap-one-whole palm-one-whole clear--left" id="explanation">
       <label class="ttip"  tabindex="0">Explanation

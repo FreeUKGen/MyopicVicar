@@ -91,7 +91,10 @@
       <% end %>
       <% if @result_count > 0 && @result_count < @max_result %>
         <% if appname_downcase == 'freebmd'%>
-          <%#= render 'bmd_search_results_footer' %>
+            <div>
+              <span><%= link_to 'Help with search results', '/cms/help'+nav_help_bmd_context %></span>
+            </div>
+            <%#= render 'bmd_search_results_footer' %>
         <% else %>
           <%= render 'please_donate' %>
         <% end %>

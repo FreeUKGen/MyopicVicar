@@ -1,6 +1,19 @@
 module FreebmdDataProblem
 
 	QUESTIONS = [
+		"I think that some data is missing",
+		"I have a query about the data that is presented",
+		"I have a query about the scan from which the data was transcribed"
+	]
+
+	ANSWERS = [
+		"FreeBMD transcribes exactly what is in the GRO index, and we do not change it to be correct as per the GRO certificate, or other certain knowledge. You may use the postem system (linked) to provide this information, which may be of great help to other family historians. If you wish to get the GRO Index corrected you should apply to the GRO [please put information here from https://www.freebmd.org.uk/FAQ.html#22].",
+		"FreeBMD transcribes EXACTLY what is in the GRO index for this event, and we do not change it to be correct as per another event in the index. If you wish to get the GRO Index corrected you should apply to the GRO [please link here to information on FreeBMD2 from https://www.freebmd.org.uk/FAQ.html#22].",
+		"If you have identified that an entry or entries on a scan of a page has not been transcribed you should attach a correction to the immediately preceding entry (find the name on the page and search using those details, and use the 'report a data error' button on that record.
+If you have done this, and are back at this point, please use this link [link to reporting page] to report the following entry as missing.  You only need to change the details that are different, such as the name of the missing person, and check the 'missing entry' or 'missing entries' box - you only need to check the missing entries box on the first person if multiple entries are missing: we will make sure all the missing entries are transcribed."
+	]
+
+	QUESTIONS2 = [
 		"The entry does not match what I know, from the GRO certificate, a census, church register, family bible or similar source",
 		"There are two entries, with slightly different spellings, I know which is correct",
 		"There is an error in the spelling of the District name",
@@ -19,7 +32,7 @@ module FreebmdDataProblem
 		"I have checked the scan and the transcription does not match what has been transcribed"
 	]
 
-	ANSWERS = [
+	ANSWERS2 = [
 		"FreeBMD transcribes exactly what is in the GRO index, and we do not change it to be correct as per the GRO certificate, or other certain knowledge. You may use the postem system (linked) to provide this information, which may be of great help to other family historians. If you wish to get the GRO Index corrected you should apply to the GRO [please put information here from https://www.freebmd.org.uk/FAQ.html#22].",
 		"It is not an error to find names appearing twice under alternative spellings in the Index. This happened when names were poorly written on the original copy. You may use the postem system (linked) to provide this information, which may be of help to other family historians.",
 		"Districts are spelt and abbreviated in a variety of ways. FreeBMD records the actual spelling from the index and links this to the definitive form of the name for searching, so we do not 'correct' them. To see the definitive form, you can click on the name of the district.",
@@ -45,22 +58,30 @@ It is also possible that this is a transcription error - if this is the case, pl
 	QUESTION_ANSWER = {
 		QUESTIONS[0] => ANSWERS[0],
 		QUESTIONS[1] => ANSWERS[1],
-		QUESTIONS[2] => ANSWERS[2],
-		QUESTIONS[3] => ANSWERS[3],
-		QUESTIONS[4] => ANSWERS[4],
-		QUESTIONS[5] => ANSWERS[5],
-		QUESTIONS[6] => ANSWERS[6],
-		QUESTIONS[7] => ANSWERS[7],
-		QUESTIONS[8] => ANSWERS[8],
-		QUESTIONS[9] => ANSWERS[9],
-		QUESTIONS[10] => ANSWERS[10],
-		QUESTIONS[11] => ANSWERS[11],
-		QUESTIONS[12] => ANSWERS[12],
-		QUESTIONS[13] => ANSWERS[13],
-		QUESTIONS[14] => ANSWERS[14],
-		QUESTIONS[15] => ANSWERS[15]
+		QUESTIONS[2] => ANSWERS[2]
+	}
+
+		SECOND_QUESTION_ANSWER = {
+		QUESTIONS2[0] => ANSWERS2[0],
+		QUESTIONS2[1] => ANSWERS2[1],
+		QUESTIONS2[2] => ANSWERS2[2],
+		QUESTIONS2[3] => ANSWERS2[3],
+		QUESTIONS2[4] => ANSWERS2[4],
+		QUESTIONS2[5] => ANSWERS2[5],
+		QUESTIONS2[6] => ANSWERS2[6],
+		QUESTIONS2[7] => ANSWERS2[7],
+		QUESTIONS2[8] => ANSWERS2[8],
+		QUESTIONS2[9] => ANSWERS2[9],
+		QUESTIONS2[10] => ANSWERS2[10],
+		QUESTIONS2[11] => ANSWERS2[11],
+		QUESTIONS2[12] => ANSWERS2[12],
+		QUESTIONS2[13] => ANSWERS2[13],
+		QUESTIONS2[14] => ANSWERS2[14],
+		QUESTIONS2[15] => ANSWERS2[15]
 	}
 
 	QUESTION_VALUE = QUESTIONS.map{|v| %W(#{v} #{QUESTIONS.index(v)})}
-	
+
+	SECOND_QUESTION_VALUE = QUESTIONS2.map{|v| %W(#{v} #{QUESTIONS2.index(v)})}
+
 end
