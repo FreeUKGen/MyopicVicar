@@ -281,6 +281,22 @@ class UseridDetail
     end
   end
 
+  def get_signature
+    user_name = "#{self.person_forename} #{self.person_surname}"
+    user_syndicate = self.syndicate
+    user_role = self.person_role
+    case user_role
+    when 'syndicate_coordinator'
+      user_groups = self.syndicate_groups.join(', ')
+    when 'county_coordinator'
+      user_groups = self.county_groups.join(', ')
+    end
+    user_role = "#{self.person_role}[#{user_groups}]"
+    user_role = "#{user_role} | #{self.secondary_role.join(', ')}" if self.secondary_role.present?
+    signature = {u_name: user_name, u_synd: user_syndicate, u_role: user_role}
+    signature
+  end
+
   def has_original_message?(message)
     userid_messages.include?(message.source_message_id) ? answer = true : answer = false
     answer

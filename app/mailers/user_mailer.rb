@@ -513,6 +513,8 @@ class UserMailer < ActionMailer::Base
     @sender = UseridDetail.userid(from).first
     @reply_messages = Message.where(source_message_id: @message.source_message_id).all unless @message.source_message_id.blank?
     @respond_to_message = Message.id(@message.source_message_id).first
+    @from = UseridDetail.where(userid: from).first
+    @signature = @from.get_signature
     from_email = UseridDetail.create_friendly_from_email(from)
     from_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if from_email.blank?
     ccs_emails = add_emails(ccs)
