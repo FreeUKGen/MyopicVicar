@@ -7,7 +7,7 @@
 <%= semantic_form_for @freecen2_piece, :html => { :class => 'grid'}  do |f| %>
   <%= f.input :number ,  label: 'Piece number (eg HO107_1935):', input_html: {class: ' simple_form_bgcolour', size:20 }%>
   <div  style="text-align: center">
-    <%= f.action :submit,  :as => :button,  :label =>  'Locate', :button_html => {name: 'commit', value: 'Submit Number', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
+    <%= f.action :submit,  :as => :button,  :label =>  'Locate', :button_html => {name: 'commit', value: 'Submit Piece Number', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
   </div>
 <% end %>
 <script type='text/javascript'>
