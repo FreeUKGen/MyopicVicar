@@ -291,7 +291,7 @@ class UseridDetail
     when 'county_coordinator'
       user_groups = self.county_groups.join(', ')
     end
-    user_role = "#{self.person_role}[#{user_groups}]"
+    user_role = "#{self.person_role}[#{user_groups}]" if user_groups.present?
     user_role = "#{user_role} | #{self.secondary_role.join(', ')}" if self.secondary_role.present?
     signature = {u_name: user_name, u_synd: user_syndicate, u_role: user_role}
     signature
