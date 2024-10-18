@@ -18,6 +18,24 @@
     </fieldset>
   <% end %>
 </div>
+<%= column_chart [
+        {
+          name: "Transcribers",
+          data: @transcribers.group_by_year(:c_at).count,
+          stack: "stack 1"
+        },
+        {
+          name: "Active Transcribers",
+          data: @active_transcribers.group_by_year(:c_at).count,
+          stack: "stack 1"
+        },
+        {
+          name: "Email Confirmed",
+          data: @email_confimed.group_by_year(:email_address_last_confirmned).count,
+          stack: "stack 1"
+        }
+    ], stacked: true
+%>
 <div class="scrollable">
   <table class="table--bordered table--data table--striped my-width">
     <caption>
@@ -32,15 +50,15 @@
     <tbody>
       <tr>
         <th scope="row">Total Transcribers</th>
-        <td><%= @transcribers_count %></td>
+        <td><%= @transcribers.count %></td>
       </tr>
       <tr>
         <th scope="row">Total active transcribers</th>
-        <td><%= @active_transcribers_count %></td>
+        <td><%= @active_transcribers.count %></td>
       </tr>
       <tr>
         <th scope="row">Number of transcribers with their email address confirmed in this period.</th>
-        <td><%= @email_confimed %></td>
+        <td><%= @email_confimed.count %></td>
       </tr>
     </tbody>
   </table>
@@ -67,4 +85,4 @@
     <% end %>
   </table>
 </div>
-<%= pie_chart uploaders_count %>
+<%= pie_chart @uploaders_count %>

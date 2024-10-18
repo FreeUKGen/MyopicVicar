@@ -204,7 +204,7 @@ class UseridDetail
       transcribers_registered = transcribers.where(c_at: start_date..end_date)
       active_transcribers = transcribers.where(active: true)
       email_address_confimed = transcribers.where(email_address_last_confirmned: start_date..end_date)
-      [transcribers.count, active_transcribers.count, email_address_confimed.count]
+      [transcribers, active_transcribers, email_address_confimed]
     end
   end
 
