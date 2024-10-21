@@ -29,10 +29,12 @@ module MyopicVicar
     FREEREG = 'freereg'
     FREECEN = 'freecen'
     FREEBMD = 'freebmd'
+    FREEPRO = 'freepro'
     ALL_APPLICATIONS = [
       FREEREG,
       FREECEN,
-      FREEBMD
+      FREEBMD,
+      FREEPRO
     ]
   end
   module Servers
@@ -119,6 +121,11 @@ module MyopicVicar
       config.assets.paths << Rails.root.join('app', 'assets_freebmd')
 
       config.assets.paths << Rails.root.join('app', 'assets_freebmd', 'styles')
+    when TemplateSet::FREEPRO
+      config.freexxx_display_name = 'FreePRO'
+      config.assets.paths << Rails.root.join('app', 'assets_freepro')
+
+      config.assets.paths << Rails.root.join('app', 'assets_freepro', 'styles')
     else
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
