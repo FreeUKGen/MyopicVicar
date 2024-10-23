@@ -140,24 +140,6 @@
           <% end %>
 	      </td>
     	</tr>
-      <tr>
-        <th scope="row">
-          Date of birth
-        </th>
-        <td>
-          <%= record.AgeAtDeath %>
-        </td>
-      </tr>
-    <% end %>
-    <% if entry_type == "death" %>
-      <tr>
-        <th scope="row">
-          Age at death
-        </th>
-        <td>
-          <%= record.AgeAtDeath %>
-        </td>
-      </tr>
     <% end %>
     <% unless entry_type == "marriage" %>
       <tr>
