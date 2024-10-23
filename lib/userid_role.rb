@@ -37,7 +37,8 @@ module UseridRole
                                       'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'engagement_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Site Statistics', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'website_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'general_communication_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies']
+      'general_communication_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'image_server_coord' => ['Profile', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Image Server','FreeUKGenealogy Policies']
     }
   when 'freecen'
     OPTIONS = {
@@ -135,7 +136,8 @@ module UseridRole
     'Place Edit Reasons' => '/place_edit_reasons',
     'Upload Report' => '/physical_files/upload_report',
     'Place Sources' => '/freecen2_place_sources',
-    'System Roles' => '/userid_details/list_roles_and_assignees'
+    'System Roles' => '/userid_details/list_roles_and_assignees',
+    'Image Server' => '/image_server_groups'
   }
 
   OPTIONS_TITLES = {
