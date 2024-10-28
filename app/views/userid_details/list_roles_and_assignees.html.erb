@@ -1,29 +1,31 @@
 <div class="grid__item ">
-  <% unless @userids.blank? %>
-    <section class="island ">
-      <div class="scrollable ">
-        <table class=" table--bordered my-width table--data just--left">
-          <thead >
+  <section class="island ">
+    <div class="scrollable ">
+      <table class=" table--bordered my-width table--data just--left">
+        <thead >
+          <tr>
+            <th class='sticky-header'>Roles</th>
+            <th class='sticky-header'>Userids</th>
+            <th class='sticky-header'>Emails</th>
+          </tr>
+        </thead>
+        <tbody >
+          <% @included_roles.each do |role| %>
             <tr>
-              <th class='sticky-header'>UserID</th>
-              <th class='sticky-header'>Email</th>
-              <th class='sticky-header'>Primary Role</th>
-              <th class='sticky-header'>Secondary Role</th>
+              <td><%= role %></td>
+              <td>
+                <% assignees_userids = UseridDetail.any_of({person_role: role}, {secondary_role: role}).pluck(:userid) %>
+                <%= assignees_userids.present? ? assignees_userids.to_sentence : 'N/A' %>
+              </td>
+              <td>
+                <% assignees_emails = UseridDetail.any_of({person_role: role}, {secondary_role: role}).pluck(:email_address) %>
+                <%= assignees_emails.present? ? assignees_emails.to_sentence : 'N/A' %>
+              </td>
             </tr>
-          </thead>
-          <tbody >
-            <% @userids.each do |userid| %>
-                  <td > <%= userid.userid %>  </td>
-                  <td > <%= userid.email_address %> </td>
-                  <td><%= userid.person_role %></td>
-                  <td><%= userid.secondary_role %></td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    <%else%>
-      There are no members
-    <% end %>
-  </div>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  
+</div>

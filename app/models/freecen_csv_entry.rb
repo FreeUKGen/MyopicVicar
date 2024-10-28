@@ -21,6 +21,7 @@ class FreecenCsvEntry
   require 'record_type'
   require 'freecen_constants'
   require 'chapman_code'
+  require 'age_parser'
 
   field :address_flag, type: String
   field :age, type: String
@@ -2793,13 +2794,17 @@ class FreecenCsvEntry
     myage = age.to_i
     census_year = year
     adjustment = 0 # this is all we need to do for day and week age units
-    myage_unit_included = age[-1].match?(/[A-Za-z]/) if age.present?
+    myage_with_unit = AgeParser.new(age).process_age if age.present?
+    myage_unit_included = myage_with_unit.match?(/[A-Za-z]/) if age.present?
+    logger.warn("myagggggggggggge = #{myage_unit_included}")
     if myage_unit_included
-      myage_unit = age[-1]
+      myage_unit = myage_with_unit[-1]
       if myage_unit == 'y'
+        myage = myage_with_unit.to_i
         adjustment = 0 - myage
       end
       if myage_unit == 'm'
+        myage = myage_with_unit.to_i
         if census_year == RecordType::CENSUS_1841
           # Census day: June 6, 1841
           #
@@ -2838,6 +2843,7 @@ class FreecenCsvEntry
 
   def translate_date_old
     myage = age.to_i
+
     census_year = year
     adjustment = 0 # this is all we need to do for day and week age units
     if age_unit == 'y' || age_unit.blank?

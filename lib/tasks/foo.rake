@@ -222,7 +222,7 @@ namespace :foo do
       lock_file = File.new(rake_lock_file, 'w')
       AddEmbargoRecord.process(args.limit)
       lock_file.close
-      FileUtils.rm rake_lock_file
+      FileUtils.rm_f(rake_lock_file)
     else
       p 'Already running'
     end

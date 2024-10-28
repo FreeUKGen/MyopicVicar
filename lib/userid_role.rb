@@ -2,42 +2,43 @@ module UseridRole
   VALUES = ['checker', 'computer', 'contacts_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'data_manager', 'documentation_coordinator',
             'engagement_coordinator', 'executive_director', 'genealogy_coordinator', 'general_communication_coordinator', 'pending', 'project_manager',
             'publicity_coordinator', 'researcher', 'syndicate_coordinator', 'system_administrator', 'technical', 'trainee', 'transcriber',
-            'validator', 'volunteer_coordinator', 'website_coordinator']
+            'validator', 'volunteer_coordinator', 'website_coordinator', 'image_server_coord']
   case MyopicVicar::Application.config.template_set
   when 'freereg'
     OPTIONS = {
-      'researcher' => ['Communicate', 'Profile', 'Roadmap', 'Management','FreeUKGenealogy  Policies'],
+      'researcher' => ['Communicate', 'Profile', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Roadmap','FreeUKGenealogy  Policies'],
       'computer' => ['Profile', 'Roadmap'],
-      'trainee' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Batches', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'trainee' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Batches', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'pending' => ['Profile'],
-      'transcriber' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'syndicate_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'contacts_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Transcriber Statistics','Display County Coordinators', 'Display Communications Coordinators',
+      'transcriber' => ['Assignments', 'Batches', 'Communicate', 'Profile', 'Roadmap', 'Display County Coordinators', 'Display Syndicate Coordinators', 'FreeUKGenealogy  Policies'],
+      'syndicate_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'contacts_coordinator' => ['Assignments', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Batches', 'Communicate', 'Contacts', 'Transcriber Statistics','Display County Coordinators', 'Display Communications Coordinators',
                                  'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Message System','Manage Counties', 'Profile', 'System Documentation', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'county_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts',  'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'country_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
-      'volunteer_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'county_coordinator' => ['Assignments', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Batches', 'Communicate', 'Contacts',  'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'country_coordinator' => ['Assignments', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Batches', 'Communicate', 'Contacts', 'Display Userids', 'Manage County', 'Manage Syndicate', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
+      'volunteer_coordinator' => ['Assignments', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Batches', 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeUKGenealogy  Policies'],
       'data_manager' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'Denominations', 'Display Userids', 'Display Syndicate Coordinators', 'Display County Coordinators',
                          'Manage Counties', 'Manage Syndicates', 'Physical Files', 'Profile', 'Roadmap' ],
-      'technical' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Manage Assignments', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap',  'Search Performance', 'Site Statistics',
+      'technical' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Manage Assignments', 'Contacts', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap',  'Search Performance', 'Site Statistics',
                       'System Documentation', 'FreeUKGenealogy  Policies'],
       'system_administrator' => ['Upload Report','Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Denominations',  'Display Communications Coordinators', 'GAP Reasons', 'Feedback',
                                  'Manage Counties', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap',
                                  'Search Performance', 'Site Statistics',
-                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'Management', 'FreeUKGenealogy  Policies'],
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'System Roles', 'FreeUKGenealogy  Policies'],
       'project_manager' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Denominations', 'GAP Reasons', 'Feedback',
                             'Manage Counties', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                             'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
       'executive_director' => ['Upload Report','Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Denominations', 'GAP Reasons', 'Feedback',
                                'Manage Counties', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                                'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'publicity_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'genealogy_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'documentation_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Display Userids', 'Feedback', 'Manage Syndicates',
+      'publicity_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'genealogy_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Profile', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'documentation_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Manage Syndicates',
                                       'Manage Counties', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'engagement_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Site Statistics', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'website_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
-      'general_communication_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies']
+      'engagement_coordinator' => ['Assignments', 'Batches', 'Communicate', 'Contacts', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Manage Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Site Statistics', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'website_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'general_communication_coordinator' => ['Batches', 'Contacts', 'Communicate', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeUKGenealogy  Policies'],
+      'image_server_coord' => ['Profile', 'Display County Coordinators', 'Display Syndicate Coordinators', 'Image Server','FreeUKGenealogy Policies']
     }
   when 'freecen'
     OPTIONS = {
@@ -71,7 +72,7 @@ module UseridRole
       'syndicate_coordinator' => ['CSV Batches', 'Gazetteer', 'FreeCEN Handbook', 'Manage Syndicate', 'Contacts', 'Communicate', 'Display Userids', 'Profile',  'Roadmap', 'FreeUKGenealogy  Policies', 'Display County Coordinators', 'Display Syndicate Coordinators'],
       'system_administrator' => ['Upload Report','Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'Display Communications Coordinators', 'County Coordinators', 'Country Coordinators', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Gazetteer',
                                  'Manage Counties', 'Manage FreeCen Coverage', 'Manage Syndicates', 'Manage Userids', 'Message System', 'Place Edit Reasons', 'Place Sources', 'Physical Files', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Statistics', 'Search Performance', 'Site Statistics',
-                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'TNA Change Logs', 'FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'TNA Change Logs', 'System Roles','FreeCEN Handbook', 'FreeUKGenealogy  Policies'],
       'trainee' => ['CSV Batches', 'Communicate', 'Profile', 'Roadmap', 'Gazetteer', 'FreeCEN Handbook','Display County Coordinators', 'Display Syndicate Coordinators', 'FreeUKGenealogy  Policies'],
       'technical' => ['Access Attic', 'CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Feedback', 'FreeCen Errors', 'Gazetteer', 'Profile', 'RefineryCMS', 'Roadmap','Search Statistics', 'Search Performance', 'Site Statistics',
                       'System Documentation', 'FreeCEN Handbook','Display County Coordinators', 'Display Syndicate Coordinators',  'FreeUKGenealogy  Policies'],
@@ -135,7 +136,8 @@ module UseridRole
     'Place Edit Reasons' => '/place_edit_reasons',
     'Upload Report' => '/physical_files/upload_report',
     'Place Sources' => '/freecen2_place_sources',
-    'Management' => '/userid_details/list_roles_and_assignees'
+    'System Roles' => '/userid_details/list_roles_and_assignees',
+    'Image Server' => '/image_server_groups'
   }
 
   OPTIONS_TITLES = {
@@ -236,7 +238,7 @@ module UseridRole
     'Review Batches being Validated' => '/manage_counties/selection?option=Being Validated',
     'Review Incorporated Batches' => '/manage_counties/selection?option=Incorporated',
     'Review Batches by Filename' => '/manage_counties/selection?option=Review Batches by Filename',
-    'Review Batches by Userid then Filename' => '/manage_cmanage_countiesounties/selection?option=Review Batches by Userid then Filename',
+    'Review Batches by Userid then Filename' => '/manage_counties/selection?option=Review Batches by Userid then Filename',
     'Review Batches by Most Recent Date of Change' => '/manage_counties/selection?option=Review Batches by Most Recent Date of Change',
     'Review Batches by Oldest Date of Change' => '/manage_counties/selection?option=Review Batches by Oldest Date of Change',
     'Review Specific Batch' => '/manage_counties/selection?option=Review Specific Batch',
