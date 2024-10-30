@@ -111,6 +111,8 @@ namespace :freecen do
       files.each do |file|
         previously_validated = false
         one_entry = Freecen1VldEntry.where(freecen1_vld_file_id: file.id, individual_flag: '-' ).first
+        next if one_entry.blank?
+
         previously_validated = true if one_entry.pob_valid == true || one_entry.pob_valid == false
 
         previously_unvalidated_processed += 1 if previously_validated == false
@@ -180,7 +182,7 @@ namespace :freecen do
         vld_file.set(num_invalid_pobs: num_invalid_pobs)
       end
       report = "Processed #{num_individuals} individuals - found #{num_invalid_pobs} invalid POBs"
-      report = 'Vld file may not be correctly linked to freecen_individuals collection - please report to System Administrator' if num_invalid_pobs == num_individuals
+      report = 'Vld file may not be correctly linked to freecen_individuals collection or has no individuals - please report to System Administrator/Data Manager' if num_invalid_pobs == num_individuals
       unless vld_err_messages.empty?
         report += "The following processing error messages were reported:\n"
         vld_err_messages.each do |msg|
