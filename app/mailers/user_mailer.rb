@@ -169,6 +169,8 @@ class UserMailer < ActionMailer::Base
         @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
       end
     end
+    from = UseridDetail.where(userid: @contact.user_id).first
+    @signature = from.get_signature
     get_attachment(@contact)
     mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier} on #{@appname}")
   end
@@ -513,6 +515,8 @@ class UserMailer < ActionMailer::Base
     @sender = UseridDetail.userid(from).first
     @reply_messages = Message.where(source_message_id: @message.source_message_id).all unless @message.source_message_id.blank?
     @respond_to_message = Message.id(@message.source_message_id).first
+    @from = UseridDetail.where(userid: from).first
+    @signature = @from.get_signature
     from_email = UseridDetail.create_friendly_from_email(from)
     from_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if from_email.blank?
     ccs_emails = add_emails(ccs)
