@@ -1,65 +1,231 @@
-<p>
-  <b>
-    After successfully submitting this form you will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window)
-    WITHIN 24HRS.
-  </b></p>
+<% title "Technical Volunteer Registration" %>
+<h1 class="title ">Technical Volunteer Registration</h1>
+
+<div class="grid">
+  <div class="grid__item two-thirds lap-one-half palm-one-whole">
+    <div class="read-length">
+      <p>Thank you for your interest in volunteering for
+        <%= appname %>. To join one of our teams of technical volunteers, fill in this form with your
+        details. Please read our
+        <%= link_to "Privacy Notice", helpful_links[:privacyNotice] %>
+        for information on how we will protect and use your data.</p>
+
+      <p>After successfully submitting the form, you will receive an email that contains a link
+        to complete the registration process. Click on that link, or copy and paste it into
+        you browser&rsquo;s address window. You must respond to the email
+        <em>within 24 hours</em>. If you have not received it within a few minutes, please check your spam folder.</p>
+
+      <p>If you have any questions about the documents below or about volunteering, please
+        <%= link_to "contact us", "/contacts/new" %>.</p>
+    </div>
+  </div>
+
+  <aside class="grid__item one-third lap-one-half palm-one-whole">
+    <div class="island island--navy">
+      <h2 class="banner__title">Questions? Data?</h2>
+      <p>For more information before you register, or if you have some data to contribute,
+        please use the
+        <a href="/contacts/new">contact us</a>
+        form and select the &lsquo;Volunteering&rsquo; option.</p>
+    </div>
+  </aside>
+
+</div>
+
+<% if flash[:notice] %>
+  <div class="weight--semibold push--bottom" style="color: #a1185a;">
+    <%= flash[:notice] %>
+    <% flash[:notice] = nil %>
+  </div>
+<% end %>
+
+<% if @userid.errors.any? %>
+  <h2 class="gamma">
+    You have
+    <%= pluralize(@userid.errors.count, "error") %>: please review</h2>
+  <ul class="validation-list">
+    <% @userid.errors.full_messages.each do |msg| %>
+      <li class="validation-list__error"><%= msg %></li>
+    <% end %>
+  </ul>
+  <% @userid.errors.clear %>
+<% end %>
+
 <%= semantic_form_for @userid do |f| %>
-  <div id="main"style="color:black">
-    <table class="table--bordered  table--striped  table--data">
-      <tr>
-        <th style="width:70%">Field</th>
-        <th style="width:30">Value</th>
-      </tr>
-      <tr>
-        <td>
-          Please provide us with a unique identification name. This will be used by the system to identify you at all times. The name must only contain alphabetic characters and numbers; it must NOT contain any special characters or spaces. It can be of any length. Avoid using your forename as it likely to have already been taken. <b>Mandatory</b>
-        </td>
-        <td>
-          <%= f.input :userid,:input_html => { :size => 35 }%> </td>
-      </tr>
-      <tr>
-        <td>
-          Your forename or given name
-        </td>
-        <td>
-          <%= f.input :person_forename,:input_html => { :size => 35 }%></td>
-      </tr>
-      <tr>
-        <td>Your surname</td>
-        <td>
-          <%= f.input :person_surname,:input_html => { :size => 35 }%></td>
-      </tr>
-      <tr>
-        <td>Your email address. Must be unique for your identification. <b>Mandatory</b></td>
-        <td>
-          <%= f.input :email_address,:input_html => { :size => 35 } %></td>
-      </tr>
-      <tr>
-        <td>
-          Please provide us with your physical location, i.e. Country.
-        </td>
-        <td>
-          <%= f.input :address,:input_html => { :size => 35 }%></td>
-      </tr>
-      <tr>
-        <td>
-          Please provide us with a telephone number in case we need to contact you.
-        </td>
-        <td>
-          <%= f.input :telephone_number,:input_html => { :size => 35 }%></td>
-      </tr>
-      <tr>
-        <td>
-          Please read the technical <%= link_to 'participation agreement', places_path%>  and confirm that you accept these terms.PLEASE NOTE THE AGREEMENT IS NOT THERE YET
-        </td>
-        <td>
-          <%= f.input :transcription_agreement, {:as => :select,  :collection => [false,true], :required => true,:size => 35}%></td>
-      </tr>
-    </table>
-    <p>
-      Please provide us with a short description of your skills and interests that would be applicable to <%= appname %>.</p>
-    <%= f.input :skill_notes,:input_html => { :size => 100 }%><br>
-    <p><b>After submitting this form you will be redirected to the home page and will receive an email that contains a link to complete the registration process. Click on that link (or copy and paste it into you browser address window) WITHIN 24HRS. Once your registration has been received a member of the management team will contact you to see how best to link you into the project. Until that time your abilities after log in will be restricted. </b></p>
-    <%= f.action :submit, :as => :input, :label => 'Technical Registration' %>
-  <% end %>
+  <div class="grid">
+    <div class="grid__item two-thirds lap-four-fifths palm-one-whole">
+      <fieldset>
+        <legend>Volunteer documents</legend>
+        <p class="push-half--bottom">We need you to read and agree to these documents:</p>
+        <label for="userid_detail_technical_agreement">
+          <%= f.check_box :technical_agreement %>
+          I have read and hereby sign, the
+          <%= link_to "Technical Participation Agreement (pdf)",
+          "https://docs.google.com/document/d/1wCvnF2SX_XzOOFAWH0g5PLC2SEYKoLeTzd1VurR_iks/edit?usp=sharing",
+          target: "_blank",
+          title: "View or download the Agreement",
+          rel: "noopener" %>
+          <span class="weight--normal">(link opens in new tab)</span>
+        </label>
+        <label for="userid_detail_volunteer_induction_handbook">
+          <%= f.check_box :volunteer_induction_handbook %>
+          I have read and hereby sign, the
+          <%= link_to "Volunteer Induction Handbook (pdf)",
+          "https://drive.google.com/file/d/1VQEW2vYCbuAB1gPul46XIZSRV9Y0b-6O/view?usp=sharing",
+          title: "View or download the Volunteer Induction Handbook",
+          target: "_blank",
+          rel: "noopener" %>
+          <span class="weight--normal">(link opens in new tab)</span>
+        </label>
+        <label for="userid_detail_code_of_conduct">
+          <%= f.check_box :code_of_conduct %>
+          I have read, and agree to abide by, the
+          <%= link_to 'Code of Conduct (pdf)',
+                      'http://www.freeukgenealogy.org.uk/files/Documents/Code-of-Conduct.pdf',
+                      title: 'View or download the Code of Conduct (pdf)',
+                      target: '_blank',
+                      rel: 'noopener' %>
+          <span class="weight--normal">(link opens in new tab)</span>
+        </label>
+        <label for="userid_detail_volunteer_policy">
+          <%= f.check_box :volunteer_policy %>
+          I have read, and agree to abide by, the
+          <%= link_to 'Volunteer Policy (pdf)',
+                      'https://www.freeukgenealogy.org.uk/files/Volunteer-Policy.pdf',
+                      title: 'View or download the Volunteer Policy (pdf)',
+                      target: '_blank',
+                      rel: 'noopener' %>
+          <span class="weight--normal">(link opens in new tab)</span>
+        </label>
+      </fieldset>
+    </div>
+  </div>
+  <!--Your Details section is using standard html and erb-->
+  <fieldset class="inputs">
+    <legend>Your details</legend>
+    <ol class="grid">
+      <li class="grid__item one-third lap-one-half palm-one-whole">
+        <label class="label ttip" for="forename" tabindex="0">Forename
+          <%= image_tag "png/info.png", alt: "Info", height: "16" %>
+          <span class="ttip__text">Required. Your forename for when we contact you</span>
+        </label>
+        <%= text_field_tag "userid_detail[person_forename]",
+        @userid.person_forename.presence,
+        id: "forename",
+        placeholder: @userid.person_forename.blank? ? "Required" : nil,
+        class: "text-input" %>
+      </li>
+
+      <li class="grid__item one-third lap-one-half palm-one-whole">
+        <label class="label ttip" for="surname" tabindex="0">Surname
+          <%= image_tag "png/info.png", alt: "Info", height: "16" %>
+          <span class="ttip__text">Required. Your surname for when we contact you</span>
+        </label>
+        <%= text_field_tag "userid_detail[person_surname]",
+        @userid.person_surname.presence,
+        id: "surname",
+        placeholder: @userid.person_surname.blank? ? "Required" : nil,
+        class: "text-input" %>
+      </li>
+
+      <li class="grid__item one-third lap-one-half palm-one-whole">
+        <label class="label ttip" for="email_address" tabindex="0">Your email address
+          <%= image_tag "png/info.png", alt: "Info", height: "16" %>
+          <span class="ttip__text">Required. Your email address so we can contact you. It will not be made public</span>
+        </label>
+        <%= text_field_tag "userid_detail[email_address]",
+        @userid.email_address.presence,
+        id: "email_address",
+        placeholder: @userid.email_address.blank? ? "Required" : nil,
+        class: "text-input",
+        required: true %>
+      </li>
+
+      <li class="grid__item one-third lap-one-half palm-one-whole">
+        <label class="label ttip" for="username" tabindex="0">User name (UserID)
+          <%= image_tag "png/info.png", alt: "Info", height: "16" %>
+          <span class="ttip__text">Required. A
+            <em>unique</em>
+            way to identify you. Letters and numbers
+            <em>only</em>. Any length</span>
+        </label>
+        <%= text_field_tag "userid_detail[userid]",
+        @userid.userid.presence,
+        id: "username",
+        placeholder: @userid.userid.blank? ? "Required" : nil,
+        class: "text-input" %>
+      </li>
+
+      <li class="grid__item one-third lap-one-half palm-one-whole">
+        <label class="label ttip" for="location" tabindex="0">Location
+          <%= image_tag "png/info.png", alt: "Info", height: "16" %>
+          <span class="ttip__text">Optional. The country you live in. This helps us if we need to contact you</span>
+        </label>
+
+        <%= text_field_tag "userid_detail[address]",
+        @userid.address.presence,
+        id: "location",
+        placeholder: @userid.address.blank? ? "Optional" : nil,
+        class: "text-input" %>
+      </li><br>
+
+      <li class="grid__item lap-one-whole palm-one-whole">
+        <fieldset class="choices" >
+          <legend class="label">Please select your volunteer role*</legend>
+          <ol class="choices-group">
+            <% UseridDetail.options.each_pair do |name, value| %>
+              <li class="choice">
+                <%= radio_button_tag 'userid_detail[volunteer_role]', value %>
+                <%= name %>
+              </li>
+            <% end %>
+          </ol>
+        </fieldset>
+      </li>
+
+      <div class="grid__item lap-one-whole palm-one-whole">
+        <%= f.input :skill_notes,
+                label:
+                  "Please provide us with a brief description of your
+                                                                  skills and interests that would be applicable to #{appname}.",
+                # required: true,
+                placeholder: @userid.skill_notes.blank? ? "Required" : nil,
+                input_html: {
+                  size: 150,
+                  class: "text-input",
+                  maxlength: 150
+                } %>
+      </div>
+
+      <li class=" betterstyling grid__item seven-twelfths lap-one-whole palm-one-whole ">
+        <label class="label ttip" for="<%= @userid[:honeypot] %>">
+          Leave this field blank
+        </label>
+        <input type="text" id="<%= @userid[:honeypot] %>" name="<%= @userid[:honeypot] %>">
+        <input type="hidden" id="__TIME" name="__TIME" value="<%= Time.zone.now %>">
+      </li>
+
+      <%= f.action :submit,
+               as: :input,
+               label: "Register as Technical Volunteer",
+               button_html: {
+                 class: "btn",
+                 type: "submit"
+               },
+               wrapper_html: {
+                 class: "grid__item one-whole",
+                 style: "padding-top: 20px;"
+               } %>
+    </ol>
+  </fieldset>
+<% end %>
+
+<div class="grid">
+  <aside class="grid__item one-whole">
+    <div class="adsense_box push--ends reg_adsense">
+      <p class="text--center">Advertisement</p>
+      <%#= fullwidth_adsense %>
+      <%= my_heritage_720_90_second %>
+    </div>
+  </aside>
 </div>

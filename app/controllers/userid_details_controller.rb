@@ -15,11 +15,10 @@ class UseridDetailsController < ApplicationController
   include ActiveModel::Dirty
   require 'userid_role'
   require 'import_users_from_csv'
-  skip_before_action :require_login, only: [:general, :create, :researcher_registration, :transcriber_registration, :technical_registration]
+  skip_before_action :require_login, only: %i[general create researcher_registration transcriber_registration technical_registration]
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
-  PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'newsletter_coordinator']
-  STATS_PERMITTED_ROLES = ['system_administrator', 'executive_director', 'project_manager', 'engagement_coordinator', 'contacts_coordinator', 'newsletter_coordinator']
-
+  PERMITTED_ROLES = %w[system_administrator syndicate_coordinator county_coordinator country_coordinator master_county_coordinator newsletter_coordinator]
+  STATS_PERMITTED_ROLES = %w[system_administrator executive_director project_manager engagement_coordinator contacts_coordinator newsletter_coordinator]
 
   def all
     session[:user_index_page] = params[:page] if params[:page]
@@ -36,7 +35,7 @@ class UseridDetailsController < ApplicationController
     refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
     if refinery_user.blank?
       flash[:notice] = 'There was an issue with your request please consult your coordinator.' if session[:my_own]
-      flash[:notice] = 'There was an issue with the userid please consult with system administration.' if !session[:my_own]
+      flash[:notice] = 'There was an issue with the userid please consult with system administration.' unless session[:my_own]
       logger.warn("FREEREG:USERID: The refinery entry for #{@userid.userid} does not exist. Run the Fix Refinery User Table utilty")
     else
       refinery_user.send_reset_password_instructions
@@ -58,112 +57,6 @@ class UseridDetailsController < ApplicationController
     @options = [true, false]
   end
 
-  def create
-    if spam_check
-      @userid = UseridDetail.new(userid_details_params)
-      @userid.add_fields(params[:commit], session[:syndicate])
-      @userid.save
-      if @userid.save
-        refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
-        refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
-        @userid.write_userid_file
-        next_place_to_go_successful_create
-      else
-        flash[:notice] = 'The registration was unsuccessful'
-        @syndicates = Syndicate.get_syndicates_open_for_transcription
-        next_place_to_go_unsuccessful_create
-      end
-    else
-      render status: :not_found
-    end
-  end
-
-  def destroy
-    load(params[:id])
-    redirect_back(fallback_location: options_userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
-
-    session[:type] = 'edit'
-    redirect_back(fallback_location: options_userid_details_path, notice: 'The removal of the userid not permitted as they have batches') && return if @userid.has_files?
-
-    if appname_downcase == 'freereg'
-      Freereg1CsvFile.delete_userid_folder(@userid.userid)
-    end
-    if @userid.destroy
-      flash[:notice] = 'The destruction of the profile and deletion of the user folder was successful'
-    else
-      flash[:notice] = 'The destruction of the profile failed'
-    end
-    #redirect_to(options_userid_details_path)
-    redirect_to userid_details_path
-  end
-
-  def disable
-    session[:return_to] = request.fullpath
-    load(params[:id])
-    redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
-
-    unless @userid.active
-      @userid.update_attributes(active: true, disabled_reason_standard: nil, disabled_reason: nil, disabled_date: nil)
-      flash[:notice] = 'Userid re-activated'
-      redirect_to(userid_details_path(anchor: "#{ @userid.id}")) && return
-    end
-    session[:type] = 'disable'
-  end
-
-  def display
-    session[:return_to] = request.fullpath
-    get_user_info_from_userid
-    @syndicate = 'all'
-    session[:syndicate] = @syndicate
-    @options = UseridRole::USERID_ACCESS_OPTIONS
-    session[:edit_userid] = false
-    render action: :options
-  end
-
-  def download_txt
-    send_file "#{Rails.root}/script/create_user.txt", type: "application/txt", x_sendfile: true
-  end
-
-  def edit
-    get_user_info_from_userid
-    load(params[:id])
-    redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
-
-    #session[:return_to] = request.fullpath
-    session[:type] = 'edit'
-    @userid = @user if session[:my_own]
-    @current_user = get_user
-    @syndicates = Syndicate.get_syndicates
-    @appname = appname_downcase
-    @authourised_roles = ['system_administrator', 'volunteer_coordinator']
-  end
-
-  def general
-    session[:return_to] = request.fullpath
-    session[:first_name] = 'New Registrant'
-  end
-
-  def import
-    create_users = ImportUsersFromCsv.new(params[:file], params[:commit],session[:syndicate]).import
-    flash[:notice] = "Users creation completed"
-    @userids = UseridDetail.get_userids_for_display('all')
-    @syndicate = 'all'
-    @show_log = true
-    render "index"
-  end
-
-  def incomplete_registrations
-    @current_syndicate = session[:syndicate]
-    @current_user = get_user
-    session[:edit_userid] = true
-    user = UseridDetail.new
-    redirect_back(fallback_location: new_manage_resource_path, notice:'Sorry, You are not authorized for this action') && return unless permitted_users?
-
-    @incomplete_registrations = user.list_incomplete_registrations(@current_user, @current_syndicate)
-    render template: 'shared/incomplete_registrations'
-  end
-
   def index
     session[:return_to] = request.fullpath
     get_user_info_from_userid
@@ -181,11 +74,194 @@ class UseridDetailsController < ApplicationController
     end
     @syndicate = session[:syndicate]
     @sorted_by = session[:active]
-  end #end method
+  end # end method
+
+  def show
+    get_user_info_from_userid
+    load(params[:id])
+    if @userid.blank?
+      redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') &&
+        return
+    end
+
+    session[:return_to] = request.fullpath
+    @syndicate = session[:syndicate]
+    @page_name = params[:page_name]
+  end
+
+  def new
+    session[:return_to] = request.fullpath
+    session[:type] = 'add'
+    get_user_info_from_userid
+    @role = session[:role]
+    if @role == 'syndicate_coordinator'
+      @syndicates = []
+      @syndicates[0] = session[:syndicate]
+    elsif %w[system_administrator executive_director project_manager volunteer_coordinator].include?(@role)
+      @syndicates = Syndicate.get_syndicates
+    else
+      @syndicates = Syndicate.get_syndicates_open_for_transcription
+    end
+    @appname = appname_downcase
+    @userid = UseridDetail.new
+  end
+
+  def edit
+    get_user_info_from_userid
+    load(params[:id])
+    redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
+
+    # session[:return_to] = request.fullpath
+    session[:type] = 'edit'
+    @userid = @user if session[:my_own]
+    @current_user = get_user
+    @syndicates = Syndicate.get_syndicates
+    @appname = appname_downcase
+    @authourised_roles = %w[system_administrator volunteer_coordinator]
+  end
+
+  def create
+    if spam_check
+      @userid = UseridDetail.new(userid_details_params)
+      @userid.add_fields(params[:commit], session[:syndicate])
+      @userid.save
+      if @userid.save
+        refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
+        refinery_user.send_reset_password_instructions
+        flash[:notice] = 'Thank you for successfully submitting the form. You will now receive an email to complete the registration process.'
+        @userid.write_userid_file
+        next_place_to_go_successful_create
+      else
+        flash[:notice] = 'Sorry, the registration was unsuccessful. Please try again.'
+        @syndicates = Syndicate.get_syndicates_open_for_transcription
+        next_place_to_go_unsuccessful_create
+      end
+    else
+      render file: "#{Rails.public_path.join('404')}", layout: true, status: :not_found
+    end
+  end
+
+  def update
+    load(params[:id])
+    redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
+
+    changed_syndicate = @userid.changed_syndicate?(params[:userid_detail][:syndicate])
+    changed_email_address = @userid.changed_email?(params[:userid_detail][:email_address])
+    proceed = true
+    case params[:commit]
+    when 'Disable'
+      params[:userid_detail][:disabled_date] = DateTime.now if @userid.disabled_date.blank?
+      params[:userid_detail][:active] = false
+      params[:userid_detail][:person_role] = params[:userid_detail][:person_role] if params[:userid_detail][:person_role].present?
+    when 'Update'
+      params[:userid_detail][:previous_syndicate] = @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
+    when 'Confirm'
+      logger.warn "FREECEN::USER #{params.inspect}"
+      if params[:userid_detail][:email_address_valid] == 'true' || params[:userid_detail][:email_address_valid] == true
+        @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new, email_address_validity_change_message: [])
+        if @userid.errors.any?
+          logger.warn "FREECEN::USER errors#{@userid.errors.full_messages}"
+          flash[:notice] = "The update of the profile was unsuccessful #{@userid.errors.full_messages}"
+          redirect_to confirm_email_address_userid_details_path && return
+        else
+          flash[:notice] = 'Email address confirmed'
+          redirect_to(new_manage_resource_path) && return
+        end
+      else
+        logger.warn 'FREECEN::USER not confirmed'
+        flash[:notice] = "Email address was not confirmed; you responded #{params[:userid_detail][:email_address_valid]}. Please edit"
+        session[:my_own] = true
+        redirect_to(edit_userid_detail_path(@userid)) && return
+      end
+    end
+    email_valid_change_message
+    params[:userid_detail][:email_address_last_confirmned] = %w[1 true].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
+    @userid.update_attributes(userid_details_params.except(:userid))
+    @userid.write_userid_file
+    @userid.save_to_refinery
+    if @userid.errors.any?
+      flash[:notice] = "The update of the profile was unsuccessful #{@userid.errors.full_messages}"
+      redirect_to(edit_userid_detail_path(@userid)) && return
+    else
+      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if changed_syndicate
+      UserMailer.send_change_of_email_notification_to_sc(@userid).deliver_now if changed_email_address
+      flash[:notice] = 'The update of the profile was successful'
+      redirect_to(userid_detail_path(@userid, page_name: params[:page_name])) && return
+    end
+  end
+
+  def destroy
+    load(params[:id])
+    redirect_back(fallback_location: options_userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
+
+    session[:type] = 'edit'
+    redirect_back(fallback_location: options_userid_details_path, notice: 'The removal of the userid not permitted as they have batches') && return if @userid.has_files?
+
+    Freereg1CsvFile.delete_userid_folder(@userid.userid) if appname_downcase == 'freereg'
+    flash[:notice] = if @userid.destroy
+                       'The destruction of the profile and deletion of the user folder was successful'
+                     else
+                       'The destruction of the profile failed'
+                     end
+    # redirect_to(options_userid_details_path)
+    redirect_to userid_details_path
+  end
+
+  def disable
+    session[:return_to] = request.fullpath
+    load(params[:id])
+    redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
+
+    unless @userid.active
+      @userid.update_attributes(active: true, disabled_reason_standard: nil, disabled_reason: nil, disabled_date: nil)
+      flash[:notice] = 'Userid re-activated'
+      redirect_to(userid_details_path(anchor: "#{@userid.id}")) && return
+    end
+    session[:type] = 'disable'
+  end
+
+  def display
+    session[:return_to] = request.fullpath
+    get_user_info_from_userid
+    @syndicate = 'all'
+    session[:syndicate] = @syndicate
+    @options = UseridRole::USERID_ACCESS_OPTIONS
+    session[:edit_userid] = false
+    render action: :options
+  end
+
+  def download_txt
+    send_file "#{Rails.root.join('script/create_user.txt')}", type: 'application/txt', x_sendfile: true
+  end
+
+  def general
+    session[:return_to] = request.fullpath
+    session[:first_name] = 'New Registrant'
+  end
+
+  def import
+    create_users = ImportUsersFromCsv.new(params[:file], params[:commit], session[:syndicate]).import
+    flash[:notice] = 'Users creation completed'
+    @userids = UseridDetail.get_userids_for_display('all')
+    @syndicate = 'all'
+    @show_log = true
+    render 'index'
+  end
+
+  def incomplete_registrations
+    @current_syndicate = session[:syndicate]
+    @current_user = get_user
+    session[:edit_userid] = true
+    user = UseridDetail.new
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Sorry, You are not authorized for this action') && return unless permitted_users?
+
+    @incomplete_registrations = user.list_incomplete_registrations(@current_user, @current_syndicate)
+    render template: 'shared/incomplete_registrations'
+  end
 
   def list_users_handle_communications
-    comm_roles = ['website_coordinator', 'volunteer_coordinator', 'publicity_coordinator', 'contacts_coordinator', 'general_communication_coordinator', 'genealogy_coordinator', 'project_manager']
-    @userids = UseridDetail.any_of({:person_role.in => comm_roles}, {secondary_role: {'$in' =>  comm_roles }})
+    comm_roles = %w[website_coordinator volunteer_coordinator publicity_coordinator contacts_coordinator general_communication_coordinator genealogy_coordinator project_manager]
+    @userids = UseridDetail.any_of({ :person_role.in => comm_roles }, { secondary_role: { '$in' => comm_roles } })
   end
 
   def list_roles_and_assignees
@@ -196,7 +272,7 @@ class UseridDetailsController < ApplicationController
 
   def load(userid_id)
     @user = get_user
-    @first_name = @user.person_forename unless @user.blank?
+    @first_name = @user.person_forename if @user.present?
     @userid = UseridDetail.find(userid_id)
     return if @userid.blank?
 
@@ -210,26 +286,10 @@ class UseridDetailsController < ApplicationController
     redirect_back(fallback_location: options_userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
     redirect_back(fallback_location: options_userid_details_path, notice: 'The removal of the userid not permitted as they have batches') && return if @userid.has_files?
+
     @userid.update_attributes(syndicate: 'To be Destroyed')
     flash[:notice] = 'Userid moved to the To be Destroyed syndicate for review'
     redirect_to(userid_detail_path(@userid.id))
-  end
-
-  def new
-    session[:return_to] = request.fullpath
-    session[:type] = 'add'
-    get_user_info_from_userid
-    @role = session[:role]
-    if @role == 'syndicate_coordinator'
-      @syndicates = []
-      @syndicates[0] = session[:syndicate]
-    elsif ['system_administrator', 'executive_director', 'project_manager', 'volunteer_coordinator'].include?(@role)
-      @syndicates = Syndicate.get_syndicates
-    else
-      @syndicates = Syndicate.get_syndicates_open_for_transcription
-    end
-    @appname = appname_downcase
-    @userid = UseridDetail.new
   end
 
   def my_own
@@ -253,12 +313,12 @@ class UseridDetailsController < ApplicationController
   def next_place_to_go_successful_create
     @userid.finish_creation_setup if params[:commit] == 'Register as Transcriber'
     @userid.finish_researcher_creation_setup if params[:commit] == 'Register Researcher'
-    @userid.finish_technical_creation_setup if params[:commit] == 'Technical Registration'
+    @userid.finish_technical_creation_setup if params[:commit] == 'Register as Technical Volunteer'
     if params[:commit] == 'Register as Transcriber'
-      if MyopicVicar::Application.config.template_set != 'freecen'
-        redirect_to(transcriber_registration_userid_detail_path) && return
+      if MyopicVicar::Application.config.template_set == 'freecen'
+        redirect_to '/cms/opportunities-to-volunteer-with-freecen/welcome-to-freecen' and return
       else
-        redirect_to "/cms/opportunities-to-volunteer-with-freecen/welcome-to-freecen" and return
+        redirect_to(transcriber_registration_userid_detail_path) && return
       end
     elsif params[:commit] == 'Submit' && session[:userid_detail_id].present?
       redirect_to(userid_detail_path(@userid)) && return
@@ -275,7 +335,7 @@ class UseridDetailsController < ApplicationController
     case params[:commit]
     when 'Submit'
       @user = get_user
-      @first_name = @user.person_forename unless @user.blank?
+      @first_name = @user.person_forename if @user.present?
       render action: :new and return
     when 'Register Researcher'
       render action: :researcher_registration and return
@@ -283,7 +343,7 @@ class UseridDetailsController < ApplicationController
       @syndicates = Syndicate.get_syndicates_open_for_transcription
       @userid[:honeypot] = session[:honeypot]
       render action: :transcriber_registration and return
-    when 'Technical Registration'
+    when 'Register as Technical Volunteer'
       render action: :technical_registration and return
     else
       @user = get_user
@@ -335,7 +395,7 @@ class UseridDetailsController < ApplicationController
       @userid = UseridDetail.new
       @first_name = session[:first_name]
     else
-      #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+      # we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
       flash[:notice] = 'The system is presently undergoing maintenance and is unavailable for registration'
       flash.keep
       redirect_to(new_search_query_path) && return
@@ -359,22 +419,20 @@ class UseridDetailsController < ApplicationController
   end
 
   def return_percentage_all_existing_users_accepted_transcriber_agreement_old
-    total_existing_users = UseridDetail.where(sign_up_date: {'$gt': DateTime.new(2017, 10, 17)}).count.to_f
-    total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: 'Accepted', sign_up_date: {'$gt': DateTime.new(2017, 10, 17)}).count.to_f
-    return 0  if total_existing_users == 0 || total_existing_users_accepted == 0
+    total_existing_users = UseridDetail.where(sign_up_date: { '$gt': DateTime.new(2017, 10, 17) }).count.to_f
+    total_existing_users_accepted = UseridDetail.where(new_transcription_agreement: 'Accepted', sign_up_date: { '$gt': DateTime.new(2017, 10, 17) }).count.to_f
+    return 0 if total_existing_users == 0 || total_existing_users_accepted == 0
 
     ((total_existing_users_accepted / total_existing_users) * 100).round(2)
   end
 
   def return_percentage_all_existing_active_users_accepted_transcriber_agreement_old
-    total_existing_active_users = UseridDetail.where(active: true, sign_up_date: {'$gt': DateTime.new(2017, 10, 17)}).count.to_f
-    total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: 'Accepted', sign_up_date: {'$gt': DateTime.new(2017, 10, 17)}).count.to_f
+    total_existing_active_users = UseridDetail.where(active: true, sign_up_date: { '$gt': DateTime.new(2017, 10, 17) }).count.to_f
+    total_existing_active_users_accepted = UseridDetail.where(active: true, new_transcription_agreement: 'Accepted', sign_up_date: { '$gt': DateTime.new(2017, 10, 17) }).count.to_f
     return 0 if total_existing_active_users == 0 || total_existing_active_users_accepted == 0
 
     ((total_existing_active_users_accepted / total_existing_active_users) * 100).round(2)
   end
-
-
 
   def role
     @userids = UseridDetail.role(params[:role]).all.order_by(userid_lower_case: 1)
@@ -383,7 +441,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def scotland_counties
-    ["Aberdeenshire Syndicate", "Angus (Forfarshire) Syndicate", "Argyllshire Syndicate", "Ayrshire Syndicate",]
+    ['Aberdeenshire Syndicate', 'Angus (Forfarshire) Syndicate', 'Argyllshire Syndicate', 'Ayrshire Syndicate']
   end
 
   def secondary
@@ -407,13 +465,13 @@ class UseridDetailsController < ApplicationController
     when params[:userid].present?
       redirect_back(fallback_location: new_manage_resource_path, notice: 'Blank cannot be selected') && return if params[:userid] == ''
 
-      userid = UseridDetail.where(:userid => params[:userid]).first
+      userid = UseridDetail.where(userid: params[:userid]).first
       redirect_to(userid_detail_path(userid, option: params[:option])) && return
     when params[:email].present?
       redirect_back(fallback_location: new_manage_resource_path, notice: 'Blank cannot be selected') && return if params[:email] == ''
 
       params[:email] = params[:email].gsub(/\s/, '+')
-      userid = UseridDetail.where(:email_address => params[:email]).first
+      userid = UseridDetail.where(email_address: params[:email]).first
       redirect_to(userid_detail_path(userid, option: params[:option])) && return
     when params[:name].present?
       redirect_back(fallback_location: new_manage_resource_path, notice: 'Blank cannot be selected') && return if params[:name] == ''
@@ -422,7 +480,7 @@ class UseridDetailsController < ApplicationController
       number = UseridDetail.where(person_surname: name[0], person_forename: name[1]).count
       case
       when number == 0
-        @userids = UseridDetail.where(:person_surname => name[0]).all
+        @userids = UseridDetail.where(person_surname: name[0]).all
         redirect_back(fallback_location: new_manage_resource_path, notice: 'Blank cannot be selected') && return if @userids.blank?
 
         render 'index'
@@ -455,17 +513,17 @@ class UseridDetailsController < ApplicationController
       redirect_to action: :new
       return
     when params[:option] == 'Select specific email'
-      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @syndicate = params[:syndicate].presence || 'all'
       @userids = UseridDetail.get_emails_for_selection(@syndicate)
       @location = 'location.href= "select?email=" + this.value'
       @prompt = "Please select an email address from the following list for #{session[:syndicate]}"
     when params[:option] == 'Select specific userid'
-      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @syndicate = params[:syndicate].presence || 'all'
       @userids = UseridDetail.get_userids_for_selection(@syndicate)
       @location = 'location.href= "select?userid=" + this.value'
       @prompt = "Select userid for #{session[:syndicate]}"
     when params[:option] == 'Select specific surname/forename'
-      params[:syndicate].present? ? @syndicate = params[:syndicate] : @syndicate = 'all'
+      @syndicate = params[:syndicate].presence || 'all'
       @userids = UseridDetail.get_names_for_selection(@syndicate)
       @location = 'location.href= "select?name=" + this.value'
       @prompt = "Select surname/forename for #{session[:syndicate]}"
@@ -477,28 +535,33 @@ class UseridDetailsController < ApplicationController
     @manage_syndicate = session[:syndicate]
   end
 
-  def show
-    get_user_info_from_userid
-    load(params[:id])
-    redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
-    session[:return_to] = request.fullpath
-    @syndicate = session[:syndicate]
-    @page_name = params[:page_name]
-  end
-
   def technical_registration
-    redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
+    unless Rails.application.config.member_open
+      redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') &&
+        return
+    end
+
+    # we set the mongo_config.yml member open flag.
+    # true is open. false is closed We do allow technical people in
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = 'technical_registration'
+    session[:honeypot] = "agreement_#{rand.to_s[2..11]}"
     @userid = UseridDetail.new
+    @userid[:honeypot] = session[:honeypot]
+    @new_transcription_agreement = %w[Unknown Accepted Declined Requested]
+    @first_name = session[:first_name]
   end
 
   def transcriber_registration
-    redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
+    unless Rails.application.config.member_open
+      redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') &&
+        return
+    end
 
-    #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+    # we set the mongo_config.yml member open flag.
+    # true is open. false is closed We do allow technical people in
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
@@ -508,10 +571,9 @@ class UseridDetailsController < ApplicationController
     @userid = UseridDetail.new
     @userid[:honeypot] = session[:honeypot]
     @syndicates = Syndicate.get_syndicates_open_for_transcription
-    @new_transcription_agreement = ['Unknown','Accepted','Declined','Requested']
+    @new_transcription_agreement = %w[Unknown Accepted Declined Requested]
     @first_name = session[:first_name]
   end
-
 
   def transcriber_statistics
     @current_user = get_user
@@ -545,61 +607,10 @@ class UseridDetailsController < ApplicationController
     @percentage_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_users_accepted_transcriber_agreement
     @percentage_active_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_active_users_accepted_transcriber_agreement
     @new_users = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - @timeline.months }).count
-    #@new_users_last_90_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 90.days }).count
+    # @new_users_last_90_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 90.days }).count
     @number_of_transcribers_recently_uploaded_file = UseridDetail.number_of_transcribers_uploaded_file_recently(@timeline)
     @images_groups_unallocated = ImageServerGroup.unallocated_groups_count
   end
-
-  def update
-    load(params[:id])
-    redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
-
-    changed_syndicate = @userid.changed_syndicate?(params[:userid_detail][:syndicate])
-    changed_email_address = @userid.changed_email?(params[:userid_detail][:email_address])
-    proceed = true
-    case params[:commit]
-    when 'Disable'
-      params[:userid_detail][:disabled_date] = DateTime.now if @userid.disabled_date.blank?
-      params[:userid_detail][:active] = false
-      params[:userid_detail][:person_role] = params[:userid_detail][:person_role] if params[:userid_detail][:person_role].present?
-    when 'Update'
-      params[:userid_detail][:previous_syndicate] = @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
-    when 'Confirm'
-      logger.warn "FREECEN::USER #{params.inspect}"
-      if params[:userid_detail][:email_address_valid] == 'true' || params[:userid_detail][:email_address_valid] == true
-        @userid.update_attributes(email_address_valid: true, email_address_last_confirmned: Time.new, email_address_validity_change_message: [])
-        if @userid.errors.any?
-          logger.warn "FREECEN::USER errors#{@userid.errors.full_messages}"
-          flash[:notice] = "The update of the profile was unsuccessful #{@userid.errors.full_messages}"
-          redirect_to confirm_email_address_userid_details_path && return
-        else
-          flash[:notice] = 'Email address confirmed'
-          redirect_to(new_manage_resource_path) && return
-        end
-      else
-        logger.warn "FREECEN::USER not confirmed"
-        flash[:notice] = "Email address was not confirmed; you responded #{params[:userid_detail][:email_address_valid]}. Please edit"
-        session[:my_own] = true
-        redirect_to(edit_userid_detail_path(@userid)) && return
-      end
-    end
-    email_valid_change_message
-    params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
-    @userid.update_attributes(userid_details_params.except(:userid))
-    @userid.write_userid_file
-    @userid.save_to_refinery
-    if @userid.errors.any?
-      flash[:notice] = "The update of the profile was unsuccessful #{@userid.errors.full_messages}"
-      redirect_to(edit_userid_detail_path(@userid)) && return
-    else
-      UserMailer.send_change_of_syndicate_notification_to_sc(@userid).deliver_now if changed_syndicate
-      UserMailer.send_change_of_email_notification_to_sc(@userid).deliver_now if changed_email_address
-      flash[:notice] = 'The update of the profile was successful'
-      redirect_to(userid_detail_path(@userid, page_name: params[:page_name])) && return
-    end
-  end
-
-
 
   private
 
@@ -614,27 +625,25 @@ class UseridDetailsController < ApplicationController
     honeypot_error = true
     diff = Time.now - Time.parse(params[:__TIME])
     params.each do |k, x|
-      if k.include? session[:honeypot]
-        honeypot_error = false if x == ''
-      end
+      honeypot_error = false if k.include?(session[:honeypot]) && x == ('')
     end
 
     if honeypot_error || diff <= 5
       error_file = 'log/spam_check_error_messages.log'
-      f = File.exists?(error_file) ? File.open(error_file, 'a+') : File.new(error_file, 'w')
-      error_text = " ===========SPAM caught at " + Time.now.to_s
-      error_text = error_text + ' honeypot error detected'  if honeypot_error
-      error_text = error_text + ' submission time is ' + diff.to_s + ' seconds'  if diff <= 5
+      f = File.exist?(error_file) ? File.open(error_file, 'a+') : File.new(error_file, 'w')
+      error_text = ' ===========SPAM caught at ' + Time.now.to_s
+      error_text += ' honeypot error detected' if honeypot_error
+      error_text = error_text + ' submission time is ' + diff.to_s + ' seconds' if diff <= 5
       error_text = error_text + "\r\nEMAIL: " + params[:userid_detail][:email_address] + "\r\n"
-      error_text = error_text + "USERID: " + params[:userid_detail][:userid] + "\r\n"
-      error_text = error_text + "FORENAME: " + params[:userid_detail][:person_forename] + "\r\n"
-      error_text = error_text + "SURNAME: " + params[:userid_detail][:person_surname] + "\r\n"
-      error_text = error_text + "REMOE ADDR: " + request.remote_addr + "\r\n" if request.present? && request.remote_addr.present?
-      error_text = error_text + "REMOE ADDR: Unknown \r\n" unless request.present? && request.remote_addr.present?
-      error_text = error_text + "REMOTE IP: " + request.remote_ip + "\r\n" if request.present? && request.remote_ip.present?
-      error_text = error_text + "REMOE IP: Unknown \r\n" unless request.present? && request.remote_ip.present?
-      error_text = error_text + "REMOTE HOST: " + request.remote_host + "\r\n\r\n\r\n" if request.present? && request.remote_host.present?
-      error_text = error_text + "REMOE HOST: Unknown \r\n" unless request.present? && request.remote_host.present?
+      error_text = error_text + 'USERID: ' + params[:userid_detail][:userid] + "\r\n"
+      error_text = error_text + 'FORENAME: ' + params[:userid_detail][:person_forename] + "\r\n"
+      error_text = error_text + 'SURNAME: ' + params[:userid_detail][:person_surname] + "\r\n"
+      error_text = error_text + 'REMOE ADDR: ' + request.remote_addr + "\r\n" if request.present? && request.remote_addr.present?
+      error_text += "REMOE ADDR: Unknown \r\n" unless request.present? && request.remote_addr.present?
+      error_text = error_text + 'REMOTE IP: ' + request.remote_ip + "\r\n" if request.present? && request.remote_ip.present?
+      error_text += "REMOE IP: Unknown \r\n" unless request.present? && request.remote_ip.present?
+      error_text = error_text + 'REMOTE HOST: ' + request.remote_host + "\r\n\r\n\r\n" if request.present? && request.remote_host.present?
+      error_text += "REMOE HOST: Unknown \r\n" unless request.present? && request.remote_host.present?
       f.puts error_text
       f.close
       return false
@@ -669,7 +678,7 @@ class UseridDetailsController < ApplicationController
   end
 
   def get_option_parameter(option, location)
-    location += '+"&option=' + option +'"'
+    location += '+"&option=' + option + '"'
   end
 
   def email_value_changed
@@ -677,16 +686,16 @@ class UseridDetailsController < ApplicationController
   end
 
   def email_valid_change_message
-    if email_value_changed
-      message = @userid.email_address_validity_change_message
-      case userid_details_params[:email_address_valid]
-      when 'true'
-        message << "VALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"
-      else
-        message << "INVALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"
-      end
-      @userid.update_attribute(:email_address_validity_change_message, message)
-    end
+    return unless email_value_changed
+
+    message = @userid.email_address_validity_change_message
+    message << case userid_details_params[:email_address_valid]
+               when 'true'
+                 "VALID on #{Time.now.utc.strftime('%B %d, %Y')} at #{Time.now.utc.strftime('%H:%M:%S')}"
+               else
+                 "INVALID on #{Time.now.utc.strftime('%B %d, %Y')} at #{Time.now.utc.strftime('%H:%M:%S')}"
+               end
+    @userid.update_attribute(:email_address_validity_change_message, message)
   end
 
   def email_valid_change
