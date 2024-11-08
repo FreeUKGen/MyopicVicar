@@ -15,7 +15,7 @@
     <% end %>
     <% if controller.action_name == 'new' || controller.action_name == 'create'%>
       <%= f.input :userid,:label => "UserID (Required)",:input_html => { :class => "simple_form_bgcolour",:size => 40 } %>
-      <% if !(@user.get_roles & @authourised_roles).empty? && !session[:my_own] %>
+      <% if !(@user.get_roles.to_a & @authourised_roles).empty? && !session[:my_own] %>
       <%# if (@user.person_role == 'system_administrator' || @user.person_role == 'volunteer_coordinator')  %>
         <%= f.input :syndicate,:label => "Syndicate  (Required)",:include_blank => false, :collection => @syndicates, :input_html => {  :class => "text-input simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
         <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in #{appname} (Required)", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 }%>
