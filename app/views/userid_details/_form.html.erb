@@ -38,7 +38,7 @@
           <!--span>I hereby prefer not to sign, the <%#= link_to 'Transcription Agreement(pdf)', "http://www.freeukgenealogy.org.uk/files/Documents/FreeUKGenealogyTranscriptionAgreement.pdf", target: '_blank', title: "Click here to view or download the Agreement" %></span><br /><br /-->
         </div>
       <% end %>
-      <% if !(@user.get_roles & @authourised_roles).empty? && !session[:my_own] %>
+      <% if !(@user.get_roles.to_a & @authourised_roles).empty? && !session[:my_own] %>
         <%= f.input :syndicate,:label => "Syndicate",:include_blank => false,  :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
       <% end%>
       <% if session[:role] == 'system_administrator'  && !session[:my_own] %>
