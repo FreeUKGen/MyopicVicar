@@ -229,6 +229,7 @@ class UseridDetailsController < ApplicationController
       @syndicates = Syndicate.get_syndicates_open_for_transcription
     end
     @appname = appname_downcase
+    @authourised_roles = ['system_administrator', 'volunteer_coordinator']
     @userid = UseridDetail.new
   end
 
