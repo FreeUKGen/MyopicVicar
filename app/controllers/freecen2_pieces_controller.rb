@@ -222,37 +222,37 @@ class Freecen2PiecesController < ApplicationController
     end
   end
 
-   def find_pieces
-   redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
-   @number = params[:number]
-   numbers_array = params[:number].split(',')
-   @cleaned_numbers = numbers_array.map(&:squish)
-   @piece_hash = {}
-   @cleaned_numbers.each do |number|
-     year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(number, '')
-     piece_information = Freecen2Piece.where(number: piece).first
-     next unless piece_information.present?
-     piece_chapman_code = piece_information.admin_county
-     session[:type] = 'locate_other_pieces'
-     find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
-     @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
-     @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
-     @associated_pieces = get_pieces(piece_number, year, piece_chapman_code) if find_associated_pieces
-     @piece_hash[number] = {freecen2_piece: @freecen2_pieces, associated_piece: @associated_pieces}
-   end
+  def find_pieces
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
+    @number = params[:number]
+    numbers_array = params[:number].split(',')
+    @cleaned_numbers = numbers_array.map(&:squish)
+    @piece_hash = {}
+    @cleaned_numbers.each do |number|
+      year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(number, '')
+      piece_information = Freecen2Piece.where(number: piece).first
+      next unless piece_information.present?
+      piece_chapman_code = piece_information.admin_county
+      session[:type] = 'locate_other_pieces'
+      find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
+      @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
+      @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
+      @associated_pieces = get_pieces(piece_number, year, piece_chapman_code) if find_associated_pieces
+      @piece_hash[number] = {freecen2_piece: @freecen2_pieces, associated_piece: @associated_pieces}
+    end
     @piece_hash
-   @all_pieces = []
-   @piece_hash.each do|key, value|
-     freecen2_pieces = value[:freecen2_piece].present? ? value[:freecen2_piece] : []
-     associated_pieces = value[:associated_piece].present? ? value[:associated_piece] : []
-     associated_pieces.present? ? @all_pieces << associated_pieces : @all_pieces << freecen2_pieces
-   end
-   @all_pieces = @all_pieces.flatten
+    @all_pieces = []
+    @piece_hash.each do|key, value|
+      freecen2_pieces = value[:freecen2_piece].present? ? value[:freecen2_piece] : []
+      associated_pieces = value[:associated_piece].present? ? value[:associated_piece] : []
+      associated_pieces.present? ? @all_pieces << associated_pieces : @all_pieces << freecen2_pieces
+    end
+    @all_pieces = @all_pieces.flatten
   end
 
   def get_pieces(piece_number, year,piece_chapman_code)
     pieces = []
-    Freecen2Piece.chapman_code(piece_chapman_code).year(year).order_by(number: 1).each do |test_piece|
+    Freecen2Piece.admin_chapman_code(piece_chapman_code).year(year).order_by(number: 1).each do |test_piece|
       next unless test_piece.number.include?(piece_number)
 
       pieces << test_piece

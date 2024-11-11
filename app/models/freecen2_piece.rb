@@ -85,6 +85,10 @@ class Freecen2Piece
       where(chapman_code: chapman)
     end
 
+    def admin_chapman_code(chapman)
+      where(admin_county: chapman)
+    end
+
     def year(year)
       where(year: year)
     end
