@@ -232,7 +232,7 @@ class Freecen2PiecesController < ApplicationController
      year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(number, '')
      piece_information = Freecen2Piece.where(number: piece).first
      next unless piece_information.present?
-     piece_chapman_code = piece_information.chapman_code
+     piece_chapman_code = piece_information.admin_county
      session[:type] = 'locate_other_pieces'
      find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
      @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
