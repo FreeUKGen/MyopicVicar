@@ -1,0 +1,10 @@
+<section>
+  <div id="evidence_explained_citation_container" style="display: none;">
+    <% @entry = entry %>
+    <h4>Citation (Evidence explained):</h4>
+    <p class = "citation_container"><%=appname%> - "GRO Index of <%= format_record_type_for_scan_url(@entry) %>s" database (<%= 'https://www.freebmd.org.uk/entry-information/'+@entry.record_hash+'/hash' %> : accessed <%=Date.today.strftime("%e %b %Y")%>), entry for <%= @entry['GivenName'] %> <%= @entry['OtherNames'] %> <%= @entry['Surname'] %>, <%= format_quarter(@entry['QuarterNumber']) %>, <%=@entry['District']%>, Vol.<%=@entry['Volume']%>/<%=@entry['Page']%>, citing General Register Office, Southport</p>
+    <div class = "text--center">
+      <button class = "btn  btn--small ", onclick = copy("evidence_explained_citation_container") style = "cursor: pointer">Copy</button>
+      <button class = "btn  btn--small ", onclick = this.parentElement.parentElement.style.display='none' style = "cursor: pointer">Close</button>
+    </div>
+</section>
