@@ -141,8 +141,8 @@
       <p><strong>Need help?</strong></p>
       <p>There is information in the <%= link_to 'Help', 'cms/help/draft-ordering-a-certificate'%> section about quarters, districts, and how to find the partner in a marriage.</p>
       <p><strong>Ordering a GRO certificate</strong></p>
-      <p>You can order certificates from the General Register Office(GRO) to help you research your family history and family tree.</p>
-      <div>
+      <p>You can order certificates from the <%= link_to 'General Register Office(GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.</p>
+      <div class="grid__item two-thirds lap-two-thirds palm-one-whole text--center push--top ">
           <%= link_to 'Suggest a correction', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
         </div>
     </div>
