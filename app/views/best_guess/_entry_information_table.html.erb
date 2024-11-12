@@ -182,10 +182,10 @@
       <td>
         <% unless record.Page.to_i == 0 %>
           <% if @search %>
-            <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: search_id, original_record: original_record} %>
+            <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: @search, original_record: record} %>
           <% end %>
           <% if params[:saved_record] %>
-            <%= render partial: 'page_records_navigation_saved', locals: {record: record, search_id: search_id, original_record: original_record} %>
+            <%= render partial: 'page_records_navigation_saved', locals: {record: record, search_id: @search, original_record: record} %>
           <% end %>
         <% else%>
           <%= record.Page %>
