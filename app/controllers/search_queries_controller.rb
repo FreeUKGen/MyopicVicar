@@ -20,9 +20,10 @@ class SearchQueriesController < ApplicationController
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
   rescue_from Timeout::Error, with: :search_taking_too_long
+  autocomplete :BestGuess, :Surname, full: false,  limit: 5
+  autocomplete :BestGuess, :GivenName, full: false, limit: 10
   include DownloadAsCsv
-  #autocomplete :BestGuess, :Surname, full: false,  limit: 5
-  #autocomplete :BestGuess, :GivenName, full: false, limit: 5
+
   RECORDS_PER_PAGE = 100
 
   def about
@@ -70,14 +71,23 @@ class SearchQueriesController < ApplicationController
   def create
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
-
+    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    selected_counties = search_params['chapman_codes'].split(',').compact
+    selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
+    county_codes = []
+    county_hash.each {|country, counties|
+      selected_counties.each{|c|
+        county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
+      }
+    }
+    search_params['chapman_codes'] = county_codes.flatten
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
       @search_results, success, error_type = @search_query.search_records.to_a
       error = error_type.to_i if error_type.present?
-      redirect_to search_query_path(@search_query, anchor: "bmd_content") and return if success
+      redirect_to search_query_path(@search_query) and return if success
       redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
       redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
     else
@@ -119,7 +129,10 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    page = Refinery::Page.where(slug: 'message').first
+    test_page = Refinery::Page.where(slug: 'test_message').first
+    beta_page = Refinery::Page.where(slug: 'beta_message').first
+    url = request.original_url
+    url.include?('beta') ? page = beta_page : page= test_page
     @page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
 
     @search_query = SearchQuery.new
@@ -253,13 +266,6 @@ class SearchQueriesController < ApplicationController
         response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
         @filter_condition = params[:filter_option]
         @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
-        #if params[:sort_option].present?
-          #if @search_query.order_asc
-           # @search_results = @search_results.order(:order_field)
-          #else
-           # @search_results = @search_results.order(order_field: :desc)
-          #end
-        #end
         @results_per_page = assign_value(params[:results_per_page],SearchQuery::RESULTS_PER_PAGE)
         @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
@@ -294,6 +300,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def show_print_version
+    @timeout = false
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
@@ -336,12 +343,37 @@ class SearchQueriesController < ApplicationController
   end
 
   def districts_of_selected_counties
+    @selected_districts = params[:selected_districts]
     districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
+    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    selected_counties = params[:selected_counties]
+    selected_counties = selected_counties.split(',').compact unless selected_counties.kind_of?(Array)
+    selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
+    whole_england = ChapmanCode::ALL_ENGLAND.values.flatten
+    whole_wales = ChapmanCode::ALL_WALES.values.flatten
+    check_whole_england = whole_england - selected_counties
+    check_whole_wales = whole_wales - selected_counties
+    codes = params[:county_code]
+    unless codes.present?
+      county_codes = []
+      county_hash.each {|country, counties|
+        selected_counties.each{|c|
+          county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
+        }
+      }
+    else
+      county_codes = selected_counties
+    end
     @districts = Hash.new
-    params[:selected_counties].reject { |c| c.empty? }.each { |c|
+    county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
       @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
+    @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales") || check_whole_england.empty? || check_whole_wales.empty?
+  end
+
+  def end_year_val
+    @end_year = params[:year]
   end
 
   def wildcard_options_dropdown
@@ -358,8 +390,19 @@ class SearchQueriesController < ApplicationController
     page_number = params[:page]
     results_per_page = params[:results_per_page]
     sorted_results = @search_query.sorted_and_paged_searched_records
+    results_per_page.to_i > 50 ? results_per_page = 50 : results_per_page = results_per_page
     paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
     send_data search_results_csv(paginated_array), filename: "search_results-#{Date.today}.csv"
+  end
+
+  def download_as_gedcom
+    search_id = params[:id]
+    @search_query = SearchQuery.find_by(id: search_id)
+    page_number = params[:page]
+    results_per_page = params[:results_per_page]
+    sorted_results = @search_query.sorted_and_paged_searched_records
+    paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
+    send_data @search_query.search_results_gedcom(paginated_array,@user).join("\n"), filename: "search_results-#{Date.today}.ged"
   end
 
   def compare_search
@@ -410,6 +453,23 @@ class SearchQueriesController < ApplicationController
       records = result.values.map{|h| BestGuess.new(h)}#BestGuess.get_best_guess_records(select_hash)
     end
     records
+  end
+
+  def select_counties
+    prefix = params[:prefix].split(',').pop.strip.downcase
+    @counties_group = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    county_keys = []
+    counties_array = @counties_group.each{|ctry, county| county_keys << county.keys }
+    if (params[:prefix].strip.include?'All England') || (params[:prefix].strip.include?'All Wales')
+      county_keys = ['All England', 'All Wales']
+    end
+    @counties = county_keys.flatten.select { |s| s.downcase.include?(prefix) }
+    respond_to do |format|
+      format.html
+      format.json {
+        render json: @counties
+      }
+    end
   end
 
   private

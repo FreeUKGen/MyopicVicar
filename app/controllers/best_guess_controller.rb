@@ -151,21 +151,69 @@ class BestGuessController < ApplicationController
   end
 
   def save_entry
-    entry_id = params[:id]
+    entry_id = params[:rec_id]
     user = UseridDetail.where(id: cookies.signed[:userid]).first
     @entry = BestGuess.where(RecordNumber: entry_id).first
     record_hash = @entry.record_hash
     user.saved_entry << record_hash
     user.save
-    flash[:notice] = user.save ? "The entry is saved. Use 'View Saved Searches' action in Your Actions list to view your saved searches list." : 'unsuccessful'
+    flash[:notice] = user.save ? "The entry is saved. Use 'View Saved Entries' action in Your Actions list to view your saved searches list." : 'unsuccessful'
     if params[:search_id].present?
-      redirect_to friendly_bmd_record_details_path(params[:search_id],entry_id, @entry.friendly_url) 
+      redirect_to friendly_bmd_record_details_url(params[:search_id],entry_id, @entry.friendly_url)
+      return
     else
-      redirect_to best_guess_path(@entry.RecordNumber)
+      redirect_to best_guess_path(@entry.RecordNumber) && return
     end
   end
 
+  def unsave_entry
+    entry_id = params[:rec_id]
+    user = UseridDetail.where(id: cookies.signed[:userid]).first
+    @entry = BestGuess.where(RecordNumber: entry_id).first
+    record_hash = @entry.record_hash
+    user.saved_entry.delete(record_hash)
+    user.save
+    flash[:notice] = user.save ? "The record is unsaved" : 'unsuccessful'
+    if params[:search_id].present?
+      redirect_to friendly_bmd_record_details_path(params[:search_id],entry_id, @entry.friendly_url)
+      return
+    else
+       redirect_to best_guess_path(@entry.RecordNumber)
+      return
+    end
+  end
+
+  def unique_forenames
+    term = params[:term].downcase
+    @entries = BestGuess.select("GivenName").where('lower(GivenName) LIKE ?', term+"%").distinct(:GivenName)
+    namesarray = forenames_as_array(@entries)
+    render :json => namesarray
+  end
+  def unique_surnames
+    prefix = params[:prefix].downcase
+    surnames = BestGuess.distinct(:Surname)
+    @entries = BestGuess.select("Surname").where('lower(Surname) LIKE ?', prefix+"%").distinct(:Surname)
+    namesarray = surnames_as_array(@entries)
+    render :json => namesarray
+  end
+
   private
+
+  def forenames_as_array(records)
+    arr = []
+    records.each do |rec|
+      arr << rec.GivenName
+    end
+    arr.sort
+  end
+
+  def surnames_as_array(records)
+    arr = []
+    records.each do |rec|
+      arr << rec.Surname
+    end
+    arr.sort
+  end
 
   def show_postem_or_scan
     case @option
@@ -224,4 +272,5 @@ class BestGuessController < ApplicationController
   def clean_session_for_saved_entry
     session.delete(:search_entry_number)
   end
+
 end

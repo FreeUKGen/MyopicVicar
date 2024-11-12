@@ -1,7 +1,22 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
-    <h1 class="accessibility">Search Results</h1>
+    <!--h1 class="accessibility">Search Results</h1-->
+    <% if print_friendly %>
+  <style type="text/css">
+    @media print {
+        .accessibility { display:none; }
+    }
+  </style>
+      <div style="border: 1px solid black; margin-bottom: 10px;">
+        <p class='accessibility'>You can print these results directly, or download them to PDF using your right-click or browser menu.</p>
+      </div>
+    <% end %>
       <table class="table--bordered table--data">
-        <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 can be sorted by event.</caption>
+        <% unless print_friendly %>
+          <% if @search_query.bmd_record_type.count() > 1 %>
+            <p class="code-comment">MMN: mother's maiden name; AAD: age at death or date of birth; SS: spouse's surname.</p>
+          <% end %>
+          <caption class='accessibility'>Column 1 has link to details of record; Column 2 can be sorted on First Name; Column 3 contains mother's maiden name (births), age at death or date of birth (deaths) or spouse's surname (marriages); Column 4 can be sorted by event.</caption>
+        <% end %>
         <thead>
           <tr>
             <% unless print_friendly %>
@@ -11,7 +26,19 @@
               <%#= link_to_unless(print_friendly, 'Individual',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
             </th>
-            
+
+            <th>
+              <% if @search_query.bmd_record_type == ["0","1","2","3"] %> MMN/AAD/SS
+              <% elsif @search_query.bmd_record_type == ["1","2"] %> MMN/AAD
+              <% elsif @search_query.bmd_record_type == ["1","3"] %> MMN/SS
+              <% elsif @search_query.bmd_record_type == ["2","3"] %> AAD/SS
+              <% elsif @search_query.bmd_record_type == ["1"] %> Mother's maiden name
+              <% elsif @search_query.bmd_record_type == ["2"] %> Age at death
+              <% elsif @search_query.bmd_record_type == ["3"] %> Spouse's surname
+              <% else %> <%= @search_query.bmd_record_type %>
+              <% end %>
+            </th>
+
             <th>Record Type
               <%#= link_to_unless(print_friendly, 'Record Type',
             reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
@@ -33,36 +60,36 @@
                 </td>
               <% end %>
               <td class="table--data">
-                <dl>
-                  <strong>
-                    <dt class="ttip">
-                      <%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
-                      <span class="ttip__text"><%="#{search_record[:Volume]} #{search_record[:Page]}"%></span>
-                    </dt>
-                  
-                  <dt>
-                    <%= format_quarter_year(search_record.QuarterNumber) %>
-                  </dt>
-                  <dt>
+                  <strong><%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
+                  <br/>
+                  <%= format_quarter_year(search_record.QuarterNumber) %>
                     <% if print_friendly %>
                       <%= search_record[:District] %>
+                      <span class="ttip__text"> <%=" (Volume #{search_record[:Volume]} Page #{search_record[:Page]})"%></span>
                     <% else %>
-                        <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
-                        <% if district.present? %>
-                          <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
-                        <%#= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record.define_url_distict}.html", target: "_blank" , title: ApplicationText::NEW_TAB_LINK_TEXT %><!--span class="accessibility"><%#= "(#{ApplicationText::NEW_TAB_LINK_TEXT})" %></span-->
+                      <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
+                      <% if district.present? %>
+                        <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
+                     <% else %>
+                       <%= search_record[:District] %>
+                     <% end %>
+                      <% if search_record.register_entry_number_format %>
+                        <% register_number = search_record.event_registration_number %>
+                        <% entry_number = search_record.event_registration %>
+                        <% if register_number.present? %> Reg. no. <%= register_number %><% end %>
+                        Entry no. <%# if entry_number.present? %> <%#= entry_number %> <%# else %> <%= search_record[:Page] %> <%# end %>
                       <% else %>
-                        <%= search_record[:District] %>
+                        Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
                       <% end %>
-                      Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
-                    <% end %>
-                  </dt>
-                  <dt>
+
+                  <% end %>
                      <%#= render partial: 'best_guess/more_information' %>
-                  </dt>
-                </dl>
               </td>
               <td>
+                <%= search_record.AssociateName %>
+                <%= search_record.AgeAtDeath %>
+              </td>
+              <td <% if print_friendly %> valign="top" <% end %> >
                 <center><%= "#{record_type}" %></center>
               </td>
             </tr>

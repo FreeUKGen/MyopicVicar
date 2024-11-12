@@ -1,3 +1,68 @@
+<script>
+    document.getElementById("citation-toggle").addEventListener("click", citationToggle);
+    /*Hide citation blocks unless citation type is selected*/
+     const citations = ['wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
+    function hide_citation_block(cite){
+      cite_element =  document.getElementById(`${cite}_citation_container`);
+      if (cite_element) {
+        cite_element.style.display = "none";
+      }
+    }
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function citationToggle() {
+      var x = document.getElementById("citation-dropdown");
+      //var y = document.getElementById('wikitree_citation_container');
+      citations.forEach(hide_citation_block);
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+    }
+    window.addEventListener("load", function(){
+        const no_javascript_elements = document.getElementsByClassName("no-javascript");
+        const javascript_elements = document.getElementsByClassName("javascript");
+
+        for(let i = 0; i < no_javascript_elements.length; i++){
+            no_javascript_elements[i].remove();
+        }
+        for(let i = 0; i < javascript_elements.length; i++){
+            javascript_elements[i].style.display = "block";
+        }
+        //if(!document.getElementById("citation_section")){
+            document.getElementById("citation-dropdown").style.display = "none";
+        //}
+    })
+    function copy(elm) {
+        var button = event.currentTarget || event.srcElement;
+        var btnText = button.innerHTML;
+        var target = document.getElementById(elm);
+        var citation = target.querySelectorAll('.citation_container')[0];
+        var range, select;
+        if (document.createRange) {
+            range = document.createRange();
+            range.selectNode(citation);
+            select = window.getSelection();
+            select.removeAllRanges();
+            select.addRange(range);
+            document.execCommand('copy');
+            select.removeAllRanges();
+        } else {
+            range = document.body.createTextRange();
+            range.moveToElementText(citation);
+            range.select();
+            document.execCommand('copy');
+        }
+        button.innerHTML = "Copied"
+        setTimeout(function(){
+            button.innerHTML = btnText;
+        }, 1000);
+    }
+</script>
+<style type="text/css">
+  .citation_container {border: 1px solid black; padding: 5px;}
+</style>
 <table class="table--bordered table--data">
   <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
   <tbody>
@@ -10,24 +75,29 @@
         <%= "#{record_type}" %>
       </td>
     </tr>
-    <% if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
+    <%# if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
       <tr>
         <th scope="row">
           Date
         </th>
         <td>
-          <%= format_quarter(record.QuarterNumber) %>
+          <%= format_quarter_year(record.QuarterNumber) %>
         </td>
       </tr>
-    <% end %>
+    <%# end %>
     <tr>
       <th scope="row">
         District
       </th>
       <td>
-        <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
+        <% district = District.where(DistrictNumber: record[:DistrictNumber]).first %>
         <% if district.present? %>
-          <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber) %>
+          <% if @search %>
+            <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, entry_id: record[:RecordNumber], search_id: search_id) %>
+            <%= "(recorded as #{record[:District]} not #{district.DistrictName})" if record[:District].strip != district.DistrictName.strip %>
+          <% else%>
+            <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber)%>
+          <% end %>
         <% else %>
           <%= record.display_district_name %>
         <% end %>
@@ -58,7 +128,7 @@
 	      </td>
     	</tr>
     <% end %>
-    <% if entry_type == "birth" %>
+    <% unless entry_type == "death" %>
     	<tr>
 	      <th scope="row">
 	        <%= mother_or_spouse_surname(record_type)%>
@@ -71,6 +141,32 @@
 	      </td>
     	</tr>
     <% end %>
+    <% if record.register_entry_number_format %>
+    <tr>
+      <th scope="row">
+        Register number
+      </th>
+      <td >
+        <% event_register_number = record.event_registration_number %>
+        <% if event_register_number.present? %>
+          <%= event_register_number  %>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Entry number
+      </th>
+      <td>
+        <% event_entry_number = record.event_entry_number %>
+        <% if event_entry_number.present?  %>
+          <%= event_entry_number %>
+        <% else %>
+          <%= "#{ record.Page }" %>
+        <% end %>
+      </td>
+    </tr>
+    <% else %>
     <tr>
       <th scope="row">
         Volume
@@ -86,16 +182,30 @@
       <td>
         <% unless record.Page.to_i == 0 %>
           <% if @search %>
-            <%= link_to "#{record.Page}", same_page_entries_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, search_id: search_id, entry_id: original_record.RecordNumber) %>
-          <% else %>
-            <%= link_to "#{record.Page}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: original_record.RecordNumber) %>
+            <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: @search, original_record: record} %>
           <% end %>
-          <br>
+          <% if params[:saved_record] %>
+            <%= render partial: 'page_records_navigation_saved', locals: {record: record, search_id: @search, original_record: record} %>
+          <% end %>
         <% else%>
           <%= record.Page %>
         <% end %>
       </td>
     </tr>
+    <% end %>
+     <% if entry_type == "death" %>
+      <tr>
+        <th scope="row">
+          <%= age_at_death_or_date_of_birth(record_type)%>
+        </th>
+        <td>
+          <%= record.AgeAtDeath %>
+          <% if record.AgeAtDeath.blank? %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
     <tr>
       <th scope="row">
         Transcriber
@@ -107,14 +217,24 @@
         <% end %>
       </td>
     </tr>
+    <tr>
+      <th scope="row">
+        Persistent URL for entry
+      </th>
+      <td>
+        <% url = 'https://www.freebmd.org.uk/entry-information/'+record.record_hash+'/hash' %>
+        <a class="pUrl" href="<%= url %>"><%= url %></a>
+        <a class="btn btn--small" href="#" onclick=copy("pUrl") style="cursor: pointer">Copy URL</a>
+      </td>
+    </tr>
     <% if search == true %>
       <% unless (record.Confirmed & 512).zero? %>
         <tr>
           <th scope="row">
-            Refers
+            Linked records
           </th>
           <td>
-             <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+             <%= link_to "View linked record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
           </td>
         </tr>
       <% end %>
@@ -182,5 +302,4 @@
     <%# end %>
   </tbody>
 </table>
-<p>Do you need help with this? There is information about quarters, districts, and how to find the partner in a marriage in the Help section. Use the link in the menu at the top of the page.</p>
 <%#= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? %>

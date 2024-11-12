@@ -1,1 +1,1 @@
-$('select#search_query_districts').html('<%= j grouped_options_for_select(@districts, nil, {prompt: false}) %>');
+$('select#search_query_districts').html('<%= j grouped_options_for_select(@districts, set_district(@selected_districts), {prompt: false}) %>');

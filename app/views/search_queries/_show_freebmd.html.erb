@@ -1,9 +1,18 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% unless print_friendly %>
-  <%= render(partial: 'count_and_tools_menu') %>
+  <%#= render(partial: 'count_and_tools_menu') %>
   <%= render(partial: app_specific_partial("search_result_form")) %>
 <% end %>
 <div class="container">
+    <% if print_friendly %>
+      <div class="grid">
+        <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom ">
+          <div class="accessibility">
+          <%= link_to "Print", "#", class: "btn   btn--small", :onclick => 'window.print();return false;' %>
+        </div>
+      </div>
+      </div>
+    <% end %>
   <div class="grid">
     <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole " id='bmd_results'>
       <%= render(partial: app_specific_partial("desktop"), locals: { search_results: @paginatable_array, first_name: @search_query.first_name, last_name: @search_query.last_name, ucf_results: false})  %>

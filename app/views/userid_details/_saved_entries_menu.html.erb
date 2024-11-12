@@ -5,7 +5,7 @@
         <strong class="results-header"><%= pluralize(@saved_entries.count, ' saved entries')%></strong>
       </div>
       <div class="grid__item one-sixth lap-one-third palm-one-half">
-        <%= select_tag "Tools", options_for_select([ ['Download as CSV', saved_entries_as_csv_path(@saved_entries, search_id: @search_id)]]), prompt: "Tools", onchange: 'location.href= this.value'%>
+        <%= select_tag "Tools", options_for_select([ ['Download as CSV', saved_entries_as_csv_path(@saved_entries, search_id: @search_id)], ['Download as GEDCOM', saved_entries_as_gedcom_path(@saved_entries, search_id: @search_id)]]), prompt: "Tools", onchange: 'location.href= this.value'%>
       </div>
     </div>
   </div>
@@ -16,6 +16,7 @@
         <%#= link_to "Printable format", show_print_version_search_query_path %>
         <%#search_results_download_as_csv%>
         <%= link_to "Download as CSV", saved_entries_as_csv_path(@saved_entries, search_id: @search_id) %>
+        <%= link_to "Download as GEDCOM", saved_entries_as_gedcom_path(@saved_entries, search_id: @search_id) %>
       </div>
     </div>
   </div>

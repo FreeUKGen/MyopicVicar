@@ -6,7 +6,6 @@
 @import "FreeUKGenealogy-Core-Frontend/styles/scss/lap_and_up";
 @import "FreeUKGenealogy-Core-Frontend/styles/scss/palm";
 
-
 .display_none_extra {
     @media only screen and (min-width: 1055px) {
         display: none !important;
@@ -70,6 +69,21 @@
 
 .bmd_adsense {
     float: none !important;
+}
+
+/**
+    bmd_short_header and bmd_long_header classes provide alternate versions
+    of a header - each to be placed in a <span> with the appropriate class.
+    Only the relevant one will be displayed. rbl 29.1.2024
+ **/
+
+.bmd_short_header {
+  display: none;
+}
+
+@media (max-width: $desk-start) {
+    .bmd_short_header { display: inline-block; }
+    .bmd_long_header { display: none; }
 }
 
 /**
@@ -189,9 +203,10 @@
     margin-bottom: 25px;
 }
 
-input {
+input, select {
     padding: 10px !important;
     margin-bottom: 5px !important;
+    background-color: #ffffff;
 }
 
 label {
