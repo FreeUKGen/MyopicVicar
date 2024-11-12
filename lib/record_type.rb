@@ -34,6 +34,8 @@ module RecordType
       all_types = RecordType::ALL_FREECEN_TYPES
     when 'freebmd'
       all_types = RecordType::ALL_FREEREG_TYPES
+    when 'freepro'
+      all_types = RecordType::ALL_FREEREG_TYPES
     end
     all_types
   end
