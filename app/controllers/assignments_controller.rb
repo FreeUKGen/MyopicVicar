@@ -47,8 +47,8 @@ class AssignmentsController < ApplicationController
     instructions = assignment_params[:instructions]
     user = UseridDetail.where(userid: { '$in' => assignment_params[:user_id] }).first
 
-    Assignment.create_assignment(source_id, user, instructions, assign_list, image_status)
-
+    Assignment.create_assignment(source_id, user, instructions, assign_list, image_status) if assignment_params[:image_server_group_id].present?
+    Assignment.create_little_gems_assignment(source_id, user, instructions) unless assignment_params[:image_server_group_id].present?
     ImageServerImage.refresh_image_server_group_after_assignment(assignment_params[:image_server_group_id]) if assignment_params[:image_server_group_id].present?
 
     flash[:notice] = 'Assignment was successful'

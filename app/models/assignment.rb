@@ -92,6 +92,20 @@ class Assignment
       assign_image_server_image_to_assignment(assignment.id,user_id,assign_list,image_status)
     end
 
+    def create_little_gems_assignment(source_id,user_id,instructions,image_status=nil)
+      source = Source.id(source_id).first
+      userid_detail = UseridDetail.id(user_id).first
+      assignment = Assignment.new(:source_id=>source_id, :userid_detail_id=>user_id.id)
+      assignment.instructions = instructions
+      assignment.assign_date = Time.now.iso8601
+      syndicate_code = userid_detail.syndicate
+      syndicate = Syndicate.syndicate_code(syndicate_code).first
+      assignment.syndicate_id = syndicate._id
+      assignment.source_id = source.id
+      assignment.userid_detail_id = userid_detail.id
+      assignment.save
+    end
+
     def filter_assignments_by_assignment_id(assignment_id)
       a_ids = Assignment.where(:id=>assignment_id).pluck(:id, :source_id, :assign_date, :instructions, :userid_detail_id)
       if a_ids.empty?
