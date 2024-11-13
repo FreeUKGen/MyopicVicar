@@ -10,7 +10,7 @@
   <%= s.input :type, :as => :radio_buttons, :label => 'Assign?', :collection => [['Transcriber', 'transcriber'], ['Reviewer', 'reviewer']], :checked => ['Transcriber', 'transcriber'], :label_html => {:style => 'margin-left:2px'}, :item_label_class => "collection_check_boxes" %>
   <%= s.hidden_field :source_id, :value=>@source.id %>
   <%= s.hidden_field :assign_type, as: :fake, :value=>params[:assign_type] %>
-  <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
+  <%= s.button :submit, 'Submit' %>
 <% end %>
 </div>
 </section>
