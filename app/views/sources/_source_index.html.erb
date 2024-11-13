@@ -37,13 +37,21 @@
             <td class="t15">
               <% case x.source_name %>
               <% when 'Image Server' %>
-              <%= link_to 'SH', source_path(x) %>
-              <% if session[:manage_user_origin] == 'manage county' %>
-                <%= link_to 'ED', edit_source_path(x) %>
-                <% if session[:role] = 'system_administrator' %>
-                  <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                <%= link_to 'SH', source_path(x) %>
+                <% if session[:manage_user_origin] == 'manage county' %>
+                  <%= link_to 'ED', edit_source_path(x) %>
+                  <% if session[:role] = 'system_administrator' %>
+                    <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                  <% end %>
                 <% end %>
-              <% end %>
+                <% when 'Little Gems' %>
+                <%= link_to 'SH', source_path(x) %>
+                <% if session[:manage_user_origin] == 'manage county' %>
+                  <%= link_to 'ED', edit_source_path(x) %>
+                  <% if session[:role] = 'system_administrator' %>
+                    <%= link_to 'DE', source_path(x), data: { confirm: 'Are you sure you want to delete "'+x[:source_name]+'"?'}, method: :delete %>
+                  <% end %>
+                <% end %>
               <% when 'Other Server1' %>
               <%= link_to 'SH', source_path(x) %>
               <% if session[:manage_user_origin] == 'manage county' %>
