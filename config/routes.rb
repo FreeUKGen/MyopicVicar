@@ -471,7 +471,7 @@ MyopicVicar::Application.routes.draw do
   get 'registers/:id/relocate', :to => 'registers#relocate', :as => :relocate_register
   get 'registers/:id/create_image_server', :to => 'registers#create_image_server', :as => :create_image_server_register
   get 'registers/create_image_server_return', :to => 'registers#create_image_server_return', :as => :create_image_server_return_register
-  get 'registers/create_little_gems_source', to: 'registers#create_little_gems_source', as: :create_little_gems_source_register
+  get 'registers/:id/create_little_gems_source', to: 'registers#create_little_gems_source', as: :create_little_gems_source_register
   get 'registers/:id/show_image_server', to: 'registers#show_image_server', as: :show_image_server_register
   resources :registers
 
