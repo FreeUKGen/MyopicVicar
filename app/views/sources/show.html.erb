@@ -25,6 +25,7 @@
       <% end %>
     <% when 'Little Gems' %>
       <%= link_to 'Edit Little Gems Source', edit_source_path(@source), method: :get, :class => "btn  btn--small" %>
+      <%= link_to 'Create Assignment', little_gems_assign_assignment_path(:assign_type=>'transcriber'), method: :get, :class => "btn  btn--small" %>
       <% if ['county_coordinator', 'system_administrator', 'country_coordinator', 'data_manager'].include? session[:role] %>
         <%#= link_to 'Propagate this Image Source Information', flush_source_path(@source), method: :get, :class => "btn  btn--small" %>
       <% end %>

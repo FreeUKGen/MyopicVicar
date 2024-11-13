@@ -24,6 +24,11 @@ class AssignmentsController < ApplicationController
     @assignment = Assignment.new
   end
 
+  def little_gems_assign
+    userids_and_transcribers
+    @assignment = Assignment.new
+  end
+
   def counties_for_selection
     @counties = []
 
@@ -43,10 +48,11 @@ class AssignmentsController < ApplicationController
 
     Assignment.create_assignment(source_id, user, instructions, assign_list, image_status)
 
-    ImageServerImage.refresh_image_server_group_after_assignment(assignment_params[:image_server_group_id])
+    ImageServerImage.refresh_image_server_group_after_assignment(assignment_params[:image_server_group_id]) if assignment_params[:image_server_group_id].present?
 
     flash[:notice] = 'Assignment was successful'
-    redirect_to index_image_server_image_path(assignment_params[:image_server_group_id])
+    redirect_to index_image_server_image_path(assignment_params[:image_server_group_id]) and return if assignment_params[:image_server_group_id].present?
+    redirect_to source_path(assignment_params[:source_id]) and return unless assignment_params[:image_server_group_id].present?
   end
 
   def destroy
@@ -262,7 +268,8 @@ class AssignmentsController < ApplicationController
   end
 
   def userids_and_transcribers
-    @userids = UseridDetail.where(syndicate: session[:syndicate], active: true).all.order_by(userid_lower_case: 1)
+    @userids = UseridDetail.where(syndicate: session[:syndicate], active: true).all.order_by(userid_lower_case: 1) if session[:syndicate].present?
+    @userids = UseridDetail.where(active: true).all.order_by(userid_lower_case: 1) unless session[:syndicate].present?
     @people = []
     @userids.each { |ids| @people << ids.userid }
   end

@@ -1,0 +1,20 @@
+<% title "Little Gems Assignment" %>
+<%= render partial: 'flash_notice' %>
+
+<section class="island  island--light">
+<div class="grid">
+<%= simple_form_for @assignment do |s| %>
+	<%= s.input :user_id, :collection=>@people, :label=>'members to assign', :include_hidden=>false, :selected=>false, :input_html => {:multiple=>true, :class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3} %>
+	<%= s.input :instructions, :as => :text, :input_html => {:class => "simple_form_bgcolour", :style => 'width: 100%', :rows => 5} %>
+
+  <%= s.input :type, :as => :radio_buttons, :label => 'Assign?', :collection => [['Transcriber', 'transcriber'], ['Reviewer', 'reviewer']], :checked => ['Transcriber', 'transcriber'], :label_html => {:style => 'margin-left:2px'}, :item_label_class => "collection_check_boxes" %>
+  <%= s.hidden_field :source_id, :value=>@source.id %>
+  <%= s.hidden_field :assign_type, as: :fake, :value=>params[:assign_type] %>
+  <%= s.button :submit, 'Submit', :onclick => 'return validate_selection()' %>
+<% end %>
+</div>
+</section>
+
+<script type="text/javascript">
+  <%= render :partial => 'assignment.js' %>
+</script>

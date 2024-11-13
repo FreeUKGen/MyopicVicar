@@ -599,6 +599,7 @@ MyopicVicar::Application.routes.draw do
   resources :image_server_groups
 
   get 'assignments/:id/assign(.:format)', :to => 'assignments#assign', :as => :assign_assignment
+  get 'assignments/:id/little_gems_assign(.:format)', :to => 'assignments#little_gems_assign', :as => :little_gems_assign_assignment
   get 'assignments/:id/re_assign(.:format)', :to => 'assignments#re_assign', :as => :re_assign_assignment
   get 'assignments/:id/select_user(.:format)', :to => 'assignments#select_user', :as => :select_user_assignment
   get 'assignments/:id/list_assignments_by_syndicate_coordinator(.:format)', :to => 'assignments#list_assignments_by_syndicate_coordinator', :as => :list_assignments_by_syndicate_coordinator_assignment
