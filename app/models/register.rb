@@ -332,7 +332,7 @@ class Register
   end
 
   def little_gems_exists?
-    image_server = false
+    little_gems = false
     unless self.sources.nil?
       self.sources.each do |source|
         little_gems = true if source.source_name == "Little Gems"
