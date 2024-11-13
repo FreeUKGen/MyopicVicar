@@ -15,14 +15,22 @@
   <% if session[:manage_user_origin] == 'manage county' && !['syndicate','place','unallocate'].include?(session[:image_group_filter])  %>
     <% case @source.source_name %>
     <% when 'Image Server' %>
-    <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn  btn--small" %>
-    <%= link_to 'Initialize Status', initialize_status_source_path(@source), method: :get, :class => "btn  btn--small" %>
-    <% if ['county_coordinator', 'system_administrator', 'country_coordinator', 'data_manager'].include? session[:role] %>
-      <%= link_to 'Propagate this Image Source Information', flush_source_path(@source), method: :get, :class => "btn  btn--small" %>
-    <% end %>
-    <% if session[:role] == 'system_administrator' %>
-      <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
-    <% end %>
+      <%= link_to 'Edit Image Source', edit_source_path(@source), method: :get, :class => "btn  btn--small" %>
+      <%= link_to 'Initialize Status', initialize_status_source_path(@source), method: :get, :class => "btn  btn--small" %>
+      <% if ['county_coordinator', 'system_administrator', 'country_coordinator', 'data_manager'].include? session[:role] %>
+        <%= link_to 'Propagate this Image Source Information', flush_source_path(@source), method: :get, :class => "btn  btn--small" %>
+      <% end %>
+      <% if session[:role] == 'system_administrator' %>
+        <%= link_to 'Delete Image Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
+      <% end %>
+    <% when 'Little Gems' %>
+      <%= link_to 'Edit Little Gems Source', edit_source_path(@source), method: :get, :class => "btn  btn--small" %>
+      <% if ['county_coordinator', 'system_administrator', 'country_coordinator', 'data_manager'].include? session[:role] %>
+        <#%= link_to 'Propagate this Image Source Information', flush_source_path(@source), method: :get, :class => "btn  btn--small" %>
+      <% end %>
+      <% if session[:role] == 'system_administrator' %>
+        <%= link_to 'Delete Little Gems Source', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
+      <% end %>
     <% when 'Other Server1' %>
     <% if session[:role] == 'system_administrator' %>
       <%= link_to 'Delete Other Server1', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
@@ -32,9 +40,9 @@
       <%= link_to 'Delete Other Server2', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
     <% end %>
     <% when 'Other Server3' %>
-    <% if session[:role] == 'system_administrator' %>
-      <%= link_to 'Delete Other Server3', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
-    <% end %>
+      <% if session[:role] == 'system_administrator' %>
+        <%= link_to 'Delete Other Server3', source_path(@source), data: { confirm: 'Are you sure you want to delete "'+@source[:source_name]+'"?'}, method: :delete, :class => "btn  btn--small" %>
+      <% end %>
   <% end %>
 <% end %>
 </div>
