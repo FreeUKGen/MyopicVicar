@@ -331,6 +331,16 @@ class Register
     image_server
   end
 
+  def little_gems_exists?
+    image_server = false
+    unless self.sources.nil?
+      self.sources.each do |source|
+        little_gems = true if source.source_name == "Little Gems"
+      end
+    end
+    little_gems
+  end
+
   def merge_registers
     register_id = self._id
     church = self.church
