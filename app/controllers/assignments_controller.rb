@@ -26,7 +26,7 @@ class AssignmentsController < ApplicationController
 
   def little_gems_assign
     userids_and_transcribers
-    @source = Source.find(assignment_params[:source_id])
+    @source = Source.find(params[:source_id])
     @assignment = Assignment.new
   end
 
