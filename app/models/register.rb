@@ -222,6 +222,23 @@ class Register
     return proceed, message
   end
 
+  def add_little_gems_source(folder_name)
+     proceed = true
+    message = ''
+    self.sources.each do |source|
+      if source.source_name == "Little Gems"
+        proceed = false
+        message = 'Little Gems source exists'
+      end
+    end
+    if proceed
+      source = Source.new(:source_name => "Little Gems",:folder_name => folder_name)
+      self.sources << source
+      self.save
+    end
+    return proceed, message
+  end
+
   def calculate_register_numbers
     records = 0
     total_hash = FreeregContent.setup_total_hash

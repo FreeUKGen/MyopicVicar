@@ -52,6 +52,21 @@ class RegistersController < ApplicationController
     redirect_to(website) && return
   end
 
+  def create_little_gems_source
+    load(params[:id])
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
+
+    proceed, message = @register.can_create_image_source
+    redirect_to(register_path(params[:id]), notice: message) && return unless proceed
+
+    flash[:notice] = 'creating little gems source'
+    folder_name = @place_name.to_s + ' ' + @church_name.to_s + ' ' + @register.register_type.to_s
+    register = Register.find(params[:id])
+    proceed, message = register.add_little_gems_source(folder_name)
+    redirect_to(register_path(params[:id])) && return
+  end
+
   def create_image_server_return
     register = Register.id(params[:register]).first
     proceed, message = register.add_source(params[:folder_name]) if params[:success] == 'Succeeded'
@@ -171,6 +186,7 @@ class RegistersController < ApplicationController
     @transcribers = @register.transcribers
     @contributors = @register.contributors
     @image_server = @register.image_servers_exist?
+    @little_gems = @register.little_gems_exists?
     @embargo_rules = @register.embargo_rules_exist?
     @gaps = @register.gaps_exist?
   end

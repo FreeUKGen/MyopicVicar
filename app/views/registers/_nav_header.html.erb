@@ -4,6 +4,7 @@
   <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that you to change the Register Type?'}, :class => "btn   btn--small" %>
   <%= link_to 'Merge Identical Register Types into this one', merge_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that this is the Register Type into which you want all similar Register Types in this church to be merged? The action will be taken on selecting OK and cannot be recovered!!!!'}, :class => "btn   btn--small " %>
   <%= which_image_server_link(@image_server) %>
+  <%= which_little_gems_link(@little_gems) %>
   <%= which_embargo_rule_link(@embargo_rules) %>
   <%= which_gaps_link(@gaps) %>
 </div>
