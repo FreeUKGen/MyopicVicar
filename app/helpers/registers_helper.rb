@@ -11,7 +11,7 @@ module RegistersHelper
     end
   end
 
-  def little_gems(server)
+  def which_little_gems_link(server)
     #if @register.sources.pluck(:source_name).include?('Little Gems')
     if server
       link_to 'Little Gems', show_image_server_register_path(@register), method: :get, class: 'btn   btn--small'
