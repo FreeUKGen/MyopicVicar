@@ -122,3 +122,9 @@ data/*
 
 doc/design/data_flow/OneNote Table Of Contents.onetoc2
 *.onetoc2
+/bin/bundle
+/bin/bundle.cmd
+/bin/importmap
+/bin/rails
+/bin/rake
+/bin/setup
