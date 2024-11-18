@@ -25,6 +25,8 @@ class SearchQuery
     DISTRICT='District'
     BMD_RECORD_TYPE='RecordTypeID'
     BMD_DATE = 'QuarterNumber'
+    BMD_ASSOCIATE_NAME = 'AssociateName'
+    BMD_AGE_AT_DEATH = 'AgeAtDeath'
     BIRTH_PLACE = 'birth_place'
 
     ALL_ORDERS = [
@@ -39,7 +41,9 @@ class SearchQuery
       FIRSTNAME,
       DISTRICT,
       BMD_RECORD_TYPE,
-      BMD_DATE
+      BMD_DATE,
+      BMD_ASSOCIATE_NAME,
+      BMD_AGE_AT_DEATH
     ]
   end
 
@@ -1014,109 +1018,128 @@ class SearchQuery
    # raise SearchOrder::SURNAME.inspect
     if results.present?
       case order_field
-      when *selected_sort_fields
-        order = order_field.to_sym
-        results.each do |rec|
-        end
-        results.sort! do |x, y|
+        when *selected_sort_fields
+          order = order_field.to_sym
+          results.each do |rec|
+          end
+          results.sort! do |x, y|
+            if self.order_asc
+              (x[order] || '') <=> (y[order] || '')
+            else
+              (y[order] || '') <=> (x[order] || '')
+            end
+          end
+        when SearchOrder::DATE
           if self.order_asc
-            (x[order] || '') <=> (y[order] || '')
+            results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
           else
-            (y[order] || '') <=> (x[order] || '')
+            results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
           end
-        end
-      when SearchOrder::DATE
-        if self.order_asc
-          results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
-        else
-          results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
-        end
-      when SearchOrder::LOCATION
-        if self.order_asc
-          results.sort! do |x, y|
-            compare_location(x, y)
+        when SearchOrder::LOCATION
+          if self.order_asc
+            results.sort! do |x, y|
+              compare_location(x, y)
+            end
+          else
+            results.sort! do |x, y|
+              compare_location(y, x) # note the reverse order
+            end
           end
-        else
-          results.sort! do |x, y|
-            compare_location(y, x) # note the reverse order
+        when SearchOrder::NAME
+          if self.order_asc
+            results.sort! do |x, y|
+              compare_name(x, y)
+            end
+          else
+            results.sort! do |x, y|
+              compare_name(y, x) # note the reverse order
+            end
           end
-        end
-      when SearchOrder::NAME
-        if self.order_asc
-          results.sort! do |x, y|
-            compare_name(x, y)
+        when SearchOrder::SURNAME
+          if self.order_asc
+            results.sort! do |x, y|
+              compare_name_bmd(x, y, 'Surname',['GivenName', 'QuarterNumber', 'District'])
+            end
+          else
+            results.sort! do |x, y|
+              compare_name_bmd(y, x, 'Surname',['GivenName', 'QuarterNumber', 'District'])
+            end
           end
-        else
-          results.sort! do |x, y|
-            compare_name(y, x) # note the reverse order
-          end
-        end
-      when SearchOrder::SURNAME
-        if self.order_asc
-          results.sort! do |x, y|
-            compare_name_bmd(x, y, 'Surname',['GivenName', 'QuarterNumber', 'District'])
-          end
-        else
-          results.sort! do |x, y|
-            compare_name_bmd(y, x, 'Surname',['GivenName', 'QuarterNumber', 'District'])
-          end
-        end
-         #if order_asc
-          #results.sort! { |x, y| (x[:Surname] || '') <=> (y[:Surname] || '') }
-        #else
-          #results.sort! { |x, y| (y[:Surname] || '') <=> (x[:Surname] || '') }
-        #end
-      when SearchOrder::FIRSTNAME
-        if self.order_asc
-          results.sort! do |x, y|
-           compare_name_bmd(x, y, 'GivenName', ['Surname', 'QuarterNumber', 'District'])
-          end
-        else
-          results.sort! do |x, y|
-             compare_name_bmd(y, x, 'GivenName',['Surname', 'QuarterNumber', 'District'])
-          end
-        end
-        #raise 'hi'
-        #if order_asc
-
-         # results.sort! { |x, y| (x[:GivenName] || '') <=> (y[:GivenName] || '') }
-        #else
-         # results.sort! { |x, y| (y[:GivenName] || '') <=> (x[:GivenName] || '') }
-        #end
-      when SearchOrder::BMD_RECORD_TYPE
-        #if self.order_asc
-         # results.sort! do |x, y|
-          #  compare_name_bmd(y, x, 'RecordTypeID')
-         # end
-        #else
-         # results.sort! do |x, y|
-          #   compare_name_bmd(x,y, 'RecordTypeID')
+           #if order_asc
+            #results.sort! { |x, y| (x[:Surname] || '') <=> (y[:Surname] || '') }
+          #else
+            #results.sort! { |x, y| (y[:Surname] || '') <=> (x[:Surname] || '') }
           #end
-        #end
+        when SearchOrder::FIRSTNAME
+          if self.order_asc
+            results.sort! do |x, y|
+             compare_name_bmd(x, y, 'GivenName', ['Surname', 'QuarterNumber', 'District'])
+            end
+          else
+            results.sort! do |x, y|
+               compare_name_bmd(y, x, 'GivenName',['Surname', 'QuarterNumber', 'District'])
+            end
+          end
+          #raise 'hi'
+          #if order_asc
+
+           # results.sort! { |x, y| (x[:GivenName] || '') <=> (y[:GivenName] || '') }
+          #else
+           # results.sort! { |x, y| (y[:GivenName] || '') <=> (x[:GivenName] || '') }
+          #end
+        when SearchOrder::BMD_RECORD_TYPE
+          #if self.order_asc
+           # results.sort! do |x, y|
+            #  compare_name_bmd(y, x, 'RecordTypeID')
+           # end
+          #else
+           # results.sort! do |x, y|
+            #   compare_name_bmd(x,y, 'RecordTypeID')
+            #end
+          #end
+          if self.order_asc
+            results.sort! { |x, y| (x[:RecordTypeID] || '') <=> (y[:RecordTypeID] || '') }
+          else
+            results.sort! { |x, y| (y[:RecordTypeID] || '') <=> (x[:RecordTypeID] || '') }
+          end
+      when SearchOrder::BMD_DATE
         if self.order_asc
-          results.sort! { |x, y| (x[:RecordTypeID] || '') <=> (y[:RecordTypeID] || '') }
-        else
-          results.sort! { |x, y| (y[:RecordTypeID] || '') <=> (x[:RecordTypeID] || '') }
-        end
-       when SearchOrder::BMD_DATE
-         if self.order_asc
           results.sort! do |x, y|
-           compare_name_bmd(x, y, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
+            compare_name_bmd(x, y, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
           end
         else
           results.sort! do |x, y|
-             compare_name_bmd(y, x, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
+            compare_name_bmd(y, x, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
           end
         end
-        
       when SearchOrder::DISTRICT
         if self.order_asc
           results.sort! do |x, y|
-           compare_name_bmd(x, y, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
+            compare_name_bmd(x, y, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
           end
         else
           results.sort! do |x, y|
-             compare_name_bmd(y, x, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
+            compare_name_bmd(y, x, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
+          end
+        end
+      when SearchOrder::BMD_ASSOCIATE_NAME
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(x, y, 'AssociateName',['Surname', 'GivenName', 'QuarterNumber'])
+          end
+        else
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'AssociateName',['Surname', 'GivenName', 'QuarterNumber'])
+          end
+        end
+      when SearchOrder::BMD_AGE_AT_DEATH
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(x, y, 'AgeAtDeath',['Surname', 'GivenName', 'QuarterNumber'])
+          end
+        else
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'AgeAtDeath',['Surname', 'GivenName', 'QuarterNumber'])
           end
         end
       end
