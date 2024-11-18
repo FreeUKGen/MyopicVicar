@@ -48,27 +48,6 @@
                   <%= link_to('Age at Death/Date of Birth', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_AGE_AT_DEATH)) %>
                 <% else %>Age at Death/Date of Birth<% end %></th>
             <% end %>
-            <th>Individual
-              <%#= link_to_unless(print_friendly, 'Individual',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
-            </th>
-
-            <th>
-              <% if @search_query.bmd_record_type == ["0","1","2","3"] %> MMN/AAD/SS
-              <% elsif @search_query.bmd_record_type == ["1","2"] %> MMN/AAD
-              <% elsif @search_query.bmd_record_type == ["1","3"] %> MMN/SS
-              <% elsif @search_query.bmd_record_type == ["2","3"] %> AAD/SS
-              <% elsif @search_query.bmd_record_type == ["1"] %> Mother's maiden name
-              <% elsif @search_query.bmd_record_type == ["2"] %> Age at death
-              <% elsif @search_query.bmd_record_type == ["3"] %> Spouse's surname
-              <% else %> <%= @search_query.bmd_record_type %>
-              <% end %>
-            </th>
-
-            <th>Record Type
-              <%#= link_to_unless(print_friendly, 'Record Type',
-            reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
-            </th>
           </tr>
         </thead>
         <tbody>
