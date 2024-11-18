@@ -1,12 +1,12 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% title "Search Results" %>
-<!--h1 class="accessibility">Search results</h1-->
+<h1 class="accessibility">Search results</h1>
 <%= render 'flash_notice' %>
 <%# show_contents_link%>
 <div class='container'>
   <!--h1 class="semi-kilo">Results</h1-->
   <%= render(partial: 'navigation_links') %>
-  <h4 class="accessibility">Search Criteria</h4>
+  <h2 class="accessibility">Search Criteria</h2>
 </div>
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
