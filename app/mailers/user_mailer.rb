@@ -96,6 +96,12 @@ class UserMailer < ActionMailer::Base
     mail(to: @user_email, :subject => 'Notification of github issue creation')
   end
 
+  def communicate_github_issue_closed(feedback)
+    @feedback = feedback
+    @user = UseridDetail.where(userid: feedback.user_id).first
+    @user_email = @user.email_address
+    mail(to: @user_email, :subject => 'Notification of github issue closed')
+  end
 
   def contact_action_request(contact, send_to, copies_to)
     @appname = appname
