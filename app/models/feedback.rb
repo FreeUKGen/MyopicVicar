@@ -268,7 +268,7 @@ class Feedback
       next unless feedback.github_issue_url.present?
       issue = Octokit.issue(Rails.application.config.github_issues_repo, feedback.github_number)
       issue_state = issue.state if issue.present?
-      if issue_state != feedback.github_issue_state && issue_state = 'closed'
+      if issue_state != feedback.github_issue_state && issue_state == 'closed'
         UserMailer.communicate_github_issue_closed(feedback).deliver_now
         feedback.update_attributes(github_issue_state: issue_state, notified_issue_closed: true)
       end
