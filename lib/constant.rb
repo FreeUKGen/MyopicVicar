@@ -34,4 +34,5 @@ module Constant
 
 	PRIVACY_POLICY_LINK = "https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view"
 	EVENT_QUARTER_TO_YEAR = 589
+  LAST_DATE_WITH_VOLUMES_AND_PAGES = 621
 end

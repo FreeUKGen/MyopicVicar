@@ -423,6 +423,25 @@ class BestGuess < FreebmdDbBase
     submissions.Registered if submissions.present?
   end
 
+  def event_entry_number
+    submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
+    submissions.Page if submissions.present?
+  end
+
+  def event_registration_number
+    if Submission.column_names.include?('RegistrationNumber')
+      submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
+      submissions.RegistrationNumber if submissions.present?
+    end
+  end
+
+  def register_entry_number_format
+    quarter = self[:QuarterNumber]
+    year = QuarterDetails.quarter_year(quarter)
+    event_type = self[:RecordTypeID]
+    new_format =  ((year == 1993) and (event_type < 3)) or (year >= 1994)
+    new_format
+  end
   def self.get_birth_unique_names birth_records
     entries = Hash.new
     all_entries = birth_records
