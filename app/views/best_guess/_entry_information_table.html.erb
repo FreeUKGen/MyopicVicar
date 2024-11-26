@@ -69,7 +69,7 @@
     <% record_type = RecordType::display_name(record.RecordTypeID)%>
     <tr>
       <th scope="row">
-        Event Type
+        Record Type
       </th>
       <td>
         <%= "#{record_type}" %>
@@ -111,35 +111,24 @@
         <% end %>
       </td>
     </tr>
-    <% if entry_type == "marriage" %>
-    	<tr>
-	      <th scope="row">
-	        <%= mother_or_spouse_surname(record_type)%>
-	      </th>
-	      <td>
-	      	<% if search && record.AssociateName.present? %>
-            <% if @search %>
-	        	  <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
-            <% else %>
-              <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
-            <% end %>
-	        	<span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
-	        <% else %>
-	        	<%= record.AssociateName %>
-	        <% end %>
-          <% if record.AssociateName.blank? %>
-            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-          <% end %>
-	      </td>
-    	</tr>
-    <% end %>
     <% unless entry_type == "death" %>
     	<tr>
 	      <th scope="row">
 	        <%= mother_or_spouse_surname(record_type)%>
 	      </th>
 	      <td>
-	        <%= record.AssociateName %>
+	      	<% if search && record.AssociateName.present? %>
+            <% if entry_type == 'marriage' %>
+              <% if @search %>
+  	        	  <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+              <% else %>
+                <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+              <% end %>
+              <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+            <% else %>
+              <%= record.AssociateName %>
+            <% end %>
+	        <% end %>
           <% if record.AssociateName.blank? %>
             <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
           <% end %>
