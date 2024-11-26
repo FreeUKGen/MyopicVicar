@@ -24,7 +24,7 @@ class Feedback
   field :archived, type: Boolean, default: false
   field :keep, type: Boolean, default: false
   attr_accessor :action
-
+  validates_format_of :email_address,:with => Devise::email_regexp
   mount_uploader :screenshot, ScreenshotUploader
 
   validate :title_or_body_exist
