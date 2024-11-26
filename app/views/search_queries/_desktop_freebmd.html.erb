@@ -71,8 +71,6 @@
                 <%= format_quarter_year(search_record.QuarterNumber) %>
               </td>
               <td class="table--data">
-                  <strong><%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
-                  <br/>
                   <%= format_quarter_year(search_record.QuarterNumber) %>
                     <% if print_friendly %>
                       <%= search_record[:District] %>
