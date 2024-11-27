@@ -40,6 +40,23 @@ class ApplicationController < ActionController::Base
     UseridDetail.all.pluck(:userid).sort
   end
 
+  def userid_role_group
+    coord_roles = ['county_coordinator', 'country_coordinator', 'syndicate_coordinator']
+    roles = UseridRole::VALUES - coord_roles
+    grouped_options = {}
+    roles.each{|role| grouped_options[role] = UseridDetail.where(person_role: role).pluck(:userid)}
+    coord_roles.each do|c|
+      next if c = 'country_coordinator'
+      case c
+      when 'county_coordinator'
+        grouped_options[c] = UseridDetail.where(person_role: c).map{|u| "#{u.userid} #{u.county_groups.join(', ')}"}
+      when 'syndicate_coordinator'
+        grouped_options[c] = UseridDetail.where(person_role: c).map{|u| "#{u.userid} #{u.county_groups.join(', ')}"}
+      end
+    end
+    grouped_options
+  end
+
   def appname_upcase
     appname.upcase
   end
