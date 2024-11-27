@@ -1,8 +1,12 @@
-<% breadcrumb :image_server_groups, @user, @chapman_code, @county, @register, @source %>
+<% breadcrumb :image_server_groups, @user, @chapman_code, @county, @register, @source unless session[:role] == 'image_server_coord' %>
 
 <% title "IS Group - list" %>
-<%= render partial: 'header' %>
-<%= render partial: 'flash_notice' %>
+<% if session[:role] == 'image_server_coord' %>
+  <p>All image server groups</p>
+<% else %>
+  <%= render partial: 'header' %>
+  <%= render partial: 'flash_notice' %>
+<% end %>
 
 <div class="grid">
   <section class="island">

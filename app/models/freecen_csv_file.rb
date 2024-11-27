@@ -1273,6 +1273,18 @@ class FreecenCsvFile
     update_attributes(locked_by_transcriber: true, total_errors: new_number_errors, total_warnings: new_number_warnings)
   end
 
+  def update_total_warning_messages
+    original_number_warnings = total_warnings
+    new_number_warnings = original_number_warnings - 1
+    update_attributes(total_warnings: new_number_warnings)
+  end
+
+  def adjust_total_warning_messages_and_lock(original_warnings, warnings_adjustment)
+    new_number_warnings = original_warnings + warnings_adjustment
+    new_number_warnings = 0 if new_number_warnings.negative?
+    update_attributes(locked_by_transcriber: true, total_warnings: new_number_warnings)
+  end
+
   def update_freecen_piece
     Freecen2Piece.update_or_create_piece(self)
   end

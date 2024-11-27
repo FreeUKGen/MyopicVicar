@@ -28,7 +28,7 @@
         <th class="t12">Transcriber</th>
         <th class="t10">Reviewer</th>
         <th class="t10">Action <a href="#" class="left_tooltip"><%= image_tag 'png/info.png', alt: 'Information', height: '14' %>
-            <% if session[:manage_user_origin] == 'manage county' %>  <%# any user from manage_counties %>
+            <% if session[:manage_user_origin] == 'manage county' || session[:role] == 'image_server_coord' %>  <%# any user from manage_counties %>
               <span>Some actions may not be applicable. SH: Show Properties;<br>
                 ED: Edit Properties;<br>
                 DE: Delete Group;<br>
@@ -90,7 +90,7 @@
               <% end %>
               &nbsp;</td>
             <td class="t10"><%= link_to 'SH', image_server_group_path(group), :title=>'show image group properties' %>
-              <% if session[:manage_user_origin] == 'manage county' %>
+              <% if session[:manage_user_origin] == 'manage county' || session[:role] == 'image_server_coord' %>
                 <%= link_to 'ED', edit_image_server_group_path(group), :title=>'edit image group properties' %>
                 <%= link_to 'DE', image_server_group_path(group), :title=>'delete image group', data: { confirm: 'Are you sure you want to delete Image Group "'+group.group_name+'"?'}, method: :delete %>
               <% end %>
@@ -99,7 +99,7 @@
                 <%= link_to 'AL', image_server_group_path(group, :type=>'allocate accept'), :title=>'accept allocate request', method: :put %>
                 <%= link_to 'RJ', image_server_group_path(group, :type=>'allocate reject'), :title=>'reject allocate request', data: { confirm: 'Are you sure you want to reject the allocation request?'}, method: :put %>
               <% end %>
-            </td>
+            </td> 
           </tr>
         <% end %>
       </tbody>

@@ -11,9 +11,9 @@ namespace :freecen do
 
     piece = file.freecen_piece
     freecen2_piece, freecen2_place = Freecen2Piece.find_by_vld_file_name(piece)
-    raise "Unable to locate a Freecen2 Piece for this number #{piece_number} " if freecen2_piece.blank?
+    raise "Unable to locate a Freecen2 Piece for piece #{piece.piece_number} " if freecen2_piece.blank?
 
-    raise "This Freecen2 Piece number #{piece_number} does not have a Freecen2 Place" if freecen2_place.blank?
+    raise "This Freecen2 Piece for piece #{piece.piece_number} does not have a Freecen2 Place" if freecen2_place.blank?
 
     piece.update_attributes(freecen2_place_id: freecen2_place.id)
     transformer = Freecen::Freecen1VldTransformer.new
