@@ -26,7 +26,7 @@ module Freecen
 
     def update_from_propagations(csv_entry)
       match_found = false
-      propagation_match = Freecen1VldEntryPropagation.where(match_verbatim_birth_county: csv_entry.verbatim_birth_county, match_verbatim_birth_place: csv_entry.verbatim_birth_place, scope_year: 'ALL', scope_county: 'ALL').first
+      propagation_match = FreecenPobPropagation.where(match_verbatim_birth_county: csv_entry.verbatim_birth_county, match_verbatim_birth_place: csv_entry.verbatim_birth_place, scope_year: 'ALL', scope_county: 'ALL').first
       if propagation_match.present?
         if propagation_match.propagate_pob
           warning_message = csv_entry.warning_messages + "Warning: Alternate fields have been adjusted and need review.<br>"

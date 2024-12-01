@@ -70,7 +70,7 @@ module Freecen
           end
         end
       else
-        propagation_matches = Freecen1VldEntryPropagation.where(match_verbatim_birth_county: vld_entry.verbatim_birth_county, match_verbatim_birth_place: vld_entry.verbatim_birth_place)
+        propagation_matches = FreecenPobPropagation.where(match_verbatim_birth_county: vld_entry.verbatim_birth_county, match_verbatim_birth_place: vld_entry.verbatim_birth_place)
         if propagation_matches.present?
 
           propagation_matches.each do |prop_rec|
