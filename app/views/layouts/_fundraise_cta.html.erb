@@ -12,11 +12,11 @@
             <!--div class="" id="main_box"-->
                 <div class="grid__item desk-three-quarters lap-one-whole palm-one-whole logo_div" style="">
                   <%#= image_tag("png/donate_title_text.png", alt: "Help us keep your family history free", id:'help_text')%><%#= "Free#{appname_downcase[4,4].upcase}"%>
-                  <h3>We're taking part in The Big Give's 2023 Christmas Challenge</h3>
+                  <h3>We're taking part in The Big Give's 2024 Christmas Challenge</h3>
                 </div>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-                    <p id="" class="push-half--bottom">Thank you to everyone who has donated so far: you helped us match our pledge pot in just three days!</p>
-                    <p class="push-half--bottom">We still need your support to secure our services and build on them for the future. We don't have any grant or government funding, we rely on our users' donations. A £15 donation means 1,000 new records will be added to our databases and £30 runs our servers for one day.</p>
+                    <p id="" class="push-half--bottom">This week, you can double the impact of a donation to our charity.</p>
+                    <p class="push-half--bottom">Every donation made during the Big Give Christmas Challenge up to £2,000 will be matched.This means we can raise £4,000 to help us carry on providing free access to family history records</p>
                 </div>
             <!--/div-->
         </div>
@@ -24,18 +24,18 @@
             <div class="grid__item desk-one-whole desk-one-whole lap-one-whole palm-one-whole" >
                 <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom" style="display: flex; justify-content: center;">
                     <div class="grid__item desk-wide-three-fifths desk-three-fifths lap-one-whole palm-one-whole hard--left" id='impact_text_div'>
-                        <%#= image_tag("png/impact_text.png", alt: "One donation, twice the impact", class: "text--center", id: 'impact_text')%><%#= "Free#{appname_downcase[4,4].upcase}"%>
-                        <h3 style="margin-bottom: 0;">Help us keep your family history free.</h3>
+                        <%= image_tag("png/impact_text.png", alt: "One donation, twice the impact", class: "text--center", id: 'impact_text')%><%= "Free#{appname_downcase[4,4].upcase}"%>
+                        <!--h3 style="margin-bottom: 0;">Help us keep your family history free.</h3-->
                     </div>
                 </div>
                 <div class="" id="request_box">
-                   <%#= image_tag("png/impact_text.png", alt: "One donation, twice the impact", class: "text--center")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                   <%= image_tag("png/impact_text.png", alt: "One donation, twice the impact", class: "text--center")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
                     <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left">
                         <div class="grid__item desk-one-half lap-one-half palm-one-whole text--center hard--left" id="read_more_div">
                             <a href="https://www.freeukgenealogy.org.uk/why-donate" class="text--center btn btn--small" target="_blank" tabindex="0" id="read_more" autofocus="false" style="padding:10px">Why donate?</a>
                         </div>
                         <div class="grid__item desk-one-half lap-one-half palm-one-whole" id="donate_div" style="display:flex; justify-content:center;">
-                            <% donate_link = "https://donate.biggive.org/campaign/a056900002RXtYPAA1" %>
+                            <% donate_link = "https://donate.biggive.org/campaign/a056900002TPUe8AAH" %>
                             <% donate_cta_link = "https://donate.kindlink.com/free-uk-genealogy/#{ApplicationHelper::DONATE_ID[appname_downcase]}" %>
                             <%= link_to "DONATE NOW", donate_link , class: "freeREG btn btn--small weight--semibold", id:"donate_now_button", target:"_blank", tabindex: "0", style: 'padding:10px' %>
                         </div>
