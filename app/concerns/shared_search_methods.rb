@@ -275,10 +275,30 @@ module SharedSearchMethods
           end
         else
           results.sort! do |x, y|
-             compare_name_bmd(x,y, 'RecordTypeID')
+            compare_name_bmd(x,y, 'RecordTypeID')
           end
         end
-       when SearchOrder::BMD_DATE
+      when SearchOrder::BMD_ASSOCIATE_NAME
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'AssociateName')
+          end
+        else
+          results.sort! do |x, y|
+            compare_name_bmd(x,y, 'AssociateName')
+          end
+        end
+      when SearchOrder::BMD_AGE_AT_DEATH
+        if self.order_asc
+          results.sort! do |x, y|
+            compare_name_bmd(y, x, 'AgeAtDeath')
+          end
+        else
+          results.sort! do |x, y|
+            compare_name_bmd(x,y, 'AgeAtDeath')
+          end
+        end
+      when SearchOrder::BMD_DATE
         if self.order_asc
           results.sort! do |x, y|
             compare_name_bmd(y, x, 'QuarterNumber')
