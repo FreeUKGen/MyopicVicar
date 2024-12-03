@@ -238,7 +238,7 @@ class PhysicalFile
   def upload_report_data(start_date, end_date)
     appname = MyopicVicar::Application.config.freexxx_display_name
     uploaded_files = PhysicalFile.where(c_at: start_date..end_date)
-    uploaded_files = FreecenCsvFile.where(c_at: start_date..end_date) if appname.downcase == 'freecen'
+    uploaded_files = FreecenCsvFile.where(created_at: start_date..end_date) if appname.downcase == 'freecen'
     uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
     uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
     uploders_role = uploaders.pluck(:person_role)
@@ -250,8 +250,8 @@ class PhysicalFile
 
   def upload_report_mail(start_date, end_date)
     appname = MyopicVicar::Application.config.freexxx_display_name
-    uploaded_files = PhysicalFile.where(c_at: start_date..end_date)
-    uploaded_files = FreecenCsvFile.where(c_at: start_date..end_date) if appname.downcase == 'freecen'
+    uploaded_files = PhysicalFile.where(created_at: start_date..end_date)
+    uploaded_files = FreecenCsvFile.where(created_at: start_date..end_date) if appname.downcase == 'freecen'
     uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
     uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
     exclude_roles = ['system_administrator', 'executive_director', 'technical']
