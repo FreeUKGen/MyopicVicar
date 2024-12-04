@@ -17,8 +17,13 @@ class BestGuess < FreebmdDbBase
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
   ENTRY_REFERENCE = 512
-  DISTRICT_MISSPELT = 2
   DISTRICT_ALIAS = 1
+  DISTRICT_MISSPELT = 2
+  DISTRICT_UNKNOWN = 4
+  BAD_VOLUME_FOR_DISTRICT = 8
+  BAD_DATE_FOR_DISTRICT = 16
+  PAGE_OUTSIDE_EXECTED_RANGE_FOR_DISTRICT = 32
+  PAGE_RANGE_NOT_CHECKED = 64
   EVENT_YEAR_ONLY = 589
 
   def friendly_url
@@ -341,6 +346,34 @@ class BestGuess < FreebmdDbBase
     (self.DistrictFlag & DISTRICT_MISSPELT).zero?
   end
 
+  def district_alternative_form
+    not (self.DistrictFlag & DISTRICT_ALIAS).zero?
+  end
+
+  def district_misspelt
+    not (self.DistrictFlag & DISTRICT_MISSPELT).zero?
+  end
+
+  def district_invented
+    not (self.DistrictFlag & DISTRICT_UNKNOWN).zero?
+  end
+
+  def bad_volume_for_district
+    not (self.DistrictFlag & BAD_VOLUME_FOR_DISTRICT).zero?
+  end
+
+  def bad_date_for_district
+    not (self.DistrictFlag & BAD_DATE_FOR_DISTRICT).zero?
+  end
+
+  def bad_page_range_for_district
+    not (self.DistrictFlag & PAGE_OUTSIDE_EXECTED_RANGE_FOR_DISTRICT).zero?
+  end
+
+  def page_range_not_checked
+    not (self.DistrictFlag & PAGE_RANGE_NOT_CHECKED).zero?
+  end
+
   def non_alias_district
     (self.DistrictFlag & DISTRICT_ALIAS).zero?
     #$primaryDistrictFlag & $BMD::Const::DistrictAlias && $primaryDistrictName ne $canDistrictName
@@ -390,6 +423,25 @@ class BestGuess < FreebmdDbBase
     submissions.Registered if submissions.present?
   end
 
+  def event_entry_number
+    submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
+    submissions.Page if submissions.present?
+  end
+
+  def event_registration_number
+    if Submission.column_names.include?('RegistrationNumber')
+      submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
+      submissions.RegistrationNumber if submissions.present?
+    end
+  end
+
+  def register_entry_number_format
+    quarter = self[:QuarterNumber]
+    year = QuarterDetails.quarter_year(quarter)
+    event_type = self[:RecordTypeID]
+    new_format =  ((year == 1993) and (event_type < 3)) or (year >= 1994)
+    new_format
+  end
   def self.get_birth_unique_names birth_records
     entries = Hash.new
     all_entries = birth_records

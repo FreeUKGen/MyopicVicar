@@ -1,4 +1,4 @@
-<h1 class="title">Data Problem Report</h1>
+<h1 class="title">Errors and omissions in the GRO Index data</h1>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
@@ -14,12 +14,12 @@
     </ul>
   </div>
 <% end %>
-<div class="read-length">
-  <p class="push-half--bottom">Thank you for reporting a possible error in our transcription. <b>We will change our record if we agree with your interpretation of the source document we transcribed.</b> If you have access to a different document which has different evidence, please provide details so that we can attach a note to our transcription. We would be grateful if you could send us an image of the different document so that we may transcribe it.</p>
-  <p style="font-size: 0.9rem;">Please note: some Record Offices and some websites allow you to make copies for personal use only &mdash; if your document is such a copy, we cannot use it.</p>
-  <p>Please read our <%= link_to "Privacy Notice(#{ApplicationText::NEW_TAB_LINK_TEXT})", Constant::PRIVACY_POLICY_LINK, target: "_blank" %> for information on how we will protect and use your data, and then complete the form below.</p>
+<div >
+  <p class="push-half--bottom">The data in the FreeBMD web site is transcribed by our volunteers from scans of pages in the General Register Office indexes. These indexes were created by copying selected information from certificates, pooling it centrally, and creating an index by hand. The format of these indexes has changed over time, from handwritten pages, to typed pages, then to computer printout. The quality of the scans we have been given access to (often a scan of fiche or microfilm, which is itself a copy of the source page) has also varied - some are very hard to read.</p>
+  <p class="push-half--bottom">In the course of all this copying of data, it is inevitable that mistakes and omissions will occur. Our goal is to ensure that, as far as possible, our data is a faithful transcription of what is actually present in the GRO index. We recognize, and accept, that the index itself may be wrong. We do provide a mechanism for recording additional information about an index entry (a "postem"), but you should be aware that anything recorded in a postem will not be searchable, and will only be seen by others if they happen to find the entry by other means.</p>
+  <p class="push-half--bottom">Please select the option below which best describes your reason for thinking the data in this entry is wrong, and an explanation will appear, advising what (if anything) you should report to us.</p>
 </div>
-<div class="push palm-flush--bottom">
+  <div class="push palm-flush--bottom">
   <ol class="grid">
     <li class="grid__item one-half lap-one-whole palm-one-whole" id="quesons">
       <label class="ttip" for="questins" tabindex="0">Select your query
@@ -39,13 +39,18 @@
       <div class="read_answer">
         <label class="ttip" for="read_explanation" tabindex="0">
           <%= check_box_tag "read_explanation", 1, false, required: true %>
-          <span>Yes, I have read the above explanation and wish to submit the report</span>
+          <span>Yes, I have read the above explanation and wish to submit a report</span>
         </label>
       </div>
     </li>
   </ol>
 </div>
 <div class="push palm-flush--bottom report_form">
+  <div class="read-length">
+    <p class="push-half--bottom">Thank you for reporting a possible error in our transcription. <b>We will change our record if we agree with your interpretation of the source document we transcribed.</b> If you have access to a different document which has different evidence, please provide details so that we can attach a note to our transcription. We would be grateful if you could send us an image of the different document so that we may transcribe it.</p>
+    <p style="font-size: 0.9rem;">Please note: some Record Offices and some websites allow you to make copies for personal use only &mdash; if your document is such a copy, we cannot use it.</p>
+    <p>Please read our <%= link_to "Privacy Notice(#{ApplicationText::NEW_TAB_LINK_TEXT})", Constant::PRIVACY_POLICY_LINK, target: "_blank" %> for information on how we will protect and use your data, and then complete the form below.</p>
+  </div>
   <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
     <%= f.hidden_field :query %>
     <%= f.hidden_field :contact_type %>

@@ -69,22 +69,22 @@
     <% record_type = RecordType::display_name(record.RecordTypeID)%>
     <tr>
       <th scope="row">
-        Event Type
+        Record Type
       </th>
       <td>
         <%= "#{record_type}" %>
       </td>
     </tr>
-    <% if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
+    <%# if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
       <tr>
         <th scope="row">
           Date
         </th>
         <td>
-          <%= format_quarter(record.QuarterNumber) %>
+          <%= format_quarter_year(record.QuarterNumber) %>
         </td>
       </tr>
-    <% end %>
+    <%# end %>
     <tr>
       <th scope="row">
         District
@@ -94,7 +94,7 @@
         <% if district.present? %>
           <% if @search %>
             <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, entry_id: record[:RecordNumber], search_id: search_id) %>
-            <%= "(recorded as #{record[:District]} not #{district.DistrictName})" if record[:District].strip != district.DistrictName.strip %>
+            <%#= "(recorded as #{record[:District]} not #{district.DistrictName})" if record[:District].strip != district.DistrictName.strip %>
           <% else%>
             <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber)%>
           <% end %>
@@ -104,23 +104,30 @@
         <% if record.District.blank? %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
+        <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+          <a class="footnote-link" id="link-to-district-query" href="#district-query">
+            [district query] <span class="accessibility">potential issue with this District name</span>
+          </a>
+        <% end %>
       </td>
     </tr>
-    <% if entry_type == "marriage" %>
+    <% unless entry_type == "death" %>
     	<tr>
 	      <th scope="row">
 	        <%= mother_or_spouse_surname(record_type)%>
 	      </th>
 	      <td>
 	      	<% if search && record.AssociateName.present? %>
-            <% if @search %>
-	        	  <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+            <% if entry_type == 'marriage' %>
+              <% if @search %>
+  	        	  <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+              <% else %>
+                <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+              <% end %>
+              <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
             <% else %>
-              <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+              <%= record.AssociateName %>
             <% end %>
-	        	<span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
-	        <% else %>
-	        	<%= record.AssociateName %>
 	        <% end %>
           <% if record.AssociateName.blank? %>
             <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
@@ -128,56 +135,43 @@
 	      </td>
     	</tr>
     <% end %>
-    <% unless entry_type == "death" %>
-    	<tr>
-	      <th scope="row">
-	        <%= mother_or_spouse_surname(record_type)%>
-	      </th>
-	      <td>
-	        <%= record.AssociateName %>
-          <% if record.AssociateName.blank? %>
-            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-          <% end %>
-	      </td>
-    	</tr>
-      <tr>
-        <th scope="row">
-          Date of birth
-        </th>
-        <td>
-          <%= record.AgeAtDeath %>
-        </td>
-      </tr>
-    <% end %>
-    <% if entry_type == "death" %>
-      <tr>
-        <th scope="row">
-          Age at death
-        </th>
-        <td>
-          <%= record.AgeAtDeath %>
-        </td>
-      </tr>
-    <% end %>
-    <% unless entry_type == "marriage" %>
-      <tr>
-        <th scope="row">
-          <%= age_at_death_or_date_of_birth(record_type)%>
-        </th>
-        <td>
-          <%= record.AgeAtDeath %>
-          <% if record.AgeAtDeath.blank? %>
-            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-          <% end %>
-        </td>
-      </tr>
-    <% end %>
+    <% if record.register_entry_number_format %>
+    <tr>
+      <th scope="row">
+        Register number
+      </th>
+      <td >
+        <% event_register_number = record.event_registration_number %>
+        <% if event_register_number.present? %>
+          <%= event_register_number  %>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Entry number
+      </th>
+      <td>
+        <% event_entry_number = record.event_entry_number %>
+        <% if event_entry_number.present?  %>
+          <%= event_entry_number %>
+        <% else %>
+          <%= "#{ record.Page }" %>
+        <% end %>
+      </td>
+    </tr>
+    <% else %>
     <tr>
       <th scope="row">
         Volume
       </th>
       <td>
         <%= "#{ record.Volume }" %>
+        <% if record.bad_volume_for_district %>
+          <a class="footnote-link" id="link-to-volume-query" href="#volume-query">
+            [volume query] <span class="accessibility">potential issue with this volume number</span>
+          </a>
+        <% end %>
       </td>
     </tr>
     <tr>
@@ -195,8 +189,27 @@
         <% else%>
           <%= record.Page %>
         <% end %>
+        <% if record.bad_page_range_for_district or record.page_range_not_checked %>
+          <a class="footnote-link" id="link-to-page-query" href="#page-query">
+            [page query] <span class="accessibility">potential issue with this page number</span>
+          </a>
+        <% end %>
       </td>
     </tr>
+    <% end %>
+     <% if entry_type == "death" %>
+      <tr>
+        <th scope="row">
+          Age at Death or Date of Birth
+        </th>
+        <td>
+          <%= record.AgeAtDeath %>
+          <% if record.AgeAtDeath.blank? %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
     <tr>
       <th scope="row">
         Transcriber
@@ -222,10 +235,10 @@
       <% unless (record.Confirmed & 512).zero? %>
         <tr>
           <th scope="row">
-            Refers
+            Linked records
           </th>
           <td>
-             <%= link_to "View Reference Record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+             <%= link_to "View linked record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
           </td>
         </tr>
       <% end %>
@@ -293,4 +306,40 @@
     <%# end %>
   </tbody>
 </table>
-<%#= link_to 'Report an Error in this Data', report_error_contact_path(record.RecordNumber, query: query), class: 'btn btn--natural' unless  record.blank? %>
+<% if record.DistrictFlag > 0 or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+  <div>
+    <h2>Queries relating to this entry</h2>
+  <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+      <div id="district-query">
+        <h3>District name</h3>
+        <p>
+          <% if record[:District].strip.downcase != district.DistrictName.strip.downcase %><%= " District recorded as #{record[:District]} not #{district.DistrictName}. " %><% end %>
+          <% if record.district_misspelt  %> The District name is a misspelt alternative form of the official name <%= "'#{district.DistrictName.strip}'" %>.<% end %>
+          <% if record.district_invented %> The District name is not an official name or a recognized alternative form of name. <% end %>
+          <% if record.bad_date_for_district %> The date does not fall within the range of dates when this District was active.<% end %>
+          <a href="#link-to-district-query">[back to district]</a>
+        </p>
+      </div>
+  <% end %>
+  <% if record.bad_volume_for_district %>
+      <div id="volume-query">
+        <h3>Volume number</h3>
+        <p>
+          <% if record.bad_volume_for_district %> The volume number does not have one of the expected values for this District/Quarter.<% end %>
+          <a href="#link-to-volume-query">[back to volume]</a>
+        </p>
+      </div>
+  <% end %>
+  <% if record.bad_page_range_for_district or record.page_range_not_checked %>
+      <div id="page-query">
+        <h3>Page number</h3>
+        <p>
+          <% if record.bad_page_range_for_district %> The page number does not have one of the expected values for this District/Quarter.<% end %>
+          <% if record.page_range_not_checked %> The page range cannot be checked because the data provided is not sufficiently precise.<% end %>
+          <a href="#link-to-page-query">[back to page]</a>
+        </p>
+      </div>
+  <% end %>
+  </div>
+<% end %>
+<p>Do you need help with this? There is information about quarters, districts, and how to find the partner in a marriage in the <a href="/cms/help">Help section</a>.</p>
