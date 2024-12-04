@@ -150,6 +150,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_entries/propagate_pob', to: 'freecen_csv_entries#propagate_pob', as: :propagate_pob_freecen_csv_entry
   resources :freecen_csv_entries
 
+  resources :freecen_pob_propagations
+
   get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
   delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
   delete 'messages/:id/remove_from_userid_detail(.:format)', :to => 'messages#remove_from_userid_detail', :as => :remove_from_userid_detail

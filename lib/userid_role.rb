@@ -217,7 +217,7 @@ module UseridRole
     'List by uploaded date (descending)' => '/freereg1_csv_files/selection?option=List by uploaded date (descending)',
     'List files waiting to be processed' => '/freereg1_csv_files/selection?option=List files waiting to be processed',
     'Review Specific Batch' => '/freereg1_csv_files/selection?option=Review Specific Batch'
-}
+  }
   case MyopicVicar::Application.config.template_set
   when 'freereg'
     COUNTY_MANAGEMENT_OPTIONS = ['All Places', 'Active Places', 'Specific Place', 'Places with Unapproved Names', 'Review Batches with Errors',
@@ -228,7 +228,7 @@ module UseridRole
     COUNTY_MANAGEMENT_OPTIONS = ['Manage FreeCEN2 Places', 'Manage FreeCEN2 Districts', 'Manage FreeCEN2 Pieces', 'Manage FreeCEN2 Civil Parishes',
                                  'Locate Pieces', 'CAP Report','Review Batches by Filename', 'Review Batches with Errors', 'Review Batches being Validated',
                                  'Review Incorporated Batches', 'Review Specific Batch', 'Upload New Batch', 'County Statistics',
-                                 'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places']
+                                 'Manage FreeCEN1 Pieces', 'Manage VLD Files', 'Manage FreeCEN1 Places', 'Manage POB Propagations']
   when 'freebmd'
   end
   COUNTY_OPTIONS_TRANSLATION = {
@@ -258,7 +258,8 @@ module UseridRole
     'Offline Reports' => '/manage_counties/selection?option=Offline Reports',
     'Locate Pieces' => '/freecen2_pieces/enter_number',
     'CAP Report' => '/freecen2_pieces/cap_report',
-    'Clean Places UCF list' => '/manage_counties/clean_ucf_list_for_all_places'
+    'Clean Places UCF list' => '/manage_counties/clean_ucf_list_for_all_places',
+    'Manage POB Propagations' => '/freecen_pob_propagations'
   }
   COUNTY_OPTIONS_TITLES = {
     'All Places' => 'Lists all possible places in the county',
@@ -283,7 +284,8 @@ module UseridRole
     'Manage VLD Files' => 'Minimal tools to manage VLD files',
     'Manage Places' => 'Minimal tools to manage places used by CEN1',
     'Offline Reports' => 'Generate off line reports',
-    'Locate Pieces' => 'Locates Pieces in other counties, perhaps as a result of a move'
+    'Locate Pieces' => 'Locates Pieces in other counties, perhaps as a result of a move',
+    'Manage POB Propagations' => 'Manage POB Propagations'
 
   }
   case MyopicVicar::Application.config.template_set
