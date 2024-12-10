@@ -93,4 +93,11 @@ module BestGuessHelper
     end
     image_path
   end
+
+  def value_or_no_data(field_value)
+    unless field_value.blank?
+      field_value
+    else "No data"
+    end
+  end
 end
