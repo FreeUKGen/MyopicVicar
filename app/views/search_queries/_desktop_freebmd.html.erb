@@ -82,7 +82,14 @@
                      <% else %>
                        <%= search_record[:District] %>
                      <% end %>
-                      <br/>Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
+                      <% if record.register_entry_number_format %>
+                        <% event_register_number = record.event_registration_number %>
+                        <% if event_register_number.present? %>
+                          <br /><%= event_register_number  %>
+                        <% end %>
+                      <% else %>
+                        <br/>Volume <%= search_record[:Volume] %> Page <%= search_record[:Page] %>
+                      <% end %>
                     <% end %>
               </td>
               <% if included_record_types[0] == "0" or included_record_types.include? "1" %>

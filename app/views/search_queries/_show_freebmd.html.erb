@@ -3,27 +3,32 @@
   <%#= render(partial: 'count_and_tools_menu') %>
   <%= render(partial: app_specific_partial("search_result_form")) %>
 <% end %>
-<div class="container">
-    <% if print_friendly %>
-      <div class="grid">
-        <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom ">
-          <div class="accessibility">
-          <%= link_to "Print", "#", class: "btn   btn--small", :onclick => 'window.print();return false;' %>
+<% if device_type == :desktop || device_type == :tablet %>
+  <div class="container">
+      <% if print_friendly %>
+        <div class="grid">
+          <div class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom ">
+            <div class="accessibility">
+            <%= link_to "Print", "#", class: "btn   btn--small", :onclick => 'window.print();return false;' %>
+          </div>
         </div>
-      </div>
-      </div>
-    <% end %>
-  <div class="grid">
-    <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole " id='bmd_results'>
-      <%= render(partial: app_specific_partial("desktop"), locals: { search_results: @paginatable_array, first_name: @search_query.first_name, last_name: @search_query.last_name, ucf_results: false})  %>
-    </div>
-    <% unless print_friendly %>
-      <% if device_type == :desktop %>
-        <div class="grid__item two-tenths lap-two-tenths palm-one-whole "  id='results_table_ad'>
-          <center><p>Advertisement</p>
-          <%= advert_code("right_side","side_big") %></center>
         </div>
       <% end %>
-    <% end %>
+    <div class="grid">
+      <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole " id='bmd_results'>
+        <%= render(partial: app_specific_partial("desktop"), locals: { search_results: @paginatable_array, first_name: @search_query.first_name, last_name: @search_query.last_name, ucf_results: false})  %>
+
+      </div>
+      <% unless print_friendly %>
+        <% if device_type == :desktop %>
+          <div class="grid__item two-tenths lap-two-tenths palm-one-whole "  id='results_table_ad'>
+            <center><p>Advertisement</p>
+            <%= advert_code("right_side","side_big") %></center>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
   </div>
-</div>
+<% else %>
+  <%= render(partial: app_specific_partial("mobile"), locals: { search_results: @paginatable_array, first_name: @search_query.first_name, last_name: @search_query.last_name, ucf_results: false})  %>
+<% end %>
