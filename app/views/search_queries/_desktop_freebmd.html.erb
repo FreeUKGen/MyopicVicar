@@ -65,7 +65,7 @@
                 </td>
               <%# end %>
               <td <% if print_friendly %> valign="top" <% end %> >
-                <center><%= "#{record_type}" %></center>
+                <center><%= "#{record_type}".capitalize.chop %></center>
               </td>
               <td class="table--data">
                 <%= format_quarter_year(search_record.QuarterNumber) %>
@@ -86,19 +86,19 @@
                     <% end %>
               </td>
               <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
-              <td class="table--data">
-                <%= search_record[:AssociateName] if record_type == "BIRTHS" %>
-              </td>
+                <td class="table--data">
+                  <%= if record_type == "BIRTHS" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
+                </td>
               <% end %>
               <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
-              <td class="table--data">
-                <%= search_record[:AssociateName] if record_type == "MARRIAGES" %>
-              </td>
+                <td class="table--data">
+                  <%= if record_type == "MARRIAGES" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
+                </td>
               <% end %>
               <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
-              <td class="table--data">
-                <%= search_record[:AgeAtDeath] %>
-              </td>
+                <td class="table--data">
+                  <%= if record_type == "DEATHS" then value_or_no_data(search_record[:AgeAtDeath]) else '-' end %>
+                </td>
               <% end %>
             </tr>
           <% end %>
