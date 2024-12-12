@@ -13,7 +13,7 @@
  <%# raise @search_query.bmd_record_type.inspect %>
     <% included_record_types = @search_query.bmd_record_type %>
     <% order_field = @search_query.order_field %>
-    <p>Sort order is <%= order_field %></p>
+    <!--p>Sort order is <%= order_field %></p-->
       <table class="table--bordered table--data">
         <% unless print_friendly %>
           <caption class='accessibility'>Click on a column heading to sort by the contents of that column.</caption>
@@ -22,32 +22,31 @@
           <tr>
             <% unless print_friendly %>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::SURNAME) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::FIRSTNAME, 'First Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME), class: "btn btn--natural") %>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::SURNAME, 'Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME), class: "btn btn--natural") %>
+                  <%#= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::FIRSTNAME, 'First Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::SURNAME, 'Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
               </th>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE) %>>
-                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE, 'Record Type'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE), class: "btn btn--natural") %>
+                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE, 'Record Type'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
               </th>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_DATE) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_DATE, 'Registration Date'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE), class: "btn btn--natural") %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_DATE, 'Registration Date'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
               </th>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::DISTRICT) %>>
-                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::DISTRICT, 'Registration District'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT), class: "btn btn--natural") %>
-                <br/>Reference
+                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::DISTRICT, 'Registration District & Reference'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
               </th>
               <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
-                <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Mother\'s Maiden Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME), class: "btn btn--natural") %>
+                <th  <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME) %>>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Mother\'s Maiden Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME)) %>
                 </th>
               <% end %>
               <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
                 <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Spouse\'s Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME), class: "btn btn--natural") %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Spouse\'s Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME)) %>
                 </th>
               <% end %>
               <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
                 <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, 'Age at Death/Date of Birth'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_AGE_AT_DEATH), class: "btn btn--natural") %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, 'Age at Death/Date of Birth'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_AGE_AT_DEATH)) %>
                 </th>
               <% end %>
             <% else %>

@@ -337,7 +337,7 @@ module SearchQueriesHelper
     # old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     response = ""
     if order_field == search_query.order_field then
-      if order_field != params[:order_field] then
+      if search_query.order_asc then
         response = " aria-sort=\"ascending\"".html_safe
       else
         response = " aria-sort=\"descending\"".html_safe
@@ -348,14 +348,17 @@ module SearchQueriesHelper
 
   def sort_field_marker search_query, order_field, heading
     # old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
-    response = heading
+    response = '<button type="button" class="btn btn--full">'+heading
     if order_field == search_query.order_field then
-      if order_field != params[:order_field] then
+      if search_query.order_asc then
         response = response+" <span aria-hidden=\"true\">&#9650;</span>"
       else
         response = response+" <span aria-hidden=\"true\">&#9660;</span>"
       end
+    else
+      response = response+" <span aria-hidden=\"true\">&#9674;</span>"
     end
+    response = response+"</button>"
     response.html_safe
   end
 end
