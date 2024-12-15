@@ -16,13 +16,13 @@
     <!--p>Sort order is <%= order_field %></p-->
       <table class="table--bordered table--data">
         <% unless print_friendly %>
-          <caption class='accessibility'>Click on a column heading to sort by the contents of that column.</caption>
+          <caption class='accessibility'>Select a column heading to sort by the contents of that column.</caption>
         <% end %>
         <thead>
           <tr>
             <% unless print_friendly %>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::SURNAME) %>>
-                  <%#= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::FIRSTNAME, 'First Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::FIRSTNAME, 'First Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME, 'anchor': 'result_table_Surname')) %>
                   <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::SURNAME, 'Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME, 'anchor': 'result_table_Surname')) %>
               </th>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE) %>>
