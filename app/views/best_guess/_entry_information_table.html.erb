@@ -200,7 +200,11 @@
      <% if entry_type == "death" %>
       <tr>
         <th scope="row">
-          Age at Death or Date of Birth
+          <% if record.AgeAtDeath.present? && record.AgeAtDeath.to_i.to_s == record.AgeAtDeath %>
+            Age at Death
+          <% else %>
+            Date of Birth
+          <% end %>
         </th>
         <td>
           <%= record.AgeAtDeath %>
