@@ -442,6 +442,7 @@ class BestGuess < FreebmdDbBase
     new_format =  ((year == 1993) and (event_type < 3)) || (year >= 1994)
     new_format
   end
+  
   def self.get_birth_unique_names birth_records
     entries = Hash.new
     all_entries = birth_records
