@@ -310,12 +310,22 @@
     <%# end %>
   </tbody>
 </table>
+<div class='push-half--top'>
+  <% if params[:search_id].present? %>
+    <div class="grid">
+      <div class='grid__item text--center'>
+        <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
+        <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
+      </div>
+    </div>
+  <% end %>
+</div>
 <% if record.DistrictFlag > 0 or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
   <div>
-    <h2>Queries relating to this entry</h2>
+    <h3>Queries relating to this entry</h3>
   <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
       <div id="district-query">
-        <h3>District name</h3>
+        <h4>District name</h4>
         <p>
           <% if record[:District].strip.downcase != district.DistrictName.strip.downcase %><%= " District recorded as #{record[:District]} not #{district.DistrictName}. " %><% end %>
           <% if record.district_misspelt  %> The District name is a misspelt alternative form of the official name <%= "'#{district.DistrictName.strip}'" %>.<% end %>
@@ -327,7 +337,7 @@
   <% end %>
   <% if record.bad_volume_for_district %>
       <div id="volume-query">
-        <h3>Volume number</h3>
+        <h4>Volume number</h4>
         <p>
           <% if record.bad_volume_for_district %> The volume number does not have one of the expected values for this District/Quarter.<% end %>
           <a href="#link-to-volume-query">[back to volume]</a>
@@ -336,7 +346,7 @@
   <% end %>
   <% if record.bad_page_range_for_district or record.page_range_not_checked %>
       <div id="page-query">
-        <h3>Page number</h3>
+        <h4>Page number</h4>
         <p>
           <% if record.bad_page_range_for_district %> The page number does not have one of the expected values for this District/Quarter.<% end %>
           <% if record.page_range_not_checked %> The page range cannot be checked because the data provided is not sufficiently precise.<% end %>

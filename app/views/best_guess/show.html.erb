@@ -33,15 +33,6 @@
         <% if params[:saved_record] %>
           <%#= render partial: 'page_records_navigation_saved' %>
         <% end %>
-        <div class='push-half--top'>
-          <% if params[:search_id].present? %>
-            <div class="grid">
-              <div class='grid__item text--center'>
-                <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
-                <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
-            </div>
-          <% end %>
-        </div>
       </section>
       
       <% if @option == '1' %>
@@ -138,9 +129,9 @@
           </div>
         </div>
       <% end %>
-      <h4>Need help?</h4>
+      <h3>Need help?</h3>
       <p>There is information in the <%= link_to 'Help', '/cms/help#gtkDetails'%> section about quarters and how to find the partner in a marriage.</p>
-      <h4>Ordering a GRO certificate</h4>
+      <h3>Ordering a GRO certificate</h3>
       <p>You can order certificates from the <%= link_to 'General Register Office (GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.</p>
       <div class="grid__item two-thirds lap-two-thirds palm-one-whole text--center push--top ">
           <%= link_to 'Suggest a correction', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
