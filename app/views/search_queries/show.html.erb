@@ -5,9 +5,9 @@
 <%# show_contents_link%>
 <div class='container'>
   <% if device_type == :desktop %>
-    <%= render partial: 'navigation_links', locals: {class: "display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px 20px;"} %>
+    <%= render partial: 'navigation_links', locals: {device_style: "display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px 20px;"} %>
   <% else %>
-    <%= render partial: 'navigation_links', locals: {class: "display: flex; list-style: none; flex-direction: column; justify-content: space-evenly; align-content: space-evenly; flex-wrap: wrap; gap: 10px 30px; margin-left: 0;" } %>
+    <%= render partial: 'navigation_links', locals: {device_style: "display: flex; list-style: none; flex-direction: column; justify-content: space-evenly; align-content: space-evenly; flex-wrap: wrap; gap: 10px 30px; margin-left: 0;" } %>
   <% end %>
   <h2 class="accessibility">Search Criteria</h2>
 </div>

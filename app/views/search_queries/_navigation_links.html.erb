@@ -2,7 +2,7 @@
 <% unless print_friendly %>
  	<div class="grid">
 	  <nav class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom flush--left hard--left" role="navigation" aria-label="Search menu">
-	  	<ul style="<%= params[:class]%>">
+	  	<ul style=<%= device_style %> >
 				<li><%= link_to "View Search Criteria", '#search_criteria_container', id: "view_search_criteria"%></li>
 		    <li><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query) %></li>
 		    <li><%= link_to "New Search", new_search_query_path %></li>
