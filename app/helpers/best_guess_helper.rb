@@ -13,7 +13,7 @@ module BestGuessHelper
   def mother_or_spouse_surname(record_type)
     case record_type.downcase
     when "birth"
-      header = "Mothers Surname"
+      header = "Mother's Maiden Name"
     when "marriage"
       header = "Spouse Surname"
     end

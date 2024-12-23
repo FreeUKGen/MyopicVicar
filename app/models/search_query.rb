@@ -872,6 +872,21 @@ class SearchQuery
     params
   end
 
+  def get_search_record_details(search_result)
+    result_hash = {}
+    record = BestGuess.find_by(RecordNumber: search_result[:RecordNumber])
+
+    return result_hash unless record
+
+    if record.register_entry_number_format
+      register_entry_details(result_hash, record)
+    else
+      volume_page_details(result_hash, search_result)
+    end
+
+    result_hash
+  end
+
   def previous_record(current)
     records_sorted = self.results
     return nil if records_sorted.nil?
@@ -2236,5 +2251,15 @@ class SearchQuery
       arr << '1 NAME Not logged in /Anonymous/'
     end
     arr
+  end
+
+  def register_entry_details(result_hash, record)
+    result_hash['Register No.'] = record.event_registration_number
+    result_hash['Entry No.'] = record.event_entry_number
+  end
+
+  def volume_page_details(result_hash, search_result)
+    result_hash['Volume'] = search_result[:Volume]
+    result_hash['Page'] = search_result[:Page]
   end
 end

@@ -59,7 +59,7 @@ class FeedbacksController < ApplicationController
     if session[:return_to].present?
       redirect_to session.delete(:return_to)
     else
-      redirect_to action: 'new'
+      redirect_to new_feedback_path
     end
   end
 
