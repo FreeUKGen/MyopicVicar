@@ -7,7 +7,6 @@
       <% end %>
     </ul>
   </div>
-  <%@feedback.errors.clear%>
 <% end %>
 <%= simple_form_for(@feedback, :html => {:multipart => true}) do |f| %>
   <%= f.input :title, :label => "Summary" , :input_html => {:class => "simple_form_bgcolour ", :size => 40 }%>
@@ -17,11 +16,12 @@
   <% if @user.present? %>
     <%= f.input :user_id, as: :hidden %>
   <% else %>
-    <%= f.input :user_name %>
+    <%= f.input :user_name, label: 'Your name', :input_html => {:class => "simple_form_bgcolour ", :size => 40 } %>
+    <%= f.input :email_address, label: 'Your email address', :input_html => {:class => "simple_form_bgcolour ", :size => 40 } %>
   <% end %>
   <%= f.input :session_id, :as => :hidden %>
   <%= f.input :problem_page_url,  as: :hidden %>
   <%= f.input :previous_page_url, as: :hidden %>
   <%= f.input :feedback_type, as: :hidden %>
-  <%= f.button :submit, 'Submit Feedback Report'   %>
+  <%= f.button :submit, 'Submit Problem Report'   %>
 <% end %>
