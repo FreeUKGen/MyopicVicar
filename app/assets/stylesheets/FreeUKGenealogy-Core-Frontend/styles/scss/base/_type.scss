@@ -25,7 +25,9 @@
  */
 a {
   color: $project-color;
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: teal;
   font-weight: bold;
   &:focus, &:hover {
     color: $focus-hover;
