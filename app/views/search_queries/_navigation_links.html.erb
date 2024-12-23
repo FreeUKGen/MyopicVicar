@@ -2,14 +2,14 @@
 <% unless print_friendly %>
  	<div class="grid">
 	  <nav class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom flush--left hard--left" role="navigation" aria-label="Search menu">
-	  	<ul style=<%= device_style %> >
+	  	<ul class='nav' style="<%= device_style %>" >
 				<li><%= link_to "View Search Criteria", '#search_criteria_container', id: "view_search_criteria"%></li>
 		    <li><%= link_to "Revise Search", new_search_query_path(:search_id => @search_query) %></li>
 		    <li><%= link_to "New Search", new_search_query_path %></li>
 		    <% if @results_per_page.to_i <= 50 %>
-					<li><%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %></li>
-					<li><%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %></li>
-					<li><%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %></li>
+					<li><%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", :onclick => 'window.print();return false;') %></li>
+					<li><%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
+					<li><%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
 			  <% end %>
 				<% if cookies.signed[:userid].present? %>
 			      <li><%= link_to "Save this search", save_search_path(@search_query.id), method: "post" %></li>
