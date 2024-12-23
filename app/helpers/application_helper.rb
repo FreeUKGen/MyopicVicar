@@ -693,11 +693,11 @@ module ApplicationHelper
       left_arrow_pink: '<i class="fa fa-arrow-left"></i>',
       search: '<i class="fa fa-search"></i>',
       reset: '<i class="fas fa-times></i>',
-      postem: '<i class="fas fa-envelope"></i>',
+      postem: '<i class="fas fa-envelope" style="padding-right:5px"></i>',
       open_postem: '<i class="fas fa-envelope-open-text"></i>',
       scan_file: '<i class="fas fa-file-image"></i>',
       scan_file_filled: '<i class="fas fa-file-image"></i>',
-      camera: '<i class="fas fa-camera"></i>',
+      camera: '<i class="fas fa-camera" style="padding-right:5px"></i>',
       heart: '<i class="far fa-heart"></i>',
       heart_filled: '<i class="fas fa-heart"></i>'
     }
