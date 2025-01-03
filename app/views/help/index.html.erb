@@ -1,0 +1,71 @@
+<main  class="site__content  icon__honeycomb--top-right" id="bmd_site_content">
+  <div class="container">
+    <div class="push--top">
+      <section id="body_content" class="no_side_body"><h1>Help</h1>
+        <section id="body"><div class="inner"><style scoped="scoped">
+            figcaption {
+                font-style: italic;
+                color: #737373; /* 4.74:1 */
+                margin-top: 0.3em;
+            }
+            figure.site img {
+                border: 2px solid #00a099;
+                padding: 0.3em;
+            }
+            figure.image-wide  img {
+                width: 100%;
+                height: auto;
+            }
+        </style>
+          <div class="grid">
+            <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+              <nav aria-labelledby="thisPage">
+                <div class="islet islet--bordered">
+                  <h2 class="title-block" id="helpTopics">Help topics</h2>
+                  <ul class="sub-nav">
+                    <li class="open">
+                      <a href="#SearchHelp">Searching the FreeBMD database</a>
+                      <ul class="push--left">
+                        <li>
+                          <a href="#Intro">Getting Started</a>
+                        </li>
+                        <li>
+                          <a href="#FreeBmdDatabase">The FreeBmd Database</a>
+                        </li>
+                        <li>
+                          <a href="#DataFields">Data Fields</a>
+                        </li>
+                        <li>
+                          <a href="#SearchStrategy">Search Strategy</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <a href="#SearchPage">The Search Page</a>
+                    </li>
+                    <li>
+                      <a href="#ResultsPage">The Results Page</a>
+                    </li>
+                    <li>
+                      <a href="#EntryPage">The Entry Page</a>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+          </div>
+            <div id="SearchHelp" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+              <%= render partial: 'search_help' %>
+            </div>
+            <div id="SearchPage" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+              <%= render partial: 'search_page' %>
+            </div>
+            <div id="ResultsPage" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+              <%= render partial: 'results_page' %>
+            </div>
+            <div id="EntryPage" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+              <%= render partial: 'entry_page' %>
+            </div>
+      </section>
+    </div>
+  </div>
+</main>
