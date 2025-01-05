@@ -1894,7 +1894,7 @@ class FreecenCsvEntry
       end
     else
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        next if entry.id == _id
+        next if entry.id == _id || entry.notes.upcase.include?(notes.upcase)
 
         warning_message = entry.warning_messages + need_review_message
         add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
@@ -1917,21 +1917,29 @@ class FreecenCsvEntry
     notes_need_review_message = 'Warning: Notes field has been adjusted and needs review.<br>'
     if scope == 'ED'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        next if entry.id == _id || entry.notes.upcase.include?(notes.upcase)
+        next if entry.id == _id
 
         _adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
         new_warning_message = updated_warnings + notes_need_review_message
-        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        if entry.notes.present? && entry.notes.upcase.include?(notes.upcase)
+          add_notes = entry.notes
+        else
+          add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        end
         @warnings_adjustment += 1 if entry.warning_messages.blank?
         entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message)
       end
     else
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        next if entry.id == _id || entry.notes.upcase.include?(notes.upcase)
+        next if entry.id == _id
 
         _adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
         new_warning_message = updated_warnings + notes_need_review_message
-        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        if entry.notes.present? && entry.notes.upcase.include?(notes.upcase)
+          add_notes = entry.notes
+        else
+          add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        end
         @warnings_adjustment += 1 if entry.warning_messages.blank?
         entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message)
       end
