@@ -50,7 +50,7 @@ module FreecenCsvEntriesHelper
   end
 
   def propagate_alternate
-    return if session[:propagate_alternate] == session[:propagated_alternate]
+    return if session[:propagate_alternate] == session[:propagated_alternate] || @freecen_csv_file.incorporated
 
     if session[:propagate_alternate].present? && session[:propagate_alternate] == @freecen_csv_entry.id && @year != '1841' && @freecen_csv_entry.record_valid.downcase == 'true'
       link_to 'Propagate Alternate POB Fields', propagate_pob_freecen_csv_entry_path(id: @freecen_csv_entry._id, propagation_fields: 'Alternative'), method: :get, class: "btn btn--small",
@@ -60,7 +60,7 @@ module FreecenCsvEntriesHelper
   end
 
   def propagate_note
-    return if session[:propagate_alternate] == session[:propagated_alternate]
+    return if session[:propagate_alternate] == session[:propagated_alternate] || @freecen_csv_file.incorporated
 
     if session[:propagate_note].present? && session[:propagate_note] == @freecen_csv_entry.id && @freecen_csv_entry.record_valid.downcase == 'true'
       link_to 'Propagate Notes Field', propagate_pob_freecen_csv_entry_path(id: @freecen_csv_entry._id, propagation_fields: 'Notes'), method: :get, class: "btn btn--small",
@@ -70,7 +70,7 @@ module FreecenCsvEntriesHelper
   end
 
   def propagate_both
-    return if session[:propagate_alternate] == session[:propagated_alternate]
+    return if session[:propagate_alternate] == session[:propagated_alternate] || @freecen_csv_file.incorporated
 
     if session[:propagate_alternate].present? && session[:propagate_note].present? && session[:propagate_alternate] == @freecen_csv_entry.id && @year != '1841' && @freecen_csv_entry.record_valid.downcase == 'true'
       link_to 'Propagate POB and Notes Field', propagate_pob_freecen_csv_entry_path(id: @freecen_csv_entry._id, propagation_fields: 'Both'), method: :get, class: "btn btn--small",
