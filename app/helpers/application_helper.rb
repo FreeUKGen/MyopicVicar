@@ -1141,4 +1141,8 @@ module ApplicationHelper
   def titleize_string(string)
     string.present? ? string.titleize : '' 
   end
+
+  def upcase_string(string)
+    string.present? ? string.upcase : '' 
+  end
 end
