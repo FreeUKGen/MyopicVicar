@@ -49,7 +49,7 @@
              <%= search_record[:District] %>
            <% end %>
             <% if search_record.register_entry_number_format %>
-              <% event_register_number = record.event_registration_number %>
+              <% event_register_number = search_record.event_registration_number %>
               <% if event_register_number.present? %>
                 <br /><%= event_register_number  %>
               <% end %>
