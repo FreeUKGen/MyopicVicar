@@ -1,11 +1,11 @@
 <% title "Record Details" %>
 <% breadcrumb :entry_information, @current_record  if @saved_record %>
 <%= render 'flash_notice' %>
-<nav class="text--center" role="navigation" aria-label="Options for entry information">
+<nav class="" role="navigation" aria-label="Options for entry information">
   <ul class="nav">
-      <li><%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, anchor: @anchor_entry), class: " btn   btn--small" if params[:search_id].present?%></li>
-      <li><a href="#" id="citation-toggle" class="btn   btn--small citation-toggle">Generate Citation</a></li>
-      <li><%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %></li>
+    <li><%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, anchor: @anchor_entry), class: " btn   btn--small" if params[:search_id].present?%></li>
+    <li><a href="#" id="citation-toggle" class="btn   btn--small citation-toggle">Generate Citation</a></li>
+    <li><%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %></li>
   </ul>
 </nav>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
@@ -133,12 +133,10 @@
           </div>
         </div>
       <% end %>
-      
-<p>Do you need help with this? There is information about quarters, districts, and how to find the partner in a marriage in the <a href="/cms/help">Help section</a>.</p>
-      <p><strong>Need help?</strong></p>
-      <p>There is information in the <%= link_to 'Help', 'cms/help/draft-ordering-a-certificate'%> section about quarters, districts, and how to find the partner in a marriage.</p>
-      <p><strong>Ordering a GRO certificate</strong></p>
-      <p>You can order certificates from the <%= link_to 'General Register Office(GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.</p>
+      <h3>Need help?</h3>
+      <p>There is information in the <%= link_to 'Help', '/cms/help#gtkDetails'%> section about quarters and how to find the partner in a marriage.</p>
+      <h3>Ordering a GRO certificate</h3>
+      <p>You can order certificates from the <%= link_to 'General Register Office (GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.</p>
       <div class="grid__item two-thirds lap-two-thirds palm-one-whole text--center push--top ">
           <%= link_to 'Suggest a correction', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
         </div>
