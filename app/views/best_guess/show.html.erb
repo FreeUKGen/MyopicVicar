@@ -1,15 +1,13 @@
 <% title "Record Details" %>
 <% breadcrumb :entry_information, @current_record  if @saved_record %>
 <%= render 'flash_notice' %>
-<div class="grid">
-  <nav class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom" role="navigation" aria-label="Options for entry information">
-    <ul class="nav">
-      <li><%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, anchor: @anchor_entry), class: " btn   btn--small" if params[:search_id].present?%></li>
-      <li><a href="#" id="citation-toggle" class="btn   btn--small citation-toggle">Generate Citation</a></li>
-      <li><%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %></li>
-    </ul>
-  </nav>
-</div>
+<nav class="" role="navigation" aria-label="Options for entry information">
+  <ul class="nav">
+    <li><%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, anchor: @anchor_entry), class: " btn   btn--small" if params[:search_id].present?%></li>
+    <li><a href="#" id="citation-toggle" class="btn   btn--small citation-toggle">Generate Citation</a></li>
+    <li><%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %></li>
+  </ul>
+</nav>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <section>
   <%= render 'nav_header_freebmd' %>
