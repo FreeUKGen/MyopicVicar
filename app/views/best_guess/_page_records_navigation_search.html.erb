@@ -1,5 +1,5 @@
 <div class='push-half--top'>
-  <div class= "grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
+  <div class= "grid__item one-whole palm-one-whole hard--left">
     <% if @previous_record_of_page.present?%>
       <div class='grid__item one-third lap-one-half palm-one-half push-half--bottom'>
         <%= link_to 'Previous in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
