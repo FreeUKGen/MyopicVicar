@@ -13,7 +13,7 @@ module BestGuessHelper
   def mother_or_spouse_surname(record_type)
     case record_type.downcase
     when "birth"
-      header = "Mothers Surname"
+      header = "Mother's Maiden Name"
     when "marriage"
       header = "Spouse Surname"
     end
@@ -92,5 +92,12 @@ module BestGuessHelper
       image_path = "#{@image_server}/#{@year}/#{@event}/"
     end
     image_path
+  end
+
+  def value_or_no_data(field_value)
+    unless field_value.blank?
+      field_value
+    else "No data"
+    end
   end
 end
