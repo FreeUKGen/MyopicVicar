@@ -25,18 +25,6 @@
             <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, original_record: @original_record, type: "general"} %>
           <% end %>
         </div>
-        <div class='push-half--top'>
-          <% if params[:search_id].present? %>
-            <div class="grid">
-              <div class='grid__item one-half lap-one-half palm-one-half text--left'>
-                <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
-              </div>
-              <div class='one-half lap-one-half palm-one-half text--right'>
-                <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
-              </div>
-            </div>
-          <% end %>
-        </div>
       </section>
       
       <% if @option == '1' %>

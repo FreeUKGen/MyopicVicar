@@ -25,6 +25,7 @@
  */
 a {
   color: $project-color;
+  text-decoration: none;
   font-weight: bold;
   &:focus, &:hover {
     color: $focus-hover;
