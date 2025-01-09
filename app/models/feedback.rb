@@ -28,6 +28,7 @@ class Feedback
   mount_uploader :screenshot, ScreenshotUploader
 
   validate :title_or_body_exist
+  validates_format_of :email_address,:with => Devise::email_regexp
 
   before_create :url_check, :add_identifier, :add_email, :add_screenshot_location
 
