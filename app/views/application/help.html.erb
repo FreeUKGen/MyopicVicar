@@ -1,0 +1,12 @@
+<%= render Refinery::Page.where(slug: 'information-for-members').first.parts.first.body.html_safe%>
+<% content_for :sidebar do %>
+  <div class="islet islet--bordered">
+    <h5 class="beta  text--teal">Actions</h5>
+    <ul class="sub-nav">
+      <%@help_topics.each do |help| %>
+          <li><%= link_to help, HelpPage::SECTIONS[help], class: "" , method: :get, title: elpPage::SECTIONS[help], target: :_blank %></li>
+      <br>
+      <% end%>
+    </ul>
+  </div>
+<% end %>
