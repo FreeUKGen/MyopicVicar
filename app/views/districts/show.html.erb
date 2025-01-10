@@ -33,7 +33,10 @@
             </tr>
             <tr>
               <td>Year 1993-4 to End</td>
-              <td><%= @district.Volume1993_4toEnd %></td>
+              <td>
+                <%= @district.Volume1993_4toEnd unless @district.Volume1993_4toEnd == 'xx' %>
+                <%= '-' if @district.Volume1993_4toEnd == 'xx' or !district.Volume1993_4toEnd.present? %>
+              </td>
             </tr>
             <tr>
               <th rowspan="<%= @district.DistrictToCounty.count + 1%>">County</th>
