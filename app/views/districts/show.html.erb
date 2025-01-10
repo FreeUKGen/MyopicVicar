@@ -40,7 +40,7 @@
             </tr>
             <% @district.DistrictToCounty.each do |d| %>
               <tr>
-                <td><%= ChapmanCode.name_from_code(d.County) %></td>
+                <td><%= link_to ChapmanCode.name_from_code(d.County), "/districts/county_summary?county_code="+d.County %></td>
                 <td><%= "From #{QuarterDetails.quarter_human(d.StartQN)}" %> <%= QuarterDetails.quarter_year(d.EndQN) > 1993 ? "" : "to #{QuarterDetails.quarter_human(d.EndQN)}" %></td>
               </tr>
             <% end %>
