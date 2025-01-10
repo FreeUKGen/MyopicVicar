@@ -301,6 +301,9 @@ class ApplicationController < ActionController::Base
     session.delete(:contents_id)
     session.delete(:contents_county_description)
     session.delete(:contents_place_description)
+    session.delete(:propagate_alternate)
+    session.delete(:propagate_note)
+    session.delete(:propagated_alternate)
   end
 
   def clean_session_for_county
@@ -355,6 +358,9 @@ class ApplicationController < ActionController::Base
     session.delete(:move_old_place)
     session.delete(:move_new_county)
     session.delete(:move_new_place)
+    session.delete(:propagate_alternate)
+    session.delete(:propagate_note)
+    session.delete(:propagated_alternate)
   end
 
   def clean_session_for_images
