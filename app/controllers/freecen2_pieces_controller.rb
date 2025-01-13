@@ -17,7 +17,9 @@ class Freecen2PiecesController < ApplicationController
     if params[:commit] == 'Submit Number'
       params[:freecen2_piece][:number] = params[:freecen2_piece][:number].strip
       redirect_to locate_other_pieces_freecen2_piece_path(number: params[:freecen2_piece][:number])
-
+    elsif params[:commit] == 'Submit Piece Number'
+      params[:freecen2_piece][:number] = params[:freecen2_piece][:number].strip
+      redirect_to find_pieces_freecen2_piece_path(number: params[:freecen2_piece][:number])
     else
       @new_freecen2_piece_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
       @freecen2_piece = Freecen2Piece.new(@new_freecen2_piece_params)
@@ -116,6 +118,11 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = session[:chapman_code]
   end
 
+  def enter_piece_number
+    @freecen2_piece = Freecen2Piece.new
+    @chapman_code = session[:chapman_code]
+  end
+
   def export_csv
     @chapman_code = session[:chapman_code]
     @year = params[:csvdownload][:year]
@@ -182,12 +189,12 @@ class Freecen2PiecesController < ApplicationController
         piece.update_attributes(piece_availability: params["#{p}_piece_availability"], piece_digitised: params["#{p}_piece_digitised"])
         if piece.errors.any?
           flash[:notice] = "The update of the piece status failed #{piece.errors.full_messages}."
-          redirect_back(fallback_location: locate_other_pieces_freecen2_piece_path(current_piece_number)) && return
+          redirect_back(fallback_location: find_pieces_freecen2_piece_path(current_piece_number)) && return
         end
       end
     end
     flash[:notice] = 'Update was successful'
-    redirect_to locate_other_pieces_freecen2_piece_path(number: current_piece_number)
+    redirect_to find_pieces_freecen2_piece_path(number: current_piece_number)
   end
 
   def index_district_year
@@ -202,37 +209,50 @@ class Freecen2PiecesController < ApplicationController
     end
   end
 
-   def locate_other_pieces
-   redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
-   @number = params[:number]
-   numbers_array = params[:number].split(',')
-   @cleaned_numbers = numbers_array.map(&:squish)
-   @piece_hash = {}
-   @cleaned_numbers.each do |number|
-     year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(number, '')
-     piece_information = Freecen2Piece.where(number: piece).first
-     next unless piece_information.present?
-     piece_chapman_code = piece_information.chapman_code
-     session[:type] = 'locate_other_pieces'
-     find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
-     @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
-     @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
-     @associated_pieces = get_pieces(piece_number, year, piece_chapman_code) if find_associated_pieces
-     @piece_hash[number] = {freecen2_piece: @freecen2_pieces, associated_piece: @associated_pieces}
-   end
+  def locate_other_pieces
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
+    @number = params[:number]
+    year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(params[:number], '')
+    @freecen2_pieces = []
+    session[:type] = 'locate_other_pieces'
+    Freecen2Piece.year(year).order_by(number: 1).each do |test_piece|
+      next unless test_piece.number.include?(piece)
+
+      @freecen2_pieces << test_piece
+    end
+  end
+
+  def find_pieces
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
+    @number = params[:number]
+    numbers_array = params[:number].split(',')
+    @cleaned_numbers = numbers_array.map(&:squish)
+    @piece_hash = {}
+    @cleaned_numbers.each do |number|
+      year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(number, '')
+      piece_information = Freecen2Piece.where(number: piece).first
+      next unless piece_information.present?
+      piece_chapman_code = piece_information.admin_county
+      session[:type] = 'locate_other_pieces'
+      find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
+      @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
+      @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
+      @associated_pieces = get_pieces(piece_number, year, piece_chapman_code) if find_associated_pieces
+      @piece_hash[number] = {freecen2_piece: @freecen2_pieces, associated_piece: @associated_pieces}
+    end
     @piece_hash
-   @all_pieces = []
-   @piece_hash.each do|key, value|
-     freecen2_pieces = value[:freecen2_piece].present? ? value[:freecen2_piece] : []
-     associated_pieces = value[:associated_piece].present? ? value[:associated_piece] : []
-     associated_pieces.present? ? @all_pieces << associated_pieces : @all_pieces << freecen2_pieces
-   end
-   @all_pieces = @all_pieces.flatten
+    @all_pieces = []
+    @piece_hash.each do|key, value|
+      freecen2_pieces = value[:freecen2_piece].present? ? value[:freecen2_piece] : []
+      associated_pieces = value[:associated_piece].present? ? value[:associated_piece] : []
+      associated_pieces.present? ? @all_pieces << associated_pieces : @all_pieces << freecen2_pieces
+    end
+    @all_pieces = @all_pieces.flatten
   end
 
   def get_pieces(piece_number, year,piece_chapman_code)
     pieces = []
-    Freecen2Piece.chapman_code(piece_chapman_code).year(year).order_by(number: 1).each do |test_piece|
+    Freecen2Piece.admin_chapman_code(piece_chapman_code).year(year).order_by(number: 1).each do |test_piece|
       next unless test_piece.number.include?(piece_number)
 
       pieces << test_piece
@@ -359,8 +379,8 @@ class Freecen2PiecesController < ApplicationController
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @census_year = params[:census_year] if params[:census_year].present?
-    @pieces = Freecen2Piece.where(chapman_code: @chapman_code)
-    @pieces = @pieces.where(year: @census_year) if @census_year.present?
+    @pieces = Freecen2Piece.where(admin_county: @chapman_code).order_by(number: 1)
+    @pieces = @pieces.where(year: @census_year).order_by(number: 1) if @census_year.present?
   end
 
   def gap_report
