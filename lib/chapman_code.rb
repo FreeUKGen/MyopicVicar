@@ -155,7 +155,7 @@ module ChapmanCode
         when 'freecen'
           elimination_codes = Freecen::CHAPMAN_CODE_ELIMINATIONS
         when 'freebmd'
-          elimination_codes = {}
+          elimination_codes = {} # tried FreebmdConstants::CHAPMAN_CODE_ELIMINATIONS but made no difference
         end
         myvalue = value.dup
         elimination_codes.each do |county|
