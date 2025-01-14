@@ -3,20 +3,22 @@
 class Help
 
   TopLevelPages = {
-    'search' => 'Searching the FreeBMD database',
-    'search_page' => 'The Search Page',
-    'results_page' => 'The Results Page',
-    'entry_page' => 'The Entry Page'
+    'search' => 'Search',
+    'results' => 'View Results',
+    'entry' => 'Entry Information',
+    'certificates' => 'Order a Certificate',
+    'downloading' => 'Download or Share your results',
+    'more_help' => 'More Help'
   }
 
-  SearchHelp = {
+  Search = {
     'intro' => 'Getting started',
     'freebmd_database' => 'The FreeBMD database',
     'data_fields' => 'Data fields',
     'search_strategy' => 'Search strategy'
   }
 
-  SearchPage = {
+  MoreHelp = {
     'Names' => 'Names',
     'Dates' => 'Dates',
     'RecordTypes' => 'Record Types',
@@ -48,6 +50,21 @@ class Help
     'Print' => 'Print'
   }
 
+  Certificates = {
+    'Ordering' => 'Ordering a Certificate',
+    'GRO' =>  'About the GRO'
+  }
+
+  Downloading = {
+    'Downloading' => 'Downloading Results',
+    'Sharing' => 'Sharing Results'
+  }
+
+  MoreHelp = {
+    'NewTopic' => 'New Topic',
+    'AnotherTopic' => 'Another topic'
+  }
+
   def self.create_island(island_hash, on_this_page = true)
     if on_this_page
       title = 'On this page'
@@ -77,6 +94,21 @@ class Help
     end
     island += '</ul></div></nav></div>'
     island.html_safe
+  end
+
+  def self.create_help_menu(menu_hash, include_header = false)
+    prefix = '/help/'
+    menu = '<div class="grid__item two-fifths lap-one-third palm-one-whole float--right">'
+    menu += '<nav aria-labelledby="thisPage"><div class="islet islet--bordered">'
+    menu += '<h2 class="title-block" id="thisPage">Help Pages</h2>' if include_header
+    menu += '<ul class="sub-nav">'
+    menu_hash.each do |key, value|
+      if value.is_a? String
+        menu += '<li><a title="'+value+'" href="'+prefix+key+'">'+value+'</a></li>'
+      end
+    end
+    menu += '</ul></div></nav></div>'
+    menu.html_safe
   end
 
 end

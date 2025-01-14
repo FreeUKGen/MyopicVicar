@@ -1,9 +1,9 @@
-<section id="search_help">
-  <h2>Searching help</h2>
+<section id="search">
+  <h2>Help: Search</h2>
   <div class="grid">
-    <%= Help.create_island(Help::SearchHelp) %>
+    <%= Help.create_help_menu(Help::TopLevelPages) %>
     <%= render partial: 'intro' %>
     <%= render partial: "freebmd_database" %>
-    <%= Help.create_island(Help::TopLevelPages, false) %>
+    <%= Help.create_island(Help::Search) %>
   </div>
 </section>

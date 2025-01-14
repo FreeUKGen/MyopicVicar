@@ -1,0 +1,9 @@
+<section id="more_help">
+  <h2>Help: More Help</h2>
+  <div class="grid">
+    <%= Help.create_help_menu(Help::TopLevelPages) %>
+    <%#= render partial: 'intro' %>
+    <%#= render partial: "freebmd_database" %>
+    <%= Help.create_island(Help::MoreHelp) %>
+  </div>
+</section>
