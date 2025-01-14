@@ -69,6 +69,20 @@ module ApplicationHelper
     end
   end
 
+  def nav_help_bmd_context
+    suffix = ""
+    if controller_name == 'search_queries'
+      if action_name == 'new'
+        suffix = "#howToSearch"
+      else
+        suffix = "#gtkResults"
+      end
+    elsif controller_name == 'best_guess'
+      suffix = "#gtkDetails"
+    end
+    suffix
+  end
+
   def nav_member_page_link
     return if controller_name == 'sessions'
 
@@ -679,11 +693,11 @@ module ApplicationHelper
       left_arrow_pink: '<i class="fa fa-arrow-left"></i>',
       search: '<i class="fa fa-search"></i>',
       reset: '<i class="fas fa-times></i>',
-      postem: '<i class="fas fa-envelope"></i>',
+      postem: '<i class="fas fa-envelope" style="padding-right:5px"></i>',
       open_postem: '<i class="fas fa-envelope-open-text"></i>',
       scan_file: '<i class="fas fa-file-image"></i>',
       scan_file_filled: '<i class="fas fa-file-image"></i>',
-      camera: '<i class="fas fa-camera"></i>',
+      camera: '<i class="fas fa-camera" style="padding-right:5px"></i>',
       heart: '<i class="far fa-heart"></i>',
       heart_filled: '<i class="fas fa-heart"></i>'
     }
@@ -1122,5 +1136,13 @@ module ApplicationHelper
 
   def enc_uri_reg(search_query)
     'https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName="#{search_query.first_name}"&lastName="#{search_query.last_name}"&tr_device=&size=160x600'
+  end
+
+  def titleize_string(string)
+    string.present? ? string.titleize : '' 
+  end
+
+  def upcase_string(string)
+    string.present? ? string.upcase : '' 
   end
 end

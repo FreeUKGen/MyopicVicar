@@ -1,5 +1,5 @@
 class DistrictsController < ApplicationController
-	require 'freebmd_constants'
+  require 'freebmd_constants'
   skip_before_action :require_login
 	def index
 	  @districts = District.not_invented.all
@@ -65,8 +65,9 @@ class DistrictsController < ApplicationController
     @all_districts = District.not_invented.all
     @districts = []
     @all_districts.each do |district|
-      @districts << district if district.DistrictName =~ ::Regexp.new(/#{@character}/) # RBL: relaxed regex so that it matches multi-character params, anywhere in the District name.
-    end
+      @districts << district if district.DistrictName =~ ::Regexp.new(/^[#{@character}]/)
+		end
+		@districts = @districts.sort_by { |district| [district.DistrictName]}
     render :index
 	end
 

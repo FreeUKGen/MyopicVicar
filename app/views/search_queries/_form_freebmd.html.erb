@@ -22,6 +22,10 @@
     </div>
 <% end %>
 
+<style>
+  .search_form li ol li {margin-bottom: 0px;}
+</style>
+
 <script
     src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
     integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
@@ -72,7 +76,7 @@
                         </div>
                         <div class="flex_item">
                             <label class="accessibility" for="from_year">Start Year</label>
-                            <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                            <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1999, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
                         </div>
                     </div>
                 </fieldset>
@@ -88,7 +92,7 @@
                             </div>
                         <div class="flex_item">
                             <label class="accessibility" for="to_year">To Year</label>
-                            <%= number_field_tag 'search_query[end_year]', set_value_or_default(1993, @search_query.end_year), min: 1837, max:1993, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+                            <%= number_field_tag 'search_query[end_year]', set_value_or_default(1999, @search_query.end_year), min: 1837, max:1999, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
                             </div>
                     </div>
                 </fieldset>
@@ -294,6 +298,9 @@
       </script>
 
     </fieldset>
+    <div>
+      <span><%= link_to 'Help with searching', '/cms/help'+nav_help_bmd_context %></span>
+    </div>
     <div class="grid action">
         <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
     </div>
@@ -520,11 +527,11 @@
                     $('.pages').hide();
                 }
             };
-            vol_and_page_display_controller();
+            //vol_and_page_display_controller();
             aad_selection_function();
 
             $('#search_query_districts').change(function(){
-                vol_and_page_display_controller();
+               // vol_and_page_display_controller();
             });
 
             //$('#death_select_box').prop('disabled', 'disabled');
@@ -537,8 +544,7 @@
                     $('#spouses_mother_surname').prop('disabled', false);
                     $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
                     $('.spouse_or_mother_surname_label').attr('tabindex', '0');
-                    $('.spouse_or_mother_surname_label').text("Mother's Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
-                    $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s name before marriage</span>')
+                    $('.spouse_or_mother_surname_label').text("Mother\'s Maiden Name");
                     $('#death_select_box').prop('disabled', 'disabled');
                     $('#death_select_box').val([]);
                     aad_selection_function();
@@ -575,9 +581,8 @@
             if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
                 //$('#spouses_mother_surname').prop('disabled', false)
                 $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
-                $('.spouse_or_mother_surname_label').text("Mothers Surname").append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
+                $('.spouse_or_mother_surname_label').text("Mother\'s Maiden Name");
                 $('.spouse_or_mother_surname_label').attr('tabindex', '0');
-                $('.spouse_or_mother_surname_label').append('<span class="ttip__text" id="mother_or_spouse_help_text">Mother\'s name before marriage</span>')
                // $('#spouses_mother_surname').css('background', 'white');
                // $('#death_select_box').prop('disabled', 'disabled');
                // $('#death_select_box').css('background', '#ccc');

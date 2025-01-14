@@ -1,22 +1,25 @@
 <% title "Record Details" %>
 <% breadcrumb :entry_information, @current_record  if @saved_record %>
 <%= render 'flash_notice' %>
-<!--div class="grid">
-  <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole">
-    <div class="grid__item one-third lap-one-third palm-one-half hard--left"-->
-      <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, anchor: @anchor_entry), class: " btn   btn--small" if params[:search_id].present?%>
-    <!--/div>
-    
-    
-  </div>
-</div-->
+<div class="grid">
+  <nav class="grid__item seven-tenths lap-one-whole palm-one-whole" role="navigation" aria-label="Options for entry information">
+    <ul class="nav" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px 20px;">
+      <li><%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, anchor: @anchor_entry) if params[:search_id].present?%></li>
+      <li><a href="#" id="citation-toggle" class="citation-toggle">Generate Citation</a></li>
+      <li><%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "", :onclick => 'window.print();return false;') %></li>
+    </ul>
+  </nav>
+</div>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
+<section>
+  <%= render 'nav_header_freebmd' %>
+</section>
   <div class="grid">
     <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
-      <h1 class="beta push-half--top flush--bottom"><%= "Entry Information: #{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}" %></h1>
+      <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s record" %></h1>
       <hr>
       <section>
-        <div class="grid__item two-thirds lap-one-whole palm-one-whole hard--left">
+        <div>
           <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
           <% if params[:search_id].present? %>
             <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
@@ -24,85 +27,60 @@
             <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, original_record: @original_record, type: "general"} %>
           <% end %>
         </div>
-        <% if @search %>
-          <%= render partial: 'page_records_navigation_search' %>
-        <% end %>
-        <% if params[:saved_record] %>
-          <%= render partial: 'page_records_navigation_saved' %>
-        <% end %>
-        <div class='push-half--top'>
-          <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
-            <% if params[:search_id].present? %>
-              <div class='grid__item one-half lap-one-half palm-one-half text--left'>
-                <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
-              </div>
-              <div class='grid__item one-half lap-one-half palm-one-half text--right'>
-                <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
-              </div>
-            <% end %>
-          </div>
-        </div>
       </section>
       
       <% if @option == '1' %>
         <div id="display_scans">
-          <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left push--top">
-            <h4>Scans</h4>
-          </div>
-          <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
-            <table class="table--bordered table--data ">
-              <thead>
-                <th>Scan</th>
-                <th>View Scan</th>
-              </thead>
-              <tbody>
-                <% if @scan_links.present? %>
-                  <% @scan_links.each do |s| %>
-                      <% series = s.SeriesRangeFileName %>
-                      <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
+          <h4>Scans</h4>
+          <table class="table--bordered table--data ">
+            <thead>
+              <th>Scan</th>
+              <th>View Scan</th>
+            </thead>
+            <tbody>
+              <% if @scan_links.present? %>
+                <% @scan_links.each do |s| %>
+                    <% series = s.SeriesRangeFileName %>
+                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
+                    <tr>
+                      <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                      <td><%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%></td>
+                    </tr>
+                <% end %>
+               <% end %>
+              <% if @acc_scans.present? %>
+                <% @acc_scans.each do |s| %>
+                    <% series = s.SeriesID %>
+                    <% range = "/#{s.range.Range}" if s.Range.present?%>
+                    <% file = s.Filename %>
+                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
+                    <tr>
+                      <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                      <td><%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%></td>
+                    </tr>
+                <% end %>
+              <% end %>
+              <% if @acc_mul_scans.present? %>
+                <% @acc_mul_scans.each do |s| %>
+                    <% series = s.SeriesID %>
+                    <% range = "/#{s.Range}" if s.Range.present?%>
+                    <% @current_record.multi_image_filenames.each do |fn| %>
+                      <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
                       <tr>
                         <td><%= image_tag(image_file_path,size: "100x100")%></td>
-                        <td><%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%></td>
+                        <td><%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%></td>
                       </tr>
-                  <% end %>
+                    <% end %>
                 <% end %>
-                <% if @acc_scans.present? %>
-                  <% @acc_scans.each do |s| %>
-                      <% series = s.SeriesID %>
-                      <% range = "/#{s.range.Range}" if s.Range.present?%>
-                      <% file = s.Filename %>
-
-                      <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
-                      <tr>
-                        <td><%= image_tag(image_file_path,size: "100x100")%></td>
-                        <td><%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%></td>
-                      </tr>
-                  <% end %>
-                <% end %>
-                <% if @acc_mul_scans.present? %>
-                  <% @acc_mul_scans.each do |s| %>
-                      <% series = s.SeriesID %>
-                      <% range = "/#{s.Range}" if s.Range.present?%>
-                      <% @current_record.multi_image_filenames.each do |fn| %>
-                        <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
-                        <tr>
-                          <td><%= image_tag(image_file_path,size: "100x100")%></td>
-                          <td><%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%></td>
-                        </tr>
-                      <% end %>
-                  <% end %>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
-          <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
-            <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site (link opens in new tab)", "https://images.freebmd.org.uk/cgi/choose.pl", target: "_blank"%></p>
-          </div>
+              <% end %>
+            </tbody>
+          </table>
+          <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site (link opens in new tab)", "https://images.freebmd.org.uk/cgi/choose.pl", target: "_blank"%></p>
         </div>
       <% end %>
       <% if @option == '2' %>
         <div id="display_postems">
-          <div class="grid__item two-thirds lap-two-thirds palm-one-whole push--bottom hard--left push--top">
+          <div>
             <h4>Postems</h4>
             <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
             <% if @current_record.postems_list.present? %>
@@ -125,7 +103,7 @@
                   <% end %>
                 </tbody>
               </table>
-            <% end%>
+            <% end %>
             <p id="create_postem">Add a postem</p>
             <div class="create_postem_div">
               <%= semantic_form_for(@new_postem) do |f| %>
@@ -145,8 +123,12 @@
           </div>
         </div>
       <% end %>
+      <h3>Need help?</h3>
+      <p>There is information in the <%= link_to 'Help', '/cms/help#gtkDetails'%> section about quarters and how to find the partner in a marriage.</p>
+      <h3>Ordering a GRO certificate</h3>
+      <p>You can order certificates from the <%= link_to 'General Register Office (GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.</p>
       <div class="grid__item two-thirds lap-two-thirds palm-one-whole text--center push--top ">
-          <%= link_to 'Report an Error in this Data', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
+          <%= link_to 'Suggest a correction', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
         </div>
     </div>
     <% unless print_friendly %>

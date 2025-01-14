@@ -179,7 +179,7 @@
               <%= yield %>
             </div>
           <% end %>
-          <% unless  session[:userid_detail_id].present?%>
+          <% unless  session[:userid_detail_id].present? || (controller_name == 'feedbacks' && action_name == 'new') %>
             <%= form_tag(problem_url, method: :get) do %>
               <% problem_button_options.each_pair do |name, value| %>
                 <%= hidden_field_tag(name, value)%>

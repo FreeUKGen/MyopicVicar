@@ -54,6 +54,12 @@ class District < FreebmdDbBase
   def district_name_as_filename
     self.DistrictName.gsub(/ /, "_")
   end
+  
+  def district_name_no_spaces(suffix)
+    district_name = self.DistrictName.gsub(/\W/, "_")
+    district_name.gsub!(/_+/, '_')
+    district_name+'.'+suffix
+  end
 
   def district_friendly_url
     particles = []

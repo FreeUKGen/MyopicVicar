@@ -13,7 +13,7 @@ module BestGuessHelper
   def mother_or_spouse_surname(record_type)
     case record_type.downcase
     when "birth"
-      header = "Mothers Surname"
+      header = "Mother's Maiden Name"
     when "marriage"
       header = "Spouse Surname"
     end
@@ -58,6 +58,9 @@ module BestGuessHelper
   end
 
   def format_registered registered_date, quarter
+    if (registered_date.length == 4)
+      registered_date.insert(2, '.')
+    end
     registered = registered_date.split('.')
     year = formatted_year(quarter).to_s
     value = "#{QuarterDetails.month_hash[registered[0]]} #{year[0..1]}#{registered[1]}"
@@ -108,4 +111,10 @@ module BestGuessHelper
     end
   end
 
+  def value_or_no_data(field_value)
+    unless field_value.blank?
+      field_value
+    else "No data"
+    end
+  end
 end
