@@ -32,7 +32,7 @@ module Freecen
           warning_message = csv_entry.warning_messages + "Warning: Alternate fields have been adjusted and need review.<br>"
           csv_entry.update_attributes(birth_county: propagation_match.new_birth_county, birth_place: propagation_match.new_birth_place, warning_messages: warning_message)
         end
-        if propagation_match.propagate_notes
+        if propagation_match.propagate_notes && !(csv_entry.notes.present? && csv_entry.notes.upcase.include?(propagation_match.new_notes.upcase))
           the_notes = csv_entry.notes.blank? ? propagation_match.new_notes : "#{csv_entry.notes} #{propagation_match.new_notes}"
           warning_message = csv_entry.warning_messages + "Warning: Notes field has been adjusted and needs review.<br>"
           csv_entry.update_attributes(notes: the_notes, warning_messages: warning_message)

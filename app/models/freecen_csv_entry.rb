@@ -1746,7 +1746,7 @@ class FreecenCsvEntry
   end
 
   def add_address(freecen_csv_file_id, dwelling)
-    first_individual = FreecenCsvEntry.find_by(freecen_csv_file_id: freecen_csv_file_id, dwelling_number: dwelling)
+    first_individual = FreecenCsvEntry.find_by(freecen_csv_file_id: freecen_csv_file_id, dwelling_number: dwelling, sequence_in_household: 1)
     if first_individual.present?
       self.folio_number = first_individual.folio_number
       self.page_number = first_individual.page_number
@@ -1883,16 +1883,18 @@ class FreecenCsvEntry
     need_review_message = 'Warning: Notes field has been adjusted and needs review.<br>'
     if scope == 'ED'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        next if entry.id == _id
+        next if entry.id == _id || entry.notes.upcase.include?(notes.upcase)
+
 
         warning_message = entry.warning_messages + need_review_message
         add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
         @warnings_adjustment += 1 if entry.warning_messages.blank?
         entry.update_attributes(notes: add_notes, warning_messages: warning_message)
+
       end
     else
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        next if entry.id == _id
+        next if entry.id == _id || entry.notes.upcase.include?(notes.upcase)
 
         warning_message = entry.warning_messages + need_review_message
         add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
@@ -1919,7 +1921,11 @@ class FreecenCsvEntry
 
         _adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
         new_warning_message = updated_warnings + notes_need_review_message
-        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        if entry.notes.present? && entry.notes.upcase.include?(notes.upcase)
+          add_notes = entry.notes
+        else
+          add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        end
         @warnings_adjustment += 1 if entry.warning_messages.blank?
         entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message)
       end
@@ -1929,7 +1935,11 @@ class FreecenCsvEntry
 
         _adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
         new_warning_message = updated_warnings + notes_need_review_message
-        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        if entry.notes.present? && entry.notes.upcase.include?(notes.upcase)
+          add_notes = entry.notes
+        else
+          add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        end
         @warnings_adjustment += 1 if entry.warning_messages.blank?
         entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message)
       end
@@ -2606,11 +2616,22 @@ class FreecenCsvEntry
     return [nil, nil] if list_of_records.blank?
 
     current_index = list_of_records.find_index(_id)
-    return [nil, nil] if current_index.blank?
-
     number_records = list_of_records.length
-    next_entry = (current_index + 1) <= number_records ? FreecenCsvEntry.find_by(_id: list_of_records[current_index + 1]) : nil
-    previous_entry = (current_index - 1) < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_records[current_index - 1])
+    if current_index.present?
+      next_index = current_index + 1
+      previous_index = current_index - 1
+    else
+      previous_index = -1
+      next_index = number_records
+      list_of_records.each_with_index do |list_id, idx|
+        next_index = idx
+        break if list_id > _id
+
+        previous_index = idx
+      end
+    end
+    next_entry = next_index < number_records && next_index != previous_index ? FreecenCsvEntry.find_by(_id: list_of_records[next_index]) : nil
+    previous_entry = previous_index.negative? ? nil : FreecenCsvEntry.find_by(_id: list_of_records[previous_index])
     [next_entry, previous_entry]
   end
 
