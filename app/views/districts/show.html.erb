@@ -2,19 +2,16 @@
 <%# @district = District.where(DistrictNumber: params['district_number']).first if params['district_number'] %>
 <% other_info_available = (@district.Volume1993_4toEnd != 'xx' || @district.DistrictPseudonym.present?) %>
 <h1 class="title text--center">District: <%= "#{@district.district_name_display_format}"%></h1>
-<hr>
+<p>This is the information we hold about the <%= "#{@district.district_name_display_format}"%> Registration District.</p>
+<% if @district.district_url_definable? %>
+  <p>There is more detailed information about <%= @district.district_name_display_format %> on the <%= link_to "UKBMD website", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%>.
+    Please note that during the period this Registration District name was used there could be changes in which places were included within the
+    district. The <%= link_to "UKBMD page", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%> includes information
+    on these changes.</p>
+<% else %>
+  <p>UKBMD information on <%= "#{@district.district_name_display_format}"%> is not available.</p>
+<% end %>
 <div class="grid">
-  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="intro">
-  <p>This is the information we hold about the <%= "#{@district.district_name_display_format}"%> Registration District.</p>
-  <% if @district.district_url_definable? %>
-    <p>There is more detailed information about <%= @district.district_name_display_format %> on the <%= link_to "UKBMD website", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%>.
-      Please note that during the period this Registration District name was used there could be changes in which places were included within the
-      district. The <%= link_to "UKBMD page", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%> includes information
-      on these changes.</p>
-  <% else %>
-    <p>UKBMD information on <%= "#{@district.district_name_display_format}"%> is not available.</p>
-  <% end %>
-  </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties">
     <h2>Counties</h2>
     <p>Counties of which <%= "#{@district.district_name_display_format}"%> Registration District has formed a part, by date.</p>
