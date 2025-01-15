@@ -1,0 +1,84 @@
+<% breadcrumb :freecen_pob_propagation, @chapman_code, @pob_propagation%>
+<h1 style="text-align: center">FreeCen POB Propagation for <%= @county%> (<%= @chapman_code%>)</h1>
+<div style="text-align: center">
+  <%= link_to 'Delete POB Propagation Record', freecen_pob_propagation_path(@pob_propagation), method: :delete, data: { disable_with:"<i class='fa fa-spinner fa-spin'></i>Deleting", confirm: 'Are you sure you want to delete this POB Propagation Record?' } , :class => "btn  btn--small"%>
+</div>
+<div class="grid">
+  <section class="island ">
+    <div class="grid__item ">
+      <table   class="table--bordered table--striped  table--data">
+        <colgroup >
+          <col class=t40>
+          <col class=t60>
+        </colgroup>
+        <tr>
+          <th class="caps">Field</th>
+          <th  class="caps">Value</th>
+        </tr>
+        <tr>
+          <td>Verbatim Birth County:</td>
+          <td class="weight--semibold">
+            <%= @pob_propagation.match_verbatim_birth_county %> </td>
+        </tr>
+        <tr>
+          <td>Verbatim Birth Place:</td>
+          <td class="weight--semibold">
+            <%= @pob_propagation.match_verbatim_birth_place %> </td>
+        </tr>
+        <tr>
+          <td>Scope Year (ALL = All years):</td>
+          <td class="weight--semibold">
+            <%= @pob_propagation.scope_year  %></td>
+        </tr>
+        <tr>
+          <td>Scope County (ALL = All Counties):</td>
+          <td class="weight--semibold">
+            <%= @pob_propagation.scope_county  %></td>
+        </tr>
+        <tr>
+          <td>Propagate POB:</td>
+          <% if @pob_propagation.propagate_pob %>
+            <td class="weight--semibold">Yes</td>
+          <% else %>
+            <td class="weight--semibold">No</td>
+          <% end %>
+        </tr>
+        <tr>
+          <td>Alternate Birth County:</td>
+          <td class="weight--semibold">
+            <%= @pob_propagation.new_birth_county %> </td>
+        </tr>
+        <tr>
+          <td>Alternate Birth Place:</td>
+          <td class="weight--semibold">
+            <%= @pob_propagation.new_birth_place %> </td>
+        </tr>
+        <tr>
+          <td>Propagate Note:</td>
+          <% if @pob_propagation.propagate_notes %>
+            <td class="weight--semibold">Yes</td>
+          <% else %>
+            <td class="weight--semibold">No</td>
+          <% end %>
+        </tr>
+        <tr>
+          <td>Note:</td>
+          <td class="weight--semibold">
+            <%= @pob_propagation.new_notes %> </td>
+        </tr>
+        <tr>
+          <td>Created by:</td>
+          <td class="weight--semibold">
+            <%= @pob_propagation.created_by  %></td>
+        </tr>
+        <tr>
+          <td>Creation Date:</td>
+          <td class="weight--semibold">
+            <%= @pob_propagation.c_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+        </tr>
+      </p>
+    </table>
+  </div>
+</section>
+</div>
+<br>
