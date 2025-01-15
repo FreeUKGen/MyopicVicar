@@ -1241,7 +1241,7 @@ module ApplicationHelper
   end
 #publift
   def horz_advert(fuse)
-    content_tag :div, class:'grid__item one-whole' do
+    content_tag :div, class:'one-whole' do
       content_tag :fieldset do
         concat(content_tag(:legend,"Advertisement", align:'center'))
         concat(content_tag(:div,'',"data-fuse"=>fuse))
