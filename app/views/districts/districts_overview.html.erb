@@ -48,17 +48,23 @@
   </div>
 
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties_districts">
-    <h2>Counties and Registration Districts</h2>
-    <p>These pages contain information about each County and Registration District in the database, showing the dates when each District was active,
-      and the county or counties within which it fell. There is everything from detailed
-      county and district listings right down to how many records the database holds for every year for an individual registration district.</p>
+    <h2>Registration Districts</h2>
+    <p>These pages contain information about each Registration District in the database. For each District we provide the following information:
+    <ul>
+      <li>the <b>county</b> or <b>counties</b> within which the District fell, and the range of dates for each</li>
+      <li>the <b>volume number</b> associated with the District for different dates</li>
+      <li>a <b>page map</b> showing the expected volume number, and the ranges of page numbers encountered in the data,
+        for each event type (birth, marriage and death) and quarter</li>
+      <li>lists of all the <b>forenames</b> and <b>surnames</b> found in the District for each event type (birth, marriage and death)</li>
+      <li>the <b>total number</b> of births, marriages and deaths recorded for the District</li>
+    </ul></p>
 
     <%= render(partial: 'select_a_county') %>
     <%= render(partial: 'select_districts') %>
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="other_info">
     <h2>Other Information</h2>
-    <p></p>
+    <p>We also provide <b>page maps</b> which are arranged chronologically.</p>
     <%= render(partial: 'select_a_year') %>
 
       <script>

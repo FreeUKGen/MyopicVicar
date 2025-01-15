@@ -1,117 +1,16 @@
 <%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
 <%# @district = District.where(DistrictNumber: params['district_number']).first if params['district_number'] %>
 <% other_info_available = (@district.Volume1993_4toEnd != 'xx' || @district.DistrictPseudonym.present?) %>
-<h1 class="beta push-half--top flush--bottom">District: <%= "#{@district.district_name_display_format}"%></h1>
+<h1 class="title text--center">District: <%= "#{@district.district_name_display_format}"%></h1>
 <hr>
 <div class="grid">
-  <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
-    <h1 class="beta push-half--top flush--bottom">District Information: <%= "#{@district.district_name_display_format}"%></h1>
-    <hr>
-    <section>
-      <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left">
-        <table class="table--bordered table--data">
-          <caption class="accessibility"> Information about <%= "#{@district.district_name_display_format} District"%>  </caption>
-          <tbody>
-            <tr>
-              <th rowspan="7">Volume</th>
-            </tr>
-            <tr>
-              <td>Year 1837 to 1851</td>
-              <td><%= @district.Volume1837to1851 %></td>
-            </tr>
-            <tr>
-              <td>Year 1852 to 1945</td>
-              <td><%= @district.Volume1852to1945 %></td>
-            </tr>
-            <tr>
-              <td>Year 1946 to 1965</td>
-              <td><%= @district.Volume1946to1965 %></td>
-            </tr>
-            <tr>
-              <td>Year 1966 to 1973</td>
-              <td><%= @district.Volume1966to1973 %></td>
-            </tr>
-            <tr>
-              <td>Year 1974 to 1993_4</td>
-              <td><%= @district.Volume1974to1993_4 %></td>
-            </tr>
-            <tr>
-              <td>Year 1993-4 to End</td>
-              <td><%= @district.Volume1993_4toEnd %></td>
-            </tr>
-            <tr>
-              <th rowspan="<%= @district.DistrictToCounty.count + 1%>">County</th>
-            </tr>
-            <% @district.DistrictToCounty.each do |d| %>
-              <tr>
-                <td><%= ChapmanCode.name_from_code(d.County) %></td>
-                <td><%= "From #{QuarterDetails.quarter_human(d.StartQN)}" %> <%= QuarterDetails.quarter_year(d.EndQN) > 1993 ? "" : "to #{QuarterDetails.quarter_human(d.EndQN)}" %></td>
-              </tr>
-            <% end %>
-            <tr>
-                <th rowspan="4">Unique Names</th>
-              </tr>
-              <tr>
-                <td><%= link_to 'View Birth Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "birth" ), method: :get %></td>
-                <td>
-                  <dl>
-                    <dt>
-                      Forenames Count: <%= @birth_uniq_forename_count%>
-                    </dt>
-                    <dt>
-                      Surnames Count: <%= @birth_uniq_surname_count%>
-                    </dt>
-                  </dl>
-                </td>
-              </tr>
-              <tr>
-                <td><%= link_to 'View Marriage Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "marriage" ), method: :get %></td>
-                <td>
-                  <dl>
-                    <dt>
-                      Forenames Count: <%= @marriage_uniq_forename_count%>
-                    </dt>
-                    <dt>
-                      Surnames Count: <%= @marriage_uniq_surname_count%>
-                    </dt>
-                  </dl>
-                </td>
-              </tr>
-              <tr>
-                <td><%= link_to 'View Death Names', unique_district_names_path(id: @district.DistrictNumber, record_type: "death" ), method: :get %></td>
-                <td>
-                  <dl>
-                    <dt>
-                      Forenames Count: <%= @death_uniq_forename_count%>
-                    </dt>
-                    <dt>
-                      Surnames Count: <%= @death_uniq_surname_count%>
-                    </dt>
-                  </dl>
-                </td>
-              </tr>
-              <tr>
-                <th>UKBMD Link</th>
-                <td colspan="2">
-                  <% if @district.district_url_definable? %>
-                    There is  more information about <%= @district.district_name_display_format.capitalize %> on the UKBMD website. Please note that during the period this Registration District name was used there could be changes in which places were included within the district. UKBMD  includes information on these:
-                    <%= link_to "More information about #{@district.district_name_display_format.capitalize} on UKBMD", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%><br>
-                  <% else %>
-                    Not Available
-                  <% end %>
-                </td>
-              </tr>
-          </tbody>
-        </table>
-      </div>  
-    </section>
-  </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="intro">
   <p>This is the information we hold about the <%= "#{@district.district_name_display_format}"%> Registration District.</p>
   <% if @district.district_url_definable? %>
-    <p>There is  more information about <%= @district.district_name_display_format %> on the <%= link_to "UKBMD website", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%>.
-      Please note that during the period this Registration District name was used there could be changes in which places were included within the district.
-      The <%= link_to "UKBMD page", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%> includes information on these changes.</p>
+    <p>There is more detailed information about <%= @district.district_name_display_format %> on the <%= link_to "UKBMD website", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%>.
+      Please note that during the period this Registration District name was used there could be changes in which places were included within the
+      district. The <%= link_to "UKBMD page", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%> includes information
+      on these changes.</p>
   <% else %>
     <p>UKBMD information on <%= "#{@district.district_name_display_format}"%> is not available.</p>
   <% end %>

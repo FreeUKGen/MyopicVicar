@@ -3,7 +3,7 @@
 <h2>Page map for <%= "#{@district.district_name_display_format}" %></h2>
 <div class="grid">
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
-    <% if File.exist?('app/html/'+@district.district_name_as_filename+'.csv') %>
+    <% if File.exist?('/raid/freebmd2/district_csv_files/'+@district.district_name_as_filename+'.csv') %>
       <p>This page gives information about the range of values for <b>Page</b> for each <b>Volume</b> for a specific Quarter and Event Type (Birth, Marriage or Death).
         These ranges have been derived from the entries included. An explanation of the headings is given at <a href="#explain">the end of this page</a>.
         Here are links to the first <a href="#B">Birth</a>, <a href="#M">Marriage</a> and <a href="#D">Death</a> entry in the table.</p>
@@ -11,7 +11,7 @@
         <tr><th colspan="4"></th><th scope="column">Page</th><th scope="column" colspan="3">Assessment data</th></tr>
         <tr><th scope="column">Type</th><th scope="column">Year</th><th scope="column">Quarter</th><th scope="column">Volume</th><th scope="column">Lowest/Highest</th><th scope="column">Before/After</th><th scope="column">Gaps</th><th scope="column">Total</th></tr>
         <% current_event_type = '-' %>
-        <% File.readlines('app/html/'+@district.district_name_as_filename+'.csv', chomp: true).each do | line | %>
+        <% File.readlines('/raid/freebmd2/district_csv_files/'+@district.district_name_as_filename+'.csv', chomp: true).each do | line | %>
           <%  cells = line.split(',')
               year = cells[0][0..3]
               event_type = cells[0][4]
@@ -40,8 +40,8 @@
         <tr><th scope="row">Gaps</th> <td>Number of page numbers missing within range</td></tr>
         <tr><th scope="row">Total</th> <td>Total number of entries with page numbers within range</td></tr></TABLE>
     <% else %>
-      <p>Sorry, the file <%= 'app/html/'+@district.district_name_as_filename+'.csv' %> cannot be found, so page map details are not available.</p>
-      <p>Currently in directory <%= File.basename(Dir.getwd) %> - files <%= Dir[Dir.getwd+'/*'] %> and in html folder <%= Dir[Dir.getwd+'/app/html/*'] %> </p>
+      <p>Sorry, the file <%= '/raid/freebmd2/district_csv_files/'+@district.district_name_as_filename+'.csv' %> cannot be found, so page map details are not available.</p>
+      <p>Currently in directory <%= File.basename(Dir.getwd) %> - files <%= Dir[Dir.getwd+'/*'] %> and in html folder <%= Dir[Dir.getwd+'/raid/freebmd2/district_csv_files/*'] %> </p>
     <% end %>
   </div>
 </div>
