@@ -1,44 +1,64 @@
-<h1 class="title text--center">Counties and Registration Districts</h1>
-<h2 class="accessibility">Database contents</h2>
-<p>These pages contain information about each County and Registration District in the database, showing the duration of each District,
-  and the county/ies within which it fell. There is everything from detailed
-  county and district listings right down to how many records the database holds for every year for an individual registration district.</p>
+<h1 class="title text--center">Explore the Database</h1>
+<div>
+  <p>These pages tell you about the data behind the FreeBMD web site. This information is designed to help you make the best use of the site when researching
+  your family history.</p>
+  <p>One obvious question to ask is <q>does the FreeBMD database hold the information I am seeking?</q>. The <a href="#statistics">Database coverage
+    and statistics</a> section explains the scope of the database, and gives an up-to-date summary of our progress in transcribing the G.R.O. index.</p>
+  <p>You can refine your search by specifying one or more <a href="#counties_districts">Registration Districts</a>. The boundaries of these Districts have changed over time, and
+    it may not be obvious which District a present-day place may belong to. You can find out more about an individual <a href="#districts">District</a>
+  if you know its name, or you can start by selecting a <a href="#counties">county</a> to see what Districts it contains. There is more information to
+  be found about each District; the <a href="#other_info">Other Information</a> section describes this.</p>
+</div>
 <script
   src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
   integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
   crossorigin="anonymous"></script>
 
 <div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2>Database coverage</h2>
+    <% active_quarter_events = Coverage.where( Percentage: 1..98) %>
+    <p>The FreeBMD database holds records of births, marriages and deaths registered in England and Wales from July 1837 onwards.
+      It is being constantly updated with new transcriptions.</p>
+    <p>Work is substantially complete on all dates up to <%= format_quarter_year(active_quarter_events.first.quarter_number_event_to_quarter) %>.
+      There are <%= active_quarter_events.size.to_s %> <%= link_to "active quarters", coverage_index_path %> from this date. The latest date for which transcription work
+      has started is <%= format_quarter_year(active_quarter_events.last.quarter_number_event_to_quarter) %>.</p>
+  </div>
+
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
     <nav aria-labelledby="contentsMenu">
       <div class="islet islet--bordered">
         <h2 class="title-block" id="contentsMenu">On this page</h2>
         <ul class="sub-nav">
           <li>
-            <a href="#counties">Select a County</a> </li>
+            <a href="#statistics">Database coverage</a> </li>
           <li>
-            <a href="#districts">Select a District</a> </li>
-          <li>
-            <a href="#years">Select a Year</a> </li>
-          <li>
-            <a href="#statistics">Database statistics</a> </li>
+            <a href="#counties_districts">Counties and Districts</a>
+            <ul class="push--left">
+              <li>
+                <a href="#counties">Select a County</a> </li>
+              <li>
+                <a href="#districts">Select a District</a> </li>
+            </ul>
+            <li>
+              <a href="#other_info">Other information</a> </li>
         </ul>
       </div>
     </nav>
   </div>
 
-  <%= render(partial: 'select_a_county') %>
-  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right" id="statistics">
-    <div class="island island--bordered">
-      <h2 class="delta push-half--bottom">Database statistics</h2>
-      <% active_quarter_events = Coverage.where( Percentage: 1..98) %>
-      <p>The FreeBMD database is being constantly updated with new transcriptions.
-      Work is substantially complete on all dates up to <%= format_quarter_year(active_quarter_events.first.quarter_number_event_to_quarter) %>.
-      There are <%= active_quarter_events.size.to_s %> <%= link_to "active quarters", coverage_index_path %> from this date. The latest date for which transcription work
-      has started is <%= format_quarter_year(active_quarter_events.last.quarter_number_event_to_quarter) %>.</p>
-    </div>
-  </div>
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties_districts">
+    <h2>Counties and Registration Districts</h2>
+    <p>These pages contain information about each County and Registration District in the database, showing the dates when each District was active,
+      and the county or counties within which it fell. There is everything from detailed
+      county and district listings right down to how many records the database holds for every year for an individual registration district.</p>
+
+    <%= render(partial: 'select_a_county') %>
     <%= render(partial: 'select_districts') %>
+  </div>
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="other_info">
+    <h2>Other Information</h2>
+    <p></p>
     <%= render(partial: 'select_a_year') %>
 
       <script>
@@ -74,4 +94,6 @@
               }
           });
       </script>
+  </div>
+
 </div>
