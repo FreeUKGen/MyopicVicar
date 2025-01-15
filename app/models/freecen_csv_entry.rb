@@ -1746,7 +1746,7 @@ class FreecenCsvEntry
   end
 
   def add_address(freecen_csv_file_id, dwelling)
-    first_individual = FreecenCsvEntry.find_by(freecen_csv_file_id: freecen_csv_file_id, dwelling_number: dwelling)
+    first_individual = FreecenCsvEntry.find_by(freecen_csv_file_id: freecen_csv_file_id, dwelling_number: dwelling, sequence_in_household: 1)
     if first_individual.present?
       self.folio_number = first_individual.folio_number
       self.page_number = first_individual.page_number
