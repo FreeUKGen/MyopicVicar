@@ -16,16 +16,16 @@
       <tr>
         <th class='sticky-header '> Verbatim Birth County</th>
         <th class='sticky-header '> Verbatim Birth Place</th>
-        <th class='sticky-header '> Created By</th>
-        <th class='sticky-header '> Creation Date</th>
+        <th class='sticky-header '> Alternate Birth County</th>
+        <th class='sticky-header '> Alternate Birth Place</th>
         <th class='sticky-header '> Action</th>
       </tr>
       <% @pob_propagations.each do |prop| %>
         <tr>
           <td><%= prop.match_verbatim_birth_county %></td>
           <td><%= prop.match_verbatim_birth_place %></td>
-          <td><%= prop.created_by %></td>
-          <td><%= prop.c_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+          <td><%= prop.new_birth_county %></td>
+          <td><%= prop.new_birth_place %></td>
           <td><%= link_to 'Show', freecen_pob_propagation_path(prop) %></td>
         </tr>
       <% end %>
