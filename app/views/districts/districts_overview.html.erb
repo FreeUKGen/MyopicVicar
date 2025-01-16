@@ -4,10 +4,10 @@
   your family history.</p>
   <p>One obvious question to ask is <q>does the FreeBMD database hold the information I am seeking?</q>. The <a href="#statistics">Database coverage
     and statistics</a> section explains the scope of the database, and gives an up-to-date summary of our progress in transcribing the G.R.O. index.</p>
-  <p>You can refine your search by specifying one or more <a href="#counties_districts">Registration Districts</a>. The boundaries of these Districts have changed over time, and
-    it may not be obvious which District a present-day place may belong to. You can find out more about an individual <a href="#districts">District</a>
+  <p>In your searches you can specify one or more <a href="#counties_districts">Registration Districts</a>. The boundaries of these Districts have changed over time, and
+    it may not be obvious which District a present-day place may be situated in. You can find out more about an individual <a href="#districts">District</a>
   if you know its name, or you can start by selecting a <a href="#counties">county</a> to see what Districts it contains. There is more information to
-  be found about each District; the <a href="#other_info">Other Information</a> section describes this.</p>
+    be found about each District - see <a href="#counties_districts">Registration Districts</a> below.</p>
 </div>
 <script
   src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
@@ -51,12 +51,14 @@
     <h2>Registration Districts</h2>
     <p>These pages contain information about each Registration District in the database. For each District we provide the following information:
     <ul>
+      <li>the <b>total number</b> of births, marriages and deaths recorded for the District</li>
       <li>the <b>county</b> or <b>counties</b> within which the District fell, and the range of dates for each</li>
       <li>the <b>volume number</b> associated with the District for different dates</li>
       <li>a <b>page map</b> showing the expected volume number, and the ranges of page numbers encountered in the data,
         for each event type (birth, marriage and death) and quarter</li>
+      <li>[<b>volume numbers by year</b> as found in the data]</li>
+      <li>[<b>volume/year conflicts</b> as found in the data]</li>
       <li>lists of all the <b>forenames</b> and <b>surnames</b> found in the District for each event type (birth, marriage and death)</li>
-      <li>the <b>total number</b> of births, marriages and deaths recorded for the District</li>
     </ul></p>
 
     <%= render(partial: 'select_a_county') %>
@@ -64,7 +66,9 @@
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="other_info">
     <h2>Other Information</h2>
-    <p>We also provide <b>page maps</b> which are arranged chronologically.</p>
+    <p>Most of the information we provide about the database is organised by District. However, we also provide
+      <b>page maps</b>, showing the expected volume number and the ranges of page numbers encountered in the data,
+      which are arranged chronologically. Pick a year, quarter and event type to see the corresponding page map.</p>
     <%= render(partial: 'select_a_year') %>
 
       <script>
