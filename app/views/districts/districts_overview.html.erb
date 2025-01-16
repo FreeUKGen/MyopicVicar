@@ -1,5 +1,5 @@
 <h1 class="title text--center">Explore the Database</h1>
-<div>
+<div class="three-fifths lap-two-thirds palm-one-whole">
   <p>These pages tell you about the data behind the FreeBMD web site. This information is designed to help you make the best use of the site when researching
   your family history.</p>
   <p>One obvious question to ask is <q>does the FreeBMD database hold the information I am seeking?</q>. The <a href="#statistics">Database coverage
@@ -15,16 +15,6 @@
   crossorigin="anonymous"></script>
 
 <div class="grid">
-  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
-    <h2>Database coverage</h2>
-    <% active_quarter_events = Coverage.where( Percentage: 1..98) %>
-    <p>The FreeBMD database holds records of births, marriages and deaths registered in England and Wales from July 1837 onwards.
-      It is being constantly updated with new transcriptions.</p>
-    <p>Work is substantially complete on all dates up to <%= format_quarter_year(active_quarter_events.first.quarter_number_event_to_quarter) %>.
-      There are <%= active_quarter_events.size.to_s %> <%= link_to "active quarters", coverage_index_path %> from this date. The latest date for which transcription work
-      has started is <%= format_quarter_year(active_quarter_events.last.quarter_number_event_to_quarter) %>.</p>
-  </div>
-
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
     <nav aria-labelledby="contentsMenu">
       <div class="islet islet--bordered">
@@ -40,11 +30,21 @@
               <li>
                 <a href="#districts">Select a District</a> </li>
             </ul>
-            <li>
-              <a href="#other_info">Other information</a> </li>
+          <li>
+            <a href="#other_info">Other information</a> </li>
         </ul>
       </div>
     </nav>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2>Database coverage</h2>
+    <% active_quarter_events = Coverage.where( Percentage: 1..98) %>
+    <p>The FreeBMD database holds records of births, marriages and deaths registered in England and Wales from July 1837 onwards.
+      It is being constantly updated with new transcriptions.</p>
+    <p>Work is substantially complete on all dates up to <%= format_quarter_year(active_quarter_events.first.quarter_number_event_to_quarter) %>.
+      There are <%= active_quarter_events.size.to_s %> <%= link_to "active quarters", coverage_index_path %> from this date. The latest date for which transcription work
+      has started is <%= format_quarter_year(active_quarter_events.last.quarter_number_event_to_quarter) %>.</p>
   </div>
 
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties_districts">
