@@ -35,5 +35,9 @@
       </div>
       </div>
 <% else %>
-      <p>Sorry, the file <%= '/raid/freebmd2/district_csv_files/'+@year+@event_type+@quarter+'.csv' %> cannot be found, so page map details are not available.</p>
+      <% if @year == "1837" && @quarter == "1" %>
+        <p>Registration of <%= "#{initial_to_event_type(@event_type)}" %> only began in quarter 3 of 1837.</p>
+      <% else %>
+        <p>Sorry, the file <%= '/raid/freebmd2/district_csv_files/'+@year+@event_type+@quarter+'.csv' %> cannot be found, so page map details are not available.</p>
+      <% end %>
 <% end %>
