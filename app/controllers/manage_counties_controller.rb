@@ -174,7 +174,7 @@ class ManageCountiesController < ApplicationController
     @counties = @user.county_groups
     @countries = @user.country_groups
     roles = %w[volunteer_coordinator contacts_coordinator data_manager master_county_coordinator system_administrator documentation_coordinator SNDManager CENManager REGManager country_coordinator executive_director project_manager]
-    roles << "county_coordinator" if appname_downcase == 'freecen'
+    roles += ["county_coordinator", "reporter_transcriber"] if appname_downcase == 'freecen'
     if roles.include?(session[:role])
       @countries = []
       counties = County.application_counties
@@ -424,6 +424,7 @@ class ManageCountiesController < ApplicationController
     @county = session[:county]
     @manage_county = ManageCounty.new
     @options = UseridRole::COUNTY_MANAGEMENT_OPTIONS
+    @options = ['CAP Report'] if session[:role] == 'reporter_transcriber'
     @prompt = 'Select Action?'
   end
 
