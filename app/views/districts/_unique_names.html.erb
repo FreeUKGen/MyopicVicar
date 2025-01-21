@@ -1,29 +1,38 @@
+<style>
+    ul { display:inline-flex; list-style:none; }
+    li { display:block; list-style:none; margin-right:10px; padding:0; }
+</style>
+<%
+  if @name_type == "0"
+    nametypestring = "SURNAMES"
+  else
+    nametypestring = "FORENAMES"
+  end
+%>
 <div class="grid">
   <section class="island ">
     <div >
-    	<% if @name_type == "0"%>
-      	<h3 class=" text--center"><%= "#{@record_type.upcase} SURNAMES" %></h3>
-      <% else %>
-      	<h3 class=" text--center"><%= "#{@record_type.upcase} FORENAMES" %></h3>
-      <% end %>
+    	<h3 class=" text--center"><%= "#{@record_type.upcase} #{nametypestring}" %></h3>
       <p class=" text--center">You may find it useful to use your browser find option to search for critical parts of names</p>
-      <p>
+      <div>
         <% ("A".."Z").each do |letter| %>
         <% unless @unique_names[letter].blank? %>
-          <p><%= letter%></p>
-          <p>
+          <h4><%= nametypestring.capitalize+" beginning with "+letter%></h4>
+          <ul>
             <% @unique_names[letter].each do |name| %>
-              <%= name %>&emsp;&nbsp;
+              <li><%= name %></li>
             <% end%>
-          </p>
+          </ul>
           <% end %>
         <% end%>
-        <p> Additional Names</p>
-        <p>
-          <% @remainders.each do |name| %>
-            <%= name %>&emsp;&nbsp;
-          <% end%>
-        </p>
+        <% if @remainders.present? %>
+          <p> Additional Names</p>
+          <ul>
+            <% @remainders.each do |name| %>
+              <li><%= name %></li>
+            <% end%>
+          </ul>
+        <% end %>
       </p>
     </div>
   </section>
