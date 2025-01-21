@@ -1,0 +1,24 @@
+<div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="districts">
+  <h3>Select one or more Districts</h3>
+  <p>Select a District from this list, or type in part of a District name to find all Districts whose name matches your search string.</p>
+  <form id="freebmd_district_select" action="/districts/select_district" accept-charset="UTF-8" method="get">
+    <ol class="grid">
+      <li>
+        <% options = District.districts_as_hash.sort %>
+        <select class="grid__item one-whole push--bottom text--center" class="select" id="id" name="id">
+          <%= options_for_select(options) %>
+        </select>
+      </li>
+      <li class="action button_action grid__item one-whole push--bottom text--center" id="freebmd_districts_submit_action"><button name="button" type="submit" class="ladda-button" data-style="contract" data-color="freereg" data-size="s" data-spinner-color="#ffffff">Select District</button></li>
+    </ol>
+  </form>
+  <br/>
+  <form id="freebmd_district_match" action="/districts/districts_list" accept-charset="UTF-8" method="get">
+    <li>
+      <input class="text--center" id="params" name="params"/>
+    </li>
+    <li class="action button_action grid__item one-whole push--bottom" id="freebmd_district_match_submit_action"><button name="button" type="submit" class="ladda-button" data-style="contract" data-color="freereg" data-size="s" data-spinner-color="#ffffff">Find matching Districts</button></li>
+    </ol>
+  </form>
+  <hr/>
+</div>

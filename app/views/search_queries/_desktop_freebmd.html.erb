@@ -30,8 +30,7 @@
               <% else %>
             Reg. Date <% end %></th>
             <th><% unless print_friendly %>
-                <%= link_to('Registration District', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
-                <br/>Reference
+                <%= link_to('Registration District & Reference', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
                 <% else %>Reg. District <% end %></th>
             <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
               <th><% unless print_friendly %>

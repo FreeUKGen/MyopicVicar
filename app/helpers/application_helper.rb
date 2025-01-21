@@ -102,7 +102,7 @@ module ApplicationHelper
     when 'freecen'
       link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
-      link_to('Records', main_app.district_alphabet_selection_path)
+      link_to('Records', main_app.districts_overview_path)
     end
   end
 
