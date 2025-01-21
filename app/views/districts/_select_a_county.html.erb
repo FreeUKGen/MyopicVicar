@@ -1,0 +1,17 @@
+<div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties">
+  <h3>Select a County</h3>
+  <form id="freebmd_county_select" action="county_summary?locale=en" accept-charset="UTF-8" method="get">
+    <ol class="grid">
+      <li class="grid__item one-whole push--bottom text--center" id="freebmd_county_select_input">
+        <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
+        <%# options = ChapmanCode::ENGLAND_AND_WALES_CODES %>
+        <select class="select" id="county_code" multiple="multiple" name="county_code">
+          <% key = ChapmanCode::FREEBMD_CODES %>
+          <%= grouped_options_for_select(grouped_options, selected_key = key) %>
+        </select>
+      </li>
+      <li class="action button_action grid__item one-whole push--bottom text--center" id="freebmd_counties_submit_action"><button name="button" type="submit" class="ladda-button" data-style="contract" data-color="freereg" data-size="s" data-spinner-color="#ffffff">Select County</button></li>
+    </ol>
+  </form>
+  <hr/>
+</div>

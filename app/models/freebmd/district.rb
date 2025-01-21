@@ -1,6 +1,7 @@
 class District < FreebmdDbBase
   self.table_name = 'Districts'
   has_many :DistrictToCounty, foreign_key: :DistrictNumber
+  has_many :DistrictPseudonym, foreign_key: :DistrictNumber
   has_many :records, foreign_key: :DistrictNumber, class_name: '::BestGuess'
   scope :not_invented, -> { where(Invented: 0) }
 
@@ -50,6 +51,10 @@ class District < FreebmdDbBase
     district_name
   end
 
+  def district_name_as_filename
+    self.DistrictName.gsub(/ /, "_")
+  end
+  
   def district_name_no_spaces(suffix)
     district_name = self.DistrictName.gsub(/\W/, "_")
     district_name.gsub!(/_+/, '_')
@@ -66,4 +71,23 @@ class District < FreebmdDbBase
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
   end
+
+  def District.districts_as_array
+    @all_districts = District.not_invented.all
+    options = []
+    @all_districts.each do |district|
+      options << district.DistrictName
+    end
+    options
+  end
+  def District.districts_as_hash
+    @all_districts = District.not_invented.all
+    hash = {}
+    @all_districts.each do |district|
+      hash[district.DistrictName] = district.DistrictNumber
+    end
+    hash
+  end
+
+
 end

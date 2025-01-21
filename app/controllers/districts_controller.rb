@@ -1,5 +1,5 @@
 class DistrictsController < ApplicationController
-	require 'freebmd_constants'
+  require 'freebmd_constants'
   skip_before_action :require_login
 	def index
 	  @districts = District.not_invented.all
@@ -44,9 +44,23 @@ class DistrictsController < ApplicationController
     @options = FreebmdConstants::ALPHABETS[0]
     @location = 'location.href= "/districts/districts_list?params=" + this.value'
     @prompt = 'Select District Range'
-  end
+	end
 
-  def districts_list
+  def county_selection
+		@county = County.new
+		@options = ['Aberdeenshire', 'Cheshire']
+		@location = 'location.href= "/counties/show?params=" + this.value'
+		@prompt = 'Select County'
+	end
+
+	def district_selection
+		@districts = District.new
+		@options = districts_as_array
+		@location = 'location.href= "/districts/districts_list?params=" + this.value'
+		@prompt = 'Select District'
+	end
+
+	def districts_list
     @character = params[:params]
     @all_districts = District.not_invented.all
     @districts = []
@@ -55,5 +69,25 @@ class DistrictsController < ApplicationController
 		end
 		@districts = @districts.sort_by { |district| [district.DistrictName]}
     render :index
-  end
+	end
+
+  def districts_hash
+		@all_districts = District.not_invented.all
+		hash = Hash.new
+		@all_districts.each do |district|
+			hash[district.DistrictName] = district.DistrictNumber
+		end
+		hash
+	end
+
+	def district_page_map
+		id = params[:id]
+		@district = District.where(DistrictNumber: id).first if id.present?
+	end
+
+	def year_page_map
+		@year = params[:year]
+		@quarter = params[:quarter]
+		@event_type = params[:event_type]
+	end
 end
