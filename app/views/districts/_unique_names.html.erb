@@ -14,26 +14,28 @@
     <div >
     	<h3 class=" text--center"><%= "#{@record_type.upcase} #{nametypestring}" %></h3>
       <p class=" text--center">You may find it useful to use your browser find option to search for critical parts of names</p>
-      <div>
         <% ("A".."Z").each do |letter| %>
         <% unless @unique_names[letter].blank? %>
-          <h4><%= nametypestring.capitalize+" beginning with "+letter%></h4>
-          <ul>
-            <% @unique_names[letter].each do |name| %>
-              <li><%= name %></li>
-            <% end%>
-          </ul>
+          <div>
+            <h4><%= nametypestring.capitalize+" beginning with "+letter%></h4>
+            <ul>
+              <% @unique_names[letter].each do |name| %>
+                <li><%= name %></li>
+              <% end%>
+            </ul>
+          </div>
           <% end %>
         <% end%>
         <% if @remainders.present? %>
+        <div>
           <h4>Additional Names</h4>
           <ul>
             <% @remainders.each do |name| %>
               <li><%= name %></li>
             <% end%>
           </ul>
+        </div>
         <% end %>
       </p>
-    </div>
   </section>
 </div>
