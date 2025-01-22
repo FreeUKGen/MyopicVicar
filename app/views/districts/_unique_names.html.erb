@@ -13,20 +13,29 @@
   <section class="island ">
     <div >
     	<h3 class=" text--center"><%= "#{@record_type.upcase} #{nametypestring}" %></h3>
-      <p class=" text--center">You may find it useful to use your browser find option to search for critical parts of names</p>
+      <p class=" text--center">You can use the links below to navigate to names beginning with a specified letter, or use your browser find option to search for critical parts of names</p>
+      <nav class="text--center" aria-labelledby="names_nav" id="names_nav">
+        <p class="accessibility">Each link takes you to the first name beginning with the specified letter.</p>
         <% ("A".."Z").each do |letter| %>
+          <% unless @unique_names[letter].blank? %>
+            <a class="push-half--sides" href="<%= '#names_'+letter %>"><%= letter %></a>
+          <% end %>
+        <% end %>
+      </nav>
+      <% ("A".."Z").each do |letter| %>
         <% unless @unique_names[letter].blank? %>
-          <div>
+          <div id="<%= 'names_'+letter%>">
             <h4><%= nametypestring.capitalize+" beginning with "+letter%></h4>
-            <ul>
+            <ol class="nav">
               <% @unique_names[letter].each do |name| %>
                 <li><%= name %></li>
               <% end%>
-            </ul>
+            </ol>
+            <p><a href="#names_nav">Choose another letter</a></p>
           </div>
-          <% end %>
-        <% end%>
-        <% if @remainders.present? %>
+        <% end %>
+      <% end%>
+      <% if @remainders.present? %>
         <div>
           <h4>Additional Names</h4>
           <ul>
@@ -35,7 +44,7 @@
             <% end%>
           </ul>
         </div>
-        <% end %>
-      </p>
+      <% end %>
+    </div>
   </section>
 </div>
