@@ -65,7 +65,7 @@ class DistrictsController < ApplicationController
     @all_districts = District.not_invented.all
     @districts = []
     @all_districts.each do |district|
-      @districts << district if district.DistrictName =~ ::Regexp.new(/^[#{@character}]/)
+      @districts << district if district.DistrictName =~ ::Regexp.new(/#{@character}/)
 		end
 		@districts = @districts.sort_by { |district| [district.DistrictName]}
     render :index
