@@ -13,7 +13,17 @@
   <section class="island ">
     <div >
     	<h3 class=" text--center"><%= "#{@record_type.upcase} #{nametypestring}" %></h3>
-      <p class=" text--center">You can use the links below to navigate to names beginning with a specified letter, or use your browser find option to search for critical parts of names</p>
+      <p class=" text--center">You can filter the names, use the links below to navigate to names beginning with a specified letter, or use your browser find option to search for critical parts of names</p>
+      <form class=" text--center" id="filter_names" accept-charset="UTF-8" method="get">
+        <input type=hidden name="record_type" id="record_type" value="<%= params[:record_type] %>"/>
+        <ul>
+        <li>
+          <input class="text--center" id="filter" name="filter" value="<%= params[:filter] %>" type="text"/>
+        </li>
+        <li class="action button_action grid__item one-whole push--bottom" id="freebmd_district_match_submit_action"><button name="button" type="submit" class="ladda-button" data-style="contract" data-color="freereg" data-size="s" data-spinner-color="#ffffff">Filter names</button></li>
+        </ul>
+      </form>
+      <hr/>
       <nav class="text--center" aria-labelledby="names_nav" id="names_nav">
         <p class="accessibility">Each link takes you to the first name beginning with the specified letter.</p>
         <% ("A".."Z").each do |letter| %>

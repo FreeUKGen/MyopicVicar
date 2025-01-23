@@ -34,7 +34,16 @@ class DistrictsController < ApplicationController
 		else
 			@unique_names_0 = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_forenames
 		end
-		@unique_names = @unique_names_0.sort_by!(&:downcase)
+		if params[:filter].present?
+			@filter = params[:filter]
+			@unique_names_filtered = []
+			@unique_names_0.each do |name|
+				@unique_names_filtered << name if name =~ ::Regexp.new(/#{@filter}/)
+			end
+			@unique_names = @unique_names_filtered.sort_by!(&:downcase)
+		else
+				@unique_names = @unique_names_0.sort_by!(&:downcase)
+		end
 		@unique_names.map!(&:titleize)
 		@unique_names, @remainders = @district.letterize(@unique_names)
 	end
