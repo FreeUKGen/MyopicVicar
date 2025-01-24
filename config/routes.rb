@@ -147,7 +147,10 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_entries/:id/error(.:format)', :to => 'freecen_csv_entries#error', :as => :error_freecen_csv_entry
   get 'freecen_csv_entries/:id/accept(.:format)', :to => 'freecen_csv_entries#accept', :as => :accept_freecen_csv_entry
   get 'freecen_csv_entries/:id/revalidate(.:format)', :to => 'freecen_csv_entries#revalidate', :as => :revalidate_freecen_csv_entry
+  get 'freecen_csv_entries/propagate_pob', to: 'freecen_csv_entries#propagate_pob', as: :propagate_pob_freecen_csv_entry
   resources :freecen_csv_entries
+
+  resources :freecen_pob_propagations
 
   get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
   delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
@@ -327,7 +330,9 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/district_place_name', to: 'freecen2_pieces#district_place_name', as: :district_place_name_freecen2_pieces
   get 'freecen2_pieces/missing_place', to: 'freecen2_pieces#missing_place', as: :missing_place_freecen2_pieces
   get 'freecen2_pieces/enter_number', to: 'freecen2_pieces#enter_number', as: :enter_number_freecen2_piece
+  get 'freecen2_pieces/enter_piece_number', to: 'freecen2_pieces#enter_piece_number', as: :enter_piece_number_freecen2_piece
   get 'freecen2_pieces/locate_other_pieces', to: 'freecen2_pieces#locate_other_pieces', as: :locate_other_pieces_freecen2_piece
+  get 'freecen2_pieces/find_pieces', to: 'freecen2_pieces#find_pieces', as: :find_pieces_freecen2_piece
   #get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
   get 'freecen2_pieces/chapman_year_index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
   get 'freecen2_pieces/index_district', :to => 'freecen2_pieces#index_district', :as => :freecen2_pieces_district_index

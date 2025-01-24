@@ -135,14 +135,14 @@ class Freecen1VldEntry
 
   def propagate_collection(propagation_fields, userid)
     propagate_pob, propagate_notes = propagation_flags(propagation_fields)
-    success = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+    success = FreecenPobPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
     error_message = success ? '' : 'Propagation record for Collection not created as it already exists. Please re-run Auto Validation on this VLD file.'
     [success, error_message]
   end
 
   def propagate_county(propagation_fields, chapman_code, userid)
     propagate_pob, propagate_notes = propagation_flags(propagation_fields)
-    success = Freecen1VldEntryPropagation.create_new_propagation('ALL', chapman_code, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+    success = FreecenPobPropagation.create_new_propagation('ALL', chapman_code, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
     error_message = success ? '' : 'Propagation record for County not created as it already exists. Please re-run Auto Validation on this VLD file.'
     [success, error_message]
   end
@@ -194,7 +194,7 @@ class Freecen1VldEntry
     if vld_file.present?
       census_year = vld_file.full_year
       propagate_pob, propagate_notes = propagation_flags(propagation_fields)
-      success = Freecen1VldEntryPropagation.create_new_propagation(census_year, 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+      success = FreecenPobPropagation.create_new_propagation(census_year, 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
       error_message = success ? '' : 'Propagation record for Year not created as it already exists. Please re-run Auto Validation on this VLD file.'
     else
       error_message = 'Error creating Propagation record - VLD File not Found'

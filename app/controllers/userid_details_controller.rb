@@ -190,8 +190,8 @@ class UseridDetailsController < ApplicationController
 
   def list_roles_and_assignees
     roles_not_included = ['computer', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'pending', 'researcher', 'syndicate_coordinator', 'technical', 'trainee', 'transcriber']
-    included_roles = UseridRole::VALUES - roles_not_included
-    @userids = UseridDetail.any_of({:person_role.in => included_roles}, {secondary_role: {'$in' =>  included_roles }})
+    @included_roles = UseridRole::VALUES - roles_not_included
+    @userids = UseridDetail.any_of({:person_role.in => @included_roles}, {secondary_role: {'$in' =>  @included_roles }})
   end
 
   def load(userid_id)
@@ -229,6 +229,7 @@ class UseridDetailsController < ApplicationController
       @syndicates = Syndicate.get_syndicates_open_for_transcription
     end
     @appname = appname_downcase
+    @authourised_roles = ['system_administrator', 'volunteer_coordinator']
     @userid = UseridDetail.new
   end
 
@@ -298,7 +299,8 @@ class UseridDetailsController < ApplicationController
     session[:edit_userid] = true
     @syndicate = 'all'
     session[:syndicate] = @syndicate
-    @options = UseridRole::USERID_MANAGER_OPTIONS
+    @options = UseridRole::USERID_MANAGER_OPTIONS - ['Create userid']
+    @options = UseridRole::USERID_MANAGER_OPTIONS if @user.person_role == 'system_administrator'
   end
 
   def person_roles
