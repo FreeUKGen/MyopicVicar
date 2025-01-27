@@ -22,11 +22,9 @@ class DistrictsController < ApplicationController
 	end
 
 	def unique_district_names
-		@record_type = "birth"
-		@record_type = params[:record_type] if params[:record_type].present?
+		if params[:record_type].present? then @record_type = params[:record_type] else @record_type = "birth" end
 		record_type_id = RecordType::FREEBMD_OPTIONS[@record_type.upcase]
-		@name_type = "1"
-		@name_type = params[:name_type] if params[:name_type].present?
+		if params[:name_type].present? then @name_type = params[:name_type] else @name_type = "1" end
 		@district_number = params[:id]
 		@district = District.where(DistrictNumber: @district_number).first
 		if @name_type == "0"
