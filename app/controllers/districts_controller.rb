@@ -34,9 +34,10 @@ class DistrictsController < ApplicationController
 		end
 		if params[:filter].present?
 			@filter = params[:filter]
+			pattern = ::Regexp.new(/#{@filter}/)
 			@unique_names_filtered = []
 			@unique_names_0.each do |name|
-				@unique_names_filtered << name if name =~ ::Regexp.new(/#{@filter}/)
+				@unique_names_filtered << name if pattern.match(name)
 			end
 			@unique_names = @unique_names_filtered.sort_by!(&:downcase)
 		else

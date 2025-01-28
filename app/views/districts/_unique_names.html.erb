@@ -8,6 +8,7 @@
   else
     nametypestring = "forenames"
   end
+  namesfound = false
 %>
 <div class="grid three-quarters">
   <!--section class="island "-->
@@ -15,13 +16,13 @@
       <h2><%= "#{@record_type.capitalize} #{nametypestring}" %> for people in <%= @district.DistrictName %> Registration District</h2>
 
       <!--h3 class=" text--center"><%#= "#{@record_type.upcase} #{nametypestring}" %></h3-->
-      <p>You can filter the names, use the links below to navigate to names beginning with a specified letter, or use your browser find option to search for critical parts of names</p>
+      <p>You can filter the names (try UPPERCASE match strings if exact case doesn't work), use the links below to navigate to names beginning with a specified letter, or use your browser find option to search for critical parts of names</p>
       <form class=" text--left" id="filter_names" accept-charset="UTF-8" method="get">
         <input type=hidden name="record_type" id="record_type" value="<%= params[:record_type] %>"/>
         <input type=hidden name="name_type" id="name_type" value="<%= params[:name_type] %>"/>
         <ul>
         <li>
-          <input class="text--left" id="filter" name="filter" value="<%= params[:filter] %>" type="text"/>
+          <input class="text--left" id="filter" name="filter" value="<%= params[:filter] %>" type="text" autocapitalize="on"/>
         </li>
         <li class="action button_action push--bottom" id="freebmd_district_match_submit_action"><button name="button" type="submit" class="ladda-button" data-style="contract" data-color="freereg" data-size="s" data-spinner-color="#ffffff">Filter names</button></li>
         </ul>
@@ -37,6 +38,7 @@
       </nav>
       <% ("A".."Z").each do |letter| %>
         <% unless @unique_names[letter].blank? %>
+          <% namesfound = true %>
           <div id="<%= 'names_'+letter%>">
             <h4><%= nametypestring.capitalize %><%= " containing '"+params[:filter]+"' and " if params[:filter].present? %> beginning with <%= letter %></h4>
             <ol class="nav">
@@ -61,6 +63,14 @@
           </ul>
         </div>
       <% end %>
+      <% if !namesfound %>
+        <% if params[:filter].present? %>
+          <p>No names matching '<%= params[:filter] %>' found.</p>
+        <%else %>
+          <p>No matching names found.</p>
+        <% end %>
+      <% end %>
+
     </div>
   <!--/section-->
 </div>
