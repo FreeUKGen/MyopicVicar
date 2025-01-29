@@ -94,7 +94,7 @@
                     <% else %>
                       <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
                       <% if district.present? %>
-                        <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
+                        <%= link_to "#{search_record[:District]}".capitalize, district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
                      <% else %>
                        <%= search_record[:District] %>
                      <% end %>
