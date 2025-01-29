@@ -300,7 +300,7 @@ class UseridDetailsController < ApplicationController
     @syndicate = 'all'
     session[:syndicate] = @syndicate
     @options = UseridRole::USERID_MANAGER_OPTIONS - ['Create userid']
-    @options = UseridRole::USERID_MANAGER_OPTIONS if @user.person_role == 'system_administrator'
+    @options = UseridRole::USERID_MANAGER_OPTIONS if session[:role] == 'system_administrator'
   end
 
   def person_roles
