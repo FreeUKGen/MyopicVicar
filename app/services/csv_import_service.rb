@@ -3,7 +3,7 @@ class CsvImportService
 		@file_path = file_path
 	end
 
-	def csv_import
+	def csv_import_and_update_church
 		CSV.foreach(@file_path, headers: true) do |row|
       csv_data = row.to_hash
       update_church(csv_data)

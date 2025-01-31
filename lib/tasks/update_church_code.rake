@@ -7,7 +7,7 @@ namespace :update_church do
       exit
     end
 
-    CsvImportService.new(file_path).import
+    CsvImportService.new(file_path).csv_import_and_update_church
     puts "Church Codes updated"
   end
 end
