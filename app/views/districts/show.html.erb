@@ -228,15 +228,15 @@
         <caption class="accessibility"> Statistics for <%= "#{@district.district_name_display_format} Registration District"%>  </caption>
         <tr>
           <th scope="row">Total Births</th>
-          <td><%= @birth_count #BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 1).count %></td>
+          <td><%= @birth_count %></td>
         </tr>
         <tr>
           <th scope="row">Total Deaths</th>
-          <td><%= @marriage_count#BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 2).count %></td>
+          <td><%= @marriage_count %></td>
         </tr>
         <tr>
           <th scope="row">Total Marriages</th>
-          <td><%= @death_count#BestGuess.where(DistrictNumber: @district.DistrictNumber, RecordTypeId: 3).count %></td>
+          <td><%= @death_count %></td>
         </tr>
       </table>
     </div>
