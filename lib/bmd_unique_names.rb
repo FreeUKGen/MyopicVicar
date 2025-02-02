@@ -29,7 +29,7 @@ class BmdUniqueNames
             distinct_birth_surnames = distinct_birth_surnames.sort
             district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 1).first
             if district_unique_name.present?
-              district_unique_name.update_attributes(unique_forenames: [], unique_surnames: [], , total_records: 0)
+              district_unique_name.update_attributes(unique_forenames: [], unique_surnames: [], total_records: 0)
               district_unique_name.update_attributes(unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames, total_records: birth_records_count)
             else
               district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames, record_type: 1, total_records: birth_records_count)
@@ -44,7 +44,7 @@ class BmdUniqueNames
             distinct_marriage_surnames = distinct_marriage_surnames.sort
             district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 3).first
             if district_unique_name.present?
-               district_unique_name.update_attributes(unique_forenames: [], unique_surnames: [], , total_records: 0)
+               district_unique_name.update_attributes(unique_forenames: [], unique_surnames: [], total_records: 0)
               district_unique_name.update_attributes(unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames, total_records: marriage_records_count)
             else
               district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames, record_type: 3, total_records: marriage_records_count)
@@ -59,7 +59,7 @@ class BmdUniqueNames
             distinct_death_surnames = distinct_death_surnames.sort
             district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 2).first
             if district_unique_name.present?
-               district_unique_name.update_attributes(unique_forenames: [], unique_surnames: [], , total_records: 0)
+               district_unique_name.update_attributes(unique_forenames: [], unique_surnames: [], total_records: 0)
               district_unique_name.update_attributes(unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_surnames, total_records: death_records_count)
             else
               district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_surnames, record_type: 2,  total_records: death_records_count)
