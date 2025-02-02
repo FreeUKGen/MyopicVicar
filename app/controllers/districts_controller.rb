@@ -6,22 +6,14 @@ class DistrictsController < ApplicationController
   end
 
 	def show
-		id = params[:id]
-		@district = District.where(DistrictNumber: id).first if id.present?
-		@search_query = SearchQuery.find(params[:search_id]) if params[:search_id].present?
-		@search_record = BestGuess.find(params[:entry_id]) if params[:entry_id].present?
-		birth_uniq_name = DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 1).first
-		@birth_count = birth_uniq_name.total_records
-		marriage_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 3).first
-		@marriage_count = marriage_uniq_name.total_records
-		death_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 2).first
-		@death_count = death_uniq_name.total_records
-		@birth_uniq_surname_count = birth_uniq_name.present? ? birth_uniq_name.unique_surnames.count : "none"
-		@birth_uniq_forename_count = birth_uniq_name.present? ? birth_uniq_name.unique_forenames.count : "none"
-		@marriage_uniq_surname_count = marriage_uniq_name.present? ? marriage_uniq_name.unique_surnames.count : "none"
-		@marriage_uniq_forename_count = marriage_uniq_name.present? ? marriage_uniq_name.unique_forenames.count : "none"
-		@death_uniq_surname_count = death_uniq_name.present? ? death_uniq_name.unique_surnames.count : "none"
-		@death_uniq_forename_count = death_uniq_name.present? ? death_uniq_name.unique_forenames.count : "none"
+		@district = get_district(params[:id])
+    @search_query = get_search_query(params[:search_id])
+    @search_record = get_entry(params[:entry_id])
+    if @district
+      @birth_count, @birth_uniq_surname_count, @birth_uniq_forename_count = fetch_unique_name_counts(@district.DistrictNumber, 1)
+      @marriage_count, @marriage_uniq_surname_count, @marriage_uniq_forename_count = fetch_unique_name_counts(@district.DistrictNumber, 3)
+      @death_count, @death_uniq_surname_count, @death_uniq_forename_count = fetch_unique_name_counts(@district.DistrictNumber, 2)
+    end
 	end
 
 	def unique_district_names
@@ -93,4 +85,26 @@ class DistrictsController < ApplicationController
 		@quarter = params[:quarter]
 		@event_type = params[:event_type]
 	end
+
+	private
+
+	def get_district(id=nil)
+		District.find_by(DistrictNumber: id) if id.present?
+	end
+
+	def get_search_query(search_id=nil)
+    SearchQuery.find(search_id) if search_id.present?
+  end
+
+  def get_entry(entry_id=nil)
+    BestGuess.find(entry_id) if entry_id.present?
+  end
+
+  def fetch_unique_name_counts(district_number, record_type)
+    unique_name = DistrictUniqueName.find_by(district_number: district_number, record_type: record_type)
+    count = unique_name.present? ? unique_name.total_records : 0
+    uniq_surname_count = unique_name.present? ? unique_name.unique_surnames.count : "none"
+    uniq_forename_count = unique_name.present? ? unique_name.unique_forenames.count : "none"
+    [count, uniq_surname_count, uniq_forename_count]
+  end
 end
