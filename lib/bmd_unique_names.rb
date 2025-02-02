@@ -13,8 +13,11 @@ class BmdUniqueNames
         p "processing batch"
         group.each do |district|
           birth_records = district.records.where(RecordTypeID: 1)
+          birth_records_count = birth_records.count
           marriage_records = district.records.where(RecordTypeID: 3)
+          marriage_records_count = marriage_records.count
           death_records = district.records.where(RecordTypeID: 2)
+          death_records_count = death_records.count
           birth_unique_names = BestGuess.get_birth_unique_names birth_records
           marriage_unique_names = BestGuess.get_marriage_unique_names marriage_records
           death_unique_names = BestGuess.get_death_unique_names death_records
@@ -26,9 +29,10 @@ class BmdUniqueNames
             distinct_birth_surnames = distinct_birth_surnames.sort
             district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 1).first
             if district_unique_name.present?
-              district_unique_name.update_attributes(unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames)
+              district_unique_name.update_attributes(unique_forenames: [], unique_surnames: [], , total_records: 0)
+              district_unique_name.update_attributes(unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames, total_records: birth_records_count)
             else
-              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames, record_type: 1)
+              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_birth_forenames, unique_surnames: distinct_birth_surnames, record_type: 1, total_records: birth_records_count)
               district_unique_name.save
             end
           end
@@ -40,9 +44,10 @@ class BmdUniqueNames
             distinct_marriage_surnames = distinct_marriage_surnames.sort
             district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 3).first
             if district_unique_name.present?
-              district_unique_name.update_attributes(unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames)
+               district_unique_name.update_attributes(unique_forenames: [], unique_surnames: [], , total_records: 0)
+              district_unique_name.update_attributes(unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames, total_records: marriage_records_count)
             else
-              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames, record_type: 3)
+              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_marriage_forenames, unique_surnames: distinct_marriage_surnames, record_type: 3, total_records: marriage_records_count)
               district_unique_name.save
             end
           end
@@ -54,9 +59,10 @@ class BmdUniqueNames
             distinct_death_surnames = distinct_death_surnames.sort
             district_unique_name = DistrictUniqueName.where(district_number: district.DistrictNumber, record_type: 2).first
             if district_unique_name.present?
-              district_unique_name.update_attributes(unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_surnames)
+               district_unique_name.update_attributes(unique_forenames: [], unique_surnames: [], , total_records: 0)
+              district_unique_name.update_attributes(unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_surnames, total_records: death_records_count)
             else
-              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_surnames, record_type: 2)
+              district_unique_name = DistrictUniqueName.new(district_number: district.DistrictNumber, unique_forenames: distinct_death_forenames, unique_surnames: distinct_death_surnames, record_type: 2,  total_records: death_records_count)
               district_unique_name.save
             end
           end

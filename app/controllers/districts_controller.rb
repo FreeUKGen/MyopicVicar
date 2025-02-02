@@ -11,8 +11,11 @@ class DistrictsController < ApplicationController
 		@search_query = SearchQuery.find(params[:search_id]) if params[:search_id].present?
 		@search_record = BestGuess.find(params[:entry_id]) if params[:entry_id].present?
 		birth_uniq_name = DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 1).first
+		@birth_count = birth_uniq_name.total_records
 		marriage_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 3).first
+		@marriage_count = marriage_uniq_name.total_records
 		death_uniq_name =  DistrictUniqueName.where(district_number: @district.DistrictNumber, record_type: 2).first
+		@death_count = death_uniq_name.total_records
 		@birth_uniq_surname_count = birth_uniq_name.present? ? birth_uniq_name.unique_surnames.count : "none"
 		@birth_uniq_forename_count = birth_uniq_name.present? ? birth_uniq_name.unique_forenames.count : "none"
 		@marriage_uniq_surname_count = marriage_uniq_name.present? ? marriage_uniq_name.unique_surnames.count : "none"
