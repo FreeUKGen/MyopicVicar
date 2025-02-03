@@ -332,4 +332,34 @@ module SearchQueriesHelper
   def error_field_label_id
 
   end
+
+  def sort_field_aria search_query, order_field
+    # old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    response = "id=\"result_table_"
+    response = response + order_field
+    response = response + "\""
+    if order_field == search_query.order_field then
+      if search_query.order_asc then
+        response = response + " aria-sort=\"ascending\""
+      else
+        response = response + " aria-sort=\"descending\""
+      end
+    end
+    response.html_safe
+  end
+
+  def sort_field_marker search_query, order_field, heading
+    # old_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
+    response = heading
+    if order_field == search_query.order_field then
+      if search_query.order_asc then
+        response = response+" <span aria-hidden=\"true\">&#9650;</span>"
+      else
+        response = response+" <span aria-hidden=\"true\">&#9660;</span>"
+      end
+    else
+      response = response+" <span aria-hidden=\"true\">&#9674;</span>"
+    end
+    response.html_safe
+  end
 end

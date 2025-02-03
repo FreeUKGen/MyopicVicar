@@ -50,4 +50,13 @@ module QuarterDetails
       "4" => "Oct to Dec",
     }
   end
+
+  def self.quarter_abbreviated_hash
+    {
+      "1" => "Mar",
+      "2" => "Jun",
+      "3" => "Sept",
+      "4" => "Dec",
+    }
+  end
 end
