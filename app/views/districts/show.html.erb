@@ -118,9 +118,9 @@
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties">
     <h2>Counties</h2>
-    <p>Counties of which <%= "#{@district.district_name_display_format}"%> Registration District has formed a part, by date.</p>
+    <p><%= "#{@district.district_name_display_format}"%> Registration District has been part of the following counties, by date.</p>
     <table>
-      <caption class="accessibility">Counties of which <%= "#{@district.district_name_display_format}"%> Registration District has formed a part, by date.</caption>
+      <caption class="accessibility"><%= "#{@district.district_name_display_format}"%> Registration District has been part of the following counties, by date.</caption>
       <tr>
         <th scope="col">County</th>
         <th scope="col">Date range</th>
@@ -135,9 +135,9 @@
   </div>
   <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="volumes">
     <h2>Volumes</h2>
-    <p>Volume numbers that have been assigned to <%= "#{@district.district_name_display_format}"%> Registration District, by date.</p>
+    <p>Volume numbers used in <%= "#{@district.district_name_display_format}"%> Registration District, by date.</p>
     <table>
-      <caption class="accessibility">Volume numbers that have been assigned to <%= "#{@district.district_name_display_format}"%> Registration District, by date.</caption>
+      <caption class="accessibility">Volume numbers used in <%= "#{@district.district_name_display_format}"%> Registration District, by date.</caption>
       <tr>
         <th scope="col">Volume</th>
         <th scope="col">Date range</th>
@@ -173,8 +173,6 @@
       </tr>
       <% end %>
     </table>
-    <p>[Volumes by year for <%= "#{@district.district_name_display_format}" %> Registration District]</p>
-    <p>[Volumes/year conflicts for <%= "#{@district.district_name_display_format}" %> Registration District]</p>
   </div>
 <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
   <div  class="islet islet--bordered" id="names">

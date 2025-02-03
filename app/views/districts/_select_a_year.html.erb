@@ -1,24 +1,25 @@
 <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="years">
   <h3>Page Maps by Year</h3>
   <p>View Page Maps for all Districts for a specified year, quarter and event type.</p>
-  <form id="freebmd_year_select" action="year_page_map?locale=en" accept-charset="UTF-8" method="get">
+  <div class="one-third lap-one-third palm-one-whole">
+  <form id="freebmd_year_select" action="year_page_map?locale=en" class="text--center" accept-charset="UTF-8" method="get">
     <ol class="grid">
       <li>
-        <select class="grid__item one-whole push--bottom text--center" class="select" id="year" name="year">
+        <select class="one-whole push--bottom text--center" class="select" id="year" name="year">
           <% for y in 1837..1993 do %>
               <option><%= y.to_s %></option>
             <% end %>
         </select>
       </li>
       <li>
-        <select class="grid__item one-whole push--bottom text--center" class="select" id="quarter" name="quarter">
+        <select class="one-whole push--bottom text--center" class="select" id="quarter" name="quarter">
           <% for y in 1..4 do %>
             <option><%= y %></option>
           <% end %>
         </select>
       </li>
       <li>
-        <select class="grid__item one-whole push--bottom text--center" class="select" id="event_type" name="event_type">
+        <select class="one-whole push--bottom text--center" class="select" id="event_type" name="event_type">
           <% for y in ["Births", "Marriages", "Deaths"] do %>
             <option value="<%= y[0] %>"><%= y %></option>
           <% end %>
@@ -27,5 +28,6 @@
       <li class="action button_action grid__item one-whole push--bottom text--center" id="freebmd_year_submit_action"><button name="button" type="submit" class="ladda-button" data-style="contract" data-color="freereg" data-size="s" data-spinner-color="#ffffff">Select Year</button></li>
     </ol>
   </form>
+  </div>
   <hr/>
 </div>
