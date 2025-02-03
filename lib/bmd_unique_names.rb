@@ -33,7 +33,7 @@ class BmdUniqueNames
         unique_names = BestGuess.send("get_#{record_type}_unique_names", records)
         next unless unique_names.present?
 
-        log_message(message_file, "Producing report of the population of #{record_type} unique names")
+        log_message(message_file, "processing #{record_type} unique names")
         distinct_forenames = extract_unique_forenames(unique_names).sort
         distinct_surnames = extract_unique_surnames(unique_names).sort
         update_or_create_district_unique_name(district, record_type_id, distinct_forenames, distinct_surnames, records.count)
