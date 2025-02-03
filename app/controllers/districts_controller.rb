@@ -22,11 +22,9 @@ class DistrictsController < ApplicationController
 	end
 
 	def unique_district_names
-		@record_type = "birth"
-		@record_type = params[:record_type] if params[:record_type].present?
+		if params[:record_type].present? then @record_type = params[:record_type] else @record_type = "birth" end
 		record_type_id = RecordType::FREEBMD_OPTIONS[@record_type.upcase]
-		@name_type = "1"
-		@name_type = params[:name_type] if params[:name_type].present?
+		if params[:name_type].present? then @name_type = params[:name_type] else @name_type = "1" end
 		@district_number = params[:id]
 		@district = District.where(DistrictNumber: @district_number).first
 		if @name_type == "0"
@@ -34,7 +32,17 @@ class DistrictsController < ApplicationController
 		else
 			@unique_names_0 = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_forenames
 		end
-		@unique_names = @unique_names_0.sort_by!(&:downcase)
+		if params[:filter].present?
+			@filter = params[:filter]
+			pattern = ::Regexp.new(/#{@filter}/)
+			@unique_names_filtered = []
+			@unique_names_0.each do |name|
+				@unique_names_filtered << name if pattern.match(name)
+			end
+			@unique_names = @unique_names_filtered.sort_by!(&:downcase)
+		else
+				@unique_names = @unique_names_0.sort_by!(&:downcase)
+		end
 		@unique_names.map!(&:titleize)
 		@unique_names, @remainders = @district.letterize(@unique_names)
 	end
