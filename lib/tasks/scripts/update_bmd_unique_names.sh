@@ -1,0 +1,1 @@
+sudo -u webserv bundle exec  rake RAILS_ENV=production reports:extract_collection_unique_names --trace
