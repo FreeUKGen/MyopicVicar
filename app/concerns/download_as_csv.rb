@@ -13,8 +13,9 @@ module DownloadAsCsv
       csv << FIELDS
       array.each do |record|
         format_csv_data(record)
-        record = record.except!('AssociateName')
-        csv << SEARCH_RESULTS_ATTRIBUTES.map{ |attr| record[attr] }
+        record = record.except!('AssociateName', 'AgeAtDeath')
+        search_results_attr =  SEARCH_RESULTS_ATTRIBUTES - ['AssociateName', 'AgeAtDeath']
+        csv << search_results_attr.map{ |attr| record[attr] }
       end
     end
   end

@@ -47,11 +47,11 @@ class BmdUniqueNames
     end
 
     def extract_unique_forenames(names)
-      names.values_at("GivenName").flatten.uniq.reject(&:empty?)
+      names.values_at("GivenName").compact.flatten.uniq.reject(&:empty?)
     end
 
     def extract_unique_surnames(names)
-      names.values_at("Mother's Surname", "Surname").flatten.uniq.reject(&:empty?)
+      names.values_at("Mother's Surname", "Surname").compact.flatten.uniq.reject(&:empty?)
     end
 
     def log_message(file, message)
