@@ -1,17 +1,15 @@
-<div class='push-half--top'>
   <div class= "grid__item one-whole palm-one-whole hard--left">
     <% if @previous_record_of_page.present?%>
-      <div class='grid__item one-third lap-one-half palm-one-half push-half--bottom'>
+      <div class='grid__item one-third lap-one-half palm-one-half'>
         <%= link_to 'Previous in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record_of_page, @previous_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
       </div>
     <% end %>
-    <div class='grid__item one-third lap-one-half palm-one-half push-half--bottom'>
+    <div class='grid__item one-third lap-one-half palm-one-half'>
       <%= link_to "#{record.Page}", same_page_entries_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, search_id: search_id, entry_id: original_record.RecordNumber) %>
     </div>
     <% if @next_record_of_page.present?%>
-      <div class='grid__item one-third lap-one-half palm-one-half push-half--bottom'>
+      <div class='grid__item one-third lap-one-half palm-one-half'>
         <%= link_to 'Next in Page'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record_of_page, @next_record_of_page.friendly_url, search_entry: @current_record), class: 'push-half--right push-half--top' %>
       </div>
     <% end %>
   </div>
-</div>
