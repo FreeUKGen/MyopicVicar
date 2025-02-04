@@ -4,6 +4,29 @@
 <h1 class="beta push-half--top flush--bottom">District: <%= "#{@district.district_name_display_format}"%></h1>
 <hr>
 <div class="grid">
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="contentsMenu">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="contentsMenu">On this page</h2>
+        <ul class="sub-nav">
+          <li>
+            <a href="#counties">Counties</a> </li>
+          <li>
+            <a href="#volumes">Volumes</a> </li>
+          <li>
+            <a href="#pages">Pages</a> </li>
+          <% if other_info_available %>
+            <li>
+              <a href="#otherInfo">Other information</a> </li>
+          <% end %>
+          <li>
+            <a href="#names">Personal names</a> </li>
+          <li>
+            <a href="#stats">Statistics</a> </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="intro">
     <p>This is the information we hold about the <%= "#{@district.district_name_display_format}"%> Registration District.</p>
     <% if @district.district_url_definable? %>
