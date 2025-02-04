@@ -37,14 +37,17 @@
             </tr>
             <tr>
               <td>Year 1993-4 to End</td>
-              <td><%= @district.Volume1993_4toEnd %></td>
+              <td>
+                <%= @district.Volume1993_4toEnd unless @district.Volume1993_4toEnd == 'xx' %>
+                <%= '-' if @district.Volume1993_4toEnd == 'xx' or !district.Volume1993_4toEnd.present? %>
+              </td>
             </tr>
             <tr>
               <th rowspan="<%= @district.DistrictToCounty.count + 1%>">County</th>
             </tr>
             <% @district.DistrictToCounty.each do |d| %>
               <tr>
-                <td><%= ChapmanCode.name_from_code(d.County) %></td>
+                <td><%= link_to ChapmanCode.name_from_code(d.County), "/districts/county_summary?county_code="+d.County %></td>
                 <td><%= "From #{QuarterDetails.quarter_human(d.StartQN)}" %> <%= QuarterDetails.quarter_year(d.EndQN) > 1993 ? "" : "to #{QuarterDetails.quarter_human(d.EndQN)}" %></td>
               </tr>
             <% end %>
@@ -118,9 +121,9 @@
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties">
     <h2>Counties</h2>
-    <p>Counties of which <%= "#{@district.district_name_display_format}"%> Registration District has formed a part, by date.</p>
+    <p><%= "#{@district.district_name_display_format}"%> Registration District has been part of the following counties, by date.</p>
     <table>
-      <caption class="accessibility">Counties of which <%= "#{@district.district_name_display_format}"%> Registration District has formed a part, by date.</caption>
+      <caption class="accessibility"><%= "#{@district.district_name_display_format}"%> Registration District has been part of the following counties, by date.</caption>
       <tr>
         <th scope="col">County</th>
         <th scope="col">Date range</th>
@@ -135,9 +138,9 @@
   </div>
   <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="volumes">
     <h2>Volumes</h2>
-    <p>Volume numbers that have been assigned to <%= "#{@district.district_name_display_format}"%> Registration District, by date.</p>
+    <p>Volume numbers used in <%= "#{@district.district_name_display_format}"%> Registration District, by date.</p>
     <table>
-      <caption class="accessibility">Volume numbers that have been assigned to <%= "#{@district.district_name_display_format}"%> Registration District, by date.</caption>
+      <caption class="accessibility">Volume numbers used in <%= "#{@district.district_name_display_format}"%> Registration District, by date.</caption>
       <tr>
         <th scope="col">Volume</th>
         <th scope="col">Date range</th>
@@ -173,8 +176,6 @@
       </tr>
       <% end %>
     </table>
-    <p>[Volumes by year for <%= "#{@district.district_name_display_format}" %> Registration District]</p>
-    <p>[Volumes/year conflicts for <%= "#{@district.district_name_display_format}" %> Registration District]</p>
   </div>
 <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
   <div  class="islet islet--bordered" id="names">

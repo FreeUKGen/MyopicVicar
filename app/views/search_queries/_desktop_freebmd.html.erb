@@ -94,7 +94,7 @@
                     <% else %>
                       <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
                       <% if district.present? %>
-                        <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
+                        <%= link_to "#{search_record[:District]}".capitalize, district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
                      <% else %>
                        <%= search_record[:District] %>
                      <% end %>
@@ -122,6 +122,12 @@
           <% end %>
         </tbody>
       </table>
+      <div>
+        <h2 class="accessibility">Explanation of table entries</h2>
+        <p><b>Mother’s Maiden Name</b>, <b>Spouse’s Surname</b>, and <b>Age at Death/Date of Birth</b> are relevant for the records from 1993 onward.
+        If no data is available for a specific record, these fields will display ‘No data.’ A dash (‘-’) will appear in fields
+        that are not relevant to a particular event type.</p>
+      </div>
     <!--/div-->
     <% unless print_friendly %>
       <div class='text--center inline-block'>
