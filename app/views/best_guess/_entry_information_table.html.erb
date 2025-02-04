@@ -102,6 +102,7 @@
           <%= record.display_district_name %>
         <% end %>
         <% if record.District.blank? %>
+          <%= 'No data' %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
         <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
@@ -130,6 +131,7 @@
             <% end %>
 	        <% end %>
           <% if record.AssociateName.blank? %>
+            <%= 'No data' %>
             <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
           <% end %>
 	      </td>
@@ -209,6 +211,7 @@
         <td>
           <%= record.AgeAtDeath %>
           <% if record.AgeAtDeath.blank? %>
+            <%= 'No data' %>
             <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
           <% end %>
         </td>
@@ -221,6 +224,7 @@
       <td>
         <%= record.transcribers.join(', ') if record.transcribers.present? %>
         <% if record.transcribers.blank? %>
+          <%= 'No data' %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
       </td>
