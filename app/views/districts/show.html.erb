@@ -63,36 +63,30 @@
         <th scope="col">Volume</th>
         <th scope="col">Date range</th>
       </tr>
-      <% if @district.Volume1837to1851 != 'xx' %>
       <tr>
-        <td><%= @district.Volume1837to1851 %></td>
+        <td><%= @district.Volume1837to1851 != 'xx' ? @district.Volume1837to1851 : '-' %></td>
         <td>Year 1837 to 1851</td>
       </tr>
-      <% end %>
-      <% if @district.Volume1852to1945 != 'xx' %>
       <tr>
-        <td><%= @district.Volume1852to1945 %></td>
+        <td><%= @district.Volume1852to1945 != 'xx' ? @district.Volume1852to1945 : '-' %></td>
         <td>Year 1852 to 1945</td>
       </tr>
-      <% end %>
-      <% if @district.Volume1946to1965 != 'xx' %>
       <tr>
-        <td><%= @district.Volume1946to1965 %></td>
+        <td><%= @district.Volume1946to1965 != 'xx' ? @district.Volume1946to1965 : '-' %></td>
         <td>Year 1946 to 1965</td>
       </tr>
-      <% end %>
-      <% if @district.Volume1966to1973 != 'xx' %>
       <tr>
-        <td><%= @district.Volume1966to1973 %></td>
+        <td><%= @district.Volume1966to1973 != 'xx' ? @district.Volume1966to1973 : '-' %></td>
         <td>Year 1966 to 1973</td>
       </tr>
-      <% end %>
-      <% if @district.Volume1974to1993_4 != 'xx' %>
       <tr>
-        <td><%= @district.Volume1974to1993_4 %></td>
+        <td><%= @district.Volume1974to1993_4 != 'xx' ? @district.Volume1974to1993_4 : '-'%></td>
         <td>Year 1974 to 1993_4</td>
       </tr>
-      <% end %>
+      <tr>
+        <td>Year 1993-4 to End</td>
+        <td><%= (@district.Volume1974to1993_4 == 'xx' || !@district.Volume1993_4toEnd.present?) ? '-' : @district.Volume1974to1993_4 %></td>
+      </tr>
     </table>
   </div>
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
