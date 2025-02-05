@@ -78,6 +78,10 @@ module Freecen
       record.birth_chapman_code = individual.birth_county if individual.birth_county.present?
       record.birth_place = individual.verbatim_birth_place if individual.verbatim_birth_place.present?
       record.birth_place = individual.birth_place if individual.birth_place.present?
+      if record.birth_chapman_code.present? && record.birth_place.present?
+        valid_pob, place_id = Freecen2Place.valid_place(record.birth_chapman_code, record.birth_place)
+        valid_pob ? record.freecen2_place_of_birth = place_id : record.freecen2_place_of_birth = nil
+      end
       record.freecen_individual = individual
       record.transform
       record.add_digest

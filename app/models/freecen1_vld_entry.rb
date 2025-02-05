@@ -50,7 +50,29 @@ class Freecen1VldEntry
       search_rec = SearchRecord.find_by(freecen_individual_id: individual_rec._id)
       return if search_rec.blank?
 
-      search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place)
+      valid_pob, place_id = Freecen2Place.valid_place(birth_county, birth_place)
+      if valid_pob
+        search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place, freecen2_place_of_birth: place_id)
+      else
+        search_rec.set(birth_chapman_code: birth_county, birth_place: birth_place, freecen2_place_of_birth: nil)
+      end
+    end
+
+    def update_linked_individual_rec_verbatim_pob(vld_entry, verbatim_birth_place)
+      individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
+      return if individual_rec.blank?
+
+      individual_rec.set(verbatim_birth_place: verbatim_birth_place)
+    end
+
+    def set_search_record_pob_place(vld_entry, birth_place)
+      individual_rec = FreecenIndividual.find_by(freecen1_vld_entry_id: vld_entry.id)
+      return if individual_rec.blank?
+
+      search_rec = SearchRecord.find_by(freecen_individual_id: individual_rec._id)
+      return if search_rec.blank?
+
+      search_rec.set(birth_place: birth_place) if search_rec.birth_place.blank?
     end
 
     def in_propagation_scope?(prop_rec, chapman_code, vld_year)
@@ -113,14 +135,14 @@ class Freecen1VldEntry
 
   def propagate_collection(propagation_fields, userid)
     propagate_pob, propagate_notes = propagation_flags(propagation_fields)
-    success = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+    success = FreecenPobPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
     error_message = success ? '' : 'Propagation record for Collection not created as it already exists. Please re-run Auto Validation on this VLD file.'
     [success, error_message]
   end
 
   def propagate_county(propagation_fields, chapman_code, userid)
     propagate_pob, propagate_notes = propagation_flags(propagation_fields)
-    success = Freecen1VldEntryPropagation.create_new_propagation('ALL', chapman_code, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+    success = FreecenPobPropagation.create_new_propagation('ALL', chapman_code, verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
     error_message = success ? '' : 'Propagation record for County not created as it already exists. Please re-run Auto Validation on this VLD file.'
     [success, error_message]
   end
@@ -172,7 +194,7 @@ class Freecen1VldEntry
     if vld_file.present?
       census_year = vld_file.full_year
       propagate_pob, propagate_notes = propagation_flags(propagation_fields)
-      success = Freecen1VldEntryPropagation.create_new_propagation(census_year, 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+      success = FreecenPobPropagation.create_new_propagation(census_year, 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
       error_message = success ? '' : 'Propagation record for Year not created as it already exists. Please re-run Auto Validation on this VLD file.'
     else
       error_message = 'Error creating Propagation record - VLD File not Found'

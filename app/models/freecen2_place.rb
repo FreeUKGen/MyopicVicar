@@ -157,13 +157,7 @@ class Freecen2Place
 
     def search(place_name, county)
       if county.present?
-        codes = []
-        case county
-        when 'Yorkshire'
-          codes = %w[ERY NRY WRY]
-        else
-          codes << ChapmanCode.values_at(county)
-        end
+        codes = county_codes_for_search(county)
         results = Freecen2Place.where('$text' => { '$search' => place_name }, 'disabled' => 'false', :chapman_code => { '$in' => codes })
         .order_by(place_name: 1, chapman_code: 1).all
       else
@@ -172,15 +166,39 @@ class Freecen2Place
       results
     end
 
+    def county_codes_for_search(county)
+      county_codes = []
+      case county
+      when 'Yorkshire'
+        county_codes = %w[ERY NRY WRY]
+      when 'Channel Islands'
+        all_islands = ChapmanCode::CODES['Islands'].values
+        county_codes = all_islands.reject { |element| element == 'IOM' }
+      when 'England'
+        county_codes = ChapmanCode::CODES['England'].values
+      when 'Ireland'
+        county_codes = ChapmanCode::CODES['Ireland'].values
+      when 'Scotland'
+        county_codes = ChapmanCode::CODES['Scotland'].values
+      when 'Wales'
+        county_codes = ChapmanCode::CODES['Wales'].values
+        # Add Herefordshire to Wales as lots of border places - story 1617
+        county_codes << ChapmanCode.values_at('Herefordshire')
+      when 'London (City)'
+        # add Kent, Middlesex and Surrey to London - story 1627
+        county_codes = %w[LND KEN MDX SRY]
+      when 'Hampshire'
+        # Add Isle of Wight  to Hampshire - story 1800
+        county_codes = %w[HAM IOW]
+      else
+        county_codes << ChapmanCode.values_at(county)
+      end
+      county_codes
+    end
+
     def sound_search(name_soundex, county)
       if county.present?
-        codes = []
-        case county
-        when 'Yorkshire'
-          codes = %w[ERY NRY WRY]
-        else
-          codes << ChapmanCode.values_at(county)
-        end
+        codes = county_codes_for_search(county)
         results = Freecen2Place.where(:place_name_soundex => name_soundex, 'disabled' => 'false', :chapman_code => { '$in' => codes })
         .or(Freecen2Place.where("alternate_freecen2_place_names.alternate_name_soundex" => name_soundex, 'disabled' => 'false',
                                 :chapman_code => { '$in' => codes })).order_by(place_name: 1, chapman_code: 1).all
@@ -194,13 +212,7 @@ class Freecen2Place
 
     def regexp_search(regexp, county)
       if county.present?
-        codes = []
-        case county
-        when 'Yorkshire'
-          codes = %w[ERY NRY WRY]
-        else
-          codes << ChapmanCode.values_at(county)
-        end
+        codes = county_codes_for_search(county)
         results = Freecen2Place.where(standard_place_name: regexp, 'disabled' => 'false', :chapman_code => { '$in' => codes })
         .or(Freecen2Place.where("alternate_freecen2_place_names.standard_alternate_name":  regexp, 'disabled' => 'false',
                                 :chapman_code => { '$in' => codes })).order_by(place_name: 1, chapman_code: 1).all
@@ -260,6 +272,8 @@ class Freecen2Place
     end
 
     def valid_place(county, place_name)
+      return [true, nil] if place_name == '-'
+
       standard_place_name = Freecen2Place.standard_place(place_name)
       case county
       when 'YKS'
@@ -298,6 +312,7 @@ class Freecen2Place
       params = {}
       params[:chapman_code] = { '$eq' => county }
       params["alternate_freecen2_place_names.standard_alternate_name"] = { '$eq' => place }
+      params[:disabled] = { '$eq' => 'false' }
       place_alternate = Freecen2Place.collection.find(params)
       place_alternate_valid = (place_alternate.present? && place_alternate.count > 0) ? true : false
       place_id = place_alternate.first if place_alternate.present?
@@ -347,30 +362,7 @@ class Freecen2Place
     end
 
     def search_records_birth_places?(place)
-      exist = false
-      place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => place.place_name).first
-      if place_used.present?
-        exist = true
-      elsif place.original_place_name.present?
-        original_place_used _= SearchRecord.where(:birth_chapman_code => place.original_chapman_code, :birth_place => place.original_place_name).first
-        if original_place_used.present?
-          exist = true
-        end
-      elsif place.alternate_freecen2_place_names.present?
-        place.alternate_freecen2_place_names.each do |alt_place|
-          alternate_place_used = SearchRecord.where(:birth_chapman_code => place.chapman_code, :birth_place => alt_place.alternate_name).first
-          if alternate_place_used.present?
-            exist = true
-            break
-          end
-        end
-      end
-      exist
-    end
-
-    def search_records_birth_places_alternate?(chapman_code, alternate_place)
-      place_used = SearchRecord.where(birth_chapman_code: chapman_code, birth_place: alternate_place).no_timeout.first
-      place_used.present? ? true : false
+      SearchRecord.where(birth_chapman_code: place.chapman_code, freecen2_place_of_birth_id: place.id).no_timeout.exists?
     end
 
   end
@@ -414,7 +406,7 @@ class Freecen2Place
     [true, '']
   end
 
-  def check_alternate_names(alternate_freecen2_place_names_attributes, chapman_code, this_place_name)
+  def check_alternate_names(alternate_freecen2_place_names_attributes, chapman_code, this_place_id)
     alternate_names_set = SortedSet.new
     entries = 0
     dup_place_set = SortedSet.new
@@ -424,13 +416,11 @@ class Freecen2Place
 
         alternate_names_set << Freecen2Place.standard_place(value[:alternate_name])
         entries += 1
-        unless  Freecen2Place.where(:place_name=> this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-          if Freecen2Place.where(:chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-            dup_place_set << value[:alternate_name]
-          end
-          if Freecen2Place.where(:place_name.ne => this_place_name, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
-            dup_place_set << value[:alternate_name]
-          end
+        if Freecen2Place.where(:disabled => 'false', :id.ne => this_place_id, :chapman_code => chapman_code, 'alternate_freecen2_place_names.standard_alternate_name' => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+          dup_place_set << value[:alternate_name]
+        end
+        if Freecen2Place.where(:disabled => 'false', :chapman_code => chapman_code, :standard_place_name => Freecen2Place.standard_place(value[:alternate_name])).all.count.positive?
+          dup_place_set << value[:alternate_name]
         end
       end
     end
@@ -455,12 +445,6 @@ class Freecen2Place
 
           if value[:alternate_name].blank?
             err_msg = 'Other Name for Place cannot be empty with Destroy box checked'
-          else
-            used_as_birth_place = Freecen2Place.search_records_birth_places_alternate?(chapman_code, value[:alternate_name])
-            if used_as_birth_place
-              err_msg = "The Other Name for Place (#{value[:alternate_name]}) cannot be deleted because there are dependent search record birth places"
-              break
-            end
           end
         end
       end

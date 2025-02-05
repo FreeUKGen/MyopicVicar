@@ -1,6 +1,6 @@
 module RegistersHelper
   def which_embargo_rule_link(rules)
-    if ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(@user.person_role)
+    if ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(session[:role])
       if rules
         link_to 'Embargo Rules', embargo_rules_path(county: @county, place: @place, church: @church, register: @register),
           method: :get, class: 'btn   btn--small'
@@ -22,7 +22,7 @@ module RegistersHelper
   def which_gaps_link(gaps)
     if gaps
       link_to 'List Gaps', gaps_path(register: @register), method: :get, class: 'btn   btn--small'
-    elsif @register.register_type == 'PR'
+    else #@register.register_type == 'PR'
       link_to 'Create Gap', new_gap_path(register: @register), method: :get, class: 'btn  btn--small'
     end
   end

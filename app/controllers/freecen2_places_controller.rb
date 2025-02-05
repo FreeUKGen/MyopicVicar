@@ -1,4 +1,4 @@
-# Copyright 2012 Trustees of FreeBMD
+#review Copyright 2012 Trustees of FreeBMD
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@ class Freecen2PlacesController < ApplicationController
   rescue_from Mongoid::Errors::DeleteRestriction, with: :record_cannot_be_deleted
   rescue_from Mongoid::Errors::Validations, with: :record_validation_errors
 
+  require 'chapman_code'
+  require 'freecen_constants'
+
   skip_before_action :require_login, only: [:for_search_form, :for_freereg_content_form, :for_freecen2_piece_form]
 
   def active_index
@@ -28,7 +31,6 @@ class Freecen2PlacesController < ApplicationController
     session[:manage_places] = true
     session[:type] = 'active_place_index'
   end
-
 
   def approve
     session[:return_to] = request.referer
@@ -109,10 +111,10 @@ class Freecen2PlacesController < ApplicationController
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent districts, sub districts or civil parishes') && return
     else
       used_as_birth_place = Freecen2Place.search_records_birth_places?(@place)
-      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are dependent search record birth places') && return if used_as_birth_place
+      redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'The Place cannot be deleted because there are search records with this place recorded as birth place') && return if used_as_birth_place
 
     end
-    # @place.update_attributes(disabled: 'true', data_present: false) - disabled flag is now obsolete 2022/11
+    # @place.update_attributes(disabled: 'true', data_present: false) - disabled flag is obsolete when deleting/destroying a place but is used in Move Place linkages 2024/03
     place_name_deleted = @place.place_name
     @place.delete
     if @place.errors.any?
@@ -136,7 +138,7 @@ class Freecen2PlacesController < ApplicationController
 
     get_user_info_from_userid
     permitted = %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator
-                   executive_director project_manager].include?(@user.person_role) ? true : false
+                   executive_director project_manager].include?(session[:role]) ? true : false
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'You are not permitted to edit a place') && return unless permitted
 
     @county = @place.county
@@ -145,11 +147,11 @@ class Freecen2PlacesController < ApplicationController
       lnd_county_coord = County.find_by(chapman_code: @chapman_code)
       message = 'Only system administrators, data administrator and LND county coordinator can edit LND'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
-      %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
+      %w[system_administrator data_manager].include?(session[:role]) || @user.userid == lnd_county_coord.county_coordinator
     elsif @chapman_code == 'WLS'
       message = 'Only system administrators and data administrator can edit WLS'
       redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: message) && return unless
-      %w[system_administrator data_manager].include?(@user.person_role)
+      %w[system_administrator data_manager].include?(session[:role])
     end
     @place_name = @place.place_name
     @place.alternate_freecen2_place_names.build
@@ -178,8 +180,6 @@ class Freecen2PlacesController < ApplicationController
       end
     end
   end
-
-
 
   def index
     get_user_info_from_userid
@@ -261,10 +261,62 @@ class Freecen2PlacesController < ApplicationController
     @first_name = session[:first_name]
   end
 
+  def move
+    load(params[:id])
+    redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
+
+    get_user_info_from_userid
+    @county = session[:county]
+    @chapman_code = @place.chapman_code
+    @all_counties = Freecen2Place.where(disabled: 'false').distinct('chapman_code').sort_by(&:downcase)
+    @counties = {}
+    @counties = { '' => 'Select a County ... ' }
+    @all_counties.each { |county| @counties[county] = county }
+    session[:move_old_county] = @chapman_code
+    session[:move_old_place] = @place.place_name
+    session[:move_new_county] = ''
+    session[:move_new_place] = ''
+    if params[:commit] == 'Review Details'
+      session[:move_old_county] = @place.chapman_code
+      session[:move_old_place] = @place.place_name
+      session[:move_new_county] = params[:county_new]
+      session[:move_new_place] = params[:place_new]
+      redirect_to review_move_freecen2_place_path
+    end
+  end
+
+  def move_place_names
+    county_new = params[:county_new]
+    county_old = session[:move_old_county]
+    place_old = session[:move_old_place]
+    if county_new.present?
+      @county_places = Freecen2Place.where(chapman_code: county_new, disabled: 'false').order_by(place_name: 1)
+      county_places_hash = { '' => "Select a Place in #{county_new} ..." }
+      @county_places.each { |place|
+        next if place.chapman_code == county_old && place.place_name == place_old
+
+        county_places_hash[place.place_name] = place.place_name
+      }
+      if county_places_hash.present? && county_places_hash.length > 1
+        respond_to do |format|
+          format.json do
+            render json: county_places_hash
+          end
+        end
+      else
+        flash[:notice] = 'An Error was encountered: No places found'
+      end
+    else
+      flash[:notice] = 'County not found'
+      redirect_back(fallback_location: move_freecen2_places_path) && return
+
+    end
+  end
+
   def new
     get_user_info_from_userid
     permitted = %w[county_coordinator master_county_coordinator country_coordinator system_administrator data_manager validator
-                   executive_director project_manager].include?(@user.person_role) ? true : false
+                   executive_director project_manager].include?(session[:role]) ? true : false
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'You are not permitted to create a new place') && return unless permitted
 
     @place_name = params[:place] if params[:place].present?
@@ -279,8 +331,8 @@ class Freecen2PlacesController < ApplicationController
     counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Channel Islands' } # GitHub story 1495
     counties_for_select = counties_for_select.delete_if { |cnty| cnty == 'Overseas British' } # GitHub story 1310 (note: includes #1526 mods too so that there are no conflicts when deployed)
     lnd_county_coord = County.find_by(chapman_code: 'LND')
-    counties_for_select << 'London (City)' if %w[system_administrator data_manager].include?(@user.person_role) || @user.userid == lnd_county_coord.county_coordinator
-    counties_for_select << 'Wales' if %w[system_administrator data_manager].include?(@user.person_role)
+    counties_for_select << 'London (City)' if %w[system_administrator data_manager].include?(session[:role]) || @user.userid == lnd_county_coord.county_coordinator
+    counties_for_select << 'Wales' if %w[system_administrator data_manager].include?(session[:role])
     @counties = counties_for_select.sort
     get_sources
   end
@@ -305,20 +357,42 @@ class Freecen2PlacesController < ApplicationController
     redirect_to freecen2_places_path
   end
 
-  def rename
-    load(params[:id])
-    redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
-
+  def review_move
     get_user_info_from_userid
-    places_counties_and_countries
-    @county = session[:county]
-    @chapman_code = @place.chapman_code
-    @records = @place.search_records.count
-    max_records = get_max_records(@user)
-    if @records.present? && @records.to_i >= max_records
-      flash[:notice] = 'There are too many records for an on-line relocation'
-      redirect_to(action: 'show') && return
+    county_from = session[:move_old_county]
+    place_from = session[:move_old_place]
+    @place_from_rec = Freecen2Place.find_by(chapman_code: county_from, place_name: place_from)
+    # @place_from_used_as_pob = Freecen2Place.search_records_birth_places?(@place_from_rec) ? 'Yes' : 'No' - too slow but may improve when indexes created
+    county_to = session[:move_new_county]
+    place_to = session[:move_new_place]
+    @place_to_rec = Freecen2Place.find_by(chapman_code: county_to, place_name: place_to)
+    # @place_to_used_as_pob = Freecen2Place.search_records_birth_places?(@place_to_rec) ? 'Yes' : 'No' - too slow but may improve when indexes created
+    @place_from_alternates_list = '['
+    @place_from_rec.alternate_freecen2_place_names.each do |alt_name|
+      @place_from_alternates_list += "#{alt_name.alternate_name}, "
     end
+    @place_from_alternates_list = @place_from_alternates_list == '[' ? ' ' : @place_from_alternates_list[0..-3] + ']'
+
+    @place_to_alternates_list = '['
+    @place_to_rec.alternate_freecen2_place_names.each do |alt_name|
+      @place_to_alternates_list += "#{alt_name.alternate_name}, "
+    end
+    @place_to_alternates_list = @place_to_alternates_list == '[' ? ' ' : @place_to_alternates_list[0..-3] + ']'
+
+    return unless params[:commit] == 'Move Place Linkages'
+
+    userid = @user.userid
+    logger.warn("FREECEN:MOVE_FREECEN2_PLACE_LINKAGES: Starting rake task for #{userid} county #{county_from} place #{place_from}")
+    if params[:review_move_fc2_place][:mode] == 'Update'
+      pid1 = spawn("bundle exec rake freecen:move_freecen2_place_linkages[#{userid},#{@place_from_rec.id},#{@place_to_rec.id},Y]")
+    else
+      pid1 = spawn("bundle exec rake freecen:move_freecen2_place_linkages[#{userid},#{@place_from_rec.id},#{@place_to_rec.id},N]")
+    end
+    logger.warn("FREECEN:MOVE_FREECEN2_PLACE_LINKAGES: rake task for #{pid1}")
+    flash[:notice] = "The background task (with Run Mode = #{params[:review_move_fc2_place][:mode]}) for move of linkages for #{place_from} in #{ChapmanCode.name_from_code(county_from)} (#{county_from}) to #{place_to} in #{ChapmanCode.name_from_code(county_to)} (#{county_to}) has been initiated. You will be notified by email when the task has completed."
+    return unless params[:review_move_fc2_place][:mode] == 'Update'
+
+    redirect_to freecen2_places_path
   end
 
   def search_names
@@ -350,7 +424,7 @@ class Freecen2PlacesController < ApplicationController
     if @advanced_search.present? && @advanced_search != 'not_applicable'
       redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Advanced search must contain alphabetic characters only') && return unless search_place.match(/^[A-Za-z ]+$/)
       if @advanced_search != 'soundex'
-        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless Freecen2Place.standard_place(search_place).length >= 3
+        redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'Partial searches must contain at least 3 characters') && return unless search_place.strip.squeeze(' ').length >= 3
       end
     end
     case @advanced_search
@@ -359,15 +433,18 @@ class Freecen2PlacesController < ApplicationController
       @type_head = 'Soundex'
       @results = Freecen2Place.sound_search(place_soundex, search_county)
     when 'starts_with'
-      regexp = BSON::Regexp::Raw.new('^' + Freecen2Place.standard_place(search_place))
+      place_starts = search_place.downcase == 'saint' ? 'st ' : Freecen2Place.standard_place(search_place)
+      regexp = BSON::Regexp::Raw.new('^' + place_starts)
       @type_head = 'Starts with'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     when 'contains'
-      regexp = BSON::Regexp::Raw.new(Freecen2Place.standard_place(search_place))
+      place_contains = search_place.downcase == 'saint' ? ' st ' : Freecen2Place.standard_place(search_place)
+      regexp = BSON::Regexp::Raw.new(place_contains)
       @type_head = 'Contains string'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     when 'ends_with'
-      regexp = BSON::Regexp::Raw.new(Freecen2Place.standard_place(search_place) + '$')
+      place_ends = search_place.downcase == 'saint' ? ' st ' : Freecen2Place.standard_place(search_place)
+      regexp = BSON::Regexp::Raw.new(place_ends + '$')
       @type_head = 'Ends with'
       @results = Freecen2Place.regexp_search(regexp, search_county)
     else
@@ -429,7 +506,7 @@ class Freecen2PlacesController < ApplicationController
         return
       end
 
-      error_message = @place.check_alternate_names(params[:freecen2_place][:alternate_freecen2_place_names_attributes], @place.chapman_code, params[:freecen2_place][:place_name])
+      error_message = @place.check_alternate_names(params[:freecen2_place][:alternate_freecen2_place_names_attributes], @place.chapman_code, params[:id])
       unless error_message == 'None'
         flash[:notice] = error_message
         get_reasons
@@ -452,16 +529,6 @@ class Freecen2PlacesController < ApplicationController
       else
         flash[:notice] = 'The update of the Place was unsuccessful'
         render action: 'edit'
-      end
-      return
-    when params[:commit] == 'Rename'
-      proceed, message = @place.change_name(params[:freecen2_place])
-      if proceed
-        flash[:notice] = 'The rename the Place was successful'
-        redirect_to freecen2_place_path(@place)
-      else
-        flash[:notice] = "Place rename unsuccessful; #{message}"
-        render action: 'rename'
       end
       return
     else

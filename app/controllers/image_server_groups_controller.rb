@@ -125,10 +125,13 @@ class ImageServerGroupsController < ApplicationController
   def index
     session.delete(:upload_return)
     session[:source_id] = params[:id]
-    display_info
-
-    @image_server_group = ImageServerGroup.image_server_groups_by_user_role(session[:manage_user_origin], session[:source_id], session[:syndicate])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'Register does not have any Image Group from Image Server.') && return if @image_server_group.nil?
+    if session[:role] == 'image_server_coord'
+      @image_server_group = ImageServerGroup.all
+    else
+      display_info
+      @image_server_group = ImageServerGroup.image_server_groups_by_user_role(session[:manage_user_origin], session[:source_id], session[:syndicate])
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'Register does not have any Image Group from Image Server.') && return if @image_server_group.nil?
+    end
   end
 
   def initialize_status

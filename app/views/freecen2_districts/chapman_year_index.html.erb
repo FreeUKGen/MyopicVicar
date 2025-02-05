@@ -3,7 +3,7 @@
 <div style="text-align: center">
   <%= link_to 'Download CSV Listing of Districts', csv_index_freecen2_district_path(year: @year, chapman_code: @chapman_code), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Downloads a csv file listing all the districts for this year and county'%>
 </div>
-<% if %w[data_manager system_administrator].include?(@user.person_role)%>
+<% if %w[data_manager system_administrator].include?(session[:role])%>
   <div style="text-align: center">
     <%= link_to 'Add District', new_freecen2_district_path(year: @year, chapman_code: @chapman_code, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Adding a District is restricted to data managers and system administrators'%>
   <% end%>

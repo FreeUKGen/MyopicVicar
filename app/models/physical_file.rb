@@ -234,4 +234,38 @@ class PhysicalFile
     self.update_attribute(:userid, new_userid)
   end
 
+
+  def upload_report_data(start_date, end_date)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    uploaded_files = PhysicalFile.where(c_at: start_date..end_date)
+    uploaded_files = FreecenCsvFile.where(created_at: start_date..end_date) if appname.downcase == 'freecen'
+    uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
+    uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
+    uploders_role = uploaders.pluck(:person_role)
+    uploaders_count = uploders_role.group_by(&:itself).transform_values(&:count)
+    email_confirmed = UseridDetail.where(email_address_last_confirmned: start_date..end_date)
+    users_count = UseridDetail.where(c_at: start_date..end_date)
+    [uploaders_count, email_confirmed, users_count]
+  end
+
+  def upload_report_mail(start_date, end_date)
+    appname = MyopicVicar::Application.config.freexxx_display_name
+    uploaded_files = PhysicalFile.where(created_at: start_date..end_date)
+    uploaded_files = FreecenCsvFile.where(created_at: start_date..end_date) if appname.downcase == 'freecen'
+    uploaders_userid = uploaded_files.pluck(:userid).uniq.sort
+    uploaders = UseridDetail.where(userid: {'$in' => uploaders_userid })
+    exclude_roles = ['system_administrator', 'executive_director', 'technical']
+    uploders_role = uploaders.pluck(:person_role)
+    uploders_role = uploders_role.reject{|role| exclude_roles.include?(role)}
+    uploaders_count = uploders_role.group_by(&:itself).transform_values(&:count)
+    email_confirmed = UseridDetail.where(email_address_last_confirmned: start_date..end_date)
+    users_count = UseridDetail.where(c_at: start_date..end_date)
+    total_records_added = SiteStatistic.where(year: start_date.year, month: start_date.month).sum(:n_records_added)
+    if appname.downcase == 'freecen'
+      total_csv_records_added = Freecen2SiteStatistic.where(year: start_date.year, month: start_date.month).sum(:added_csv_entries)
+      total_vld_records_added = Freecen2SiteStatistic.where(year: start_date.year, month: start_date.month).sum(:added_vld_entries)
+      total_records_added = total_csv_records_added + total_vld_records_added
+    end
+    [uploaders_count, email_confirmed, users_count, total_records_added]
+  end
 end

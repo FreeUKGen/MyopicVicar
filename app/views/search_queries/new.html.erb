@@ -1,4 +1,10 @@
 <% title "Search Query" %>
+<% content_for :meta_robots do %>
+  <meta name="robots" content="index, follow" />
+<% end %>
+<% content_for :meta_description do %>
+  <meta name="description" content="Discover your ancestors in our UK census transcriptions">
+<% end %>
 <%= render "flash_notice" %>
 <% unless @page.nil?%>
   <div style="text-align: center">

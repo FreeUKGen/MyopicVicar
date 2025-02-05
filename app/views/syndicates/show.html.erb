@@ -1,6 +1,6 @@
 <% breadcrumb :show_syndicate,  @syndicate%>
 <h2 class=" text--center">Details for <%= @syndicate.syndicate_code%></h2>
-<%if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(@user.person_role) %>
+<%if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(session[:role]) %>
   <div style="text-align: center"> <%= link_to 'Edit details', edit_syndicate_path(@syndicate), method: :get, :class => "btn  btn--small" %> <%= link_to 'Destroy syndicate', syndicate_path(@syndicate), method: :delete,  :class => "btn  btn--small" ,data: { confirm: 'Are you sure you want to delete this syndicate'} %></div>
 <% end%>
 <%= render 'flash_notice' %>

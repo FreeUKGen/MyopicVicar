@@ -27,7 +27,7 @@
             <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a place</span>
           </label>
           <% if @search_query.last_name.nil? %>
-            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
+            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional" autocomplete="off">
           <% else %>
             <input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
           <% end %>
@@ -39,7 +39,7 @@
             <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically</span>
           </label>
           <% if @search_query.first_name.nil? %>
-            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional">
+            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional" autocomplete="off">
           <% else %>
             <input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
           <% end %>
@@ -51,7 +51,7 @@
             <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
           </label>
           <% if @search_query.start_year.nil? %>
-            <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
+            <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional" autocomplete="off">
           <% else %>
             <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
           <% end %>
@@ -63,7 +63,7 @@
             <span class="ttip__text">Optional, YYYY. The last year you want to search</span>
           </label>
           <% if @search_query.end_year.nil? %>
-            <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
+            <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional" autocomplete="off">
           <% else %>
             <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
           <% end %>
@@ -152,6 +152,12 @@
             Name Soundex
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
             <span class="ttip__text">Check to include the Soundex equivalent of the name: it is used for both surname and forename (if entered)</span>
+          <% end %>
+        </li>
+        <li class="grid__item one-third lap-one-whole palm-one-whole">
+          <%= f.label :no_surname, { :class => "ttip", :tabindex => "0" } do %>
+            <%= f.check_box :no_surname, {},  true, false %>
+            Check Records with no surnames
           <% end %>
         </li>
         <li class="grid__item one-third lap-one-whole palm-one-whole">

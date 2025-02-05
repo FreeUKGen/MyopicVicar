@@ -25,7 +25,7 @@ class Freecen2PlaceSourcesController < ApplicationController
     redirect_back(fallback_location: { action: 'index' }, notice: 'The source was not found ') && return if @source.blank?
 
     get_user_info_from_userid
-    reject_access(@user, 'Place Source Edit') unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
+    reject_access(@user, 'Place Source Edit') unless session[:role] == 'data_manager' || session[:role] == 'system_administrator'
   end
 
   def index
@@ -40,7 +40,7 @@ class Freecen2PlaceSourcesController < ApplicationController
 
   def new
     get_user_info_from_userid
-    reject_access(@user, 'Place Source Create') unless @user.person_role == 'data_manager' || @user.person_role == 'system_administrator'
+    reject_access(@user, 'Place Source Create') unless session[:role] == 'data_manager' || session[:role] == 'system_administrator'
     @source = Freecen2PlaceSource.new
   end
 

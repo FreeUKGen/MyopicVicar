@@ -54,7 +54,7 @@ class FeedbacksController < ApplicationController
     redirect_back(fallback_location: new_feedback_path, notice: 'There was a problem creating your feedback!') && return if @feedback.errors.any?
 
     flash.notice = 'Thank you for your feedback!'
-    @feedback.communicate_initial_contact
+    @feedback.feedback_type == 'freecen handbook feedback' ? @feedback.communicate_handbook_feedback : @feedback.communicate_initial_contact
     if session[:return_to].present?
       redirect_to session.delete(:return_to)
     else
@@ -85,7 +85,8 @@ class FeedbacksController < ApplicationController
     redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
 
     get_user_info_from_userid
-    @messages = Message.where(source_feedback_id: params[:id]).all
+    @messages = Message.where(source_feedback_id: params[:id], :sub_nature.ne => 'comment').all
+    @comments = Message.where(source_feedback_id: params[:id], sub_nature: 'comment').all if @messages.present?
     @link = false
     render 'messages/index'
   end
@@ -182,6 +183,18 @@ class FeedbacksController < ApplicationController
     @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
     @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
   end
+
+  def new_handbook_feedback
+    session[:return_to] ||= request.referer
+    get_user_info_from_userid
+    @feedback = Feedback.new if params[:source_feedback_id].blank?
+    @message = Message.new
+    @message.message_time = Time.now
+    @message.userid = @user.userid
+    @respond_to_feedback = Feedback.id(params[:source_feedback_id]).first
+    @feedback_replies = Message.fetch_feedback_replies(params[:source_feedback_id])
+  end
+
 
   def restore
     @feedback = Feedback.find(params[:id])

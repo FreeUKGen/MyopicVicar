@@ -89,7 +89,7 @@ class AddEmbargoRecord
       person = UseridDetail.find_by(_id: user)
       emails << person.email_address if person.present?
     end
-    UserMailer.send_logs(file_for_warning_messages, emails, 'Details of the processing of your embargo rule', 'Embargo completion report').deliver_now
+    UserMailer.send_embargo_logs(file_for_warning_messages, emails, 'Details of the processing of your embargo rule', 'Embargo completion report').deliver_now
   end
 
   def self.process_embargo_records_for_a_embargo(rule_id, email)

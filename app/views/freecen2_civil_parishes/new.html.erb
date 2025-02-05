@@ -3,7 +3,7 @@
 </h3>
 <%= render 'flash_notice' %>
 <%= semantic_form_for @freecen2_civil_parish, :html => { :class => 'grid'}  do |f| %>
-  <% if @user.person_role == "system_administrator" || @user.person_role == "data_manager" %>
+  <% if session[:role] == "system_administrator" || session[:role] == "data_manager" %>
     <%= f.input :reason_changed,:label => 'Reason for making addition',required: false,:as => :text,:input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>
   <% else %>
     <%= f.input :reason_changed,:label => 'Reason for making addition',required: true,:as => :text,:input_html => {:class => ' simple_form_bgcolour  ',   :placeholder => 'Enter the reason for addition',  :size => '50x5' }%>

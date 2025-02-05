@@ -160,6 +160,7 @@ class AssignmentsController < ApplicationController
     heading_info
     @assignment, @count = Assignment.filter_assignments_by_assignment_id(params[:id])
     @images = Assignment.find(params[:id]).image_server_images.where(image_server_group_id: params[:image_server_group_id]).order_by(image_file_name: 1)
+    @image_listing_partial = params[:images_listing].present? ? true : false
     @assignment_id = params[:id]
   end
 

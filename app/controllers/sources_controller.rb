@@ -17,7 +17,7 @@ class SourcesController < ApplicationController
   def access_image_server
     @user = get_user
     (session[:manage_user_origin] != 'manage county' && session[:chapman_code].blank?) ? chapman_code = 'all' : chapman_code = session[:chapman_code]
-    website = Source.create_manage_image_server_url(@user.userid, @user.person_role, chapman_code)
+    website = Source.create_manage_image_server_url(@user.userid, session[:role], chapman_code)
     redirect_to(website) && return
   end
 
@@ -48,7 +48,7 @@ class SourcesController < ApplicationController
     redirect_back(fallback_location: root_path, notice: 'Attempting to create with an incomplete source') && return if @register.blank? ||
       @church.blank? || @place.blank? || @source.blank? || source.blank?
 
-    redirect_back(fallback_location: root_path, notice: 'Only system_administrator and data_manager is allowed to delete source') and return unless ['system_administrator', 'data_manager'].include? @user.person_role
+    redirect_back(fallback_location: root_path, notice: 'Only system_administrator and data_manager is allowed to delete source') and return unless ['system_administrator', 'data_manager'].include? session[:role]
 
     get_user_info(session[:userid], session[:first_name])
     begin

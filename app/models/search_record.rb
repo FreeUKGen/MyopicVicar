@@ -37,6 +37,7 @@ class SearchRecord
   belongs_to :freecen1_vld_file, index: true, optional: true
   belongs_to :place, index: true, optional: true
   belongs_to :freecen2_place, index: true, optional: true
+  belongs_to :freecen2_place_of_birth, index: true, class_name: 'Freecen2Place', optional: true
 
   field :annotation_ids, type: Array # , :typecast => 'ObjectId'
 
@@ -64,6 +65,7 @@ class SearchRecord
   field :secondary_search_date, type: String
   field :embargoed, type: Boolean, default: false
   field :release_year, type: Integer
+  field :possible_last_names, type: Array, default: []
 
   # search fields
   embeds_many :search_names, :class_name => 'SearchName'
@@ -190,6 +192,7 @@ class SearchRecord
       total_records
     end
 
+
     def before_date(county, last_midnight)
       last_id = BSON::ObjectId.from_time(last_midnight)
       total_records = {}
@@ -258,6 +261,7 @@ class SearchRecord
       search_record.transform
       search_record.place_id = place_id
       search_record.digest = search_record.cal_digest
+      search_record.possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
       search_record.save
       #p search_record
       'created'
@@ -500,7 +504,7 @@ class SearchRecord
       new_search_record.search_date = ' ' if new_search_record.search_date.nil?
       new_search_record.place_id = place.id
       new_search_record.chapman_code = place.chapman_code
-
+      new_search_record.possible_last_names = new_search_record.transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
       new_search_record.save
       #search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
       search_record.destroy if search_record.present?
@@ -906,7 +910,10 @@ class SearchRecord
 
   def populate_search_names
     return unless transcript_names && transcript_names.size > 0
-
+    #possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
+    #other_last_name = {}
+    # other_last_name = transcript_names.each{|n| other_last_name["#{n[:role]}"] = [n[:last_name]] if n[:last_name].present?}
+    #get_last_name = other_possible_last_name(other_last_name)
     transcript_names.each do |name_hash|
       person_type = PersonType::FAMILY
       person_type = PersonType::PRIMARY if name_hash[:type] == 'primary'
@@ -925,10 +932,21 @@ class SearchRecord
     end
   end
 
+  def other_possible_last_name last_names_hash
+    last_name = last_names_hash['f'] if last_names_hash.has_key?('f')
+    last_name = last_names_hash['m'] if !last_names_hash.has_key?('f') && last_names_hash.has_key?('m')
+    last_name = last_names_hash['h'] if !last_names_hash.has_key?('f') && !last_names_hash.has_key?('m') && last_names_hash.has_key?('h')
+    last_name = last_names_hash['mr'] if !last_names_hash.has_key?('f') && !last_names_hash.has_key?('m') && !last_names_hash.has_key?('h') && last_names_hash.has_key?('mr')
+    last_name = last_names_hash['fr'] if !last_names_hash.has_key?('f') && !last_names_hash.has_key?('m') && !last_names_hash.has_key?('h') && last_names_hash.has_key?('mr') && last_names_hash.has_key?('fr')
+    last_name
+  end
+
   def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
     name = nil
     unless last_name.blank?
       name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+    else
+      name = SearchName.new({ :first_name => copy_name(first_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
     name
   end

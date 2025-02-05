@@ -149,6 +149,13 @@ class ApplicationController < ActionController::Base
     user
   end
 
+  def get_user_roles
+    user = get_user
+    all_roles = user.secondary_role
+    all_roles << user.person_role
+    all_roles.uniq
+  end
+
   def get_user_info_from_userid
     @user = get_user
     if @user.blank?
@@ -160,7 +167,7 @@ class ApplicationController < ActionController::Base
       @user_userid = @user.userid
       @first_name = @user.person_forename
       @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+      @roles = UseridRole::OPTIONS.fetch(session[:role])
     end
   end
 
@@ -169,7 +176,7 @@ class ApplicationController < ActionController::Base
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     @userid = @user.id
-    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    @roles = UseridRole::OPTIONS.fetch(session[:role])
   end
 
   def get_userids_and_transcribers
@@ -344,6 +351,10 @@ class ApplicationController < ActionController::Base
     session.delete(:stats_year)
     session.delete(:stats_todate)
     session.delete(:stats_recs)
+    session.delete(:move_old_county)
+    session.delete(:move_old_place)
+    session.delete(:move_new_county)
+    session.delete(:move_new_place)
   end
 
   def clean_session_for_images

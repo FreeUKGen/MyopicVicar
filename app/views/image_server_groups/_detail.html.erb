@@ -1,6 +1,6 @@
 <div style="text-align: center">
   <%= link_to 'List Images Under This Group', index_image_server_image_path(@image_server_group), method: :get, :class => "btn  btn--small" %>
-  <% if session[:manage_user_origin] == 'manage county' %>
+  <% if session[:manage_user_origin] == 'manage county' || session[:role] == 'image_server_coord' %>
     <%= link_to 'Edit Image Group', edit_image_server_group_path(@image_server_group), method: :get, :class => "btn  btn--small" %>
     <%= link_to 'Unallocate Image Group', image_server_group_path(@image_server_group, :type=>'unallocate'), data: { confirm: 'Are you sure you want to unallocate this Image Group?'}, method: :put, :class => "btn  btn--small" if @image_server_group[:summary][:status] == ['a'] %>
     <%= link_to 'Upload Images', upload_image_server_group_path(@image_server_group), data: { confirm: 'Are you sure you want to upload images into this Image Group "'+@image_server_group[:group_name]+'"?'}, method: :get, :class => "btn  btn--small" %>

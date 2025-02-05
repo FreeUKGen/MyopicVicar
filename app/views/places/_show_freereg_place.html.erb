@@ -1,9 +1,9 @@
 <% breadcrumb :show_place,  @county, @place%>
-<div style="text-align: center"> <%= link_to 'Edit Place Information', edit_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" unless @user.person_role == "contacts_coordinator" %>    <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn   btn--small" unless @user.person_role == "contacts_coordinator"%>
-  <% if @user.person_role == 'data_manager' ||   @user.person_role == 'system_administrator'%>
+<div style="text-align: center"> <%= link_to 'Edit Place Information', edit_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small" unless session[:role] == "contacts_coordinator" %>    <%= link_to 'Create New Church', new_church_path, method: :get , :class => "btn   btn--small" unless session[:role] == "contacts_coordinator"%>
+  <% if session[:role] == 'data_manager' ||   session[:role] == 'system_administrator'%>
     <%= link_to 'Create New Place', new_place_path, method: :get, :class => "btn   btn--small" %>   <%= link_to 'Change Place Name', rename_place_path(@place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn   btn--small" %>   <%= link_to 'Destroy Place', place_path(@place), method: :delete,  data: { confirm: 'Are you sure you want to destroy this Place.? It will not happen if there are dependents!' }, :class => "btn   btn--small" %> <%= link_to 'Fill County and Country fields', relocate_place_path(@place), method: :get ,data: { confirm: 'Are you sure?' }, :class => "btn   btn--small"%>
   <% end%>
-  <% if  @user.person_role == 'system_administrator'%>
+  <% if  session[:role] == 'system_administrator'%>
     <%= link_to 'Merge Identical Places into this one', merge_place_path(@place), method: :get,data: { confirm: 'Are you really really sure that this is the Place into which you want all similar Places in this County to be merged? The action will be taken on selecting OK and cannot be recovered!!!!' }, :class => "btn  btn--small" %>
   <% end%>
 </div>
