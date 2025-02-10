@@ -1,7 +1,11 @@
 <% breadcrumb :syndicates%>
 <h2 class=" text--center">Listing of all syndicates</h2>
 <%= render 'flash_notice' %>
-<div style="text-align: center"> <%= link_to 'Create new syndicate', new_syndicate_path, method: :get , :class => "btn  btn--small"  if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(@user.person_role) %></div>
+<% if %w[system_administrator volunteer_coordinator engagement_coordinator executive_director project_manager].include?(session[:role])%>
+  <div style="text-align: center">
+    <%= link_to 'Create new syndicate', new_syndicate_path, method: :get , :class => "btn  btn--small" %>
+  </div>
+<% end %>
 <div class="grid">
   <section class="island  ">
     <div class="grid__item one-whole" >
@@ -10,21 +14,22 @@
           <th class="t8">Syndicate</th>
           <th class="t8">Syndicate Coordinator</th>
           <th class="t8">email address</th>
-          <th class="15">Transcriber Agreement Accepted</th>
-          <th class="t8">Accepting Transcribers?</th>
-          <% if @user.person_role == "system_administrator"%>
+          <% if @control_access_roles.include?(session[:role]) %>
+            <th class="15">Transcriber Agreement Accepted</th>
+            <th class="t8">Accepting Transcribers?</th>
             <th class="t8">Show</th>
             <th class="t8">Edit</th>
           <% end%>
         </tr>
         <% @syndicates.each do |syndicate| %>
+        <% next if syndicate.syndicate_code == 'Technical'%>
           <tr id="<%=syndicate.id%>">
             <td > <%= syndicate.syndicate_code %>  </td>
             <td > <%= syndicate.syndicate_coordinator %>  </td>
             <td > <%= email_address(syndicate.syndicate_coordinator) %>  </td>
-            <td > <%= syndicate_coordinator_agreement(syndicate.syndicate_coordinator) %>  </td>
-            <td > <%= syndicate.accepting_transcribers %>  </td>
-            <% if @user.person_role == "system_administrator"%>
+            <% if @control_access_roles.include?(session[:role]) %>
+              <td > <%= syndicate_coordinator_agreement(syndicate.syndicate_coordinator) %>  </td>
+              <td > <%= syndicate.accepting_transcribers %>  </td>
               <td><%= link_to 'Show', syndicate_path(syndicate), method: :get , :class => "btn  btn--small" %></td>
               <td><%= link_to 'Edit details', edit_syndicate_path(syndicate), method: :get, :class => "btn  btn--small" %></td>
             </tr>

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# 'Overseas British' => 'OVB', removed from Special by 1310 final step
+#
 module ChapmanCode
   require 'freereg_options_constants'
   require 'freecen_constants'
@@ -36,7 +38,7 @@ module ChapmanCode
     def codes_for_cen_birth_county
       # this is used in the birth county selection BUT ITS THE SAME as codes_for_cen_county
       hsh = {}
-      codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+      codes = ChapmanCode.remove_codes_cen_keep_country(ChapmanCode::CODES)
       codes.each_pair do |ctry, ctryval|
         ctryhash = {}
         ctryval.each_pair do |kk, vv|
@@ -54,7 +56,7 @@ module ChapmanCode
     def codes_for_cen_county
       # This is used in the county selection
       hsh = {}
-      codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+      codes = ChapmanCode.remove_codes_cen_keep_country(ChapmanCode::CODES)
       codes.each_pair do |ctry, ctryval|
         ctryhash = {}
         ctryval.each_pair do |kk, vv|
@@ -67,13 +69,13 @@ module ChapmanCode
 
     def codes_for_cen_county_search
       hsh = {}
-      codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
+      codes = ChapmanCode.remove_codes_cen_keep_country(ChapmanCode::CODES)
       codes.each_pair do |ctry, ctryval|
         ctryhash = {}
         ctryval.each_pair do |kk, vv|
           if Rails.application.config.freecen2_place_cache
             ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s) ||
-              JSON.parse(Freecen2PlaceCache.find_by(chapman_code: vv.to_s).places_json).with_indifferent_access.blank?
+              (JSON.parse(Freecen2PlaceCache.find_by(chapman_code: vv.to_s).places_json).with_indifferent_access.blank? && !%w[ENG IRL SCT WLS].include?(vv.to_s))
           else
             ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s)
           end
@@ -152,6 +154,19 @@ module ChapmanCode
         myvalue = value.dup
         elimination_codes.each do |county|
           myvalue.delete_if { |new_key, _new_value| new_key == county }
+        end
+        reduced_hash[key] = myvalue
+      end
+      reduced_hash
+    end
+
+    def remove_codes_cen_keep_country(original_hash)
+      reduced_hash = {}
+      original_hash.each_pair do |key, value|
+        elimination_codes = Freecen::CHAPMAN_CODE_ELIMINATIONS
+        myvalue = value.dup
+        elimination_codes.each do |county|
+          myvalue.delete_if { |new_key, _new_value| new_key == county && !%w[England Ireland Scotland Wales].include?(county)}
         end
         reduced_hash[key] = myvalue
       end
@@ -353,7 +368,6 @@ module ChapmanCode
       'Unknown' => 'UNK',
       'England and Wales Shipping' => 'EWS',
       'Out of County' => 'OUC',
-      'Overseas British' => 'OVB',
       'Born Overseas' => 'OVF',
       'Scottish Shipping' => 'SCS',
       'Other Locations' => 'OTH',

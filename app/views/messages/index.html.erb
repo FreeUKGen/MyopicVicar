@@ -13,4 +13,9 @@
   <% end%>
   <%= index_header_list_link %>
 </p>
-<%= index_partial_render %>
+<%= index_partial_render(@messages) %>
+<% if @comments.present? %>
+  <% explanation = "Below listed are the comments."%>
+  <% source_type = 'Contact Comment'%>
+  <%= index_partial_render(@comments, explanation, source_type) %>
+<% end %>

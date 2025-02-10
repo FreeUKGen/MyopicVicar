@@ -39,7 +39,7 @@ class TransregCsvfilesController < ApplicationController
         range = File.join(@csvfile.userid,@csvfile.file_name)
         logger.warn("#{appname_upcase}:UPLOAD: About to process the file #{processing_time}")
         case
-        when @user.person_role == "trainee"
+        when session[:role] == "trainee"
           @result = "success"
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
           @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
@@ -65,7 +65,8 @@ class TransregCsvfilesController < ApplicationController
           #end
         when processing_time >= 600
           @result = "failure"
-          batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
+          batch.destroy
+          #batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
           @message =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
           UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
         end
@@ -130,7 +131,7 @@ class TransregCsvfilesController < ApplicationController
         range = File.join(@csvfile.userid,@csvfile.file_name)
         logger.warn("FREEREG:UPLOAD: About to process the file #{processing_time}")
         case
-        when @user.person_role == "trainee"
+        when session[:role] == "trainee"
           @result = "success"
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
           @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."

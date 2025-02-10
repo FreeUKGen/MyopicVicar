@@ -1,7 +1,7 @@
 <% breadcrumb :show_counties,  @county%>
 <h2 class=" text--center">Details for <%= @county.county_description%></h2>
 <%= render 'flash_notice' %>
-<% if @user.person_role == "system_administrator"%>
+<% if session[:role] == "system_administrator"%>
   <div style="text-align: center"> <%= link_to 'Edit details', edit_county_path(@county), method: :get , :class => "btn btn--small" %> </div>
 <% end %>
 <div id="main"style="color:black">

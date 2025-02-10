@@ -1,0 +1,36 @@
+<% breadcrumb :freecen_pob_propagations,@chapman_code %>
+<h1 style="text-align: center">Listing of FreeCen POB Propagations for <%= @county%> (<%= @chapman_code%>)</h1>
+<h2 style="text-align: center">ordered by <%=@sorted_by%></h2>
+<div class=" text--center push--bottom">
+  Click button to change the order of display :
+  <% if @sorted_by != 'Most Recent Creation Date' %>
+    <%= link_to 'Most Recent Creation Date', freecen_pob_propagations_path(county: @county, sorted_by: 'Most Recent Creation Date'), method: :get , :class => "btn btn--small", title: 'Reorder the list showing most recently created first' %>
+  <% end %>
+  <% if @sorted_by != 'Verbatim Birth Place' %>
+    <%= link_to 'Verbatim Birth Place', freecen_pob_propagations_path(county: @county, sorted_by: 'Verbatim Birth Place'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical Verbatim Place Name' %>
+  <% end %>
+</div>
+<div class="scrollable ">
+  <table class="table--bordered table--data table--striped ">
+    <% if @pob_propagations.present? %>
+      <tr>
+        <th class='sticky-header '> Verbatim Birth County</th>
+        <th class='sticky-header '> Verbatim Birth Place</th>
+        <th class='sticky-header '> Alternate Birth County</th>
+        <th class='sticky-header '> Alternate Birth Place</th>
+        <th class='sticky-header '> Action</th>
+      </tr>
+      <% @pob_propagations.each do |prop| %>
+        <tr>
+          <td><%= prop.match_verbatim_birth_county %></td>
+          <td><%= prop.match_verbatim_birth_place %></td>
+          <td><%= prop.new_birth_county %></td>
+          <td><%= prop.new_birth_place %></td>
+          <td><%= link_to 'Show', freecen_pob_propagation_path(prop) %></td>
+        </tr>
+      <% end %>
+    <% else%>
+      <p class="text--center"> No POB Propagations found</p>
+    <% end%>
+  </table>
+</div>

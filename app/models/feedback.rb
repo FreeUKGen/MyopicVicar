@@ -14,6 +14,8 @@ class Feedback
   field :github_issue_url, type: String
   field :github_comment_url, type: String
   field :github_number, type: String
+  field :github_issue_state, type: String
+  field :notified_issue_closed, type: Boolean, default: false
   field :session_data, type: Hash
   field :screenshot_location, type: String
   field :screenshot, type: String
@@ -66,6 +68,10 @@ class Feedback
 
   def acknowledge_feedback
     UserMailer.acknowledge_feedback(self).deliver_now
+  end
+
+  def acknowledge_handbook_feedback
+    UserMailer.acknowledge_handbook_feedback(self).deliver_now
   end
 
   def action_recipient_userid
@@ -125,7 +131,7 @@ class Feedback
   def add_link_to_attachment
     return if self.screenshot_location.blank?
     website = Rails.application.config.website
-    website  = website.sub("www","www13") if website == "http://www.freereg.org.uk"
+    website  = website.sub("www","www21") if website == "http://www.freereg.org.uk"
     go_to = "#{website}/#{self.screenshot_location}"
     body = self.body + "\n" + go_to
     self.update_attribute(:body, body)
@@ -205,6 +211,16 @@ class Feedback
     self.feedback_action_communication
   end
 
+  def communicate_handbook_feedback
+    self.acknowledge_handbook_feedback
+    self.handbook_feedback_communication
+  end
+
+  def handbook_feedback_communication
+    send_to_userid = 'GeoffJ'
+    UserMailer.feedback_action_request(self,send_to_userid,'').deliver_now
+  end
+
   def delete_replies
     replies = Message.where(source_feedback_id: id).all
     return if replies.blank?
@@ -240,10 +256,23 @@ class Feedback
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
       logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
-      self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
+      self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number], github_issue_state: response[:state])
+      UserMailer.communicate_github_issue_creation(self).deliver_now
     else
       logger.error("#{appname}:Tried to create an issue, but Github integration is not enabled!")
     end
+  end
+
+  def github_issue_status_closed
+    self.each {|feedback|
+      next unless feedback.github_issue_url.present?
+      issue = Octokit.issue(Rails.application.config.github_issues_repo, feedback.github_number)
+      issue_state = issue.state if issue.present?
+      if issue_state != feedback.github_issue_state && issue_state == 'closed'
+        UserMailer.communicate_github_issue_closed(feedback).deliver_now
+        feedback.update_attributes(github_issue_state: issue_state, notified_issue_closed: true)
+      end
+    }
   end
 
   def has_replies?(feedback_id)
@@ -416,7 +445,7 @@ class Feedback
   private
 
   def permitted_person_role
-    ReplyUseridRole::FEEDBACK_REPLY_ROLE.include?(@user.person_role)
+    ReplyUseridRole::FEEDBACK_REPLY_ROLE.include?(session[:role])
   end
 
   def permitted_secondary_role

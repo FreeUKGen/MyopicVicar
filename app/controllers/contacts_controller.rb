@@ -31,7 +31,8 @@ class ContactsController < ApplicationController
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
     get_user_info_from_userid
-    @messages = Message.where(source_contact_id: params[:id]).all
+    @messages = Message.where(source_contact_id: params[:id], :sub_nature.ne => 'comment').all
+    @comments = Message.where(source_contact_id: params[:id], sub_nature: 'comment').all if @messages.present?
     @links = false
     render 'messages/index'
   end
@@ -196,6 +197,7 @@ class ContactsController < ApplicationController
   def new
     @contact = Contact.new
     @options = FreeregOptionsConstants::ISSUES
+    @options = FreeregOptionsConstants::ISSUES - ['Thank-you'] if appname_downcase == 'freereg'
     @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
     #flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?
@@ -257,6 +259,7 @@ class ContactsController < ApplicationController
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
+    @userids = array_of_userids
   end
 
   def return_after_archive(source, id)

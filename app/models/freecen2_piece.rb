@@ -57,6 +57,10 @@ class Freecen2Piece
 
   field :vld_files, type: Array, default: [] # used for Scotland pieces where there can be multiple files for a single piece
   field :shared_vld_file, type: String # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
+  field :admin_county, type: String # used by County Stats drilldown - can be different to chapman_code if a piece crosses county boundaries
+  field :piece_availability, type: String, default: 'Y'
+  field :piece_digitised, type: String, default: 'N'
+  validates_inclusion_of :admin_county, in: ChapmanCode.values
 
   belongs_to :freecen2_district, optional: true, index: true
   belongs_to :freecen2_place, optional: true, index: true
@@ -81,6 +85,10 @@ class Freecen2Piece
       where(chapman_code: chapman)
     end
 
+    def admin_chapman_code(chapman)
+      where(admin_county: chapman)
+    end
+
     def year(year)
       where(year: year)
     end
@@ -90,9 +98,9 @@ class Freecen2Piece
     end
 
     def valid_series?(series)
-      return true if %w[HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series.upcase)
+      return true if %w[HS4 HS5 HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series.upcase)
 
-      # Need to add Scotland and Ireland
+      # Need to add Scotland after 1861 -> and Ireland
       false
     end
 
@@ -122,9 +130,12 @@ class Freecen2Piece
       when 'HO107'
         year = parts[1].delete('^0-9').to_i <= 1465 ? '1841' : '1851'
         census_fields = parts[1].delete('^0-9').to_i <= 1465 ? Freecen::CEN2_1841 : Freecen::CEN2_1851
-      when 'HS51'
-        year = parts[1].delete('^0-9')[2..3] == '51' ? '1851' : '1841'
-        census_fields = parts[1].delete('^0-9')[2..3] == '51' ? Freecen::CEN2_SCT_1851 : Freecen::CEN2_SCT_1841
+      when 'HS4'
+        year = '1841'
+        census_fields = Freecen::CEN2_SCT_1841
+      when 'HS5'
+        year = '1851'
+        census_fields = Freecen::CEN2_SCT_1851
       when 'RS6'
         year = '1861'
         census_fields = Freecen::CEN2_SCT_1861
@@ -146,6 +157,19 @@ class Freecen2Piece
       end
       piece = parts[1].present? ? parts[0] + '_' + parts[1] : parts[0]
       [year, piece, census_fields]
+    end
+
+    def check_piece_parts(piece)
+      piece_parts = piece.split('_')
+      continue = true
+      if piece_parts.count > 1
+        part = piece_parts[1].delete('^0-9')
+        continue = piece_parts[1] != part
+        piece = "#{piece_parts[0]}_#{part}"
+      else
+        continue = false
+      end
+      [continue, piece]
     end
 
     def before_year_totals(time)
@@ -335,30 +359,30 @@ class Freecen2Piece
     end
 
     def create_csv_export_listing(chapman_code, year)
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: chapman_code, year: year).order_by('status_date DESC, number ASC')
+      @freecen2_pieces = Freecen2Piece.where(admin_county: chapman_code, year: year).order_by('status_date DESC, number ASC')
       file = "Piece_Status_#{chapman_code}_#{year}.csv"
       file_location = Rails.root.join('tmp', file)
-      success, message = write_csv_listing_file(file_location, @freecen2_pieces)
+      success, message = write_csv_listing_file(file_location, @freecen2_pieces, chapman_code)
 
       [success, message, file_location, file]
     end
 
-    def write_csv_listing_file(file_location, pieces)
+    def write_csv_listing_file(file_location, pieces, chapman_code)
       column_headers = %w(piece_number piece_name status online_vld_files incorporated_csv_fles unincorporated_csv_files)
 
       CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
         csv << column_headers
         pieces.each do |rec|
           line = []
-          line = add_csv_listing_fields(line, rec)
+          line = add_csv_listing_fields(line, rec, chapman_code)
           csv << line
         end
       end
       [true, '']
     end
 
-    def add_csv_listing_fields(line, record)
-      line << record.number
+    def add_csv_listing_fields(line, record, chapman_code)
+      line << record.display_piece_number(chapman_code)
       line << record.name
       if record.display_piece_status.blank?
         line << ' '
@@ -428,6 +452,7 @@ class Freecen2Piece
       new_piece_params[:notes] = params['notes']
       new_piece_params[:prenote] = params['prenote']
       new_piece_params[:freecen2_place_id] = Freecen2Place.place_id(params['chapman_code'], params[:freecen2_place_id])
+      new_piece_params[:admin_county] = params['chapman_code']
       new_piece_params
     end
 
@@ -627,6 +652,17 @@ class Freecen2Piece
     [year, chapman_code, district_name, number]
   end
 
+  def display_piece_number(chap)
+    if chapman_code != admin_county
+      display_number = number + '(' + chapman_code + ')'
+    elsif chapman_code != chap
+      display_number = number + '(' + chap + ')'
+    else
+      display_number = number
+    end
+    display_number
+  end
+
   def display_piece_status
     if status.present?
       display_status = status_date.present? ? status + " (" + status_date.to_datetime.strftime("%d/%b/%Y %R") + ")" : status
@@ -654,7 +690,7 @@ class Freecen2Piece
     elsif shared_vld_file.present?
       # used when a file has multiple pieces; usually only occurs with piece has been broken into parts
       file = Freecen1VldFile.find_by(_id: shared_vld_file)
-      file.file_name if file.present?
+      "#{file.file_name}(shared)" if file.present?
     else
       'There are no VLD files'
     end
@@ -734,6 +770,71 @@ class Freecen2Piece
     success = place.save
     message = 'Failed to update place' unless success
     [success, message]
+  end
+
+  def transcription_status
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    if csv_files.present?
+      inprogress_csv_files = csv_files.where(validation: false, incorporated: false)
+    end
+    if inprogress_csv_files.present?
+      inprogress_status = 'In Progress'
+      userids = inprogress_csv_files.pluck(:userid)
+      count = inprogress_csv_files.count
+    end
+    [inprogress_status, userids, count]
+  end
+
+  def piece_being_transcribed
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    uploaded_vld_files = self.freecen1_vld_files.where("userid" => {'$ne': nil}) if vld_files.present?
+    if uploaded_vld_files.present?
+      unincorporated =  []
+      uploaded_vld_files.each{|vld_file|
+        next if vld_file.search_records.count > 0
+        unincorporated << vld_file.search_records.count == 0
+      }
+    end
+    if csv_files.present?
+      inprogress_csv_files = csv_files.where(incorporated: false, "userid" => {'$exists': true})
+    end
+    if inprogress_csv_files.present?
+      inprogress_status = 'Yes'
+    elsif unincorporated.present?
+      inprogress_status = 'Yes'
+    else
+      inprogress_status = 'No'
+    end
+    #inprogress_status = inprogress_csv_files.present? ? 'Yes' : 'No'
+    [inprogress_status]
+  end
+
+  def validation_status
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    if csv_files.present?
+      validatation_in_progress_files = csv_files.where(validation: true, incorporated: false)
+    end
+    if validatation_in_progress_files.present?
+      inprogress_status = 'In Progress'
+      userids = validatation_in_progress_files.pluck(:userid)
+      count = validatation_in_progress_files.count
+    end
+    [inprogress_status, userids, count]
+  end
+
+
+  def incorpoation_status
+    csv_files = self.freecen_csv_files
+    vld_files = self.freecen1_vld_files
+    incorporated_and_complete = csv_files.where(incorporated: true, completes_piece: true)
+    incorporated_and_part_complete = csv_files.where(incorporated: true, completes_piece: false)
+    status = 'Yes' if incorporated_and_complete.present?
+    status = 'Part' if  incorporated_and_part_complete.present?
+    status = 'Vld' if vld_files.exists?
+    status
   end
 
   def piece_search_records

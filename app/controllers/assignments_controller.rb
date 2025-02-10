@@ -125,6 +125,7 @@ class AssignmentsController < ApplicationController
 
   def index
   end
+  
 
   def list_assignments_by_syndicate_coordinator
     heading_info
@@ -136,6 +137,7 @@ class AssignmentsController < ApplicationController
     @assignment, @count = Assignment.filter_assignments_by_userid(user_id, session[:syndicate], group_id)
     render 'list_assignment_images' if @count.length == 1
   end
+
 
   def list_assignments_of_myself
     @user = UseridDetail.where(userid: session[:userid]).first
@@ -157,6 +159,9 @@ class AssignmentsController < ApplicationController
     session[:assignment_filter_list] = params[:assignment_filter_list]
     heading_info
     @assignment, @count = Assignment.filter_assignments_by_assignment_id(params[:id])
+    @images = Assignment.find(params[:id]).image_server_images.where(image_server_group_id: params[:image_server_group_id]).order_by(image_file_name: 1)
+    @image_listing_partial = params[:images_listing].present? ? true : false
+    @assignment_id = params[:id]
   end
 
   def list_submitted_review_assignments

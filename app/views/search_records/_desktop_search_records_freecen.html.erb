@@ -1,7 +1,11 @@
 <% if  @show_navigation%>
   <%= render 'nav_dwelling_freecen' if  @show_navigation %>
 <% else%>
-  <%= link_to "Printable Format", show_print_version_search_record_path(@search_record), :class => "btn  btn--small"%>
+  <% if params[:dwel].present? %>
+    <%= link_to "Printable Format", show_print_version_search_record_path(@search_record, dwel: params[:dwel]), :class => "btn  btn--small"%>
+  <% else %>
+    <%= link_to "Printable Format", show_print_version_search_record_path(@search_record), :class => "btn  btn--small" %>
+  <% end %>
 <% end%>
 <% if @dwelling %>
   <% if 0 != @dwelling_offset %>

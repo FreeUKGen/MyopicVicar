@@ -1,7 +1,7 @@
 <% breadcrumb :freecen2_places_active_index,  @county%>
 <h3 style="text-align: center"><b><%= active(session[:active_place])%> Active Freecen2 Places for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) with records online</b>.</h3>
 <%= render 'flash_notice' %>
-<% if %w[project_manager executive_director county_coordinator master_county_coordinator country_coordinator data_manager system_administrator validator].include?(@user.person_role)%>
+<% if %w[project_manager executive_director county_coordinator master_county_coordinator country_coordinator data_manager system_administrator validator].include?(session[:role])%>
   <div style="text-align: center">
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path, method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
   </div>

@@ -26,7 +26,7 @@ module ApplicationHelper
   def nav_actions_page_link
     return if session[:userid_detail_id].blank?
 
-    link_to 'Your Actions', main_app.new_manage_resource_path
+    link_to 'Your Actions', main_app.new_manage_resource_path(current_role: session[:role])
   end
 
   def nav_about_page_link
@@ -41,16 +41,16 @@ module ApplicationHelper
   end
 
   def nav_help_pages_link
-    if session[:userid_detail_id].present? || controller_name == 'sessions'
+    if session[:userid_detail_id].present?# || controller_name == 'sessions'
       get_user_info_from_userid
-      if @user.present? && @user.person_role.present?
-        if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'
+      if @user.present? && session[:role].present?
+        if session[:role] == 'transcriber' || session[:role] == 'trainee' || session[:role] == 'pending'
           if controller_name == 'pages'
             link_to 'Help', '/cms/help'
           else
             link_to 'Help', '/cms/information-for-transcribers'
           end
-        elsif @user.person_role == 'researcher'
+        elsif session[:role] == 'researcher'
           if controller_name == 'pages'
             link_to 'Help', '/cms/help'
           else
@@ -162,7 +162,7 @@ module ApplicationHelper
       @user_id = @user.id
       @userid = @user.id
       @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+      @roles = UseridRole::OPTIONS.fetch(session[:role])
     end
   end
 
@@ -194,6 +194,31 @@ module ApplicationHelper
                                        :previous_page_url => previous_page_url,
                                        :feedback_type => feedback_type })
     url
+  end
+
+  def suggestion_url
+    problem_time = Time.now.utc
+    feedback_type='freecen handbook feedback'
+    user_id = session[:userid]
+    url = main_app.new_feedback_path({ :feedback_time => problem_time,
+                                       :user_id => user_id,
+                                       :problem_page_url => freecen_handbook_manage_documents_path,
+                                       :feedback_type => feedback_type })
+    url
+  end
+
+  def suggestion_options
+    problem_time = Time.now.utc
+    session_id = request.session['session_id']
+    problem_page_url = request.env['REQUEST_URI']
+    feedback_type='freecen handbook feedback'
+    user_id = session[:userid]
+
+    {  :feedback_time => problem_time,
+       :session_id => session_id,
+       :user_id => user_id,
+       :problem_page_url => problem_page_url,
+       :feedback_type => feedback_type }
   end
 
   def problem_button_options
@@ -730,6 +755,7 @@ module ApplicationHelper
       privacyNotice: 'Privacy Notice (pdf)',
       termAndConditions: 'Terms and Conditions',
       contactUs: 'Contact Us',
+      accessibility: 'Accessibility',
       donation: 'Make a donation to cover our operating costs',
       fugNews: 'News about Free UK Genealogy',
       freeregIcon: '<span class="accessibility">FreeREG</span>',
@@ -747,6 +773,7 @@ module ApplicationHelper
       privacyNotice: 'https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view?usp=sharing',
       termAndConditions: '/cms/terms-and-conditions',
       contactUs: contact_us_path,
+      accessibility: 'https://www.freereg.org.uk/cms/about/accessibility-statement',
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
@@ -1214,7 +1241,7 @@ module ApplicationHelper
   end
 #publift
   def horz_advert(fuse)
-    content_tag :div, class:'grid__item one-whole' do
+    content_tag :div, class:'one-whole' do
       content_tag :fieldset do
         concat(content_tag(:legend,"Advertisement", align:'center'))
         concat(content_tag(:div,'',"data-fuse"=>fuse))

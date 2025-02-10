@@ -431,7 +431,7 @@ class FreecenCsvFilesController < ApplicationController
     redirect_back(fallback_location: freecen_csv_file_path(@freecen_csv_file), notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
 
     session[:records] = @records
-    if @user.person_role == 'system_administrator' || @user.person_role == 'data_manager'
+    if session[:role] == 'system_administrator' || session[:role] == 'data_manager'
       @county = session[:county]
       locations
       # setting these means that we are a DM
@@ -606,7 +606,19 @@ class FreecenCsvFilesController < ApplicationController
       message = 'File has error messages so cannot be validated'
     else
       file.update(validation: true)
-      message = 'File is now ready for validation'
+      if params[:validate][:prevalidate] == 'yes'
+        get_user_info_from_userid
+        user = UseridDetail.id(@userid).first
+        p "Starting rake task for #{user.userid} CSV File #{file.file_name} in #{file.chapman_code}"
+        logger.warn("FREECEN:CSV_PREVALIDATE: Starting rake task for #{user.userid} CSV File #{file.file_name} in #{file.chapman_code}")
+        pid1 = spawn("bundle exec rake freecen:csv_prevalidate[#{file.file_name},#{user.userid}]")
+        logger.warn("FREECEN:CSV_PREVALIDATE: rake task for #{pid1}")
+
+        message = 'The background job that pre-validates the file has been started. You will receive an email when it has been completed. File will then be ready for validation. '
+        message += 'It has been locked so it must be downloaded before it can be replaced. Please download after pre-validation has completed.'
+      else
+        message = 'File is now ready for validation.'
+      end
     end
     flash[:notice] = message
     redirect_to freecen_csv_file_path(file)

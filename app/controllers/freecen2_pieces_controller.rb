@@ -17,12 +17,14 @@ class Freecen2PiecesController < ApplicationController
     if params[:commit] == 'Submit Number'
       params[:freecen2_piece][:number] = params[:freecen2_piece][:number].strip
       redirect_to locate_other_pieces_freecen2_piece_path(number: params[:freecen2_piece][:number])
-
+    elsif params[:commit] == 'Submit Piece Number'
+      params[:freecen2_piece][:number] = params[:freecen2_piece][:number].strip
+      redirect_to find_pieces_freecen2_piece_path(number: params[:freecen2_piece][:number])
     else
       @new_freecen2_piece_params = Freecen2Piece.transform_piece_params(params[:freecen2_piece])
       @freecen2_piece = Freecen2Piece.new(@new_freecen2_piece_params)
       get_user_info_from_userid
-      @freecen2_piece.reason_changed = "Created by #{@user.person_role} (#{@user.userid})" if @freecen2_piece.reason_changed.blank?
+      @freecen2_piece.reason_changed = "Created by #{session[:role]} (#{@user.userid})" if @freecen2_piece.reason_changed.blank?
       @freecen2_piece.save
       if @freecen2_piece.errors.any?
         redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_piece.errors.full_messages}") && return
@@ -116,11 +118,14 @@ class Freecen2PiecesController < ApplicationController
     @chapman_code = session[:chapman_code]
   end
 
+  def enter_piece_number
+    @freecen2_piece = Freecen2Piece.new
+    @chapman_code = session[:chapman_code]
+  end
+
   def export_csv
     @chapman_code = session[:chapman_code]
     @year = params[:csvdownload][:year]
-    p "AEV01 #{@chapman_code}"
-    p "AEV02 #{@year}"
     success, message, file_location, file_name = Freecen2Piece.create_csv_export_listing(@chapman_code, @year)
 
     if success
@@ -172,6 +177,26 @@ class Freecen2PiecesController < ApplicationController
     end
   end
 
+  def update_piece_status
+    piece_ids = params[:all_pieces]
+    current_piece_number = params[:current_piece_number]
+    form_pieces = current_piece_number.split(',')
+    form_pieces = form_pieces.map(&:squish)
+    form_pieces.each do |p|
+      pieces_to_be_updated =  params["#{p}_pieces"]
+      pieces_to_be_updated.each do |piece_id|
+        piece = Freecen2Piece.find(piece_id)
+        piece.update_attributes(piece_availability: params["#{p}_piece_availability"], piece_digitised: params["#{p}_piece_digitised"])
+        if piece.errors.any?
+          flash[:notice] = "The update of the piece status failed #{piece.errors.full_messages}."
+          redirect_back(fallback_location: find_pieces_freecen2_piece_path(current_piece_number)) && return
+        end
+      end
+    end
+    flash[:notice] = 'Update was successful'
+    redirect_to find_pieces_freecen2_piece_path(number: current_piece_number)
+  end
+
   def index_district_year
     get_user_info_from_userid
     if session[:chapman_code].present?
@@ -195,6 +220,44 @@ class Freecen2PiecesController < ApplicationController
 
       @freecen2_pieces << test_piece
     end
+  end
+
+  def find_pieces
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Piece Number') && return if params[:number].blank?
+    @number = params[:number]
+    numbers_array = params[:number].split(',')
+    @cleaned_numbers = numbers_array.map(&:squish)
+    @piece_hash = {}
+    @cleaned_numbers.each do |number|
+      year, piece, _census_fields = Freecen2Piece.extract_year_and_piece(number, '')
+      piece_information = Freecen2Piece.where(number: piece).first
+      next unless piece_information.present?
+      piece_chapman_code = piece_information.admin_county
+      session[:type] = 'locate_other_pieces'
+      find_associated_pieces, piece_number = Freecen2Piece.check_piece_parts(piece)
+      @freecen2_pieces = get_pieces(piece, year,piece_chapman_code)
+      @freecen2_pieces = @freecen2_pieces.reject(&:blank?)
+      @associated_pieces = get_pieces(piece_number, year, piece_chapman_code) if find_associated_pieces
+      @piece_hash[number] = {freecen2_piece: @freecen2_pieces, associated_piece: @associated_pieces}
+    end
+    @piece_hash
+    @all_pieces = []
+    @piece_hash.each do|key, value|
+      freecen2_pieces = value[:freecen2_piece].present? ? value[:freecen2_piece] : []
+      associated_pieces = value[:associated_piece].present? ? value[:associated_piece] : []
+      associated_pieces.present? ? @all_pieces << associated_pieces : @all_pieces << freecen2_pieces
+    end
+    @all_pieces = @all_pieces.flatten
+  end
+
+  def get_pieces(piece_number, year,piece_chapman_code)
+    pieces = []
+    Freecen2Piece.admin_chapman_code(piece_chapman_code).year(year).order_by(number: 1).each do |test_piece|
+      next unless test_piece.number.include?(piece_number)
+
+      pieces << test_piece
+    end
+    pieces
   end
 
   def missing_place
@@ -312,18 +375,52 @@ class Freecen2PiecesController < ApplicationController
     @scotland = scotland_county?(@chapman_code)
   end
 
+  def cap_report
+    @county = session[:county]
+    @chapman_code = session[:chapman_code]
+    @census_year = params[:census_year] if params[:census_year].present?
+    @pieces = Freecen2Piece.where(admin_county: @chapman_code).order_by(number: 1)
+    @pieces = @pieces.where(year: @census_year).order_by(number: 1) if @census_year.present?
+  end
+
+  def gap_report
+    @census_year = params[:census_year].present? ? params[:census_year] : '1841'
+    @chapman_code = params[:chapman_code].present? ? params[:chapman_code] : 'BRK'
+    @pieces = Freecen2Piece.all
+    @pieces = @pieces.where(year: @census_year, chapman_code: @chapman_code) #if @census_year.present?
+  end
+
   def stats_index
     @county = session[:county]
     @chapman_code = session[:chapman_code]
     @year = params[:stats_year]
+    @all_piece_ids = []
+    pieces = Freecen2Piece.where(admin_county: @chapman_code, year: @year)
+    pieces.each do |piece|
+      if piece.shared_vld_file.blank?
+        @all_piece_ids << piece.id
+      else
+        shared_vld_file = Freecen1VldFile.find_by(id: piece.shared_vld_file)
+        if shared_vld_file.present?
+          if shared_vld_file.dir_name == @chapman_code
+            multi_pieces = Freecen2Piece.where(shared_vld_file: piece.shared_vld_file)
+            if multi_pieces.present?
+              multi_pieces.each do |a_piece|
+                @all_piece_ids << a_piece.id
+              end
+            end
+          end
+        end
+      end
+    end
     @sorted_by = params[:sorted_by].blank? ? 'Most Recent Online' : params[:sorted_by]
     case @sorted_by
     when 'Piece Number'
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('number ASC')
+      @freecen2_pieces = Freecen2Piece.where({'_id' => {"$in" => @all_piece_ids}}).order_by('number ASC')
     when 'Piece Name'
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('name ASC')
+      @freecen2_pieces = Freecen2Piece.where({'_id' => {"$in" => @all_piece_ids}}).order_by('name ASC')
     when 'Most Recent Online'
-      @freecen2_pieces = Freecen2Piece.where(chapman_code: @chapman_code, year: @year).order_by('status_date DESC, number ASC')
+      @freecen2_pieces = Freecen2Piece.where({'_id' => {"$in" => @all_piece_ids}}).order_by('status_date DESC, number ASC')
     end
   end
 
@@ -362,7 +459,7 @@ class Freecen2PiecesController < ApplicationController
       @freecen2_piece.update(freecen2_piece_params)
       if @@freecen2_piece.reason_changed.blank?
         get_user_info_from_userid
-        @@freecen2_piece.reason_changed = "Updated by #{@user.person_role} (#{@user.userid})"
+        @@freecen2_piece.reason_changed = "Updated by #{session[:role]} (#{@user.userid})"
         @@freecen2_piece.save
       end
       if @freecen2_piece.errors.any?

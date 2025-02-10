@@ -1,18 +1,17 @@
 <% title "Member Login" %>
 <div id="flash_container">
-  <%= render 'refinery/message' %>
+  <%= render "refinery/message" %>
 </div>
 <% if !Rails.application.config.member_open %>
   <p class="text--negative">The system is currently undergoing maintenance and is unavailable to Members.</p>
 <% end %>
 <div class="grid">
   <div class="grid__item two-thirds lap-one-half palm-one-whole float--right">
-    <p class="read-length float--right">You do not need to be a Member to Search our database.
-      The Member login is for transcribers, coordinators and managers.<br>
-       <%= link_to 'Video on the login process and dealing with problems', "https://youtu.be/RCzRpnDH1tQ", target: :_blank %></p>
+    <p class="read-length float--right">You do not need to be a Member to Search our database. The Member login is for
+      transcribers, volunteer, coordinators and managers.</p>
   </div>
   <div class="grid__item one-third lap-one-half palm-one-whole">
-    <%= form_for resource, :as => resource_name,
+    <%= form_for resource, html: {id: 'signin_form'}, :as => resource_name,
                            :url => refinery.authentication_devise_user_session_path do |f| %>
       <fieldset>
         <legend>Member login</legend>
@@ -22,29 +21,43 @@
         </div>
         <div class='field session_password push--bottom'>
           <%= f.label :password %>
-          <%= f.password_field :password, :autocomplete => 'off' %>
+          <%= f.password_field :password, autocomplete: "off" %>
         </div>
         <% if devise_mapping.rememberable? %>
           <div class='field remember_me push--bottom'>
             <%= f.check_box :remember_me %>
-            <%= label_tag 'authentication_devise_user_remember_me', "Keep me logged in", :class => "check-label"%>
+            <%= label_tag "authentication_devise_user_remember_me", "Keep me logged in", class: "check-label" %>
           </div>
         <% end %>
         <div class="form-actions">
-          <%= f.submit 'Sign in', :class => 'btn' %>
+          <%= f.submit "Sign in", class: "btn", id: "signin_button" %>
         </div>
       </fieldset>
     <% end %>
     <p>Want to volunteer?<br>
-      <a href="/userid_details/transcriber_registration">Transcriber registration page</a></p>
+      <a href="/cms/opportunities-to-volunteer-with-FreeREG">Opportunities to Volunteer with FreeREG</a></p>
   </div>
   <div class="grid__item two-thirds lap-one-half palm-one-whole">
     <div class="read-length float--right">
       <h2 class="gamma">Login problems or questions?</h2>
-      <p>Your <b>User name</b> (UserID) is <em>not</em> case sensitive. If you have forgotten your User name, use your email address instead. If you have forgotten both, contact your coordinator.</p>
-      <p>Your <b>Password</b> <em>is</em> case sensitive. If you have forgotten your password, use the this link to receive an email to reset it:
-        <%= link_to t('.forgot_password'), refinery.new_authentication_devise_user_password_path  %>. You will receive an email within a minute or so. If you do not receive one please check your spam folder. If there is no email then your email address has likely changed. In that case or if you require assistance contact your Coordinator.</p>
-      <p><b>Keep me logged in</b> will keep you logged in for 2 weeks after closing the browser.</p>
+      <p>Your
+        <b>User name</b>
+        (UserID) is
+        <em>not</em>
+        case sensitive. If you have forgotten your User name, use your email address instead.
+        If you have forgotten both, contact your coordinator.</p>
+      <p>Your
+        <b>Password</b>
+        <em>is</em>
+        case sensitive. If you have forgotten your password, use the this link to receive an
+        email to reset it:
+        <%= link_to t(".forgot_password"), refinery.new_authentication_devise_user_password_path %>.</p>
+      <p>You will receive an email within a minute or so. If you do not receive one please
+        check your spam folder. If there is no email then your email address has likely
+        changed. In that case or if you require assistance contact your Coordinator or point
+        of contact.</p>
+      <p><b>Keep me logged in</b>
+        will keep you logged in for 2 weeks after closing the browser.</p>
     </div>
   </div>
 </div>

@@ -26,7 +26,7 @@
             <td ><%= freecen2_civil_parish.number %></td>
           <% end%>
           <td ><%= link_to 'Show',freecen2_civil_parish_path(freecen2_civil_parish, type: @type), :class => "btn   btn--small"%>
-            <% if %w[county_coordinator country_coordinator master_county_coordinator data_manager executive_director system_administrator].include?(@user.person_role)%>
+            <% if %w[county_coordinator country_coordinator master_county_coordinator data_manager executive_director system_administrator].include?(session[:role])%>
               <td ><%= link_to 'Edit', edit_freecen2_civil_parish_path(freecen2_civil_parish, type: @type), data: { confirm: 'Are you sure?' }, :class => "btn   btn--small", title: 'Editing is restricted to, coordinators, data managers, executive directors and system administrators'%></td>
             <% end %>
           </tr>

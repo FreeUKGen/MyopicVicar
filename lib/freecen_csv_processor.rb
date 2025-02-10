@@ -846,11 +846,17 @@ class CsvRecords < CsvFile
     end
 
     while line[n].present?
-      if Freecen::FIELD_NAMES_CONVERSION.key?(line[n].downcase)
-        field_specification[n] = Freecen::FIELD_NAMES_CONVERSION[line[n].downcase]
-      else
-        success = false
-        message = message + "ERROR: column header at position #{n} is invalid  #{line[n]}.<br>"
+      unless %w[pob_valid non_pob_valid].include?(line[n].downcase) && @csvfile.validation
+        if Freecen::FIELD_NAMES_CONVERSION.key?(line[n].downcase)
+          field_specification[n] = Freecen::FIELD_NAMES_CONVERSION[line[n].downcase]
+        else
+          success = false
+          if %w[pob_valid non_pob_valid].include?(line[n].downcase)
+            message += "ERROR: header field #{line[n].downcase} should not be included as the file is not being validated.<br>"
+          else
+            message += "ERROR: column header at position #{n} is invalid  #{line[n]}.<br>"
+          end
+        end
       end
       n = n + 1
     end
@@ -860,16 +866,16 @@ class CsvRecords < CsvFile
         next if field == 'language' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || @csvfile.chapman_code == 'IOM')
         next if field_specification.value?(field)
         success = false
-        message = message + "ERROR: the field #{field} is missing from the #{@csvfile.year} spreadsheet.<br>"
+        message += "ERROR: the field #{field} is missing from the #{@csvfile.year} spreadsheet.<br>"
       end
       field_specification.values.each do |value|
-        next if %w[deleted_flag record_valid].include?(value) && @csvfile.validation
+        next if %w[deleted_flag record_valid pob_valid non_pob_valid].include?(value) && @csvfile.validation
         next if @csvfile.census_fields.include?(value)
         success = false
         if  %w[deleted_flag record_valid].include?(value)
-          message = message + "ERROR: header field #{value} should not be included as the file is not being validated.<br>"
+          message += "ERROR: header field #{value} should not be included as the file is not being validated.<br>"
         else
-          message = message + "ERROR: header field #{value} should not be included it is not part in the spreadsheet for #{@csvfile.year}.<br>"
+          message += "ERROR: header field #{value} should not be included it is not part in the spreadsheet for #{@csvfile.year}.<br>"
         end
       end
     end
@@ -1042,7 +1048,7 @@ class CsvRecord < CsvRecords
   end
 
   def extract_ward
-    unless %w[1851].include?(@csvfile.year) || (%w[1841].include?(@csvfile.year) && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code)))
+    unless %w[1851].include?(@csvfile.year) || (%w[1841].include?(@csvfile.year) && (ChapmanCode::CODES['Scotland'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code)))
       message, @csvfile.ward = FreecenCsvEntry.validate_ward(@data_record, @csvfile.ward)
       @project.write_messages_to_all(message, true) unless message == ''
     end

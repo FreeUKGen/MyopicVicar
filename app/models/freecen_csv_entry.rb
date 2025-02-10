@@ -21,6 +21,7 @@ class FreecenCsvEntry
   require 'record_type'
   require 'freecen_constants'
   require 'chapman_code'
+  require 'age_parser'
 
   field :address_flag, type: String
   field :age, type: String
@@ -172,6 +173,18 @@ class FreecenCsvEntry
     def mytitlieze(value)
       value = value.present? && !value.chars.include?('-') ? value.strip.downcase.titleize : value
       value
+    end
+
+    def propagation_scope(entry, chapman_code)
+      if  entry.verbatim_birth_county == chapman_code ||
+          %w[OVF ENG SCT IRL WLS CHI].include?(entry.verbatim_birth_county) ||
+          (chapman_code == 'HAM' && %w[HAM IOW].include?(entry.verbatim_birth_county)) ||
+          (chapman_code == 'YKS' && %w[YKS ERY WRY NRY].include?(entry.verbatim_birth_county))
+        scope = 'Collection'
+      else
+        scope = 'File'
+      end
+      scope
     end
 
     def update_parameters(params, entry)
@@ -1815,6 +1828,8 @@ class FreecenCsvEntry
 
     return true if parameters[:birth_place].present? && parameters[:birth_place] != birth_place
 
+    return true if birth_county != verbatim_birth_county || birth_place != verbatim_birth_place
+
     false
   end
 
@@ -1825,22 +1840,157 @@ class FreecenCsvEntry
 
     return true if parameters[:notes].present? && parameters[:notes] != notes
 
+    return true if notes.present?
+
     false
   end
 
-  def propagate_alternate
-    FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-      warning_message = entry.warning_messages + "Warning: Alternate fields have been adjusted and need review"
-      entry.update_attributes( birth_county: birth_county, birth_place: birth_place, warning_messages: warning_message) unless entry.id == _id
+  def propagate_alternate(scope, userid)
+    message = ''
+    @warnings_adjustment = 0
+    success = true
+    if scope == 'ED'
+      FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
+        next if entry.id == _id
+
+        adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        updated_record_valid = updated_warnings.present? || entry.error_messages.present? ? 'false' : 'true'
+        @warnings_adjustment += adjustment
+        entry.update_attributes(birth_county: birth_county, birth_place: birth_place, warning_messages: updated_warnings, record_valid: updated_record_valid)
+      end
+    else
+      FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
+        next if entry.id == _id
+
+        adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        updated_record_valid = updated_warnings.present? || entry.error_messages.present? ? 'false' : 'true'
+        @warnings_adjustment += adjustment
+        entry.update_attributes(birth_county: birth_county, birth_place: birth_place, warning_messages: updated_warnings, record_valid: updated_record_valid)
+      end
     end
+    if scope == 'All'
+      propagate_pob, propagate_notes = propagation_flags('Alternative')
+      ok = FreecenPobPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+      message = ok ? '' : 'Propagation successful for File but please note Propagation record for Collection already exists.'
+    end
+    [@warnings_adjustment, success, message]
   end
 
-  def propagate_note
-    FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place, notes: nil).no_timeout.each do |entry|
-      warning_message = entry.warning_messages + "Warning: Notes field have been adjusted and need review"
-      add_notes = entry.notes.present? ? entry.notes + notes : notes
-      entry.update_attributes(notes: add_notes, warning_messages: warning_message) unless entry.id == _id
+  def propagate_note(scope, userid)
+    message = ''
+    success = true
+    @warnings_adjustment = 0
+    need_review_message = 'Warning: Notes field has been adjusted and needs review.<br>'
+    if scope == 'ED'
+      FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
+        next if entry.id == _id
+
+        warning_message = entry.warning_messages + need_review_message
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        @warnings_adjustment += 1 if entry.warning_messages.blank?
+        entry.update_attributes(notes: add_notes, warning_messages: warning_message)
+      end
+    else
+      FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
+        next if entry.id == _id
+
+        warning_message = entry.warning_messages + need_review_message
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        @warnings_adjustment += 1 if entry.warning_messages.blank?
+        entry.update_attributes(notes: add_notes, warning_messages: warning_message)
+      end
     end
+    if scope == 'All'
+      propagate_pob, propagate_notes = propagation_flags('Notes')
+      ok = FreecenPobPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+      message = ok ? '' : 'Propagation successful for File but please note Propagation record for Collection already exists.'
+    end
+    [@warnings_adjustment, success, message]
+  end
+
+  def propagate_both(scope, userid)
+    message = ''
+    @warnings_adjustment = 0
+    success = true
+    notes_need_review_message = 'Warning: Notes field has been adjusted and needs review.<br>'
+    if scope == 'ED'
+      FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
+        next if entry.id == _id
+
+        _adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        new_warning_message = updated_warnings + notes_need_review_message
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        @warnings_adjustment += 1 if entry.warning_messages.blank?
+        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message)
+      end
+    else
+      FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
+        next if entry.id == _id
+
+        _adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
+        new_warning_message = updated_warnings + notes_need_review_message
+        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        @warnings_adjustment += 1 if entry.warning_messages.blank?
+        entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message)
+      end
+    end
+    if scope == 'All'
+      propagate_pob, propagate_notes = propagation_flags('Both')
+      ok = FreecenPobPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+      message = ok ? '' : 'Propagation successful for File but Propagation record for Whole Collection not created as it already exists.'
+    end
+    [@warnings_adjustment, success, message]
+  end
+
+  def propagate_pob(fields, scope, userid)
+    warnings_adjust = 0
+    success = false
+    case fields
+    when 'Alternative'
+      warnings_adjust, success, message = propagate_alternate(scope, userid)
+    when 'Notes'
+      warnings_adjust, success, message = propagate_note(scope, userid)
+    when 'Both'
+      warnings_adjust, success, message = propagate_both(scope, userid)
+    else
+      message = 'Invalid Propagation Field selection - please report to System Administrator'
+    end
+    [warnings_adjust, success, message]
+  end
+
+  def propagation_flags(propagation_fields)
+    propagate_pob = %w[Alternative Both].include?(propagation_fields) ? true : false
+    propagate_notes = %w[Notes Both].include?(propagation_fields) ? true : false
+    [propagate_pob, propagate_notes]
+  end
+
+  def remove_pob_warning_messages(warnings)
+    adjust_warnings = false
+    warnings_adjustment = 0
+    updated_warnings = ''
+    warning_message_parts = warnings.split('<br>')
+    warning_message_parts.each do |part|
+      if part.include?('Warning:') && (part.include?('Birth') || part.include?('Alternate'))
+        adjust_warnings = true
+      else
+        updated_warnings += part
+      end
+    end
+    warnings_adjustment = -1 if adjust_warnings && updated_warnings.blank?
+    [warnings_adjustment, updated_warnings]
+  end
+
+  def were_pob_notes_propagated(warnings)
+    pob_propagated = false
+    notes_propagated = false
+    warning_message_parts = warnings.split('<br>')
+    warning_message_parts.each do |part|
+      if part.include?('Warning:') && part.include?('adjusted')
+        pob_propagated = true if part.include?('Alternate')
+        notes_propagated = true if part.include?('Notes')
+      end
+    end
+    [pob_propagated, notes_propagated]
   end
 
   # labels/vals for dwelling page header section (body in freecen_individuals)
@@ -1850,13 +2000,15 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency']
+        # ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Census Place', 'Piece', 'Enumeration District', 'Ward', 'Constituency'] #927
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Constituency']
       end
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency']
+        # ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Where Census Taken', 'Piece',  'Ward', 'Constituency'] #927
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Census Place', 'Piece', 'Constituency']
       end
@@ -1916,8 +2068,10 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [freecen2_piece.year, disp_county, district_name, civil, enumeration_district, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency]
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
+         parliamentary_constituency]
+        # [freecen2_piece.year, disp_county, district_name, civil, enumeration_district, ecclesiastical, taken, freecen2_piece.number.to_s, #927
+        #  ward, parliamentary_constituency] #927
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, taken, freecen2_piece.number.to_s,
          parliamentary_constituency]
@@ -1925,7 +2079,9 @@ class FreecenCsvEntry
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
-         ward, parliamentary_constituency]
+         parliamentary_constituency]
+        # [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s, #927
+        # ward, parliamentary_constituency] #927
       else
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          parliamentary_constituency]
@@ -1991,7 +2147,7 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Folio', 'Page', 'Dwelling Number', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
       else
         ['Folio', 'Page', 'Dwelling Number', 'House Number', 'House or Street Name']
       end
@@ -2023,7 +2179,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms with Windows']
       else
-        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name']
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
@@ -2049,7 +2205,8 @@ class FreecenCsvEntry
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [folio_number, page_number, dwelling_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
+        # [folio_number, page_number, dwelling_number, house_number, address] #927
       else
         [folio_number, page_number, dwelling_number, house_number, address]
       end
@@ -2081,7 +2238,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms_with_windows]
       else
-        [folio_number, page_number, dwelling_number, schedule_number, house_number, address]
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms]
       end
     when '1901'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
@@ -2159,7 +2316,11 @@ class FreecenCsvEntry
   def self.individual_display_labels(year, chapman_code)
     case year
     when '1841'
-      ['Sequence', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Birth County', 'Notes']
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
+      else
+        ['Sequence', 'Surname', 'Forenames', 'Sex', 'Age', 'Occupation', 'Birth County', 'Notes']
+      end
     when '1851'
       ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
     when '1861'
@@ -2237,10 +2398,15 @@ class FreecenCsvEntry
     verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
     case year
     when '1841'
-      [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_birth_county_name, note]
+      if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
+      else
+        [sequence_in_household, sur, fore, sx, disp_age, disp_occupation, verbatim_birth_county_name, note]
+      end
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, school_children, disp_occupation]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
+        # [sequence_in_household, sur, fore, relation, marital, sx, disp_age, school_children, disp_occupation] #927
       else
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, disp_occupation]
       end
@@ -2280,7 +2446,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, category, industry, home]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, disp_occupation, category, industry, home]
+        [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, category, industry, home]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, religion, read_and_write, disp_occupation, category]
       elsif  %w[CHI ALD GSY JSY].include?(chapman_code)
@@ -2293,6 +2459,8 @@ class FreecenCsvEntry
 
   def self.part2_individual_display_labels(year, chapman_code)
     case year
+    when '1841' && ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+      ['Birth County', 'Birth Place', 'Disability', 'Notes']
     when '1851'
       ['Nationality', 'Birth County', 'Birth Place', 'Disability', 'Notes']
     when '1861'
@@ -2361,9 +2529,12 @@ class FreecenCsvEntry
     note = notes.gsub(/\<br\>/, '') if notes.present?
     lang = Freecen::LANGUAGE[language]
     case year
+    when '1841' && ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
+      [birth_county_name, birth, disability, note]
     when '1851'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        [birth_county_name, birth,  note]
+        [nationality, birth_county_name, birth, disability, note]
+        # [birth_county_name, birth,  note] #927
       else
         [nationality, birth_county_name, birth, disability, note]
       end
@@ -2410,7 +2581,7 @@ class FreecenCsvEntry
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
         [nationality, birth_county_name, birth, disability, lang, note]
       elsif ChapmanCode::CODES['Wales'].values.member?(chapman_code) || chapman_code == 'IOM'
-        [nationality, birth_county_name, birth, disability, diability_notes, lang, note]
+        [nationality, birth_county_name, birth, disability, disability_notes, lang, note]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [birth_county_name, birth, disability, lang, note]
       elsif %w[CHI ALD GSY JSY].include?(chapman_code)
@@ -2623,6 +2794,58 @@ class FreecenCsvEntry
     myage = age.to_i
     census_year = year
     adjustment = 0 # this is all we need to do for day and week age units
+    myage_with_unit = AgeParser.new(age).process_age if age.present?
+    myage_unit_included = myage_with_unit.match?(/[A-Za-z]/) if age.present?
+    logger.warn("myagggggggggggge = #{myage_unit_included}")
+    if myage_unit_included
+      myage_unit = myage_with_unit[-1]
+      if myage_unit == 'y'
+        myage = myage_with_unit.to_i
+        adjustment = 0 - myage
+      end
+      if myage_unit == 'm'
+        myage = myage_with_unit.to_i
+        if census_year == RecordType::CENSUS_1841
+          # Census day: June 6, 1841
+          #
+          # Ages in the 1841 Census
+          #    The census takers were instructed to give the exact ages of children
+          # but to round the ages of those older than 15 down to a lower multiple of 5.
+          # For example, a 59-year-old person would be listed as 55. Not all census
+          # enumerators followed these instructions. Some recorded the exact age;
+          # some even rounded the age up to the nearest multiple of 5.
+          #
+          # Source: http://familysearch.org/learn/wiki/en/England_Census:_Further_Information_and_Description
+          adjustment = -1 if myage > 6
+        elsif census_year == RecordType::CENSUS_1851
+          # Census day: March 30, 1851
+          adjustment = -1 if myage > 3
+        elsif census_year == RecordType::CENSUS_1861
+          # Census day: April 7, 1861
+          adjustment = -1 if myage > 4
+        elsif census_year == RecordType::CENSUS_1871
+          # Census day: April 2, 1871
+          adjustment = -1 if myage > 4
+        elsif census_year == RecordType::CENSUS_1881
+          # Census day: April 3, 1881
+          adjustment = -1 if myage > 4
+        elsif census_year == RecordType::CENSUS_1891
+          # Census day: April 5, 1891
+          adjustment = -1 if myage > 4
+        end
+      end
+    else
+      adjustment = 0 - myage
+    end
+    birth_year = census_year.to_i + adjustment
+    "#{birth_year}-*-*"
+  end
+
+  def translate_date_old
+    myage = age.to_i
+
+    census_year = year
+    adjustment = 0 # this is all we need to do for day and week age units
     if age_unit == 'y' || age_unit.blank?
       adjustment = 0 - myage
     end
@@ -2678,6 +2901,10 @@ class FreecenCsvEntry
       record.birth_place = birth_place
     elsif verbatim_birth_place.present?
       record.birth_place = verbatim_birth_place
+    end
+    if record.birth_chapman_code.present? && record.birth_place.present?
+      valid_pob, place_id = Freecen2Place.valid_place(record.birth_chapman_code, record.birth_place)
+      valid_pob ? record.freecen2_place_of_birth = place_id : record.freecen2_place_of_birth = nil
     end
     record.transform
     record.add_digest

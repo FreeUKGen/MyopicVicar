@@ -40,16 +40,32 @@ MyopicVicar::Application.configure do
   config.action_dispatch.best_standards_support = :builtin
   config.serve_static_files = true
 
+  # Turning Source Maps On, disables concatenation and preprocessing of assets
+  # config.assets.debug = true    # for assets pipeline debugging
+  config.assets.debug = false
+
+  # Enable live sprockets assets pipeline compilation
+  # config.assets.compile = true    # for assets pipeline debugging
+  config.assets.compile = false
+
+  # Turning Digests (fingerprinting) On
+  # config.assets.digest = false    # for assets pipeline debugging
+  config.assets.digest = true
+
+  # Enables additional runtime error checking.
+  # Minimize unexpected behaviour when deploying to `production`
+  # config.assets.raise_runtime_errors = true   # for assets pipeline debugging
+  config.assets.raise_runtime_errors = false
+
+  # Raise an Error When an Asset is Not Found
+  # config.assets.unknown_asset_fallback = false    # default, for assets pipeline debugging
+  config.assets.unknown_asset_fallback = true
+
   # Do not compress assets
   config.assets.compress = false
 
-  # Expands the lines which load the assets
-  config.assets.debug = false
-  config.assets.raise_runtime_errors = false
-  config.assets.compile = false
   # Raise exception on mass assignment protection for Active Record models
   config.assets.check_precompiled_asset = false
-  config.assets.unknown_asset_fallback = true
   config.assets.skip_pipelines = true
 
   # Log the query plan for queries taking more than this (works

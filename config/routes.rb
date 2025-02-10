@@ -97,12 +97,17 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_search_statistics/export_csv', to: 'freecen2_search_statistics#export_csv', as: :export_csv_freecen2_search_statistics
   resources :freecen2_search_statistics
 
+  get 'freecen1_vld_entries/:id/override_pob_status(.:format)', :to => 'freecen1_vld_entries#override_pob_status', :as => :override_pob_status_freecen1_vld_entry
+  get 'freecen1_vld_entries/edit_pob', to: 'freecen1_vld_entries#edit_pob', as: :edit_pob_freecen1_vld_entry
+  get 'freecen1_vld_entries/propagate_pob', to: 'freecen1_vld_entries#propagate_pob', as: :propagate_pob_freecen1_vld_entry
   resources :freecen1_vld_entries
 
   get 'freecen1_vld_files/:id/entry_csv_download(.:format)', to: 'freecen1_vld_files#entry_csv_download', as: :entry_csv_download_freecen1_vld_file
   get 'freecen1_vld_files/:id/csv_download(.:format)', to: 'freecen1_vld_files#csv_download', as: :csv_download_freecen1_vld_file
   get 'freecen1_vld_files/list_invalid_civil_parishes', to: 'freecen1_vld_files#list_invalid_civil_parishes', as: :list_invalid_civil_parishes_freecen1_vld_file
   get 'freecen1_vld_files/edit_civil_parishes', to: 'freecen1_vld_files#edit_civil_parishes', as: :edit_civil_parishes_freecen1_vld_file
+  get 'freecen1_vld_files/auto_validate_pobs', to: 'freecen1_vld_files#auto_validate_pobs', as: :auto_validate_pobs_freecen1_vld_file
+  get 'freecen1_vld_files/manual_validate_pobs', to: 'freecen1_vld_files#manual_validate_pobs', as: :manual_validate_pobs_freecen1_vld_file
   get 'freecen1_vld_files/download_vld_file', to: 'freecen1_vld_files#download_vld_file', as: :download_vld_file_freecen1_vld_file
   resources :freecen1_vld_files
 
@@ -142,7 +147,10 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_entries/:id/error(.:format)', :to => 'freecen_csv_entries#error', :as => :error_freecen_csv_entry
   get 'freecen_csv_entries/:id/accept(.:format)', :to => 'freecen_csv_entries#accept', :as => :accept_freecen_csv_entry
   get 'freecen_csv_entries/:id/revalidate(.:format)', :to => 'freecen_csv_entries#revalidate', :as => :revalidate_freecen_csv_entry
+  get 'freecen_csv_entries/propagate_pob', to: 'freecen_csv_entries#propagate_pob', as: :propagate_pob_freecen_csv_entry
   resources :freecen_csv_entries
+
+  resources :freecen_pob_propagations
 
   get 'messages/:id/show_waitlist_msg',:to => 'messages#show_waitlist_msg', :as => :show_waitlist_msg
   delete 'messages/:id/remove_from_useriddetail_waitlist(.:format)',:to => 'messages#remove_from_useriddetail_waitlist', :as => :remove_from_useriddetail_waitlist
@@ -188,6 +196,7 @@ MyopicVicar::Application.routes.draw do
   get 'physical_files/waiting_to_be_processed', :to => 'physical_files#waiting_to_be_processed', :as => :waiting_to_be_processed_physical_files
   get 'physical_files/:id/download(.:format)', :to => 'physical_files#download', :as => :download_physical_file
   get 'physical_files/:id/remove(.:format)', :to => 'physical_files#remove', :as => :remove_physical_file
+  get 'physical_files/upload_report', to: 'physical_files#upload_report', as: :upload_report_physical_file
   resources :physical_files
 
   resources :search_statistics
@@ -212,6 +221,7 @@ MyopicVicar::Application.routes.draw do
   get 'feedbacks/:id/feedback_reply_messages', to: 'feedbacks#feedback_reply_messages', as: :feedback_reply_messages
   get 'feedbacks/:id/keep',  :to => 'feedbacks#keep', :as => :keep_feedback
   get 'feedbacks/:id/unkeep',  :to => 'feedbacks#unkeep', :as => :unkeep_feedback
+  get 'feedbacks/new_handbook_feedback', to: 'feedbacks#new_handbook_feedback', as: 'handbook_feedback'
 
   resources :feedbacks
 
@@ -320,7 +330,9 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/district_place_name', to: 'freecen2_pieces#district_place_name', as: :district_place_name_freecen2_pieces
   get 'freecen2_pieces/missing_place', to: 'freecen2_pieces#missing_place', as: :missing_place_freecen2_pieces
   get 'freecen2_pieces/enter_number', to: 'freecen2_pieces#enter_number', as: :enter_number_freecen2_piece
+  get 'freecen2_pieces/enter_piece_number', to: 'freecen2_pieces#enter_piece_number', as: :enter_piece_number_freecen2_piece
   get 'freecen2_pieces/locate_other_pieces', to: 'freecen2_pieces#locate_other_pieces', as: :locate_other_pieces_freecen2_piece
+  get 'freecen2_pieces/find_pieces', to: 'freecen2_pieces#find_pieces', as: :find_pieces_freecen2_piece
   #get 'freecen2_pieces/:chapman_code/:year/new', :to => 'freecen2_pieces#new', :as => :new_freecen2_piece
   get 'freecen2_pieces/chapman_year_index', :to => 'freecen2_pieces#chapman_year_index', :as => :freecen2_pieces_chapman_year_index
   get 'freecen2_pieces/index_district', :to => 'freecen2_pieces#index_district', :as => :freecen2_pieces_district_index
@@ -332,6 +344,9 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_pieces/place_pieces_index', to: 'freecen2_pieces#place_pieces_index', as: :place_pieces_index_freecen2_piece
   get 'freecen2_pieces/stats_index', to: 'freecen2_pieces#stats_index', as: :stats_index_freecen2_pieces
   get 'freecen2_pieces/export_csv', to: 'freecen2_pieces#export_csv', as: :export_csv_freecen2_pieces
+  post 'freecen2_pieces/update_piece_status', to: 'freecen2_pieces#update_piece_status', as: :update_piece_status_freecen2_piece
+  get 'freecen2_pieces/cap_report', to: 'freecen2_pieces#cap_report', as: :cap_report_freecen2_pieces
+  get 'freecen2_pieces/gap_report', to: 'freecen2_pieces#gap_report', as: :gap_report_freecen2_pieces
   resources :freecen2_pieces
 
   get 'freecen2_civil_parishes/selection_by_name', to: 'freecen2_civil_parishes#selection_by_name', as: :selection_by_name_freecen2_civil_parishes
@@ -352,6 +367,9 @@ MyopicVicar::Application.routes.draw do
   get 'manage_resources/logout', :to =>'manage_resources#logout', :as => :logout_manage_resources
   get 'manage_resources/selection', :to =>'manage_resources#selection', :as => :selection_manage_resources
   resources :manage_resources
+
+  get 'manage_documents/freecen_handbook', :to => 'manage_document#freecen_handbook', :as => :freecen_handbook_manage_documents
+  resources :manage_documents
 
 
   get 'userid_details/confirm_email_address', :to =>'userid_details#confirm_email_address', :as => :confirm_email_address_userid_details
@@ -375,6 +393,8 @@ MyopicVicar::Application.routes.draw do
   get 'userid_details/display', :to =>'userid_details#display', :as => :display_userid_details
   get 'userid_details/incomplete_registrations', :to =>'userid_details#incomplete_registrations', :as => :incomplete_registrations_userid_details
   get 'userid_details/transcriber_statistics', :to =>'userid_details#transcriber_statistics', :as => :transcriber_statistics_userid_details
+  get 'userid_details/list_users_handle_communications', :to =>'userid_details#list_users_handle_communications', :as => :list_users_handle_communications_userid_details
+  get 'userid_details/list_roles_and_assignees', :to =>'userid_details#list_roles_and_assignees', :as => :list_roles_and_assignees_userid_details
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do
@@ -414,6 +434,7 @@ MyopicVicar::Application.routes.draw do
   get 'manage_counties/place_range', :to =>'manage_counties#place_range', :as => :place_range_manage_counties
   get 'manage_counties/selection', :to =>'manage_counties#select_year', :as => :select_year_manage_counties
   get 'manage_counties/piece_statistics', :to =>'manage_counties#piece_statistics', :as => :piece_statistics_manage_counties
+  get 'manage_counties/clean_ucf_list_for_all_places', :to =>'manage_counties#clean_ucf_list_for_all_places', :as => :clean_ucf_list_manage_counties
 
   resources :manage_counties
 
@@ -462,6 +483,9 @@ MyopicVicar::Application.routes.draw do
   get '/freecen2_places/search_names_results', :to => 'freecen2_places#search_names_results', :as => :search_names_results_freecen2_place
   get '/freecen2_places/search_names', :to => 'freecen2_places#search_names', :as => :search_names_freecen2_place
   get 'freecen2_places/:id/rename', :to => 'freecen2_places#rename', :as => :rename_freecen2_place
+  get 'freecen2_places/:id/move', :to => 'freecen2_places#move', :as => :move_freecen2_place
+  get 'freecen2_places/move_place_names', to: 'freecen2_places#move_place_names', as: :freecen2_places_move_place_names
+  get 'freecen2_places/:id//review_move', to: 'freecen2_places#review_move', as: :review_move_freecen2_place
   get 'freecen2_places/full_index', to: 'freecen2_places#full_index', as: :full_index_freecen2_places
   get 'freecen2_places/active_index', to: 'freecen2_places#active_index', as: :active_index_freecen2_places
   get 'freecen2_places/selection_by_name', to: 'freecen2_places#selection_by_name', as: :selection_by_name_freecen2_places

@@ -159,7 +159,21 @@ module Freereg1Translator
     # last_name:
     # - burial_person_surname
     # - relative_surname
-    names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename||"", :last_name => entry.burial_person_surname.present? ? entry.burial_person_surname : entry.relative_surname }
+    alternate_surname = entry.relative_surname.present? ? entry.relative_surname : entry.female_relative_surname
+    # handle entries with no surname
+    case
+    when entry.burial_person_surname.blank? && entry.relative_surname.present? && entry.female_relative_surname.blank?
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.relative_surname }
+    when entry.burial_person_surname.blank? && entry.relative_surname.blank? && entry.female_relative_surname.present?
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.female_relative_surname }
+    when entry.burial_person_surname.blank? && entry.relative_surname.present? && entry.female_relative_surname.present?
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.relative_surname }
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.female_relative_surname }
+    when entry.burial_person_surname.present?
+      names << { role: 'bu', type: 'primary', first_name: entry.burial_person_forename||"", last_name: entry.burial_person_surname }
+    end
+   
+   # names << { :role => 'bu', :type => 'primary', :first_name => entry.burial_person_forename||"", :last_name => entry.burial_person_surname.present? ? entry.burial_person_surname : alternate_surname }
     # - role: fr
     # type: other
     # fields:
@@ -180,6 +194,7 @@ module Freereg1Translator
           end
         end
       end
+      
       # - role: mr
       # type: other
       # fields:
@@ -202,12 +217,23 @@ module Freereg1Translator
     # last_name: person_surname
     # - father_surname
     # - mother_surname
-    forename = entry.person_forename || ""
-    entry.person_surname.present? ? surname = entry.person_surname : surname = nil
-    if surname.nil?
-      surname = entry.father_surname.present? ? entry.father_surname : entry.mother_surname
+    case
+    when entry.person_surname.blank? && entry.father_surname.present? && entry.mother_surname.blank?
+      names << { role: 'ba', type: 'primary', first_name: entry.person_forename||"", last_name: entry.father_surname }
+    when entry.person_surname.blank? && entry.father_surname.blank? && entry.mother_surname.present?
+      names << { role: 'ba', type: 'primary', first_name: entry.person_forename||"", last_name: entry.mother_surname }
+    when entry.person_surname.blank? && entry.father_surname.present? && entry.mother_surname.present?
+      names << { role: 'ba', type: 'primary', first_name: entry.person_forename||"", last_name: entry.father_surname }
+      names << { role: 'ba', type: 'primary', first_name: entry.person_forename||"", last_name: entry.mother_surname }
+    when entry.person_surname.present?
+      names << { role: 'ba', type: 'primary', first_name: entry.person_forename||"", last_name: entry.person_surname }
     end
-    names << { :role => 'ba', :type => 'primary', :first_name => forename, :last_name => surname}
+    #forename = entry.person_forename || ""
+    #entry.person_surname.present? ? surname = entry.person_surname : surname = nil
+    #if surname.nil?
+     # surname = entry.father_surname.present? ? entry.father_surname : entry.mother_surname
+    #end
+    #names << { :role => 'ba', :type => 'primary', :first_name => forename, :last_name => surname}
     # - role: f
     # type: other
     # fields:

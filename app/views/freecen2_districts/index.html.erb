@@ -2,7 +2,7 @@
 <h2 style="text-align: center">FreeCen2 Districts for <%=ChapmanCode.name_from_code(@chapman_code)%> (<%=@chapman_code%>) </h2>
 <h4 style="text-align: center"> Please note that some of these action may take upwards of a minute or longer to complete. Please be patient</h4>
 <%= render 'flash_notice' %>
-<% if %w[project_manager executive_director county_coordinator master_county_coordinator country_coordinator data_manager system_administrator].include?(@user.person_role)%>
+<% if %w[project_manager executive_director county_coordinator master_county_coordinator country_coordinator data_manager system_administrator].include?(session[:role])%>
   <div style="text-align: center">
     <%= link_to 'Display a Specific District', selection_by_name_freecen2_districts_path,  :class => "btn   btn--small"%>
     <%= link_to 'List Districts for a Specific Year', selection_by_year_freecen2_districts_path, :class => "btn   btn--small"%>
