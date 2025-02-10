@@ -29,13 +29,8 @@
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="intro">
     <p>This is the information we hold about the <%= "#{@district.district_name_display_format}"%> Registration District.</p>
-    <% if @district.district_url_definable? %>
-      <p>There is  more information about <%= @district.district_name_display_format %> on the <%= link_to "UKBMD website", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%>.
-        Please note that during the period this Registration District name was used there could be changes in which places were included within the district.
-        The <%= link_to "UKBMD page", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%> includes information on these changes.</p>
-    <% else %>
-      <p>UKBMD information on <%= "#{@district.district_name_display_format}"%> is not available.</p>
-    <% end %>
+    <p><%= "#{@district.district_name_display_format}"%> Registration District has been in existence from <%= "#{QuarterDetails.quarter_month(@district.QuarterStart).capitalize} #{@district.YearStart}" %> until
+    <% if @district.YearEnd == 9999 %><%= 'the present day' %><% else %><%= "#{QuarterDetails.quarter_month(@district.QuarterEnd).capitalize} #{@district.YearEnd}" %><% end %>.</p>
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties">
     <h2>Counties</h2>
@@ -83,11 +78,11 @@
         <td>Year 1974 to 1993_4</td>
         <td><%= @district.Volume1974to1993_4 != 'xx' ? @district.Volume1974to1993_4 : '-'%></td>
       </tr>
-      <tr>
-        <td>Year 1993-4 to End</td>
-        <td><%= (@district.Volume1974to1993_4 == 'xx' || !@district.Volume1993_4toEnd.present?) ? '-' : @district.Volume1974to1993_4 %></td>
-      </tr>
     </table>
+    <p>These date ranges reflect major reorganisations of the G.R.O.'s volume numbering system. <%= "#{@district.district_name_display_format}"%> Registration District
+    may have come into existence at any date within the first date range specified<% if @district.YearEnd != 9999 %>, and abolished at any date within the last date range<% end %>.
+        See the <a href="#intro">top of the page</a> for the exact dates when the District was active.
+      <% if @district.Volume1993_4toEnd != 'xx' %>After 1993, volumes were replaced by District Numbers (see <a href="#otherInfo">Other Information</a> below).<% end %></p>
   </div>
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
     <div  class="islet islet--bordered" id="names">
@@ -163,16 +158,34 @@
   <% if other_info_available  %>
     <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="otherInfo">
       <h2>Other information</h2>
+      <table>
       <% if @district.Volume1993_4toEnd != 'xx' %>
-        <h3>GRO District Number (post 1993)</h3>
-        <p><%= @district.Volume1993_4toEnd %></p>
+          <tr>
+            <th>GRO District Number (post 1993)</th>
+            <td><%= @district.Volume1993_4toEnd %></td>
+          </tr>
       <% end %>
       <% if @district.DistrictPseudonym.present? %>
-        <h3>Alternate names for District</h3>
-        <ul>
-          <% @district.DistrictPseudonym.each do |n| %><li><%= n.DistrictPseudonym + " " %></li><% end %>
-        </ul>
+          <tr>
+        <th>Alternate names for District</th>
+            <td>
+              <ul>
+                <% @district.DistrictPseudonym.each do |n| %><li><%= n.DistrictPseudonym + " " %></li><% end %>
+              </ul>
+            </td>
+          </tr>
       <% end %>
+      </table>
     </div>
   <% end %>
+    <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="pages">
+      <h2>Further information on <%= @district.district_name_display_format %></h2>
+    <% if @district.district_url_definable? %>
+      <p>There is  more information about <%= @district.district_name_display_format %> on the <%= link_to "UKBMD website", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%>.
+        Please note that during the period this Registration District name was used there could be changes in which places were included within the district.
+        The <%= link_to "UKBMD page", "http://www.ukbmd.org.uk/reg/districts/#{@district.ukbmd_url_distict}.html"%> includes information on these changes.</p>
+    <% else %>
+      <p>UKBMD information on <%= "#{@district.district_name_display_format}"%> is not available.</p>
+    <% end %>
+    </div>
 </div>
