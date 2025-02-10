@@ -643,6 +643,9 @@ MyopicVicar::Application.routes.draw do
   get '/help/:page.html.erb', :to => 'help#show_page'
   get '/help/:page', :to => 'help#show_page'
   get '/help', :to => 'help#default_page'
+  get '/about', :to => 'help#about_page'
+  get '/about/:page.html.erb', :to => 'help#show_page'
+  get '/about/:page', :to => 'help#show_page'
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.

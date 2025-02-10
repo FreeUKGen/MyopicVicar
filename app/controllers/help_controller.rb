@@ -19,6 +19,10 @@ class HelpController < ApplicationController
     render 'new_index'
   end
 
+  def about_page
+    render 'about_main_text'
+  end
+
   # This approach fails, because Rails refuses to allow multiple/repeated render commands in a single block.
   # Instead we declare each page explicitly, with a series of render commands to pull in its sub-pages.
   # Sadly, this means that page content and island-generating hashes have to be kept in sync by hand:
