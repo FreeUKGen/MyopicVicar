@@ -43,7 +43,6 @@ task :update_vld_language_b, [:limit, :fix, :email,:restriction] => :environment
 
   # START
 
-
   args.with_defaults(:limit => 1000)
   start_time = Time.current
 
