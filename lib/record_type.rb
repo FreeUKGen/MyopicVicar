@@ -26,6 +26,7 @@ module RecordType
   CENSUS_1891 = '1891'
   CENSUS_1901 = '1901'
   CENSUS_1911 = '1911'
+  CENSUS_1921 = '1921'
   def self.all_types
     case MyopicVicar::Application.config.template_set
     when 'freereg'
