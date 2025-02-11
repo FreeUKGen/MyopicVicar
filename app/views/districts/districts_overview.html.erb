@@ -1,14 +1,4 @@
-<h1 class="title text--center">Explore the Database</h1>
-<div class="three-fifths lap-two-thirds palm-one-whole">
-  <p>These pages tell you about the data behind the FreeBMD web site. This information is designed to help you make the best use of the site when researching
-  your family history.</p>
-  <p>One obvious question to ask is <q>does the FreeBMD database hold the information I am seeking?</q>. The <a href="#statistics">Database coverage
-    and statistics</a> section explains the scope of the database, and gives an up-to-date summary of our progress in transcribing the G.R.O. index.</p>
-  <p>In your searches you can specify one or more <a href="#counties_districts">Registration Districts</a>. The boundaries of these Districts have changed over time, and
-    it may not be obvious which District a present-day place may be situated in. You can find out more about an individual <a href="#districts">District</a>
-  if you know its name, or you can start by selecting a <a href="#counties">county</a> to see what Districts it contains. There is more information to
-    be found about each District - see <a href="#counties_districts">Registration Districts</a> below.</p>
-</div>
+<h1 class="title">Explore the Database</h1>
 <script
   src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
   integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
@@ -36,8 +26,18 @@
       </div>
     </nav>
   </div>
-
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p>These pages tell you about the data behind the FreeBMD web site. This information is designed to help you make the best use of the site when researching
+      your family history.</p>
+    <p>One obvious question to ask is <q>does the FreeBMD database hold the information I am seeking?</q>. The <a href="#statistics">Database coverage
+      and statistics</a> section explains the scope of the database, and gives an up-to-date summary of our progress in transcribing the G.R.O. index.</p>
+    <p>In your searches you can specify one or more <a href="#counties_districts">Registration Districts</a>. The boundaries of these Districts have changed over time, and
+      it may not be obvious which District a present-day place may be situated in. You can find out more about an individual <a href="#districts">District</a>
+      if you know its name, or you can start by selecting a <a href="#counties">county</a> to see what Districts it contains. There is more information to
+      be found about each District - see <a href="#counties_districts">Registration Districts</a> below.</p>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="statistics">
     <h2>Database coverage</h2>
     <% active_quarter_events = Coverage.where( Percentage: 1..98) %>
     <p>The FreeBMD database holds records of births, marriages and deaths registered in England and Wales from July 1837 onwards.
@@ -56,8 +56,6 @@
       <li>the <b>volume number</b> associated with the District for different dates</li>
       <li>a <b>page map</b> showing the expected volume number, and the ranges of page numbers encountered in the data,
         for each event type (birth, marriage and death) and quarter</li>
-      <li>[<b>volume numbers by year</b> as found in the data]</li>
-      <li>[<b>volume/year conflicts</b> as found in the data]</li>
       <li>lists of all the <b>forenames</b> and <b>surnames</b> found in the District for each event type (birth, marriage and death)</li>
     </ul></p>
 
