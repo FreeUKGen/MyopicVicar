@@ -1,26 +1,26 @@
 <%# breadcrumb :coverage %>
 <%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
-<h2>Database coverage</h2>
-<p>This table summarises the quarters and years which we are actively working on, i.e. transcription of them has been started but not yet finished.</p>
+<h1 class="title">Database coverage</h1>
 <div class="grid">
-  <section class="island  ">
-    <div class="grid__item one-whole" >
-      <table  class="table--bordered   table--data">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" >
+    <p>This table summarises the quarters and years which we are actively working on, i.e. transcription of them has been started but not yet finished.</p>
+  </div>
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" >
+    <table  class="table--bordered">
+      <tr>
+        <th scope="column">Date</th>
+        <th scope="column">Event type</th>
+        <th scope="column">Percentage coverage</th>
+      </tr>
+      <% @coverage.each do | span | %>
+        <% if (span.quarter_number_event_started) && (span.quarter_number_event_unfinished) %>
         <tr>
-          <th scope="column">Date</th>
-          <th scope="column">Event type</th>
-          <th scope="column">Percentage coverage</th>
+          <td><%= format_quarter_year(span.quarter_number_event_to_quarter) %></td>
+          <td><%= span.event_type_to_string(span.quarter_number_event_to_event_type) %></td>
+          <td><%= span.Percentage.to_s %></td>
         </tr>
-        <% @coverage.each do | span | %>
-          <% if (span.quarter_number_event_started) && (span.quarter_number_event_unfinished) %>
-          <tr>
-            <td><%= format_quarter_year(span.quarter_number_event_to_quarter) %></td>
-            <td><%= span.event_type_to_string(span.quarter_number_event_to_event_type) %></td>
-            <td><%= span.Percentage.to_s %></td>
-          </tr>
-          <% end %>
         <% end %>
-      </table>
-    </div>
-  </section>
+      <% end %>
+    </table>
+  </div>
 </div>

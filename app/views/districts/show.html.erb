@@ -1,8 +1,7 @@
 <%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
 <%# @district = District.where(DistrictNumber: params['district_number']).first if params['district_number'] %>
 <% other_info_available = (@district.Volume1993_4toEnd != 'xx' || @district.DistrictPseudonym.present?) %>
-<h1 class="beta push-half--top flush--bottom">District: <%= "#{@district.district_name_display_format}"%></h1>
-<hr>
+<h1 class="title">District: <%= "#{@district.district_name_display_format}"%></h1>
 <div class="grid">
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
     <nav aria-labelledby="contentsMenu">
