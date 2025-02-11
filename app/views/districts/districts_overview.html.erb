@@ -35,21 +35,23 @@
       it may not be obvious which District a present-day place may be situated in. You can find out more about an individual <a href="#districts">District</a>
       if you know its name, or you can start by selecting a <a href="#counties">county</a> to see what Districts it contains. There is more information to
       be found about each District - see <a href="#counties_districts">Registration Districts</a> below.</p>
+    <hr/>
   </div>
 
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="statistics">
-    <h2>Database coverage</h2>
+    <h2>Database coverage and statistics</h2>
     <% active_quarter_events = Coverage.where( Percentage: 1..98) %>
     <p>The FreeBMD database holds records of births, marriages and deaths registered in England and Wales from July 1837 onwards.
       It is being constantly updated with new transcriptions.</p>
     <p>Work is substantially complete on all dates up to <%= format_quarter_year(active_quarter_events.first.quarter_number_event_to_quarter) %>.
       There are <%= active_quarter_events.size.to_s %> <%= link_to "active quarters", coverage_index_path %> from this date. The latest date for which transcription work
       has started is <%= format_quarter_year(active_quarter_events.last.quarter_number_event_to_quarter) %>.</p>
+    <hr/>
   </div>
 
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties_districts">
     <h2>Registration Districts</h2>
-    <p>These pages contain information about each Registration District in the database. For each District we provide the following information:
+    <p>These pages contain information about each Registration District in the database. For each District we provide the following information:</p>
     <ul>
       <li>the <b>total number</b> of births, marriages and deaths recorded for the District</li>
       <li>the <b>county</b> or <b>counties</b> within which the District fell, and the range of dates for each</li>
@@ -57,10 +59,11 @@
       <li>a <b>page map</b> showing the expected volume number, and the ranges of page numbers encountered in the data,
         for each event type (birth, marriage and death) and quarter</li>
       <li>lists of all the <b>forenames</b> and <b>surnames</b> found in the District for each event type (birth, marriage and death)</li>
-    </ul></p>
+    </ul>
 
     <%= render(partial: 'select_a_county') %>
     <%= render(partial: 'select_districts') %>
+    <hr/>
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="other_info">
     <h2>Other Information</h2>
