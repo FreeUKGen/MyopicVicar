@@ -21,6 +21,8 @@ class ImageServerGroupsController < ApplicationController
     @group_name = ImageServerGroup.group_list_by_status(params[:id], ['u', 'ar'])
     @group = ImageServerGroup.source_id(params[:id])
     @image_server_group = @group.first
+    user_syndicate = UseridDetail.find_by(userid: allocation_requested_by).syndicate
+    @image_server_group.update_attributes(syndicate_code: user_syndicate)
 
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No group for allocation.') && return if @group_name.empty?
   end
@@ -202,7 +204,8 @@ class ImageServerGroupsController < ApplicationController
 
     ImageServerImage.update_image_status(image_server_group, 'ar')
 
-    ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
+    #ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
+    ImageServerGroup.find(:id=>ig.id).update_attributes(allocation_requested_by: sc.userid)
     UserMailer.request_cc_image_server_group(sc, cc.email_address, ig.group_name).deliver_now
 
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'Email send to County Coordinator')

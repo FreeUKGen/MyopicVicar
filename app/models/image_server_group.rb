@@ -22,6 +22,7 @@ class ImageServerGroup
   field :syndicate_code, type: String
   field :assign_date, type: String
   field :number_of_images, type: Integer
+  field :allocation_requested_by, type:String
 
   attr_accessor :custom_field
 
