@@ -90,6 +90,9 @@
                 <span style="color:red"><%= SourceProperty::STATUS[status] %></span>
                 <% when 'REVIEWED' %>
                 <span style="color:green"><%= SourceProperty::STATUS[status] %></span>
+                <% when 'Allocation Requested' %>
+                  <% syndicate = UseridDetail.find_by(userid: @image_server_group.allocation_requested_by).syndicate if @image_server_group.allocation_requested_by.present? %>
+                  <span><%= SourceProperty::STATUS[status] %> by userid: <%= @image_server_group.allocation_requested_by %> of syndicate: <%= syndicate %></span>
               <% else %>
                 <span><%= SourceProperty::STATUS[status] %></span>
               <% end %>
