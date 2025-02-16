@@ -317,7 +317,7 @@ module FreecenValidations
 
       return [true, ''] if VALID_MARITAL_STATUS.include?(field.downcase) && field.length <= 1
 
-      return [true, ''] if year == '1921' VALID_MARITAL_STATUS_PLUS.include?(field.downcase) && field.length == 2
+      return [true, ''] if year == '1921' && VALID_MARITAL_STATUS_PLUS.include?(field.downcase) && field.length == 2
 
 
       return [false, '?']  if field[-1] == '?'

@@ -2578,7 +2578,7 @@ class FreecenCsvEntry
       end
     when '1921'
       if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Total Children Under Sixteen', 'Education', 'Occupation', 'Employment', 'Place Of Work']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Age', 'Sex', 'Marital Status', 'Total Children Under Sixteen', 'Education', 'Occupation', 'Employment', 'Place Of Work']
       end
     end
   end
@@ -2662,7 +2662,7 @@ class FreecenCsvEntry
       end
     when '1921'
       if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Children Under Sixteen', 'Education', 'Occupation', 'Employment', 'Place Of Work']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Age', 'Sex', 'Marital Status', 'Children Under Sixteen', 'Education', 'Occupation', 'Employment', 'Place Of Work']
       end
     end
   end
