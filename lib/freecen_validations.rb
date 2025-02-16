@@ -29,6 +29,7 @@ module FreecenValidations
   DATE_SPLITS = { ' ' => /\s/, '-' => /\-/, '/' => /\\/ }.freeze
   WILD_CHARACTER = /[\*\[\]\-\_\?]/.freeze
   VALID_MARITAL_STATUS = %w[m s u w d -].freeze
+  VALID_MARITAL_STATUS_PLUS = %w[ba md fd bd].freeze
   VALID_SEX = %w[M F -].freeze
   VALID_LANGUAGE = %w[E G GE I IE M ME W WE].freeze
 
@@ -102,6 +103,33 @@ module FreecenValidations
       end
       [false, 'invalid']
     end
+
+    def valid_county_court_district?(field)
+      return [false, 'blank'] if field.blank?
+
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
+          return [false, '?']
+        else
+          return [false, 'invalid text']
+        end
+      end
+      [true, '']
+    end
+
+    def valid_petty_sessional_division?(field)
+      return [false, 'blank'] if field.blank?
+
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
+          return [false, '?']
+        else
+          return [false, 'invalid text']
+        end
+      end
+      [true, '']
+    end
+
 
     def text?(field)
       return [true, ''] if field.blank?
@@ -284,10 +312,13 @@ module FreecenValidations
       [true, '']
     end
 
-    def marital_status?(field)
+    def marital_status?(field, year)
       return [true, ''] if field.blank?
 
       return [true, ''] if VALID_MARITAL_STATUS.include?(field.downcase) && field.length <= 1
+
+      return [true, ''] if year == '1921' VALID_MARITAL_STATUS_PLUS.include?(field.downcase) && field.length == 2
+
 
       return [false, '?']  if field[-1] == '?'
 
@@ -444,6 +475,15 @@ module FreecenValidations
       [false, 'invalid number']
     end
 
+    def children_under_sixteen?(field)
+      field = field.to_i
+      return [false, 'is an unusual number'] if field >= 0 && field > 10
+
+      return [true, ''] if field >= 0 && field <= 10
+
+      [false, 'invalid number']
+    end
+
     def religion?(field)
       return [true, ''] if field.blank?
 
@@ -480,6 +520,14 @@ module FreecenValidations
       [false, 'invalid value']
     end
 
+    def education?(field)
+      return [true, ''] if field.blank?
+
+      return [true, ''] if field.length == 1 && ['w', 'p'].include?(field.downcase)
+
+      [false, 'invalid text']
+    end
+
     def occupation?(field, age)
       return [true, ''] if field.blank?
 
@@ -494,6 +542,34 @@ module FreecenValidations
       end
 
       return [false, '?'] if field[-1] == '?'
+
+      [true, '']
+    end
+
+    def employment?(field)
+      return [true, ''] if field.blank?
+
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
+          return [false, '?']
+        else
+          return [false, 'invalid text']
+        end
+      end
+
+      [true, '']
+    end
+
+    def place_of_work(field)
+      return [true, ''] if field.blank?
+
+      unless field.match? NARROW_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? NARROW_VALID_TEXT)
+          return [false, '?']
+        else
+          return [false, 'invalid text']
+        end
+      end
 
       [true, '']
     end

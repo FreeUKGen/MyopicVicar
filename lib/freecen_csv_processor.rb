@@ -263,7 +263,7 @@ class CsvFile < CsvFiles
     :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message, :field_specification,
     :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations, :full_dirname, :chapman_code, :traditional,
     :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :civil_parish, :census_fields,
-    :enumeration_district, :ecclesiastical_parish, :where_census_taken, :ward, :parliamentary_constituency, :poor_law_union, :police_district,
+    :enumeration_district, :petty_sessional_division, :county_court_district, :ecclesiastical_parish, :where_census_taken, :ward, :parliamentary_constituency, :poor_law_union, :police_district,
     :sanitary_district, :special_water_district, :scavenging_district, :special_lighting_district, :school_board, :folio, :page, :year,
     :piece, :schedule, :folio_suffix, :schedule_suffix, :total_errors, :total_warnings, :total_info, :header_line, :validation
 
@@ -307,6 +307,8 @@ class CsvFile < CsvFiles
     @chapman_code = ''
     @civil_parish = ''
     @enumeration_district = ''
+    @petty_sessional_division = ''
+    @county_court_district = ''
     @ecclesiastical_parish = ''
     @where_census_taken = ''
     @ward = ''
@@ -722,12 +724,16 @@ def adjust_case(record)
   record[:verbatim_birth_place] =  FreecenCsvEntry.mytitlieze(record[:verbatim_birth_place])
   record[:civil_parish] = FreecenCsvEntry.mytitlieze(record[:civil_parish])
   record[:disability] = FreecenCsvEntry.mytitlieze(record[:disability])
+  record[:petty_sessional_division] = FreecenCsvEntry.mytitlieze(record[:petty_sessional_division])
+  record[:county_court_district] = FreecenCsvEntry.mytitlieze(record[:county_court_district])
   record[:ecclesiastical_parish] = FreecenCsvEntry.mytitlieze(record[:ecclesiastical_parish])
   record[:father_place_of_birth] = FreecenCsvEntry.mytitlieze(record[:father_place_of_birth])
   record[:house_or_street_name] = FreecenCsvEntry.mytitlieze(record[:house_or_street_name])
   record[:nationality] = record[:nationality].capitalize if record[:nationality].present?
   record[:occupation] = FreecenCsvEntry.mytitlieze(record[:occupation])
   record[:occupation_category] = FreecenCsvEntry.myupcase(record[:occupation_category])
+  record[:employment] = FreecenCsvEntry.mytitlieze(record[:employment])
+  record[:place_of_work] = FreecenCsvEntry.mytitlieze(record[:place_of_work])
   record[:at_home] = FreecenCsvEntry.myupcase(record[:at_home])
   record[:marital_status] = FreecenCsvEntry.myupcase(record[:marital_status])
   record[:parliamentary_constituency] = FreecenCsvEntry.mytitlieze(record[:parliamentary_constituency])
@@ -863,7 +869,7 @@ class CsvRecords < CsvFile
 
     if traditional == 2
       @csvfile.census_fields.each do |field|
-        next if field == 'language' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || @csvfile.chapman_code == 'IOM')
+        next if field == 'language' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || (@csvfile.chapman_code == 'IOM' && %w[1911 1921].exclude?(@csvfile.year)))
         next if field_specification.value?(field)
         success = false
         message += "ERROR: the field #{field} is missing from the #{@csvfile.year} spreadsheet.<br>"
@@ -988,7 +994,7 @@ class CsvRecord < CsvRecords
 
   def process_data_record(record_type)
     case record_type
-    when 'enumeration_district', 'civil_parish', 'ecclesiastical_parish', 'where_census_taken', 'ward', 'parliamentary_constituency',
+    when 'enumeration_district', 'civil_parish', 'petty_sessional_division', 'county_court_district', 'ecclesiastical_parish', 'where_census_taken', 'ward', 'parliamentary_constituency',
         'poor_law_union', 'police_district', 'sanitary_district', 'special_water_district', 'scavenging_district', 'special_lighting_district',
         'school_board', 'location_flag'
       extract_location_fields
@@ -1007,6 +1013,10 @@ class CsvRecord < CsvRecords
   def extract_location_fields
     extract_enumeration_district
     extract_civil_parish
+    if  @csvfile.year == '1921'
+      extract_petty_sessional_division
+      extract_county_court_district
+    end
     extract_ecclesiastical_parish unless @csvfile.traditional == 0
     if @csvfile.traditional == 2
       extract_where_census_taken
@@ -1033,6 +1043,20 @@ class CsvRecord < CsvRecords
   def extract_civil_parish
     message, @csvfile.civil_parish = FreecenCsvEntry.validate_civil_parish(@data_record, @csvfile.civil_parish)
     @project.write_messages_to_all(message, true) unless message == ''
+  end
+
+  def extract_petty_sessional_division
+    if @csvfile.year == '1921' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Islands'].values.member?(@csvfile.chapman_code))
+      message, @csvfile.county_court_district = FreecenCsvEntry.validate_county_court_district(@data_record, @csvfile.county_court_district)
+      @project.write_messages_to_all(message, true) unless message == ''
+    end
+  end
+
+  def extract_county_court_district
+    if @csvfile.year == '1921' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Islands'].values.member?(@csvfile.chapman_code))
+      message, @csvfile.county_court_district = FreecenCsvEntry.validate_county_court_district(@data_record, @csvfile.county_court_district)
+      @project.write_messages_to_all(message, true) unless message == ''
+    end
   end
 
   def extract_ecclesiastical_parish
@@ -1170,6 +1194,8 @@ class CsvRecord < CsvRecords
   def propagate_records
     data_record[:enumeration_district] = @csvfile.enumeration_district if data_record[:enumeration_district].blank? && data_record[:field_specification].value?('enumeration_district')
     data_record[:civil_parish] = @csvfile.civil_parish if data_record[:civil_parish].blank? && data_record[:field_specification].value?('civil_parish')
+    data_record[:petty_sessional_division] = @csvfile.petty_sessional_division if data_record[:petty_sessional_division].blank? && data_record[:field_specification].value?('petty_sessional_division')
+    data_record[:county_court_district] = @csvfile.county_court_district if data_record[:county_court_district].blank? && data_record[:field_specification].value?('county_court_district')
     data_record[:ecclesiastical_parish] = @csvfile.ecclesiastical_parish if data_record[:ecclesiastical_parish].blank? && data_record[:field_specification].value?('ecclesiastical_parish')
     data_record[:where_census_taken] = @csvfile.where_census_taken if data_record[:where_census_taken].blank? && data_record[:field_specification].value?('where_census_taken')
     data_record[:ward] = @csvfile.ward if data_record[:ward].blank? && data_record[:field_specification].value?('ward')

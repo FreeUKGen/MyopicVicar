@@ -24,6 +24,8 @@ class Freecen2Piece
 
   #1911       RG14 plus 4 digits
 
+  #1921       RG15 plus 4 digits
+
 
   field :name, type: String
   validates :name, presence: true
@@ -127,6 +129,9 @@ class Freecen2Piece
       when 'RG14'
         year = '1911'
         census_fields = Freecen::CEN2_1911
+      when 'RG15'
+        year = '1921'
+        census_fields = Freecen::CEN2_1921
       when 'HO107'
         year = parts[1].delete('^0-9').to_i <= 1465 ? '1841' : '1851'
         census_fields = parts[1].delete('^0-9').to_i <= 1465 ? Freecen::CEN2_1841 : Freecen::CEN2_1851
@@ -544,8 +549,9 @@ class Freecen2Piece
           series += '13'
         when '1911'
           series += '14'
+        when '1921'
+          series += '15'
         end
-
       elsif series == 'RS'
         case year
         when '1861'
@@ -605,6 +611,8 @@ class Freecen2Piece
           series += '13'
         when '1911'
           series += '14'
+        when '1921'
+          series += '15'
         end
       end
       freecen2_piece_number = series + '_' + piece.piece_number.to_s
