@@ -444,36 +444,23 @@ class BestGuess < FreebmdDbBase
   end
   
   def self.get_birth_unique_names birth_records
-    entries = Hash.new
-    all_entries = birth_records
-    entries["Mother's Surname"] = all_entries.distinct.pluck(:AssociateName).reject(&:blank?).sort
-    entries["Surname"] = all_entries.distinct.pluck(:Surname).reject(&:blank?).sort
-    entries["GivenName"] = all_entries.distinct.pluck(:GivenName).reject(&:blank?).sort
-    entries.delete_if{|k,v| v.blank?}.sort
-    entries
-  end
+    get_unique_names(birth_records, ["AssociateName", "GivenName", "Surname"])
+  end 
 
   def self.get_marriage_unique_names marriage_records
-    entries = Hash.new
-    all_entries = marriage_records
-    entries["Spouse Surname"] = all_entries.distinct.pluck(:AssociateName).reject(&:blank?).sort
-    entries["Surname"] = all_entries.distinct.pluck(:Surname).reject(&:blank?).sort
-    entries["GivenName"] = all_entries.distinct.pluck(:GivenName).reject(&:blank?).sort
-    entries.delete_if{|k,v| v.blank?}.sort
-    entries
+    get_unique_names(marriage_records, ["AssociateName", "GivenName", "Surname"])
   end
 
   def self.get_death_unique_names death_records
-    entries = Hash.new
-    all_entries = death_records
-    entries["Surname"] = all_entries.distinct.pluck(:Surname).reject(&:blank?).sort
-    entries["GivenName"] = all_entries.distinct.pluck(:GivenName).reject(&:blank?).sort
-    entries.delete_if{|k,v| v.blank?}.sort
-    entries
+    get_unique_names(death_records, ["Surname", "GivenName"])
   end
 
-  def get_unique_names
-    
+  def get_unique_names records, fields
+    entries = Hash.new
+    fields.each do |field|
+      entries[field] = records.distinct.pluck(field).compact.sort
+    end
+    entries.delete_if { |_, v| v.blank? }.sort.to_h    
   end
 
   def self.get_records(result_array)
