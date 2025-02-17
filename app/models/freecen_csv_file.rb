@@ -1327,9 +1327,7 @@ class FreecenCsvFile
   end
 
   def add_fields(line, rec)
-    p "AEV01 data transistion = #{rec[:data_transition]}"
     field_specification.values.each do |field|
-      p "AEV012 data field = #{rec[field]}"
       if Freecen::LOCATION.include?(rec[:data_transition])
         @entry = rec[field]
       elsif Freecen::LOCATION_FOLIO.include?(rec[:data_transition])
@@ -1341,7 +1339,6 @@ class FreecenCsvFile
       else
         @entry = Freecen::LOCATION_DWELLING.include?(field) ? nil : rec[field]
       end
-      p "AEV012 @entry = #{@entry}"
       line << @entry
     end
     if validation
