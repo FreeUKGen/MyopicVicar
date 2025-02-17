@@ -188,7 +188,7 @@ module Freecen
   CEN2_SCT_1901 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
     SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry] + BIRTH + FINAL - %w[children_under_sixteen disability_notes]
 
-  CEN2_SCT_1911 = LOCATION - %w[poor_law_union police_district] + SCT_HOUSEHOLD + EXTRA_INDIVIDUAL - %w[children_deceased children_under_sixteen education] + OCCUPATION + BIRTH +
+  CEN2_SCT_1911 = LOCATION - %w[poor_law_union police_district] + SCT_HOUSEHOLD + EXTRA_INDIVIDUAL - %w[children_deceased] + OCCUPATION + BIRTH +
     FINAL - %w[children_under_sixteen disability_notes]
 
   CEN2_IRL_1901 = LOCATION - %w[enumeration_district ecclesiastical_parish ward sanitary_district special_water_district scavenging_district
