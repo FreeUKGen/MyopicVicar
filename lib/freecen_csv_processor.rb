@@ -396,9 +396,9 @@ class CsvFile < CsvFiles
       year, piece, fields = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
       actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
       chapman_code = actual_piece.chapman_code if actual_piece.present?
-      if (%w[1911 1921].include?(year) && %w[ALD GSY JSY SRK].include?(chapman_code))
+      if (%w[1911].include?(year) && %w[ALD GSY JSY SRK].include?(chapman_code))
         # adjust census for channel islands
-        fields = (%w[1911 1921].include?(year) && %w[ALD GSY JSY SRK].include?(chapman_code)) ? Freecen::CEN2_CHANNEL_ISLANDS_1911 : Freecen::CEN2_1911
+        fields = (%w[1911].include?(year) && %w[ALD GSY JSY SRK].include?(chapman_code)) ? Freecen::CEN2_CHANNEL_ISLANDS_1911 : Freecen::CEN2_1911
       end
       if actual_piece.blank?
         message = "Error: there is no piece #{piece.upcase} in #{year} for #{file_name} in the database}. <br>"

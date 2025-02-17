@@ -83,15 +83,15 @@ module Freecen
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag].freeze
 
-  LOCATION_FOLIO = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
+  LOCATION_FOLIO = %w[enumeration_district civil_parish petty_sessional_division county_court_district ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag folio_number].freeze
 
-  LOCATION_PAGE = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
+  LOCATION_PAGE = %w[enumeration_district civil_parish petty_sessional_division county_court_district ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag folio_number page_number].freeze
 
-  LOCATION_DWELLING = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
+  LOCATION_DWELLING = %w[enumeration_district civil_parish petty_sessional_division county_court_district ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag
                        walls roof_type rooms rooms_with_windows class_of_house rooms_with_windows].freeze
@@ -175,8 +175,8 @@ module Freecen
     OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[children_under_sixteen disability_notes language]
 
   CEN2_SCT_1871 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district
-    school_board] + SCT_HOUSEHOLD + INDIVIDUAL - %w[individual_flag] + %w[school_children individual_flag] + OCCUPATION - %w[industry occupation_category at_home]
-  + BIRTH + FINAL - %w[children_under_sixteen disability_notes language]
+    school_board] + SCT_HOUSEHOLD + INDIVIDUAL - %w[individual_flag] + %w[school_children individual_flag] + OCCUPATION - %w[industry occupation_category at_home]+
+    BIRTH + FINAL - %w[children_under_sixteen disability_notes language]
 
   CEN2_SCT_1881 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
     SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[children_under_sixteen disability_notes]

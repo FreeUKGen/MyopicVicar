@@ -560,7 +560,7 @@ module FreecenValidations
       [true, '']
     end
 
-    def place_of_work(field)
+    def place_of_work?(field)
       return [true, ''] if field.blank?
 
       unless field.match? NARROW_VALID_TEXT
