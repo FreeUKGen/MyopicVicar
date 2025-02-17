@@ -2662,7 +2662,7 @@ class FreecenCsvEntry
       end
     when '1921'
       if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Age', 'Sex', 'Marital Status', 'Children Under Sixteen', 'Education', 'Occupation', 'Employment', 'Place Of Work']
+        [sequence_in_household, sur, fore, relation, sx, disp_age, marital, children_under_sixteen, education, disp_occupation, employment, place_of_work]
       end
     end
   end
