@@ -1046,14 +1046,14 @@ class CsvRecord < CsvRecords
   end
 
   def extract_petty_sessional_division
-    if @csvfile.year == '1921' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Islands'].values.member?(@csvfile.chapman_code))
-      message, @csvfile.county_court_district = FreecenCsvEntry.validate_county_court_district(@data_record, @csvfile.county_court_district)
+    if @csvfile.year == '1921' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Islands'].values.member?(@csvfile.chapman_code))
+      message, @csvfile.petty_sessional_division = FreecenCsvEntry.validate_petty_sessional_division(@data_record, @csvfile.petty_sessional_division)
       @project.write_messages_to_all(message, true) unless message == ''
     end
   end
 
   def extract_county_court_district
-    if @csvfile.year == '1921' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Islands'].values.member?(@csvfile.chapman_code))
+    if @csvfile.year == '1921' && (ChapmanCode::CODES['England'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Wales'].values.member?(@csvfile.chapman_code) || ChapmanCode::CODES['Islands'].values.member?(@csvfile.chapman_code))
       message, @csvfile.county_court_district = FreecenCsvEntry.validate_county_court_district(@data_record, @csvfile.county_court_district)
       @project.write_messages_to_all(message, true) unless message == ''
     end

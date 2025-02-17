@@ -26,7 +26,7 @@
   <%= f.input :religion ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('religion') %>
   <%= f.input :read_write ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('read_write') %>
   <%= f.input :individual_flag, label: 'Individual Flag; current value highlighted',selected: @freecen_csv_entry.individual_flag, collection: ['x', ''], :input_html =>{:class => ' simple_form_bgcolour narrow_selection_field_width', :size => 2} if @census_fields.include?('individual_flag') %>
-  <%= f.input :education ,label: 'Education; current value highlighted', selected: @freecen_csv_entry.education, collection: ['f', 'p' ''] ,:input_html =>{:class => ' simple_form_bgcolour  narrow_selection_field_width', :size => 3} if @census_fields.include?('education') %>
+  <%= f.input :education ,label: 'Education; current value highlighted', selected: @freecen_csv_entry.education, collection: ['w', 'p' ''] ,:input_html =>{:class => ' simple_form_bgcolour  narrow_selection_field_width', :size => 3} if @census_fields.include?('education') %>
   <%= f.input :occupation ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('occupation') %>
   <%= f.input :employment ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('employment') %>
   <%= f.input :place_of_work ,  :input_html => {:class => ' simple_form_bgcolour  ',  :size => 30 } if @census_fields.include?('place_of_work') %>

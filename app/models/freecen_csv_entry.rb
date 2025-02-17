@@ -344,7 +344,7 @@ class FreecenCsvEntry
     def validate_petty_sessional_division(record, previous_petty_sessional_division)
       petty_sessional_division = record[:petty_sessional_division]
       num = record[:record_number]
-      new_petty_sessional_division = petty_sessional_division
+      new_petty_sessional_division = previous_petty_sessional_division
       info_messages = record[:messages]
       message = ''
       if %w[1921].include?(record[:year])
@@ -420,7 +420,7 @@ class FreecenCsvEntry
           new_county_court_district = county_court_district
         end
       else
-        messageb = "ERROR: line #{num} County Court District #{record[:petty_sessional_division]} should not be included for #{record[:year]}.<br>"
+        messageb = "ERROR: line #{num} County Court District #{record[:county_court_district]} should not be included for #{record[:year]}.<br>"
         message += messageb
         record[:error_messages] += messageb
       end
