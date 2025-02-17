@@ -35,7 +35,7 @@ module RecordType
     when 'freebmd'
       all_types = RecordType::ALL_FREEREG_TYPES
     when 'freepro'
-      all_types = RecordType::ALL_FREEREG_TYPES
+      all_types = RecordType::ALL_FREEPRO_TYPES
     end
     all_types
   end
@@ -55,7 +55,7 @@ module RecordType
 
   ALL_FREEREG_TYPES = [BURIAL, MARRIAGE, BAPTISM].freeze
   ALL_FREECEN_TYPES = [CENSUS_1841, CENSUS_1851, CENSUS_1861, CENSUS_1871, CENSUS_1881, CENSUS_1891, CENSUS_1901, CENSUS_1911].freeze
-
+  ALL_FREEPRO_TYPES = [PROBATE, ADMINISTRATION, CONFIRMATION].freeze
 
   private
   FREEREG_OPTIONS = {

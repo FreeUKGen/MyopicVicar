@@ -1,0 +1,66 @@
+<div class="palm-flush--bottom">
+  <%= semantic_form_for(@search_query) do |f| %>
+    <fieldset class="inputs">
+      <legend>Search fields</legend>
+      <ol class="grid">
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="last_name" tabindex="0">
+            Surname
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span>
+          </label>
+          <% if @search_query.last_name.nil? %>
+            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
+          <% else %>
+            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
+          <% end %>
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="first_name" tabindex="0">
+            Forename(s)
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically</span>
+          </label>
+          <% if @search_query.first_name.nil? %>
+            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional">
+          <% else %>
+            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
+          <% end %>
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="start_year" tabindex="0">
+            First year
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
+          </label>
+          <% if @search_query.start_year.nil? %>
+            <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
+          <% else %>
+            <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
+          <% end %>
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="end_year" tabindex="0">
+            Last year
+            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+            <span class="ttip__text">Optional, YYYY. The last year you want to search</span>
+          </label>
+          <% if @search_query.end_year.nil? %>
+            <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
+          <% else %>
+            <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
+          <% end %>
+        </li>
+        <%= f.action :submit,
+                     :as => :button,
+                     :label => 'Search ',
+                     :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname.downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" },
+                     :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
+      </ol>
+    </fieldset>
+  <% end %>
+</div>
+<script type="text/javascript">
+    Ladda.bind( 'button[type=submit]' );
+</script>
+

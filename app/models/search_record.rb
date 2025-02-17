@@ -422,11 +422,14 @@ class SearchRecord
           candidates = REG_BASIC_INDEXES.keys
           index_component = REG_BASIC_INDEXES
         end
+      when 'freepro'
+        candidates = []
+        index_component = {}
       end
       scores = {}
       candidates.each { |name| scores[name] = index_score(name, search_fields, index_component) }
       best = scores.max_by { |_k, v| v}
-      best[0]
+      best[0] if !best.nil?
     end
 
     def index_score(index_name, search_fields, index_component)
