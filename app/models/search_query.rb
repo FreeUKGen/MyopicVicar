@@ -620,8 +620,8 @@ class SearchQuery
     params = {}
     name_params = {}
     if query_contains_wildcard?
-      name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name
-      name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
+      name_params['first_name'] = wildcard_to_regex(first_name) if first_name
+      name_params['last_name'] = wildcard_to_regex(last_name.upcase) if last_name
       params['search_names'] = { '$elemMatch' => name_params }
     else
       if fuzzy
@@ -629,8 +629,8 @@ class SearchQuery
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
         params['search_soundex'] = { '$elemMatch' => name_params }
       else
-        name_params['first_name'] = first_name.downcase if first_name
-        name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
+        name_params['first_name'] = first_name if first_name
+        name_params['last_name'] = last_name.upcase if last_name.present? && !self.no_surname
         name_params['last_name'] = nil if self.no_surname
         params['search_names'] = { '$elemMatch': name_params }
       end
@@ -1043,6 +1043,37 @@ class SearchQuery
     elsif first_name && begins_with_wildcard(first_name) && places.count == 0
       errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
     end
+  end
+
+  def pro_fields_name
+    {
+      first_name: 'Death.Name.GivenName',
+      last_name: 'Death.Name.LastName'
+    }
+  end
+
+  def symbolize_search_params_keys
+    pro_search_params.symbolize_keys
+  end
+
+  def fields_needs_name_update
+    pro_fields_name.keys & symbolize_search_params_keys.keys
+  end
+
+  def pro_adjust_field_names
+    symbolize_search_params_keys.deep_transform_keys do |key|
+      (fields_needs_name_update.include?key) ? key = pro_fields_name[key].to_sym : key =key
+    end
+  end
+
+  def pro_search_results
+    self.search_result.records.values
+  end
+
+  def get_pro_search_results
+    search_results = self.sort_search_results
+    return get_pro_search_response, search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_search_results, search_result_count if get_pro_search_response
+    return get_pro_search_response if !get_pro_search_response
   end
 
   private
