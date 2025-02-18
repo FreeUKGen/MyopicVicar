@@ -531,6 +531,14 @@ module FreecenValidations
     def occupation?(field, age)
       return [true, ''] if field.blank?
 
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
+          return [false, '?']
+        else
+          return [false, 'invalid text']
+        end
+      end
+
       if age.present?
 
         return [false, 'unusual use of Scholar'] if age =~ VALID_NUMBER && (age.to_i < 2 || age.to_i > 17) && field.downcase =~ /(scholar)/
