@@ -119,7 +119,8 @@ class SearchQuery
   field :use_decomposed_dates, type: Boolean, default: false
   field :all_radius_place_ids, type: Array, default: []
   field :wildcard_search, type: Boolean, default: false
-
+  field :wildcard_field, type: String
+  field :wildcard_option, type: String
   field :birth_chapman_codes, type: Array, default: []
   field :birth_place_name, type: String
   field :disabled, type: Boolean, default: false
@@ -848,6 +849,14 @@ class SearchQuery
     params
   end
 
+  def search_records
+    if MyopicVicar::Application.config.template_set = 'freepro'
+      self.freepro_search_records
+    else
+      self.search
+    end
+  end
+
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
@@ -1045,11 +1054,50 @@ class SearchQuery
     end
   end
 
+  def freepro_search_records
+    pro_adjust_field_names
+    self.search_records
+  end
+
   def pro_fields_name
     {
       first_name: 'Death.Name.GivenName',
       last_name: 'Death.Name.LastName'
     }
+  end
+
+  def name_fields
+    [:first_name, :last_name, :fuzzy]
+  end
+
+  def has_wildcard? name
+    name.match?(/[*?]/)
+  end
+
+  def wildcard_query?
+    wildcard_field.present? && wildcard_option.present?
+  end
+
+  def surname_partial_query?
+    wildcard_query? && wildcard_field == Constant::NAME[2]
+  end
+
+  def name_search_params_pro
+    name_hash = self.attributes.symbolize_keys.except(:_id).keep_if {|k,v|  name_fields.include?(k) && v.present?}
+    if name_hash.has_key?(:last_name)
+      name_hash.except!(:last_name) if has_wildcard?(self.last_name) || surname_partial_query?
+    end
+    name_hash
+  end
+
+  def pro_search_names_criteria
+    self.fuzzy ? soundex_params_hash : name_search_params_pro
+  end
+
+  def pro_search_params
+    params = {}
+    params.merge!(pro_search_names_criteria)
+    params
   end
 
   def symbolize_search_params_keys

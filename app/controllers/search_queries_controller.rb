@@ -72,7 +72,7 @@ class SearchQueriesController < ApplicationController
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
-      @search_results = @search_query.search
+      @search_results = @search_query.search_records
       redirect_to search_query_path(@search_query)
     else
       #message = 'Failed to save search. Please Contact Us with search criteria used and topic of Website Problem'
