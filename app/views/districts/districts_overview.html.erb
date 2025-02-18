@@ -24,9 +24,11 @@
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
     <h2 class="accessibility">Database contents</h2>
-    <p>These pages contain information about each County and Registration District in the database, showing the duration of each District,
-      and the county/ies within which it fell. There is everything from detailed
-      county and district listings, right down to how many records the database holds for every year for an individual registration district.</p>
+    <p>These pages contain information about each County and Registration District in the database. They show the county/ies within which each
+      District fell. There is detailed information about each District, including how many records the database holds, and a list of all the
+      forenames and surnames encountered there. Page maps use the collated data to list the expected ranges of page numbers for each volume in
+    each District.</p>
+    <hr/>
   </div>
 
   <%= render(partial: 'select_a_county') %>
@@ -40,8 +42,14 @@
       has started is <%= format_quarter_year(active_quarter_events.last.quarter_number_event_to_quarter) %>.</p>
     </div>
   </div>
-    <%= render(partial: 'select_districts') %>
-    <%= render(partial: 'select_a_year') %>
+  <%= render(partial: 'select_districts') %>
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" style="clear: both">
+    <hr/>
+  </div>
+  <%= render(partial: 'select_a_year') %>
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" style="clear: both">
+    <hr/>
+  </div>
 
       <script>
 

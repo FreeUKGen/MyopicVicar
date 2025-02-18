@@ -5,18 +5,26 @@
     <form id="freebmd_district_match" action="/districts/districts_list" accept-charset="UTF-8" method="get">
       <ol class="grid">
       <li>
+        <div class="districtslabel">
+          <label class="ttip" for="freebmd_district_match_submit_action">Find matching Districts</label>
+        </div>
         <input class="text--left push--bottom" id="params" name="params"/>
       </li>
-      <li class="action button_action one-whole push--bottom text--center" id="freebmd_district_match_submit_action"><button name="button" type="submit" class="btn btn--small">Find matching Districts</button></li>
+      <li class="action button_action one-whole push--bottom" id="freebmd_district_match_submit_action" style="margin-left: 25px;">
+        <button name="button" type="submit" class="btn btn--small">Find matching Districts</button>
+      </li>
       </ol>
     </form>
   </div>
   <div class="one-half lap-fourths lap-one-half palm-one-whole">
   <form id="freebmd_district_select" action="/districts/select_district" accept-charset="UTF-8" method="get">
-    <ol class="grid">
+    <ol class="grid" style="margin-left: 0px !important;">
       <li>
+        <div class="districtslabel">
+          <label class="ttip" for="id">Select a District</label>
+        </div>
         <% options = District.districts_as_hash.sort %>
-        <select class="one-whole push--bottom text--center" class="select" id="id" name="id">
+        <select class="one-whole push--bottom" class="select" id="id" name="id">
           <%= options_for_select(options) %>
         </select>
       </li>
@@ -24,5 +32,4 @@
     </ol>
   </form>
   </div>
-  <hr/>
 </div>

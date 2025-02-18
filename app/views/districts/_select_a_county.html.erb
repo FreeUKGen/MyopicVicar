@@ -1,9 +1,13 @@
 <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties">
   <h3>Select a County</h3>
+  <p>Choose a county to see a list of all the Registration Districts in that county, with the dates that each District was active.</p>
   <div class="two-thirds lap-one-whole palm-one-whole">
   <form id="freebmd_county_select" action="county_summary?locale=en" accept-charset="UTF-8" method="get">
-    <ol class="grid">
-      <li class="grid__item two-thirds push--bottom text--center" id="freebmd_county_select_input">
+    <ol class="grid" style="margin-left: 0px !important;">
+      <li class="grid__item two-thirds push--bottom" id="freebmd_county_select_input">
+        <div class="districtslabel">
+          <label class="ttip" for="freebmd_county_select_input">Select a County</label>
+        </div>
         <%# grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
         <% options = ChapmanCode::ENGLAND_AND_WALES_CODES %>
         <select class="select" id="county_code" multiple="multiple" name="county_code">
