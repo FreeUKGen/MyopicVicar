@@ -2578,7 +2578,7 @@ class FreecenCsvEntry
       end
     when '1921'
       if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Age', 'Sex', 'Marital Status', 'Total Children Under Sixteen', 'Education', 'Occupation', 'Employment', 'Place Of Work']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Age', 'Sex', 'Marital Status']
       end
     end
   end
@@ -2601,7 +2601,15 @@ class FreecenCsvEntry
     home = at_home.present? ? 'Yes' : ''
     sx = sex
     note = notes.gsub(/\<br\>/, '') if notes.present?
+
+    birth = birth_place
+    birth = birth + ' (or ' + verbatim_birth_place + ')' if birth_place.present? && birth_place != verbatim_birth_place
+    birth = verbatim_birth_place if birth_place.blank?
+    birth_county_name = ChapmanCode.name_from_code(birth_county)
     verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
+    birth_county_name = birth_county_name + ' (or ' + verbatim_birth_county_name + ')' if birth_county_name.present? && birth_county_name != verbatim_birth_county_name
+    birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
+
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
@@ -2662,7 +2670,7 @@ class FreecenCsvEntry
       end
     when '1921'
       if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
-        [sequence_in_household, sur, fore, relation, sx, disp_age, marital, children_under_sixteen, education, disp_occupation, employment, place_of_work]
+        [sequence_in_household, sur, fore, relation, sx, disp_age, marital]
       end
     end
   end
@@ -2727,7 +2735,7 @@ class FreecenCsvEntry
       end
     when '1921'
       if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
-        ['Nationality', 'Birth County',  'Birth Place', 'Notes']
+        ['Nationality', 'Birth County', 'Birth Place','Education', 'Occupation', 'Employment', 'Place Of Work', 'Total Children Under Sixteen', 'Notes']
       end
     end
   end
@@ -2806,7 +2814,7 @@ class FreecenCsvEntry
       end
     when '1921'
       if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
-        [nationality, birth_county_name, birth, note]
+        [nationality, birth_county_name, birth, education, occupation, employment, place_of_work, children_under_sixteen, note]
       end
     end
   end

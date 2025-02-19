@@ -84,6 +84,8 @@ class Freecen2Content
       records[:total][:total][:added_pieces_online] = 0
 
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        next if year == '1921' # AEV1832
+
         records[:total][year] = {}
         records[:total][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
         records[:total][:total][:pieces] += records[:total][year][:pieces]
@@ -112,6 +114,8 @@ class Freecen2Content
         county_added_records_online = 0
 
         Freecen::CENSUS_YEARS_ARRAY.each do |year|
+          next if year == '1921' # AEV1832
+
           county_pieces_total += fc2_totals_pieces[year]
           county_added_records_online += fc2_added_records_online[year]
         end
@@ -163,6 +167,7 @@ class Freecen2Content
           records[county][:total][:piece_ids] = []
 
           Freecen::CENSUS_YEARS_ARRAY.each do |year|
+            next if year == '1921' # AEV1832
 
             records[county][year] = {}
             records[county][year][:piece_ids] = fc2_piece_ids[year]
@@ -214,6 +219,8 @@ class Freecen2Content
                 records[county][key_place][:total][:added_records_online] = 0
 
                 Freecen::CENSUS_YEARS_ARRAY.each do |year|
+                  next if year == '1921' # AEV1832
+
                   records[county][key_place][year] = {}
                   records[county][key_place][year][:piece_ids] = []
                   records[county][key_place][year][:piece_ids] = fc2_piece_ids[year]

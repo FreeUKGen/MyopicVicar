@@ -182,6 +182,8 @@ class Freecen2Piece
       totals_pieces = {}
       totals_pieces_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        next if year == '1921' # AEV1832
+
         totals_pieces[year] = Freecen2Piece.where(_id: { '$lte' => last_id }).year(year).count
         totals_pieces_online[year] = Freecen2Piece.where(status_date: { '$lte' => time }).year(year).status('Online').count
       end
@@ -195,6 +197,7 @@ class Freecen2Piece
       totals_pieces_online = {}
       totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        next if year == '1921' # AEV1832
 
         totals_pieces_all = Freecen2Piece.chapman_code(chapman_code).year(year).count
         totals_pieces_to_ignore = Freecen2Piece.where(_id: { '$gt' => last_id }).chapman_code(chapman_code).year(year).count
@@ -223,6 +226,8 @@ class Freecen2Piece
       totals_pieces_online = {}
       totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        next if year == '1921' # AEV1832
+
         piece_ids_array = []
         vld_total_pieces = 0
         csv_total_pieces = 0
@@ -268,6 +273,8 @@ class Freecen2Piece
     def between_dates_year_totals(time1, time2)
       totals_pieces_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        next if year == '1921' # AEV1832
+
         totals_pieces_online[year] = Freecen2Piece.between(status_date: time1..time2).year(year).status('Online').count
       end
       totals_pieces_online
@@ -279,6 +286,8 @@ class Freecen2Piece
       totals_pieces_online = {}
       totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        next if year == '1921' # AEV1832
+
         totals_pieces_online[year] = Freecen2Piece.between(status_date: time1..time2).chapman_code(chapman_code).year(year).status('Online').count
         totals_records_online_all = SearchRecord.where(chapman_code: chapman_code, record_type: year).count
         totals_records_online_to_ignore_before = SearchRecord.where(_id: { '$lt' => first_id }, chapman_code: chapman_code, record_type: year).count
@@ -292,6 +301,8 @@ class Freecen2Piece
       totals_pieces_online = {}
       totals_records_online = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        next if year == '1921' # AEV1832
+
         totals_pieces_online[year] = 0
         vld_total_pieces_online = 0
         csv_total_pieces_online = 0
@@ -342,6 +353,8 @@ class Freecen2Piece
     def county_year_totals(chapman_code)
       totals_pieces = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        next if year == '1921' # AEV1832
+
         totals_pieces[year] = 0
         Freecen2District.chapman_code(chapman_code).year(year).each do |district|
           totals_pieces[year] = totals_pieces[year] + district.freecen2_pieces.count
@@ -358,6 +371,8 @@ class Freecen2Piece
     def county_district_year_totals(id)
       totals_district_pieces = {}
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
+        next if year == '1921' # AEV1832
+
         totals_district_pieces[year] = Freecen2Piece.where(freecen2_district_id: id, year: year).count
       end
       totals_district_pieces

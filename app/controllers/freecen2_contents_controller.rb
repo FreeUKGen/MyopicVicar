@@ -262,6 +262,8 @@ class Freecen2ContentsController < ApplicationController
 
     @names = Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place_id)
     Freecen::CENSUS_YEARS_ARRAY.each do |year|
+      next if year == '1921' # AEV1832
+
       if @names.unique_forenames[year].present? && @names.unique_surnames[year].present?
         @has_names[year] = true
         @has_some_names = true
