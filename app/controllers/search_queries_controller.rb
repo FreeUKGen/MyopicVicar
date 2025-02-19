@@ -297,4 +297,6 @@ class SearchQueriesController < ApplicationController
   def search_params
     params.require(:search_query).permit!
   end
+
 end
+

@@ -8,7 +8,7 @@ class SearchQuery
   require 'name_role'
   require 'date_parser'
   require 'app'
-
+  extend SharedSearchMethods
 
   # consider extracting this from entities
   module SearchOrder
@@ -1055,7 +1055,8 @@ class SearchQuery
   end
 
   def freepro_search_records
-    records = SearchQuery.get_search_table.where(pro_adjust_field_names)
+    #records = SearchQuery.get_search_table.where(pro_adjust_field_names)
+    records = SearchQuery.get_search_table.all
     persist_results(records)
     records
   end

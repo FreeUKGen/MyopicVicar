@@ -58,6 +58,7 @@ module MyopicVicar
     # -- all .rb files in that directory are automatically loaded.
     app = config_for(:freeukgen_application)
     config.template_set = app['template_set']
+    config.search_table = app['search_table']
     config.advert_key = app['advert_key']
     config.gtm_key = app['gtm_key']
     config.cta_display_status = app['cta_display_status']
