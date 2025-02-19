@@ -1055,8 +1055,9 @@ class SearchQuery
   end
 
   def freepro_search_records
-    pro_adjust_field_names
-    self.search_records
+    records = SearchQuery.get_search_table.where(pro_adjust_field_names)
+    persist_results(records)
+    records
   end
 
   def pro_fields_name
