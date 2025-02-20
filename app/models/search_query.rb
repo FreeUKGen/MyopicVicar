@@ -219,6 +219,8 @@ class SearchQuery
         end
       when 'freecen'
         proceed = true
+      when 'freepro'
+        proceed = true
       end
       proceed
     end
@@ -1057,6 +1059,7 @@ class SearchQuery
   def freepro_search_records
     #records = SearchQuery.get_search_table.where(pro_adjust_field_names)
     records = SearchQuery.get_search_table.all
+    #records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
     records
   end
