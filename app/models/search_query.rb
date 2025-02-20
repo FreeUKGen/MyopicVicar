@@ -1056,9 +1056,14 @@ class SearchQuery
     end
   end
 
+  def pro_params_hash
+    search_fields = pro_adjust_field_names
+  end
+
   def freepro_search_records
-    records = SearchQuery.get_search_table.where(pro_adjust_field_names)
-    #SearchQuery.send(get_search_table)
+    search_fields = pro_adjust_field_names
+    #records = SearchQuery.get_search_table.where(pro_params_hash)
+    records = SearchQuery.get_search_table.where({'Death.Name.LastName' => 'EARWAKER'})
     #records = SearchQuery.get_search_table.all
     #records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
@@ -1068,7 +1073,8 @@ class SearchQuery
   def pro_fields_name
     {
       first_name: 'Death.Name.GivenName',
-      last_name: 'Death.Name.LastName'
+      last_name: 'Death.Name.LastName',
+      session_id: 'id'
     }
   end
 

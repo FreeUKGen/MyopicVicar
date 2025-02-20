@@ -27,6 +27,14 @@
             <input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
           <% end %>
         </li>
+        <!--li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="ttip" for="session_id">Id</label>
+          <%# if @search_query.session_id.nil? %>
+            <input id="session_id" name="search_query[session_id]" type="text" class="text-input" placeholder="Optional">
+          <%# else %>
+            <input id="session_id" name="search_query[session_id]" type="text" class="text-input" placeholder="Optional" value="<%#=@search_query.session_id%>">
+          <%# end %>
+        </li-->
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="ttip" for="start_year" tabindex="0">
             First year
