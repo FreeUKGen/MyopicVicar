@@ -697,13 +697,13 @@ class SearchQuery
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = record['_id'].to_s
       record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
-      record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
+      record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank? && App.name.downcase != 'freepro'
       records[rec_id] = record
       proceed = SearchQuery.does_the_entry_exist?(rec)
       if proceed
         rec_id = record['_id'].to_s
         record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
-        record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
+        record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank? && App.name.downcase != 'freepro'
         records[rec_id] = record
       else
         search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
@@ -715,7 +715,7 @@ class SearchQuery
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime('%F')
-    self.save
+    self.save!
   end
 
   def place_search?
@@ -1062,10 +1062,8 @@ class SearchQuery
 
   def freepro_search_records
     search_fields = pro_adjust_field_names
-    #records = SearchQuery.get_search_table.where(pro_params_hash)
-    records = SearchQuery.get_search_table.where({'Death.Name.LastName' => 'EARWAKER'})
-    #records = SearchQuery.get_search_table.all
-    #records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
+    records = SearchQuery.get_search_table.where(pro_params_hash)
+    #records = SearchQuery.get_search_table.where({"Death.Name.LastName" => "EARWAKER"})
     persist_results(records)
     records
   end
