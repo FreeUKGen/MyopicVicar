@@ -37,6 +37,8 @@ class SearchRecordsController < ApplicationController
     @page_number = params[:page_number].to_i
     if @appname == 'freebmd'
       show_freebmd
+    elsif @appname == 'freepro'
+      show_freepro
     elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.present?
       show_freecen_csv
       render '/freecen_csv_entries/show'
@@ -49,6 +51,10 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_freebmd
+    # common code for the three show versions show print and citation
+  end
+
+  def show_freepro
     # common code for the three show versions show print and citation
   end
 

@@ -37,7 +37,7 @@
           <tr id="<%=search_record[:RecordNumber]%>" class="<%#= record_type.downcase %>_hover" >
             <%# unless print_friendly %>
             <td class="table--data">
-              <%= link_to("#{search_record[:PersonId]}".html_safe, friendly_search_record_path(@search_query.id,search_record[:_id], search_record: search_record, search_entry: search_record[:PersonId])) %>
+              <%= link_to("#{search_record[:PersonId]}".html_safe, friendly_search_record_path(@search_query.id,search_record[:PersonId], search_record: search_record[:_id], search_entry: search_record[:PersonId])) %>
             </td>
             <td class="table--data">
               <%= search_record[:Death][:Name][:LastName] %> <%= search_record[:Death][:Name][:GivenName] %>
