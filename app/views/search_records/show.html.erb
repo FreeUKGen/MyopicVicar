@@ -2,13 +2,15 @@
 <h1 class="accessibility">Record details</h1>
 <% case @appname %>
 <% when 'freecen'%>
-<% if device_type == :desktop || device_type == :tablet %>
-  <%= render(:partial => app_partial("desktop")) %>
-<% else %>
-  <%= render(:partial => app_partial("mobile")) %>
-<% end %>
+  <% if device_type == :desktop || device_type == :tablet %>
+    <%= render(:partial => app_partial("desktop")) %>
+  <% else %>
+    <%= render(:partial => app_partial("mobile")) %>
+  <% end %>
 <% when 'freereg' %>
-<%= render(:partial => app_partial('show')) %>
+  <%= render(:partial => app_partial('show')) %>
 <% when 'freebmd' %>
-<%= render html: helpers.tag.strong('Display for FreeBMD not yet implemented') %>
+  <%= render html: helpers.tag.strong('Display for FreeBMD not yet implemented') %>
+<% when 'freepro' %>
+  <%= render(:partial => app_partial('show')) %>
 <% end %>

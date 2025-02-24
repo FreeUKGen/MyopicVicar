@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 class Probate
   include Mongoid::Document
+  include Mongoid::Attributes::Dynamic
 
-  field :id, :type => String
+  field :id, type: String
   embeds_one :divs
   embeds_one :deaths
   embeds_one :events
 
   class Div
     include Mongoid::Document
-    field :p, :type => String
+    field :p, type: String
   end
 
   class Death

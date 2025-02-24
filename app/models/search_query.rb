@@ -459,8 +459,8 @@ class SearchQuery
   def get_and_sort_results_for_display
     if self.search_result.records.respond_to?(:values)
       search_results = self.search_result.records.values
-      search_results = self.filter_name_types(search_results)
-      search_results = self.filter_embargoed(search_results)
+      search_results = self.filter_name_types(search_results) unless MyopicVicar::Application.config.template_set == 'freepro'
+      search_results = self.filter_embargoed(search_results) unless MyopicVicar::Application.config.template_set == 'freepro'
       search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
       result_count = search_results.length.present? ? search_results.length : 0
       search_results = self.sort_results(search_results) unless search_results.nil?
@@ -704,7 +704,11 @@ class SearchQuery
         rec_id = record['_id'].to_s
         record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
         record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank? && App.name.downcase != 'freepro'
-        records[rec_id] = record
+        if App.name.downcase == 'freepro'
+          records[rec_id] = record.attributes
+        else
+          records[rec_id] = record
+        end
       else
         search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
         search_record.delete if search_record.present?
@@ -1062,8 +1066,8 @@ class SearchQuery
 
   def freepro_search_records
     search_fields = pro_adjust_field_names
-    #records = SearchQuery.get_search_table.where(pro_params_hash)
-    records = SearchQuery.get_search_table.where({"Death.Name.LastName" => "EARWAKER"})
+    records = SearchQuery.get_search_table.where(pro_params_hash)
+    #records = SearchQuery.get_search_table.where({"Death.Name.LastName" => "EARWAKER"})
     #records = Test.where({"fielda" => "value a"})
     persist_results(records)
     records
