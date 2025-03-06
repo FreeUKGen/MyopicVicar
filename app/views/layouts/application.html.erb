@@ -49,6 +49,9 @@
     <% elsif MyopicVicar::Application.config.template_set == 'freebmd' %>
       <meta name="keywords" content="genealogy,registers,birth records,birth certificates,transcriptions,indexes,birth,marriage,death">
       <meta name="description" content="FreeBMD provides free on-line access to the GRO indexes of births, marriages and deaths for England and Wales. ">
+    <% elsif MyopicVicar::Application.config.template_set == 'freepro' %>
+      <meta name="keywords" content="genealogy,probate records, administration, confirmation">
+      <meta name="description" content="FreePRO provides detailed access, for free, to Probate records.">
     <% end %>
     <meta name="google-site-verification" content="zAYAee-PuoiMAfi5hbUreeLsvTGf4XFNXDxMDB9PcCQ" />
     <!--[if lt IE 9]>
@@ -77,6 +80,7 @@
     <%= stylesheet_link_tag "styles/css/icons.data.svg.css", 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "styles/css/freereg_content", 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "styles/scss/freebmd_content", 'data-turbolinks-track': 'reload' if appname.downcase == 'freebmd' %>
+    <%= stylesheet_link_tag "styles/scss/freepro_content" , 'data-turbolinks-track': 'reload' if appname.downcase == 'freepro' %>
     <%= stylesheet_link_tag "styles/scss/palm", 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "styles/scss/lap_and_up", media: "(min-width:571px)", 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "styles/scss/ladda", 'data-turbolinks-track': 'reload' %>
@@ -115,6 +119,8 @@
     <% end %>
     <% if appname_downcase == 'freebmd'%>
       <%= render 'layouts/bmd_main_nav'%>
+    <% elsif appname_downcase == 'freepro' %>
+      <%= render 'layouts/pro_main_nav' %>
     <% else %>
       <%= render "layouts/main_nav" %>
     <% end %>

@@ -1,0 +1,39 @@
+<div class="kodhandam offcanvas__primary">
+  <%= link_to '/', class: "site__header__logo icon__freebmd" do %>
+  <% end %>
+</div>
+<div class="site__header__nav offcanvas__primary">
+  <div class="Navbar__Link-toggle navbar_toggle" id="menu_container" >
+    <i class="fa fa-bars fa-2x float--right nav_toggle menu_bar" id='trigger-offcanvas' aria-hidden="true"></i>
+    <i class="fas fa-times fa-2x float--right nav_toggle menu_bar_cancel" id='trigger-offcanvas-cancel' aria-hidden="true"></i>
+  </div>
+  <!--div class="offcanvas__secondary"-->
+  <div class="site__header__nav__inner">
+
+    <nav class="main-nav float--right" role="navigation" aria-label="Main menu">
+      <ul class="nav hide_nav capitalize">
+        <% if nav_search_form_link.present?%>
+          <li><%= nav_search_form_link %></li>
+        <% end %>
+        <% if nav_transcription_page_link.present?%>
+          <li><%= nav_transcription_page_link %></li>
+        <% end %>
+        <% if nav_about_page_link.present?%>
+          <li><%= nav_about_page_link %></li>
+        <% end %>
+        <% if nav_volunteer_page_link.present?%>
+          <li><%= nav_volunteer_page_link %></li>
+        <% end %>
+        <% if nav_member_page_link.present?%>
+          <li><%= nav_member_page_link %></li>
+        <% end %>
+        <% if nav_actions_page_link.present?%>
+          <li><%= nav_actions_page_link %></li>
+        <% end %>
+        <% if nav_freecen_gazetteer.present?%>
+          <li><%= nav_freecen_gazetteer %></li>
+        <% end %>
+      </ul>
+    </nav>
+  </div>
+</div>

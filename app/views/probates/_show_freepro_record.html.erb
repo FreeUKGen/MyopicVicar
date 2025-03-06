@@ -1,0 +1,65 @@
+  <table class="table--bordered table--data">
+    <caption class="accessibility">Entry Information about <%= @search_record[:death][:GivenName] %> <%= @search_record[:death][:LastName] %>  </caption>
+    <style>
+      td { valign: top; text-align: left; }
+      th { valign: top; text-align: left; }
+    </style>
+    <tbody>
+    <tr>
+      <th scope="row">Record identifier</th>
+      <td><b><%= @search_record[:PersonId] %></b></td>
+    </tr>
+    <tr>
+      <th scope="row">Text entry</th>
+      <td><%= @search_record[:p] %></td>
+    </tr>
+    <tr>
+      <th scope="row">Name</th>
+      <td><%= @search_record[:death][:LastName] %> <%= @search_record[:death][:GivenName] %></td>
+    </tr>
+    <% if @search_record[:death][:Address].present? %>
+      <tr>
+        <th scope="row">Address</th>
+        <td><%= @search_record[:death][:Address] %></td>
+      </tr>
+    <% end %>
+    <% if @search_record[:death][:Date].present? %>
+      <tr>
+        <th scope="row">Date of death</th>
+        <td><%= @search_record[:death][:Date] %></td>
+      </tr>
+    <% end %>
+    <tr>
+      <th scope="row">Event type</th>
+      <td><%= @search_record[:event][:Type] %></td>
+    </tr>
+    <% if @search_record[:event][:Court].present? %>
+    <tr>
+      <th scope="row">Court</th>
+      <td><%= @search_record[:event][:Court] %></td>
+    </tr>
+    <% end %>
+    <% if @search_record[:event][:Date].present? %>
+    <tr>
+      <th scope="row"><%= @search_record[:event][:Type] %> Date</th>
+      <td><%= @search_record[:event][:Date] %></td>
+    </tr>
+    <% end %>
+    <% if @search_record[:event][:person].present? %>
+    <tr>
+      <th scope="row"><%= @search_record[:event][:Type] %> People</th>
+      <td>
+        <% @search_record[:event][:person].each do |p| %>
+          <%= p %><br/>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+    <% if @search_record[:event][:Value].present? %>
+    <tr>
+      <th scope="row"><%= @search_record[:event][:Type] %> Value</th>
+      <td><%= @search_record[:event][:Value] %></td>
+    </tr>
+    <% end %>
+    </tbody>
+</table>

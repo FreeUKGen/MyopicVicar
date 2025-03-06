@@ -1,0 +1,9 @@
+<%= render( :partial => "nav_freeprobate", :locals => {search_record: params[:id]}) %>
+
+<h1>Edit <%= @probate[:PersonId] %></h1>
+
+<div class="desk-two-fifths palm-one-half float--right">
+  <%= image_tag( image_url("1909%20Q-S%202.jpg"), alt: 'test image') %>
+</div>
+
+<%= render 'form' %>

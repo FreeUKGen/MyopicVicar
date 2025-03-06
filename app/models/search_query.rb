@@ -1075,8 +1075,8 @@ class SearchQuery
 
   def pro_fields_name
     {
-      first_name: 'Death.Name.GivenName',
-      last_name: 'Death.Name.LastName',
+      first_name: 'death.GivenName',
+      last_name: 'death.LastName',
       session_id: 'id'
     }
   end

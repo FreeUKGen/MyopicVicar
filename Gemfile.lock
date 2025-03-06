@@ -76,6 +76,9 @@ GEM
       activerecord (>= 4.0.0, < 7.0)
     babosa (1.0.4)
     bcrypt (3.1.16)
+    bootstrap_form (4.4.0)
+      actionpack (>= 5.0)
+      activemodel (>= 5.0)
     bourbon (7.0.0)
       thor (~> 1.0)
     browser (5.3.1)
@@ -437,6 +440,7 @@ PLATFORMS
 DEPENDENCIES
   airbrake
   bcrypt
+  bootstrap_form
   bourbon
   browser
   carrierwave-mongoid (= 1.2.0)
