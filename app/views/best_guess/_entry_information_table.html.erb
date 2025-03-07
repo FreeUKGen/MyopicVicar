@@ -34,6 +34,17 @@
             document.getElementById("citation-dropdown").style.display = "none";
         //}
     })
+    function urlCopy(elm, btn) {
+        var button = document.getElementById(btn);
+        var btnText = button.innerHTML;
+        var target = document.getElementById(elm).innerHTML;
+        navigator.clipboard.writeText(target);
+        button.innerHTML = "Copied"
+        setTimeout(function(){
+            button.innerHTML = btnText;
+        }, 1000);
+    }
+
     function copy(elm) {
         var button = event.currentTarget || event.srcElement;
         var btnText = button.innerHTML;
@@ -234,9 +245,14 @@
         Persistent URL for entry
       </th>
       <td>
-        <% url = 'https://www.freebmd.org.uk/entry-information/'+record.record_hash+'/hash' %>
-        <a class="pUrl" href="<%= url %>"><%= url %></a>
-        <a class="btn btn--small" href="#" onclick=copy("pUrl") style="cursor: pointer">Copy URL</a>
+        <% protocol = URI.parse(request.original_url).scheme %>
+        <% domain = URI.parse(request.original_url).host %>
+        <% port = URI.parse(request.original_url).port %>
+        <% domain = domain + ':' + port.to_s if port.present? %>
+        <% url = protocol+'://'+domain+'/entry-information/'+record.record_hash+'/hash' %>
+        <a id="persistentUrl" class="pUrl" href="<%= url %>"><%= url %></a>
+        <button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button>
+        <!--a class="btn btn--small" href="" onclick=copy('persistentUrl') style="cursor: pointer">Copy URL</a-->
       </td>
     </tr>
     <% if search == true %>
