@@ -248,7 +248,8 @@
         <% protocol = URI.parse(request.original_url).scheme %>
         <% domain = URI.parse(request.original_url).host %>
         <% port = URI.parse(request.original_url).port %>
-        <% domain = domain + ':' + port.to_s if port.present? %>
+        <% standard_ports = [80,443] %>
+        <% domain = domain + ':' + port.to_s unless standard_ports.include? port %>
         <% url = protocol+'://'+domain+'/entry-information/'+record.record_hash+'/hash' %>
         <a id="persistentUrl" class="pUrl" href="<%= url %>"><%= url %></a>
         <button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button>
