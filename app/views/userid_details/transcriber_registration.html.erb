@@ -8,6 +8,7 @@
       <p>Upon successful submission, you will receive an email that contains a link to complete the registration process. Click on that link or copy and paste it into your browser. You must respond to the email <em>within 24 hours</em>. Don&rsquo;t forget to check your spam folder if you don&rsquo;t receive it.</p>
       <p>If you have any questions about FreeREG or volunteering, please <%= link_to 'contact us','/contacts/new' %>.</p>
       <p>Once your registration is complete, your new coordinator will be in touch to help you get started with training.</p>
+      <p>We look forward to welcoming you aboard.</p>
     </div>
   </div>
   <aside class="grid__item one-third lap-one-half palm-one-whole">
@@ -102,7 +103,7 @@
         <%= text_field_tag "userid_detail[telephone_number]", @userid.telephone_number.blank? ? nil : @userid.telephone_number , :id => "phone", placeholder: @userid.telephone_number.blank? ? "Optional" : nil , :class => "text-input"%>
       </li>
       <li class="grid__item seven-twelfths lap-one-whole palm-one-whole">
-        <label class="label ttip" for="syndicate" tabindex="0">Syndicates available
+        <label class="label ttip" for="syndicate" tabindex="0">Available Syndicates
           <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
           <span class="ttip__text">Select a syndicate to work with. If you are in doubt, select the <q>England, rest of</q> group &mdash; you can move later depending upon your interests</span>
           <small class="additional">Required</small>
