@@ -16,7 +16,7 @@ class HelpController < ApplicationController
   # 'on this page' island and the 'overall structure' island. Less elegant than I hoped for, but not being allowed
   # to do multiple renders within a block means the rendering can't be driven from an array or hash.
   def default_page
-    render 'new_index'
+    render 'index'
   end
 
   def about_page

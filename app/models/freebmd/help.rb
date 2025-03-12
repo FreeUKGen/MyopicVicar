@@ -3,12 +3,13 @@
 class Help
 
   TopLevelPages = {
-    'search' => 'Search',
-    'results' => 'View Results',
-    'entry' => 'Entry Information',
-    'certificates' => 'Order a Certificate',
-    'downloading' => 'Download or Share your results',
-    'more_help' => 'More Help'
+    'search_help' => 'Search',
+    'results_help' => 'View Results',
+    'download_help' => 'Download or Share your results',
+    'entry_help' => 'Entry Information',
+    'certificates_help' => 'Order a Certificate',
+    'explore_help' => 'Explore the database'
+    #    'more_help' => 'More Help'
   }
 
   Search = {
@@ -65,7 +66,7 @@ class Help
     'AnotherTopic' => 'Another topic'
   }
 
-  def self.create_island(island_hash, on_this_page = true)
+  def self.create_island(island_hash, on_this_page = true, top_level = false)
     if on_this_page
       title = 'On this page'
       prefix = '#'
@@ -75,7 +76,7 @@ class Help
     end
     island = '<div class="grid__item two-fifths lap-one-third palm-one-whole float--right">'
     island += '<nav aria-labelledby="thisPage"><div class="islet islet--bordered">'
-    island += '<h2 class="title-block" id="thisPage">'+title+'</h2><ul class="sub-nav">'
+    island += '<h2 class="title-block" id="thisPage">'+title+'</h2><ul class="sub-nav">' unless top_level
     island_hash.each do |key, value|
       if value.is_a? Hash
         if value.key?('title')
