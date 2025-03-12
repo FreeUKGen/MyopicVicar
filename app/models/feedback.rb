@@ -263,7 +263,7 @@ class Feedback
     end
   end
 
-  def github_issue_status_closed
+  def self.github_issue_status_closed
     self.each {|feedback|
       next unless feedback.github_issue_url.present?
       issue = Octokit.issue(Rails.application.config.github_issues_repo, feedback.github_number)
