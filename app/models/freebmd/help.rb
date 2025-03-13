@@ -113,6 +113,7 @@ class Help
   end
 
   def self.in_page_help_menu(menu_hash)
+    prefix = '/help/'
     menu = '<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top float--right">'
     menu += '<div class="islet islet--bordered">'
     menu += '<h5 class="beta  text--teal">On this page</h5>'
@@ -120,7 +121,7 @@ class Help
     menu += '<ul class="sub-nav">'
     menu_hash.each do |key, value|
       if value.is_a? String
-        menu += '<li><a class="reactive" data-section="'+key+'" title="search" data-method="get" href="'+key+'">'+value+'</a></li>'
+        menu += '<li><a class="reactive" data-section="'+key+'" title="search" data-method="get" href="'+prefix+key+'">'+value+'</a></li>'
       end
     end
     menu += '</ul>'
