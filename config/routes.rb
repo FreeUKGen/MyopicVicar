@@ -22,6 +22,7 @@ MyopicVicar::Application.routes.draw do
 
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
+  match '/help', to: 'application#help', via: [:get]
 
   get 'open', :to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county

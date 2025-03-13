@@ -1,12 +1,149 @@
-<%= render Refinery::Page.where(slug: 'information-for-members').first.parts.first.body.html_safe%>
+<style>
+section {
+  display: none;
+}
+   .sublist {
+      display: none;
+    }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('li a.reactive');
+    const sections = document.querySelectorAll('section.section');
+    const sublinks = document.querySelectorAll('ul.sublist');
+
+    function hideAllSections() {
+      sections.forEach(section => {
+        section.style.display = 'none';
+      });
+    }
+
+    function hideAllSublinks() {
+      sublinks.forEach(sublink => {
+        sublink.style.display = 'none';
+      });
+    }
+
+    function showSublinks(list) {
+      list.style.display = 'block';
+    }
+
+
+
+    function showSection(section) {
+      section.style.display = 'block';
+      const children = section.childNodes;
+      children.forEach(child => {
+        if (child.style) {
+          child.style.display = 'block';
+        }
+      });
+    }
+
+    function removeOpenClass() {
+      links.forEach(link => {
+        link.classList.remove('open');
+      });
+    }
+
+    links.forEach(link => {
+      link.addEventListener('click', function(event) {
+        event.preventDefault();
+        const targetSection = document.querySelector(`section.${this.dataset.section}`);
+        const targetSublist = document.querySelector(`ul.${this.dataset.section}.sublist`);
+        hideAllSections();
+        hideAllSublinks();
+        if (targetSection) {
+          showSection(targetSection);
+        }
+        if (targetSublist) {
+          showSublinks(targetSublist);
+        }
+        removeOpenClass();
+        this.classList.add('open');
+      });
+    });
+
+    // Optionally, show the first section by default
+    if (sections.length > 0) {
+      showSection(sections[0]);
+      links[0].classList.add('active');
+      showSublinks(sublinks[0]);
+    }
+  });
+</script>
+
+<% content_for :h1 do %>
+  <div class="push--top text--center">
+    <h1 id="body_content_title">Help : Search </h1>
+  </div>
+<% end %>
+<!--div class="grid">
+  <div class="grid__item one-whole">
+    <%#= Refinery::Page.where(slug: 'draft-vino-help').first.parts.first.body.html_safe%>
+  </div>
+  </div-->
 <% content_for :sidebar do %>
   <div class="islet islet--bordered">
     <h5 class="beta  text--teal">Actions</h5>
+    <nav aria-labelledby="thisPage">
     <ul class="sub-nav">
-      <%@help_topics.each do |help| %>
-          <li><%= link_to help, HelpPage::SECTIONS[help], class: "" , method: :get, title: elpPage::SECTIONS[help], target: :_blank %></li>
+      <%HelpPage::SECTIONS.keys.each do |help| %>
+        <li><%= link_to help, HelpPage::SECTIONS[help], class: "reactive" ,data: {section: HelpPage::SECTIONS[help]},method: :get, title: HelpPage::SECTIONS[help] %></li>
+        <% if HelpPage::SUB_SECTIONS.keys.include?help %>
+          <ul class='<%=HelpPage::SECTIONS[help] %> sublist push--left'>
+            <% HelpPage::SUB_SECTIONS[help].each do |sub| %>
+              <%# v.each do |sub| %>
+                <li><%= link_to sub, "##{sub}_#{HelpPage::SECTIONS[help]}", class: "", data: {section: "#{HelpPage::SECTIONS[help]} #{sub}", method: :get, title: HelpPage::SUB_SECTIONS[sub]}%></li>
+              <%#end %>
+            <% end %>
+          </ul>
+        <% end %>
       <br>
       <% end%>
     </ul>
+    </nav>
+  </div>
+<% end %>
+<div class="grid">
+  <div class="grid__item one-whole">
+    <%=  Refinery::Page.where(slug: 'draft-vino-help').first.parts.first.body.html_safe %>
+  </div>
+</div>
+<% content_for :help_footer do %>
+  <div class="text--center">
+    <h3 id="body_content_title">Need Further Help?</h1>
+  </div>
+  <div class="grid">
+    <div class="grid__item one-third">
+      <div class="islet islet--bordered">
+        <h3 class="delta push-half--bottom">Records</h3>
+        <ul class="push--left">
+          <li><%= link_to 'Link 1', '#'%></li>
+          <li><%= link_to 'Link 2', '#'%></li>
+          <li><%= link_to 'Link 3', '#'%></li>
+        </ul>
+      </div>
+    </div>
+    <div class="grid__item one-third">
+      <div class="islet islet--bordered">
+        <h3 class="delta push-half--bottom">Accuracy and corrections</h3>
+        <ul class="push--left">
+           <li><%= link_to 'Link 1', '#'%></li>
+           <li><%= link_to 'Link 2', '#'%></li>
+           <li><%= link_to 'Link 3', '#'%></li>
+         </ul>
+      </div>
+    </div>
+    <div class="grid__item one-third">
+      <div class="islet islet--bordered">
+        <h3 class="delta push-half--bottom">Additional Help & Resources</h3>
+        <ul class="push--left">
+           <li><%= link_to 'Link 1', '#'%></li>
+           <li><%= link_to 'Link 2', '#'%></li>
+           <li><%= link_to 'Link 3', '#'%></li>
+        </ul>
+      </div>
+    </div>
   </div>
 <% end %>

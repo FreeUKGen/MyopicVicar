@@ -161,6 +161,9 @@
         <% end %>
         <div class="container">
           <%#= breadcrumbs  :class => "delta  text--magenta" if appname_downcase="freebmd"%>
+          <% if content_for? :h1 %>
+            <%= yield :h1%>
+          <% end %>
           <% if session[:userid_detail_id].present?%>
             <%= breadcrumbs  :class => "delta  project-text-color"  unless controller_name == "refinery" ||
              controller_name == "pages"%>
@@ -178,6 +181,9 @@
             <div class="push--top">
               <%= yield %>
             </div>
+          <% end %>
+          <% if content_for? :help_footer %>
+            <%= yield :help_footer%>
           <% end %>
           <% unless  session[:userid_detail_id].present? || (controller_name == 'feedbacks' && action_name == 'new') %>
             <%= form_tag(problem_url, method: :get) do %>
