@@ -1,0 +1,66 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.querySelectorAll('li a.reactive');
+        const sections = document.querySelectorAll('section.section');
+        const sublinks = document.querySelectorAll('ul.sublist');
+
+        function hideAllSections() {
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+        }
+
+        function hideAllSublinks() {
+            sublinks.forEach(sublink => {
+                sublink.style.display = 'none';
+            });
+        }
+
+        function showSublinks(list) {
+            list.style.display = 'block';
+        }
+
+
+
+        function showSection(section) {
+            section.style.display = 'block';
+            const children = section.childNodes;
+            children.forEach(child => {
+                if (child.style) {
+                    child.style.display = 'block';
+                }
+            });
+        }
+
+        function removeOpenClass() {
+            links.forEach(link => {
+                link.classList.remove('open');
+            });
+        }
+
+        links.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const targetSection = document.querySelector(`section.${this.dataset.section}`);
+                const targetSublist = document.querySelector(`ul.${this.dataset.section}.sublist`);
+                hideAllSections();
+                hideAllSublinks();
+                if (targetSection) {
+                    showSection(targetSection);
+                }
+                if (targetSublist) {
+                    showSublinks(targetSublist);
+                }
+                removeOpenClass();
+                this.classList.add('open');
+            });
+        });
+
+        // Optionally, show the first section by default
+        if (sections.length > 0) {
+            showSection(sections[0]);
+            links[0].classList.add('active');
+            showSublinks(sublinks[0]);
+        }
+    });
+</script>
