@@ -56,7 +56,8 @@
             });
         });
 
-        // Optionally, show the first section by default
+        // On startup, hide all sections, then optionally show the first section:
+        hideAllSections();
         if (sections.length > 0) {
             showSection(sections[0]);
             links[0].classList.add('active');
