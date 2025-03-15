@@ -158,7 +158,7 @@ module Freecen
     %w[surname_maiden school_children] + OCCUPATION + BIRTH + FINAL - %w(children_under_sixteen)
 
   CEN2_1921 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
-              school_board] + HOUSEHOLD - %w[folio_number page_number uninhabited_flag address_flag] + %w[rooms address_flag] + INDIVIDUAL_1921 +
+              school_board] + HOUSEHOLD - %w[folio_number page_number address_flag] + %w[rooms address_flag] + INDIVIDUAL_1921 +
     BIRTH + OCCUPATION_1921 + FINAL - %w[disability disability_notes]
 
   CEN2_CHANNEL_ISLANDS_1911 = CEN2_1911 - FINAL - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
