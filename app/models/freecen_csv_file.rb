@@ -515,7 +515,7 @@ class FreecenCsvFile
 
     def add_warning_fields(line, record)
       line << record.record_number
-      line << record.warning_messages
+      line << record.warning_messages.gsub("<br>", " ")
       line
     end
 
