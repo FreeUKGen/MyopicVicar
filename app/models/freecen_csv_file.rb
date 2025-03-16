@@ -490,6 +490,55 @@ class FreecenCsvFile
 
       [false, '']
     end
+
+    def create_warnings_csv_file(file, entries)
+      file = "#{file}_warnings_#{Time.now.strftime('%Y%m%d')}.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = FreecenCsvFile.write_warnings_csv_file(file_location, entries)
+
+      [success, message, file_location, file]
+    end
+
+    def write_warnings_csv_file(file_location, entries)
+      column_headers = %w(record_number warning_messages)
+
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << column_headers
+        entries.each do |rec|
+          line = []
+          line = FreecenCsvFile.add_warning_fields(line, rec)
+          csv << line
+        end
+      end
+      [true, '']
+    end
+
+    def add_warning_fields(line, record)
+      line << record.record_number
+      line << record.warning_messages
+      line
+    end
+
+    def write_csv_file(file_location)
+      header = header_line
+      header << 'record_valid' if validation && !header_line.include?('record_valid')
+      header << 'pob_valid' if validation && !header_line.include?('pob_valid')
+      header << 'non_pob_valid' if validation && !header_line.include?('non_pob_valid')
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << header
+        records = freecen_csv_entries.order_by(_id: 1)
+        records.each do |rec|
+          line = []
+          line = add_fields(line, rec)
+          if validation
+            pob_ok = pob_valid(rec)
+            line << pob_ok
+            line << non_pob_valid(pob_ok, rec)
+          end
+          csv << line
+        end
+      end
+    end
   end # self
   # ######################################################################### instance methods
 
@@ -1297,27 +1346,6 @@ class FreecenCsvFile
     transcriber
   end
 
-  def write_csv_file(file_location)
-    header = header_line
-    header << 'record_valid' if validation && !header_line.include?('record_valid')
-    header << 'pob_valid' if validation && !header_line.include?('pob_valid')
-    header << 'non_pob_valid' if validation && !header_line.include?('non_pob_valid')
-    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
-      csv << header
-      records = freecen_csv_entries.order_by(_id: 1)
-      records.each do |rec|
-        line = []
-        line = add_fields(line, rec)
-        if validation
-          pob_ok = pob_valid(rec)
-          line << pob_ok
-          line << non_pob_valid(pob_ok, rec)
-        end
-        csv << line
-      end
-    end
-  end
-
   def write_spreadsheet_header(header)
     file_location = File.join(Rails.root, 'tmp', 'spreadersheet_header.csv')
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
@@ -1398,4 +1426,6 @@ class FreecenCsvFile
     end
     result
   end
+
+
 end

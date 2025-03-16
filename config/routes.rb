@@ -137,6 +137,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/:id/incorporate(.:format)', :to => 'freecen_csv_files#incorporate', :as => :incorporate_freecen_csv_file
   get 'freecen_csv_files/:id/incorporate_partial(.:format)', :to => 'freecen_csv_files#incorporate_partial', :as => :incorporate_partial_freecen_csv_file
   get 'freecen_csv_files/:id/unincorporate(.:format)', :to => 'freecen_csv_files#unincorporate', :as => :unincorporate_freecen_csv_file
+  get 'freecen_csv_files/:id/download_warning_messages(.:format)', :to => 'freecen_csv_files#download_warning_messages', :as => :download_warning_messages_freecen_csv_file
+
   resources :freecen_csv_files
 
   resources :freecen_csv_file_audits
