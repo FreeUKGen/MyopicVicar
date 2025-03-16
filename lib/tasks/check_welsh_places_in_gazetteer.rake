@@ -23,18 +23,22 @@ namespace :freecen do
     def self.output_csv_header
       dline = ''
       dline << 'parish (english),'
+      dline << 'alternative,'
       dline << 'chapman_code,'
       dline << 'society_which_cover,'
-      dline << 'in_gazetteer'
+      dline << 'place_in_gazetteer,'
+      dline << 'alternative_in_gazetteer'
       dline
     end
 
-    def self.output_csv_line(parish, chapman_code, society, in_gaz)
+    def self.output_csv_line(parish, alternative, chapman_code, society, place_in_gaz, alt_in_gaz)
       dline = ''
       dline << "#{parish},"
+      dline << "#{alternative},"
       dline << "#{chapman_code},"
       dline << "#{society},"
-      dline << "#{in_gaz}"
+      dline << "#{place_in_gaz},"
+      dline << "#{alt_in_gaz}"
       dline
     end
 
@@ -73,7 +77,8 @@ namespace :freecen do
     record_limit = args.limit.to_i
     csv_filename = "#{Rails.root}/tmp/FREECEN_WELSH_PLACES.CSV"
     processed_total = 0
-    missing_total = 0
+    missing_place_total = 0
+    missing_alt_total = 0
     file_for_log = "#{Rails.root}/log/check_welsh_places_in_gazetteer_#{start_time.strftime('%Y%m%d%H%M')}.log"
     log_file = open_log_file(file_for_log)
     message = "Starting FreeCEN Check Welsh Places with limit of #{record_limit} records"
@@ -86,24 +91,29 @@ namespace :freecen do
         break if processed_total - 1 >= record_limit && processed_total.positive?
 
         parish_string = place[0].to_s
-        chapman__string = place[1].to_s
-        society = place[2].to_s
+        alternative_string = place[1].to_s
+        chapman__string = place[2].to_s
+        society = place[3].to_s
         processed_total += 1
 
         next if processed_total == 1
 
         # check for place on freccen2_places
-        result = place_in_gaz?(chapman__string, parish_string)
+        place_result = ''
+        alt_result  = ''
+        place_result = place_in_gaz?(chapman__string, parish_string)
+        alt_result = place_in_gaz?(chapman__string, alternative_string) if alternative_string.present?
 
         report_csv  += output_csv_header if report_csv.empty?
         report_csv  += "\n"
-        report_csv  += output_csv_line(parish_string, chapman__string, society, result)
+        report_csv  += output_csv_line(parish_string, alternative_string, chapman__string, society, place_result, alt_result)
 
-        missing_total += 1 unless result
+        missing_place_total += 1 unless place_result
+        missing_alt_total += 1 unless alt_result
       end
       actual_processed = processed_total - 1 if processed_total.positive?
 
-      report = "Processed #{actual_processed} places - #{missing_total} places not found in Gazetteer."
+      report = "Processed #{actual_processed} places - #{missing_place_total} places and #{missing_alt_total} alternative place names not found in Gazetteer."
       email_csv_file(userid, report, report_csv, log_file)
       end_time = Time.now
       run_time = ((end_time - start_time) / 60).round(2).to_s
