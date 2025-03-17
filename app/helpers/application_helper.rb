@@ -32,7 +32,7 @@ module ApplicationHelper
   def nav_about_page_link
     #return if session[:userid_detail_id].present?
 
-    link_to 'About', '/cms/about'
+    link_to 'About', '/about'
   end
 
   def nav_donate_page_link
@@ -46,26 +46,26 @@ module ApplicationHelper
       if @user.present? && @user.person_role.present?
         if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'
           if controller_name == 'pages'
-            link_to 'Help', '/cms/help'
+            link_to 'Help', '/help'
           else
             link_to 'Help', '/cms/information-for-transcribers'
           end
         elsif @user.person_role == 'researcher'
           if controller_name == 'pages'
-            link_to 'Help', '/cms/help'
+            link_to 'Help', '/help'
           else
             link_to 'Help', '/cms/registered-researchers'
           end
         else
           if controller_name == 'pages'
-            link_to 'Help', '/cms/help'
+            link_to 'Help', '/help'
           else
             link_to 'Help', '/cms/information-for-coordinators'
           end
         end
       end
     else
-      link_to 'Help', '/cms/help'
+      link_to 'Help', '/help'
     end
   end
 
