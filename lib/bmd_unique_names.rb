@@ -1,7 +1,7 @@
 class BmdUniqueNames
   class << self
-    def process(limit)
-      limit = limit.to_i
+    def process(district=nil)
+      district = district
       file_for_messages = 'log/bmd_extract_names_report.log'
       num = 0
       time_start = Time.now
@@ -9,19 +9,21 @@ class BmdUniqueNames
       File.open(file_for_messages, 'w') do |message_file|
         log_message(message_file, 'Producing report of unique names')
         log_message(message_file, "Process start time: #{time_start}")
-
-        District.find_in_batches(batch_size: 1000) do |group|
-          log_message(message_file, "Processing batch")
-          group.each do |district|
-            process_names_for_district(district, message_file)
-            num += 1
-            break if num == limit
+        if district.present?
+          district = District.where(DistrictName: district).first
+          log_message(message_file, "Processing batch for district: #{district.DistrictName}")
+          process_names_for_district(district, message_file)
+          log_message(message_file, "Process batch completed for district: #{district.DistrictName}")
+        else
+          District.find_in_batches(batch_size: 1000) do |group|
+            log_message(message_file, "Processing batch")
+            group.each do |district|
+              process_names_for_district(district, message_file)
+            end
+            log_message(message_file, "Process batch completed")
           end
-          log_message(message_file, "Process batch completed")
         end
-
         time_elapsed = Time.now - time_start
-        log_message(message_file, "Finished #{num} places in #{time_elapsed}")
       end
     end
 
