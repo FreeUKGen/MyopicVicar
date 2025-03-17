@@ -20,7 +20,7 @@ class HelpController < ApplicationController
   end
 
   def about_page
-    render 'about_main_text'
+    render 'about'
   end
 
   # This approach fails, because Rails refuses to allow multiple/repeated render commands in a single block.

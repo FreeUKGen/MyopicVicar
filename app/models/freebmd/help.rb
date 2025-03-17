@@ -12,6 +12,11 @@ class Help
     #    'more_help' => 'More Help'
   }
 
+  AboutPages = {
+    'about_freebmd' => 'About the FreeBMD Project',
+    'membership' => 'Membership'
+  }
+
   Search = {
     'intro' => 'Getting started',
     'freebmd_database' => 'The FreeBMD database',
