@@ -304,6 +304,7 @@ class ApplicationController < ActionController::Base
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
     session.delete(:propagated_alternate)
+    session.delete(:propagation_scope)
   end
 
   def clean_session_for_county
@@ -361,6 +362,7 @@ class ApplicationController < ActionController::Base
     session.delete(:propagate_alternate)
     session.delete(:propagate_note)
     session.delete(:propagated_alternate)
+    session.delete(:propagation_scope)
   end
 
   def clean_session_for_images
