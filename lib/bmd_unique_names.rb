@@ -32,7 +32,7 @@ class BmdUniqueNames
     def process_names_for_district(district, message_file)
       record_types = { 1 => 'birth', 3 => 'marriage', 2 => 'death' }
       record_types.each do |record_type_id, record_type|
-        records = district.records.where(RecordTypeID: record_type_id)
+        records = district.records.send("#{record_type}_records")
         unique_names = BestGuess.send("get_#{record_type}_unique_names", records)
         next unless unique_names.present?
 

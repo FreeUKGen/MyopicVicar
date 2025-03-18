@@ -461,7 +461,7 @@ class BestGuess < FreebmdDbBase
     fields.each do |field|
       field_array = []
       records.each do |rec|
-        field_array << record.send("#{field}")
+        field_array << rec.send("#{field}")
       end
       entries[field] = field_array.distinct.compact.sort
     end
