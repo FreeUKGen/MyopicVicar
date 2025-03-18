@@ -455,10 +455,15 @@ class BestGuess < FreebmdDbBase
     get_unique_names(death_records, ["Surname", "GivenName"])
   end
 
-  def get_unique_names records, fields
+  def self.get_unique_names records, fields
     entries = Hash.new
+
     fields.each do |field|
-      entries[field] = records.distinct.pluck(field).compact.sort
+      field_array = []
+      records.each do |rec|
+        field_array << record.send("#{field}")
+      end
+      entries[field] = field_array.distinct.compact.sort
     end
     entries.delete_if { |_, v| v.blank? }.sort.to_h    
   end
