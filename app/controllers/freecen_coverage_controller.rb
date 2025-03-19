@@ -32,7 +32,7 @@ class FreecenCoverageController < ApplicationController
     end
 
     @roles=[]
-    get_user_info_from_userid unless current_refinery_user.nil? || current_refinery_user.instance_of?(Refinery::Authentication::Devise::NilUser)
+    get_user_info_from_userid unless current_refinery_user.nil? # || current_refinery_user.instance_of?(Refinery::Authentication::Devise::NilUser)
     @manage_pieces = (@manager || (@roles.present? &&@roles.include?('Manage Pieces'))) ? true : false
     @editing = (@manage_pieces && session[:edit_freecen_pieces]=='edit')
   end
@@ -45,7 +45,7 @@ class FreecenCoverageController < ApplicationController
 
   def show
     @roles=[]
-    get_user_info_from_userid unless current_refinery_user.nil? || current_refinery_user.instance_of?(Refinery::Authentication::Devise::NilUser) #for parms
+    get_user_info_from_userid unless current_refinery_user.nil? # || current_refinery_user.instance_of?(Refinery::Authentication::Devise::NilUser) #for parms
     @manage_pieces = (@manager || (@roles.present? &&@roles.include?('Manage Pieces'))) ? true : false
     session[:edit_freecen_pieces]='edit' if @manage_pieces && (params[:act]=='edit' || params[:chapman_code]=='edit')
     session.delete(:edit_freecen_pieces) if @manage_pieces && session[:edit_freecen_pieces].present? && (params[:act]=='edit_done' || params[:chapman_code]=='edit_done')

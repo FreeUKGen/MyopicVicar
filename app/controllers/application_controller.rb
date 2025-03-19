@@ -81,7 +81,7 @@ class ApplicationController < ActionController::Base
     # This tells system there is a message to display
     if session[:message].blank?
       session[:message] = 'no'
-      session[:message] = 'load' if Refinery::Page.where(slug: 'message').exists?
+      # session[:message] = 'load' if Refinery::Page.where(slug: 'message').exists?
     end
   end
 
@@ -95,7 +95,7 @@ class ApplicationController < ActionController::Base
     logger.warn "#{appname_upcase}::USER current  #{current_authentication_devise_user.username}"
     scope = Devise::Mapping.find_scope!(resource_or_scope)
     home_path = "#{scope}_root_path"
-    respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
+    # respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
   end
 
   def check_for_mobile

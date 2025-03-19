@@ -2,8 +2,8 @@ module Refinery
   module Authentication
     module Devise
       class SessionsController < ::Devise::SessionsController
-        helper Refinery::Core::Engine.helpers
-        layout 'refinery/layouts/login'
+        #helper Refinery::Core::Engine.helpers
+        #layout 'refinery/layouts/login'
         skip_before_action :require_login
         before_action :clear_unauthenticated_flash, :only => [:new]
         before_action :force_signup_when_no_users!
@@ -21,8 +21,8 @@ module Refinery
         def create
           super
         rescue ::BCrypt::Errors::InvalidSalt, ::BCrypt::Errors::InvalidHash
-          flash[:error] = t('password_encryption', :scope => 'refinery.authentication.devise.users.forgot')
-          redirect_to refinery.new_authentication_devise_user_password_path
+          #flash[:error] = t('password_encryption', :scope => 'refinery.authentication.devise.users.forgot')
+          #redirect_to refinery.new_authentication_devise_user_password_path
         end
 
         protected
@@ -36,12 +36,12 @@ module Refinery
           end
         end
 
-        def force_signup_when_no_users!
+        #def force_signup_when_no_users!
 
-          return if refinery_users_exist?
+        # return if refinery_users_exist?
 
-          redirect_to refinery.signup_path and return
-        end
+        # redirect_to refinery.signup_path and return
+        #end
 
       end
     end
