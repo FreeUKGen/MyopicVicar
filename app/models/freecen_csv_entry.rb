@@ -1870,7 +1870,7 @@ class FreecenCsvEntry
     end
     if scope == 'All'
       propagate_pob, propagate_notes = propagation_flags('Alternative')
-      ok = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+      ok = FreecenPobPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
       message = ok ? '' : 'Propagation successful for File but please note Propagation record for Collection already exists.'
     end
     [@warnings_adjustment, success, message]
@@ -1902,7 +1902,7 @@ class FreecenCsvEntry
     end
     if scope == 'All'
       propagate_pob, propagate_notes = propagation_flags('Notes')
-      ok = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+      ok = FreecenPobPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
       message = ok ? '' : 'Propagation successful for File but please note Propagation record for Collection already exists.'
     end
     [@warnings_adjustment, success, message]
@@ -1936,7 +1936,7 @@ class FreecenCsvEntry
     end
     if scope == 'All'
       propagate_pob, propagate_notes = propagation_flags('Both')
-      ok = Freecen1VldEntryPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
+      ok = FreecenPobPropagation.create_new_propagation('ALL', 'ALL', verbatim_birth_county, verbatim_birth_place, birth_county, birth_place, notes, propagate_pob, propagate_notes, userid)
       message = ok ? '' : 'Propagation successful for File but Propagation record for Whole Collection not created as it already exists.'
     end
     [@warnings_adjustment, success, message]
@@ -2527,7 +2527,7 @@ class FreecenCsvEntry
     birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
 
     note = notes.gsub(/\<br\>/, '') if notes.present?
-    lang = Freecen::LANGUAGE[language]
+    lang = Freecen::LANGUAGE[language.upcase] if language.present?
     case year
     when '1841' && ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
       [birth_county_name, birth, disability, note]

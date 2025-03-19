@@ -85,6 +85,10 @@ class Freecen2Piece
       where(chapman_code: chapman)
     end
 
+    def admin_chapman_code(chapman)
+      where(admin_county: chapman)
+    end
+
     def year(year)
       where(year: year)
     end
@@ -785,7 +789,7 @@ class Freecen2Piece
   def piece_being_transcribed
     csv_files = self.freecen_csv_files
     vld_files = self.freecen1_vld_files
-    uploaded_vld_files = self.freecen1_vld_files.where("userid" => {'$ne': null}) if vld_files.present?
+    uploaded_vld_files = self.freecen1_vld_files.where("userid" => {'$ne': nil}) if vld_files.present?
     if uploaded_vld_files.present?
       unincorporated =  []
       uploaded_vld_files.each{|vld_file|
@@ -829,6 +833,7 @@ class Freecen2Piece
     incorporated_and_part_complete = csv_files.where(incorporated: true, completes_piece: false)
     status = 'Yes' if incorporated_and_complete.present?
     status = 'Part' if  incorporated_and_part_complete.present?
+    status = 'Vld' if vld_files.exists?
     status
   end
 
