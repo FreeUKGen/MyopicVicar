@@ -1067,7 +1067,7 @@ class SearchQuery
   def freepro_search_records
     search_fields = pro_adjust_field_names
     records = SearchQuery.get_search_table.where(pro_params_hash)
-    #records = SearchQuery.get_search_table.where({"Death.Name.LastName" => "EARWAKER"})
+    #records = SearchQuery.get_search_table.where({"death.LastName" => "EARWAKER"})
     #records = Test.where({"fielda" => "value a"})
     persist_results(records)
     records
@@ -1075,8 +1075,8 @@ class SearchQuery
 
   def pro_fields_name
     {
-      first_name: 'Death.Name.GivenName',
-      last_name: 'Death.Name.LastName',
+      first_name: 'death.GivenName',
+      last_name: 'death.LastName',
       session_id: 'id'
     }
   end

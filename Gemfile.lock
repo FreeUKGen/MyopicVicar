@@ -1,24 +1,3 @@
-GIT
-  remote: https://github.com/FreeUKGen/osgb.git
-  revision: ce21033002ff8d53dbcfcd13533fb027d683a0cd
-  specs:
-    osgb (0.3.1)
-
-GIT
-  remote: https://github.com/refinery/refinerycms-i18n
-  revision: 30059ea9a33948995faf042757b43d9e93a9528a
-  ref: 30059ea
-  specs:
-    refinerycms-i18n (4.0.2)
-      rails-i18n (~> 5.0.0)
-      routing-filter (>= 0.4.0)
-
-PATH
-  remote: vendor/extensions
-  specs:
-    refinerycms-county_pages (1.4)
-      refinerycms-core
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -50,10 +29,6 @@ GEM
       globalid (>= 0.3.6)
     activemodel (5.1.7)
       activesupport (= 5.1.7)
-    activemodel-serializers-xml (1.0.2)
-      activemodel (> 5.x)
-      activesupport (> 5.x)
-      builder (~> 3.1)
     activerecord (5.1.7)
       activemodel (= 5.1.7)
       activesupport (= 5.1.7)
@@ -63,7 +38,6 @@ GEM
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    acts_as_indexed (0.8.3)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
     airbrake (11.0.1)
@@ -72,9 +46,6 @@ GEM
       rbtree3 (~> 0.5)
     arel (8.0.0)
     ast (2.4.2)
-    awesome_nested_set (3.2.1)
-      activerecord (>= 4.0.0, < 7.0)
-    babosa (1.0.4)
     bcrypt (3.1.16)
     bourbon (7.0.0)
       thor (~> 1.0)
@@ -99,8 +70,7 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.7)
     crass (1.0.6)
-    decorators (2.0.5)
-      railties (>= 4.0.0, < 7)
+    csv (3.0.9)
     devise (4.7.3)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -110,67 +80,30 @@ GEM
     devise-encryptable (0.2.0)
       devise (>= 2.1.0)
     diff-lcs (1.4.4)
-    diffy (3.4.0)
-    dragonfly (1.2.1)
-      addressable (~> 2.3)
-      multi_json (~> 1.0)
-      rack (>= 1.3)
-    dragonfly-s3_data_store (1.3.0)
-      dragonfly (~> 1.0)
-      fog-aws
     email_veracity (0.6.0)
     erubi (1.10.0)
-    excon (0.78.0)
     execjs (2.7.0)
     faraday (1.1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
-    fog-aws (3.6.7)
-      fog-core (~> 2.1)
-      fog-json (~> 1.1)
-      fog-xml (~> 0.1)
-      ipaddress (~> 0.8)
-    fog-core (2.2.3)
-      builder
-      excon (~> 0.71)
-      formatador (~> 0.2)
-      mime-types
-    fog-json (1.2.0)
-      fog-core
-      multi_json (~> 1.10)
-    fog-xml (0.1.3)
-      fog-core
-      nokogiri (>= 1.5.11, < 2.0.0)
-    font-awesome-sass (4.7.0)
-      sass (>= 3.2)
     font_awesome5_rails (1.4.0)
       railties (>= 4.2)
-    formatador (0.2.5)
     formtastic (3.1.5)
       actionpack (>= 3.2.13)
-    friendly_id (5.2.5)
-      activerecord (>= 4.0.0)
     geocoder (1.3.7)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    globalize (5.1.0)
-      activemodel (>= 4.2, < 5.2)
-      activerecord (>= 4.2, < 5.2)
-      request_store (~> 1.0)
     gretel (4.2.0)
       actionview (>= 5.1, < 7.0)
       railties (>= 5.1, < 7.0)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
-    ipaddress (0.8.3)
     jquery-rails (4.4.0)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
-    jquery-ui-rails (5.0.5)
-      railties (>= 3.2.16)
     jquery-validation-rails (1.19.0)
     json (2.2.0)
     kaminari (1.2.1)
@@ -214,7 +147,6 @@ GEM
     mongoid-grid_fs (2.5.0)
       mime-types (>= 1.0, < 4.0)
       mongoid (>= 3.0, < 9.0)
-    multi_json (1.15.0)
     multipart-post (2.1.1)
     mysql2 (0.5.3)
     mysql2 (0.5.3-x64-mingw32)
@@ -260,11 +192,6 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.3.0)
       loofah (~> 2.3)
-    rails-i18n (5.0.4)
-      i18n (~> 0.7)
-      railties (~> 5.0)
-    rails3-jquery-autocomplete (1.0.15)
-      rails (>= 3.2)
     rails_autolink (1.1.6)
       rails (> 3.1)
     railties (5.1.7)
@@ -279,68 +206,11 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rbtree3 (0.6.0)
-    refinerycms (4.0.3)
-      refinerycms-core (= 4.0.3)
-      refinerycms-images (= 4.0.3)
-      refinerycms-pages (= 4.0.3)
-      refinerycms-resources (= 4.0.3)
-    refinerycms-authentication-devise (2.0.0)
-      actionmailer (>= 5.0.0, < 5.2)
-      devise (~> 4.0, >= 4.3.0)
-      friendly_id (~> 5.2.1)
-      refinerycms-core (>= 3.0.0, < 5.0)
-    refinerycms-core (4.0.3)
-      actionpack (>= 5.1.0, < 5.2)
-      activerecord (>= 5.1.0, < 5.2)
-      awesome_nested_set (~> 3.0, >= 3.0.0)
-      coffee-rails (~> 4.0, >= 4.0.0)
-      decorators (~> 2.0, >= 2.0.0)
-      font-awesome-sass (>= 4.3.0, < 5.0)
-      jquery-rails (~> 4.3, >= 4.3.1)
-      jquery-ui-rails (~> 5.0, >= 5.0.0)
-      railties (>= 5.1.0, < 5.2)
-      refinerycms-i18n (~> 4.0, >= 4.0.0)
-      sass-rails (>= 4.0, < 5.1)
-      truncate_html (~> 0.9)
-      will_paginate (~> 3.1, >= 3.1.0)
-      zilch-authorisation (~> 0, >= 0.0.1)
-    refinerycms-dragonfly (1.0.1)
-      dragonfly (~> 1.1)
-      dragonfly-s3_data_store
-    refinerycms-images (4.0.3)
-      activemodel-serializers-xml (~> 1.0, >= 1.0.1)
-      globalize (>= 5.1.0.beta1, < 5.2)
-      refinerycms-core (= 4.0.3)
-      refinerycms-dragonfly (~> 1.0)
-    refinerycms-pages (4.0.3)
-      activemodel-serializers-xml (~> 1.0, >= 1.0.1)
-      awesome_nested_set (~> 3.1, >= 3.1.0)
-      babosa (!= 0.3.6)
-      diffy (~> 3.1, >= 3.1.0)
-      friendly_id (>= 5.1.0, < 5.3)
-      globalize (>= 5.1.0.beta1, < 5.2)
-      refinerycms-core (= 4.0.3)
-      seo_meta (~> 3.0, >= 3.0.0)
-      speakingurl-rails (~> 8.0, >= 8.0.0)
-    refinerycms-resources (4.0.3)
-      activemodel-serializers-xml (~> 1.0, >= 1.0.1)
-      acts_as_indexed (~> 0.8.0)
-      dragonfly (~> 1.1, >= 1.1.0)
-      globalize (>= 5.1.0.beta1, < 5.2)
-      refinerycms-core (= 4.0.3)
-      refinerycms-dragonfly (~> 1.0)
-    refinerycms-wymeditor (2.2.0)
-      refinerycms-core (>= 4.0.0, < 5.0)
     regexp_parser (2.5.0)
-    request_store (1.5.0)
-      rack (>= 1.4)
     responders (3.0.1)
       actionpack (>= 5.0)
       railties (>= 5.0)
     rexml (3.2.5)
-    routing-filter (0.6.3)
-      actionpack (>= 4.2)
-      activesupport (>= 4.2)
     rspec-core (3.10.0)
       rspec-support (~> 3.10.0)
     rspec-expectations (3.10.0)
@@ -390,13 +260,9 @@ GEM
     sawyer (0.8.2)
       addressable (>= 2.3.5)
       faraday (> 0.8, < 2.0)
-    seo_meta (3.0.0)
-      railties (>= 5.0.0)
     simple_form (5.0.3)
       actionpack (>= 5.0)
       activemodel (>= 5.0)
-    speakingurl-rails (8.0.2)
-      railties (>= 3.1)
     sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -411,7 +277,6 @@ GEM
     tilt (2.0.10)
     traceroute (0.8.1)
       rails (>= 3.0.0)
-    truncate_html (0.9.3)
     tzinfo (1.2.8)
       thread_safe (~> 0.1)
     tzinfo-data (1.2020.4)
@@ -425,8 +290,6 @@ GEM
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    will_paginate (3.3.0)
-    zilch-authorisation (0.0.1)
     zip-zip (0.3)
       rubyzip (>= 1.0.0)
 
@@ -441,6 +304,7 @@ DEPENDENCIES
   browser
   carrierwave-mongoid (= 1.2.0)
   coffee-rails
+  csv
   devise
   devise-encryptable
   email_veracity
@@ -461,19 +325,11 @@ DEPENDENCIES
   mongoid-grid_fs
   mysql2
   newrelic_rpm
-  nokogiri (>= 1.13.6)
   octokit
-  osgb!
   pry
   pry-byebug
   rails
-  rails3-jquery-autocomplete
   rails_autolink
-  refinerycms
-  refinerycms-authentication-devise
-  refinerycms-county_pages!
-  refinerycms-i18n (= 4.0.2)!
-  refinerycms-wymeditor
   rspec-rails
   rubocop (~> 1.23.0)
   rubocop-rails

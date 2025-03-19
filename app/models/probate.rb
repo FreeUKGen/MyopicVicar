@@ -3,8 +3,9 @@ class Probate
   include Mongoid::Document
   include Mongoid::Attributes::Dynamic
 
-  field :id, type: String
-  embeds_one :divs
+  field :PersonId, type: String
+  field :p, type: String
+  #embeds_one :divs
   embeds_one :deaths
   embeds_one :events
 
@@ -15,20 +16,25 @@ class Probate
 
   class Death
     include Mongoid::Document
-    embeds_one :names
-    field :address, type: String
-    field :date, type: Date
-    field :place, type: String
+    #embeds_one :names
+    field :LastName, type: String
+    field :GivenName, type: String
+    field :Address, type: String
+    field :Date, type: Date
+    field :Place, type: String
   end
 
   class Event
     include Mongoid::Document
-    field :court, type: String
-    field :date, type: Date
+    field :Type, type: String
+    field :Court, type: String
+    field :Date, type: Date
     field :person, type: Array
-    field :value, type: String
+    field :Value, type: String
   end
 
+  # following classes are no longer required (but have been kept 'just in case'):
+  #
   class Administration < Event
     include Mongoid::Document
   end

@@ -21,8 +21,8 @@
 #   Mayor.create(:name => 'Daley', :city => cities.first)
 
 # Added by Refinery CMS Pages extension
-Refinery::Pages::Engine.load_seed
+#Refinery::Pages::Engine.load_seed
 
 
 # Added by Refinery CMS CountyPages extension
-Refinery::CountyPages::Engine.load_seed
+#Refinery::CountyPages::Engine.load_seed

@@ -19,7 +19,7 @@
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
 secret_token = "#{Rails.root}/config/secrets.yml"
-if File.exists?(secret_token)
+if File.exist?(secret_token)
   YAML.load_file(secret_token)[Rails.env].each do |key, value|
     MyopicVicar::Application.config.secret_token = value
   end

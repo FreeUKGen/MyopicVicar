@@ -33,15 +33,15 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
-    refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
-    if refinery_user.blank?
-      flash[:notice] = 'There was an issue with your request please consult your coordinator.' if session[:my_own]
-      flash[:notice] = 'There was an issue with the userid please consult with system administration.' if !session[:my_own]
-      logger.warn("FREEREG:USERID: The refinery entry for #{@userid.userid} does not exist. Run the Fix Refinery User Table utilty")
-    else
-      refinery_user.send_reset_password_instructions
-      flash[:notice] = 'An email has been sent with instructions.'
-    end
+    #refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
+    #if refinery_user.blank?
+    #  flash[:notice] = 'There was an issue with your request please consult your coordinator.' if session[:my_own]
+    #  flash[:notice] = 'There was an issue with the userid please consult with system administration.' if !session[:my_own]
+    #  logger.warn("FREEREG:USERID: The refinery entry for #{@userid.userid} does not exist. Run the Fix Refinery User Table utilty")
+    #else
+    #  refinery_user.send_reset_password_instructions
+    #  flash[:notice] = 'An email has been sent with instructions.'
+    #end
     if session[:my_own]
       redirect_to(logout_manage_resources_path) && return
     else
@@ -64,9 +64,9 @@ class UseridDetailsController < ApplicationController
       @userid.add_fields(params[:commit], session[:syndicate])
       @userid.save
       if @userid.save
-        refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
-        refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        #refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
+        #refinery_user.send_reset_password_instructions
+        #flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
         @userid.write_userid_file
         next_place_to_go_successful_create
       else

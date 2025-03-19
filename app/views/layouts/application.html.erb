@@ -74,12 +74,12 @@
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "https://fonts.googleapis.com/css?family=Source+Sans+Pro:italic,300,400,600&display=swap",rel: "stylesheet","content-encoding" => "gzip" %>
     <%= stylesheet_link_tag "styles/css/donate_icon", 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_link_tag "styles/css/icons.data.svg.css", 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_link_tag "styles/css/freereg_content", 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag "styles/css/icons.data.svg.css", 'data-turbolinks-track': 'reload' if appname.downcase != 'freepro' %>
+    <%= stylesheet_link_tag "styles/css/freereg_content", 'data-turbolinks-track': 'reload' if appname.downcase != 'freepro' %>
     <%= stylesheet_link_tag "styles/scss/freebmd_content", 'data-turbolinks-track': 'reload' if appname.downcase == 'freebmd' %>
-    <%= stylesheet_link_tag "styles/scss/palm", 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_link_tag "styles/scss/lap_and_up", media: "(min-width:571px)", 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_link_tag "styles/scss/ladda", 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag "styles/scss/palm", 'data-turbolinks-track': 'reload' if appname.downcase != 'freepro' %>
+    <%= stylesheet_link_tag "styles/scss/lap_and_up", media: "(min-width:571px)", 'data-turbolinks-track': 'reload' if appname.downcase != 'freepro' %>
+    <%= stylesheet_link_tag "styles/scss/ladda", 'data-turbolinks-track': 'reload' if appname.downcase != 'freepro' %>
     <!--[if (lt IE 9) & (!IEMobile)]>
       <%#= stylesheet_link_tag "styles/css/lap_and_up.min.css" %>
     <![endif]-->
@@ -87,13 +87,13 @@
       <%#= stylesheet_link_tag "styles/css/ie.min" %>
     <![endif]-->
     <%#= raise Rails.root.inspect%>
-    <%= stylesheet_link_tag "styles/css/donate_icon" %>
-    <%= stylesheet_link_tag "styles/css/freereg_content" %>
+    <%= stylesheet_link_tag "styles/css/donate_icon" if appname.downcase != 'freepro' %>
+    <%= stylesheet_link_tag "styles/css/freereg_content" if appname.downcase != 'freepro' %>
     <!-- JavaScripts -->
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>   
     <%#= javascript_include_tag "application"%>
     <%= javascript_include_tag "jquery.min.js"%>
-    <%= javascript_include_tag "jquery.validate.min.js"%>
+    <%= javascript_include_tag "jquery.validate.min.js" if appname.downcase != 'freepro' %>
     <%= javascript_include_tag "jquery.chained.remote.js"%>
     <%= javascript_include_tag "cookie_control.js"%>
     <%= javascript_include_tag "jquery.cookiesDirective.js"%>

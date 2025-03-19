@@ -124,9 +124,9 @@ module MyopicVicar
       config.assets.paths << Rails.root.join('app', 'assets_freebmd', 'styles')
     when TemplateSet::FREEPRO
       config.freexxx_display_name = 'FreePRO'
-      config.assets.paths << Rails.root.join('app', 'assets_freepro')
-
-      config.assets.paths << Rails.root.join('app', 'assets_freepro', 'styles')
+      # not required when using Propshaft:
+      #config.assets.paths << Rails.root.join('app', 'assets_freepro')
+      #config.assets.paths << Rails.root.join('app', 'assets_freepro', 'styles')
     else
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
@@ -141,8 +141,8 @@ module MyopicVicar
     config.api_only = false
 
     # make the designer's fonts available for the stylesheets
-    config.assets.paths << Rails.root.join('app', 'assets')
-    config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
+    #config.assets.paths << Rails.root.join('app', 'assets')
+    #config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
 
     config.generators do |g|
       g.orm :mongoid

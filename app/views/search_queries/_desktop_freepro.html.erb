@@ -6,7 +6,7 @@
 <% end %>
 <div class="container">
   <div class="grid">
-    <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole hard--left " id='bmd_results'>
+    <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole hard--left " id='pro_results'>
       <% order_field = @search_query.order_field %>
       <table class="table--bordered table--data">
         <% unless print_friendly %>
@@ -40,13 +40,13 @@
               <%= link_to("#{search_record[:PersonId]}".html_safe, friendly_search_record_path(@search_query.id,search_record[:_id], search_record: search_record, search_entry: search_record[:PersonId])) %>
             </td>
             <td class="table--data">
-              <%= search_record[:Death][:Name][:LastName] %> <%= search_record[:Death][:Name][:GivenName] %>
+              <%= search_record[:death][:LastName] %> <%= search_record[:death][:GivenName] %>
               <%#= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
               <i><%#= seen(@search_query,search_record) %></i>
             </td>
             <%# end %>
             <td class="table--data">
-              <%= search_record[:div][:p] %>
+              <%= search_record[:p] %>
             </td>
           </tr>
           <% end %>
