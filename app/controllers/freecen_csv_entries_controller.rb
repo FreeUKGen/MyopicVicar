@@ -237,9 +237,10 @@ class FreecenCsvEntriesController < ApplicationController
       get_user_info_from_userid
       warnings_adjustment, success, message = @freecen_csv_entry.propagate_pob(@propagation_fields, @propagation_scope, @user.userid)
       if success
-        session[:propagated_alternate] = session[:propagate_alternate]
+        session[:propagated_alternate] = @propagation_fields == 'Notes' ? session[:propagate_note] : session[:propagate_alternate]
       else
         session.delete(:propagate_alternate)
+        session.delete(:propagate_note)
       end
       @freecen_csv_entry.reload
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
@@ -319,7 +320,7 @@ class FreecenCsvEntriesController < ApplicationController
       else
         flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
       end
-      redirect_to freecen_csv_entry_path(@freecen_csv_entry)
+      redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
     end
   end
 

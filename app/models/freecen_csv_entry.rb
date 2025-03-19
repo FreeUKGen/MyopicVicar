@@ -1824,6 +1824,8 @@ class FreecenCsvEntry
 
     return false unless freecen_csv_file.validation
 
+    return false if birth_county.blank? && birth_place.blank?
+
     return true if parameters[:birth_county].present? && parameters[:birth_county] != birth_county
 
     return true if parameters[:birth_place].present? && parameters[:birth_place] != birth_place
