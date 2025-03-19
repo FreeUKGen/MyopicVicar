@@ -64,7 +64,7 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_file.update_total_warning_messages
     session[:propagate_alternate] = @freecen_csv_entry.id unless verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry)
     session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present?
-    session[:propagation_scope] = 'File'
+    session[:propagation_scope] = 'File' unless session[:propagation_scope] == 'Collection'
     flash[:notice] = 'The acceptance was successful'
     redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
   end
@@ -247,7 +247,8 @@ class FreecenCsvEntriesController < ApplicationController
       original_warning_count = @freecen_csv_file.total_warnings
       @freecen_csv_file.adjust_total_warning_messages_and_lock(original_warning_count, warnings_adjustment)
       flash[:notice] = success ? 'Propagation processed successfully, the file is now locked against replacement until it has been downloaded.' : message
-      session[:propagation_scope] = 'Collection'
+      session.delete(:propagation_scope)
+      # AEV session[:propagation_scope] = 'Collection'
       redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     else
       @freecen_csv_entry = FreecenCsvEntry.find(params[:id]) if params[:id].present?
@@ -320,6 +321,8 @@ class FreecenCsvEntriesController < ApplicationController
       else
         flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
       end
+      session.delete(:propagation_scope)
+      # AEV session[:propagation_scope] = 'Collection'
       redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
     end
   end
