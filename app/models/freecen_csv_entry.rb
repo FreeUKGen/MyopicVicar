@@ -177,7 +177,8 @@ class FreecenCsvEntry
 
     def propagation_scope(entry, chapman_code)
       scope = 'File'
-      unless FreecenPobPropagation.where(scope_year: 'ALL', scope_county: 'ALL', match_verbatim_birth_county: entry.verbatim_birth_county, match_verbatim_birth_place: entry.verbatim_birth_place).exists?
+      prop_rec_exists = FreecenPobPropagation.where(scope_year: 'ALL', scope_county: 'ALL', match_verbatim_birth_county: entry.verbatim_birth_county, match_verbatim_birth_place: entry.verbatim_birth_place).exists?
+      unless prop_rec_exists
         if  entry.verbatim_birth_county == chapman_code ||
             %w[OVF ENG SCT IRL WLS CHI].include?(entry.verbatim_birth_county) ||
             (chapman_code == 'HAM' && %w[HAM IOW].include?(entry.verbatim_birth_county)) ||
