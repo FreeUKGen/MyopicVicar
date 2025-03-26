@@ -215,6 +215,8 @@ class SearchRecordsController < ApplicationController
       @dep_series_code = 'RG 13'
     when '1911'
       @dep_series_code = 'RG 14'
+    when '1921'
+      @dep_series_code = 'RG 15'
     else
       @dep_series_code = nil
     end

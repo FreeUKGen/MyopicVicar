@@ -15,6 +15,8 @@ class Freecen2PlaceCache
     places.each do |place|
       cen_years_with_data = ''
       Freecen::CENSUS_YEARS_ARRAY.each do |yy|
+        next if yy == '1921' # AEV1832
+
         if !place.cen_data_years.nil? && place.cen_data_years.include?(yy)
           if cen_years_with_data == ''
             cen_years_with_data += " #{yy}"
