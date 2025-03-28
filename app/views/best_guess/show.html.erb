@@ -1,4 +1,9 @@
-<% title "Record Details" %>
+<% if @current_record.present? %>
+  <% title "Record details for #{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}" %>
+<% else %>
+  <% title "Record Details" %>
+<% end %>
+
 <% breadcrumb :entry_information, @current_record  if @saved_record %>
 <%= render 'flash_notice' %>
 <nav class="text--center" role="navigation" aria-label="Options for entry information">

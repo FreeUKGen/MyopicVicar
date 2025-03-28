@@ -388,7 +388,7 @@ module ApplicationHelper
     {
       freereg: "UK Parish Register Records",
       freecen: "UK Census Records (England, Scotland, Wales)",
-      freebmd: "UK Birth, Marriage, and Death Records (England, Scotland, Wales)"
+      freebmd: "UK Birth, Marriage, and Death Records (England, Wales)"
     }
   end
 
