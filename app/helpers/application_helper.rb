@@ -20,7 +20,8 @@ module ApplicationHelper
       "freereg" => '5004',
     }
   def nav_search_form_link
-    link_to('Search', main_app.new_search_query_path) unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
+    check_current_page(main_app.new_search_query_path)
+    #link_to('Search', main_app.new_search_query_path) unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
   end
 
   def nav_actions_page_link
@@ -32,7 +33,8 @@ module ApplicationHelper
   def nav_about_page_link
     #return if session[:userid_detail_id].present?
 
-    link_to 'About', '/cms/about'
+    #link_to 'About', '/cms/about'
+    check_current_page('/about')
   end
 
   def nav_donate_page_link
@@ -65,9 +67,16 @@ module ApplicationHelper
         end
       end
     else
-      link_to 'Help', '/cms/help'
+      link_to 'Help', '/help'
     end
   end
+
+  def check_current_page(url)
+    link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
+    current_page?(url) ? (link_to nav_links.key(url).titleize, url, class: '') : (link_to nav_links.key(url), url, class: 'active')
+   # link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
+  end
+
 
   def nav_help_bmd_context
     suffix = ""
