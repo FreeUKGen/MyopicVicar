@@ -8,6 +8,7 @@
   <!--<![endif]-->
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
+    <script async src="https://cdn.fuseplatform.net/publift/tags/2/3126/fuse.js"></script>
     <script>
     // Define dataLayer and the gtag function.
       window.dataLayer = window.dataLayer || [];
@@ -199,6 +200,10 @@
                 <input type="submit" value="Report a Problem"  class = "btn  btn--small"/>
               <% end %>
             </div>
+            <% else %>
+              <div class="push--top" style="float:right;">
+                <a href="#top" class = "">Top of page</a>
+              </div>
           <% end %>
         </div>
       </main>
