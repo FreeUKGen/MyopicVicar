@@ -96,6 +96,12 @@ class UserMailer < ActionMailer::Base
     mail(to: @user_email, :subject => 'Notification of github issue creation')
   end
 
+  def communicate_github_issue_closed(feedback)
+    @feedback = feedback
+    @user = UseridDetail.where(userid: feedback.user_id).first
+    @user_email = @user.email_address
+    mail(to: @user_email, :subject => 'Notification of github issue closed')
+  end
 
   def contact_action_request(contact, send_to, copies_to)
     @appname = appname
@@ -169,6 +175,8 @@ class UserMailer < ActionMailer::Base
         @cc_email_addresses.push(copy.email_address) unless @cc_email_addresses.include?(copy.email_address)
       end
     end
+    from = UseridDetail.where(userid: @contact.user_id).first
+    @signature = from.get_signature
     get_attachment(@contact)
     mail(to: "#{@send_to.email_address}", cc: @cc_email_addresses, subject: "This is a feedback action request for reference #{@contact.identifier} on #{@appname}")
   end
@@ -513,6 +521,8 @@ class UserMailer < ActionMailer::Base
     @sender = UseridDetail.userid(from).first
     @reply_messages = Message.where(source_message_id: @message.source_message_id).all unless @message.source_message_id.blank?
     @respond_to_message = Message.id(@message.source_message_id).first
+    @from = UseridDetail.where(userid: from).first
+    @signature = @from.get_signature
     from_email = UseridDetail.create_friendly_from_email(from)
     from_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if from_email.blank?
     ccs_emails = add_emails(ccs)
@@ -713,7 +723,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def sndmanager_email_lookup
-    sndmanager = UseridDetail.userid('SNDManager').first
+    sndmanager = UseridDetail.userid('FR Exec Lead').first
     friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sndmanager.blank?
     friendly_email = "#{sndmanager.person_forename} #{sndmanager.person_surname} <#{sndmanager.email_address}>" if sndmanager.present?
     [sndmanager, friendly_email]

@@ -1,0 +1,16 @@
+<%# breadcrumb :enter_number, @chapman_code %>
+<h2 style="text-align: center">Enter a FreeCEN2 Piece Number</h2>
+<div style="text-align: center">
+  <p class="read-length" style="margin-left: auto; margin-right: auto;"> A series number is required followed by the underscore and then a number. Locate finds pieces in that series containing that number AND pieces containing that number and additional characters in ANY county. (Such as when a piece is moved to another county). In the case of HO107_1935 Locate could find for example HO107_1935, HO107_1935A, HO107_1935AA </p>
+</div>
+<%= render 'flash_notice' %>
+<%= semantic_form_for @freecen2_piece, :html => { :class => 'grid'}  do |f| %>
+  <%= f.input :number ,  label: 'Piece number (eg HO107_1935):', input_html: {class: ' simple_form_bgcolour', size:20 }%>
+  <div  style="text-align: center">
+    <%= f.action :submit,  :as => :button,  :label =>  'Locate', :button_html => {name: 'commit', value: 'Submit Piece Number', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>
+  </div>
+<% end %>
+<script type='text/javascript'>
+  Ladda.bind( 'button[type=submit]' );
+</script>
+<br>

@@ -174,7 +174,7 @@ class ManageCountiesController < ApplicationController
     @counties = @user.county_groups
     @countries = @user.country_groups
     roles = %w[volunteer_coordinator contacts_coordinator data_manager master_county_coordinator system_administrator documentation_coordinator SNDManager CENManager REGManager country_coordinator executive_director project_manager]
-    roles << "county_coordinator" if appname_downcase == 'freecen'
+    roles += ["county_coordinator", "reporter_transcriber"] if appname_downcase == 'freecen'
     if roles.include?(session[:role])
       @countries = []
       counties = County.application_counties
@@ -424,6 +424,7 @@ class ManageCountiesController < ApplicationController
     @county = session[:county]
     @manage_county = ManageCounty.new
     @options = UseridRole::COUNTY_MANAGEMENT_OPTIONS
+    @options = ['CAP Report'] if session[:role] == 'reporter_transcriber'
     @prompt = 'Select Action?'
   end
 
@@ -439,7 +440,7 @@ class ManageCountiesController < ApplicationController
     session.delete(:from_source)
     session[:image_group_filter] = 'place'
     @source, @group_ids, @group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'all')       # sort by place, all groups
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No requested Sources exists') && return if @source_ids.blank? || @source_id.blank? || @group_id.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No requested Sources exists') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
 
     @county = session[:county]
     render 'image_server_group_by_place'
@@ -454,7 +455,7 @@ class ManageCountiesController < ApplicationController
     session[:image_group_filter] = 'syndicate'
     @county = session[:county]
     @source, @group_ids, @syndicate = ImageServerGroup.group_ids_sort_by_syndicate(session[:chapman_code])
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Image Groups Allocated by Syndicate for County ' + @county) && return if @source_ids.blank? || @source_id.blank? || @group_id.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Image Groups Allocated by Syndicate for County ' + @county) && return if @source.blank? || @group_ids.blank?
 
     render 'image_server_group_by_syndicate'
   end
