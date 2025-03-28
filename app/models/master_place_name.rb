@@ -6,7 +6,7 @@ class MasterPlaceName
   
 
   require 'chapman_code'
-  require 'osgb'
+  #require 'osgb'
 
   field :country, type: String
   field :county, type: String

@@ -405,8 +405,8 @@ module ApplicationHelper
     elsif content_for?(:title)
       title = content_for(:title) +  ' | ' + appname
 
-    elsif  page_title.present?
-      title = page_title + ' | '  + appname
+      #elsif  page_title.present?
+      #title = page_title + ' | '  + appname
     else
       title = "#{appname} | #{project_description[appname_downcase]}"
     end

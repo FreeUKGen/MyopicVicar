@@ -73,7 +73,6 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.7)
     crass (1.0.6)
-    csv (3.0.9)
     devise (4.7.3)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -195,6 +194,8 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.3.0)
       loofah (~> 2.3)
+    rails3-jquery-autocomplete (1.0.15)
+      rails (>= 3.2)
     rails_autolink (1.1.6)
       rails (> 3.1)
     railties (5.1.7)
@@ -308,7 +309,6 @@ DEPENDENCIES
   browser
   carrierwave-mongoid (= 1.2.0)
   coffee-rails
-  csv
   devise
   devise-encryptable
   email_veracity
@@ -329,10 +329,12 @@ DEPENDENCIES
   mongoid-grid_fs
   mysql2
   newrelic_rpm
+  nokogiri (>= 1.13.6)
   octokit
   pry
   pry-byebug
   rails
+  rails3-jquery-autocomplete
   rails_autolink
   rspec-rails
   rubocop (~> 1.23.0)
