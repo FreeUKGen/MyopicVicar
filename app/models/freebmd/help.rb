@@ -121,7 +121,7 @@ class Help
     prefix = '/help/'
     menu = '<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top float--right">'
     menu += '<div class="islet islet--bordered">'
-    menu += '<h5 class="beta  text--teal">On this page</h5>'
+    menu += '<h5 class="beta  text--teal" id="thisPage">On this page</h5>'
     menu += '<nav aria-labelledby="thisPage">'
     menu += '<ul class="sub-nav">'
     menu_hash.each do |key, value|
