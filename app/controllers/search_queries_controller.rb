@@ -29,6 +29,7 @@ class SearchQueriesController < ApplicationController
   def adjust_search_query_parameters
     @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
     @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
+    #@search_query['text'] = '{ "$search" => "'+@search_query['text']+'" }' if @search_query['text'].present?
     composite_counties = %w[CHI ENG HAM IRL SCT WLS YKS]
     if (composite_counties && @search_query['chapman_codes']).any?
       @search_query['chapman_codes'] |= expand_search_query_composite_chapman_codes(composite_counties, @search_query['chapman_codes'])

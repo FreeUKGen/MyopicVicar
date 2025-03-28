@@ -131,6 +131,7 @@ class SearchQuery
   field :language, type: String
   validates_inclusion_of :language, :in => Language::ALL_LANGUAGES + [nil]
   field :occupation, type: String
+  field :text, type: String
 
   has_and_belongs_to_many :places, inverse_of: nil
   has_and_belongs_to_many :freecen2_places, inverse_of: nil
@@ -232,6 +233,8 @@ class SearchQuery
   def adequate_first_name_criteria?
     if MyopicVicar::Application.config.template_set == 'freecen'
       first_name.present? && chapman_codes.length.positive? && freecen2_place_ids.present?
+    elsif MyopicVicar::Application.config.template_set == 'freepro'
+      first_name.present? || text.present?
     else
       first_name.present? && chapman_codes.length.positive? && place_ids.present?
     end
@@ -1066,23 +1069,37 @@ class SearchQuery
 
   def freepro_search_records
     search_fields = pro_adjust_field_names
-    records = SearchQuery.get_search_table.where(pro_params_hash)
-    #records = SearchQuery.get_search_table.where({"death.LastName" => "EARWAKER"})
-    #records = Test.where({"fielda" => "value a"})
+    text_search = self.attributes.symbolize_keys[:text]
+    if text_search.present?
+      search_fields_with_text_search = {}
+      text_search_criterion = {"$search" => text_search}
+      search_fields_with_text_search["$text".to_sym] = text_search_criterion
+      search_fields.each do |key, value|
+        search_fields_with_text_search[key] = value.to_s
+      end
+      records = SearchQuery.get_search_table.where(search_fields_with_text_search)
+    else
+      records = SearchQuery.get_search_table.where(search_fields)
+    end
+    recordCount = SearchQuery.get_search_table.count
+    #records = SearchQuery.get_search_table.where("$text" => { "$search" => "Surrey" } ).and("Death.LastName" => "SMITH")
+    #records = SearchQuery.get_search_table.where("Death.Address" => "the Lower Bourne Farnham Rural Surrey")
+    #records = SearchQuery.get_search_table.where({"Death.LastName" => "EARWAKER"})
     persist_results(records)
     records
   end
 
   def pro_fields_name
     {
-      first_name: 'death.GivenName',
-      last_name: 'death.LastName',
-      session_id: 'id'
+      first_name: 'Death.GivenName',
+      last_name: 'Death.LastName',
+      start_year: 'Death.Year',
+      session_id: 'RecordId'
     }
   end
 
   def name_fields
-    [:first_name, :last_name, :fuzzy]
+    [:first_name, :last_name, :start_year, :end_year, :fuzzy]
   end
 
   def has_wildcard? name

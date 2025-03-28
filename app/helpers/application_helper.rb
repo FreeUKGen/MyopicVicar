@@ -305,6 +305,10 @@ module ApplicationHelper
       display_map['Marital Status'] = search_query.marital_status if search_query.marital_status.present?
       display_map['Language'] = search_query.language if search_query.language.present?
       display_map['Occupation'] = search_query.occupation if search_query.occupation.present?
+    when 'freepro'
+      display_map['Start Year'] = search_query.start_year if search_query.start_year
+      display_map['End Year'] = search_query.end_year if search_query.end_year
+      display_map['Text search'] = search_query.text if search_query.text.present?
     end
     display_map
   end
@@ -342,8 +346,11 @@ module ApplicationHelper
     # name fields
     display_map['First Name'] = search_query.first_name.upcase if search_query.first_name
     display_map['Last Name'] = search_query.last_name.upcase if search_query.last_name
-    display_map['Exact Match?'] = 'Yes' unless search_query.fuzzy
-    display_map['Exact Match?'] = 'No' if search_query.fuzzy
+
+    if appname.downcase != 'freepro'
+      display_map['Exact Match?'] = 'Yes' unless search_query.fuzzy
+      display_map['Exact Match?'] = 'No' if search_query.fuzzy
+    end
 
     case appname.downcase
     when 'freereg'
@@ -373,6 +380,10 @@ module ApplicationHelper
       display_map['Marital Status'] = search_query.marital_status if search_query.marital_status.present?
       display_map['Language'] = search_query.language if search_query.language.present?
       display_map['Occupation'] = search_query.occupation if search_query.occupation.present?
+    when 'freepro'
+      display_map['Start Year'] = search_query.start_year if search_query.start_year
+      display_map['End Year'] = search_query.end_year if search_query.end_year
+      display_map['Text search'] = search_query.text if search_query.text.present?
     end
     display_map
   end
@@ -405,8 +416,8 @@ module ApplicationHelper
     elsif content_for?(:title)
       title = content_for(:title) +  ' | ' + appname
 
-    elsif  page_title.present?
-      title = page_title + ' | '  + appname
+      #elsif  page_title.present?
+      #title = page_title + ' | '  + appname
     else
       title = "#{appname} | #{project_description[appname_downcase]}"
     end

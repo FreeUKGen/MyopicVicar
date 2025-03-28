@@ -1,7 +1,7 @@
 <%= render( :partial => "nav_freeprobate", :locals => {search_query: params[:search_query], search_record: @search_record}) %>
 <div class="grid">
   <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
-    <h1 class="beta push-half--top flush--bottom"><%= @event_type %> detail for <%= @search_record[:death][:GivenName] %> <%= @search_record[:death][:LastName] %></h1>
+    <h1 class="beta push-half--top flush--bottom"><%= @event_type %> detail for <%= @search_record[:Death][:GivenName] %> <%= @search_record[:Death][:LastName] %></h1>
     <section>
       <%= render( :partial => "show_freepro_record", :locals => {search_record: @search_record} ) %>
     </section>

@@ -7,7 +7,7 @@
           <label class="ttip" for="last_name" tabindex="0">
             Surname
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Use upper- or lower-case. If you do not enter a surname (last-name) you <em>must</em> enter a forename, select one county and choose a single record type</span>
+            <span class="ttip__text">Use uppercase.</span>
           </label>
           <% if @search_query.last_name.nil? %>
             <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
@@ -19,7 +19,7 @@
           <label class="ttip" for="first_name" tabindex="0">
             Forename(s)
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional. Use upper- or lower-case. Abbreviations and Latin versions of the forename (first-name) will be included automatically</span>
+            <span class="ttip__text">Optional. Use upper- and lower-case.</span>
           </label>
           <% if @search_query.first_name.nil? %>
             <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional">
@@ -57,6 +57,14 @@
             <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
           <% else %>
             <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
+          <% end %>
+        </li>
+        <li class="grid__item one-third lap-one-half palm-one-whole">
+          <label class="ttip" for="address" tabindex="0">Text search</label>
+          <% if @search_query.text.nil? %>
+            <input id="text" name="search_query[text]" type="text" class="text-input" placeholder="Optional">
+          <% else %>
+            <input id="text" name="search_query[text]" type="text" class="text-input" value="<%=@search_query.text%>">
           <% end %>
         </li>
         <%= f.action :submit,

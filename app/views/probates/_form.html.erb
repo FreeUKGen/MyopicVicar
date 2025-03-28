@@ -3,22 +3,23 @@
   <%= simple_form_for @probate, :html => { :class => "grid"}  do |f| %>
     <%= f.input :PersonId ,:hint => "Surname, Year, running number (unique identifier)", :label => " Person ID ", :input_html => {:class => "simple_form_bgcolour"} %>
     <div class="input string required probate_Death_LastName field_with_hint"><label class="string required control-label" for="probate_p"><abbr title="required">*</abbr> Published text</label>
-      <%= f.text_area :p , :hint => "Full published text", :label => " Full text ", :class => "simple_form_bgcolour", :cols => "35", :rows => "6", :options => {:required => false} %>
+      <%= f.text_area :P , :hint => "Full published text", :label => " Full text ", :class => "simple_form_bgcolour", :cols => "35", :rows => "6", :options => {:required => false} %>
+      <%#= f.input :P , as: :text, :hint => "Full published text", :label => " Full text ", :class => "simple_form_bgcolour", :cols => "35", :rows => "6", :options => {:required => false} %>
     </div>
-    <%= f.simple_fields_for :death do |death| %>
-      <%= death.input :LastName , :hint => "Last name", :label => "Surname", :input_html => {:class => "simple_form_bgcolour"} %>
+    <%= f.simple_fields_for :Death do |death| %>
+      <%= death.input :LastName , :hint => "Last name", :label => "Surname", as: :string, :input_html => {:class => "simple_form_bgcolour"} %>
       <%= death.input :GivenName , :hint => "First name", :label => "Forename(s)", :input_html => {:class => "simple_form_bgcolour"} %>
       <%= death.input :Address , :hint => "Address of deceased", :label => "Address", :input_html => {:size => "35", :class => "simple_form_bgcolour"} %>
       <%= death.input :Role, :hint => "Role or occupation", :label => "Role", :required => false, :input_html => {:class => "simple_form_bgcolour"} %>
       <%= death.input :Date , :hint => "Date of death", :label => "Date of death", :input_html => {:class => "simple_form_bgcolour"}  %>
     <% end %>
-    <%= f.simple_fields_for :event do |event| %>
+    <%= f.simple_fields_for :Event do |event| %>
       <%= event.input :Type , :hint => "Event type", :label => "Type", :input_html => {:class => "simple_form_bgcolour"} %>
       <%= event.input :Court , :hint => "Probate Court", :label => "Court", :input_html => {:class => "simple_form_bgcolour"} %>
       <%= event.input :Date , :hint => "Date probate granted", :label => "Date granted", :input_html => {:class => "simple_form_bgcolour"} %>
-      <%= event.input :person, :multiple => true, :label => "Executor", :input_html => {:size => "35", :class => "simple_form_bgcolour"} %>
-      <% if @probate[:event][:executors].present? %>
-        <%= event.simple_fields_for :executors do |exec| %>
+      <%= event.input :Person, :multiple => true, :label => "Executor", :input_html => {:size => "35", :class => "simple_form_bgcolour"} %>
+      <% if @probate[:Event][:Executors].present? %>
+        <%= event.simple_fields_for :Executors do |exec| %>
           <%= exec.input :GivenName, :hint => "First name", :label => "Forename(s)", :required => false %>
           <%= exec.input :LastName, :hint => "Last name", :label => "Surname", :required => false %>
           <%= exec.input :Role, :hint => "Role or occupation", :label => "Role", :required => false %>

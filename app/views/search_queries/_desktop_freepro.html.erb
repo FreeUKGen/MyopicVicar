@@ -40,13 +40,13 @@
               <%= link_to("#{search_record[:PersonId]}".html_safe, friendly_probate_record_details_path(search_record[:id],search_record[:PersonId], @search_query)) %>
             </td>
             <td class="table--data">
-              <%= search_record[:death][:LastName] %> <%= search_record[:death][:GivenName] %>
+              <%= search_record[:Death][:LastName] %> <%= search_record[:Death][:GivenName] %>
               <%#= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
               <i><%#= seen(@search_query,search_record) %></i>
             </td>
             <%# end %>
             <td class="table--data">
-              <%= search_record[:p] %>
+              <%= search_record[:P] %>
             </td>
           </tr>
           <% end %>

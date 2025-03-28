@@ -3,7 +3,7 @@
     <p class="text--left">
       <%= link_to "New Search", new_search_query_path, :class => "btn  btn--small" %>
       <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small" %>
-      <%= link_to "Back to Results", search_query_path(@search_query, :anchor => "#{@search_record.id}"), :class => "btn  btn--small"%>
+      <%#= link_to "Back to Results", search_query_path(@search_query, :anchor => "#{@search_query.id}"), :class => "btn  btn--small"%>
       <% if @search_record.present? %>
         <%= link_to "Edit record", probate_update_path(@search_record), :class => "btn btn--small" %>
       <% end %>
