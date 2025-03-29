@@ -15,7 +15,7 @@ class Users::PasswordsController < Devise::PasswordsController
 
       user = User.where(email: email).first
       if user.present?
-        token = user.generate_reset_password_token!
+        token = user.generate_reset_password_token
         UserMailer.reset_notification(user, request, token).deliver_now
         redirect_to new_user_session_path,
         notice: 'Your email address exists. Please use Forgot password link to reset your password.'
