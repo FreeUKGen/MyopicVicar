@@ -519,26 +519,6 @@ class FreecenCsvFile
       line
     end
 
-    def write_csv_file(file_location)
-      header = header_line
-      header << 'record_valid' if validation && !header_line.include?('record_valid')
-      header << 'pob_valid' if validation && !header_line.include?('pob_valid')
-      header << 'non_pob_valid' if validation && !header_line.include?('non_pob_valid')
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
-        csv << header
-        records = freecen_csv_entries.order_by(_id: 1)
-        records.each do |rec|
-          line = []
-          line = add_fields(line, rec)
-          if validation
-            pob_ok = pob_valid(rec)
-            line << pob_ok
-            line << non_pob_valid(pob_ok, rec)
-          end
-          csv << line
-        end
-      end
-    end
   end # self
   # ######################################################################### instance methods
 
@@ -1344,6 +1324,27 @@ class FreecenCsvFile
       transcriber = nil unless answer
     end
     transcriber
+  end
+
+  def write_csv_file(file_location)
+    header = header_line
+    header << 'record_valid' if validation && !header_line.include?('record_valid')
+    header << 'pob_valid' if validation && !header_line.include?('pob_valid')
+    header << 'non_pob_valid' if validation && !header_line.include?('non_pob_valid')
+    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      csv << header
+      records = freecen_csv_entries.order_by(_id: 1)
+      records.each do |rec|
+        line = []
+        line = add_fields(line, rec)
+        if validation
+          pob_ok = pob_valid(rec)
+          line << pob_ok
+          line << non_pob_valid(pob_ok, rec)
+        end
+        csv << line
+      end
+    end
   end
 
   def write_spreadsheet_header(header)
