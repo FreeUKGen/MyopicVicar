@@ -789,7 +789,7 @@ class Freecen2Piece
   def piece_being_transcribed
     csv_files = self.freecen_csv_files
     vld_files = self.freecen1_vld_files
-    uploaded_vld_files = self.freecen1_vld_files.where("userid" => {'$ne': null}) if vld_files.present?
+    uploaded_vld_files = self.freecen1_vld_files.where("userid" => {'$ne': nil}) if vld_files.present?
     if uploaded_vld_files.present?
       unincorporated =  []
       uploaded_vld_files.each{|vld_file|

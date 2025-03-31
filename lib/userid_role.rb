@@ -83,7 +83,8 @@ module UseridRole
       'volunteer_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Gazetteer', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap', 'FreeCEN Handbook', 'Display County Coordinators', 'Display Syndicate Coordinators', 'FreeUKGenealogy  Policies'],
       'website_coordinator' => ['CSV Batches', 'Communicate', 'Contacts', 'Database Statistics', 'Display Userids', 'Feedback', 'Gazetteer', 'Message System','Place Edit Reasons', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation', 'FreeCEN Handbook', 'Display County Coordinators', 'Display Syndicate Coordinators',  'FreeUKGenealogy  Policies'],
       'newsletter_coordinator' => ['Profile', 'Contacts', 'Database Statistics','Search Statistics', 'Search Performance', 'Site Statistics', 'Transcriber Statistics','Display County Coordinators', 'Display Syndicate Coordinators',  'FreeUKGenealogy  Policies'],
-      'pieces_coordinator' => ['Profile', 'Find Pieces', 'CAP Report', 'FreeUKGenealogy  Policies']
+      'pieces_coordinator' => ['Profile', 'Find Pieces', 'CAP Report', 'FreeUKGenealogy  Policies'],
+      'reporter_transcriber' => ['CSV Batches', 'Find Pieces', 'Gazetteer', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'Display County Coordinators', 'Display Syndicate Coordinators', 'FreeUKGenealogy  Policies', 'Manage Counties', 'GAP Report']
     }
   end
   #'/messages/communications?source=original',
@@ -293,7 +294,7 @@ module UseridRole
     SYNDICATE_MANAGEMENT_OPTIONS = ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted',
                                     'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
                                     'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename',
-                                    'Incomplete Registrations', 'Create Userid', 'Syndicate Messages', 'Review Batches with Errors',
+                                    'Incomplete Registrations', 'Syndicate Messages', 'Review Batches with Errors',
                                     'Review Batches with Zero Dates', 'Review Batches by Filename', 'Review Batches by Userid then Filename',
                                     'Review Batches by Most Recent Date of Change', 'Review Batches by Oldest Date of Change',
                                     'Review Specific Batch', 'List files waiting to be processed', 'List files NOT processed', 'Upload New Batch',
@@ -302,7 +303,7 @@ module UseridRole
     SYNDICATE_MANAGEMENT_OPTIONS = ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted',
                                     'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
                                     'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename',
-                                    'Incomplete Registrations', 'Create Userid', 'Syndicate Messages', 'Change Recruiting Status']
+                                    'Incomplete Registrations', 'Syndicate Messages', 'Change Recruiting Status']
   when 'freebmd'
   end
 

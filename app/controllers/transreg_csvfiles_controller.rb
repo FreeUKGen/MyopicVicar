@@ -65,7 +65,8 @@ class TransregCsvfilesController < ApplicationController
           #end
         when processing_time >= 600
           @result = "failure"
-          batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
+          batch.destroy
+          #batch.update_attributes(:base => true,:base_uploaded_date => Time.now,:file_processed => false)
           @message =  "The file has been queued it is too large to be processed normally. The data manager has been informed and will discuss with you how it may be scheduled for processing. "
           UserMailer.report_to_data_manger_of_large_file( @csvfile.file_name,@csvfile.userid).deliver_now
         end
