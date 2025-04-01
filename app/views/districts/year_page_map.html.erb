@@ -2,13 +2,13 @@
 <h2>Page map for <%= "#{@year} quarter #{@quarter} #{initial_to_event_type(@event_type)}" %></h2>
 <div class="grid">
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
-    <% if File.exist?('app/html/'+@year+@event_type+@quarter+'.csv') %>
+    <% if File.exist?('/raid/freebmd2/district_csv_files/'+@year+@event_type+@quarter+'.csv') %>
       <p>This page gives information about the range of values for <b>Page</b> for each <b>Volume</b> for a specific Year and Quarter.
         These ranges have been derived from the entries included. An explanation of the headings is given at <a href="#explain">the end of this page</a>.</p>
       <table>
         <tr><th colspan="2"></th><th scope="column">Page</th><th scope="column" colspan="3">Assessment data</th></tr>
         <tr><th scope="column">District</th><th scope="column">Volume</th><th scope="column">Lowest/Highest</th><th scope="column">Before/After</th><th scope="column">Gaps</th><th scope="column">Total</th></tr>
-        <% File.readlines('app/html/'+@year+@event_type+@quarter+'.csv', chomp: true).sort.each do | line | %>
+        <% File.readlines('/raid/freebmd2/district_csv_files/'+@year+@event_type+@quarter+'.csv', chomp: true).sort.each do | line | %>
           <%  cells = line.split(',')
               district_stripped_name = cells[0].delete'"'
               district_id = District.where(DistrictName: district_stripped_name).first.id
@@ -35,5 +35,9 @@
       </div>
       </div>
 <% else %>
-      <p>Sorry, the file <%= 'app/html/'+@year+@event_type+@quarter+'.csv' %> cannot be found, so page map details are not available.</p>
+      <% if @year == "1837" && @quarter == "1" %>
+        <p>Registration of <%= "#{initial_to_event_type(@event_type)}" %> only began in quarter 3 of 1837.</p>
+      <% else %>
+        <p>Sorry, the file <%= '/raid/freebmd2/district_csv_files/'+@year+@event_type+@quarter+'.csv' %> cannot be found, so page map details are not available.</p>
+      <% end %>
 <% end %>

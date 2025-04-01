@@ -38,6 +38,16 @@ namespace :reports do
     puts "Completed Checking #{limit} collection unique names"
   end
 
+  desc "extract_bmd_unique_names"
+  task :extract_bmd_unique_names, [:district] => [:environment] do |t, args|
+    appname = MyopicVicar::Application.config.freexxx_display_name.downcase
+    require 'bmd_unique_names'
+    district = args.district
+    puts "Extracting unique names"
+    BmdUniqueNames.process(district)
+    puts "Completed extracting unique names for #{district} collection unique names"
+  end
+
   desc "extract_unique_cen_field_name"
   task :extract_unique_cen_field_name, [:limit] => [:environment] do |t, args|
     require 'extract_unique_cen_field_name'

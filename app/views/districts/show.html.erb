@@ -36,16 +36,20 @@
     <p><%= "#{@district.district_name_display_format}"%> Registration District has been part of the following counties, by date.</p>
     <table>
       <caption class="accessibility"><%= "#{@district.district_name_display_format}"%> Registration District has been part of the following counties, by date.</caption>
+      <thead>
       <tr>
         <th scope="col">County</th>
         <th scope="col">Date range</th>
       </tr>
+      </thead>
+      <tbody>
       <% @district.DistrictToCounty.each do |d| %>
         <tr>
           <td><%= link_to ChapmanCode::name_from_code(d.County),county_summary_path(county_code: d.County) %></td>
           <td><%= "From #{QuarterDetails.quarter_human(d.StartQN)}" %> <%= QuarterDetails.quarter_year(d.EndQN) > 1993 ? "" : "to #{QuarterDetails.quarter_human(d.EndQN)}" %></td>
         </tr>
       <% end %>
+      </tbody>
     </table>
   </div>
   <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="volumes">
@@ -53,10 +57,13 @@
     <p>Volume numbers used in <%= "#{@district.district_name_display_format}"%> Registration District, by date.</p>
     <table>
       <caption class="accessibility">Volume numbers used in <%= "#{@district.district_name_display_format}"%> Registration District, by date.</caption>
+      <thead>
       <tr>
         <th scope="col">Date range</th>
         <th scope="col">Volume</th>
       </tr>
+      </thead>
+      <tbody>
       <tr>
         <td>Year 1837 to 1851</td>
         <td><%= @district.Volume1837to1851 != 'xx' ? @district.Volume1837to1851 : '-' %></td>
@@ -77,6 +84,7 @@
         <td>Year 1974 to 1993_4</td>
         <td><%= @district.Volume1974to1993_4 != 'xx' ? @district.Volume1974to1993_4 : '-'%></td>
       </tr>
+      </tbody>
     </table>
     <p>These date ranges reflect major reorganisations of the G.R.O.'s volume numbering system. <%= "#{@district.district_name_display_format}"%> Registration District
     may have come into existence at any date within the first date range specified<% if @district.YearEnd != 9999 %>, and abolished at any date within the last date range<% end %>.
@@ -160,13 +168,13 @@
       <table>
       <% if @district.Volume1993_4toEnd != 'xx' %>
           <tr>
-            <th>GRO District Number (post 1993)</th>
+            <th scope="row">GRO District Number (post 1993)</th>
             <td><%= @district.Volume1993_4toEnd %></td>
           </tr>
       <% end %>
       <% if @district.DistrictPseudonym.present? %>
           <tr>
-        <th>Alternate names for District</th>
+        <th scope="row">Alternate names for District</th>
             <td>
               <ul>
                 <% @district.DistrictPseudonym.each do |n| %><li><%= n.DistrictPseudonym + " " %></li><% end %>
