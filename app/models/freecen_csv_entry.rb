@@ -2537,7 +2537,7 @@ class FreecenCsvEntry
     birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
 
     note = notes.gsub(/\<br\>/, '') if notes.present?
-    lang = Freecen::LANGUAGE[language]
+    lang = Freecen::LANGUAGE[language.upcase] if language.present?
     case year
     when '1841' && ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
       [birth_county_name, birth, disability, note]

@@ -40,6 +40,7 @@ class Freereg1CsvEntry
   field :file_line_number, type: Integer
   field :film, type: String
   field :film_number, type: String
+  field :suffix, type: String
 
   #new common fields
   field :image_file_name, type: String
@@ -121,6 +122,7 @@ class Freereg1CsvEntry
   field :burial_location_information, type: String
   field :place_of_death, type: String
   field :memorial_information, type: String
+  field :burial_parish, type: String
 
 
   #original marriage fields
@@ -917,6 +919,16 @@ class Freereg1CsvEntry
       errors.add(:consecrated_ground, 'Invalid characters')
 
     end
+
+    unless FreeregValidations.cleantext(suffix)
+      errors.add(:suffix, 'Invalid characters')
+
+    end
+    unless FreeregValidations.cleantext(burial_parish)
+      errors.add(:burial_parish, 'Invalid characters')
+
+    end
+
     case
     when record_type == 'ma'
       unless FreeregValidations.cleanage(bride_age)

@@ -239,7 +239,7 @@ module FreeregOptionsConstants
                              'private_baptism', 'witness'];
 
   EXTENDED_BURIAL_LAYOUT = ['register_entry_number', 'burial_date', 'death_date', 'burial_person_forename',
-                            'burial_person_surname', 'burial_person_title', 'relationship', 'male_relative_forename', 'relative_surname',
+                            'burial_person_surname', 'burial_person_title', 'relationship','person_occupation', 'consecrated_ground', 'male_relative_forename', 'relative_surname',
                             'male_relative_title', 'female_relative_forename', 'female_relative_surname', 'female_relative_title', 'person_age',
                             'burial_person_abode', 'cause_of_death', 'burial_location_information', 'place_of_death', 'memorial_information',
                             'notes', 'notes_from_transcriber', 'film', 'film_number', 'image_file_name'];
@@ -289,9 +289,9 @@ module FreeregOptionsConstants
                              'person_abode', 'father_occupation'];
 
   ORIGINAL_BURIAL_FIELDS = ['register_entry_number', 'burial_date', 'burial_person_forename', 'relationship', 'male_relative_forename', 'female_relative_forename', 'relative_surname',
-                            'burial_person_surname', 'person_age', 'burial_person_abode'];
+                            'burial_person_surname', 'person_age','person_occupation', 'consecrated_ground', 'burial_parish','burial_person_abode'];
 
-  ORIGINAL_COMMON_FIELDS = ['notes', 'film', 'film_number'];
+  ORIGINAL_COMMON_FIELDS = ['notes', 'film', 'film_number', 'suffix'];
 
   ORIGINAL_MARRIAGE_FIELDS = ['register_entry_number', 'marriage_date', 'groom_forename', 'groom_surname', 'groom_age', 'groom_parish', 'groom_condition', 'groom_occupation', 'groom_abode',
                               'bride_forename', 'bride_surname', 'bride_age', 'bride_parish', 'bride_condition', 'bride_occupation', 'bride_abode', 'groom_father_forename',

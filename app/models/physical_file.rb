@@ -261,6 +261,11 @@ class PhysicalFile
     email_confirmed = UseridDetail.where(email_address_last_confirmned: start_date..end_date)
     users_count = UseridDetail.where(c_at: start_date..end_date)
     total_records_added = SiteStatistic.where(year: start_date.year, month: start_date.month).sum(:n_records_added)
+    if appname.downcase == 'freecen'
+      total_csv_records_added = Freecen2SiteStatistic.where(year: start_date.year, month: start_date.month).sum(:added_csv_entries)
+      total_vld_records_added = Freecen2SiteStatistic.where(year: start_date.year, month: start_date.month).sum(:added_vld_entries)
+      total_records_added = total_csv_records_added + total_vld_records_added
+    end
     [uploaders_count, email_confirmed, users_count, total_records_added]
   end
 end
