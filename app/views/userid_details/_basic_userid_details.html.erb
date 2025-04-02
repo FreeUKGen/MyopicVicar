@@ -48,6 +48,10 @@
   <td>Syndicate:</td>
   <td > <%=@userid.syndicate %>  </td>
 </tr>
+<tr>
+  <td>Syndicate Coordinator:</td>
+  <td > <%= Syndicate.find_by(syndicate_code: @userid.syndicate).syndicate_coordinator %>  </td>
+</tr>
 <% if @userid.previous_syndicate.present?%>
   <tr>
     <td>Previous Syndicate:</td>
