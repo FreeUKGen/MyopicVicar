@@ -619,7 +619,8 @@ MyopicVicar::Application.routes.draw do
 
   resources :probates
   get ':search_id/probates/:person_id/:search_query/', :to => 'probates#show', :as => :friendly_probate_record_details
-  post '/probates/:id/edit', :to => 'probates#update', :as => :probate_update
+  patch '/probates/:id/edit', :to => 'probates#update', :as => :probate_update
+  #post '/probates/:id/edit', :to => 'probates#update', :as => :probate_update
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.

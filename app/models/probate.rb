@@ -5,26 +5,31 @@ class Probate
 
   field :PersonId, type: String
   field :P, type: String
-  #embeds_one :div
+  field :SourceImage, type: String
   embeds_one :death
   embeds_one :event
   accepts_nested_attributes_for :death, :event
 
   class Death
     include Mongoid::Document
+    embedded_in :probate
     #embeds_one :name
     field :LastName, type: String
     field :GivenName, type: String
     field :Address, type: String
-    field :Date, type: Date
+    field :Role, type: String
+    field :Date, type: String
+    field :Year, type: Integer
     field :Place, type: String
   end
 
   class Event
     include Mongoid::Document
+    embedded_in :probate
     field :Type, type: String
     field :Court, type: String
-    field :Date, type: Date
+    field :Date, type: String
+    field :Year, type: Integer
     field :person, type: Array
     field :Value, type: String
   end

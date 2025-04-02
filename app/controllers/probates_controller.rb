@@ -3,8 +3,8 @@ class ProbatesController < ApplicationController
 
   def new
     @probate = Probate.new
-    @probate.death.build
-    @probate.event.build
+    @probate.Death.build
+    @probate.Event.build
   end
 
   def show
@@ -24,15 +24,19 @@ class ProbatesController < ApplicationController
     @probate = Probate.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: probates_path, notice: 'The probate record was not found') && return if @probate.blank?
 
-    # @probate.death.build
-    # @probate.event.build
+    #@probate.Death.build
+    #@probate.Event.build
 
     render :edit
   end
 
   def update
     @probate = Probate.find(params[:id])
-    render :update
+    if @probate.update()
+      #flash[:success] = 'Probate successfully updated'
+      redirect_back(fallback_location: probates_path, notice: 'Probate successfully updated') && return
+    end
+    #render :update
   end
 
 end
