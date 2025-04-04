@@ -23,15 +23,15 @@
   <ol class="grid">
     <li class="grid__item one-half lap-one-whole palm-one-whole" id="quesons">
       <label class="ttip" for="questins" tabindex="0">Select your query
-        <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-        <span class="ttip__text">Please select your query</span>
+        <%#= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+        <!--span class="ttip__text">Please select your query</span-->
       </label>
       <%= select_tag "questins", options_for_select(FreebmdDataProblem::QUESTION_VALUE), prompt: "Please choose an option that closely relates to your query" %>
     </li>
     <li class="grid__item one-half lap-one-whole palm-one-whole clear--left" id="explanation">
       <label class="ttip"  tabindex="0">Explanation
-        <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-        <span class="ttip__text">Please read the below explanation for your query</span>
+        <%#= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+        <!--span class="ttip__text">Please read the below explanation for your query</span-->
       </label>
       <div id="answer" class="answer_explanations">Please find the explanation for your query here</div>
     </li>
@@ -49,7 +49,7 @@
   <div class="read-length">
     <p class="push-half--bottom">Thank you for reporting a possible error in our transcription. <b>We will change our record if we agree with your interpretation of the source document we transcribed.</b> If you have access to a different document which has different evidence, please provide details so that we can attach a note to our transcription. We would be grateful if you could send us an image of the different document so that we may transcribe it.</p>
     <p style="font-size: 0.9rem;">Please note: some Record Offices and some websites allow you to make copies for personal use only &mdash; if your document is such a copy, we cannot use it.</p>
-    <p>Please read our <%= link_to "Privacy Notice(#{ApplicationText::NEW_TAB_LINK_TEXT})", Constant::PRIVACY_POLICY_LINK, target: "_blank" %> for information on how we will protect and use your data, and then complete the form below.</p>
+    <p>Please read our <%= link_to "Privacy Notice (#{ApplicationText::NEW_TAB_LINK_TEXT})", Constant::PRIVACY_POLICY_LINK, target: "_blank" %> for information on how we will protect and use your data, and then complete the form below.</p>
   </div>
   <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
     <%= f.hidden_field :query %>
@@ -64,8 +64,8 @@
     <ol class="grid">
       <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left" id="name_input">
         <label class="label ttip" for="name" tabindex="0">Your name
-          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-          <span class="ttip__text">Required. Your name for when we contact you: it will not be made public</span>
+          <%#= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+          <!--span class="ttip__text">Required. Your name for when we contact you: it will not be made public</span-->
         </label>
         <% if @contact.name.nil? %>
           <input id="name" name="contact[name]" type="text" class="text-input" placeholder="Required" required="required">
@@ -75,8 +75,8 @@
       </li>
       <li class="grid__item one-quarter lap-one-half palm-one-whole" id="email_address_input">
         <label class="label ttip" for="email_address" tabindex="0">Your email address
-          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-          <span class="ttip__text">Required. Your email address so we can contact you: it will not be made public</span>
+          <%#= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+          <!--span class="ttip__text">Required. Your email address so we can contact you: it will not be made public</span-->
         </label>
         <% if @contact.email_address.nil? %>
           <input id="email_address" name="contact[email_address]" type="text" class="text-input" placeholder="Required" required="required">
@@ -88,8 +88,8 @@
       
       <li class="grid__item one-half lap-one-whole palm-one-whole push--bottom clear--left">
         <label class="ttip" for="description" tabindex="0">Description
-          <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-          <span class="ttip__text">Your reasons for commenting on the entry</span>
+          <%#= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+          <!--span class="ttip__text">Your reasons for commenting on the entry</span-->
         </label>
         <% if @contact.body.nil? %>
           <textarea id="description" name="contact[body]" style="width: 100%; max-width: 32rem;" rows="6"></textarea>
@@ -99,12 +99,12 @@
       </li>
       <li class="grid__item one-third lap-three-fifths lap-clear--left palm-one-whole push--bottom">
         <label class="ttip" for="screenshot" tabindex="0">Screenshot or image
-          <span class="weight--normal" style="display: inline-block;"> (optional) <%= image_tag 'png/info.png', alt: 'Info', height: '16' %></span>
-          <span class="ttip__text">Please select any supporting images (jpg, jpeg, png, or gif only)</span>
+          <span class="weight--normal" style="display: inline-block;"> (optional) <%#= image_tag 'png/info.png', alt: 'Info', height: '16' %></span>
+          <!--span class="ttip__text">Please select any supporting images (jpg, jpeg, png, or gif only)</span-->
         </label>
         <input class="push--bottom" id="screenshot" name="contact[screenshot]" type="file">
       </li>
-      <%= f.action :submit, :as  => :input, :label => 'Report Error' , :button_html => { :class => "btn" }, :wrapper_html => { :class => "grid__item  one-third lap-two-fifths palm-one-whole push--bottom" } %>
+      <%= f.action :submit, :as  => :input, :label => 'Submit Report' , :button_html => { :class => "btn" }, :wrapper_html => { :class => "grid__item  one-third lap-two-fifths palm-one-whole push--bottom" } %>
       <li class="betterstyling">
         <label for="contact_name_confirm">Please add your name again:</label>
         <input id="contact_name_confirm" type="text" name="contact[contact_name]">
