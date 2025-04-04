@@ -46,7 +46,6 @@ class Freereg1CsvEntry
   field :image_file_name, type: String
   field :notes_from_transcriber, type: String
 
-
   #original baptism fields
   field :baptism_date, type: String #actual date as written
   field :birth_date, type: String #actual date as written
@@ -123,6 +122,7 @@ class Freereg1CsvEntry
   field :place_of_death, type: String
   field :memorial_information, type: String
   field :burial_parish, type: String
+  field :relative_occupation, type: String
 
 
   #original marriage fields
@@ -959,6 +959,7 @@ class Freereg1CsvEntry
         errors.add(:bride_father_occupation, 'Invalid characters')
 
       end
+
       unless FreeregValidations.cleantext(bride_father_surname)
         errors.add(:bride_father_surname, 'Invalid characters')
 
@@ -1416,6 +1417,9 @@ class Freereg1CsvEntry
       end
       unless FreeregValidations.cleanage(person_age)
         errors.add(:person_age, 'Invalid age')
+      end
+      unless FreeregValidations.cleantext(relative_occupation)
+        errors.add(:relative_occupation, 'Invalid characters')
       end
       if check_embargo
         rule = embargoes.where(record_type: 'bu', period_type: 'period').first

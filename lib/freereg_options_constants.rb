@@ -9,7 +9,7 @@ module FreeregOptionsConstants
                                'witness6_surname', 'witness7_forename', 'witness7_surname', 'witness8_forename', 'witness8_surname'];
 
   ADDITIONAL_BURIAL_FIELDS = ['death_date', 'burial_person_title', 'male_relative_title', 'female_relative_surname', 'female_relative_title',
-                              'cause_of_death', 'burial_location_information', 'place_of_death', 'memorial_information'];
+                              'cause_of_death', 'burial_location_information', 'place_of_death', 'memorial_information', 'relative_occupation'];
 
   ADDITIONAL_MARRIAGE_FIELDS = ['contract_date', 'bride_title', 'bride_marked', 'bride_father_title', 'bride_mother_forename',
                                 'bride_mother_surname', 'bride_mother_title', 'bride_mother_occupation', 'groom_title', 'groom_marked', 'groom_father_title',
@@ -242,7 +242,7 @@ module FreeregOptionsConstants
                             'burial_person_surname', 'burial_person_title', 'relationship','person_occupation', 'consecrated_ground', 'male_relative_forename', 'relative_surname',
                             'male_relative_title', 'female_relative_forename', 'female_relative_surname', 'female_relative_title', 'person_age',
                             'burial_person_abode', 'cause_of_death', 'burial_location_information', 'place_of_death', 'memorial_information',
-                            'notes', 'notes_from_transcriber', 'film', 'film_number', 'image_file_name'];
+                            'notes', 'notes_from_transcriber', 'film', 'film_number', 'image_file_name', 'relative_occupation'];
 
   EXTENDED_MARRIAGE_LAYOUT = ['register_entry_number', 'marriage_date', 'contract_date', 'marriage_by_licence', 'groom_forename', 'groom_surname', 'groom_title', 'groom_age',
                               'groom_parish', 'groom_condition', 'groom_occupation', 'groom_abode', 'groom_marked', 'groom_father_forename', 'groom_father_surname', 'groom_father_occupation',
