@@ -155,7 +155,7 @@ module ChapmanCode
         when 'freecen'
           elimination_codes = Freecen::CHAPMAN_CODE_ELIMINATIONS
         when 'freebmd'
-          elimination_codes = {}
+          elimination_codes = {} # tried FreebmdConstants::CHAPMAN_CODE_ELIMINATIONS but made no difference
         end
         myvalue = value.dup
         elimination_codes.each do |county|
@@ -455,6 +455,88 @@ WALES_CODES = {
   "West Glamorgan (from Jun1974)" => "WGM"
 }.freeze
 
+  ENGLAND_AND_WALES_CODES = {
+    "Anglesey (to Mar1974)" => "AGY",
+    "Avon (from Jun1974)" => "AVN",
+    "Bedfordshire" => "BDF",
+    "Berkshire" => "BRK",
+    "Breconshire (to Mar1974)" => "BRE",
+    "Buckinghamshire" => "BKM",
+    "Caernarvonshire (to Mar1974)" => "CAE",
+    "Cambridgeshire" => "CAM",
+    "Cardiganshire (to Mar1974)" => "CGN",
+    "Carmarthenshire (to Mar1974)" => "CMN",
+    "Cheshire" => "CHS",
+    "Cleveland (from Jun1974)" => "CLV",
+    "Clwyd (from Jun1974)" => "CWD",
+    "Co. Durham" => "DUR",
+    "Cornwall" => "CON",
+    "Cumberland (to Mar1974)" => "CUL",
+    "Cumbria (from Jun1974)" => "CMA",
+    "Denbighshire (to Mar1974)" => "DEN",
+    "Derbyshire" => "DBY",
+    "Devon" => "DEV",
+    "Dorset" => "DOR",
+    "Dyfed (from Jun1974)" => "DFD",
+    "East Riding of Yorkshire (to Mar1974)" => "ERY",
+    "East Sussex (from Jun1974)" => "SXE",
+    "Essex" => "ESS",
+    "Flintshire (to Mar1974)" => "FLN",
+    "Glamorgan (to Mar1974)" => "GLA",
+    "Gloucestershire" => "GLS",
+    "Greater London (from Jun1965)" => "GTL",
+    "Greater Manchester (from Jun1974)" => "GTM",
+    "Gwent (from Jun1974)" => "GNT",
+    "Gwynedd (from Jun1974)" => "GWN",
+    "Hampshire" => "HAM",
+    "Hereford and Worcester (from Jun1974)" => "HWR",
+    "Herefordshire (to Mar1974)" => "HEF",
+    "Hertfordshire" => "HRT",
+    "Humberside (from Jun1974)" => "HUM",
+    "Huntingdonshire (to Mar1974)" => "HUN",
+    "Isle of Wight (from Sep1946)" => "IOW",
+    "Kent" => "KEN",
+    "Lancashire" => "LAN",
+    "Leicestershire" => "LEI",
+    "Lincolnshire" => "LIN",
+    "London (to Mar1965)" => "LND",
+    "Merionethshire (to Mar1974)" => "MER",
+    "Merseyside (from Jun1974)" => "MSY",
+    "Mid Glamorgan (from Jun1974)" => "MGM",
+    "Middlesex (to Mar1965)" => "MDX",
+    "Monmouthshire (to Mar1974)" => "MON",
+    "Montgomeryshire (to Mar1974)" => "MGY",
+    "Norfolk" => "NFK",
+    "North Riding of Yorkshire (to Mar1974)" => "NRY",
+    "North Yorkshire (from Jun1974)" => "NYK",
+    "Northamptonshire" => "NTH",
+    "Northumberland" => "NBL",
+    "Nottinghamshire" => "NTT",
+    "Oxfordshire" => "OXF",
+    "Pembrokeshire (to Mar1974)" => "PEM",
+    "Powys (from Jun1974)" => "POW",
+    "Radnorshire (to Mar1974)" => "RAD",
+    "Rutland (to Mar1974)" => "RUT",
+    "Shropshire" => "SAL",
+    "Somerset" => "SOM",
+    "South Glamorgan (from Jun1974)" => "SGM",
+    "South Yorkshire (from Jun1974)" => "SYK",
+    "Staffordshire" => "STS",
+    "Suffolk" => "SFK",
+    "Surrey" => "SRY",
+    "Sussex (to Mar1974)" => "SSX",
+    "Tyne and Wear (from Jun1974)" => "TWR",
+    "Warwickshire" => "WAR",
+    "West Glamorgan (from Jun1974)" => "WGM",
+    "West Midlands (from Jun1974)" => "WMD",
+    "West Riding of Yorkshire (to Mar1974)" => "WRY",
+    "West Sussex (from Jun1974)" => "SXW",
+    "West Yorkshire (from Jun1974)" => "WYK",
+    "Westmorland (to Mar1974)" => "WES",
+    "Wiltshire" => "WIL",
+    "Worcestershire (to Mar1974)" => "WOR"
+  }.freeze
+
 ALL_ENGLAND = {
   'All England' => ENGLAND_CODES.values
 }.freeze
@@ -462,8 +544,6 @@ ALL_ENGLAND = {
 ALL_WALES = {
   "All Wales" => WALES_CODES.values
 }.freeze
-
-
 
   FREEBMD_CODES = {
   'England' => ALL_ENGLAND.merge(ENGLAND_CODES).freeze,

@@ -1,48 +1,42 @@
-<div class="grid flush--left">
-  	<div class="postem ">
+<div class="grid__item one-whole palm-one-whole hard--left">
+  	<div class="postem grid__item one-third lap-one-third palm-one-whole">
     	<% if @search  %>
-	    	<div class="">
-	      	<%= link_to  "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '2', anchor: "display_postems")}" , class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link postems_link", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
-	      		<%= app_icons[:postem].html_safe %>
+	      	<%= link_to  "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '2', anchor: "display_postems")}" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
+	      		<%= "#{app_icons[:postem]}Postems".html_safe %>
 	      		<span class="accessibility">Postems</span>
 	      	<% end %>
-	      </div>
       <% else %>
-      	<div class="">
-	      	<%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '2')}#display_postems" , class: "project-text-color grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link postems_link", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
-	      		<%= app_icons[:postem].html_safe %>
+	      	<%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '2')}#display_postems" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
+	      		<%= "#{app_icons[:postem]}Postems".html_safe %>
 	      		<span class="accessibility">Postems</span>
 	      	<% end %>
-	      </div>
 	    <% end %>
     </div>
-    <div class="scan_d">
+    <div class="scan_d grid__item one-third lap-one-third palm-one-whole">
     	<% if @search  %>
     		<div class="">
-	      	<%= link_to "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link scans_link", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
-	      		<%= app_icons[:camera].html_safe %>
+	      	<%= link_to "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
+	      		<%= "#{app_icons[:camera]}Scans".html_safe %>
 	      		<span class="accessibility">Scans</span>
 	      	<% end %>
       	</div>	
       <% else %>
 	      <div class="">
-	      	<%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link scans_link", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
-	      		<%= app_icons[:camera].html_safe %>
+	      	<%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
+	      		<%= "#{app_icons[:camera]}Scans".html_safe %>
 	      		<span class="accessibility">Scans</span>
 	      	<% end %>
 	      </div>
 	    <% end %>
     </div>
   <% if cookies.signed[:userid].present?%>
-  	<% unless @user.saved_entry.include?(@search_record.record_hash)%>
-		      <div class="idk_d">
-		      	<%= link_to app_icons[:heart].html_safe, favourite_entry_path(@search_record.RecordNumber,search_id: params[:search_id]) , data: {turbo_method: :post},  disable_with: "Processing..." , alt: 'Save Entry', class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link save_link" %>
-		      </div>
-		  <% else %>
-		      <div class="idk_d">
-		        <%= link_to app_icons[:heart_filled].html_safe, remove_favourite_path(@search_record.RecordNumber, search_id: params[:search_id]), data: {turbo_method: :post}, disable_with: 'Processing', alt: 'Unsave Entry', class: "grid__item one-third lap-one-third palm-one-whole soft-half--ends soft-half--sides table_link" %>
-		      </div>
-		  <% end %>
+    <div class ="grid__item one-third lap-one-third palm-one-whole">
+	  	<% unless @user.saved_entry.include?(@search_record.record_hash)%>
+			  <%= link_to app_icons[:heart].html_safe, favourite_entry_path(@search_record.RecordNumber,search_id: params[:search_id]) , data: {turbo_method: :post},  disable_with: "Processing..." , alt: 'Save Entry', class: "table_link save_link" %>
+			  <% else %>
+			    <%= link_to app_icons[:heart_filled].html_safe, remove_favourite_path(@search_record.RecordNumber, search_id: params[:search_id]), data: {turbo_method: :post}, disable_with: 'Processing', alt: 'Unsave Entry', class: "table_link" %>
+			  <% end %>
+		</div>
   <% end %>
 </div>
 

@@ -369,7 +369,8 @@ class SearchQueriesController < ApplicationController
       @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
     }
     @districts
-    @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales") || check_whole_england.empty? || check_whole_wales.empty?
+    # rbl 22.1.2025: removed this line to allow 'All England' and 'All Wales' to generate results in the District selection list:
+    # @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales") || check_whole_england.empty? || check_whole_wales.empty?
   end
 
   def end_year_val

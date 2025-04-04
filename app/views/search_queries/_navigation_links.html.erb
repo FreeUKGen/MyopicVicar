@@ -1,21 +1,23 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% unless print_friendly %>
  	<div class="grid">
-	  <nav class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom" role="navigation" aria-label="Search menu">
-			<%= link_to "View Search Criteria", '#search_criteria_container', class: "btn   btn--small" , id: "view_search_criteria"%>
-	    <%= link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn   btn--small " %>
-	    <%= link_to "New Search", new_search_query_path, :class => "btn   btn--small white_button" %>
-	    <% if @results_per_page.to_i <= 50 %>
-			<%= link_to( '<i class="fas fa-print"></i>&nbsp;&nbsp; Print'.html_safe, "#", class: "btn   btn--small", :onclick => 'window.print();return false;') %>
-			<%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %>
-			<%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}), class: "btn   btn--small" %>
-		<% end %>
-		<% if cookies.signed[:userid].present? %>
-	      <%= link_to "Save this search", save_search_path(@search_query.id), class: "btn   btn--small", method: "post" %>
-	      <% if @save_search_id.present? %>
-	        <%= link_to "Compare", compare_search_path(@search_query.id, saved_search_id: @save_search_id, compare_search: true), class: "btn   btn--small" %>
-	      <% end %>
-	    <% end %>
+	  <nav class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom flush--left hard--left" role="navigation" aria-label="Search menu">
+	  	<ul class='nav' style="<%= device_style %>" >
+				<li><%= link_to '<i class="fas fa-eye" style="padding-right:5px;"></i>View Search Criteria'.html_safe, '#search_criteria_container', id: "view_search_criteria"%></li>
+		    <li><%= link_to '<i class="far fa-edit" style="padding-right:5px;"></i>Revise Search'.html_safe, new_search_query_path(:search_id => @search_query) %></li>
+		    <li><%= link_to '<i class="fas fa-search" style="padding-right:5px;"></i>New Search'.html_safe, new_search_query_path %></li>
+		    <% if @results_per_page.to_i <= 50 %>
+					<li><%= link_to( '<i class="fas fa-print" style="padding-right:5px"></i>Print'.html_safe, "#", :onclick => 'window.print();return false;') %></li>
+					<li><%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
+					<li><%= link_to '<i class="fas fa-download" style="padding-right:5px"></i>Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
+			  <% end %>
+				<% if cookies.signed[:userid].present? %>
+			      <li><%= link_to "Save this search", save_search_path(@search_query.id), method: "post" %></li>
+			      <% if @save_search_id.present? %>
+			        <li><%= link_to "Compare", compare_search_path(@search_query.id, saved_search_id: @save_search_id, compare_search: true) %></li>
+			      <% end %>
+		    <% end %>
+	  	</ul>
   	</nav>
 	</div>
 <% end %>

@@ -1,7 +1,7 @@
 module DownloadAsCsv
   extend ActiveSupport::Concern
-  SEARCH_RESULTS_ATTRIBUTES = %w{ GivenName Surname RecordType Quarter District Volume Page }
-  FIELDS = ["Given Name", "Surname", "Record Type", "Quarter", "District", "Volume", "Page" ]
+  SEARCH_RESULTS_ATTRIBUTES = %w[GivenName Surname RecordType Quarter District Volume Page AssociateName AgeAtDeath].freeze
+  FIELDS = ["First Name", "Surname", "Record Type", "Registration Date", "Registration District", "Volume", "Page", "Mother's Maiden Name", "Spouse's Surname", "Age at Death/Date of Birth" ].freeze
   DOB_START_QUARTER = 530
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
@@ -9,16 +9,13 @@ module DownloadAsCsv
 
   def search_results_csv(array)
     CSV.generate(headers: true) do |csv|
-      message = 'You can only download 50 results.'
-      csv << [message]
+      csv << ['You can only download 50 results.']
       csv << FIELDS
       array.each do |record|
-        qn = record['QuarterNumber']
-        quarter = qn >= SearchQuery::EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
-        record_type = RecordType::display_name(["#{record[:RecordTypeID]}"])
-        record["RecordType"] = record_type
-        record["Quarter"] = quarter
-        csv << SEARCH_RESULTS_ATTRIBUTES.map{ |attr| record[attr] }
+        format_csv_data(record)
+        record = record.except!('AssociateName', 'AgeAtDeath')
+        search_results_attr =  SEARCH_RESULTS_ATTRIBUTES - ['AssociateName', 'AgeAtDeath']
+        csv << search_results_attr.map{ |attr| record[attr] }
       end
     end
   end
@@ -70,6 +67,41 @@ module DownloadAsCsv
       end
     end
     gedcom
+  end
+
+  private
+
+  def format_csv_data(record)
+    qn = record['QuarterNumber']
+    record['Quarter'] = format_quarter(qn)
+    record['RecordType'] = format_record_type(record[:RecordTypeID])
+
+    case record['RecordType']
+    when 'BIRTHS'
+      record['MotherMaidenName'] = record['AssociateName'].presence || 'No data'
+      record['SpouseSurname'] = ''
+      record['AgeAtDeathOrDateOfBirth'] = ''
+    when 'DEATHS'
+      record['MotherMaidenName'] = ''
+      record['SpouseSurname'] = ''
+      record['AgeAtDeathOrDateOfBirth'] = record['AgeAtDeath'].presence || 'No data'
+    when 'MARRIAGES'
+      record['MotherMaidenName'] = ''
+      record['SpouseSurname'] = record['AssociateName'].presence || 'No data'
+      record['AgeAtDeathOrDateOfBirth'] = ''
+    end
+  end
+
+  def format_quarter(quarter_number)
+    if quarter_number >= SearchQuery::EVENT_YEAR_ONLY
+      QuarterDetails.quarter_year(quarter_number)
+    else
+      QuarterDetails.quarter_human(quarter_number)
+    end
+  end
+
+  def format_record_type(record_type_id)
+    RecordType.display_name([record_type_id.to_s])
   end
 
 end

@@ -549,6 +549,11 @@ MyopicVicar::Application.routes.draw do
   get 'districts/:id/:friendly(.:format)', :to => 'districts#show', as: :district_friendly_url
   get 'districts/alphabet_selection', to: 'districts#alphabet_selection', as: :district_alphabet_selection
   get 'districts/districts_list', :to =>'districts#districts_list', :as => :districts_list
+  get 'districts/districts_overview', :to => 'districts#districts_overview', :as => :districts_overview
+  get 'districts/county_summary', :to => 'districts#county_summary', :as => :county_summary
+  get 'districts/select_district', :to => 'districts#show'
+  get 'districts/district_page_map', :to => 'districts#district_page_map', :as => :district_page_map
+  get 'districts/year_page_map', :to => 'districts#year_page_map', :as => :year_page_map
 
   resources :districts
   
@@ -646,6 +651,7 @@ MyopicVicar::Application.routes.draw do
   get '/about', :to => 'help#about_page'
   get '/about/:page.html.erb', :to => 'help#show_page'
   get '/about/:page', :to => 'help#show_page'
+  resources :coverage, :as => "coverage"
 
   # This line mounts Refinery's routes at the root of your application.
   # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.

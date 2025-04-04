@@ -1,10 +1,10 @@
 <div class='container push--bottom'>
   <div class="grid">
     <div class="desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole">
-      <span class="weight--semibold">We found <%= pluralize(number_with_delimiter(@result_count, :delimiter => ','), ' result', ' results') %> for <%= titleize_string(@search_query[:first_name])  %> <%= titleize_string(@search_query[:last_name]) %></span>
+      <span class="weight--semibold">We found <%= pluralize(number_with_delimiter(@result_count, :delimiter => ','), ' result', ' results') %> for <%= titleize_string(@search_query[:first_name])  %> <%= upcase_string(@search_query[:last_name]) %></span>
       <hr/>
       <%= form_tag search_query_path(@search_query), method: :get, id: 'filter_form' do %>
-        <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
+        <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole hard--left">
           <%= label_tag 'results_per_page', 'Show' %>
           <%= select_tag :results_per_page, options_for_select([5,20,40,60,80,100], selected: @results_per_page), id: 'results_per_page', tabindex: 0 %>
         </div>

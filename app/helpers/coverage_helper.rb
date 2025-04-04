@@ -1,0 +1,4 @@
+module CoverageHelper
+
+end
+

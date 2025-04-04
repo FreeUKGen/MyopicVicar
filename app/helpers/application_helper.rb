@@ -20,7 +20,8 @@ module ApplicationHelper
       "freereg" => '5004',
     }
   def nav_search_form_link
-    link_to('Search', main_app.new_search_query_path) unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
+    check_current_page(main_app.new_search_query_path)
+    #link_to('Search', main_app.new_search_query_path) unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
   end
 
   def nav_actions_page_link
@@ -31,8 +32,8 @@ module ApplicationHelper
 
   def nav_about_page_link
     #return if session[:userid_detail_id].present?
-
-    link_to 'About', '/about'
+    #link_to 'About', '/cms/about'
+    check_current_page('/about')
   end
 
   def nav_donate_page_link
@@ -69,6 +70,13 @@ module ApplicationHelper
     end
   end
 
+  def check_current_page(url)
+    link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
+    current_page?(url) ? (link_to nav_links.key(url).titleize, url, class: '') : (link_to nav_links.key(url), url, class: 'active')
+   # link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
+  end
+
+
   def nav_help_bmd_context
     suffix = ""
     if controller_name == 'search_queries'
@@ -102,7 +110,7 @@ module ApplicationHelper
     when 'freecen'
       link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
-      link_to('Records', main_app.district_alphabet_selection_path)
+      link_to('Database', main_app.districts_overview_path)
     end
   end
 
@@ -693,11 +701,11 @@ module ApplicationHelper
       left_arrow_pink: '<i class="fa fa-arrow-left"></i>',
       search: '<i class="fa fa-search"></i>',
       reset: '<i class="fas fa-times></i>',
-      postem: '<i class="fas fa-envelope"></i>',
+      postem: '<i class="fas fa-envelope" style="padding-right:5px"></i>',
       open_postem: '<i class="fas fa-envelope-open-text"></i>',
       scan_file: '<i class="fas fa-file-image"></i>',
       scan_file_filled: '<i class="fas fa-file-image"></i>',
-      camera: '<i class="fas fa-camera"></i>',
+      camera: '<i class="fas fa-camera" style="padding-right:5px"></i>',
       heart: '<i class="far fa-heart"></i>',
       heart_filled: '<i class="fas fa-heart"></i>'
     }
@@ -1140,5 +1148,9 @@ module ApplicationHelper
 
   def titleize_string(string)
     string.present? ? string.titleize : '' 
+  end
+
+  def upcase_string(string)
+    string.present? ? string.upcase : '' 
   end
 end

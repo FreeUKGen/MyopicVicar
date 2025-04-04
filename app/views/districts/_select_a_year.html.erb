@@ -1,0 +1,42 @@
+<div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="years">
+  <h3>Page Maps by Year</h3>
+  <p>Each Page Map lists the Page Number ranges found in the data for each District and Volume, for a specific Year, Quarter and Event Type (birth, marriage or death).
+    Choose a year, quarter and event type to see the corresponding Page Map.</p>
+  <div class="one-third lap-one-third palm-one-whole">
+  <form id="freebmd_year_select" action="year_page_map?locale=en" accept-charset="UTF-8" method="get">
+    <ol class="grid" style="margin-left: 0px !important;">
+      <li>
+        <div class="districtslabel">
+          <label class="ttip" for="year">Select a year</label>
+        </div>
+        <select class="one-whole push--bottom" class="select" id="year" name="year">
+          <% for y in 1837..1993 do %>
+              <option><%= y.to_s %></option>
+            <% end %>
+        </select>
+      </li>
+      <li>
+        <div class="districtslabel">
+          <label class="ttip" for="quarter">Select a quarter</label>
+        </div>
+        <select class="one-whole push--bottom" class="select" id="quarter" name="quarter">
+          <% for y in 1..4 do %>
+            <option><%= y %></option>
+          <% end %>
+        </select>
+      </li>
+      <li>
+        <div class="districtslabel">
+          <label class="ttip" for="event_type">Select an event type</label>
+        </div>
+        <select class="one-whole push--bottom" class="select" id="event_type" name="event_type">
+          <% for y in ["Births", "Marriages", "Deaths"] do %>
+            <option value="<%= y[0] %>"><%= y %></option>
+          <% end %>
+        </select>
+      </li>
+      <li class="action button_action grid__item one-whole push--bottom text--center" id="freebmd_year_submit_action"><button name="button" type="submit" class="btn btn--small">Select Page Map</button></li>
+    </ol>
+  </form>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+<% @county_code = params[:county_code] %>
+<% @county_name = ChapmanCode::name_from_code(@county_code) %>
+<%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
+<h1 class="title">Districts summary for <%= @county_name %></h1>
+<div class="grid">
+  <div class="grid__item seven-tenths lap-seven-tenths palm-one-whole ">
+    <p>Registration Districts in <%= @county_name %>. Click on a District name to see full details of that District.</p>
+      <table class="table--bordered">
+        <caption class='accessibility'>List of Districts in <%= @county_name %></caption>
+        <thead>
+        <tr>
+          <th>District</th>
+          <th>From</th>
+          <th>To</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @districts = DistrictToCounty.where(County: @county_code) %>
+        <% @districts_sorted = @districts.sort_by {|d| [[d.StartQN], [d.EndQN]]} %>
+        <% @districts_sorted.each do |district_scope| %>
+          <% @my_district = District.where(DistrictNumber: district_scope.DistrictNumber).first %>
+          <tr>
+            <td id="go_to_district">
+              <% if @my_district.present? %>
+                <%= link_to(@my_district.DistrictName, district_friendly_url_path(@my_district.district_friendly_url, id: @my_district.DistrictNumber)) %>
+              <% end %>
+            </td>
+            <td><%= "From #{QuarterDetails.quarter_human(district_scope.StartQN)}" %></td>
+            <td><%= district_scope.EndQN <  32657 ? " until #{QuarterDetails.quarter_human(district_scope.EndQN)}" : "to PRESENT" %></td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+  </div>
+</div>

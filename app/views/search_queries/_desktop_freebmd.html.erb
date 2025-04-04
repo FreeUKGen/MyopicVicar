@@ -12,41 +12,57 @@
     <% end %>
  <%# raise @search_query.bmd_record_type.inspect %>
     <% included_record_types = @search_query.bmd_record_type %>
+    <% order_field = @search_query.order_field %>
+    <!--p>Sort order is <%= order_field %></p-->
       <table class="table--bordered table--data">
         <% unless print_friendly %>
-          <caption class='accessibility'>Click on a column heading to sort by the contents of that column.</caption>
+          <caption class='accessibility'>Select a column heading to sort by the contents of that column.</caption>
         <% end %>
         <thead>
           <tr>
-            <th><% unless print_friendly %>
-              <%= link_to('First Name', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
-                <%= link_to('Surname', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
-            <% else %> Name <% end %></th>
-            <th><% unless print_friendly %>
-                <%= link_to('Record Type', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE)) %>
-              <% else %>Record Type<% end %></th>
-            <th><% unless print_friendly %>
-              <%= link_to('Registration Date', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE)) %>
-              <% else %>
-            Reg. Date <% end %></th>
-            <th><% unless print_friendly %>
-                <%= link_to('Registration District', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
-                <br/>Reference
-                <% else %>Reg. District <% end %></th>
-            <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
-              <th><% unless print_friendly %>
-                  <%= link_to('Mother\'s Maiden Name', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME)) %>
-                <% else %>Mother's Maiden Name<% end %></th>
-            <% end %>
-            <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
-              <th><% unless print_friendly %>
-                  <%= link_to('Spouse\'s Surname', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME)) %>
-                <% else %>Spouse's Surname<% end %></th>
-            <% end %>
-            <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
-              <th><% unless print_friendly %>
-                  <%= link_to('Age at Death/Date of Birth', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_AGE_AT_DEATH)) %>
-                <% else %>Age at Death/Date of Birth<% end %></th>
+            <% unless print_friendly %>
+              <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::SURNAME) %>>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::FIRSTNAME, 'First Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME, 'anchor': 'result_table_Surname')) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::SURNAME, 'Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME, 'anchor': 'result_table_Surname')) %>
+              </th>
+              <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE) %>>
+                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE, 'Record Type'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE, 'anchor': 'result_table_RecordTypeID')) %>
+              </th>
+              <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_DATE) %>>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_DATE, 'Registration Date'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE, 'anchor': 'result_table_QuarterNumber')) %>
+              </th>
+              <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::DISTRICT) %>>
+                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::DISTRICT, 'Registration District & Reference'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT, 'anchor': 'result_table_District')) %>
+              </th>
+              <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
+                <th  <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME) %>>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Mother\'s Maiden Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'anchor': 'result_table_AssociateName')) %>
+                </th>
+              <% end %>
+              <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
+                <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME) %>>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Spouse\'s Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'anchor': 'result_table_AssociateName')) %>
+                </th>
+              <% end %>
+              <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
+                <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH) %>>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, 'Age at Death/Date of Birth'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, 'anchor': 'result_table_AgeAtDeath')) %>
+                </th>
+              <% end %>
+            <% else %>
+              <th>Name</th>
+              <th>Record Type</th>
+              <th>Reg. Date</th>
+              <th>Reg. District & reference</th>
+              <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
+                <th>Mother's Maiden Name</th>
+              <% end %>
+              <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
+                <th>Spouse's Surname</th>
+              <% end %>
+              <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
+                <th>Age at Death/Date of Birth</th>
+              <% end %>
             <% end %>
           </tr>
         </thead>
@@ -59,13 +75,13 @@
               <%# unless print_friendly %>
                 <td>
                   <center>
-                    <%= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
+                    <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
                     <i><%= seen(@search_query,search_record) %></i>
                   </center>
                 </td>
               <%# end %>
               <td <% if print_friendly %> valign="top" <% end %> >
-                <center><%= "#{record_type}" %></center>
+                <center><%= "#{record_type}".capitalize.chop %></center>
               </td>
               <td class="table--data">
                 <%= format_quarter_year(search_record.QuarterNumber) %>
@@ -78,7 +94,7 @@
                     <% else %>
                       <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
                       <% if district.present? %>
-                        <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
+                        <%= link_to "#{search_record[:District]}".capitalize, district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
                      <% else %>
                        <%= search_record[:District] %>
                      <% end %>
@@ -88,24 +104,30 @@
                     <% end %>
               </td>
               <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
-              <td class="table--data">
-                <%= search_record[:AssociateName] if record_type == "BIRTHS" %>
-              </td>
+                <td class="table--data">
+                  <%= if record_type == "BIRTHS" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
+                </td>
               <% end %>
               <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
-              <td class="table--data">
-                <%= search_record[:AssociateName] if record_type == "MARRIAGES" %>
-              </td>
+                <td class="table--data">
+                  <%= if record_type == "MARRIAGES" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
+                </td>
               <% end %>
               <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
-              <td class="table--data">
-                <%= search_record[:AgeAtDeath] %>
-              </td>
+                <td class="table--data">
+                  <%= if record_type == "DEATHS" then value_or_no_data(search_record[:AgeAtDeath]) else '-' end %>
+                </td>
               <% end %>
             </tr>
           <% end %>
         </tbody>
       </table>
+      <div>
+        <h2 class="accessibility">Explanation of table entries</h2>
+        <p><b>Mother’s Maiden Name</b>, <b>Spouse’s Surname</b>, and <b>Age at Death/Date of Birth</b> are relevant for the records from 1993 onward.
+        If no data is available for a specific record, these fields will display ‘No data.’ A dash (‘-’) will appear in fields
+        that are not relevant to a particular event type.</p>
+      </div>
     <!--/div-->
     <% unless print_friendly %>
       <div class='text--center inline-block'>
