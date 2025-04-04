@@ -915,17 +915,10 @@ class Freereg1CsvEntry
       errors.add(:film_number, 'Invalid characters')
 
     end
-    unless FreeregValidations.cleantext(consecrated_ground)
-      errors.add(:consecrated_ground, 'Invalid characters')
-
-    end
+    
 
     unless FreeregValidations.cleantext(suffix)
       errors.add(:suffix, 'Invalid characters')
-
-    end
-    unless FreeregValidations.cleantext(burial_parish)
-      errors.add(:burial_parish, 'Invalid characters')
 
     end
 
@@ -1417,6 +1410,13 @@ class Freereg1CsvEntry
       end
       unless FreeregValidations.cleanage(person_age)
         errors.add(:person_age, 'Invalid age')
+      end
+      unless FreeregValidations.cleantext(burial_parish)
+        errors.add(:burial_parish, 'Invalid characters')
+      end
+      unless FreeregValidations.cleantext(consecrated_ground)
+        errors.add(:consecrated_ground, 'Invalid characters')
+
       end
       unless FreeregValidations.cleantext(relative_occupation)
         errors.add(:relative_occupation, 'Invalid characters')
