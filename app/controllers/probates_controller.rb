@@ -7,6 +7,12 @@ class ProbatesController < ApplicationController
     @probate.Event.build
   end
 
+  def index
+    @probate = Probate.new
+    @probate.Death.build
+    @probate.Event.build
+  end
+
   def show
     @search_id = params[:search_id]
     @search = params[:search_id].present? ? true : false
@@ -23,9 +29,7 @@ class ProbatesController < ApplicationController
   def edit
     @probate = Probate.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: probates_path, notice: 'The probate record was not found') && return if @probate.blank?
-
-    #@probate.Death.build
-    #@probate.Event.build
+    @probate.build
 
     render :edit
   end
