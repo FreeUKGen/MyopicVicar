@@ -41,6 +41,7 @@ class Freereg1CsvEntry
   field :film, type: String
   field :film_number, type: String
   field :suffix, type: String
+  field :alternate_forenames, type: Array
 
   #new common fields
   field :image_file_name, type: String
