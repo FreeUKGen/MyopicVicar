@@ -1,0 +1,59 @@
+<div class="grid__item ">
+  <% unless @uniq_coordinators.blank? %>
+    <section class="island ">
+      <div class="scrollable ">
+        <table class=" table--bordered my-width table--data just--left">
+          <thead >
+            <tr>
+              <th class='sticky-header'>UserID</th>
+              <th class='sticky-header'>Name</th>
+              <th class='sticky-header'>Email Address</th>
+              <th class='sticky-header'>Counties Coordinated</th>
+              <th class='sticky-header'>Syndicates Coordinated</th>
+            </tr>
+          </thead>
+          <tbody >
+            <% @uniq_coordinators.each do |userid| %>
+              <% user = UseridDetail.find_by(userid: userid) %>
+              <% if user.present? %>
+                <% logger.warn(user) %>
+                <% logger.warn(userid) %>
+                <tr id="<%= user.id %>">
+                  <td > <%= user.userid %>  </td>
+                  <td > <%= "#{user.person_forename} #{user.person_surname}" %>  </td>
+                  <td > <%= user.email_address %> </td>
+                  <% if user.county_groups.to_a.present? %>
+                    <% cc_names = []%>
+                    <td>
+                      <% user.county_groups.each do |cc| %>
+                        <% cc_name = ChapmanCode.name_from_code(cc) %>
+                        <% next if cc_names.include?(cc_name) %>
+                        <% cc_names << ChapmanCode.name_from_code(cc) %>
+                      <% end%>
+                      <%= cc_names.join(', ') %>
+                    </td>
+                  <% else %>
+                    <td>No counties coordinated</td>
+                  <% end %>
+                  <% if user.syndicate_groups.to_a.present? %>
+                    <td>
+                      <ol class='nav'>
+                         <% user.syndicate_groups.each do |sc| %>
+                           <li><%= sc %></li>
+                         <% end%>
+                      </ol>
+                    </td>
+                  <% else %>
+                    <td>No syndicates coordinated</td>
+                  <% end %>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <%else%>
+    There are no Coordinators
+  <% end %>
+</div>

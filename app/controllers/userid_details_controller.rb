@@ -601,7 +601,12 @@ class UseridDetailsController < ApplicationController
     end
   end
 
-
+  def coordinators_list
+    syndicate_coordinators = Syndicate.all.pluck(:syndicate_coordinator)
+    county_coordinators = County.all.pluck(:county_coordinator)
+    all_coordinators = syndicate_coordinators + county_coordinators
+    @uniq_coordinators = all_coordinators.uniq
+  end
 
   private
 
