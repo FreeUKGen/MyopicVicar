@@ -944,7 +944,7 @@ class SearchRecord
   end
 
   def clean_name(transcript_name)
-    transcript_name.delete(SYMBOLS_TO_CLEAN.join)
+    transcript_name.delete(SYMBOLS_TO_CLEAN.join.gsub('-', '\-'))
   end
 
   def other_possible_last_name last_names_hash
