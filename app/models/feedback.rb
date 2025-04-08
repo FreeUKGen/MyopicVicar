@@ -251,7 +251,7 @@ class Feedback
       Octokit.configure do |c|
         c.access_token = Rails.application.config.github_issues_access_token
       end
-      self.screenshot = nil
+      #self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
       logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
