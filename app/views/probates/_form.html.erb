@@ -9,7 +9,7 @@
     <%= f.input :SourceImage , :hint => "Source image", :label => "Source image", :input_html => {:size => "35", :class => "simple_form_bgcolour"} %>
     <%# raise @probate.Death.inspect %>
     <%#= f.input :LastName , :hint => "Last name", :value => @probate[:Death][:LastName], :label => "Surname", as: :string, :input_html => {:class => "simple_form_bgcolour"} %>
-    <%= f.fields_for :Death, @probate.Death do |death| %>
+    <%= f.fields_for :Death, @death do |death| %>
       <%#= raise death.inspect %>
       <%= death.input :LastName , :hint => "Last name", :label => "Surname", as: :string, :input_html => {:class => "simple_form_bgcolour"} %>
       <%= death.input :GivenName , :hint => "First name", :label => "Forename(s)", :input_html => {:class => "simple_form_bgcolour"} %>
@@ -17,19 +17,20 @@
       <%= death.input :Role, :hint => "Role or occupation", :label => "Role", :required => false, :input_html => {:class => "simple_form_bgcolour"} %>
       <%= death.input :Date , :hint => "Date of death", :label => "Date of death", :input_html => {:class => "simple_form_bgcolour"}  %>
     <% end %>
-    <%= f.simple_fields_for :Event, @probate.Event do |event| %>
+    <%= f.simple_fields_for :Event, @event do |event| %>
       <%= event.input :Type , :hint => "Event type", :label => "Type", :input_html => {:class => "simple_form_bgcolour"} %>
       <%= event.input :Court , :hint => "Probate Court", :label => "Court", :input_html => {:class => "simple_form_bgcolour"} %>
       <%= event.input :Date , :hint => "Date probate granted", :label => "Date granted", :input_html => {:class => "simple_form_bgcolour"} %>
-      <%= event.input :Person, :multiple => true, :label => "Executor", :required => false, :input_html => {:size => "35", :class => "simple_form_bgcolour"} %>
-      <%# if @probate[:Event][:Executors].present? %>
-        <%#= event.simple_fields_for :Executors do |exec| %>
-          <%#= exec.input :GivenName, :hint => "First name", :label => "Forename(s)", :required => false %>
-          <%#= exec.input :LastName, :hint => "Last name", :label => "Surname", :required => false %>
-          <%#= exec.input :Role, :hint => "Role or occupation", :label => "Role", :required => false %>
-        <%# end %>
-      <%#end %>
       <%= event.input :Value , :hint => "Value of estate", :label => "Value", :required => false, :input_html => {:class => "simple_form_bgcolour"} %>
+    <% end %>
+    <%= @executors.each do |executor| %>
+      <%= f.simple_fields_for :Executor, executor do |exec| %>
+       <%#= raise exec.inspect %>
+        <%= exec.input :FullName,  :hint => "Full name", :label => "Name", :required => false, :input_html => {:class => "simple_form_bgcolour"} %>
+        <%= exec.input :GivenName, :hint => "First name", :label => "Forename(s)", :required => false, :input_html => {:class => "simple_form_bgcolour"} %>
+        <%= exec.input :LastName, :hint => "Last name", :label => "Surname", :required => false, :input_html => {:class => "simple_form_bgcolour"} %>
+        <%= exec.input :Role, :hint => "Role or occupation", :label => "Role", :required => false, :input_html => {:class => "simple_form_bgcolour"} %>
+      <% end %>
     <% end %>
     <%= f.button :submit, 'Submit',:button_html => {:class => "btn  " }  %>
   <% end %>

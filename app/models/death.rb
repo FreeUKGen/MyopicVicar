@@ -2,6 +2,8 @@
 
 class Death
   include Mongoid::Document
+  include Mongoid::Attributes::Dynamic
+  field :PersonId, type: String
   field :LastName, type: String
   field :GivenName, type: String
   field :Address, type: String

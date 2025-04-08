@@ -1,5 +1,5 @@
   <table class="table--bordered table--data">
-    <caption class="accessibility">Entry Information about <%= @search_record[:Death][:GivenName] %> <%= @search_record[:Death][:LastName] %>  </caption>
+    <caption class="accessibility">Entry Information about <%= @death[:GivenName] %> <%= @death[:LastName] %>  </caption>
     <style>
       td { valign: top; text-align: left; }
       th { valign: top; text-align: left; }
@@ -15,50 +15,50 @@
     </tr>
     <tr>
       <th scope="row">Name</th>
-      <td><%= @search_record[:Death][:LastName] %> <%= @search_record[:Death][:GivenName] %></td>
+      <td><%= @death[:LastName] %> <%= @death[:GivenName] %></td>
     </tr>
-    <% if @search_record[:Death][:Address].present? %>
+    <% if @death[:Address].present? %>
       <tr>
         <th scope="row">Address</th>
-        <td><%= @search_record[:Death][:Address] %></td>
+        <td><%= @death[:Address] %></td>
       </tr>
     <% end %>
-    <% if @search_record[:Death][:Date].present? %>
+    <% if @death[:Date].present? %>
       <tr>
         <th scope="row">Date of death</th>
-        <td><%= @search_record[:Death][:Date] %></td>
+        <td><%= @death[:Date] %></td>
       </tr>
     <% end %>
     <tr>
       <th scope="row">Event type</th>
-      <td><%= @search_record[:Event][:Type] %></td>
+      <td><%= @event[:Type] %></td>
     </tr>
-    <% if @search_record[:Event][:Court].present? %>
+    <% if @event[:Court].present? %>
     <tr>
       <th scope="row">Court</th>
-      <td><%= @search_record[:Event][:Court] %></td>
+      <td><%= @event[:Court] %></td>
     </tr>
     <% end %>
-    <% if @search_record[:Event][:Date].present? %>
+    <% if @event[:Date].present? %>
     <tr>
-      <th scope="row"><%= @search_record[:Event][:Type] %> Date</th>
-      <td><%= @search_record[:Event][:Date] %></td>
+      <th scope="row"><%= @event[:Type] %> Date</th>
+      <td><%= @event[:Date] %></td>
     </tr>
     <% end %>
-    <% if @search_record[:Event][:Person].present? %>
+    <% if @event[:Person].present? %>
     <tr>
-      <th scope="row"><%= @search_record[:Event][:Type] %> People</th>
+      <th scope="row"><%= @event[:Type] %> People</th>
       <td>
-        <% @search_record[:Event][:Person].each do |p| %>
+        <% @event[:Person].each do |p| %>
           <%= p %><br/>
         <% end %>
       </td>
     </tr>
     <% end %>
-    <% if @search_record[:Event][:Value].present? %>
+    <% if @event[:Value].present? %>
     <tr>
-      <th scope="row"><%= @search_record[:Event][:Type] %> Value</th>
-      <td><%= @search_record[:Event][:Value] %></td>
+      <th scope="row"><%= @event[:Type] %> Value</th>
+      <td><%= @event[:Value] %></td>
     </tr>
     <% end %>
     </tbody>
