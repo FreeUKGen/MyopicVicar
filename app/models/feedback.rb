@@ -131,7 +131,6 @@ class Feedback
   def add_link_to_attachment
     return if self.screenshot_location.blank?
     website = Rails.application.config.website
-    website  = website.sub("www","www21") if website == "https://www.freereg.org.uk"
     go_to = "#{website}/#{self.screenshot_location}"
     body = self.body + "\n" + go_to
     self.update_attribute(:body, body)
