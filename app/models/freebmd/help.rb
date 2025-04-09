@@ -106,7 +106,7 @@ class Help
     prefix = '/help/'
     menu = '<div class="grid__item two-fifths lap-one-third palm-one-whole float--right">'
     menu += '<nav aria-labelledby="thisPage"><div class="islet islet--bordered">'
-    menu += '<h2 class="title-block" id="thisPage">Help Pages</h2>' if include_header
+    menu += '<h2 class="beta text--teal" id="thisPage">Help Pages</h2>' if include_header
     menu += '<ul class="sub-nav">'
     menu_hash.each do |key, value|
       if value.is_a? String
