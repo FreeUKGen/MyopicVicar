@@ -8,12 +8,12 @@ class Probate
   field :SourceImage, type: String
   embeds_one :death
   embeds_one :event
-  has_many :executors
+  embeds_many :executors
   accepts_nested_attributes_for :death, :event, :executors
 
   def build
-    #self.Death ||= Death.new
-    #self.Event ||= Event.new
+    self.Death ||= Death.new
+    self.Event ||= Event.new
     self
   end
 
