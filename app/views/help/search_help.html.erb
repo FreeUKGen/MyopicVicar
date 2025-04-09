@@ -1,4 +1,6 @@
-<h1 class="title text--center">Searching help</h1>
+<h1>Help: Searching</h1>
 <div class="grid">
-<%= render partial: 'intro' %>
+  <%= render partial: 'intro' %>
+  <%= Help.create_help_menu(Help::TopLevelPages, true) %>
+  <%= render partial: "help_searching_overview" %>
 </div>

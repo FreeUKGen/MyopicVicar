@@ -1,9 +1,9 @@
 <section id="certificates">
-  <h1 class="title text--center">Help: Order a Certificate</h1>
+  <h1>Help: Ordering a Certificate</h1>
   <div class="grid">
-    <%= Help.create_help_menu(Help::TopLevelPages) %>
-    <%#= render partial: 'intro' %>
-    <%#= render partial: "freebmd_database" %>
-    <%= Help.create_island(Help::Certificates) %>
+    <%= render partial: 'intro' %>
+    <%= Help.create_help_menu(Help::TopLevelPages, true) %>
+    <%= render partial: "help_order_certificate_2" %>
+    <%#= Help.create_island(Help::Certificates) %>
   </div>
 </section>

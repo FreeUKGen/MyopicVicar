@@ -4,11 +4,11 @@ class Help
 
   TopLevelPages = {
     'search_help' => 'Search',
-    'results_help' => 'View Results',
-    'download_help' => 'Download or Share your results',
-    'entry_help' => 'Entry Information',
-    'certificates_help' => 'Order a Certificate',
-    'explore_help' => 'Database'
+    'results' => 'View Results',
+    'downloading' => 'Download or Share your results',
+    'entry' => 'Entry Information',
+    'certificates' => 'Order a Certificate',
+    'database' => 'Database'
     #    'more_help' => 'More Help'
   }
 

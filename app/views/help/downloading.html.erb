@@ -1,9 +1,9 @@
 <section id="downloading">
-  <h1 class="title text--center">Help: Downloading and Sharing Your Results</h1>
+  <h1>Help: Downloading and sharing your results</h1>
   <div class="grid">
-    <%= Help.create_help_menu(Help::TopLevelPages) %>
-    <%#= render partial: 'intro' %>
-    <%#= render partial: "freebmd_database" %>
-    <%= Help.create_island(Help::Downloading) %>
+    <%= render partial: 'intro' %>
+    <%= Help.create_help_menu(Help::TopLevelPages, true) %>
+    <%= render partial: 'help_download_share_results' %>
+    <%#= Help.create_island(Help::Downloading) %>
   </div>
 </section>
