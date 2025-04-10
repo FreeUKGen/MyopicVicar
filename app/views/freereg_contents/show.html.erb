@@ -8,5 +8,12 @@
 <%= render 'flash_notice' %>
 <h2 class="accessibility">Places for which information should exist</h2>
 <% loc = (@character) ? "#{@county} (#{@character})" : @county %>
-<p >Click on the Place, Church or Register name for more details at that level. (On a smart-phone, try <q>landscape</q> view for Place details page.)</p>
-<%= render 'show_body' %>
+<div class="grid">
+  <div class="grid__item three-quarters">
+    <p >Click on the Place, Church or Register name for more details at that level. (On a smart-phone, try <q>landscape</q> view for Place details page.)</p>
+    <%= render 'show_body' %>
+  </div>
+  <div class="grid__item one-quarter">
+    <%= img_tag("fmp_300_600.gif") %>
+  </div>
+</div>
