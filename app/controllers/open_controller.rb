@@ -1,5 +1,5 @@
 class OpenController < ApplicationController
-  skip_before_action :require_login
+  #skip_before_action :require_login
 
   FREEREG_RECORD_TYPE_DESCRIPTION = "baptisms, marriages and burials"
   FREECEN_RECORD_TYPE_DESCRIPTION = "census records"

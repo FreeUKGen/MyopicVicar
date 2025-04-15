@@ -131,7 +131,6 @@ class Feedback
   def add_link_to_attachment
     return if self.screenshot_location.blank?
     website = Rails.application.config.website
-    website  = website.sub("www","www21") if website == "https://www.freereg.org.uk"
     go_to = "#{website}/#{self.screenshot_location}"
     body = self.body + "\n" + go_to
     self.update_attribute(:body, body)
@@ -252,7 +251,7 @@ class Feedback
       Octokit.configure do |c|
         c.access_token = Rails.application.config.github_issues_access_token
       end
-      self.screenshot = nil
+      #self.screenshot = nil
       response = Octokit.create_issue(Rails.application.config.github_issues_repo, issue_title, issue_body, :labels => [])
       logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
