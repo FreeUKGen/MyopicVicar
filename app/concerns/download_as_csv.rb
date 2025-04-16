@@ -1,6 +1,6 @@
 module DownloadAsCsv
   extend ActiveSupport::Concern
-  SEARCH_RESULTS_ATTRIBUTES = %w[GivenName Surname RecordType Quarter District Volume Page AssociateName AgeAtDeath].freeze
+  SEARCH_RESULTS_ATTRIBUTES = %w[GivenName Surname RecordType Quarter District Volume Page AssociateName AgeAtDeath MotherMaidenName SpouseSurname AgeAtDeathOrDateOfBirth].freeze
   FIELDS = ["First Name", "Surname", "Record Type", "Registration Date", "Registration District", "Volume", "Page", "Mother's Maiden Name", "Spouse's Surname", "Age at Death/Date of Birth" ].freeze
   DOB_START_QUARTER = 530
   SPOUSE_SURNAME_START_QUARTER = 301
@@ -78,7 +78,7 @@ module DownloadAsCsv
 
     case record['RecordType']
     when 'BIRTHS'
-      record['MotherMaidenName'] = record['AssociateName'].presence || 'No data'
+      record["MotherMaidenName"] = record['AssociateName'].presence || 'No data'
       record['SpouseSurname'] = ''
       record['AgeAtDeathOrDateOfBirth'] = ''
     when 'DEATHS'
@@ -87,7 +87,7 @@ module DownloadAsCsv
       record['AgeAtDeathOrDateOfBirth'] = record['AgeAtDeath'].presence || 'No data'
     when 'MARRIAGES'
       record['MotherMaidenName'] = ''
-      record['SpouseSurname'] = record['AssociateName'].presence || 'No data'
+      record["SpouseSurname"] = record['AssociateName'].presence || 'No data'
       record['AgeAtDeathOrDateOfBirth'] = ''
     end
   end

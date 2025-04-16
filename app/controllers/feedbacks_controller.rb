@@ -51,7 +51,9 @@ class FeedbacksController < ApplicationController
     @feedback.session_data['warden_user_authentication_devise_user_key_session'] = @feedback.session_data['warden.user.authentication_devise_user.session']
     @feedback.session_data.delete('warden.user.authentication_devise_user.session') if @feedback.session_data['warden.user.authentication_devise_user.session'].present?
     @feedback.session_id = session.to_hash['session_id']
-    @feedback.save
+    if @feedback.save
+      @feedback.github_issue
+    end
     redirect_back(fallback_location: new_feedback_path, notice: 'There was a problem creating your feedback!') && return if @feedback.errors.any?
 
     flash.notice = 'Thank you for your feedback!'

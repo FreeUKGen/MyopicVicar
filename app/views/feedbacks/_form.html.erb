@@ -11,6 +11,7 @@
 <%= simple_form_for(@feedback, :html => {:multipart => true}) do |f| %>
   <%= f.input :title, :label => "Summary" , :input_html => {:class => "simple_form_bgcolour ", :size => 40 }%>
   <%= f.input :body, :label =>"Description" ,as: :text, :input_html => { :class => "simple_form_bgcolour ",:rows => 10, :cols =>60 , :placeholder => "Enter your comments"}%>
+  <%= f.input :feedback_type, label:  "Nature of feedback", include_blank: false,  collection: [['Bug', 'bug'], ['Website Problem', 'website']], :input_html => {class: "simple_form_bgcolour overide_selection_field_width"}%>
   <%= f.input :screenshot, :label => "Screenshot: Only jpg, jpeg, png or gif file" %>
   <%= f.input :feedback_time, :as => :hidden %>
   <% if @user.present? %>
@@ -19,9 +20,19 @@
     <%= f.input :user_name, label: 'Your name', :input_html => {:class => "simple_form_bgcolour ", :size => 40 } %>
     <%= f.input :email_address, label: 'Your email address', :input_html => {:class => "simple_form_bgcolour ", :size => 40 } %>
   <% end %>
+  <%#= f.input :feedback_type %>
+  <%#= f.input :feedback_type, label:  "Nature of feedback", include_blank: false,  collection: [['Bug', 'bug'], ['Website Problem', 'website']], :input_html => {:class => "simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2}%>
   <%= f.input :session_id, :as => :hidden %>
   <%= f.input :problem_page_url,  as: :hidden %>
   <%= f.input :previous_page_url, as: :hidden %>
   <%= f.input :feedback_type, as: :hidden %>
   <%= f.button :submit, 'Submit Feedback Report'   %>
 <% end %>
+<script>
+  var elements = document.querySelectorAll("form *");
+  console.log(elements);
+// Loop through the elements and remove the class
+for (var i = 0; i < elements.length; i++) {
+    elements[i].classList.remove("select");
+}
+</script>

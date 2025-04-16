@@ -3,7 +3,16 @@
     <% if print_friendly %>
   <style type="text/css">
     @media print {
-        .accessibility { display:none; }
+      .accessibility { display:none; }
+      .results {
+        overflow: visible;
+      }
+      .results td {
+        visiblity: visible;
+      }
+      table>thead>tr>th:first-child{
+        display:block !important;
+      }
     }
   </style>
       <div style="border: 1px solid black; margin-bottom: 10px;">
@@ -14,7 +23,7 @@
     <% included_record_types = @search_query.bmd_record_type %>
     <% order_field = @search_query.order_field %>
     <!--p>Sort order is <%= order_field %></p-->
-      <table class="table--bordered table--data">
+      <table class="table--bordered table--data results">
         <% unless print_friendly %>
           <caption class='accessibility'>Select a column heading to sort by the contents of that column.</caption>
         <% end %>
@@ -134,5 +143,3 @@
         <%= paginate @paginatable_array if @paginatable_array.present? %>
       </div>
     <% end %>
-
-

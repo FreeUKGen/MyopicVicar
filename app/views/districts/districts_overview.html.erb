@@ -2,7 +2,8 @@
 <script
   src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
   integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
-  crossorigin="anonymous"></script>
+  crossorigin="anonymous">
+</script>
 
 <div class="grid">
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
@@ -24,11 +25,9 @@
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
     <h2 class="accessibility">Database contents</h2>
-    <p>These pages contain information about each County and Registration District in the database. They show the county/ies within which each
-      District fell. There is detailed information about each District, including how many records the database holds, and a list of all the
-      forenames and surnames encountered there. Page maps use the collated data to list the expected ranges of page numbers for each volume in
-    each District.</p>
-    <hr/>
+    <p>These pages contain information about each County and Registration District in the database, showing the duration of each District,
+      and the county/ies within which it fell. There is everything from detailed
+      county and district listings, right down to how many records the database holds for every year for an individual registration district.</p>
   </div>
 
   <%= render(partial: 'select_a_county') %>
@@ -43,45 +42,38 @@
     </div>
   </div>
   <%= render(partial: 'select_districts') %>
-  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" style="clear: both">
-    <hr/>
-  </div>
   <%= render(partial: 'select_a_year') %>
-  <div class="grid__item three-fifths lap-two-thirds palm-one-whole" style="clear: both">
-    <hr/>
-  </div>
 
-      <script>
+  <script>
 
-          $('#search_query_chapman_codes').autocomplete({
-              source: function (request, response) {
-                  $.ajax({
-                      autoFocus: true,
-                      url: "/search_queries/select_counties/", // should be with '/'
-                      dataType: 'json',
-                      data: { prefix: request.term },
-                      success: function(data) {
-                          // call response to return the result to autocomplete box
-                          console.log(data);
-                          response(data);
-                      }
-                  });
-              },
-              focus: function() {
-                  // prevent value inserted on focus
-                  return false;
-              },
-              select: function( event, ui ) {
-                  var terms = split( this.value );
-                  // remove the current input
-                  terms.pop();
-                  // add the selected item
-                  terms.push( ui.item.value );
-                  // add placeholder to get the comma-and-space at the end
-                  terms.push( "" );
-                  this.value = terms.join( ", " );
-                  return false;
-              }
-          });
-      </script>
-</div>
+      $('#search_query_chapman_codes').autocomplete({
+          source: function (request, response) {
+              $.ajax({
+                  autoFocus: true,
+                  url: "/search_queries/select_counties/", // should be with '/'
+                  dataType: 'json',
+                  data: { prefix: request.term },
+                  success: function(data) {
+                      // call response to return the result to autocomplete box
+                      console.log(data);
+                      response(data);
+                  }
+              });
+          },
+          focus: function() {
+              // prevent value inserted on focus
+              return false;
+          },
+          select: function( event, ui ) {
+              var terms = split( this.value );
+              // remove the current input
+              terms.pop();
+              // add the selected item
+              terms.push( ui.item.value );
+              // add placeholder to get the comma-and-space at the end
+              terms.push( "" );
+              this.value = terms.join( ", " );
+              return false;
+          }
+      });
+  </script>

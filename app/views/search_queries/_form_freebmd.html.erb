@@ -299,7 +299,7 @@
 
     </fieldset>
     <div>
-      <span><%= link_to 'Help with searching', '/cms/help'+nav_help_bmd_context %></span>
+      <span><%= link_to 'Help with searching', '/help' %></span>
     </div>
     <div class="grid action">
         <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
@@ -395,7 +395,7 @@
             });
 
             var chapman_codes = <%= raw @search_query.chapman_codes %>;
-            if (chapman_codes) {
+            if (chapman_codes && chapman_codes.length > 0) {
                 $.ajax({
                     url: "/search_queries/districts_of_selected_counties",
                     type: "GET",
@@ -405,7 +405,18 @@
                       selected_districts: <%= raw @search_query.districts %>
                     }
                 });
+            } else {
+
+          $.ajax({
+            url: "/search_queries/districts_of_selected_counties",
+            type: "GET",
+            data: {
+              selected_counties: 'all',
+              county_code: false,
+              selected_districts: <%= raw @search_query.districts %>
             }
+          });
+          }
 
             $("#from_year").change(function() {
                 var year = $("#from_year").val();

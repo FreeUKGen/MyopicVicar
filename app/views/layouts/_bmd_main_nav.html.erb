@@ -1,3 +1,10 @@
+<style>
+#bmd_main_nav a {
+  font-size: 20px;
+  font-weight: bold;
+}
+</style>
+
 <!--div class='kittu'>
     <nav class='Navbar'>
         <div class="Navbar__Link Navbar__Link-brand kodhandam">
@@ -59,7 +66,7 @@
     <!--div class="offcanvas__secondary"-->
       <div class="site__header__nav__inner">
        
-        <nav class="main-nav float--right" role="navigation" aria-label="Main menu">
+        <nav class="main-nav float--right" role="navigation" aria-label="Main menu" id="bmd_main_nav">
            <ul class="nav hide_nav capitalize">
             <% if nav_search_form_link.present?%>
               <li><%= nav_search_form_link %></li>
@@ -82,9 +89,9 @@
             <% if nav_freecen_gazetteer.present?%>
               <li><%= nav_freecen_gazetteer %></li>
             <% end %>
-            <% if nav_help_bmd_context.present?%>
+            <%# if nav_help_bmd_context.present?%>
               <li><%= link_to 'Help', '/help' %></li>
-            <% end %>
+            <%# end %>
           </ul>
         </nav>
       </div>
@@ -123,5 +130,3 @@
     </nav>
   </div>
 </div>
-
-    
