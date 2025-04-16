@@ -72,7 +72,7 @@ module ApplicationHelper
 
   def check_current_page(url)
     #link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
-    current_page?(url) ? (link_to nav_links.key(url).titleize, url, class: '') : (link_to nav_links.key(url), url, class: 'active')
+    #current_page?(url) ? (link_to nav_links.key(url).titleize, url, class: '') : (link_to nav_links.key(url), url, class: 'active')
    # link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
   end
 

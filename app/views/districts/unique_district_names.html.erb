@@ -1,4 +1,4 @@
-<% title "Names found in #{@district.DistrictName} District" %>
+<% title "#{params[:record_type].capitalize} #{@name_type == "0" ? "surnames" : "forenames"} found in #{@district.DistrictName} District" %>
 <div class="container">
   <section class="island ">
     <div class="text--center">
