@@ -400,7 +400,10 @@ MyopicVicar::Application.routes.draw do
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do
-    collection { post :import }
+    collection do
+      post :import
+      get :coordinators_list
+    end
   end
 
   get  'manage_counties/selection',  :to => 'manage_counties#being_validated', constraints: ManageCountiesBeingValidatedConstraint, :as => :selection_being_validated_manage_counties

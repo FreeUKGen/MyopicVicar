@@ -601,7 +601,20 @@ class UseridDetailsController < ApplicationController
     end
   end
 
+  def coordinators_list
+    coordinator_ids = County.distinct(:county_coordinator)
+      .concat(Syndicate.distinct(:syndicate_coordinator))
+      .compact
+      .uniq
 
+    @coordinators = UseridDetail.where(userid: coordinator_ids)
+      .includes(:county_groups, :syndicate_groups)
+      .to_a
+      .index_by(&:userid)
+
+    @county_names = ChapmanCode::CODES.invert
+  end
+    
 
   private
 
