@@ -142,7 +142,7 @@ module UseridRole
     'CAP Report' => '/freecen2_pieces/cap_report',
     'System Roles' => '/userid_details/list_roles_and_assignees',
     'Image Server' => '/image_server_groups',
-    'Coordinators list' => 'userid_details/coordinators_list'
+    'Coordinators list' => '/userid_details/coordinators_list'
   }
 
   OPTIONS_TITLES = {
