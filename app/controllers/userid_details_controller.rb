@@ -607,12 +607,12 @@ class UseridDetailsController < ApplicationController
       .compact
       .uniq
 
-    @coordinators = UseridDetail.where(userid: coordinator_ids)
-      .includes(:county_groups, :syndicate_groups)
+    @coordinators = UseridDetail.in(userid: coordinator_ids)
       .to_a
       .index_by(&:userid)
+      .sort_by(&:userid)
 
-    @county_names = ChapmanCode::CODES.invert
+    @county_names = ChapmanCode::CODES.values.reduce({}, :merge).invert
   end
     
 
