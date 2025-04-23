@@ -22,6 +22,9 @@ class ImageServerGroup
   field :syndicate_code, type: String
   field :assign_date, type: String
   field :number_of_images, type: Integer
+  field :allocation_requested_by, type:String
+  field :allocation_requested_through_syndicate, type: String
+
 
   attr_accessor :custom_field
 
@@ -335,6 +338,7 @@ class ImageServerGroup
       when 'a'
         self.update(:assign_date=>Time.now.iso8601)
         ig = self.first
+        ig.update_attributes(syndicate_code: ig.allocation_requested_through_syndicate)
         UserMailer.notify_sc_allocate_request_rejection(user,ig.group_name,ig.syndicate_code,'allocate').deliver_now
 
         flash_notice = 'Image Group successfully allocated'
