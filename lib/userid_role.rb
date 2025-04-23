@@ -141,7 +141,8 @@ module UseridRole
     'Find Pieces' => '/freecen2_pieces/enter_piece_number',
     'CAP Report' => '/freecen2_pieces/cap_report',
     'System Roles' => '/userid_details/list_roles_and_assignees',
-    'Image Server' => '/image_server_groups'
+    'Image Server' => '/image_server_groups',
+    'Coordinators list' => 'userid_details/coordinators_list'
   }
 
   OPTIONS_TITLES = {
