@@ -1255,9 +1255,69 @@ module ApplicationHelper
   end
 
   #fmp
-  def fmp_advert(county_advert_link, type)
-    banner = send(county_advert_link)[type]
-    banner.html_safe
+  FMP_ADVERTS = {
+    'sry' => {
+      'reg' => {
+        square: {},
+        skyscraper: {
+          's' => '3887392',
+          'v' => '2114',
+          'q' => '514627',
+          'r' => '1869332'
+        }
+      }
+    },
+    'lan' => {
+      'reg' => {
+        square: {},
+        skyscraper: {
+          's' => '3887391',
+          'v' => '2114',
+          'q' => '514627',
+          'r' => '1869332'
+        }
+      }
+    },
+    'ham' => {
+      'reg' => {
+        square: {},
+        skyscraper: {
+          's' => '3887388',
+          'v' => '2114',
+          'q' => '514627',
+          'r' => '1869332'
+        }
+      }
+    },
+    'ess' => {
+      'reg' => {
+        square: {},
+        skyscraper: {
+          's' => '3887387',
+          'v' => '2114',
+          'q' => '514627',
+          'r' => '1869332'
+        }
+      }
+    },
+    'dev' => {
+      'reg' => {
+        square: {},
+        skyscraper: {
+          's' => '3887386',
+          'v' => '2114',
+          'q' => '276741',
+          'r' => '1869332'
+        }
+      }    
+    }
+  }.freeze
+
+  def fmp_advert(chapman_code, type)
+    banner = FMP_ADVERTS[chapman_code.downcase]['reg'][type]
+    content_tag :a, href: "https://www.awin1.com/cread.php?#{banner.map { |k, v| "#{k}=#{v}" }.join('&')}" do
+      content_tag :img, src: "https://www.awin1.com/cshow.php?#{banner.map { |k, v| "#{k}=#{v}" }.join('&')}"
+    end
   end
 
   def fmp_Advert_sry
