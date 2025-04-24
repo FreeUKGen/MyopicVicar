@@ -1253,4 +1253,87 @@ module ApplicationHelper
     fuse_tags = {"freereg" =>'3271', "freecen" => '3270'}
     src = "https://cdn.fuseplatform.net/publift/tags/2/#{fuse_tags[appname_downcase]}/fuse.js"
   end
+
+  #fmp
+  def fmp_advert(county_advert_link, type)
+    banner = send(county_advert_link)[type]
+    banner.html_safe
+  end
+
+  def fmp_Advert_sry
+    {
+      long: '
+      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887392&v=2114&q=514627&r=1869332">
+        <img src="https://www.awin1.com/cshow.php?s=3887392&v=2114&q=514627&r=1869332" border="0">
+      </a>
+      ',
+      short: ''
+    }
+  end
+
+  def fmp_advert_lan
+    {
+      long: '
+      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887391&v=2114&q=514627&r=1869332">
+        <img src="https://www.awin1.com/cshow.php?s=3887391&v=2114&q=514627&r=1869332" border="0">
+      </a>
+      ',
+      short: ''
+    }
+  end
+
+  def fmp_advert_ken
+    {
+      long: '
+      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887390&v=2114&q=514627&r=1869332">
+        <img src="https://www.awin1.com/cshow.php?s=3887390&v=2114&q=514627&r=1869332" border="0">
+      </a>
+      ',
+      short: ''
+    }
+  end
+  
+  def fmp_advert_hrt
+    {
+      long: '
+      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887389&v=2114&q=514627&r=1869332">
+        <img src="https://www.awin1.com/cshow.php?s=3887389&v=2114&q=514627&r=1869332" border="0">
+      </a>
+      ',
+      short: ''
+    }
+  end
+
+  def fmp_advert_ham
+    {
+      long: '
+      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887388&v=2114&q=514627&r=1869332">
+        <img src="https://www.awin1.com/cshow.php?s=3887388&v=2114&q=514627&r=1869332" border="0">
+      </a>
+      ',
+      short: ''
+    }
+  end
+
+  def fmp_advert_ess
+    {
+      long: '
+      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887387&v=2114&q=514627&r=1869332">
+        <img src="https://www.awin1.com/cshow.php?s=3887387&v=2114&q=514627&r=1869332" border="0">
+      </a>
+      ',
+      short: ''
+    }
+  end
+
+  def fmp_advert_dev
+    {
+      long: '
+      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887386&v=2114&q=276741&r=1869332">
+        <img src="https://www.awin1.com/cshow.php?s=3887386&v=2114&q=276741&r=1869332" border="0">
+      </a>
+      ',
+      short: ''
+    }
+  end
 end
