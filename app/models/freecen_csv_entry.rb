@@ -176,13 +176,15 @@ class FreecenCsvEntry
     end
 
     def propagation_scope(entry, chapman_code)
-      if  entry.verbatim_birth_county == chapman_code ||
-          %w[OVF ENG SCT IRL WLS CHI].include?(entry.verbatim_birth_county) ||
-          (chapman_code == 'HAM' && %w[HAM IOW].include?(entry.verbatim_birth_county)) ||
-          (chapman_code == 'YKS' && %w[YKS ERY WRY NRY].include?(entry.verbatim_birth_county))
-        scope = 'Collection'
-      else
-        scope = 'File'
+      scope = 'File'
+      prop_rec_exists = FreecenPobPropagation.where(scope_year: 'ALL', scope_county: 'ALL', match_verbatim_birth_county: entry.verbatim_birth_county, match_verbatim_birth_place: entry.verbatim_birth_place).exists?
+      unless prop_rec_exists
+        if  entry.verbatim_birth_county == chapman_code ||
+            %w[OVF ENG SCT IRL WLS CHI].include?(entry.verbatim_birth_county) ||
+            (chapman_code == 'HAM' && %w[HAM IOW].include?(entry.verbatim_birth_county)) ||
+            (chapman_code == 'YKS' && %w[YKS ERY WRY NRY].include?(entry.verbatim_birth_county))
+          scope = 'Collection'
+        end
       end
       scope
     end

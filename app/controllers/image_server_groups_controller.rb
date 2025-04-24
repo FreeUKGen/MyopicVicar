@@ -190,6 +190,7 @@ class ImageServerGroupsController < ApplicationController
   def request_cc_image_server_group
     image_server_group = ImageServerGroup.id(params[:id])
     ig = image_server_group.first
+    current_syndicate = session[:syndicate]
 
     sc = UseridDetail.where(:id=>params[:user], :email_address_valid => true).first
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'SC does not exist') && return if sc.blank?
@@ -202,7 +203,8 @@ class ImageServerGroupsController < ApplicationController
 
     ImageServerImage.update_image_status(image_server_group, 'ar')
 
-    ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
+    #ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
+     ImageServerGroup.find(:id=>ig.id).update_attributes(allocation_requested_by: sc.userid, allocation_requested_through_syndicate: current_syndicate)
     UserMailer.request_cc_image_server_group(sc, cc.email_address, ig.group_name).deliver_now
 
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'Email send to County Coordinator')
@@ -304,6 +306,9 @@ class ImageServerGroupsController < ApplicationController
     @user = UseridDetail.where(:userid=>session[:userid]).first
     image_server_group = ImageServerGroup.id(params[:id]).first
     website = image_server_group.create_upload_images_url(@user.id)
+    #test_website = 'test3'
+    #request.original_url.include?(test_website) ? test_url = test_website : test_url = ''
+    #website = website + "&website=#{test_url}"
     redirect_to(website) && return
   end
 

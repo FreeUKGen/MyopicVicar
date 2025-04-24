@@ -376,7 +376,7 @@ class CsvFile < CsvFiles
     rescue => e
       p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}"
       p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.backtrace.inspect}"
-      error_message = " We were unable to complete the file #{@userid}\t#{@file_name}. because #{e.message} Please contact your coordinator or the System Administrator with this message. #{e.backtrace.inspect}<br>"
+      error_message = " We were unable to complete the file #{@userid}\t#{@file_name}. because #{e.message} Please contact your coordinator or the System Administrator with this message.<br>"
       project.write_messages_to_all(error_message, true)
       project.write_messages_to_all("Rescued from crash #{e.message}", true)
       project.write_log_file("#{e.message}")
@@ -774,7 +774,8 @@ class CsvFile < CsvFiles
       batch.update_attributes( :file_processed => true, :file_processed_date => Time.new,:waiting_to_be_processed => false, :waiting_date => nil)
     else
       #only checked for errors so file is not processed into search database
-      batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
+      batch.destroy
+      #batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
     end
   end
 
