@@ -7,7 +7,9 @@
     <%= semantic_form_for(@message, :html => {:multipart => true}) do |f| %>
       <li  class="grid__item  two-fifths  palm-one-whole text--center push--bottom "></li>
       <li  class="grid__item  one-third  palm-one-whole text--center push--bottom " id="message_recipients">
-        <label class="ttip" for="recipients" tabindex="0"> Recipients  <%= image_tag 'png/info.png', alt: 'Info', height: '16' %><span  class=" ttip__text">You may select multiple individuals</span></a></label>
+        <label class="ttip" for="recipients" tabindex="0"> Recipients  <%= image_tag 'png/info.png', alt: 'Info', height: '16' %><span  class=" ttip__text">You may select multiple individuals</span></a><br>
+          <small>Hold Ctrl for multiple</small>
+        </label>
       <select id="recipients" name="recipients[]"  multiple="multiple" class="select" required="required" size="4">
         <%= recipients_list %>
       </select>

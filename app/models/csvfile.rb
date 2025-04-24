@@ -148,7 +148,7 @@ class Csvfile < CarrierWave::Uploader::Base
         #end
         process = true
       elsif processing_time >= 600
-        batch.update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
+        batch.destroy #update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
         message = "Your file #{file_name} is not being processed in its current form as it is too large. Your coordinator and the data managers have been informed. Please discuss with them how to proceed. "
         UserMailer.report_to_data_manger_of_large_file(file_name, userid).deliver_now
         process = false
