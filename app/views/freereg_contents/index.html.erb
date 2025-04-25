@@ -5,6 +5,7 @@
 }
 .inline_list {
   display: inline;
+  padding: 10px;
 }
 @media only screen and (min-width: 800px) {
   .default_class {
@@ -41,7 +42,8 @@
     <li class="grid__item one-third palm-one-whole">
       <h3 class="text--center">Advertisement</h3>
       <div class="adsense_box push--ends">
-        <%#= my_heritage_300_250_cen %>
+        <%= fmp_advert(@chapman_code, :square) %>
+        <%#= image_tag('gif/fmp_300_250.gif')%>
       </div>
     </li>
   <% end %>
@@ -50,16 +52,20 @@
   <div class="default_class">
     <div class="grid__item one-third palm-one-whole">
       <h3 class="">General County Information</h3>
-      <h3 class="delta">As of today …</h3>
-      <p class=""><%= @county %> has <%= display_number(@records[0])%> these records:</p>
-      <ul class="">
+      <p><span class="delta">As of today:</span> <%= @county %> has <%= display_number(@records[0])%> records.</p>
+      <!--ul class="">
         <li class="inline_list"><%= display_number(@records[1])%> baptisms</li>
         <li class="inline_list"><%=display_number(@records[2])%> burials</li>
         <li class="inline_list"><%= display_number(@records[3])%> marriages</li>
-      </ul>
+      </ul-->
     </div>
     <div class="grid__item one-third palm-one-whole">
       <p>Coordinator: <span class="weight--semibold"><%= @coordinator %></span></p>
+      <ul style="margin-left:10px;">
+        <li class=""><%= display_number(@records[1])%> baptisms</li>
+        <li class=""><%=display_number(@records[2])%> burials</li>
+        <li class=""><%= display_number(@records[3])%> marriages</li>
+      </ul>
     </div>
   </div>
 </div>

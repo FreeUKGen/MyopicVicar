@@ -1258,7 +1258,12 @@ module ApplicationHelper
   FMP_ADVERTS = {
     'sry' => {
       'reg' => {
-        square: {},
+        square: {
+          's' => '3889116',
+          'v' => '2114',
+          'q' => '312354',
+          'r' => '1869332'
+        },
         skyscraper: {
           's' => '3887392',
           'v' => '2114',
@@ -1269,7 +1274,12 @@ module ApplicationHelper
     },
     'lan' => {
       'reg' => {
-        square: {},
+        square: {
+          's' => '3889118',
+          'v' => '2114',
+          'q' => '312354',
+          'r' => '1869332'
+        },
         skyscraper: {
           's' => '3887391',
           'v' => '2114',
@@ -1278,9 +1288,46 @@ module ApplicationHelper
         }
       }
     },
+    'ken' => {
+      'reg' => {
+        square: {
+          's' => '3889119',
+          'v' => '2114',
+          'q' => '312354',
+          'r' => '1869332'
+        },
+        skyscraper: {
+          's' => '3887390',
+          'v' => '2114',
+          'q' => '514627',
+          'r' => '1869332'
+        }
+      }
+    },
+    'hrt' => {
+      'reg' => {
+        square: {
+          's' => '3889120',
+          'v' => '2114',
+          'q' => '312354',
+          'r' => '1869332'
+        },
+        skyscraper: {
+          's' => '3887389',
+          'v' => '2114',
+          'q' => '514627',
+          'r' => '1869332'
+        }
+      }
+    },
     'ham' => {
       'reg' => {
-        square: {},
+        square: {
+          's' => '3889121',
+          'v' => '2114',
+          'q' => '312354',
+          'r' => '1869332'
+        },
         skyscraper: {
           's' => '3887388',
           'v' => '2114',
@@ -1291,7 +1338,12 @@ module ApplicationHelper
     },
     'ess' => {
       'reg' => {
-        square: {},
+        square: {
+          's' => '3889122',
+          'v' => '2114',
+          'q' => '312354',
+          'r' => '1869332'
+        },
         skyscraper: {
           's' => '3887387',
           'v' => '2114',
@@ -1302,98 +1354,48 @@ module ApplicationHelper
     },
     'dev' => {
       'reg' => {
-        square: {},
+        square: {
+          's' => '3889124',
+          'v' => '2114',
+          'q' => '312354',
+          'r' => '1869332'
+        },
         skyscraper: {
           's' => '3887386',
           'v' => '2114',
           'q' => '276741',
           'r' => '1869332'
         }
-      }    
+      }
+    },
+    'lego' => {
+      'reg' => {
+        square: {
+          's' => '3877049',
+          'v' => '2114',
+          'q' => '312354',
+          'r' => '1869332'
+        },
+        skyscraper: {
+          's' => '3877048',
+          'v' => '2114',
+          'q' => '276741',
+          'r' => '1869332'
+        }
+      }
     }
   }.freeze
 
   def fmp_advert(chapman_code, type)
-    banner = FMP_ADVERTS[chapman_code.downcase]['reg'][type]
-    content_tag :a, href: "https://www.awin1.com/cread.php?#{banner.map { |k, v| "#{k}=#{v}" }.join('&')}" do
-      content_tag :img, src: "https://www.awin1.com/cshow.php?#{banner.map { |k, v| "#{k}=#{v}" }.join('&')}"
+    chapman_code = chapman_code.downcase
+    chapman_code = 'lego' unless FMP_ADVERTS.key?(chapman_code)
+    
+    banner = FMP_ADVERTS[chapman_code]['reg'][type]
+    return unless banner.present?
+
+    query_params = banner.map { |k, v| "#{k}=#{v}" }.join('&')
+    content_tag :a, href: "https://www.awin1.com/cread.php?#{query_params}" do
+      image_tag("https://www.awin1.com/cshow.php?#{query_params}", border: 0)
     end
-  end
-
-  def fmp_Advert_sry
-    {
-      long: '
-      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887392&v=2114&q=514627&r=1869332">
-        <img src="https://www.awin1.com/cshow.php?s=3887392&v=2114&q=514627&r=1869332" border="0">
-      </a>
-      ',
-      short: ''
-    }
-  end
-
-  def fmp_advert_lan
-    {
-      long: '
-      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887391&v=2114&q=514627&r=1869332">
-        <img src="https://www.awin1.com/cshow.php?s=3887391&v=2114&q=514627&r=1869332" border="0">
-      </a>
-      ',
-      short: ''
-    }
-  end
-
-  def fmp_advert_ken
-    {
-      long: '
-      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887390&v=2114&q=514627&r=1869332">
-        <img src="https://www.awin1.com/cshow.php?s=3887390&v=2114&q=514627&r=1869332" border="0">
-      </a>
-      ',
-      short: ''
-    }
-  end
-  
-  def fmp_advert_hrt
-    {
-      long: '
-      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887389&v=2114&q=514627&r=1869332">
-        <img src="https://www.awin1.com/cshow.php?s=3887389&v=2114&q=514627&r=1869332" border="0">
-      </a>
-      ',
-      short: ''
-    }
-  end
-
-  def fmp_advert_ham
-    {
-      long: '
-      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887388&v=2114&q=514627&r=1869332">
-        <img src="https://www.awin1.com/cshow.php?s=3887388&v=2114&q=514627&r=1869332" border="0">
-      </a>
-      ',
-      short: ''
-    }
-  end
-
-  def fmp_advert_ess
-    {
-      long: '
-      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887387&v=2114&q=514627&r=1869332">
-        <img src="https://www.awin1.com/cshow.php?s=3887387&v=2114&q=514627&r=1869332" border="0">
-      </a>
-      ',
-      short: ''
-    }
-  end
-
-  def fmp_advert_dev
-    {
-      long: '
-      <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3887386&v=2114&q=276741&r=1869332">
-        <img src="https://www.awin1.com/cshow.php?s=3887386&v=2114&q=276741&r=1869332" border="0">
-      </a>
-      ',
-      short: ''
-    }
   end
 end
