@@ -14,11 +14,11 @@
 #
 module ApplicationHelper
   DONATE_ID = {
-      #field: id
-      "freebmd" => '5007',
-      "freecen" => '5005',
-      "freereg" => '5004',
-    }
+    #field: id
+    "freebmd" => '5007',
+    "freecen" => '5005',
+    "freereg" => '5004',
+  }
   def nav_search_form_link
     link_to('Search', main_app.new_search_query_path) unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
   end
@@ -299,7 +299,7 @@ module ApplicationHelper
       counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(' or ')
       display_map['Census Counties'] = counties if search_query.chapman_codes.size > 1
       display_map['Census County'] = counties if search_query.chapman_codes.size == 1
-      display_map['Census Place'] = place if search_query_places_size > 0
+      display_map['Census District'] = place if search_query_places_size > 0
       display_map['Disabled'] = 'Yes' if search_query.disabled
       display_map['Sex'] = search_query.sex if search_query.sex.present?
       display_map['Marital Status'] = search_query.marital_status if search_query.marital_status.present?
@@ -367,7 +367,7 @@ module ApplicationHelper
       counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(' or ')
       display_map['Census Counties'] = counties if search_query.chapman_codes.size > 1
       display_map['Census County'] = counties if search_query.chapman_codes.size == 1
-      display_map['Census Place'] = place if search_query_places_size > 0
+      display_map['Census District'] = place if search_query_places_size > 0
       display_map['Disabled'] = 'Yes' if search_query.disabled
       display_map['Sex'] = search_query.sex if search_query.sex.present?
       display_map['Marital Status'] = search_query.marital_status if search_query.marital_status.present?
@@ -1072,185 +1072,185 @@ module ApplicationHelper
                 banner.html_safe
               end
 
-  def my_heritage_720_90_first
-    banner = <<-HTML
-    <ins class='dcmads' style='display:inline-block;width:728px;height:90px'
-      data-dcm-placement='N217801.4498381FREEREG/B27882117.337217241'
-      data-dcm-rendering-mode='iframe'
-      data-dcm-https-only
-      data-dcm-gdpr-applies='gdpr=${GDPR}'
-      data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
-      data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
-      data-dcm-ltd='false'
-      data-dcm-resettable-device-id=''
-      data-dcm-app-id=''>
-      <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
-    </ins>
-    HTML
-    banner.html_safe
-  end
+              def my_heritage_720_90_first
+                banner = <<-HTML
+                <ins class='dcmads' style='display:inline-block;width:728px;height:90px'
+                data-dcm-placement='N217801.4498381FREEREG/B27882117.337217241'
+                data-dcm-rendering-mode='iframe'
+                data-dcm-https-only
+                data-dcm-gdpr-applies='gdpr=${GDPR}'
+                data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+                data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+                data-dcm-ltd='false'
+                data-dcm-resettable-device-id=''
+                data-dcm-app-id=''>
+                <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+                </ins>
+                HTML
+                banner.html_safe
+              end
 
-  def my_heritage_720_90_second
-    banner = <<-HTML
-    <ins class='dcmads' style='display:inline-block;width:728px;height:90px'
-      data-dcm-placement='N217801.4498381FREEREG/B27882117.337217574'
-      data-dcm-rendering-mode='iframe'
-      data-dcm-https-only
-      data-dcm-gdpr-applies='gdpr=${GDPR}'
-      data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
-      data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
-      data-dcm-ltd='false'
-      data-dcm-resettable-device-id=''
-      data-dcm-app-id=''>
-      <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
-    </ins>
-    HTML
-    banner.html_safe
-  end
-  def my_heritage_300_250_first
-    banner = <<-HTML
-    <ins class='dcmads' style='display:inline-block;width:300px;height:250px'
-      data-dcm-placement='N217801.4498381FREEREG/B27882117.337370260'
-      data-dcm-rendering-mode='iframe'
-      data-dcm-https-only
-      data-dcm-gdpr-applies='gdpr=${GDPR}'
-      data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
-      data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
-      data-dcm-ltd='false'
-      data-dcm-resettable-device-id=''
-      data-dcm-app-id=''>
-      <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
-    </ins>
-    HTML
-    banner.html_safe
-  end
-  def mh_160_600
-    banner = <<-HTML
-      <ins class='dcmads' style='display:inline-block;width:160px;height:600px'
-        data-dcm-placement='N217801.4498381FREEREG/B27882117.366641627'
-        data-dcm-rendering-mode='iframe'
-        data-dcm-https-only
-        data-dcm-api-frameworks='[APIFRAMEWORKS]'
-        data-dcm-omid-partner='[OMIDPARTNER]'
-        data-dcm-gdpr-applies='gdpr=${GDPR}'
-        data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
-        data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
-        data-dcm-ltd='false'
-        data-dcm-resettable-device-id=''
-        data-dcm-app-id=''>
-       <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
-      </ins>
-    HTML
-    banner.html_safe
-  end
+              def my_heritage_720_90_second
+                banner = <<-HTML
+                <ins class='dcmads' style='display:inline-block;width:728px;height:90px'
+                data-dcm-placement='N217801.4498381FREEREG/B27882117.337217574'
+                data-dcm-rendering-mode='iframe'
+                data-dcm-https-only
+                data-dcm-gdpr-applies='gdpr=${GDPR}'
+                data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+                data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+                data-dcm-ltd='false'
+                data-dcm-resettable-device-id=''
+                data-dcm-app-id=''>
+                <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+                </ins>
+                HTML
+                banner.html_safe
+              end
+              def my_heritage_300_250_first
+                banner = <<-HTML
+                <ins class='dcmads' style='display:inline-block;width:300px;height:250px'
+                data-dcm-placement='N217801.4498381FREEREG/B27882117.337370260'
+                data-dcm-rendering-mode='iframe'
+                data-dcm-https-only
+                data-dcm-gdpr-applies='gdpr=${GDPR}'
+                data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+                data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+                data-dcm-ltd='false'
+                data-dcm-resettable-device-id=''
+                data-dcm-app-id=''>
+                <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+                </ins>
+                HTML
+                banner.html_safe
+              end
+              def mh_160_600
+                banner = <<-HTML
+                <ins class='dcmads' style='display:inline-block;width:160px;height:600px'
+                data-dcm-placement='N217801.4498381FREEREG/B27882117.366641627'
+                data-dcm-rendering-mode='iframe'
+                data-dcm-https-only
+                data-dcm-api-frameworks='[APIFRAMEWORKS]'
+                data-dcm-omid-partner='[OMIDPARTNER]'
+                data-dcm-gdpr-applies='gdpr=${GDPR}'
+                data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+                data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+                data-dcm-ltd='false'
+                data-dcm-resettable-device-id=''
+                data-dcm-app-id=''>
+                <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+                </ins>
+                HTML
+                banner.html_safe
+              end
 
-  def mh_160_600_freecen
-    banner = <<-HTML
-      <ins class='dcmads' style='display:inline-block;width:160px;height:600px'
-        data-dcm-placement='N217801.4486016FREECEN2/B27887957.366768679'
-        data-dcm-rendering-mode='iframe'
-        data-dcm-https-only
-        data-dcm-api-frameworks='[APIFRAMEWORKS]'
-        data-dcm-omid-partner='[OMIDPARTNER]'
-        data-dcm-gdpr-applies='gdpr=${GDPR}'
-        data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
-        data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
-        data-dcm-ltd='false'
-        data-dcm-resettable-device-id=''
-        data-dcm-app-id=''>
-        <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
-      </ins>
-    HTML
-    banner.html_safe
-  end
+              def mh_160_600_freecen
+                banner = <<-HTML
+                <ins class='dcmads' style='display:inline-block;width:160px;height:600px'
+                data-dcm-placement='N217801.4486016FREECEN2/B27887957.366768679'
+                data-dcm-rendering-mode='iframe'
+                data-dcm-https-only
+                data-dcm-api-frameworks='[APIFRAMEWORKS]'
+                data-dcm-omid-partner='[OMIDPARTNER]'
+                data-dcm-gdpr-applies='gdpr=${GDPR}'
+                data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+                data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+                data-dcm-ltd='false'
+                data-dcm-resettable-device-id=''
+                data-dcm-app-id=''>
+                <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+                </ins>
+                HTML
+                banner.html_safe
+              end
 
-  def my_heritage_300_250_second
-    banner = <<-HTML
-    <ins class='dcmads' style='display:inline-block;width:300px;height:250px'
-      data-dcm-placement='N217801.4498381FREEREG/B27882117.337649001'
-      data-dcm-rendering-mode='iframe'
-      data-dcm-https-only
-      data-dcm-gdpr-applies='gdpr=${GDPR}'
-      data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
-      data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
-      data-dcm-ltd='false'
-      data-dcm-resettable-device-id=''
-      data-dcm-app-id=''>
-      <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
-    </ins>
-    HTML
-    banner.html_safe
-  end
+              def my_heritage_300_250_second
+                banner = <<-HTML
+                <ins class='dcmads' style='display:inline-block;width:300px;height:250px'
+                data-dcm-placement='N217801.4498381FREEREG/B27882117.337649001'
+                data-dcm-rendering-mode='iframe'
+                data-dcm-https-only
+                data-dcm-gdpr-applies='gdpr=${GDPR}'
+                data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+                data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+                data-dcm-ltd='false'
+                data-dcm-resettable-device-id=''
+                data-dcm-app-id=''>
+                <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+                </ins>
+                HTML
+                banner.html_safe
+              end
 
-  def my_heritage_720_90_cen
-    banner = <<-HTML
-    <ins class='dcmads' style='display:inline-block;width:728px;height:90px'
-    data-dcm-placement='N217801.4486016FREECEN2/B27887957.337083338'
-    data-dcm-rendering-mode='iframe'
-    data-dcm-https-only
-    data-dcm-gdpr-applies='gdpr=${GDPR}'
-    data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
-    data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
-    data-dcm-ltd='false'
-    data-dcm-resettable-device-id=''
-    data-dcm-app-id=''>
-  <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
-</ins>
-    HTML
-    banner.html_safe
-  end
+              def my_heritage_720_90_cen
+                banner = <<-HTML
+                <ins class='dcmads' style='display:inline-block;width:728px;height:90px'
+                data-dcm-placement='N217801.4486016FREECEN2/B27887957.337083338'
+                data-dcm-rendering-mode='iframe'
+                data-dcm-https-only
+                data-dcm-gdpr-applies='gdpr=${GDPR}'
+                data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+                data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+                data-dcm-ltd='false'
+                data-dcm-resettable-device-id=''
+                data-dcm-app-id=''>
+                <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+                </ins>
+                HTML
+                banner.html_safe
+              end
 
-  def my_heritage_720_90_cen_detail
-    banner = <<-HTML
-    <ins class='dcmads' style='display:inline-block;width:728px;height:90px'
-    data-dcm-placement='N217801.4486016FREECEN2/B27887957.337358632'
-    data-dcm-rendering-mode='iframe'
-    data-dcm-https-only
-    data-dcm-gdpr-applies='gdpr=${GDPR}'
-    data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
-    data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
-    data-dcm-ltd='false'
-    data-dcm-resettable-device-id=''
-    data-dcm-app-id=''>
-  <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
-</ins>
-    HTML
-    banner.html_safe
-  end
+              def my_heritage_720_90_cen_detail
+                banner = <<-HTML
+                <ins class='dcmads' style='display:inline-block;width:728px;height:90px'
+                data-dcm-placement='N217801.4486016FREECEN2/B27887957.337358632'
+                data-dcm-rendering-mode='iframe'
+                data-dcm-https-only
+                data-dcm-gdpr-applies='gdpr=${GDPR}'
+                data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+                data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+                data-dcm-ltd='false'
+                data-dcm-resettable-device-id=''
+                data-dcm-app-id=''>
+                <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+                </ins>
+                HTML
+                banner.html_safe
+              end
 
-  def my_heritage_300_250_cen
-    banner = <<-HTML
-    <ins class='dcmads' style='display:inline-block;width:300px;height:250px'
-    data-dcm-placement='N217801.4486016FREECEN2/B27887957.337358929'
-    data-dcm-rendering-mode='iframe'
-    data-dcm-https-only
-    data-dcm-gdpr-applies='gdpr=${GDPR}'
-    data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
-    data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
-    data-dcm-ltd='false'
-    data-dcm-resettable-device-id=''
-    data-dcm-app-id=''>
-  <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
-</ins>
-    HTML
-    banner.html_safe
-  end
+              def my_heritage_300_250_cen
+                banner = <<-HTML
+                <ins class='dcmads' style='display:inline-block;width:300px;height:250px'
+                data-dcm-placement='N217801.4486016FREECEN2/B27887957.337358929'
+                data-dcm-rendering-mode='iframe'
+                data-dcm-https-only
+                data-dcm-gdpr-applies='gdpr=${GDPR}'
+                data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+                data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+                data-dcm-ltd='false'
+                data-dcm-resettable-device-id=''
+                data-dcm-app-id=''>
+                <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+                </ins>
+                HTML
+                banner.html_safe
+              end
 
-  def enc_uri_reg(search_query)
-    'https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName="#{search_query.first_name}"&lastName="#{search_query.last_name}"&tr_device=&size=160x600'
-  end
-#publift
-  def horz_advert(fuse)
-    content_tag :div, class:'one-whole' do
-      content_tag :fieldset do
-        concat(content_tag(:legend,"Advertisement", align:'center'))
-        concat(content_tag(:div,'',"data-fuse"=>fuse))
-      end
-    end
-  end
+              def enc_uri_reg(search_query)
+                'https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName="#{search_query.first_name}"&lastName="#{search_query.last_name}"&tr_device=&size=160x600'
+              end
+              #publift
+              def horz_advert(fuse)
+                content_tag :div, class:'one-whole' do
+                  content_tag :fieldset do
+                    concat(content_tag(:legend,"Advertisement", align:'center'))
+                    concat(content_tag(:div,'',"data-fuse"=>fuse))
+                  end
+                end
+              end
 
-  def fuse_tags_source
-    fuse_tags = {"freereg" =>'3271', "freecen" => '3270'}
-    src = "https://cdn.fuseplatform.net/publift/tags/2/#{fuse_tags[appname_downcase]}/fuse.js"
-  end
-end
+              def fuse_tags_source
+                fuse_tags = {"freereg" =>'3271', "freecen" => '3270'}
+                src = "https://cdn.fuseplatform.net/publift/tags/2/#{fuse_tags[appname_downcase]}/fuse.js"
+              end
+              end

@@ -23,50 +23,50 @@
         <%= link_to('Census County', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::COUNTY)) %>
       <% else %>Census County<% end %></th>
     <th><% unless print_friendly %>
-        <%= link_to('Census Place', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
-      <% else %>Census Place<% end %></th>
+        <%= link_to('Census District', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::LOCATION)) %>
+      <% else %>Census District<% end %></th>
   </thead >
   <tbody >
     <% n = 0 %>
     <% @search_results.each do |search_record| %>
       <% n += 1 %>
       <tr id="<%=search_record.id%>">
-          <% unless print_friendly %>
-            <td>
-              <%= link_to "View #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url), :rel => "nofollow",
+        <% unless print_friendly %>
+          <td>
+            <%= link_to "View #{n}", friendly_search_record_path(search_record.id, search_record.friendly_url), :rel => "nofollow",
               :title => "Row #{n}, details for #{search_record.transcript_names.first['first_name']} #{search_record.transcript_names.first['last_name']}",
               :class => "btn  btn--small" %><br>
-      <i><%= viewed(@search_query,search_record) %></i>
-    </td>
-  <% end %>
-  <td>
-    <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
-      <% if i > 0 %>
-        <br/>
-    <% end%>
-    <%= "#{name['first_name']} #{name['last_name']} " %>
-  <% end%>
-</td>
-<td>
-  <%= search_birth_county(search_record) %>
-</td>
-<td>
-  <%= search_birth_place(search_record) %>
-</td>
-<td>
-  <%= format_freecen_birth_year(search_record.transcript_dates.first, search_record.record_type) %>
-</td>
-<td>
-  <%= search_record.record_type %>
-</td>
-<td>
-  <%# search_record.place.county %>
-  <%= ChapmanCode::name_from_code(search_record.chapman_code) %>
-</td>
-<td>
-  <%= cen_location(search_record) %>
-</td>
-</tr>
-<% end %>
-</tbody>
+            <i><%= viewed(@search_query,search_record) %></i>
+          </td>
+        <% end %>
+        <td>
+          <% search_record.transcript_names.uniq.each_with_index do |name, i| %>
+            <% if i > 0 %>
+              <br/>
+            <% end%>
+            <%= "#{name['first_name']} #{name['last_name']} " %>
+          <% end%>
+        </td>
+        <td>
+          <%= search_birth_county(search_record) %>
+        </td>
+        <td>
+          <%= search_birth_place(search_record) %>
+        </td>
+        <td>
+          <%= format_freecen_birth_year(search_record.transcript_dates.first, search_record.record_type) %>
+        </td>
+        <td>
+          <%= search_record.record_type %>
+        </td>
+        <td>
+          <%# search_record.place.county %>
+          <%= ChapmanCode::name_from_code(search_record.chapman_code) %>
+        </td>
+        <td>
+          <%= cen_location(search_record) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>

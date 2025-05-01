@@ -134,9 +134,9 @@
         <% end%></p>
       <% place = @search_query.freecen2_places.map {|pl| pl.place_name} %>
       <% if place.size == 0 %>
-        <b>All <b>census </b> places</b> with data in the selected counties were included.
+        <b>All <b>census </b> districts</b> with data in the selected counties were included.
       <% else %>
-        The <b>census </b>place with the name <b><%= place[0] %></b> was searched.
+        The <b>census </b>district with the name <b><%= place[0] %></b> was searched.
       <% end %>
     </p>
   <% end %>
