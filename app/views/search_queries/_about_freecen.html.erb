@@ -102,7 +102,7 @@
     <% if @search_query.radius_search? %>
       <p>
         Search Criteria:
-        <b>Search additional places</b>
+        <b>Search additional census districts</b>
         near
         <b><%= @search_query.places.map {|pl| pl.place_name }.join(" or ")%></b>
         in
