@@ -2618,22 +2618,11 @@ class FreecenCsvEntry
     return [nil, nil] if list_of_records.blank?
 
     current_index = list_of_records.find_index(_id)
-    number_records = list_of_records.length
-    if current_index.present?
-      next_index = current_index + 1
-      previous_index = current_index - 1
-    else
-      previous_index = -1
-      next_index = number_records
-      list_of_records.each_with_index do |list_id, idx|
-        next_index = idx
-        break if list_id > _id
+    return [nil, nil] if current_index.blank?
 
-        previous_index = idx
-      end
-    end
-    next_entry = next_index < number_records && next_index != previous_index ? FreecenCsvEntry.find_by(_id: list_of_records[next_index]) : nil
-    previous_entry = previous_index.negative? ? nil : FreecenCsvEntry.find_by(_id: list_of_records[previous_index])
+    number_records = list_of_records.length
+    next_entry = (current_index + 1) <= number_records ? FreecenCsvEntry.find_by(_id: list_of_records[current_index + 1]) : nil
+    previous_entry = (current_index - 1) < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_records[current_index - 1])
     [next_entry, previous_entry]
   end
 
