@@ -125,8 +125,8 @@ module MyopicVicar
     when TemplateSet::FREEPRO
       config.freexxx_display_name = 'FreePRO'
       # not required when using Propshaft:
-      #config.assets.paths << Rails.root.join('app', 'assets_freepro')
-      #config.assets.paths << Rails.root.join('app', 'assets_freepro', 'styles')
+      config.assets.paths << Rails.root.join('app', 'assets_freepro')
+      config.assets.paths << Rails.root.join('app', 'assets_freepro', 'styles')
     else
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
