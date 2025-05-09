@@ -435,7 +435,7 @@ class FreecenCsvFile
       [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
     end
 
-    def convert_freecen_csv_file_name_to_freecen1_vld_file_name(description)
+    def check_for_vld_file(description)
       # Need to add Ireland
       remove_extension = description.split('.')
       parts = remove_extension[0].split('_')
@@ -476,15 +476,20 @@ class FreecenCsvFile
         series = 'RS9'
       end
       vld = series.present? ? series + parts[1] + '.VLD' : ''
-      vld = vld.upcase if vld.present?
-      vld
+      vld = vld.downcase if vld.present?
+      result = Freecen1VldFile.find_by(file_name_lower_case: vld) if vld.present?
+      unless result.present? || parts[1].length > 3 || vld.blank?
+        piece_number = '0' + parts[1]
+        vld = series + piece_number + '.VLD'
+        vld = vld.downcase
+        result = Freecen1VldFile.find_by(file_name_lower_case: vld) if vld.present?
+      end
+      result
     end
 
     def vld_file_exists(file_name)
       if file_name.present?
-        vld = FreecenCsvFile.convert_freecen_csv_file_name_to_freecen1_vld_file_name(file_name)
-        vld = vld.present? ? vld.downcase : vld
-        result = Freecen1VldFile.find_by(file_name_lower_case: vld)
+        result = FreecenCsvFile.check_for_vld_file(file_name)
         return [true, 'There is a VLD file of that name that should be deleted first'] if result.present?
       end
 
