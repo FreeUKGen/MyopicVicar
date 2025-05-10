@@ -475,11 +475,14 @@ class FreecenCsvFile
       when 'RS9'
         series = 'RS9'
       end
-      vld = series.present? ? series + parts[1] + '.VLD' : ''
+
+      pnumber_digits = parts[1].end_with?('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') ? parts[1] : parts[1].chop
+      vld = series.present? ? series + pnumber_digits + '.VLD' : ''
       vld = vld.downcase if vld.present?
+
       result = Freecen1VldFile.find_by(file_name_lower_case: vld) if vld.present?
-      unless result.present? || parts[1].length > 3 || vld.blank?
-        piece_number = '0' + parts[1]
+      unless result.present? || pnumber_digits.length > 3 || vld.blank?
+        piece_number = '0' + pnumber_digits
         vld = series + piece_number + '.VLD'
         vld = vld.downcase
         result = Freecen1VldFile.find_by(file_name_lower_case: vld) if vld.present?
