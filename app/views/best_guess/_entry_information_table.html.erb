@@ -252,7 +252,7 @@
         <% record_hash = record.record_hash %>
         <% cleaned_hash = record_hash.gsub(/[^a-zA-Z0-9_.-]/) { |char| "%#{char.ord.to_s(16).upcase}" } %>
         <% url = protocol+'://'+domain+'/entry-information/'+cleaned_hash+'/hash' %>
-        <a id="persistentUrl" class="pUrl" href="<%= url %>"><%= url %></a>
+        <a id="persistentUrl" class="pUrl" href="<%= @url %>"><%= @url %></a>
         <button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button>
         <!--a class="btn btn--small" href="" onclick=copy('persistentUrl') style="cursor: pointer">Copy URL</a-->
       </td>

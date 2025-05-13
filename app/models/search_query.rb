@@ -184,14 +184,14 @@ class SearchQuery
   validate :wildcard_field_value_validation
   validate :other_partial_option_validation
   validates_absence_of :fuzzy, if: Proc.new{|u| has_wildcard?(u.last_name) if u.last_name.present?}, message: "You cannot use both Phonetic search surnames and surname wildcards in a search."
-  validates_numericality_of :start_year, less_than_or_equal_to: :end_year, message: "From Quarter/Year must precede To Quarter/Year."
+  validates_numericality_of :start_year, less_than_or_equal_to: :end_year,  :allow_blank => true, message: "From Quarter/Year must precede To Quarter/Year."
   validates_inclusion_of :min_age_at_death, in: 0..199, if: Proc.new{|u| u.min_age_at_death.present?}, message: "Invalid Min Age. Please provide a value between 0 to 199"
   validates_inclusion_of :max_age_at_death, in: 0..199, if: Proc.new{|u| u.max_age_at_death.present?}, message: "Invalid Max Age. Please provide a value between 0 to 199"
   validates_presence_of :max_age_at_death, if: Proc.new{|u| u.min_age_at_death.present?}, message: "Max Age field is empty, it is required for Age Range(Age at Death) search."
   validates_numericality_of :max_age_at_death,  greater_than_or_equal_to: :min_age_at_death, if: Proc.new{|u| u.min_age_at_death.present?}, message: "Invalid Age range(Age at Death). Max Age must be greater than or equal to Min Age."
   validates_numericality_of :max_dob_at_death,  greater_than_or_equal_to: :min_dob_at_death, if: Proc.new{|u| u.min_dob_at_death.present?}, message: "Invalid Year of Birth range. Max Year of birth must be greater than or equal to Min Year of Birth."
-  validates_numericality_of :start_year,  greater_than_or_equal_to: 1837, message: "From Quarter/Year must be greater or equal to 1837."
-  validates_numericality_of :end_year,  less_than_or_equal_to: 1999, message: "To Quarter/Year must be less than or equal to 1999."
+  validates_numericality_of :start_year,  greater_than_or_equal_to: 1837,  :allow_blank => true, message: "From Quarter/Year must be greater or equal to 1837."
+  validates_numericality_of :end_year,  less_than_or_equal_to: 1999,  :allow_blank => true, message: "To Quarter/Year must be less than or equal to 1999."
 
 
   # probably not necessary in FreeCEN

@@ -21,6 +21,7 @@ class BestGuessController < ApplicationController
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(record_id, page_entries)
     @display_date = false
     show_postem_or_scan
+    @url = generate_url
     return if @search_query.blank?
 
     @search_result = @search_query.search_result
@@ -245,6 +246,16 @@ class BestGuessController < ApplicationController
       original_record = @saved_entry
     end
     original_record
+  end
+
+  def generate_url
+    protocol = URI.parse(request.original_url).scheme 
+    domain = URI.parse(request.original_url).host 
+    port = URI.parse(request.original_url).port 
+    domain = domain + ':' + port.to_s if port.present?
+    record_hash = @current_record.record_hash
+    cleaned_hash = record_hash.gsub(/[^a-zA-Z0-9_.-]/) { |char| "%#{char.ord.to_s(16).upcase}" } 
+    url = protocol+'://'+domain+'/entry-information/'+cleaned_hash+'/hash' 
   end
 
   def prepare_for_show_search_entry
