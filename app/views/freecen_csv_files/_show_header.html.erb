@@ -11,6 +11,9 @@
   <%  if @freecen_csv_file.total_warnings.positive? %>
     <%= download_warnings %>
   <% end%><br>
+  <%  if @freecen_csv_file.total_errors.positive? %>
+    <%= download_errors %>
+  <% end%><br>
   <%= list_freecen_file_flags %>
   <%= list_freecen_file_error_entries %>
   <%= list_freecen_file_warning_entries %>
