@@ -50,7 +50,10 @@
 </tr>
 <tr>
   <td>Syndicate Coordinator:</td>
-  <td > <%= Syndicate.find_by(syndicate_code: @userid.syndicate).syndicate_coordinator %>  </td>
+  <% coord = Syndicate.find_by(syndicate_code: @userid.syndicate).syndicate_coordinator %>
+  <% user_coord = UseridDetail.find_by(userid: coord) %>
+  <td > <%= "#{user_coord.person_forename} #{user_coord.person_surname} (#{coord})" %></td>
+
 </tr>
 <% if @userid.previous_syndicate.present?%>
   <tr>

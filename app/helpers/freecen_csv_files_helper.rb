@@ -61,6 +61,10 @@ module FreecenCsvFilesHelper
     link_to 'Download Warning Messages', download_warning_messages_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small', title: 'Download a CSV file of awarning messages to your computer. It will be be stored in your downloads folder'
   end
 
+  def download_errors
+    link_to 'Download Error Messages', download_error_messages_freecen_csv_file_path(@freecen_csv_file), method: :get, class: 'btn   btn--small', title: 'Download a CSV file of error messages to your computer. It will be be stored in your downloads folder'
+  end
+
   def list_freecen_file_flags
     link_to 'View Flags', freecen_csv_entries_path(type: 'Fla'), method: :get, class: 'btn   btn--small', title: 'Lists the entry numbers where any flag is set. Any of the entries can be displayed on line'
   end
