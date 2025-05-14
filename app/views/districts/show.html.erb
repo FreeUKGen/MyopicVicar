@@ -136,28 +136,16 @@
       </ul>
     </div>
   </div>
-  <div  class="grid__item two-fifths lap-one-third palm-one-whole float--right" id="stats">
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right" id="advert">
     <div class="islet islet--bordered">
-      <h2>Statistics</h2>
-      <p>Statistics specific to <%= "#{@district.district_name_display_format}"%> Registration District:</p>
-      <table class="table--bordered table--data">
-        <caption class="accessibility"> Statistics for <%= "#{@district.district_name_display_format} Registration District"%>  </caption>
-        <tr>
-          <th scope="row">Total Births</th>
-          <td><%= @birth_count %></td>
-        </tr>
-        <tr>
-          <th scope="row">Total Deaths</th>
-          <td><%= @marriage_count %></td>
-        </tr>
-        <tr>
-          <th scope="row">Total Marriages</th>
-          <td><%= @death_count %></td>
-        </tr>
-      </table>
+      <center>
+        <p>Advertisement<p>
+        <a rel="sponsored" href="https://www.awin1.com/cread.php?s=3889124&v=2114&q=312354&r=1869332">
+          <img src="https://www.awin1.com/cshow.php?s=3889124&v=2114&q=312354&r=1869332" border="0">
+        </a>
+      </center>
     </div>
   </div>
-  <div>
   <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="pages">
     <h2>Pages</h2>
     <p>The <%= link_to "#{@district.district_name_display_format} Page Map", district_page_map_path(id: @district[:DistrictNumber]) %> shows the expected
@@ -186,6 +174,27 @@
       </table>
     </div>
   <% end %>
+    <div  class="grid__item two-fifths lap-one-third palm-one-whole float--right" id="stats">
+  <div class="islet islet--bordered">
+    <h2>Statistics</h2>
+    <p>Statistics specific to <%= "#{@district.district_name_display_format}"%> Registration District:</p>
+   <table class="table--bordered table--data">
+     <caption class="accessibility"> Statistics for <%= "#{@district.district_name_display_format} Registration District"%>  </caption>
+     <tr>
+       <th scope="row">Total Births</th>
+       <td><%= @birth_count %></td>
+     </tr>
+     <tr>
+       <th scope="row">Total Deaths</th>
+       <td><%= @marriage_count %></td>
+     </tr>
+     <tr>
+       <th scope="row">Total Marriages</th>
+       <td><%= @death_count %></td>
+     </tr>
+    </table>
+  </div>
+</div>
     <div  class="grid__item three-fifths lap-two-thirds palm-one-whole" id="pages">
       <h2>Further information on <%= @district.district_name_display_format %></h2>
     <% if @district.district_url_definable? %>

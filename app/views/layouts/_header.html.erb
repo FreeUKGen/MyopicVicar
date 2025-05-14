@@ -62,10 +62,22 @@
       <% unless device_type == :mobile %>
         <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
           <div class="bnner-horz bmd_adsenses header_ads">
-            <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">
-              <%= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
-            </a>
-            <%= advert_code("header", "horz") %>
+            <!--a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">
+              <%#= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
+            </a-->
+            <%#= advert_code("header", "horz") %>
+            <ins class='dcmads' style='display:inline-block;width:728px;height:90px'
+              data-dcm-placement="N217801.4536833FREEBMD/B28102710.339843023"
+              data-dcm-rendering-mode='iframe'
+              data-dcm-https-only
+              data-dcm-gdpr-applies='gdpr=${GDPR}'
+              data-dcm-gdpr-consent='gdpr_consent=${GDPR_CONSENT_755}'
+              data-dcm-addtl-consent='addtl_consent=${ADDTL_CONSENT}'
+              data-dcm-ltd='false'
+              data-dcm-resettable-device-id=''
+              data-dcm-app-id=''>
+               <script src='https://www.googletagservices.com/dcm/dcmads.js'></script>
+            </ins>
           </div>
         <% end %>
       <% end %>

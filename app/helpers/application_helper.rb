@@ -1153,4 +1153,15 @@ module ApplicationHelper
   def upcase_string(string)
     string.present? ? string.upcase : '' 
   end
+
+  #publift
+  def horz_advert(fuse)
+    content_tag :div, class:'grid__item one-whole hard--left' do
+      content_tag :fieldset do
+        concat(content_tag(:legend,"Advertisement", align:'center'))
+        concat(content_tag(:div,'',"data-fuse"=>fuse))
+      end
+    end
+  end
+
 end
