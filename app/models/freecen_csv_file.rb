@@ -499,6 +499,28 @@ class FreecenCsvFile
       [success, message, file_location, file]
     end
 
+    def create_errors_csv_file(file, entries)
+      file = "#{file}_errors_#{Time.now.strftime('%Y%m%d')}.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = FreecenCsvFile.write_errors_csv_file(file_location, entries)
+
+      [success, message, file_location, file]
+    end
+
+    def write_errors_csv_file(file_location, entries)
+      column_headers = %w(record_number error_messages)
+
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << column_headers
+        entries.each do |rec|
+          line = []
+          line = FreecenCsvFile.add_error_fields(line, rec)
+          csv << line
+        end
+      end
+      [true, '']
+    end 
+
     def write_warnings_csv_file(file_location, entries)
       column_headers = %w(record_number warning_messages)
 
@@ -516,6 +538,12 @@ class FreecenCsvFile
     def add_warning_fields(line, record)
       line << record.record_number
       line << record.warning_messages.gsub("<br>", " ")
+      line
+    end
+
+    def add_error_fields(line, record)
+      line << record.record_number
+      line << record.error_messages.gsub("<br>", " ")
       line
     end
 
