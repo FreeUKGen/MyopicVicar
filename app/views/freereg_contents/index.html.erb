@@ -1,4 +1,26 @@
 <% title "#{@county} Contents" %>
+<style>
+.default_class {
+  display: flex;
+}
+.inline_list {
+  display: inline;
+  padding: 10px;
+}
+@media only screen and (min-width: 800px) {
+  .default_class {
+    flex-direction: row;
+    justify-content: center;
+    gap: 50px;
+  }
+}
+@media only screen and (max-width: 800px) {
+  .default_class {
+    flex-direction: column;
+
+  }
+}
+</style>
 <div class="text--center push-half--bottom">
   <%= link_to 'Choose a County', new_freereg_content_path, :class => "btn  btn--small "%>
 </div>
@@ -7,9 +29,9 @@
 <div class="text--center push-half--bottom"><%= link_to 'Latest Additions', recent_additions_freereg_content_path(county: @chapman_code), :class => "btn  btn--small" %></div>
 <%= render 'flash_notice' %>
 <div class="grid">
-  <%= simple_form_for @freereg_content do |f| %>
-    <li class="grid__item one-half palm-one-whole" >
-      <h2 class="text--center">Choose a Specific Place </h2>
+  <%= simple_form_for @freereg_content, html: { class: 'default_class' } do |f| %>
+    <li class="grid__item one-third palm-one-whole" >
+      <h3 class="text--center">Choose a Specific Place </h2>
       <select id="freereg_content_place" name="freereg_content[place]" class="select" size="11">
         <%  @places.each do | value| %>
           <option value="<%= value.id %>"><%= value.place_name %></option>
@@ -17,21 +39,33 @@
       </select>
       <%= f.button :submit,  'Select' , :button_html => {:class => 'btn--small' }  %>
     </li>
-    <li class="grid__item one-half palm-one-whole">
-      <h2 class="text--center">General County Information</h2>
-      <div class="read-length">
-        <p class="gamma">Coordinator: <span class="weight--semibold"><%= @coordinator %></span></p>
-        <%= county_content(@page)%>
-      </div>
-      <div class="island island--bordered">
-        <h3 class="delta push-half--bottom">As of today …</h3>
-        <p class="push-half--bottom"><%= @county %> has <%= display_number(@records[0])%> these records:</p>
-        <ul class="push--left">
-          <li><%= display_number(@records[1])%> baptisms</li>
-          <li><%=display_number(@records[2])%> burials</li>
-          <li><%= display_number(@records[3])%> marriages</li>
-        </ul>
+    <li class="grid__item one-third palm-one-whole">
+      <h3 class="text--center">Advertisement</h3>
+      <div class="adsense_box push--ends">
+        <%= fmp_advert(@chapman_code, :square) %>
+        <%#= image_tag('gif/fmp_300_250.gif')%>
       </div>
     </li>
   <% end %>
+</div>
+<div class="grid push--top">
+  <div class="default_class">
+    <div class="grid__item one-third palm-one-whole">
+      <h3 class="">General County Information</h3>
+      <p><span class="delta">As of today:</span> <%= @county %> has <%= display_number(@records[0])%> records.</p>
+      <!--ul class="">
+        <li class="inline_list"><%= display_number(@records[1])%> baptisms</li>
+        <li class="inline_list"><%=display_number(@records[2])%> burials</li>
+        <li class="inline_list"><%= display_number(@records[3])%> marriages</li>
+      </ul-->
+    </div>
+    <div class="grid__item one-third palm-one-whole">
+      <p>Coordinator: <span class="weight--semibold"><%= @coordinator %></span></p>
+      <ul style="margin-left:10px;">
+        <li class=""><%= display_number(@records[1])%> baptisms</li>
+        <li class=""><%=display_number(@records[2])%> burials</li>
+        <li class=""><%= display_number(@records[3])%> marriages</li>
+      </ul>
+    </div>
+  </div>
 </div>
