@@ -41,6 +41,7 @@
       <% if !(@user.get_roles.to_a & @authourised_roles).empty? && !session[:my_own] %>
         <%= f.input :syndicate,:label => "Syndicate",:include_blank => false,  :collection => @syndicates,:input_html => {  :class => "text-input simple_form_bgcolour simple_form_position", :size => 4 }, :hint => "The syndicate MUST be selected"%>
       <% end%>
+      <%= f.input :recieve_system_emails, as: :boolean, boolean_style: :inline %>
       <% if session[:role] == 'system_administrator'  && !session[:my_own] %>
         <%= f.input :person_role,  :collection => UseridRole::VALUES, :include_blank => false,:label => "Role in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4 } %>
         <%= f.input :secondary_role, :collection => UseridRole::VALUES, :include_blank => true,:label => "Secondary Role(s) in #{appname} :", :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 4, multiple: true }, include_hidden: true, :hint => "Hold Ctrl or Shift to select multiple roles" %>
