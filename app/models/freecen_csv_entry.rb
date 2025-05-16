@@ -1043,7 +1043,8 @@ class FreecenCsvEntry
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 5.<br>"
                 message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
                 record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
-              elsif record[:year] == '1911' && record[:rooms].to_i > 20
+              end
+              if %w[1891 1901 1911].include?(record[:year]) && record[:rooms].to_i > 20
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 20.<br>"
                 message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
                 record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
