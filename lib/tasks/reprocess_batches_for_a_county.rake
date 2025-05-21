@@ -1,4 +1,6 @@
 namespace :freereg do
+  BATCH_SIZE = 1000
+  PROGRESS_INTERVAL = 10
   desc "Reprocess batches for a specific county chapman code (e.g. 'rake batches:reprocess_county[YKS]')"
   task :reprocess_batches_for_a_county, [:chapman_code] => :environment do |t, args|
     validate_chapman_code(args[:chapman_code])
@@ -60,13 +62,13 @@ namespace :freereg do
     start_time = Time.now
     software_version = get_software_version
 
-    batches.no_cursor_timeout.each_slice(100) do |batch_group|
+    batches.no_cursor_timeout.each_slice(BATCH_SIZE) do |batch_group|
       batch_group.each do |batch|
         begin
           process_single_batch(batch, processed + 1, total_batches, software_version, chapman_code)
           processed += 1
           
-          if (processed % 10).zero?
+          if (processed % PROGRESS_INTERVAL).zero?
             print_progress(processed, total_batches, start_time)
           end
         rescue => e
@@ -81,14 +83,14 @@ namespace :freereg do
   def process_single_batch(batch, current, total, software_version,chapman_code)
     print "\rProcessing batch #{current}/#{total}: #{batch.file_name}"
     
-    batch.freereg1_csv_entries.no_cursor_timeout.each_slice(100) do |entry_group|
+    batch.freereg1_csv_entries.no_timeout.each_slice(BATCH_SIZE) do |entry_group|
       entry_group.each do |entry|
         search_version = ''
         #puts software_version
         search_version = software_version.last_search_record_version if software_version.present?
        # puts search_version
         place = Place.where(chapman_code: chapman_code, place_name: entry.place).first
-        SearchRecord.no_cursor_timeout.update_create_search_record(entry, search_version, place)
+        SearchRecord.no_timeout.update_create_search_record(entry, search_version, place)
       end
     end
   end
