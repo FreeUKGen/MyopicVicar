@@ -62,7 +62,7 @@ namespace :freereg do
     start_time = Time.now
     software_version = get_software_version
 
-    batches.no_cursor_timeout.each_slice(BATCH_SIZE) do |batch_group|
+    batches.no_timeout.each_slice(BATCH_SIZE) do |batch_group|
       batch_group.each do |batch|
         begin
           process_single_batch(batch, processed + 1, total_batches, software_version, chapman_code)
