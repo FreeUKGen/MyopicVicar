@@ -2146,17 +2146,18 @@ class SearchQuery
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = this_record_atts["Surname"]
       given_names = this_record_atts["GivenName"].split(' ')
-      given_name = given_names[0]
-      given_names.shift()
-      other_given_names = given_names.join(' ') if given_names.present?
+      #given_name = given_names[0]
+      #given_names.shift()
+      #other_given_names = given_names.join(' ') if given_names.present?
       i = i+1
       f = f+1 if saved_record[:RecordTypeID] == 3
       gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+given_name+' /'+surname+'/'
-      gedcom << '2 SURN '+surname
-      gedcom << '2 GIVN '+given_name
-      gedcom << '2 _MIDN '+other_given_names if other_given_names.present?
+      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
+      gedcom << '2 SURN '+surname.capitalize
+      given_names.each do |name|
+        gedcom << '2 GIVN '+name
+      end
       #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if saved_record[:RecordTypeID] == 1
       gedcom << '1 DEAT' if saved_record[:RecordTypeID] == 2
@@ -2165,6 +2166,8 @@ class SearchQuery
       gedcom << '2 PLAC '+this_record_atts['District']
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+saved_record.record_hash+'/'+saved_record.friendly_url
     end
+    gedcom << ''
+    gedcom << '0 TRLR'
     gedcom
   end
 
@@ -2178,18 +2181,19 @@ class SearchQuery
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = rec[:Surname]
       given_names = rec[:GivenName].split(' ')
-      given_name = given_names[0]
-      given_names.shift()
-      other_given_names = given_names.join(' ') if given_names.present?
+      #given_name = given_names[0]
+      #given_names.shift()
+      #other_given_names = given_names.join(' ') if given_names.present?
       i = i+1
       f = f+1 if rec[:RecordTypeID] == 3
       entry = BestGuess.where(RecordNumber: rec[:RecordNumber]).first
       gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+given_name+' /'+surname+'/'
-      gedcom << '2 SURN '+surname
-      gedcom << '2 GIVN '+given_name
-      gedcom << '2 _MIDN '+other_given_names if other_given_names.present?
+      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
+      gedcom << '2 SURN '+surname.capitalize
+      given_names.each do |name|
+        gedcom << '2 GIVN '+name
+      end
       #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if rec[:RecordTypeID] == 1
       gedcom << '1 DEAT' if rec[:RecordTypeID] == 2
@@ -2198,6 +2202,8 @@ class SearchQuery
       gedcom << '2 PLAC '+rec[:District]
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
     end
+    gedcom << ''
+    gedcom << '0 TRLR'
     gedcom
   end
 
