@@ -384,7 +384,11 @@ class SearchQueriesController < ApplicationController
     end
     @districts = Hash.new
     county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
-      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
+      #@districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
+      districts_names.where(County: [c]).each{|d|
+        district_name = d.formatted_name_for_search
+        @district[c] = [district_name, :DistrictNumber]
+      }
     }
     @districts
     # rbl 22.1.2025: removed this line to allow 'All England' and 'All Wales' to generate results in the District selection list:
