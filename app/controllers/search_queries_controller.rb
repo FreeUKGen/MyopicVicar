@@ -386,7 +386,7 @@ class SearchQueriesController < ApplicationController
     county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
       #@districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
       districts_names.where(County: [c]).each{|d|
-        district_name = d.formatted_name_for_search
+        district_name = d.District.formatted_name_for_search
         @district[c] = [district_name, :DistrictNumber]
       }
     }
