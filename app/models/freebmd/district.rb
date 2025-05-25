@@ -92,7 +92,7 @@ class District < FreebmdDbBase
   def valid_start
     valid_start = ''
     if self.YearStart && !(self.YearStart == 1837 && self.QuarterStart == 3)
-      self.QuarterStart == 3 ? quarter = '' : quarter = QuarterDetails.quarters.index(self.QuarterStart]) unless 
+      self.QuarterStart == 3 ? quarter = '' : quarter = QuarterDetails.quarters.index(self.QuarterStart]) 
       valid_start = "#{quarter} #{self.YearStart}"
     end
   end
@@ -100,7 +100,7 @@ class District < FreebmdDbBase
   def valid_end
     valid_end = ''
     if self.YearEnd && !(self.YearEnd == 9999 && self.QuarterStart == 9)
-      self.QuarterStart == 4 ? quarter = '' : quarter = QuarterDetails.quarters.index(self.QuarterStart]) unless 
+      self.QuarterStart == 4 ? quarter = '' : quarter = QuarterDetails.quarters.index(self.QuarterStart])
       valid_start = "#{quarter} #{self.YearEnd}"
     end
   end
