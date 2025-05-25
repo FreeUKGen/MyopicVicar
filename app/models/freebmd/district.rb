@@ -89,5 +89,37 @@ class District < FreebmdDbBase
     hash
   end
 
+  def valid_start
+    valid_start = ''
+    if self.YearStart && !(self.YearStart == 1837 && self.QuarterStart == 3)
+      self.QuarterStart == 3 ? quarter = '' : quarter = QuarterDetails.quarters.index(self.QuarterStart]) unless 
+      valid_start = "#{quarter} #{self.YearStart}"
+    end
+  end
+
+  def valid_end
+    valid_end = ''
+    if self.YearEnd && !(self.YearEnd == 9999 && self.QuarterStart == 9)
+      self.QuarterStart == 4 ? quarter = '' : quarter = QuarterDetails.quarters.index(self.QuarterStart]) unless 
+      valid_start = "#{quarter} #{self.YearEnd}"
+    end
+  end
+
+  def district_validity_period
+    case
+    when valid_start.present? && !valid_end.present?
+      "from #{valid_start}"
+    when !valid_start.present? && valid_end.present?
+      "to #{valid_end}"
+    when valid_start.present? && valid_end.present?
+      "#{valid_start} - #{valid_end}"
+    else
+      "" 
+    end
+  end
+
+  def formatted_name_for_search
+    "#{self.DistrictName} #{district_validity_period}"
+  end
 
 end
