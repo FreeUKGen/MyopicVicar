@@ -1,5 +1,5 @@
 <div class='container push--bottom'>
-  <div class="grid">
+  <div class="grid" style="display: flex; overflow: unset;">
     <div class="grid__item desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole">
       <span class="weight--semibold">We found <%= pluralize(number_with_delimiter(@result_count, :delimiter => ','), ' result', ' results') %> for <%= titleize_string(@search_query[:first_name])  %> <%= upcase_string(@search_query[:last_name]) %></span>
       <hr/>
