@@ -69,3 +69,7 @@
   <td>Signed up:</td>
   <td > <%= @userid.sign_up_date.strftime("%d %b %Y") unless @userid.sign_up_date.nil? %> </td>
 </tr>
+<tr>
+  <td>Recieves System Emails</td>
+  <td><%= @userid.recieve_system_emails %></td>
+</tr>
