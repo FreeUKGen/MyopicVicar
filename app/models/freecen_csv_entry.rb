@@ -2626,8 +2626,6 @@ class FreecenCsvEntry
     return [nil, nil] if list_of_records.blank?
 
     current_index = list_of_records.find_index(_id)
-
-    p "AEV NP _id= #{_id}"
     return [nil, nil] if current_index.blank?
 
     number_records = list_of_records.length
@@ -2636,28 +2634,22 @@ class FreecenCsvEntry
     [next_entry, previous_entry]
   end
 
-
-
-
   def next_and_previous_warning
+
+    # Propagated and/or accepted pre_validation records can update multiple records will no longer be in the warnings list so look for next
+
     list_of_warnings = freecen_csv_file.index_type('War').pluck(:_id)
     return [nil, nil] if list_of_warnings.blank?
 
     @number_warnings = list_of_warnings.length
 
-    p "AEV NP_AV  @number_warnings = #{ @number_warnings }"
-
     current_index = list_of_warnings.find_index(_id)
-    p "AEV NP_AV _id= #{_id}"
 
     if current_index.blank?
-
-      # Propagated and/or accepted records will no longer be in the warnings list so look for next
 
       list_index = list_of_warnings.find_index { |rec_id| rec_id > _id }
 
       current_index = list_index
-
       next_entry = current_index.present? ? FreecenCsvEntry.find_by(_id: list_of_warnings[current_index]) : nil
 
       if current_index.present?
@@ -2672,10 +2664,6 @@ class FreecenCsvEntry
 
     [next_entry, previous_entry]
   end
-
-
-
-
 
   def remove_flags
     update_attributes(flag: false, address_flag: '', birth_place_flag: '', individual_flag: '', deleted_flag: '', location_flag: '',

@@ -57,6 +57,10 @@ class FreecenCsvEntriesController < ApplicationController
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
       original_warning_count = @freecen_csv_file.total_warnings
       @freecen_csv_file.adjust_total_warning_messages_and_lock(original_warning_count, warnings_adjustment)
+      @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_warning
+      session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
+      session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
+      session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
     end
 
     @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
@@ -245,18 +249,12 @@ class FreecenCsvEntriesController < ApplicationController
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
       original_warning_count = @freecen_csv_file.total_warnings
       @freecen_csv_file.adjust_total_warning_messages_and_lock(original_warning_count, warnings_adjustment)
-      # AEV start
       if success
         @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_warning
-        p " AEV PROP "
-        p " AEV PROP after @next_list_entry id= #{@next_list_entry.id}" if @next_list_entry.present?
-        p " AEV PROP after @previous_list_entry id= #{@previous_list_entry.id}" if @previous_list_entry.present?
-        p " AEV PROP End"
         session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
         session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
         session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
       end
-      # AEV End
       flash[:notice] = success ? 'Propagation processed successfully, the file is now locked against replacement until it has been downloaded.' : message
       redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     else
@@ -287,14 +285,7 @@ class FreecenCsvEntriesController < ApplicationController
     @file_validation = @freecen_csv_file.validation
     @freecen_csv_entry.add_address(@freecen_csv_file.id, @freecen_csv_entry.dwelling_number)
     @next_entry, @previous_entry = @freecen_csv_entry.next_and_previous_entries
-    # @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_list_entries_av_warning(@type)
-    # p " AEV SHOW after _AV @next_list_entry= #{@next_list_entry}"
-    # p " AEV SHOW after _AV @previous_list_entry= #{@previous_list_entry}"
     @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_list_entries(@type)
-    p " AEV SHOW "
-    p " AEV SHOW after @next_list_entry.id= #{@next_list_entry.id}" if @next_list_entry.present?
-    p " AEV SHOW after @previous_list_entry.id= #{@previous_list_entry.id}" if @previous_list_entry.present?
-    p " AEV SHOW End"
     session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
     session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
     session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
