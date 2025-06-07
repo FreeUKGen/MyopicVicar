@@ -2663,7 +2663,7 @@ class FreecenCsvEntry
       if current_index.present?
         previous_entry = (current_index - 1) < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_warnings[current_index - 1])
       else
-        previous_entry = @number_records - 1 < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_warnings[@number_warnings - 1])
+        previous_entry = @number_warnings - 1 < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_warnings[@number_warnings - 1])
       end
     else
       next_entry = (current_index + 1) <= @number_warnings ? FreecenCsvEntry.find_by(_id: list_of_warnings[current_index + 1]) : nil
