@@ -57,6 +57,10 @@ class FreecenCsvEntriesController < ApplicationController
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
       original_warning_count = @freecen_csv_file.total_warnings
       @freecen_csv_file.adjust_total_warning_messages_and_lock(original_warning_count, warnings_adjustment)
+      @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_warning
+      session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
+      session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
+      session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
     end
 
     @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
@@ -245,6 +249,12 @@ class FreecenCsvEntriesController < ApplicationController
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
       original_warning_count = @freecen_csv_file.total_warnings
       @freecen_csv_file.adjust_total_warning_messages_and_lock(original_warning_count, warnings_adjustment)
+      if success
+        @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_warning
+        session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
+        session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
+        session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
+      end
       flash[:notice] = success ? 'Propagation processed successfully, the file is now locked against replacement until it has been downloaded.' : message
       redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     else
