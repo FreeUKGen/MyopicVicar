@@ -11,7 +11,7 @@ module DownloadAsCsv
     CSV.generate(headers: true) do |csv|
       csv << ['You can only download 50 results.']
       csv << FIELDS
-      array.each do |record|
+      array.flatten.each do |record|
         format_csv_data(record)
         record = record.except!('AssociateName', 'AgeAtDeath')
         search_results_attr =  SEARCH_RESULTS_ATTRIBUTES - ['AssociateName', 'AgeAtDeath']
