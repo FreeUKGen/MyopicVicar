@@ -47,26 +47,26 @@ module ApplicationHelper
       if @user.present? && @user.person_role.present?
         if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'
           if controller_name == 'pages'
-            link_to 'Help', '/help'
+            link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
           else
-            link_to 'Help', '/cms/information-for-transcribers'
+            link_to 'Help', '/cms/information-for-transcribers', class: current_page?('/cms/information-for-transcribers') ? 'active' : ''
           end
         elsif @user.person_role == 'researcher'
           if controller_name == 'pages'
-            link_to 'Help', '/help'
+            link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
           else
-            link_to 'Help', '/cms/registered-researchers'
+            link_to 'Help', '/cms/registered-researchers', class: current_page?('/cms/registered-researchers') ? 'active' : ''
           end
         else
           if controller_name == 'pages'
-            link_to 'Help', '/help'
+            link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
           else
-            link_to 'Help', '/cms/information-for-coordinators'
+            link_to 'Help', '/cms/information-for-coordinators', class: current_page?('/cms/information-for-coordinators') ? 'active' : ''
           end
         end
       end
     else
-      link_to 'Help', '/help'
+      link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
     end
   end
 
@@ -95,9 +95,9 @@ module ApplicationHelper
     return if controller_name == 'sessions'
 
     if session[:userid_detail_id].present?
-      link_to 'Logout', main_app.logout_manage_resources_path
+      link_to 'Logout', main_app.logout_manage_resources_path, class: current_page?(main_app.logout_manage_resources_path) ? 'active' : ''
     else
-      link_to 'Member', refinery.login_path
+      link_to 'Member', refinery.login_path, class: current_page?(refinery.login_path) ? 'active' : ''
     end
   end
 
