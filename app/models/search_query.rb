@@ -386,6 +386,36 @@ class SearchQuery
   end
 
   def field_values_match(x, y, fieldname)
+    # Handle if x and y are arrays of hashes
+    if x.is_a?(Array) && y.is_a?(Array)
+      # Compare arrays by checking if any element in x matches any element in y
+      x.any? do |x_item|
+        y.any? do |y_item|
+          compare_values(x_item[fieldname], y_item[fieldname])
+        end
+      end
+    elsif x.is_a?(Array)
+      x.any? { |item| compare_values(item[fieldname], y[fieldname]) }
+    elsif y.is_a?(Array)
+      y.any? { |item| compare_values(x[fieldname], item[fieldname]) }
+    else
+      compare_values(x[fieldname], y[fieldname])
+    end
+  end
+
+  def compare_values(x_val, y_val)
+    if x_val.is_a?(String) && y_val.is_a?(String)
+      x_val.to_s.downcase == y_val.to_s.downcase
+    else
+      x_val == y_val
+    end
+  end
+
+  def field_values_match_old(x, y, fieldname)
+    logger.warn(fieldname)
+    logger.warn(x)
+    logger.warn(y)
+    logger.warn("#{x[fieldname]} : #{x[fieldname].class}")
     if x[fieldname].class == String && y[fieldname].class == String
       return x[fieldname].to_s.downcase == y[fieldname].to_s.downcase
     else
@@ -393,7 +423,7 @@ class SearchQuery
     end
   end
 
-  def compare_field_values(x, y, fieldname)
+  def compare_field_values_old(x, y, fieldname)
     if x[fieldname].class == String && y[fieldname].class == String
       return x[fieldname].to_s.downcase <=> y[fieldname].to_s.downcase
     else
@@ -401,8 +431,44 @@ class SearchQuery
     end
   end
 
-  def compare_name_bmd(x, y, order_field, next_order_field=nil)
+    def compare_field_values(x, y, fieldname)
+    # Handle arrays of hashes
+    if x.is_a?(Array) && y.is_a?(Array)
+      x.each do |x_item|
+        y.each do |y_item|
+          comparison = compare_single_values(x_item[fieldname], y_item[fieldname])
+          return comparison unless comparison == 0
+        end
+      end
+      return 0 # If all comparisons are equal
+    elsif x.is_a?(Array)
+      x.each do |item|
+        comparison = compare_single_values(item[fieldname], y[fieldname])
+        return comparison unless comparison == 0
+      end
+      return 0
+    elsif y.is_a?(Array)
+      y.each do |item|
+        comparison = compare_single_values(x[fieldname], item[fieldname])
+        return comparison unless comparison == 0
+      end
+      return 0
+    else
+      compare_single_values(x[fieldname], y[fieldname])
+    end
+  end
+
+  def compare_single_values(x_val, y_val)
+    if x_val.is_a?(String) && y_val.is_a?(String)
+      x_val.to_s.downcase <=> y_val.to_s.downcase
+    else
+      x_val <=> y_val
+    end
+  end
+
+  def compare_name_bmd_old(x, y, order_field, next_order_field=nil)
     if field_values_match(x, y, order_field)
+      logger.warn(next_order_field)
       next_order_field.each do |field|
         if x[field].nil? || y[field].nil?
           return compare_field_values(x, y, field)
@@ -411,6 +477,49 @@ class SearchQuery
         return compare_field_values(x, y, field)
       end
       return 0 # rbl 20.9.2022: only gets to here if all next_order_field values match, so return 'equals' in that situation.
+    else
+      return compare_field_values(x, y, order_field)
+    end
+  end
+
+    def compare_name_bmd(x, y, order_field, next_order_field=nil)
+    # arrays of hashes
+    if x.is_a?(Array) && y.is_a?(Array)
+      # Compare arrays by finding the first non-zero comparison
+      x.each do |x_item|
+        y.each do |y_item|
+          comparison = compare_single_name_bmd(x_item, y_item, order_field, next_order_field)
+          return comparison unless comparison == 0
+        end
+      end
+      return 0 # If all comparisons are equal
+    elsif x.is_a?(Array)
+      x.each do |item|
+        comparison = compare_single_name_bmd(item, y, order_field, next_order_field)
+        return comparison unless comparison == 0
+      end
+      return 0
+    elsif y.is_a?(Array)
+      y.each do |item|
+        comparison = compare_single_name_bmd(x, item, order_field, next_order_field)
+        return comparison unless comparison == 0
+      end
+      return 0
+    else
+      compare_single_name_bmd(x, y, order_field, next_order_field)
+    end
+  end
+
+  def compare_single_name_bmd(x, y, order_field, next_order_field)
+    if field_values_match(x, y, order_field)
+      next_order_field.each do |field|
+        if x[field].nil? || y[field].nil?
+          return compare_field_values(x, y, field)
+        end
+        next if field_values_match(x, y, field)
+        return compare_field_values(x, y, field)
+      end
+      return 0 # Only gets here if all next_order_field values match
     else
       return compare_field_values(x, y, order_field)
     end
@@ -807,9 +916,13 @@ class SearchQuery
       if SearchQuery.app_template == 'freebmd'
         rec_attr = record.attributes
         rec_hash = record.record_hash
-        #hash_attr = record.best_guess_hash.attributes
-        #res_atrr = rec_attr.merge(hash_attr)
-        records[rec_hash] = rec_attr
+        #Handle multiple records with same hash
+        if records.has_key? rec_hash
+          v1 = records[rec_hash]
+          records[rec_hash]=[v1, rec_attr]
+        else
+          records[rec_hash] = rec_attr
+        end
       end
       unless SearchQuery.app_template == 'freebmd'
         rec_id = record['_id'].to_s
@@ -1360,7 +1473,7 @@ class SearchQuery
       logger.warn("#{App.name_upcase}: Timeout")
       [[], false, 1]
     rescue => e
-      logger.warn("#{App.name_upcase}:error: #{e}")
+      logger.warn("#{App.name_upcase}:error: #{e.inspect}")
       [[], false, 2]
     end
   end
@@ -1724,11 +1837,13 @@ class SearchQuery
   end
 
   def bmd_search_results
-    self.search_result.records.values
+   # raise self.search_result.records.values.flatten.inspect
+    self.search_result.records.values.flatten
   end
 
   def get_bmd_search_results
-    search_results = self.sort_search_results
+    search_results = self.sort_search_results.flatten
+    #raise search_results.inspect
     return get_bmd_search_response, search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_search_results, search_result_count if get_bmd_search_response
     return get_bmd_search_response if !get_bmd_search_response
   end
