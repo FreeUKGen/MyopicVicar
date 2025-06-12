@@ -444,6 +444,16 @@ class SearchQueriesController < ApplicationController
     paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
     send_data search_results_csv(paginated_array), filename: "search_results-#{Date.today}.csv"
   end
+  def download_as_tsv
+    search_id = params[:id]
+    @search_query = SearchQuery.find_by(id: search_id)
+    page_number = params[:page]
+    results_per_page = params[:results_per_page]
+    sorted_results = @search_query.sorted_and_paged_searched_records
+    results_per_page.to_i > 50 ? results_per_page = 50 : results_per_page = results_per_page
+    paginated_array = @search_query.paginate_results(sorted_results,page_number,results_per_page)
+    send_data search_results_tsv(paginated_array), filename: "search_results-#{Date.today}.tsv"
+  end
 
   def download_as_gedcom
     search_id = params[:id]
