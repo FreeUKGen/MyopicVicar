@@ -2222,6 +2222,11 @@ crumb :search_names do
   parent :root
 end
 
+crumb :freecen2_places_download_csv do
+  link 'Gazetteer CSV Download', download_csv_freecen2_places_path
+  parent :root
+end
+
 crumb :tna_change_logs do
   link 'Changes to TNA collections', tna_change_logs_path
   parent :root

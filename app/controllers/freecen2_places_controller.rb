@@ -97,6 +97,12 @@ class Freecen2PlacesController < ApplicationController
     end
   end
 
+
+
+  def download_csv
+    get_counties_for_selection
+  end
+
   def destroy
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?
