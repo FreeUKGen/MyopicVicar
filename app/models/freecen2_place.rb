@@ -396,7 +396,7 @@ class Freecen2Place
       line << record.grid_reference
       line << record.latitude
       line << record.longitude
-      record.record.latitude.present? && record.longitude.present? ? line << "https://www.google.com/maps/@?api=1&map_action=map&center=#{record.latitude},#{record.longitude}&zoom=13" : ''
+      record.latitude.present? && record.longitude.present? ? line << "https://www.google.com/maps/@?api=1&map_action=map&center=#{record.latitude},#{record.longitude}&zoom=13" : line << ''
       line << record.source
       line << record.genuki_url
       line << record.place_notes
