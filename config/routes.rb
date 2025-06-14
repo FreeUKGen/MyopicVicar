@@ -495,6 +495,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_places/active_index', to: 'freecen2_places#active_index', as: :active_index_freecen2_places
   get 'freecen2_places/selection_by_name', to: 'freecen2_places#selection_by_name', as: :selection_by_name_freecen2_places
   get 'freecen2_places/for_search_form(.:format)', :to => 'freecen2_places#for_search_form', :as => :freecen2_places_for_search_form
+  get 'freecen2_places/download_csv', to: 'freecen2_places#download_csv', as: :download_csv_freecen2_places
+  get 'freecen2_places/csv_index', to: 'freecen2_places#csv_index', as: :csv_index_freecen2_places
   resources :freecen2_places
 
   resources :freecen2_place_sources

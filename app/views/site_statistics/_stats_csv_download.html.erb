@@ -15,20 +15,20 @@
           <%= f.label :period_to, "End Date: " %>
           <%= f.select :period_to, @period_end_dates %>
         </li>
-            <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
-          </fieldset>
-        <% end %>
-      </div>
-      <script>
-        function hideDiv() {
-          var div = document.getElementById("csvdownload");
-          var btn = document.getElementById("downloadbutton");
-          if (div.style.display === "none") {
-            div.style.display = "block";
-            btn.innerHTML = "Hide CSV File Download"
-          } else {
-            div.style.display = "none";
-            btn.innerHTML = "Show CSV File Download"
-          }
-        }
-      </script>
+        <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
+      </fieldset>
+    <% end %>
+  </div>
+  <script>
+    function hideDiv() {
+      var div = document.getElementById("csvdownload");
+      var btn = document.getElementById("downloadbutton");
+      if (div.style.display === "none") {
+        div.style.display = "block";
+        btn.innerHTML = "Hide CSV File Download"
+      } else {
+        div.style.display = "none";
+        btn.innerHTML = "Show CSV File Download"
+      }
+    }
+  </script>

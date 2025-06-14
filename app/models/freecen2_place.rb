@@ -365,6 +365,72 @@ class Freecen2Place
       SearchRecord.where(birth_chapman_code: place.chapman_code, freecen2_place_of_birth_id: place.id).no_timeout.exists?
     end
 
+    def create_csv_file(chapman_code)
+      gaz_places = Freecen2Place.where(chapman_code: chapman_code).all.order_by(standard_place_name: 1)
+      max_alternate_names = 1
+      gaz_places.each do |place|
+        max_alternate_names = place.alternate_freecen2_place_names.count if place.alternate_freecen2_place_names.count > max_alternate_names
+      end
+
+      now = Time.now.strftime('%Y%m%d_%H%M')
+      file = "Freecen_Gazetteer_Places_#{chapman_code}_#{now}.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = Freecen2Place.write_csv_file(file_location, gaz_places, max_alternate_names)
+
+      [success, message, file_location, file]
+    end
+
+    def write_csv_file(file_location, gaz_places, max_alternate_names)
+      column_headers_start = %w[chapman_code place_name standard_name grid_reference latitude longitude location_google_maps source source_url]
+      column_headers_end = %w[place_notes updated]
+      column_alt_names = %w[alternate_place_name standard_alternate_name]
+      column_headers_all = column_headers_start + column_alt_names
+      i = 1
+      while i < max_alternate_names
+        column_headers_all = column_headers_all + column_alt_names
+        i += 1
+      end
+      column_headers_final = column_headers_all + column_headers_end
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << column_headers_final
+        gaz_places.each do |rec|
+          line = []
+          line = Freecen2Place.add_fields(line, rec, max_alternate_names)
+          csv << line
+        end
+      end
+      [true, '']
+    end
+
+    def add_fields(line, record, max_alternate_names)
+      line << record.chapman_code
+      line << record.place_name
+      line << record.standard_place_name
+      line << record.grid_reference
+      line << record.latitude
+      line << record.longitude
+      record.latitude.present? && record.longitude.present? ? line << "https://www.google.com/maps/@?api=1&map_action=map&center=#{record.latitude},#{record.longitude}&zoom=13" : line << ''
+      line << record.source
+      line << record.genuki_url
+      i = 1
+      if record.alternate_freecen2_place_names.count > 0
+        record.alternate_freecen2_place_names.each do |alternate_place|
+          line << alternate_place.alternate_name
+          line << alternate_place.standard_alternate_name
+          i += 1
+        end
+      end
+      while i <= max_alternate_names
+        line << ' '
+        line << ' '
+        i += 1
+      end
+      line << record.place_notes
+      record.u_at.present? ? line << record.u_at.strftime('%d %b %Y') : ''
+      line
+    end
+
+
   end
 
 

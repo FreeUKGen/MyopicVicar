@@ -1,0 +1,13 @@
+<% breadcrumb :freecen2_places_download_csv%>
+<%= render 'flash_notice' %>
+<h1 style="text-align: center">Download CSV File of Gazetteer Places for a County</h1>
+<div class=" text--center push--bottom">
+  <%= form_for(:csvdownload, url: csv_index_freecen2_places_path, method: :get, data: { confirm: "You sure you want to download a CSV file of Gazetteer Places?"}) do |f| %>
+    <fieldset class="input" style="text-align: center">
+      *County :  <%= f.select :county, @counties %>
+    </fieldset>
+    <div style="text-align: center">
+      <%= f.submit 'Download CSV File', :class => "btn   btn--small", title: 'Downloads a CSV file',data: { disable_with: false } %>
+    </div>
+  <% end %>
+</div>
