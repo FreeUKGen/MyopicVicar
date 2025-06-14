@@ -98,14 +98,19 @@ class Freecen2PlacesController < ApplicationController
   end
 
   def download_csv
-    @counties = Freecen2Place.pluck(:chapman_code).uniq
+    @counties = []
+    chapman_codes = Freecen2Place.distinct("chapman_code")
+    chapman_codes.each do |cnty|
+      code_and_name =  "#{cnty} - #{ChapmanCode.name_from_code(cnty)}"
+      @counties << code_and_name
+    end
     @counties.unshift('Select a County')
   end
 
   def csv_index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No County Selected') && return if params[:csvdownload][:county] == 'Select a County'
 
-    chapman_code = params[:csvdownload][:county]
+    chapman_code = params[:csvdownload][:county][0...3]
 
     success, message, file_location, file_name = Freecen2Place.create_csv_file(chapman_code)
     if success
