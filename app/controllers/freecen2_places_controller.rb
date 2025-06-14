@@ -97,10 +97,26 @@ class Freecen2PlacesController < ApplicationController
     end
   end
 
-
-
   def download_csv
-    get_counties_for_selection
+    @counties = Freecen2Place.pluck(:chapman_code).uniq
+    @counties.unshift('Select a County')
+  end
+
+  def csv_index
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No County Selected') && return if params[:csvdownload][:county] == 'Select a County'
+
+    chapman_code = params[:csvdownload][:county]
+
+    success, message, file_location, file_name = Freecen2Place.create_csv_file(chapman_code)
+    if success
+      if File.file?(file_location)
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+        flash[:notice] = 'Downloaded'
+      end
+    else
+      flash[:notice] = "There was a problem saving the file prior to download. Please send this message #{message} to your coordinator"
+    end
+    redirect_back(fallback_location: new_manage_resource_path)
   end
 
   def destroy

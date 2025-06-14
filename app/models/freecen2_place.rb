@@ -365,6 +365,46 @@ class Freecen2Place
       SearchRecord.where(birth_chapman_code: place.chapman_code, freecen2_place_of_birth_id: place.id).no_timeout.exists?
     end
 
+    def create_csv_file(chapman_code)
+      gaz_places = Freecen2Place.where(chapman_code: chapman_code).all.order_by(standard_place_name: 1)
+      now = Time.now.strftime('%Y%m%d_%H%M')
+      file = "Freecen_Gazetteer_Places_#{chapman_code}_#{now}.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = Freecen2Place.write_csv_file(file_location, gaz_places)
+
+      [success, message, file_location, file]
+    end
+
+    def write_csv_file(file_location, gaz_places)
+      column_headers = %w[chapman_code place_name standard_name grid_reference latitude longitude location_google_maps source source_url place_notes updated]
+
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << column_headers
+        gaz_places.each do |rec|
+          line = []
+          line = Freecen2Place.add_fields(line, rec)
+          csv << line
+        end
+      end
+      [true, '']
+    end
+
+    def add_fields(line, record)
+      line << record.chapman_code
+      line << record.place_name
+      line << record.standard_place_name
+      line << record.grid_reference
+      line << record.latitude
+      line << record.longitude
+      record.record.latitude.present? && record.longitude.present? ? line << "https://www.google.com/maps/@?api=1&map_action=map&center=#{record.latitude},#{record.longitude}&zoom=13" : ''
+      line << record.source
+      line << record.genuki_url
+      line << record.place_notes
+      record.u_at.present? ? line << record.u_at.strftime('%d %b %Y') : ''
+      line
+    end
+
+
   end
 
 
