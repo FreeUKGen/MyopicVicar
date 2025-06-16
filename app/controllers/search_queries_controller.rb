@@ -343,83 +343,23 @@ class SearchQueriesController < ApplicationController
   end
 
   def districts_of_selected_counties
-    logger.warn(params)
-    @selected_districts = params[:selected_districts]
-    districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
-    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    term = params[:term]
     selected_counties = params[:selected_counties]
-    unless selected_counties == 'all'
-      selected_counties = selected_counties.split(',').compact unless selected_counties.kind_of?(Array)
-      selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
+    
+    query = DistrictToCounty.includes(:District)
+                           .where('DistrictName LIKE ?', "%#{term}%")
+    
+    if selected_counties.present? && selected_counties != 'all'
+      query = query.where(chapman_code: selected_counties)
     end
-    logger.warn(selected_counties)
-    whole_england = ChapmanCode::ALL_ENGLAND.values.flatten
-    whole_wales = ChapmanCode::ALL_WALES.values.flatten
-    #check_whole_england = whole_england - selected_counties
-    #check_whole_wales = whole_wales - selected_counties
-    logger.warn("selected_countiesss: #{selected_counties}")
-    codes = params[:county_code]
-    unless codes.present?
-      county_codes = []
-      if selected_counties.present?
-        county_hash.each {|country, counties|
-          selected_counties.each{|c|
-            county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
-          }
-        }
-      else
-        england_codes = county_hash.dig('England').fetch('All England')
-        wales_codes = county_hash.dig('Wales').fetch('All Wales')
-        county_codes = england_codes + wales_codes
-      end
-    else
-      unless selected_counties == 'all'
-        county_codes = selected_counties
-        logger.warn("county codesss: #{county_codes}")
-      else
-        england_codes = county_hash.dig('England').fetch('All England')
-        wales_codes = county_hash.dig('Wales').fetch('All Wales')
-        county_codes = england_codes + wales_codes
-      end
+    
+    districts = query.distinct
+                    .order('DistrictName ASC')
+                    .pluck(:DistrictName)
+    
+    respond_to do |format|
+      format.json { render json: districts }
     end
-    @districts = Hash.new
-    county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
-      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
-    }
-    @districts
-    # rbl 22.1.2025: removed this line to allow 'All England' and 'All Wales' to generate results in the District selection list:
-    # @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales") || check_whole_england.empty? || check_whole_wales.empty?
-  end
-
-  def districts_of_selected_counties_old
-    @selected_districts = params[:selected_districts]
-    districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
-    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
-    selected_counties = params[:selected_counties]
-    selected_counties = selected_counties.split(',').compact unless selected_counties.kind_of?(Array)
-    selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
-    whole_england = ChapmanCode::ALL_ENGLAND.values.flatten
-    whole_wales = ChapmanCode::ALL_WALES.values.flatten
-    check_whole_england = whole_england - selected_counties
-    check_whole_wales = whole_wales - selected_counties
-    codes = params[:county_code]
-    unless codes.present?
-      county_codes = []
-      county_hash.each {|country, counties|
-        selected_counties.each{|c|
-          county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
-        }
-      }
-    else
-      county_codes = selected_counties
-    end
-    @districts = Hash.new
-    county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
-      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
-    }
-    @districts
-    # rbl 22.1.2025: removed this line to allow 'All England' and 'All Wales' to generate results in the District selection list:
-    # @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales") || check_whole_england.empty? || check_whole_wales.empty?
   end
 
   def end_year_val

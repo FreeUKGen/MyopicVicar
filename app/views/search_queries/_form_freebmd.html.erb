@@ -225,14 +225,57 @@
                     <div class='districtslabel'>
                         <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip" do %>
                             <%= "Districts".html_safe %>
-                            <small class="additional">Select none, one or more Districts (hold Ctrl for multiple)</small>
+                            <small class="additional">Start typing district names</small>
                         <% end %>
                     </div>
                 </div>
-                <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
-                
+                <%= text_field_tag 'search_query[districts]', 
+                    set_value(@search_query.districts), 
+                    class: 'text-input flush--bottom',
+                    role: 'textbox',
+                    id: 'search_query_districts',
+                    tabindex: "0" %>
             </li>
+
+            <script>
+                $(document).ready(function() {
+                    $('#search_query_districts').autocomplete({
+                        source: function(request, response) {
+                            var counties = $('#search_query_chapman_codes').val();
+                            $.ajax({
+                                url: '/search_queries/districts_of_selected_counties',
+                                dataType: 'json',
+                                data: {
+                                    term: request.term,
+                                    selected_counties: counties
+                                },
+                                success: function(data) {
+                                    response(data);
+                                }
+                            });
+                        },
+                        minLength: 2,
+                        select: function(event, ui) {
+                            var terms = split(this.value);
+                            terms.pop();
+                            terms.push(ui.item.value);
+                            terms.push("");
+                            this.value = terms.join(", ");
+                            return false;
+                        }
+                    });
+
+                    function split(val) {
+                        return val.split(/,\s*/);
+                    }
+
+                    // Update districts when counties change
+                    $('#search_query_chapman_codes').on('change', function() {
+                        $('#search_query_districts').val('');
+                    });
+                });
+            </script>
+
             <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole volumes">
             <div class='labels'>
                 <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
