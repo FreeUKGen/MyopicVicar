@@ -294,6 +294,69 @@
                         return false;
                     }
                 });
+                
+                $('#search_query_districts').autocomplete({
+            //var counties = $('#search_query_chapman_codes').val();
+              source: function (request, response) {
+                $.ajax({
+                  autoFocus: true,
+                  url: "/search_queries/districts_of_selected_counties/",
+                  dataType: 'json',
+                  data: {
+                    selected_counties: $('#search_query_chapman_codes').val(),
+                    term: request.term
+                  },
+                  success: function(data) {
+                    // call response to return the result to autocomplete box
+                  //  console.log(data);
+                    //response(data);
+                    // Transform the array of arrays into the format jQuery UI autocomplete expects
+                  var transformedData = data.map(function(item) {
+                    return {
+                      label: item[0], // DistrictName
+                      value: item[0], // DistrictName
+                      id: item[1]     // DistrictID
+                    };
+                  });
+                  response(transformedData);
+                  }
+                });
+              },
+              focus: function() {
+                // prevent value inserted on focus
+                  return false;
+              },
+                        select: function(event, ui) {
+              var terms = split(this.value);
+              // remove the current input
+              terms.pop();
+              // add the selected item's ID
+              terms.push(ui.item.value);
+              // add placeholder to get the comma-and-space at the end
+              terms.push("");
+              this.value = terms.join(", ");
+              
+              // Store the display names in a data attribute
+              var displayNames = this.getAttribute('data-display-names') || '';
+              displayNames = displayNames ? displayNames.split(',') : [];
+              displayNames.push(ui.item.name);
+              this.setAttribute('data-display-names', displayNames.join(','));
+              
+              return false;S
+            }
+          });
+
+          // Add a hidden input to store the display names
+          $('<input>').attr({
+            type: 'hidden',
+            name: 'search_query[district_names]',
+            id: 'district_names'
+          }).insertAfter('#search_query_districts');
+
+          // Update the hidden input when districts change
+          $('#search_query_districts').on('change', function() {
+            $('#district_names').val($(this).attr('data-display-names'));
+            });
             </script>
         </fieldset>
         <div>
