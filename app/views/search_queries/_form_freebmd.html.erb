@@ -230,7 +230,7 @@
                         </div>
                     </div>
                     <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-                    <%= autocomplete_field_tag 'search_query[districts]', set_value(@search_query.districts), '/search_queries/districts_of_selected_counties', 'data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_districts', tabindex: "0" %>
+                    <%= autocomplete_field_tag 'search_query[districts]', set_district(@search_query.districts), '/search_queries/districts_of_selected_counties', 'data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_districts', tabindex: "0" %>
                     
                 </li>
                 <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole volumes">
@@ -294,7 +294,7 @@
                         return false;
                     }
                 });
-                
+
                 $('#search_query_districts').autocomplete({
             //var counties = $('#search_query_chapman_codes').val();
               source: function (request, response) {
