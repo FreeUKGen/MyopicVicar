@@ -266,6 +266,8 @@ class SearchQueriesController < ApplicationController
         response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
         @filter_condition = params[:filter_option]
         @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
+        #@search_query[:results_per_page] = assign_value(params[:results_per_page], SearchQuery::RESULTS_PER_PAGE) if @search_query[:results_per_page].nil? # issue 693
+        #@results_per_page = assign_value(params[:results_per_page],@search_query[:results_per_page]) #SearchQuery::RESULTS_PER_PAGE)
         @results_per_page = assign_value(params[:results_per_page],SearchQuery::RESULTS_PER_PAGE)
         @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'

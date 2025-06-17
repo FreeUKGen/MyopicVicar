@@ -169,6 +169,7 @@ class SearchQuery
   field :language, type: String
   validates_inclusion_of :language, :in => Language::ALL_LANGUAGES + [nil]
   field :occupation, type: String
+  #field :results_per_page, type: Integer # issue 693: make this a property of the search querySearchQuery
 
   has_and_belongs_to_many :places, inverse_of: nil
   has_and_belongs_to_many :freecen2_places, inverse_of: nil
@@ -210,7 +211,7 @@ class SearchQuery
     3 => "Year of Birth",
     4 => "Year of Birth Range"
   }
-  RESULTS_PER_PAGE = 20
+  RESULTS_PER_PAGE = 50
   DEFAULT_PAGE = 1
 
   class << self
@@ -1336,6 +1337,7 @@ class SearchQuery
   def freebmd_search_records
     search_fields = bmd_adjust_field_names
     search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
+    search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present? # issue 689: given name punctuation not in data, so remove them from search
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     begin
