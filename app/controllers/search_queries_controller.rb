@@ -81,10 +81,29 @@ class SearchQueriesController < ApplicationController
       }
     }
     search_params['chapman_codes'] = county_codes.flatten
+#    raise search_params.inspect
+    selected_districts = search_params['districts'].split(',').compact
+    selected_districts = selected_districts.collect(&:strip).reject{|c| c.empty? }
+    #raise selected_districts.inspect
+    district_ids = []
+    if selected_districts.present?
+      all_districts = District.all
+      selected_districts.each{ |sd|
+        all_districts.each{|d|
+          district = District.new
+          formatted_dn = district.formatted_name_for_search(d)
+          next if formatted_dn != sd
+          logger.warn("dnnnnnnnnnnnnnnnnnnnnnnnnnnnnn: #{formatted_dn}")
+          district_ids << d.DistrictNumber if formatted_dn == sd
+        }
+      }
+    end
+    search_params['districts'] = district_ids
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
+      #raise @search_query.search_records.to_a.inspect
       @search_results, success, error_type = @search_query.search_records.to_a
       error = error_type.to_i if error_type.present?
       redirect_to search_query_path(@search_query) and return if success
@@ -343,21 +362,18 @@ class SearchQueriesController < ApplicationController
   end
 
   def districts_of_selected_counties
-    logger.warn(params)
-    @selected_districts = params[:selected_districts]
-    districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
-    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    term = params[:term].split(',').pop.strip.downcase
     selected_counties = params[:selected_counties]
+    selected_districts = params[:selected_districts]
+
+    query = DistrictToCounty.joins(:District)
+                           #.where('DistrictName LIKE ?', "%#{term}%")
+
+    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
     unless selected_counties == 'all'
-      selected_counties = selected_counties.split(',').compact unless selected_counties.kind_of?(Array)
+      selected_counties = selected_counties.split(',').compact unless selected_counties.kind_of?(Array) #&& !selected_counties.include?(',')
       selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
     end
-    logger.warn(selected_counties)
-    whole_england = ChapmanCode::ALL_ENGLAND.values.flatten
-    whole_wales = ChapmanCode::ALL_WALES.values.flatten
-    #check_whole_england = whole_england - selected_counties
-    #check_whole_wales = whole_wales - selected_counties
-    logger.warn("selected_countiesss: #{selected_counties}")
     codes = params[:county_code]
     unless codes.present?
       county_codes = []
@@ -382,13 +398,29 @@ class SearchQueriesController < ApplicationController
         county_codes = england_codes + wales_codes
       end
     end
-    @districts = Hash.new
+    @districts = []
+    unless selected_districts.present?
     county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
-      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
+      #raise districts_names.where(County: 'HRT').inspect
+      query.where(County: c).where('DistrictName LIKE ?', "%#{term}%").each do |d|
+         district = District.new
+         dna = district.formatted_name_for_search(d.District)
+         dno = d.District.DistrictNumber
+         @districts << [dna, dno]
+      end
     }
-    @districts
-    # rbl 22.1.2025: removed this line to allow 'All England' and 'All Wales' to generate results in the District selection list:
-    # @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales") || check_whole_england.empty? || check_whole_wales.empty?
+    else
+      selected_districts.each{|dn|
+        d = District.where(DistrictNumber: dn).first
+        district = District.new
+        dna =  district.formatted_name_for_search(d)
+        dno = dn
+        @districts << [dna, dno]
+      }
+    end
+    respond_to do |format|
+      format.json { render json: @districts }
+    end
   end
 
   def districts_of_selected_counties_old
