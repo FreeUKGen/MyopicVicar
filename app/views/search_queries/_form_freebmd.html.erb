@@ -252,6 +252,49 @@
                     <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
                 </li>
             </ol>
+            <script>
+                $( "#first_name" ).autocomplete({
+                    source: '/unique_forenames/?term='
+                });
+                $( "#last_name" ).autocomplete({
+                    source: '/unique_surnames/?term='
+                });
+                function split( val ) {
+                    return val.split( /,\s*/ );
+                }
+
+
+                $('#search_query_chapman_codes').autocomplete({
+                    source: function (request, response) {
+                    $.ajax({
+                          autoFocus: true,
+                          url: "/search_queries/select_counties/", // should be with '/'
+                          dataType: 'json',
+                          data: { prefix: request.term },
+                          success: function(data) {
+                                // call response to return the result to autocomplete box
+                                console.log(data);
+                                response(data);
+                            }
+                        });
+                    },
+                    focus: function() {
+                        // prevent value inserted on focus
+                        return false;
+                    },
+                    select: function( event, ui ) {
+                        var terms = split( this.value );
+                        // remove the current input
+                        terms.pop();
+                        // add the selected item
+                        terms.push( ui.item.value );
+                        // add placeholder to get the comma-and-space at the end
+                        terms.push( "" );
+                        this.value = terms.join( ", " );
+                        return false;
+                    }
+                });
+            </script>
         </fieldset>
         <div>
           <span><%= link_to 'Help with searching', '/help' %></span>
@@ -262,7 +305,7 @@
         <div class="small_screen_actions">
             <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
         </div>
-    <% end %>
+  <% end %>
 </div>
 <%# end %>
 <style>
@@ -297,48 +340,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
     <script type="text/javascript">
-        $( "#first_name" ).autocomplete({
-            source: '/unique_forenames/?term='
-        });
-        $( "#last_name" ).autocomplete({
-            source: '/unique_surnames/?term='
-        });
-        function split( val ) {
-            return val.split( /,\s*/ );
-        }
-
-
-        $('#search_query_chapman_codes').autocomplete({
-            source: function (request, response) {
-            $.ajax({
-                  autoFocus: true,
-                  url: "/search_queries/select_counties/", // should be with '/'
-                  dataType: 'json',
-                  data: { prefix: request.term },
-                  success: function(data) {
-                        // call response to return the result to autocomplete box
-                        console.log(data);
-                        response(data);
-                    }
-                });
-            },
-            focus: function() {
-                // prevent value inserted on focus
-                return false;
-            },
-            select: function( event, ui ) {
-                var terms = split( this.value );
-                // remove the current input
-                terms.pop();
-                // add the selected item
-                terms.push( ui.item.value );
-                // add placeholder to get the comma-and-space at the end
-                terms.push( "" );
-                this.value = terms.join( ", " );
-                return false;
-            }
-        });
-
         $('.checkAll').on('change', function(e) {
             var $inputs = $('.checkboxtag');
             if (e.originalEvent === undefined) {
@@ -351,7 +352,6 @@
                 $inputs.prop('checked', this.checked);
             }
         });
-
         $('.checkboxtag').on('change', function() {
             $('.checkAll').trigger('change');
         });
