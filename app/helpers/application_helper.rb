@@ -21,7 +21,8 @@ module ApplicationHelper
     }
   def nav_search_form_link
     #check_current_page(main_app.new_search_query_path)
-    link_to('Search', main_app.new_search_query_path, class: check_current_page('')) #unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
+    path = 'search_queries/new'
+    link_to('Search', main_app.new_search_query_path, class: check_current_page(path)) #unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
   end
 
   def nav_actions_page_link
