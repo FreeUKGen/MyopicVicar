@@ -90,7 +90,7 @@
               <li><%= nav_freecen_gazetteer %></li>
             <% end %>
             <%# if nav_help_bmd_context.present?%>
-              <li><%= link_to 'Help', '/help' %></li>
+              <li><%= nav_help_pages_link %></li>
             <%# end %>
           </ul>
         </nav>
@@ -124,7 +124,7 @@
           <li><%=nav_freecen_gazetteer%></li>
         <% end%>
         <% if nav_help_pages_link.present?%>
-          <li><%= link_to 'Help', '/cms/help' %></li>
+          <li><%= nav_help_pages_link %></li>
         <% end%>
       </ul>
     </nav>
