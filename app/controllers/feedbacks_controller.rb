@@ -268,7 +268,7 @@ class FeedbacksController < ApplicationController
   end
 
   def show
-    #get_user_info_from_userid
+    get_user_info_from_userid
     @feedback = Feedback.find(params[:id])
     redirect_back(fallback_location: feedbacks_path, notice: 'The feedback was not found') && return if @feedback.blank?
 
