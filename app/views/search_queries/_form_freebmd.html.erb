@@ -302,11 +302,16 @@
       </script>
 
     </fieldset>
-    <div>
-      <span><%= link_to 'Help with searching', '/help' %></span>
-    </div>
     <div class="grid action">
-        <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+        <div class="grid__item desk-one-third lap-one-third palm-one-whole">
+            <span class="float--left"><%= link_to 'Help with searching', '/help' %></span>
+        </div>
+        <div class="grid__item desk-one-third lap-one-third palm-one-whole text--center">
+            <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+        </div>
+        <div class="grid__item desk-one-third lap-one-third palm-one-whole">
+            <%= button_tag 'Clear Form', type: 'button', class: 'clear_forms ladda-button-reverse' data: {color: 'freebmd'} %>
+        </div>
     </div>
     <div class="small_screen_actions">
         <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
@@ -709,11 +714,63 @@
                 }
             });
 
-            $('.clear_form').click(function() {
+            $('.clear_forms').click(function() {
+                // Reset the form using the native reset method
+                $('#new_search_query')[0].reset();
+                
+                // Clear all text inputs
+                $('#new_search_query input[type="text"]').val('');
+                $('#new_search_query input[type="number"]').val('');
+                
+                // Clear select dropdowns
+                $('#new_search_query select').val('');
+                
+                // Uncheck all checkboxes
+                $('#new_search_query input[type="checkbox"]').prop('checked', false);
+                
+                // Reset record type checkboxes - check "Select All" and uncheck others
+                $('#search_query_bmd_record_type_birth').prop('checked', false);
+                $('#search_query_bmd_record_type_death').prop('checked', false);
+                $('#search_query_bmd_record_type_marriage').prop('checked', false);
+                
+                // Reset specific fields to defaults
+                $('#from_year').val('1837');
+                $('#to_year').val('1999');
+                $('#from_quarter').val('1');
+                $('#to_quarter').val('4');
+                
+                // Clear districts selection
+                $('#search_query_districts').empty();
+                
+                // Reset form state
                 hide_all_death_options();
                 $('#death_select_box').val([]);
-                //$('#death_select_box').prop('disabled', 'disabled');
-                //$('#death_select_box').css('background', '#ccc');
+                $('#death_select_box').prop('disabled', 'disabled');
+                
+                // Hide conditional fields
+                $('#spouse_firstnames_div').hide();
+                $('#spouse_or_mother_surname_div').hide();
+                $('#age_at_death_or_date_of_birth_div').hide();
+                $('#spouse_first_name').val('');
+                $('#spouses_mother_surname').val('');
+                
+                // Reset labels
+                $('.spouse_or_mother_surname_label').text("Spouse/Mothers surname");
+                
+                // Show advanced search
+                $("#advanced_search").show();
+                
+                // Clear any validation errors
+                $('#new_search_query').find('.error').removeClass('error');
+                $('#new_search_query').find('.validation-list').hide();
+                
+                // Reset autocomplete fields
+                $('#first_name').val('');
+                $('#last_name').val('');
+                $('#search_query_chapman_codes').val('');
+                
+                // Trigger change events to update form state
+                $('.checkboxtag, .checkAll').trigger('change');
             });
         });
     </script>

@@ -570,3 +570,467 @@
     color: #00857E;
     border-color: #00857E;
 }
+  /* reverse button */
+  
+.ladda-button-reverse:hover {
+    position: relative
+}
+
+.ladda-button-reverse:hover .ladda-spinner-reverse:hover {
+    position: absolute;
+    z-index: 2;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    margin-top: 0;
+    opacity: 0;
+    pointer-events: none
+}
+
+.ladda-button-reverse:hover .ladda-label-reverse:hover {
+    position: relative;
+    z-index: 3
+}
+
+.ladda-button-reverse:hover .ladda-progress-reverse:hover {
+    position: absolute;
+    width: 0;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(0, 0, 0, 0.2);
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: 0.1s linear all !important;
+    -moz-transition: 0.1s linear all !important;
+    -ms-transition: 0.1s linear all !important;
+    -o-transition: 0.1s linear all !important;
+    transition: 0.1s linear all !important
+}
+
+.ladda-button-reverse[data-loading]:hover .ladda-progress-reverse:hover {
+    opacity: 1;
+    visibility: visible
+}
+
+.ladda-button-reverse:hover,
+.ladda-button-reverse:hover .ladda-spinner-reverse:hover,
+.ladda-button-reverse:hover .ladda-label-reverse:hover {
+    -webkit-transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) all !important;
+    -moz-transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) all !important;
+    -ms-transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) all !important;
+    -o-transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) all !important;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) all !important
+}
+
+.ladda-button-reverse[data-style=zoom-in]:hover,
+.ladda-button-reverse[data-style=zoom-in]:hover .ladda-spinner-reverse:hover,
+.ladda-button-reverse[data-style=zoom-in]:hover .ladda-label-reverse:hover,
+.ladda-button-reverse[data-style=zoom-out]:hover,
+.ladda-button-reverse[data-style=zoom-out]:hover .ladda-spinner-reverse:hover,
+.ladda-button-reverse[data-style=zoom-out]:hover .ladda-label-reverse:hover {
+    -webkit-transition: 0.3s ease all !important;
+    -moz-transition: 0.3s ease all !important;
+    -ms-transition: 0.3s ease all !important;
+    -o-transition: 0.3s ease all !important;
+    transition: 0.3s ease all !important
+}
+
+.ladda-button-reverse[data-style=expand-right]:hover .ladda-spinner-reverse:hover {
+    right: -6px
+}
+
+.ladda-button-reverse[data-style=expand-right][data-size="s"]:hover .ladda-spinner-reverse:hover,
+.ladda-button-reverse[data-style=expand-right][data-size="xs"]:hover .ladda-spinner-reverse:hover {
+    right: -12px
+}
+
+.ladda-button-reverse[data-style=expand-right][data-loading]:hover {
+    padding-right: 56px
+}
+
+.ladda-button-reverse[data-style=expand-right][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1
+}
+
+.ladda-button-reverse[data-style=expand-right][data-loading][data-size="s"]:hover,
+.ladda-button-reverse[data-style=expand-right][data-loading][data-size="xs"]:hover {
+    padding-right: 40px
+}
+
+.ladda-button-reverse[data-style=expand-left]:hover .ladda-spinner-reverse:hover {
+    left: 26px
+}
+
+.ladda-button-reverse[data-style=expand-left][data-size="s"]:hover .ladda-spinner-reverse:hover,
+.ladda-button-reverse[data-style=expand-left][data-size="xs"]:hover .ladda-spinner-reverse:hover {
+    left: 4px
+}
+
+.ladda-button-reverse[data-style=expand-left][data-loading]:hover {
+    padding-left: 56px
+}
+
+.ladda-button-reverse[data-style=expand-left][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1
+}
+
+.ladda-button-reverse[data-style=expand-left][data-loading][data-size="s"]:hover,
+.ladda-button-reverse[data-style=expand-left][data-loading][data-size="xs"]:hover {
+    padding-left: 40px
+}
+
+.ladda-button-reverse[data-style=expand-up]:hover {
+    overflow: hidden
+}
+
+.ladda-button-reverse[data-style=expand-up]:hover .ladda-spinner-reverse:hover {
+    top: -32px;
+    left: 50%;
+    margin-left: 0
+}
+
+.ladda-button-reverse[data-style=expand-up][data-loading]:hover {
+    padding-top: 54px
+}
+
+.ladda-button-reverse[data-style=expand-up][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1;
+    top: 26px;
+    margin-top: 0
+}
+
+.ladda-button-reverse[data-style=expand-up][data-loading][data-size="s"]:hover,
+.ladda-button-reverse[data-style=expand-up][data-loading][data-size="xs"]:hover {
+    padding-top: 32px
+}
+
+.ladda-button-reverse[data-style=expand-up][data-loading][data-size="s"]:hover .ladda-spinner-reverse:hover,
+.ladda-button-reverse[data-style=expand-up][data-loading][data-size="xs"]:hover .ladda-spinner-reverse:hover {
+    top: 4px
+}
+
+.ladda-button-reverse[data-style=expand-down]:hover {
+    overflow: hidden
+}
+
+.ladda-button-reverse[data-style=expand-down]:hover .ladda-spinner-reverse:hover {
+    top: 62px;
+    left: 50%;
+    margin-left: 0
+}
+
+.ladda-button-reverse[data-style=expand-down][data-size="s"]:hover .ladda-spinner-reverse:hover,
+.ladda-button-reverse[data-style=expand-down][data-size="xs"]:hover .ladda-spinner-reverse:hover {
+    top: 40px
+}
+
+.ladda-button-reverse[data-style=expand-down][data-loading]:hover {
+    padding-bottom: 54px
+}
+
+.ladda-button-reverse[data-style=expand-down][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1
+}
+
+.ladda-button-reverse[data-style=expand-down][data-loading][data-size="s"]:hover,
+.ladda-button-reverse[data-style=expand-down][data-loading][data-size="xs"]:hover {
+    padding-bottom: 32px
+}
+
+.ladda-button-reverse[data-style=slide-left]:hover {
+    overflow: hidden
+}
+
+.ladda-button-reverse[data-style=slide-left]:hover .ladda-label-reverse:hover {
+    position: relative
+}
+
+.ladda-button-reverse[data-style=slide-left]:hover .ladda-spinner-reverse:hover {
+    left: 100%;
+    margin-left: 0
+}
+
+.ladda-button-reverse[data-style=slide-left][data-loading]:hover .ladda-label-reverse:hover {
+    opacity: 0;
+    left: -100%
+}
+
+.ladda-button-reverse[data-style=slide-left][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1;
+    left: 50%
+}
+
+.ladda-button-reverse[data-style=slide-right]:hover {
+    overflow: hidden
+}
+
+.ladda-button-reverse[data-style=slide-right]:hover .ladda-label-reverse:hover {
+    position: relative
+}
+
+.ladda-button-reverse[data-style=slide-right]:hover .ladda-spinner-reverse:hover {
+    right: 100%;
+    margin-left: 0;
+    left: 16px
+}
+
+.ladda-button-reverse[data-style=slide-right][data-loading]:hover .ladda-label-reverse:hover {
+    opacity: 0;
+    left: 100%
+}
+
+.ladda-button-reverse[data-style=slide-right][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1;
+    left: 50%
+}
+
+.ladda-button-reverse[data-style=slide-up]:hover {
+    overflow: hidden
+}
+
+.ladda-button-reverse[data-style=slide-up]:hover .ladda-label-reverse:hover {
+    position: relative
+}
+
+.ladda-button-reverse[data-style=slide-up]:hover .ladda-spinner-reverse:hover {
+    left: 50%;
+    margin-left: 0;
+    margin-top: 1em
+}
+
+.ladda-button-reverse[data-style=slide-up][data-loading]:hover .ladda-label-reverse:hover {
+    opacity: 0;
+    top: -1em
+}
+
+.ladda-button-reverse[data-style=slide-up][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1;
+    margin-top: 0
+}
+
+.ladda-button-reverse[data-style=slide-down]:hover {
+    overflow: hidden
+}
+
+.ladda-button-reverse[data-style=slide-down]:hover .ladda-label-reverse:hover {
+    position: relative
+}
+
+.ladda-button-reverse[data-style=slide-down]:hover .ladda-spinner-reverse:hover {
+    left: 50%;
+    margin-left: 0;
+    margin-top: -2em
+}
+
+.ladda-button-reverse[data-style=slide-down][data-loading]:hover .ladda-label-reverse:hover {
+    opacity: 0;
+    top: 1em
+}
+
+.ladda-button-reverse[data-style=slide-down][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1;
+    margin-top: 0
+}
+
+.ladda-button-reverse[data-style=zoom-out]:hover {
+    overflow: hidden
+}
+
+.ladda-button-reverse[data-style=zoom-out]:hover .ladda-spinner-reverse:hover {
+    left: 50%;
+    margin-left: 32px;
+    -webkit-transform: scale(2.5);
+    -moz-transform: scale(2.5);
+    -ms-transform: scale(2.5);
+    -o-transform: scale(2.5);
+    transform: scale(2.5)
+}
+
+.ladda-button-reverse[data-style=zoom-out]:hover .ladda-label-reverse:hover {
+    position: relative;
+    display: inline-block
+}
+
+.ladda-button-reverse[data-style=zoom-out][data-loading]:hover .ladda-label-reverse:hover {
+    opacity: 0;
+    -webkit-transform: scale(0.5);
+    -moz-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    -o-transform: scale(0.5);
+    transform: scale(0.5)
+}
+
+.ladda-button-reverse[data-style=zoom-out][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1;
+    margin-left: 0;
+    -webkit-transform: none;
+    -moz-transform: none;
+    -ms-transform: none;
+    -o-transform: none;
+    transform: none
+}
+
+.ladda-button-reverse[data-style=zoom-in]:hover {
+    overflow: hidden
+}
+
+.ladda-button-reverse[data-style=zoom-in]:hover .ladda-spinner-reverse:hover {
+    left: 50%;
+    margin-left: -16px;
+    -webkit-transform: scale(0.2);
+    -moz-transform: scale(0.2);
+    -ms-transform: scale(0.2);
+    -o-transform: scale(0.2);
+    transform: scale(0.2)
+}
+
+.ladda-button-reverse[data-style=zoom-in]:hover .ladda-label-reverse:hover {
+    position: relative;
+    display: inline-block
+}
+
+.ladda-button-reverse[data-style=zoom-in][data-loading]:hover .ladda-label-reverse:hover {
+    opacity: 0;
+    -webkit-transform: scale(2.2);
+    -moz-transform: scale(2.2);
+    -ms-transform: scale(2.2);
+    -o-transform: scale(2.2);
+    transform: scale(2.2)
+}
+
+.ladda-button-reverse[data-style=zoom-in][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1;
+    margin-left: 0;
+    -webkit-transform: none;
+    -moz-transform: none;
+    -ms-transform: none;
+    -o-transform: none;
+    transform: none
+}
+
+.ladda-button-reverse[data-style=contract]:hover {
+    overflow: hidden;
+    width: 100px
+}
+
+.ladda-button-reverse[data-style=contract]:hover .ladda-spinner-reverse:hover {
+    left: 50%;
+    margin-left: 0
+}
+
+.ladda-button-reverse[data-style=contract][data-loading]:hover {
+    border-radius: 50%;
+    width: 52px
+}
+
+.ladda-button-reverse[data-style=contract][data-loading]:hover .ladda-label-reverse:hover {
+    opacity: 0
+}
+
+.ladda-button-reverse[data-style=contract][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1
+}
+
+.ladda-button-reverse[data-style=contract-overlay]:hover {
+    overflow: hidden;
+    width: 100px;
+    box-shadow: 0px 0px 0px 2000px transparent
+}
+
+.ladda-button-reverse[data-style=contract-overlay]:hover .ladda-spinner-reverse:hover {
+    left: 50%;
+    margin-left: 0
+}
+
+.ladda-button-reverse[data-style=contract-overlay][data-loading]:hover {
+    border-radius: 50%;
+    width: 52px;
+    box-shadow: 0px 0px 0px 2000px rgba(0, 0, 0, 0.8)
+}
+
+.ladda-button-reverse[data-style=contract-overlay][data-loading]:hover .ladda-label-reverse:hover {
+    opacity: 0
+}
+
+.ladda-button-reverse[data-style=contract-overlay][data-loading]:hover .ladda-spinner-reverse:hover {
+    opacity: 1
+}
+
+.ladda-button-reverse:hover {
+    background: #666;
+    border: 0;
+   /* padding: 14px 18px;*/
+    font-size: 18px;
+    cursor: pointer;
+    color: #fff;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    -webkit-appearance: none;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent
+}
+
+
+
+.ladda-button-reverse {
+    border-color: rgba(0, 0, 0, 0.07);
+    background-color: #888
+}
+
+.ladda-button-reverse[disabled],
+.ladda-button-reverse[data-loading] {
+    border-color: rgba(0, 0, 0, 0.07)
+}
+
+.ladda-button-reverse[disabled],
+.ladda-button-reverse[disabled]:hover,
+.ladda-button-reverse[data-loading],
+.ladda-button-reverse[data-loading]:hover {
+    cursor: default;
+    background-color: #009999
+}
+
+.ladda-button-reverse[data-size=xs]:hover {
+    padding: 4px 8px
+}
+
+.ladda-button-reverse[data-size=xs] .ladda-label-reverse:hover {
+    font-size: 0.7em
+}
+
+.ladda-button-reverse[data-size=s]:hover {
+    padding: 4px 4px
+}
+
+.ladda-button-reverse[data-size=s]:hover .ladda-label-reverse:hover {
+    font-size: 0.9em
+}
+
+.ladda-button-reverse[data-size=l]:hover .ladda-label-reverse:hover {
+    font-size: 1.2em
+}
+
+.ladda-button-reverse[data-size=xl]:hover .ladda-label-reverse:hover {
+    font-size: 1.5em
+}
+
+.ladda-button-reverse {
+    border-color: rgba(0, 0, 0, 0.07);
+    background-color: #888
+}
+
+.ladda-button-reverse[data-color=freebmd]:hover, .ladda-button-reverse[data-color=freebmd]:hover {
+    background: #C84182;
+    border-radius: 4px;
+    font-weight: normal;
+    color: #fff;
+}
+
+.ladda-button-reverse[data-color=freebmd] {
+   background: #fff;
+   color: #C84182;
+   border-color:#C84182;
+   border-radius: 4px;
+}
