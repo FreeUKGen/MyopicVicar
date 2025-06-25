@@ -351,7 +351,7 @@ class Contact
 
   def obtain_coordinator
     coordinator = nil
-    if MyopicVicar::Application.config.template_set.downcased == 'freebmd'
+    if MyopicVicar::Application.config.template_set.downcase == 'freebmd'
       coordinator = UseridDetail.role('data_manager').active(true).first
       coordinator = UseridDetail.secondary('data_manager').active(true).first if coordinator.blank?
       coordinator = UseridDetail.role('system_administrator').active(true).first if coordinator.blank?
