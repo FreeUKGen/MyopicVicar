@@ -33,4 +33,35 @@
     </tr>
   </table>
 </div>
+<strong>Syndicate Statistics</strong>
+<div class="scrollable">
+  <table style="border: 1px solid black;">
+    <caption>
+      <strong><p>Syndicates open for transcription</p></strong>
+    </caption>
+    <tr>
+      <th style="border: 1px solid black; padding: 5px;">Syndicate</th>
+    </tr>
+    <% Syndicate.where(accepting_transcribers: true).each do |s| %>
+      <tr>
+        <td style="border: 1px solid black; padding: 5px;"><%= s.syndicate_code %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+<div class="scrollable">
+  <table style="border: 1px solid black;">
+    <caption>
+      <strong><p>Syndicates closed for transcription</p></strong>
+    </caption>
+    <tr>
+      <th style="border: 1px solid black; padding: 5px;">Syndicate</th>
+    </tr>
+    <% Syndicate.where(accepting_transcribers: false).each do |s| %>
+      <tr>
+        <td style="border: 1px solid black; padding: 5px;"><%= s.syndicate_code %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
 </html> 
