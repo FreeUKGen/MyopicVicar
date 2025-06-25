@@ -2151,7 +2151,7 @@ class SearchQuery
       #other_given_names = given_names.join(' ') if given_names.present?
       i = i+1
       f = f+1 if saved_record[:RecordTypeID] == 3
-      gedcom << ''
+      #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
       gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
       gedcom << '2 SURN '+surname.capitalize
@@ -2187,7 +2187,7 @@ class SearchQuery
       i = i+1
       f = f+1 if rec[:RecordTypeID] == 3
       entry = BestGuess.where(RecordNumber: rec[:RecordNumber]).first
-      gedcom << ''
+      #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
       gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
       gedcom << '2 SURN '+surname.capitalize
