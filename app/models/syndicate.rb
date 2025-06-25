@@ -140,4 +140,18 @@ class Syndicate
     userids
   end
 
+  def self.productive_volunteers(syndicate, start_date, end_date)
+    stats = {}
+    UseridDetail.syndicate(syndicate).each do |u|
+      stats[userid] = []
+      files = FreecenCsvFile.where(userid: u.userid, created_at: start_date..end_date)
+      next unless files.present?
+      files.each do |f|
+        #stats << [f.userid, f.file_name, f.total_records]
+        stats[u.userid] << [f.file_name, f.total_records]
+      end
+    end
+    stats.select{|k,v| !v.empty?}
+  end
+
 end

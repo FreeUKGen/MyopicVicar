@@ -41,10 +41,20 @@
     </caption>
     <tr>
       <th style="border: 1px solid black; padding: 5px;">Syndicate</th>
+      <th style="border: 1px solid black; padding: 5px;">Userid</th>
+      <th style="border: 1px solid black; padding: 5px;">Files Uploaded</th>
+      <th style="border: 1px solid black; padding: 5px;"></th>
     </tr>
-    <% Syndicate.where(accepting_transcribers: true).each do |s| %>
+    <% @open_syndicates.each do |s| %>
       <tr>
         <td style="border: 1px solid black; padding: 5px;"><%= s.syndicate_code %></td>
+        <% Syndicate.productive_volunteers(s.syndicate_code).each do |k,v| %>
+          <td style="border: 1px solid black; padding: 5px;"><%= k %></td>
+          <% v.each do |val|%>
+            <td style="border: 1px solid black; padding: 5px;"><%= val[0]%></td>
+            <td style="border: 1px solid black; padding: 5px;"><%= stats[1] %></td>
+          <% end %>
+        <% end %>
       </tr>
     <% end %>
   </table>
@@ -57,7 +67,7 @@
     <tr>
       <th style="border: 1px solid black; padding: 5px;">Syndicate</th>
     </tr>
-    <% Syndicate.where(accepting_transcribers: false).each do |s| %>
+    <% @closed_syndicates.each do |s| %>
       <tr>
         <td style="border: 1px solid black; padding: 5px;"><%= s.syndicate_code %></td>
       </tr>
