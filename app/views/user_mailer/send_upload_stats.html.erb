@@ -1,77 +1,63 @@
 <html>
-<p>Hello Everyone,</p>
-<p>Here is the upload report for the month of <%= @start_date.strftime('%B')%></p>
-<div class="scrollable">
-  <table style="border: 1px solid black;">
-    <caption>
-      <strong><p>Upload report by members</p></strong>
-    </caption>
-    <tr>
-      <th style="border: 1px solid black; padding: 5px;">Time Period</th>
-      <th style="border: 1px solid black; padding: 5px;">Roles</th>
-      <th style="border: 1px solid black; padding: 5px">Upload Count</th>
-    </tr>
-    <% @uploaders_count.each do |u| %>
+  <p>Hello Everyone,</p>
+  <p>Here is the upload report for the month of <%= @start_date.strftime('%B')%></p>
+  <div class="scrollable">
+    <table style="border: 1px solid black;">
+      <caption>
+        <strong><p>Upload report by members</p></strong>
+      </caption>
       <tr>
-        <td style="border: 1px solid black; padding: 5px;"><%= "#{@start_date.to_date.strftime("%B, %d, %Y")} - #{@end_date.to_date.strftime("%B, %d, %Y")}" %></td>
-        <td style="border: 1px solid black;  padding: 5px;">
-            <%= u[0].split('_').map(&:titlecase).join(' ') %>
-        </td>
-        <td style="border: 1px solid black;  padding: 5px;"><%= u[1] %></td>
+        <th style="border: 1px solid black; padding: 5px;">Time Period</th>
+        <th style="border: 1px solid black; padding: 5px;">Roles</th>
+        <th style="border: 1px solid black; padding: 5px">Upload Count</th>
       </tr>
-    <% end %>
-  </table>
-</div>
-<div class="scrollable">
-  <table style="border: 1px solid black;">
-    <caption>
-      <strong><p>Database Additions</p></strong>
-    </caption>
-    <tr>
-      <th style="border: 1px solid black; padding: 5px;">New Records added</th>
-      <td style="border: 1px solid black; padding: 5px;"><%= number_with_delimiter(@records_added) %></td>
-    </tr>
-  </table>
-</div>
-<strong>Syndicate Statistics</strong>
-<div class="scrollable">
-  <table style="border: 1px solid black;">
-    <caption>
-      <strong><p>Syndicates open for transcription</p></strong>
-    </caption>
-    <tr>
-      <th style="border: 1px solid black; padding: 5px;">Syndicate</th>
-      <th style="border: 1px solid black; padding: 5px;">Userid</th>
-      <th style="border: 1px solid black; padding: 5px;">Files Uploaded</th>
-      <th style="border: 1px solid black; padding: 5px;"></th>
-    </tr>
-    <% @open_syndicates.each do |s| %>
+      <% @uploaders_count.each do |u| %>
+        <tr>
+          <td style="border: 1px solid black; padding: 5px;"><%= "#{@start_date.to_date.strftime("%B, %d, %Y")} - #{@end_date.to_date.strftime("%B, %d, %Y")}" %></td>
+          <td style="border: 1px solid black;  padding: 5px;">
+              <%= u[0].split('_').map(&:titlecase).join(' ') %>
+          </td>
+          <td style="border: 1px solid black;  padding: 5px;"><%= u[1] %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+  <div class="scrollable">
+    <table style="border: 1px solid black;">
+      <caption>
+        <strong><p>Database Additions</p></strong>
+      </caption>
       <tr>
-        <td style="border: 1px solid black; padding: 5px;"><%= s.syndicate_code %></td>
-        <% Syndicate.productive_volunteers(s.syndicate_code, @start_date, @end_date).each do |k,v| %>
-          <td style="border: 1px solid black; padding: 5px;"><%= k %></td>
-          <% v.each do |val|%>
-            <td style="border: 1px solid black; padding: 5px;"><%= val[0]%></td>
-            <td style="border: 1px solid black; padding: 5px;"><%= stats[1] %></td>
-          <% end %>
-        <% end %>
+        <th style="border: 1px solid black; padding: 5px;">New Records added</th>
+        <td style="border: 1px solid black; padding: 5px;"><%= number_with_delimiter(@records_added) %></td>
       </tr>
-    <% end %>
-  </table>
-</div>
-<div class="scrollable">
-  <table style="border: 1px solid black;">
-    <caption>
-      <strong><p>Syndicates closed for transcription</p></strong>
-    </caption>
-    <tr>
-      <th style="border: 1px solid black; padding: 5px;">Syndicate</th>
-    </tr>
-    <% @closed_syndicates.each do |s| %>
+    </table>
+  </div>
+  <strong>Syndicate Statistics</strong>
+  <div class="scrollable">
+    <table style="border: 1px solid black;">
+      <caption>
+        <strong><p>Syndicates open for transcription</p></strong>
+      </caption>
       <tr>
-        <td style="border: 1px solid black; padding: 5px;"><%= s.syndicate_code %></td>
+        <th style="border: 1px solid black; padding: 5px;">Syndicate</th>
       </tr>
-    <% end %>
-  </table>
-</div>
-</html> 
+      <tr>
+        <td style="border: 1px solid black; padding: 5px;"><%= @closed_syndicates.pluck(:syndicate_code).join(', ') %></td>
+      </tr>
+    </table>
+  </div>
+  <div class="scrollable">
+    <table style="border: 1px solid black;">
+      <caption>
+        <strong><p>Syndicates closed for transcription</p></strong>
+      </caption>
+      <tr>
+        <th style="border: 1px solid black; padding: 5px;">Syndicate</th>
+      </tr>
+        <tr>
+          <td style="border: 1px solid black; padding: 5px;"><%= @closed_syndicates.pluck(:syndicate_code).join(', ') %></td>
+        </tr>
+    </table>
+  </div>
+</html>
