@@ -43,7 +43,7 @@
         <th style="border: 1px solid black; padding: 5px;">Syndicate</th>
       </tr>
       <tr>
-        <td style="border: 1px solid black; padding: 5px;"><%= @closed_syndicates.pluck(:syndicate_code).join(', ') %></td>
+        <td style="border: 1px solid black; padding: 5px;"><%= @open_syndicates.pluck(:syndicate_code).join(', ') %></td>
       </tr>
     </table>
   </div>
