@@ -770,6 +770,7 @@ module ApplicationHelper
       privacyNotice: 'Privacy Notice
       <span class="accessibility">Opens in new window</span>',
       termAndConditions: 'Terms and Conditions',
+      accessibility: 'Accessibility',
       contactUs: 'Contact Us',
       donation: 'Make a donation to cover our operating costs
       <span class="accessibility">Opens in new window</span>',
@@ -790,6 +791,7 @@ module ApplicationHelper
       privacyNotice: Constant::PRIVACY_POLICY_LINK,
       termAndConditions: '/cms/terms-and-conditions',
       contactUs: contact_us_path,
+      accessibility: "#{Rails.application.config.website}/cms/about/accessibility-statement",
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
