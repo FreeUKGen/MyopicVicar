@@ -48,7 +48,7 @@
     <% @open_syndicates.each do |s| %>
       <tr>
         <td style="border: 1px solid black; padding: 5px;"><%= s.syndicate_code %></td>
-        <% Syndicate.productive_volunteers(s.syndicate_code).each do |k,v| %>
+        <% Syndicate.productive_volunteers(s.syndicate_code, @start_date, @end_date).each do |k,v| %>
           <td style="border: 1px solid black; padding: 5px;"><%= k %></td>
           <% v.each do |val|%>
             <td style="border: 1px solid black; padding: 5px;"><%= val[0]%></td>
