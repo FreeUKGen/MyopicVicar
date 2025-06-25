@@ -264,10 +264,10 @@ class PhysicalFile
     if appname.downcase == 'freecen'
       stats_records = Freecen2SiteStatistic.where(year: start_date.year, month: start_date.month).last
       prev_stats_records = Freecen2SiteStatistic.where(year: start_date.year, month: (start_date.month - 1)).last
-      total_csv_records_added = stats_records.records.dig(:total,:total,:added_csv_entries)
-      total_vld_records_added = stats_records.records.dig(:total, :total,:added_vld_entries)
-      prev_total_csv_records_added = prev_stats_records.records.dig(:total,:total,:added_csv_entries)
-      prev_total_vld_records_added = prev_stats_records.records.dig(:total, :total,:added_vld_entries)
+      total_csv_records_added = stats_records.records.dig(:total,:total,:csv_entries)
+      total_vld_records_added = stats_records.records.dig(:total, :total,:vld_entries)
+      prev_total_csv_records_added = prev_stats_records.records.dig(:total,:total,:csv_entries)
+      prev_total_vld_records_added = prev_stats_records.records.dig(:total, :total,:vld_entries)
       total_records = total_csv_records_added + total_vld_records_added
       prev_total_records = prev_total_csv_records_added + prev_total_vld_records_added
       total_records_added = total_records - prev_total_records
