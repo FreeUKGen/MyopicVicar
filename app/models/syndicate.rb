@@ -143,7 +143,7 @@ class Syndicate
   def self.productive_volunteers(syndicate, start_date, end_date)
     stats = {}
     UseridDetail.syndicate(syndicate).each do |u|
-      stats[userid] = []
+      stats[u.userid] = []
       files = FreecenCsvFile.where(userid: u.userid, created_at: start_date..end_date)
       next unless files.present?
       files.each do |f|
