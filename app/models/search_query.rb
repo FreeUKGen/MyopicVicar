@@ -169,7 +169,7 @@ class SearchQuery
   field :language, type: String
   validates_inclusion_of :language, :in => Language::ALL_LANGUAGES + [nil]
   field :occupation, type: String
-  #field :results_per_page, type: Integer # issue 693: make this a property of the search querySearchQuery
+  field :results_per_page, type: Integer # issue 693: make this a property of the search query
 
   has_and_belongs_to_many :places, inverse_of: nil
   has_and_belongs_to_many :freecen2_places, inverse_of: nil
@@ -233,6 +233,7 @@ class SearchQuery
       return record, false, messagea if parameter.nil?
 
       record = SearchQuery.find(parameter)
+
       return record, false, messageb if record.blank?
 
       [record, true, '']

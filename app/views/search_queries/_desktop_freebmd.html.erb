@@ -32,7 +32,7 @@
             <% unless print_friendly %>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::SURNAME) %>>
                   <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::FIRSTNAME, 'First Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME, 'anchor': 'result_table_Surname')) %>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::SURNAME, 'Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME, :results_per_page => @results_per_page, 'anchor': 'result_table_Surname')) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::SURNAME, 'Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME, 'anchor': 'result_table_Surname')) %>
               </th>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE) %>>
                 <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE, 'Record Type'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE, 'anchor': 'result_table_RecordTypeID')) %>
