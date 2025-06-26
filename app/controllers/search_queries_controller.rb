@@ -168,6 +168,7 @@ class SearchQueriesController < ApplicationController
       old_query.order_field = order_field
       old_query.order_asc = true
     end
+    old_query[:results_per_page] = params[:results_per_page] if params[:results_per_page].present?
     old_query.save!
     #    old_query.new_order(old_query)
     redirect_to search_query_path(old_query)
@@ -266,10 +267,13 @@ class SearchQueriesController < ApplicationController
         response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
         @filter_condition = params[:filter_option]
         @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
-        @results_per_page = assign_value(params[:results_per_page],SearchQuery::RESULTS_PER_PAGE)
+        # Issue 693: results_per_page is now a SearchQuery field, set to DEFAULT_RESULTS_PER_PAGE on creation.
+        # This allows the selected value to survive the reordering of search results.
+        #@search_query[:results_per_page] = assign_value(params[:results_per_page],SearchQuery::DEFAULT_RESULTS_PER_PAGE)
+        @search_query[:results_per_page] = params[:results_per_page] if params[:results_per_page].present?
         @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
-        @paginatable_array = @search_query.paginate_results(@search_results, @page, @results_per_page)
+        @paginatable_array = @search_query.paginate_results(@search_results, @page, @search_query[:results_per_page])
         if !response || @search_results.nil? || @search_query.result_count.nil?
           logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
           flash[:notice] = 'Your search results are not available. Please repeat your search'
