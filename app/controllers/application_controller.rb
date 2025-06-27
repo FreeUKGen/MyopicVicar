@@ -66,6 +66,9 @@ class ApplicationController < ActionController::Base
           site_stat.records[:total][:total][:added_csv_individuals_incorporated].present? ? (site_stat.records[:total][:total][:added_vld_entries] +
                                                                                              site_stat.records[:total][:total][:added_csv_individuals_incorporated]) : 0
         @site_stat = session[:site_stats]
+      when 'freebmd'
+        database_name = FREEBMD_DB["database"]
+        @site_stat = RecordStatistic.where(database_name: database_name)
       end
     else
       @site_stat = session[:site_stats]

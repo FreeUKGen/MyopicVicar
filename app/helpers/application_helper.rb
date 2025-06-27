@@ -804,6 +804,10 @@ module ApplicationHelper
     }
   end
 
+  def footer_records_stats(stat,type)
+    stat.where(record_type: type).first.total_records
+  end
+
   def contact_us_path
     case appname_downcase
     when "freereg"
