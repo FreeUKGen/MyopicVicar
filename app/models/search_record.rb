@@ -930,9 +930,9 @@ class SearchRecord
       end
       name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
       search_names << name if name
-      if name_contains_symbols?(name_hash[:first_name]) || name_contains_symbols?(name_hash[:last_name])
-        cleaned_first_name = clean_name(name_hash[:first_name])
-        cleaned_last_name = clean_name(name_hash[:last_name])
+      if name_contains_symbols?(name_hash['first_name']) || name_contains_symbols?(name_hash['last_name'])
+        cleaned_first_name = clean_name(name_hash['first_name']) if name_hash[:first_name].present?
+        cleaned_last_name = clean_name(name_hash['last_name']) if name_hash[:last_name].present?
         sn = search_name(cleaned_first_name, cleaned_last_name, person_type, person_role, person_gender)
         search_names << sn if sn
       end
@@ -940,7 +940,7 @@ class SearchRecord
   end
 
   def name_contains_symbols?(name)
-    SYMBOLS_TO_CLEAN.any? { |sym| name.include?(sym) }
+    SYMBOLS_TO_CLEAN.any? { |sym| name.include?(sym) } if names.present?
   end
 
   def clean_name(transcript_name)
