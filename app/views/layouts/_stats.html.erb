@@ -64,10 +64,10 @@
     <dd class="c-subfooter-1__stats-value">1,994 last year (estimate)</dd>
     <dt class="c-subfooter-1__stats-term">4.7 milliion searches per month</dt>
     <dt class="c-subfooter-1__stats-term">Record Count</dt>
-    <dd class="c-subfooter-1__stats-value">number_to_human(footer_records_stats(@site_stat, 1)) Birth records</dd>
-    <dd class="c-subfooter-1__stats-value">number_to_human(footer_records_stats(@site_stat, 3)) Marriage records</dd>
-    <dd class="c-subfooter-1__stats-value">number_to_human(footer_records_stats(@site_stat, 2)) Death records</dd>
-    <dd class="c-subfooter-1__stats-value">number_to_human(footer_records_stats(@site_stat, 0)) Total records<b></b></dd>
+    <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 1)) %> Birth records</dd>
+    <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 3)) %> Marriage records</dd>
+    <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 2)) %> Death records</dd>
+    <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 0)) %> Total records<b></b></dd>
   </dl>
 <% end%>
 </div>
