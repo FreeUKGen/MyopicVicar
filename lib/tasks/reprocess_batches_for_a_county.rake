@@ -17,14 +17,22 @@ namespace :freereg do
 
   desc "clean up"
   task :clean_up_processed_batch, [:chapman_code] => :environment do |t, args|
-    validate_chapman_code(args[:chapman_code])
-    chapman_code = args[:chapman_code].upcase
+    rake_lock_file = File.join(Rails.root, 'tmp', 'cleanup_lock_file.txt')
+    unless File.exist?(rake_lock_file)
+      validate_chapman_code(args[:chapman_code])
+      chapman_code = args[:chapman_code].upcase
 
-    puts "Starting batch clean up for #{ChapmanCode.name_from_code(chapman_code)} (#{chapman_code})"
-    begin
-      clean_up_processed_batch(chapman_code)
-    rescue => e
-      handle_fatal_error(e)
+      puts "Starting batch clean up for #{ChapmanCode.name_from_code(chapman_code)} (#{chapman_code})"
+      begin
+        lock_file = File.new(rake_lock_file, 'w')
+        clean_up_processed_batch(chapman_code)
+      rescue => e
+        handle_fatal_error(e)
+        FileUtils.rm_f(rake_lock_file)
+      end
+      FileUtils.rm_f(rake_lock_file)
+    else
+      p 'clean up process is running'
     end
   end
 
@@ -60,7 +68,7 @@ namespace :freereg do
   end
 
   def clean_up_processed_batch(chapman_code)
-    batches = Freereg1CsvFile.where(county: chapman_code).order_by(file_name: 1)#.skip(1215)
+    batches = Freereg1CsvFile.where(county: chapman_code).order_by(file_name: 1).skip(2832)
     total_batches = batches.count
     if total_batches.zero?
       puts "No batches found for #{chapman_code}"
@@ -68,7 +76,7 @@ namespace :freereg do
     end
 
     puts "Found #{total_batches} batches to process"
-    processed = 0
+    processed = 2832
     failed = []
     start_time = Time.now
     batches.no_timeout.each do |batch|
