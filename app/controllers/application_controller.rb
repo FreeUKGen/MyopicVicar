@@ -69,6 +69,11 @@ class ApplicationController < ActionController::Base
       when 'freebmd'
         database_name = FREEBMD_DB["database"]
         @site_stat = RecordStatistic.where(database_name: database_name)
+        today = Time.now
+        last_month = today - 1.month
+        end_date = Time.now.beginning_of_month
+        start_date = last_month.beginning_of_month
+        @search_count = SearchQuery.where(c_at: start_date..end_date).count
       end
     else
       @site_stat = session[:site_stats]

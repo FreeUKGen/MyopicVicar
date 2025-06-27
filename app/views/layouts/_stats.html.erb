@@ -62,7 +62,7 @@
     <dt class="c-subfooter-1__stats-term">Active Volunteers</dt>
     <dd class="c-subfooter-1__stats-value">12,412 all-time</dd>
     <dd class="c-subfooter-1__stats-value">1,994 last year (estimate)</dd>
-    <dt class="c-subfooter-1__stats-term">4.7 milliion searches per month</dt>
+    <dt class="c-subfooter-1__stats-term"><%= number_to_human(@search_count) %> searches per month</dt>
     <dt class="c-subfooter-1__stats-term">Record Count</dt>
     <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 1)) %> Birth records</dd>
     <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 3)) %> Marriage records</dd>
