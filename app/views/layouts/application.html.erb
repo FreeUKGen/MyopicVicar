@@ -127,6 +127,7 @@
     <%#= raise Rails.root.inspect%>
     <%= stylesheet_link_tag "styles/css/donate_icon" %>
     <%= stylesheet_link_tag "styles/css/freereg_content" %>
+    <%= stylesheet_link_tag "lazy_loading" %>
     <!-- JavaScripts -->
     <%= javascript_include_tag "application"%>
     <%= javascript_include_tag "jquery.min.js"%>
@@ -138,6 +139,7 @@
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
     <%= javascript_include_tag "#{appname.downcase}_advert_control.js" %>
+    <%= javascript_include_tag "auto_scroll" %>
     <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
     <% end %>

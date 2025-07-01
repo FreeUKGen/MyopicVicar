@@ -1,0 +1,43 @@
+<% search_results.each do |search_record| %>
+  <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
+  <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
+    <td>
+      <center>
+        <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
+        <i><%= seen(@search_query,search_record) %></i>
+      </center>
+    </td>
+    <td>
+      <center><%= "#{record_type}".capitalize.chop %></center>
+    </td>
+    <td class="table--data">
+      <%= format_quarter_year(search_record.QuarterNumber) %>
+    </td>
+    <td class="table--data">
+      <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
+      <% if district.present? %>
+        <%= link_to "#{search_record[:District]}".capitalize, district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
+      <% else %>
+        <%= search_record[:District] %>
+      <% end %>
+      <% @search_query.get_search_record_details(search_record).each do |key, value| %>
+        <br /><%= "#{key} #{value}" %>
+      <% end %>
+    </td>
+    <% if @search_query.bmd_record_type[0] == "0" or @search_query.bmd_record_type.include? "1" %>
+      <td class="table--data">
+        <%= if record_type == "BIRTHS" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
+      </td>
+    <% end %>
+    <% if @search_query.bmd_record_type[0] == "0" or @search_query.bmd_record_type.include? "3" %>
+      <td class="table--data">
+        <%= if record_type == "MARRIAGES" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
+      </td>
+    <% end %>
+    <% if @search_query.bmd_record_type[0] == "0" or @search_query.bmd_record_type.include? "2" %>
+      <td class="table--data">
+        <%= if record_type == "DEATHS" then value_or_no_data(search_record[:AgeAtDeath]) else '-' end %>
+      </td>
+    <% end %>
+  </tr>
+<% end %> 

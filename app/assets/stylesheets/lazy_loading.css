@@ -1,0 +1,76 @@
+/* Lazy Loading Styles */
+
+.loading-indicator {
+  text-align: center;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.end-message {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+}
+
+.error-message {
+  text-align: center;
+  padding: 20px;
+  color: #d32f2f;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
+  margin: 20px 0;
+}
+
+/* Smooth transition for new rows */
+.results tbody tr {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading state for the entire table */
+.results.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .loading-indicator {
+    padding: 15px;
+  }
+  
+  .spinner {
+    width: 30px;
+    height: 30px;
+    border-width: 3px;
+  }
+} 

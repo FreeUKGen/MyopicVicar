@@ -540,6 +540,7 @@ MyopicVicar::Application.routes.draw do
   resources :search_queries do
     get :autocomplete_BestGuess_Surname, :on => :collection
     get :autocomplete_BestGuess_GivenName, :on => :collection
+    get :load_more, :on => :member
   end
 
   resources :postems
