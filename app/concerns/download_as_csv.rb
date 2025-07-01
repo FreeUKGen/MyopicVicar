@@ -99,7 +99,7 @@ module DownloadAsCsv
       year = QuarterDetails.quarter_year(quarter_number)
       output = [month, year]
     else
-      month = QuarterDetails.quarter_month(quarter_number)
+      month = QuarterDetails.quarter_month(quarter_number).upcase
       year = QuarterDetails.quarter_year(quarter_number)
       output = [month, year]
     end
