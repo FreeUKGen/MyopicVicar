@@ -154,8 +154,8 @@
             
             <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
                 <div class='labels'>
-                    <%= label_tag 'death_select_box', "Age at Death".html_safe, class: "ttip" do %>
-                        <%= "Age at Death".html_safe %>
+                    <%= label_tag 'death_select_box', "Age at Death/Birth Year".html_safe, class: "ttip" do %>
+                        <%= "Age at Death/Birth Year".html_safe %>
                     <% end %>
                 </div>
                 <%= select_tag('search_query[death_at_age]', options_for_select(SearchQuery::DEATH_AGE_OPTIONS.map { |k,v| [v,k]}, set_value(@search_query.death_at_age)), {:prompt => "Select Death Age", id: 'death_select_box', class: 'push-half--bottom text-input', tabindex: "0"}) %>
