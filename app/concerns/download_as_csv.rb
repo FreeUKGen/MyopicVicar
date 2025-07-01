@@ -1,7 +1,7 @@
 module DownloadAsCsv
   extend ActiveSupport::Concern
-  SEARCH_RESULTS_ATTRIBUTES = %w[GivenName Surname RecordType Quarter District Volume Page AssociateName AgeAtDeath MotherMaidenName SpouseSurname AgeAtDeathOrDateOfBirth].freeze
-  FIELDS = ["First Name", "Surname", "Record Type", "Registration Date", "Registration District", "Volume", "Page", "Mother's Maiden Name", "Spouse's Surname", "Age at Death/Date of Birth" ].freeze
+  SEARCH_RESULTS_ATTRIBUTES = %w[RecordType Quarter Year Surname GivenName AgeAtDeathOrDateOfBirth SpouseSurname MotherMaidenName District DistrictFlag Volume Page AssociateName AgeAtDeath].freeze
+  FIELDS = ["Record Type", "Quarter", "Year", "Surname", "First Name", "Age at Death/Date of Birth", "Spouse's Surname", "Mother's Maiden Name", "Registration District","District Flag", "Volume", "Page"].freeze
   DOB_START_QUARTER = 530
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
@@ -73,7 +73,8 @@ module DownloadAsCsv
 
   def format_csv_data(record)
     qn = record['QuarterNumber']
-    record['Quarter'] = format_quarter(qn)
+    record['Quarter'] = format_quarter(qn)[0]
+    record['Year'] = format_quarter(qn)[1]
     record['RecordType'] = format_record_type(record[:RecordTypeID])
 
     case record['RecordType']
@@ -94,10 +95,15 @@ module DownloadAsCsv
 
   def format_quarter(quarter_number)
     if quarter_number >= SearchQuery::EVENT_YEAR_ONLY
-      QuarterDetails.quarter_year(quarter_number)
+      month = ""
+      year = QuarterDetails.quarter_year(quarter_number)
+      output = [month, year]
     else
-      QuarterDetails.quarter_human(quarter_number)
+      month = QuarterDetails.quarter_month(quarter_number).upcase
+      year = QuarterDetails.quarter_year(quarter_number)
+      output = [month, year]
     end
+    output
   end
 
   def format_record_type(record_type_id)
