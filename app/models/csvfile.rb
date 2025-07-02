@@ -10,7 +10,7 @@ class Csvfile < CarrierWave::Uploader::Base
   field :action, type: String
   # files are stored in Rails.application.config.datafiles
   mount_uploader :csvfile, CsvfileUploader
-
+  PROCESSING_TIME_THRESHOLD = 1000 #basically file size | previously 600 
   def check_for_existing_file_and_save
     # this saves the exiting file in the attic
     process = true
@@ -135,7 +135,7 @@ class Csvfile < CarrierWave::Uploader::Base
         pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
         message = "The csv file #{file_name} is being checked. You will receive an email when it has been completed."
         process = true
-      elsif processing_time < 600
+      elsif processing_time < PROCESSING_TIME_THRESHOLD
         batch.update_attributes(waiting_to_be_processed: true, waiting_date: Time.now)
         rake_lock_file = File.join(Rails.root, 'tmp', 'processing_rake_lock_file.txt')
         processor_initiation_lock_file = File.join(Rails.root, 'tmp', 'processor_initiation_lock_file.txt')
@@ -147,7 +147,7 @@ class Csvfile < CarrierWave::Uploader::Base
           message = "The csv file #{file_name} is being processed . You will receive an email when it has been completed."
         #end
         process = true
-      elsif processing_time >= 600
+      elsif processing_time >= PROCESSING_TIME_THRESHOLD
         batch.destroy #update_attributes(base: true, base_uploaded_date: Time.now, file_processed: false)
         message = "Your file #{file_name} is not being processed in its current form as it is too large. Your coordinator and the data managers have been informed. Please discuss with them how to proceed. "
         UserMailer.report_to_data_manger_of_large_file(file_name, userid).deliver_now
