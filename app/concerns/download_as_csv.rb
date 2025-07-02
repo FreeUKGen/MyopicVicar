@@ -8,7 +8,6 @@ module DownloadAsCsv
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
 
-
   def search_results_csv(array)
     CSV.generate(headers: true) do |csv|
       csv << ['You can only download 50 results.']
@@ -86,7 +85,8 @@ module DownloadAsCsv
 
   def format_csv_data(record)
     qn = record['QuarterNumber']
-    record['Quarter'] = format_quarter(qn)
+    record['Quarter'] = format_quarter(qn)[0]
+    record['Year'] = format_quarter(qn)[1]
     record['RecordType'] = format_record_type(record[:RecordTypeID])
 
     case record['RecordType']
@@ -124,10 +124,15 @@ module DownloadAsCsv
   end
   def format_quarter(quarter_number)
     if quarter_number >= SearchQuery::EVENT_YEAR_ONLY
-      QuarterDetails.quarter_year(quarter_number)
+      month = ""
+      year = QuarterDetails.quarter_year(quarter_number)
+      output = [month, year]
     else
-      QuarterDetails.quarter_human(quarter_number)
+      month = QuarterDetails.quarter_month(quarter_number).upcase
+      year = QuarterDetails.quarter_year(quarter_number)
+      output = [month, year]
     end
+    output
   end
 
   def format_record_type(record_type_id)

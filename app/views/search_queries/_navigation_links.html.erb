@@ -9,6 +9,7 @@
 		    <% if @results_per_page.to_i <= 50 %>
 					<li><%= link_to( '<i class="fas fa-print" style="padding-right:5px"></i>Print'.html_safe, "#", :onclick => 'window.print();return false;') %></li>
 					<li><%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as TSV'.html_safe, search_results_download_as_tsv_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
+					<li><%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
 					<li><%= link_to '<i class="fas fa-download" style="padding-right:5px"></i>Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
 			  <% end %>
 				<% if cookies.signed[:userid].present? %>
