@@ -170,6 +170,7 @@ class SearchQuery
   validates_inclusion_of :language, :in => Language::ALL_LANGUAGES + [nil]
   field :occupation, type: String
   field :results_per_page, type: Integer # issue 693: make this a property of the search query
+  field :result_truncated, type: Boolean
 
   has_and_belongs_to_many :places, inverse_of: nil
   has_and_belongs_to_many :freecen2_places, inverse_of: nil
@@ -1744,7 +1745,7 @@ class SearchQuery
     bmd_search_results.length
   end
 
-  def sort_search_results
+  def   sort_search_results
     self.sort_results(bmd_search_results) unless bmd_search_results.nil?
   end
 

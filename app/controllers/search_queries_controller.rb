@@ -259,9 +259,11 @@ class SearchQueriesController < ApplicationController
       @save_search_id = params[:saved_search] if params[:saved_search].present?
       if @search_query.result_count >= @max_result
         @result_count = @search_query.result_count
-        @search_results = []
-        @ucf_results = []
-      else
+        @search_query.result_truncated = true
+        #@search_results = []
+        #@ucf_results = []
+      end
+        #else
         response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
         response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
         @filter_condition = params[:filter_option]
@@ -277,7 +279,7 @@ class SearchQueriesController < ApplicationController
           flash[:notice] = 'Your search results are not available. Please repeat your search'
           redirect_to(new_search_query_path(search_id: @search_query)) && return
         end
-      end
+        #end
     else
       @timeout=true
       @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])

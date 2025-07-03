@@ -1,5 +1,4 @@
-<div class="island">
-  <p class="read-length">Your search returned <%= if @result_count.nil? then 'too many' else @result_count end %> records; the maximum allowed is <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS %>.</p>
+<div class="island float--right">
   <p class="read-length"> Consider narrowing down your search. If you did not include all of the following in your search, try adding one or more of them:</p>
   <ul>
     <li>Forename</li>
@@ -9,3 +8,4 @@
   </ul>
   <p class='read-length'>If you’ve used a wildcard, this is particularly good advice. For more information about searching, see the FreeBMD <a href='https://beta.freebmd.org.uk/cms/help#howToSearch'>Help</a> page(or equivalent)</p>
 </div>
+<p class="read-length weight--semibold">Your search returned <%= if @result_count.nil? then 'too many' else @result_count end %> records; the maximum allowed is <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS %>.</p>
