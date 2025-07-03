@@ -2,10 +2,11 @@ module DownloadAsCsv
   extend ActiveSupport::Concern
   SEARCH_RESULTS_ATTRIBUTES = %w[GivenName Surname RecordType Quarter District Volume Page AssociateName AgeAtDeath MotherMaidenName SpouseSurname AgeAtDeathOrDateOfBirth].freeze
   FIELDS = ["First Name", "Surname", "Record Type", "Registration Date", "Registration District", "Volume", "Page", "Mother's Maiden Name", "Spouse's Surname", "Age at Death/Date of Birth" ].freeze
+  TSV_ATTRIBUTES = %w[RecordType Quarter Year Surname GivenName AadAssociateName District DistrictFlag Volume Page AgeAtDeath AssociateName].freeze
+  TSV_FIELDS = ["Event","Quarter","Year","Surname","Given Name","AAD/Spouse/Mother","District","Flag","Volume","Page"].freeze
   DOB_START_QUARTER = 530
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
-
 
   def search_results_csv(array)
     CSV.generate(headers: true) do |csv|
@@ -16,6 +17,17 @@ module DownloadAsCsv
         record = record.except!('AssociateName', 'AgeAtDeath')
         search_results_attr =  SEARCH_RESULTS_ATTRIBUTES - ['AssociateName', 'AgeAtDeath']
         csv << search_results_attr.map{ |attr| record[attr] }
+      end
+    end
+  end
+
+  def search_results_tsv(array)
+    CSV.generate(headers: true, col_sep: "\t") do |tsv|
+      tsv << TSV_FIELDS
+      array.each do |record|
+        format_tsv_data(record)
+        search_results_attr =  TSV_ATTRIBUTES - ['AgeAtDeath', 'AssociateName']
+        tsv << search_results_attr.map{ |attr| record[attr] }
       end
     end
   end
@@ -73,7 +85,8 @@ module DownloadAsCsv
 
   def format_csv_data(record)
     qn = record['QuarterNumber']
-    record['Quarter'] = format_quarter(qn)
+    record['Quarter'] = format_quarter(qn)[0]
+    record['Year'] = format_quarter(qn)[1]
     record['RecordType'] = format_record_type(record[:RecordTypeID])
 
     case record['RecordType']
@@ -92,12 +105,34 @@ module DownloadAsCsv
     end
   end
 
+  def format_tsv_data(record)
+    qn = record['QuarterNumber']
+    record['Quarter'] = QuarterDetails.quarter_month(qn)[0..2].capitalize
+    record['Year'] = QuarterDetails.quarter_year(qn)
+    record['RecordType'] = format_record_type(record[:RecordTypeID])
+
+    case record['RecordType']
+    when 'BIRTHS'
+      record['AadAssociateName'] = record['AssociateName']
+    when 'DEATHS'
+      record['AadAssociateName'] = record['AgeAtDeath']
+    when 'MARRIAGES'
+      record['AadAssociateName'] = record['AssociateName']
+    end
+
+    record['RecordType'] = record['RecordType'].capitalize
+  end
   def format_quarter(quarter_number)
     if quarter_number >= SearchQuery::EVENT_YEAR_ONLY
-      QuarterDetails.quarter_year(quarter_number)
+      month = ""
+      year = QuarterDetails.quarter_year(quarter_number)
+      output = [month, year]
     else
-      QuarterDetails.quarter_human(quarter_number)
+      month = QuarterDetails.quarter_month(quarter_number).upcase
+      year = QuarterDetails.quarter_year(quarter_number)
+      output = [month, year]
     end
+    output
   end
 
   def format_record_type(record_type_id)
