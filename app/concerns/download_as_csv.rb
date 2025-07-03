@@ -1,7 +1,7 @@
 module DownloadAsCsv
   extend ActiveSupport::Concern
-  SEARCH_RESULTS_ATTRIBUTES = %w[GivenName Surname RecordType Quarter District Volume Page AssociateName AgeAtDeath MotherMaidenName SpouseSurname AgeAtDeathOrDateOfBirth].freeze
-  FIELDS = ["First Name", "Surname", "Record Type", "Registration Date", "Registration District", "Volume", "Page", "Mother's Maiden Name", "Spouse's Surname", "Age at Death/Date of Birth" ].freeze
+  SEARCH_RESULTS_ATTRIBUTES = %w[RecordType Quarter Year Surname GivenName AgeAtDeathOrDateOfBirth SpouseSurname MotherMaidenName District DistrictFlag Volume Page AssociateName AgeAtDeath].freeze
+  FIELDS = ["Record Type", "Quarter", "Year", "Surname", "First Name", "Age at Death/Date of Birth", "Spouse's Surname", "Mother's Maiden Name", "Registration District","District Flag", "Volume", "Page"].freeze
   TSV_ATTRIBUTES = %w[RecordType Quarter Year Surname GivenName AadAssociateName District DistrictFlag Volume Page AgeAtDeath AssociateName].freeze
   TSV_FIELDS = ["Event","Quarter","Year","Surname","Given Name","AAD/Spouse/Mother","District","Flag","Volume","Page"].freeze
   DOB_START_QUARTER = 530
