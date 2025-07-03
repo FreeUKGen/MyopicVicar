@@ -21,6 +21,7 @@
     <% end %>
  <%# raise @search_query.bmd_record_type.inspect %>
     <% included_record_types = @search_query.bmd_record_type %>
+    <% blank_record_types = @search_query.bmd_record_type.blank? %>
     <% order_field = @search_query.order_field %>
     <!--p>Sort order is <%= order_field %></p-->
       <table class="table--bordered table--data results">
@@ -43,17 +44,17 @@
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::DISTRICT) %>>
                 <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::DISTRICT, 'Registration District & Reference'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT, 'anchor': 'result_table_District')) %>
               </th>
-              <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
+              <% if blank_record_types or included_record_types.include? "1" %>
                 <th  <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME) %>>
                   <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Mother\'s Maiden Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'anchor': 'result_table_AssociateName')) %>
                 </th>
               <% end %>
-              <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
+              <% if blank_record_types or included_record_types.include? "3" %>
                 <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME) %>>
                   <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Spouse\'s Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'anchor': 'result_table_AssociateName')) %>
                 </th>
               <% end %>
-              <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
+              <% if blank_record_types or included_record_types.include? "2" %>
                 <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH) %>>
                   <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, 'Age at Death/Date of Birth'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, 'anchor': 'result_table_AgeAtDeath')) %>
                 </th>
@@ -63,13 +64,13 @@
               <th>Record Type</th>
               <th>Reg. Date</th>
               <th>Reg. District & reference</th>
-              <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
+              <% if blank_record_types or included_record_types.include? "1" %>
                 <th>Mother's Maiden Name</th>
               <% end %>
-              <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
+              <% if blank_record_types or included_record_types.include? "3" %>
                 <th>Spouse's Surname</th>
               <% end %>
-              <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
+              <% if blank_record_types or included_record_types.include? "2" %>
                 <th>Age at Death/Date of Birth</th>
               <% end %>
             <% end %>
@@ -103,7 +104,7 @@
                     <% else %>
                       <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
                       <% if district.present? %>
-                        <%= link_to "#{search_record[:District]}".capitalize, district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
+                        <%= link_to "#{titleize_string(search_record[:District])}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
                      <% else %>
                        <%= search_record[:District] %>
                      <% end %>
@@ -112,17 +113,17 @@
                       <% end %>
                     <% end %>
               </td>
-              <% if included_record_types[0] == "0" or included_record_types.include? "1" %>
+              <% if blank_record_types or included_record_types.include? "1" %>
                 <td class="table--data">
                   <%= if record_type == "BIRTHS" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
                 </td>
               <% end %>
-              <% if included_record_types[0] == "0" or included_record_types.include? "3" %>
+              <% if blank_record_types or included_record_types.include? "3" %>
                 <td class="table--data">
                   <%= if record_type == "MARRIAGES" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
                 </td>
               <% end %>
-              <% if included_record_types[0] == "0" or included_record_types.include? "2" %>
+              <% if blank_record_types or included_record_types.include? "2" %>
                 <td class="table--data">
                   <%= if record_type == "DEATHS" then value_or_no_data(search_record[:AgeAtDeath]) else '-' end %>
                 </td>

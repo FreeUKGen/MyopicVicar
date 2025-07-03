@@ -4,7 +4,10 @@ class BestGuessHashController < ApplicationController
   def show
     #redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
     redirect_to( new_search_query_path, notice: 'Hash '+params[:id]+' is no longer valid: please re-run your search') && return if BestGuessHash.where(Hash: params[:id]).empty?
-    @record_number = BestGuessHash.where(Hash: params[:id]).first.RecordNumber
+    clean_id = params[:id].gsub(/%([0-9A-F]{2})/i) { |match| 
+      $1.hex.chr 
+    }
+    @record_number = BestGuessHash.where(Hash: clean_id).first.RecordNumber
     @search_record = BestGuess.where(RecordNumber: @record_number).first
     @display_date = false
     respond_to do |format|
