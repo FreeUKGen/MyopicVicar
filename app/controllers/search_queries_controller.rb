@@ -401,12 +401,12 @@ class SearchQueriesController < ApplicationController
     @districts = []
     unless selected_districts.present?
     county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
-      #raise districts_names.where(County: 'HRT').inspect
       query.where(County: c).where('DistrictName LIKE ?', "%#{term}%").each do |d|
          district = District.new
          dna = district.formatted_name_for_search(d.District)
          dno = d.District.DistrictNumber
          @districts << [dna, dno]
+         @districts = @districts.uniq.sort { |x,y| x[0] <=> y[0] }
       end
     }
     else
@@ -416,6 +416,7 @@ class SearchQueriesController < ApplicationController
         dna =  district.formatted_name_for_search(d)
         dno = dn
         @districts << [dna, dno]
+        @districts = @districts.uniq.sort { |x,y| x[0] <=> y[0] }
       }
     end
     respond_to do |format|
