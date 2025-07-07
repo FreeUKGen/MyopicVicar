@@ -1,13 +1,14 @@
 <div class="grid__item one-whole palm-one-whole hard--left">
   	<div class="postem grid__item one-third lap-one-third palm-one-whole">
+  		<% @postems_count.present? ? postem_count_text = @postems_count : postem_count_text = 'Add'%>
     	<% if @search  %>
 	      	<%= link_to  "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '2', anchor: "display_postems")}" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
-	      		<%= "#{app_icons[:postem]}Postems".html_safe %>
+	      		<%= "#{postem_count_text} #{app_icons[:postem]}Postems".html_safe %>
 	      		<span class="accessibility">Postems</span>
 	      	<% end %>
       <% else %>
 	      	<%= link_to "#{friendly_bmd_record_details_non_search_path(@search_record, @search_record.friendly_url, filter_option: '2')}#display_postems" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
-	      		<%= "#{app_icons[:postem]}Postems".html_safe %>
+	      		<%= "#{postem_count_text} #{app_icons[:postem]}Postems".html_safe %>
 	      		<span class="accessibility">Postems</span>
 	      	<% end %>
 	    <% end %>
