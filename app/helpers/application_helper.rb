@@ -809,7 +809,7 @@ module ApplicationHelper
   end
 
   def footer_records_stats(stat,type)
-    stat.where(record_type: type).first.total_records
+    stat.where(record_type: type).first.total_records if stat.where(record_type: type).first.present?
   end
 
   def contact_us_path
