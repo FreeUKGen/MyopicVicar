@@ -550,6 +550,8 @@ class UserMailer < ActionMailer::Base
     @end_date = end_date
     @uploaders_count, @email_confirmed, @users_count, @records_added = PhysicalFile.new.upload_report_mail(@start_date, @end_date)
     @transcribers_count, @active_transcribers_count, @email_confimed = UseridDetail.get_transcriber_stats(@start_date, @end_date)
+    @open_syndicates = Syndicate.where(accepting_transcribers: true)
+    @closed_syndicates = Syndicate.where(accepting_transcribers: false)
     from_email = "no-reply@#{appname.downcase}.org.uk"
     to_email, cc_email = app_specific_email_upload_stats
     mail(from: from_email, to: to_email, cc: cc_email, subject: "Upload report stats")
