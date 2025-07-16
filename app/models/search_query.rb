@@ -438,6 +438,7 @@ class SearchQuery
   def filter_name_types(search_results)
     filtered_records = Array.new { {} }
     search_results.each do |search_result|
+      next if search_result[:search_names].blank?
       search_result[:search_names].each do |search_name|
         if fuzzy
           include_record = include_record_for_fuzzy_search(search_name)
@@ -445,7 +446,7 @@ class SearchQuery
           include_record = include_record_for_wildcard_search(search_name)
         else
           include_record = include_record_for_standard_search(search_name)
-        end
+          end
         filtered_records << search_result if include_record
         break filtered_records if include_record
       end
