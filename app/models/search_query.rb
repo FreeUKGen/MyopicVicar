@@ -2202,7 +2202,6 @@ class SearchQuery
       gedcom << '2 PLAC '+rec[:District]
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
     end
-    gedcom << ''
     gedcom << '0 TRLR'
     gedcom
   end
