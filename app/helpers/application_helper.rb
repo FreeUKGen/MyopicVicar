@@ -21,7 +21,8 @@ module ApplicationHelper
     }
   def nav_search_form_link
     #check_current_page(main_app.new_search_query_path)
-    link_to('Search', main_app.new_search_query_path) #unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
+    path = 'search_queries/new'
+    link_to('Search', main_app.new_search_query_path, class: check_current_page(path)) #unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
   end
 
   def nav_actions_page_link
@@ -41,7 +42,7 @@ module ApplicationHelper
     link_to 'Donate', "https://www.freeukgenealogy.org.uk/help-us-keep-history-free/", id: 'donate_nav', target: :_blank
   end
 
-  def nav_help_pages_link
+  def nav_help_pages_link_old
     if session[:userid_detail_id].present? || controller_name == 'sessions'
       get_user_info_from_userid
       if @user.present? && @user.person_role.present?
@@ -70,7 +71,14 @@ module ApplicationHelper
     end
   end
 
+  def nav_help_pages_link
+    link_to 'Help', '/help', class: check_current_page('help')
+  end
+
   def check_current_page(url)
+    main_url = Rails.application.config.website
+    my_class = current_page?("#{main_url}/#{url}") ? 'active' : ''
+    my_class
     #link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
     #current_page?(url) ? (link_to nav_links.key(url).titleize, url, class: '') : (link_to nav_links.key(url), url, class: 'active')
    # link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
@@ -97,7 +105,7 @@ module ApplicationHelper
     if session[:userid_detail_id].present?
       link_to 'Logout', main_app.logout_manage_resources_path, class: current_page?(main_app.logout_manage_resources_path) ? 'active' : ''
     else
-      link_to 'Member', refinery.login_path, class: current_page?(refinery.login_path) ? 'active' : ''
+      link_to 'Member', refinery.login_path, class: check_current_page("cms/refinery/login")
     end
   end
 
@@ -110,14 +118,14 @@ module ApplicationHelper
     when 'freecen'
       link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
-      link_to('Database', main_app.districts_overview_path)
+      link_to('Database', main_app.districts_overview_path, class: check_current_page('districts/districts_overview')))
     end
   end
 
   def nav_volunteer_page_link
     return if session[:userid_detail_id].present?
 
-    link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}"
+    link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}", class: check_current_page("cms/opportunities-to-volunteer-with-#{appname.downcase}")
   end
 
   def nav_freecen_gazetteer
