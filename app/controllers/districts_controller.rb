@@ -28,11 +28,11 @@ class DistrictsController < ApplicationController
 			@unique_names_0 = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_forenames
 		end
 		if params[:filter].present?
-			@filter = params[:filter]
+			@filter = params[:filter].downcase
 			pattern = ::Regexp.new(/#{@filter}/)
 			@unique_names_filtered = []
 			@unique_names_0.each do |name|
-				@unique_names_filtered << name if pattern.match(name)
+				@unique_names_filtered << name if pattern.match(name.downcase)
 			end
 			@unique_names = @unique_names_filtered.sort_by!(&:downcase)
 		else
