@@ -118,7 +118,7 @@ module ApplicationHelper
     when 'freecen'
       link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
-      link_to('Database', main_app.districts_overview_path, class: check_current_page('districts/districts_overview')))
+      link_to('Database', main_app.districts_overview_path, class: check_current_page('districts/districts_overview'))
     end
   end
 
