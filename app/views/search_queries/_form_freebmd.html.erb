@@ -31,6 +31,10 @@
     integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
     crossorigin="anonymous"></script>
 
+<div class='text--left push-half--bottom'>
+  <small><strong>Tip: Double-tab to move through name fields</strong></small>
+</div>
+
 <div class="bmd_search_form">
     <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="input">
@@ -103,12 +107,6 @@
                     <legend class="label">Record Type</legend>
                     <ol class="choices-group">
                         <li class="choice">
-                            <%= f.label :bmd_record_type_all, { :class => "optional_attributes rule", id: 'all_record_types_label'} do %>
-                                <%= check_box_tag 'search_query[bmd_record_type][]', '0',set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '0'),{ multiple: true, class: 'checkAll', id: 'search_query_bmd_record_type_all', tabindex: "0" } %>
-                                <%= content_text(:optional_checkbox_label, 'Select All') %>
-                            <% end %>
-                        </li>
-                        <li class="choice">
                             <%= f.label :bmd_record_type_birth, { :class => "optional_attributes", id: 'birth_record_type_label'} do %>
                                 <%= check_box_tag 'search_query[bmd_record_type][]', 1,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '1'),{ multiple: true, class: 'checkboxtag birth', id: 'search_query_bmd_record_type_birth', tabindex: "0" } %>
                                 <%= content_text(:optional_checkbox_label, 'Birth') %>
@@ -156,8 +154,8 @@
             
             <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
                 <div class='labels'>
-                    <%= label_tag 'death_select_box', "Age at Death".html_safe, class: "ttip" do %>
-                        <%= "Age at Death".html_safe %>
+                    <%= label_tag 'death_select_box', "Age at Death/Birth Year".html_safe, class: "ttip" do %>
+                        <%= "Age at Death/Birth Year".html_safe %>
                     <% end %>
                 </div>
                 <%= select_tag('search_query[death_at_age]', options_for_select(SearchQuery::DEATH_AGE_OPTIONS.map { |k,v| [v,k]}, set_value(@search_query.death_at_age)), {:prompt => "Select Death Age", id: 'death_select_box', class: 'push-half--bottom text-input', tabindex: "0"}) %>
@@ -210,103 +208,166 @@
                     <div class="countieslabel">
                         <%= label_tag 'search_query_chapman_codes', "Counties/Country".html_safe, class: "ttip" do %>
                             <%= "Counties/Country".html_safe %>
-                            <small class="additional">Start typing county or country names</small>
                         <% end %>
                     </div>
-                </div>
+                    <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0" %>
+                    <label>
+                        <small>
+                            <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
+                        Exact match on first names
+                        </small>
+                    </label>
+                </li>
 
-                <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
-                <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-                <%= autocomplete_field_tag 'search_query[chapman_codes]',set_county_value(@search_query.chapman_codes),'/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
-            </li>
+              
+                    <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
+                        <div class='labels'>
+                            <div class='districtslabel'>
+                                <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip" do %>
+                                    <%= "Districts".html_safe %>
+                                <% end %>
+                            </div>
+                        </div>
+                        <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
+                        <%= autocomplete_field_tag 'search_query[districts]', set_district(@search_query.districts), '/search_queries/districts_of_selected_counties', 'data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_districts', tabindex: "0" %>
+                        
+                    </li>
+                    <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole volumes">
+                        <div class='labels'>
+                            <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
+                                <%= "Volume".html_safe %>
+                            <% end %>
+                        </div>
+                        <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
+                    </li>
 
-            <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
-                <div class='labels'>
-                    <div class='districtslabel'>
-                        <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip" do %>
-                            <%= "Districts".html_safe %>
-                            <small class="additional">Select none, one or more Districts (hold Ctrl for multiple)</small>
-                        <% end %>
-                    </div>
-                </div>
-                <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {multiple: true, id: 'search_query_districts', tabindex: "0"} %>
-                
-            </li>
-            <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole volumes">
-            <div class='labels'>
-                <%= label_tag 'volume', "Volume".html_safe, class: "ttip" do %>
-                    <%= "Volume".html_safe %>
-                <% end %>
-            </div>
-            <%= text_field_tag 'search_query[volume]', set_value(@search_query.volume), class: 'text-input', id: 'volume', placeholder: 'Enter Volume', tabindex: "0" %>
-        </li>
+                    <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole pages">
+                        <div class='labels'>
+                            <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
+                                <%= "Page".html_safe %>
+                                <span class="ttip__text"><%#= info_tag_text[:page]%></span>
+                            <% end %>
+                        </div>
+                        <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
+                    </li>
+                </ol>
+                <script>
+                    $( "#first_name" ).autocomplete({
+                        source: '/unique_forenames/?term='
+                    });
+                    $( "#last_name" ).autocomplete({
+                        source: '/unique_surnames/?term='
+                    });
+                    function split( val ) {
+                        return val.split( /,\s*/ );
+                    }
+                    $('#search_query_chapman_codes').autocomplete({
+                        source: function (request, response) {
+                        $.ajax({
+                              autoFocus: true,
+                              url: "/search_queries/select_counties/", // should be with '/'
+                              dataType: 'json',
+                              data: { prefix: request.term },
+                              success: function(data) {
+                                    // call response to return the result to autocomplete box
+                                    console.log(data);
+                                    response(data);
+                                }
+                            });
+                        },
+                        focus: function() {
+                            // prevent value inserted on focus
+                            return false;
+                        },
+                        select: function( event, ui ) {
+                            var terms = split( this.value );
+                            // remove the current input
+                            terms.pop();
+                            // add the selected item
+                            terms.push( ui.item.value );
+                            // add placeholder to get the comma-and-space at the end
+                            terms.push( "" );
+                            this.value = terms.join( ", " );
+                            return false;
+                        }
+                    });
 
-        <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole pages">
-            <div class='labels'>
-                <%= label_tag 'page', "Page".html_safe, class: "ttip" do %>
-                    <%= "Page".html_safe %>
-                    <span class="ttip__text"><%#= info_tag_text[:page]%></span>
-                <% end %>
-            </div>
-            <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
-        </li>
-        </ol>
-
-      <script>
-          $( "#first_name" ).autocomplete({
-              source: '/unique_forenames/?term='
-          });
-          $( "#last_name" ).autocomplete({
-              source: '/unique_surnames/?term='
-          });
-          function split( val ) {
-      return val.split( /,\s*/ );
-          }
-
-
-          $('#search_query_chapman_codes').autocomplete({
-              source: function (request, response) {
-                $.ajax({
-                  autoFocus: true,
-                  url: "/search_queries/select_counties/", // should be with '/'
-                  dataType: 'json',
-                  data: { prefix: request.term },
-                  success: function(data) {
-                    // call response to return the result to autocomplete box
-                    console.log(data);
-                    response(data);
-                  }
-                });
-              },
-              focus: function() {
-                // prevent value inserted on focus
-                  return false;
-              },
-              select: function( event, ui ) {
-                  var terms = split( this.value );
+                    $('#search_query_districts').autocomplete({
+                  source: function (request, response) {
+                    $.ajax({
+                      autoFocus: true,
+                      url: "/search_queries/districts_of_selected_counties/",
+                      dataType: 'json',
+                      data: {
+                        selected_counties: $('#search_query_chapman_codes').val(),
+                        term: request.term
+                      },
+                      success: function(data) {
+                        // call response to return the result to autocomplete box
+                      //  console.log(data);
+                        //response(data);
+                        // Transform the array of arrays into the format jQuery UI autocomplete expects
+                      var transformedData = data.map(function(item) {
+                        return {
+                          label: item[0], // DistrictName
+                          value: item[0], // DistrictName
+                          id: item[1]     // DistrictID
+                        };
+                      });
+                      response(transformedData);
+                      }
+                    });
+                  },
+                  focus: function() {
+                    // prevent value inserted on focus
+                      return false;
+                  },
+                            select: function(event, ui) {
+                  var terms = split(this.value);
                   // remove the current input
                   terms.pop();
-                  // add the selected item
-                  terms.push( ui.item.value );
+                  // add the selected item's ID
+                  terms.push(ui.item.value);
                   // add placeholder to get the comma-and-space at the end
-                  terms.push( "" );
-                  this.value = terms.join( ", " );
-                  return false;
-             }
-            });
-      </script>
+                  terms.push("");
+                  this.value = terms.join(", ");
+                  
+                  // Store the display names in a data attribute
+                  var displayNames = this.getAttribute('data-display-names') || '';
+                  displayNames = displayNames ? displayNames.split(',') : [];
+                  displayNames.push(ui.item.name);
+                  this.setAttribute('data-display-names', displayNames.join(','));
+                  
+                  return false;S
+                }
+              });
+              // Add a hidden input to store the display names
+              $('<input>').attr({
+                type: 'hidden',
+                name: 'search_query[district_names]',
+                id: 'district_names'
+              }).insertAfter('#search_query_districts');
 
-    </fieldset>
-    <div>
-      <span><%= link_to 'Help with searching', '/help' %></span>
-    </div>
-    <div class="grid action">
-        <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
-    </div>
-    <div class="small_screen_actions">
-        <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
-    </div>
+              // Update the hidden input when districts change
+              $('#search_query_districts').on('change', function() {
+                $('#district_names').val($(this).attr('data-display-names'));
+                });
+                </script>
+        </fieldset>
+        <div class="grid action">
+            <div class="grid__item desk-one-third lap-one-third palm-one-whole">
+                <span class="float--left"><%= link_to 'Help with searching', '/help' %></span>
+            </div>
+            <div class="grid__item desk-one-third lap-one-third palm-one-whole text--center">
+                <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+            </div>
+            <div class="grid__item desk-one-third lap-one-third palm-one-whole">
+                <%= button_tag 'Clear Form', type: 'button', class: 'clear_forms ladda-button-reverse', data: {color: 'freebmd'} %>
+            </div>
+        </div>
+        <div class="small_screen_actions">
+            <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
+        </div>
   <% end %>
 </div>
 <%# end %>
@@ -354,7 +415,6 @@
                 $inputs.prop('checked', this.checked);
             }
         });
-
         $('.checkboxtag').on('change', function() {
             $('.checkAll').trigger('change');
         });
@@ -705,11 +765,63 @@
                 }
             });
 
-            $('.clear_form').click(function() {
+            $('.clear_forms').click(function() {
+                // Reset the form using the native reset method
+                $('#new_search_query')[0].reset();
+                
+                // Clear all text inputs
+                $('#new_search_query input[type="text"]').val('');
+                $('#new_search_query input[type="number"]').val('');
+                
+                // Clear select dropdowns
+                $('#new_search_query select').val('');
+                
+                // Uncheck all checkboxes
+                $('#new_search_query input[type="checkbox"]').prop('checked', false);
+                
+                // Reset record type checkboxes - check "Select All" and uncheck others
+                $('#search_query_bmd_record_type_birth').prop('checked', false);
+                $('#search_query_bmd_record_type_death').prop('checked', false);
+                $('#search_query_bmd_record_type_marriage').prop('checked', false);
+                
+                // Reset specific fields to defaults
+                $('#from_year').val('1837');
+                $('#to_year').val('1999');
+                $('#from_quarter').val('1');
+                $('#to_quarter').val('4');
+                
+                // Clear districts selection
+                $('#search_query_districts').empty();
+                
+                // Reset form state
                 hide_all_death_options();
                 $('#death_select_box').val([]);
-                //$('#death_select_box').prop('disabled', 'disabled');
-                //$('#death_select_box').css('background', '#ccc');
+                $('#death_select_box').prop('disabled', 'disabled');
+                
+                // Hide conditional fields
+                $('#spouse_firstnames_div').hide();
+                $('#spouse_or_mother_surname_div').hide();
+                $('#age_at_death_or_date_of_birth_div').hide();
+                $('#spouse_first_name').val('');
+                $('#spouses_mother_surname').val('');
+                
+                // Reset labels
+                $('.spouse_or_mother_surname_label').text("Spouse/Mothers surname");
+                
+                // Show advanced search
+                $("#advanced_search").show();
+                
+                // Clear any validation errors
+                $('#new_search_query').find('.error').removeClass('error');
+                $('#new_search_query').find('.validation-list').hide();
+                
+                // Reset autocomplete fields
+                $('#first_name').val('');
+                $('#last_name').val('');
+                $('#search_query_chapman_codes').val('');
+                
+                // Trigger change events to update form state
+                $('.checkboxtag, .checkAll').trigger('change');
             });
         });
     </script>

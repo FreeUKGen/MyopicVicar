@@ -47,26 +47,26 @@ module ApplicationHelper
       if @user.present? && @user.person_role.present?
         if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'
           if controller_name == 'pages'
-            link_to 'Help', '/help'
+            link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
           else
-            link_to 'Help', '/cms/information-for-transcribers'
+            link_to 'Help', '/cms/information-for-transcribers', class: current_page?('/cms/information-for-transcribers') ? 'active' : ''
           end
         elsif @user.person_role == 'researcher'
           if controller_name == 'pages'
-            link_to 'Help', '/help'
+            link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
           else
-            link_to 'Help', '/cms/registered-researchers'
+            link_to 'Help', '/cms/registered-researchers', class: current_page?('/cms/registered-researchers') ? 'active' : ''
           end
         else
           if controller_name == 'pages'
-            link_to 'Help', '/help'
+            link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
           else
-            link_to 'Help', '/cms/information-for-coordinators'
+            link_to 'Help', '/cms/information-for-coordinators', class: current_page?('/cms/information-for-coordinators') ? 'active' : ''
           end
         end
       end
     else
-      link_to 'Help', '/help'
+      link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
     end
   end
 
@@ -95,9 +95,9 @@ module ApplicationHelper
     return if controller_name == 'sessions'
 
     if session[:userid_detail_id].present?
-      link_to 'Logout', main_app.logout_manage_resources_path
+      link_to 'Logout', main_app.logout_manage_resources_path, class: current_page?(main_app.logout_manage_resources_path) ? 'active' : ''
     else
-      link_to 'Member', refinery.login_path
+      link_to 'Member', refinery.login_path, class: current_page?(refinery.login_path) ? 'active' : ''
     end
   end
 
@@ -770,6 +770,7 @@ module ApplicationHelper
       privacyNotice: 'Privacy Notice
       <span class="accessibility">Opens in new window</span>',
       termAndConditions: 'Terms and Conditions',
+      accessibility: 'Accessibility',
       contactUs: 'Contact Us',
       donation: 'Make a donation to cover our operating costs
       <span class="accessibility">Opens in new window</span>',
@@ -778,7 +779,8 @@ module ApplicationHelper
       freeregIcon: '<span class="accessibility">FreeREG</span>',
       freecenIcon: '<span class="accessibility">FreeCEN</span>',
       freebmdIcon: '<span class="accessibility">FreeBMD</span>',
-      freebmdAccuracy: 'accuracy or completeness',
+      freebmdAccuracy: 'accuracy',
+      freebmdComplete: 'completeness',
       freeukgenIcon: '<span class="accessibility">FreeUKGenealogy</span>',
       statistics: 'Statistics'
     }
@@ -790,18 +792,24 @@ module ApplicationHelper
       privacyNotice: Constant::PRIVACY_POLICY_LINK,
       termAndConditions: '/cms/terms-and-conditions',
       contactUs: contact_us_path,
+      accessibility: "#{Rails.application.config.website}/cms/about/accessibility-statement",
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
       freecen: 'https://www.freecen.org.uk/',
       freebmd: 'https://www.freebmd.org.uk/',
-      freebmdAccuracy: '/cms/help#Accuracy',
+      freebmdAccuracy: '/cms/help#accuracy',
+      freebmdComplete: '/coverage?locale=en',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
       #freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
       freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en',
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
     }
+  end
+
+  def footer_records_stats(stat,type)
+    stat.where(record_type: type).first.total_records if stat.where(record_type: type).first.present?
   end
 
   def contact_us_path
