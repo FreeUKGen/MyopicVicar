@@ -8,7 +8,8 @@ class Help
     'download_help' => 'Download or Share your results',
     'entry_help' => 'Entry Information',
     'certificates_help' => 'Order a Certificate',
-    'explore_help' => 'Explore the database'
+    'explore_help' => 'Explore the database',
+    'tips_and_tricks' => 'Tips and Tricks',
     #    'more_help' => 'More Help'
   }
 
