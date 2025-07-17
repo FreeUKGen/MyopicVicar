@@ -9,7 +9,7 @@ MYSQL_PASSWORD=$(yq e ".${ENVIRONMENT}.password" $YAML_FILE)
 
 
 # Find the latest bmd_<epoch> database
-LATEST_DB=$(mysql -u"$MYSQL_USER" -p"$MYSQL_PASS" -h"$MYSQL_HOST" -N -B -e "SHOW DATABASES LIKE 'bmd\_%';" \
+LATEST_DB=$(mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -N -B -e "SHOW DATABASES LIKE 'bmd\_%';" \
   | grep -E '^bmd_[0-9]+$' \
   | awk -F_ '{print $2"\t"$0}' \
   | sort -k1,1nr \
