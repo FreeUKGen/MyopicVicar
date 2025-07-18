@@ -34,12 +34,24 @@ fi
 
 echo "Latest database: $LATEST_DB"
 
-# Update or create YAML file (set top-level 'database:' key)
-if grep -q '^[[:space:]]*database:' "$YAML_FILE"; then
-  # Replace only the first matching line
-  awk -v db="$LATEST_DB" '{if (!done && $0 ~ /^[[:space:]]*database:/) {print "database: " db; done=1} else print $0}' "$YAML_FILE" > "${YAML_FILE}.tmp" && mv "${YAML_FILE}.tmp" "$YAML_FILE"
-else
-  echo "database: $LATEST_DB" >> "$YAML_FILE"
-fi
+# Update database: under production: only
+awk -v env="$ENVIRONMENT" -v db="$LATEST_DB" '
+BEGIN {in_env=0}
+{
+  # Detect start of environment block
+  if ($0 ~ "^"env":") {
+    print $0
+    in_env=1
+    next
+  }
+  # If in correct environment, replace database line
+  if (in_env && $1 == "database:") {
+    print "  database: " db
+    in_env=0 # Only replace first occurrence in block
+    next
+  }
+  print $0
+}
+' "$YAML_FILE" > "${YAML_FILE}.tmp" && mv "${YAML_FILE}.tmp" "$YAML_FILE"
 
-echo "Updated $YAML_FILE with database: $LATEST_DB"
+echo "Updated $YAML_FILE: set production database to $LATEST_DB"
