@@ -20,6 +20,30 @@
 
 }
 
+.nav {
+  list-style: none;
+  margin-left: 0;
+/*  @extend .cf;*/
+
+  > li {
+    &,
+    > a {
+     /* display: inline-block;*/
+      *display: inline;
+      zoom: 1;
+    }
+
+    > a {
+      &.active,
+      &:hover {
+        background: #fff;
+        color: $project-color;
+        outline: 5px solid #fff;
+        text-decoration: none;
+      }
+    }
+  }
+}
 /**
  * A stacked blocky sub nav with open and active states
  * AO: edit colours, add focus states, remove link-like stuff from .active ('you are here')
@@ -182,5 +206,30 @@
    outline: none;
  }
 }
+/*
+.nav {
+  list-style: none;
+  margin-left: 0;
+  @extend .cf;
 
+  > li {
+    &,
+    > a {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+    }
+
+    > a {
+      &.active,
+      &:hover {
+        background: #fff;
+        color: $project-color;
+        outline: 5px solid #fff;
+        text-decoration: none;
+      }
+    }
+  }
+}
+*/
 }//endif
