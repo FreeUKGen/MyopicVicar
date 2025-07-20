@@ -21,7 +21,8 @@ module ApplicationHelper
     }
   def nav_search_form_link
     #check_current_page(main_app.new_search_query_path)
-    link_to('Search', main_app.new_search_query_path) #unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
+    path = 'search_queries/new'
+    link_to('Search', main_app.new_search_query_path, class: check_current_page(path)) #unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
   end
 
   def nav_actions_page_link
@@ -41,36 +42,43 @@ module ApplicationHelper
     link_to 'Donate', "https://www.freeukgenealogy.org.uk/help-us-keep-history-free/", id: 'donate_nav', target: :_blank
   end
 
-  def nav_help_pages_link
+  def nav_help_pages_link_old
     if session[:userid_detail_id].present? || controller_name == 'sessions'
       get_user_info_from_userid
       if @user.present? && @user.person_role.present?
         if @user.person_role == 'transcriber' || @user.person_role == 'trainee' || @user.person_role == 'pending'
           if controller_name == 'pages'
-            link_to 'Help', '/help'
+            link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
           else
-            link_to 'Help', '/cms/information-for-transcribers'
+            link_to 'Help', '/cms/information-for-transcribers', class: current_page?('/cms/information-for-transcribers') ? 'active' : ''
           end
         elsif @user.person_role == 'researcher'
           if controller_name == 'pages'
-            link_to 'Help', '/help'
+            link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
           else
-            link_to 'Help', '/cms/registered-researchers'
+            link_to 'Help', '/cms/registered-researchers', class: current_page?('/cms/registered-researchers') ? 'active' : ''
           end
         else
           if controller_name == 'pages'
-            link_to 'Help', '/help'
+            link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
           else
-            link_to 'Help', '/cms/information-for-coordinators'
+            link_to 'Help', '/cms/information-for-coordinators', class: current_page?('/cms/information-for-coordinators') ? 'active' : ''
           end
         end
       end
     else
-      link_to 'Help', '/help'
+      link_to 'Help', '/help', class: current_page?('/help') ? 'active' : ''
     end
   end
 
+  def nav_help_pages_link
+    link_to 'Help', '/help', class: check_current_page('help')
+  end
+
   def check_current_page(url)
+    main_url = Rails.application.config.website
+    my_class = current_page?("#{main_url}/#{url}") ? 'active' : ''
+    my_class
     #link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
     #current_page?(url) ? (link_to nav_links.key(url).titleize, url, class: '') : (link_to nav_links.key(url), url, class: 'active')
    # link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
@@ -95,9 +103,9 @@ module ApplicationHelper
     return if controller_name == 'sessions'
 
     if session[:userid_detail_id].present?
-      link_to 'Logout', main_app.logout_manage_resources_path
+      link_to 'Logout', main_app.logout_manage_resources_path, class: current_page?(main_app.logout_manage_resources_path) ? 'active' : ''
     else
-      link_to 'Member', refinery.login_path
+      link_to 'Member', refinery.login_path, class: check_current_page("cms/refinery/login")
     end
   end
 
@@ -110,14 +118,14 @@ module ApplicationHelper
     when 'freecen'
       link_to('Records', main_app.freecen2_contents_path)
     when 'freebmd'
-      link_to('Database', main_app.districts_overview_path)
+      link_to('Database', main_app.districts_overview_path, class: check_current_page('districts/districts_overview'))
     end
   end
 
   def nav_volunteer_page_link
     return if session[:userid_detail_id].present?
 
-    link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}"
+    link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}", class: check_current_page("cms/opportunities-to-volunteer-with-#{appname.downcase}")
   end
 
   def nav_freecen_gazetteer
@@ -770,6 +778,7 @@ module ApplicationHelper
       privacyNotice: 'Privacy Notice
       <span class="accessibility">Opens in new window</span>',
       termAndConditions: 'Terms and Conditions',
+      accessibility: 'Accessibility',
       contactUs: 'Contact Us',
       donation: 'Make a donation to cover our operating costs
       <span class="accessibility">Opens in new window</span>',
@@ -791,6 +800,7 @@ module ApplicationHelper
       privacyNotice: Constant::PRIVACY_POLICY_LINK,
       termAndConditions: '/cms/terms-and-conditions',
       contactUs: contact_us_path,
+      accessibility: "#{Rails.application.config.website}/cms/about/accessibility-statement",
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
@@ -804,6 +814,10 @@ module ApplicationHelper
       freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en',
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
     }
+  end
+
+  def footer_records_stats(stat,type)
+    stat.where(record_type: type).first.total_records if stat.where(record_type: type).first.present?
   end
 
   def contact_us_path
