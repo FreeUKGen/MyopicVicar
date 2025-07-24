@@ -237,6 +237,38 @@ class FreecenCsvFilesController < ApplicationController
     @prompt = 'Select spreadsheet'
   end
 
+  def download_warning_messages
+    @freecen_csv_file = FreecenCsvFile.find(params[:id])
+    file_name = @freecen_csv_file.file_name[0..-5]
+    records_with_warnings = FreecenCsvEntry.where(:freecen_csv_file_id => params[:id], :warning_messages.ne => '').all.order_by(record_number: 1)
+    success, message, file_location, file_name = FreecenCsvFile.create_warnings_csv_file(file_name, records_with_warnings)
+    if success
+      if File.file?(file_location)
+        flash[:notice] = message unless message.empty?
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice] = 'There was a problem downloading the CSV file of warning messages'
+    end
+    redirect_back(fallback_location: new_manage_resource_path) && return
+  end
+
+  def download_error_messages
+    @freecen_csv_file = FreecenCsvFile.find(params[:id])
+    file_name = @freecen_csv_file.file_name[0..-5]
+    records_with_errors = FreecenCsvEntry.where(:freecen_csv_file_id => params[:id], :error_messages.ne => '').all.order_by(record_number: 1)
+    success, message, file_location, file_name = FreecenCsvFile.create_errors_csv_file(file_name, records_with_errors)
+    if success
+      if File.file?(file_location)
+        flash[:notice] = message unless message.empty?
+        send_file(file_location, filename: file_name, x_sendfile: true) && return
+      end
+    else
+      flash[:notice] = 'There was a problem downloading the CSV file of error messages'
+    end
+    redirect_back(fallback_location: new_manage_resource_path) && return
+  end
+
   def edit
     @freecen_csv_file = FreecenCsvFile.find(params[:id])
     unless FreecenCsvFile.valid_freecen_csv_file?(params[:id])

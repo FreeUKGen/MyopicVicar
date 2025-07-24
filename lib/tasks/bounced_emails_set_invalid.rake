@@ -28,7 +28,7 @@ namespace :freereg do
     end
 
     ccs_system_administrator = []
-    UseridDetail.role('system_administrator').each do |userid|
+    UseridDetail.role('system_administrator').where(recieve_system_emails: true).each do |userid|
       ccs_system_administrator << userid.email_address
     end
     email_of_nil_users = []

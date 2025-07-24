@@ -48,6 +48,13 @@
   <td>Syndicate:</td>
   <td > <%=@userid.syndicate %>  </td>
 </tr>
+<tr>
+  <td>Syndicate Coordinator:</td>
+  <% coord = Syndicate.find_by(syndicate_code: @userid.syndicate).syndicate_coordinator %>
+  <% user_coord = UseridDetail.find_by(userid: coord) %>
+  <td > <%= "#{user_coord.person_forename} #{user_coord.person_surname} (#{coord})" %></td>
+
+</tr>
 <% if @userid.previous_syndicate.present?%>
   <tr>
     <td>Previous Syndicate:</td>
@@ -61,4 +68,8 @@
 <tr>
   <td>Signed up:</td>
   <td > <%= @userid.sign_up_date.strftime("%d %b %Y") unless @userid.sign_up_date.nil? %> </td>
+</tr>
+<tr>
+  <td>Recieves System Emails</td>
+  <td><%= @userid.recieve_system_emails %></td>
 </tr>

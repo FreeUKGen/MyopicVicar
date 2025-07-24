@@ -124,13 +124,14 @@
 
             <td><%= freereg1_csv_entry.marriage_date %></td>
 
+            <td><%= freereg1_csv_entry.groom_forename %></td>
+
+            <td><%= freereg1_csv_entry.groom_surname %></td>
+
             <td><%= freereg1_csv_entry.bride_forename %></td>
 
             <td><%= freereg1_csv_entry.bride_surname %></td>
 
-            <td><%= freereg1_csv_entry.groom_forename %></td>
-
-            <td><%= freereg1_csv_entry.groom_surname %></td>
             <td><%= link_to 'Show', freereg1_csv_entry %><br><%= link_to 'Edit', edit_freereg1_csv_entry_path(freereg1_csv_entry) %><br><%= link_to 'Destroy', freereg1_csv_entry, data: { confirm:  'Are you sure?'}, method: :delete %></td>
           </tr>
           <% end %>

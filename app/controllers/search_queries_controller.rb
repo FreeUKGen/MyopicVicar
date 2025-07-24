@@ -27,6 +27,20 @@ class SearchQueriesController < ApplicationController
   end
 
   def adjust_search_query_parameters
+    send("adjust_search_query_parameters_#{appname_downcase}")
+  end
+
+  def adjust_search_query_parameters_freereg
+    @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
+    @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
+    @search_query['chapman_codes'] = ['', 'ERY', 'NRY', 'WRY'] if @search_query['chapman_codes'][1].eql?('YKS')
+    @search_query['birth_chapman_codes'] = ['', 'ERY', 'NRY', 'WRY'] if @search_query['birth_chapman_codes'][1].eql?('YKS')
+    @search_query['chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['chapman_codes'][1].eql?('CHI')
+    @search_query['birth_chapman_codes'] = ['', 'ALD', 'GSY', 'JSY', 'SRK'] if @search_query['birth_chapman_codes'][1].eql?('CHI')
+    @search_query.session_id = request.session_options[:id]
+  end
+
+  def adjust_search_query_parameters_freecen
     @search_query['first_name'] = @search_query['first_name'].strip if @search_query['first_name'].present?
     @search_query['last_name'] = @search_query['last_name'].strip if @search_query['last_name'].present?
     composite_counties = %w[CHI ENG HAM IRL SCT WLS YKS]

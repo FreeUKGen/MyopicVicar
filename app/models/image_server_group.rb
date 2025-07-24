@@ -22,6 +22,9 @@ class ImageServerGroup
   field :syndicate_code, type: String
   field :assign_date, type: String
   field :number_of_images, type: Integer
+  field :allocation_requested_by, type:String
+  field :allocation_requested_through_syndicate, type: String
+
 
   attr_accessor :custom_field
 
@@ -155,7 +158,7 @@ class ImageServerGroup
       place_id = Place.chapman_code(chapman_code).pluck(:id, :place_name).to_h
       church_id, register_id, source, source_id = prepare_location_id_hash(place_id)
 
-      image_server_group = ImageServerGroup.find_by_source_ids(source_id).where(:syndicate_code=>{'$nin'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+      image_server_group = ImageServerGroup.find_by_source_ids(source_id).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
       group_sort_by_syndicate = image_server_group.sort_by {|a,b,c,d,e,f| [b,d ? 0 : 1, d]}
 
       group_id = Hash.new{|h,k| h[k]=[]}.tap{|h| group_sort_by_syndicate.each{|k,v1,v2,v3,v4,v5| h[k] << v1 << v2 << v3 << v4 << v5}}
@@ -181,7 +184,7 @@ class ImageServerGroup
 
       case allocation_filter
       when 'all'
-        image_server_group = ImageServerGroup.find_by_source_ids(source_id).where(:syndicate_code=>{'$nin'=>['', nil]}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
+        image_server_group = ImageServerGroup.find_by_source_ids(source_id).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
       when 'allocate request'
         image_server_group = ImageServerGroup.find_by_source_ids(source_id).where('summary.status'=>{'$in'=>['ar']}).pluck(:id, :source_id, :group_name, :syndicate_code, :assign_date, :number_of_images)
       when 'unallocate'
@@ -335,6 +338,7 @@ class ImageServerGroup
       when 'a'
         self.update(:assign_date=>Time.now.iso8601)
         ig = self.first
+        ig.update_attributes(syndicate_code: ig.allocation_requested_through_syndicate)
         UserMailer.notify_sc_allocate_request_rejection(user,ig.group_name,ig.syndicate_code,'allocate').deliver_now
 
         flash_notice = 'Image Group successfully allocated'

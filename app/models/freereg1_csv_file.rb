@@ -1158,6 +1158,9 @@ class Freereg1CsvFile
     hash_of_fields.values.sort.each do |val|
       fields << hash_of_fields.key(val)
     end
+    fields.delete(:county)
+    fields.delete(:place)
+    fields.delete(:record_type)
     return fields
   end
 

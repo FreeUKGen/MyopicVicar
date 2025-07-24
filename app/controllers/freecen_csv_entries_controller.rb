@@ -46,6 +46,7 @@ class FreecenCsvEntriesController < ApplicationController
       else
         @propagation_fields = 'Notes'
       end
+
       @propagation_scope = 'File'
       get_user_info_from_userid
       warnings_adjustment, success, _message = @freecen_csv_entry.propagate_pob(@propagation_fields, @propagation_scope, @user.userid)
@@ -56,6 +57,10 @@ class FreecenCsvEntriesController < ApplicationController
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
       original_warning_count = @freecen_csv_file.total_warnings
       @freecen_csv_file.adjust_total_warning_messages_and_lock(original_warning_count, warnings_adjustment)
+      @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_warning
+      session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
+      session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
+      session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
     end
 
     @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
@@ -63,7 +68,7 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
     @freecen_csv_file.update_total_warning_messages
     session[:propagate_alternate] = @freecen_csv_entry.id unless verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry)
-    session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present?
+    session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present? && @freecen_csv_entry.birth_county.present?
     flash[:notice] = 'The acceptance was successful'
     redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
   end
@@ -235,14 +240,21 @@ class FreecenCsvEntriesController < ApplicationController
       get_user_info_from_userid
       warnings_adjustment, success, message = @freecen_csv_entry.propagate_pob(@propagation_fields, @propagation_scope, @user.userid)
       if success
-        session[:propagated_alternate] = session[:propagate_alternate]
+        session[:propagated_alternate] = @propagation_fields == 'Notes' ? session[:propagate_note] : session[:propagate_alternate]
       else
         session.delete(:propagate_alternate)
+        session.delete(:propagate_note)
       end
       @freecen_csv_entry.reload
       @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
       original_warning_count = @freecen_csv_file.total_warnings
       @freecen_csv_file.adjust_total_warning_messages_and_lock(original_warning_count, warnings_adjustment)
+      if success
+        @next_list_entry, @previous_list_entry = @freecen_csv_entry.next_and_previous_warning
+        session[:current_list_entry] = @freecen_csv_entry.id if @next_list_entry.present? || @previous_list_entry.present?
+        session[:next_list_entry] = @next_list_entry.id if @next_list_entry.present?
+        session[:previous_list_entry] = @previous_list_entry.id if @previous_list_entry.present?
+      end
       flash[:notice] = success ? 'Propagation processed successfully, the file is now locked against replacement until it has been downloaded.' : message
       redirect_to freecen_csv_entry_path(@freecen_csv_entry)
     else
@@ -295,8 +307,6 @@ class FreecenCsvEntriesController < ApplicationController
     if @freecen_csv_entry.errors.any?
       redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
     else
-      session[:propagate_alternate] = @freecen_csv_entry.id if @freecen_csv_entry.propagate?(params[:freecen_csv_entry])
-      session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.propagate_note?(params[:freecen_csv_entry])
       params[:freecen_csv_entry][:warning_messages] = '' if params[:freecen_csv_entry][:record_valid] == 'true'
       @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
       if params[:commit] == 'Override warnings'
@@ -304,6 +314,8 @@ class FreecenCsvEntriesController < ApplicationController
         @freecen_csv_entry.remove_flags if @freecen_csv_entry.flag
       end
       @freecen_csv_entry.reload
+      session[:propagate_alternate] = @freecen_csv_entry.id if @freecen_csv_entry.propagate?(params[:freecen_csv_entry])
+      session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.propagate_note?(params[:freecen_csv_entry])
       @warnings_now, @errors_now = @freecen_csv_entry.are_there_messages
       @freecen_csv_entry.check_valid
       @freecen_csv_file.update_messages_and_lock(@warnings, @errors, @warnings_now, @errors_now)
@@ -312,7 +324,7 @@ class FreecenCsvEntriesController < ApplicationController
       else
         flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
       end
-      redirect_to freecen_csv_entry_path(@freecen_csv_entry)
+      redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
     end
   end
 

@@ -137,6 +137,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen_csv_files/:id/incorporate(.:format)', :to => 'freecen_csv_files#incorporate', :as => :incorporate_freecen_csv_file
   get 'freecen_csv_files/:id/incorporate_partial(.:format)', :to => 'freecen_csv_files#incorporate_partial', :as => :incorporate_partial_freecen_csv_file
   get 'freecen_csv_files/:id/unincorporate(.:format)', :to => 'freecen_csv_files#unincorporate', :as => :unincorporate_freecen_csv_file
+  get 'freecen_csv_files/:id/download_warning_messages(.:format)', :to => 'freecen_csv_files#download_warning_messages', :as => :download_warning_messages_freecen_csv_file
+  get 'freecen_csv_files/:id/download_error_messages(.:format)', :to => 'freecen_csv_files#download_error_messages', :as => :download_error_messages_freecen_csv_file
   resources :freecen_csv_files
 
   resources :freecen_csv_file_audits
@@ -398,7 +400,10 @@ MyopicVicar::Application.routes.draw do
   post 'userid_details/new', :to => 'userid_details#create'
   get 'download_txt', to: "userid_details#download_txt"
   resources :userid_details do
-    collection { post :import }
+    collection do
+      post :import
+      get :coordinators_list
+    end
   end
 
   get  'manage_counties/selection',  :to => 'manage_counties#being_validated', constraints: ManageCountiesBeingValidatedConstraint, :as => :selection_being_validated_manage_counties
@@ -490,6 +495,8 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_places/active_index', to: 'freecen2_places#active_index', as: :active_index_freecen2_places
   get 'freecen2_places/selection_by_name', to: 'freecen2_places#selection_by_name', as: :selection_by_name_freecen2_places
   get 'freecen2_places/for_search_form(.:format)', :to => 'freecen2_places#for_search_form', :as => :freecen2_places_for_search_form
+  get 'freecen2_places/download_csv', to: 'freecen2_places#download_csv', as: :download_csv_freecen2_places
+  get 'freecen2_places/csv_index', to: 'freecen2_places#csv_index', as: :csv_index_freecen2_places
   resources :freecen2_places
 
   resources :freecen2_place_sources

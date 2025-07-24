@@ -7,7 +7,13 @@
   <%= convert_header %>
   <%= download_freecen_file %>
   <%= remove_freecen_file unless @freecen_csv_file.incorporation_lock %>
-  <%= download_messages %><br>
+  <%= download_messages %>
+  <%  if @freecen_csv_file.total_warnings.positive? %>
+    <%= download_warnings %>
+  <% end%><br>
+  <%  if @freecen_csv_file.total_errors.positive? %>
+    <%= download_errors %>
+  <% end%><br>
   <%= list_freecen_file_flags %>
   <%= list_freecen_file_error_entries %>
   <%= list_freecen_file_warning_entries %>

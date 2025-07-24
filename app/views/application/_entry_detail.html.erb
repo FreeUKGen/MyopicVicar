@@ -102,7 +102,7 @@
             </tr>
           <% end%>
           <% when 'credit' %>
-          <%  creditable = credit(@entry) %>
+          <% creditable =  @file.credit_name %>
           <% if creditable.present? %>
             <tr>
               <td ><%= field.gsub('_',' ').capitalize %></td>

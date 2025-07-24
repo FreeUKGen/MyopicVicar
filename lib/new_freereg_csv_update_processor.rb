@@ -376,7 +376,7 @@ class CsvFile < CsvFiles
     rescue => e
       p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.message}"
       p "FREEREG:CSV_PROCESSOR_FAILURE: #{e.backtrace.inspect}"
-      error_message = " We were unable to complete the file #{@userid}\t#{@file_name}. because #{e.message} Please contact your coordinator or the System Administrator with this message. #{e.backtrace.inspect}<br>"
+      error_message = " We were unable to complete the file #{@userid}\t#{@file_name}. because #{e.message} Please contact your coordinator or the System Administrator with this message.<br>"
       project.write_messages_to_all(error_message, true)
       project.write_messages_to_all("Rescued from crash #{e.message}", true)
       project.write_log_file("#{e.message}")
@@ -774,7 +774,8 @@ class CsvFile < CsvFiles
       batch.update_attributes( :file_processed => true, :file_processed_date => Time.new,:waiting_to_be_processed => false, :waiting_date => nil)
     else
       #only checked for errors so file is not processed into search database
-      batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
+      batch.destroy
+      #batch.update_attributes(:file_processed => false, :file_processed_date => nil,:waiting_to_be_processed => false, :waiting_date => nil)
     end
   end
 
@@ -1577,7 +1578,7 @@ class CsvRecord < CsvRecords
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if @data_record[:year].blank?
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:confirmation_date]) if @data_record[:year].blank?
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:received_into_church_date]) if @data_record[:year].blank?
-    (@data_record[:private_baptism].present? && FreeregOptionsConstants::PRIVATE_BAPTISM_OPTIONS.include?(@data_record[:private_baptism].downcase)) ? @data_record[:private_baptism] = true : @data_record[:private_baptism] = false
+    #(@data_record[:private_baptism].present? && FreeregOptionsConstants::PRIVATE_BAPTISM_OPTIONS.include?(@data_record[:private_baptism].downcase)) ? @data_record[:private_baptism] = true : @data_record[:private_baptism] = false
     @data_record[:person_sex] = process_baptism_sex_field(@data_record[:person_sex])
     @data_record[:father_surname] = Unicode::upcase(@data_record[:father_surname] ) unless @data_record[:father_surname] .nil?
     @data_record[:mother_surname] = Unicode::upcase(@data_record[:mother_surname]) unless  @data_record[:mother_surname].nil?
@@ -1645,9 +1646,9 @@ class CsvRecord < CsvRecords
     @data_record[:file_line_number] = line
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if @data_record[:year].blank?
-    (@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false
-    (@data_record[:groom_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)) ? @data_record[:groom_marked] = true : @data_record[:groom_marked] = false
-    (@data_record[:bride_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)) ? @data_record[:bride_marked] = true : @data_record[:bride_marked] = false
+    #(@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false
+    #(@data_record[:groom_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:groom_marked].downcase)) ? @data_record[:groom_marked] = true : @data_record[:groom_marked] = false
+    #(@data_record[:bride_marked].present? && FreeregOptionsConstants::MARKED_OPTIONS.include?(@data_record[:bride_marked].downcase)) ? @data_record[:bride_marked] = true : @data_record[:bride_marked] = false
     @data_record[:processed_date] = Time.now
     csvfile.data[line] = @data_record
   end
@@ -1655,7 +1656,7 @@ class CsvRecord < CsvRecords
   def  process_baptism_sex_field(field)
     case
     when field.nil?
-      return_field = "?"
+      return_field = nil
     when FreeregValidations::UNCERTAIN_SEX.include?(field.upcase)
       return_field = field
     when FreeregValidations::VALID_MALE_SEX.include?(field.upcase)

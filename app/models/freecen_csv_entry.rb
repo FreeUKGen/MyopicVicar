@@ -176,13 +176,15 @@ class FreecenCsvEntry
     end
 
     def propagation_scope(entry, chapman_code)
-      if  entry.verbatim_birth_county == chapman_code ||
-          %w[OVF ENG SCT IRL WLS CHI].include?(entry.verbatim_birth_county) ||
-          (chapman_code == 'HAM' && %w[HAM IOW].include?(entry.verbatim_birth_county)) ||
-          (chapman_code == 'YKS' && %w[YKS ERY WRY NRY].include?(entry.verbatim_birth_county))
-        scope = 'Collection'
-      else
-        scope = 'File'
+      scope = 'File'
+      prop_rec_exists = FreecenPobPropagation.where(scope_year: 'ALL', scope_county: 'ALL', match_verbatim_birth_county: entry.verbatim_birth_county, match_verbatim_birth_place: entry.verbatim_birth_place).exists?
+      unless prop_rec_exists
+        if  entry.verbatim_birth_county == chapman_code ||
+            %w[OVF ENG SCT IRL WLS CHI].include?(entry.verbatim_birth_county) ||
+            (chapman_code == 'HAM' && %w[HAM IOW].include?(entry.verbatim_birth_county)) ||
+            (chapman_code == 'YKS' && %w[YKS ERY WRY NRY].include?(entry.verbatim_birth_county))
+          scope = 'Collection'
+        end
       end
       scope
     end
@@ -1746,7 +1748,7 @@ class FreecenCsvEntry
   end
 
   def add_address(freecen_csv_file_id, dwelling)
-    first_individual = FreecenCsvEntry.find_by(freecen_csv_file_id: freecen_csv_file_id, dwelling_number: dwelling)
+    first_individual = FreecenCsvEntry.find_by(freecen_csv_file_id: freecen_csv_file_id, dwelling_number: dwelling, sequence_in_household: 1)
     if first_individual.present?
       self.folio_number = first_individual.folio_number
       self.page_number = first_individual.page_number
@@ -1824,7 +1826,13 @@ class FreecenCsvEntry
 
     return false unless freecen_csv_file.validation
 
-    return true if parameters[:birth_county].present? && parameters[:birth_county] != birth_county
+    return false if parameters[:birth_county] == birth_county && parameters[:birth_place] == birth_place
+
+    return false if parameters[:birth_county].blank? && birth_county.blank? and parameters[:birth_place].blank? && birth_place.blank?
+
+    return true if parameters[:birth_county] != birth_county
+
+    return true if parameters[:birth_place] != birth_place
 
     return true if parameters[:birth_place].present? && parameters[:birth_place] != birth_place
 
@@ -1837,6 +1845,8 @@ class FreecenCsvEntry
     return false if freecen_csv_file.incorporated
 
     return false unless freecen_csv_file.validation
+
+    return false if parameters[:birth_county].blank? && birth_county.blank? and parameters[:birth_place].blank? && birth_place.blank?
 
     return true if parameters[:notes].present? && parameters[:notes] != notes
 
@@ -1883,16 +1893,18 @@ class FreecenCsvEntry
     need_review_message = 'Warning: Notes field has been adjusted and needs review.<br>'
     if scope == 'ED'
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, enumeration_district: enumeration_district, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        next if entry.id == _id
+        next if entry.id == _id || entry.notes.upcase.include?(notes.upcase)
+
 
         warning_message = entry.warning_messages + need_review_message
         add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
         @warnings_adjustment += 1 if entry.warning_messages.blank?
         entry.update_attributes(notes: add_notes, warning_messages: warning_message)
+
       end
     else
       FreecenCsvEntry.where(freecen_csv_file_id: freecen_csv_file_id, verbatim_birth_county: verbatim_birth_county, verbatim_birth_place: verbatim_birth_place).no_timeout.each do |entry|
-        next if entry.id == _id
+        next if entry.id == _id || entry.notes.upcase.include?(notes.upcase)
 
         warning_message = entry.warning_messages + need_review_message
         add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
@@ -1919,7 +1931,11 @@ class FreecenCsvEntry
 
         _adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
         new_warning_message = updated_warnings + notes_need_review_message
-        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        if entry.notes.present? && entry.notes.upcase.include?(notes.upcase)
+          add_notes = entry.notes
+        else
+          add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        end
         @warnings_adjustment += 1 if entry.warning_messages.blank?
         entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message)
       end
@@ -1929,7 +1945,11 @@ class FreecenCsvEntry
 
         _adjustment, updated_warnings = remove_pob_warning_messages(entry.warning_messages)
         new_warning_message = updated_warnings + notes_need_review_message
-        add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        if entry.notes.present? && entry.notes.upcase.include?(notes.upcase)
+          add_notes = entry.notes
+        else
+          add_notes = entry.notes.present? ? entry.notes + ' ' + notes : notes
+        end
         @warnings_adjustment += 1 if entry.warning_messages.blank?
         entry.update_attributes( birth_county: birth_county, birth_place: birth_place, notes: add_notes, warning_messages: new_warning_message)
       end
@@ -2527,7 +2547,7 @@ class FreecenCsvEntry
     birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
 
     note = notes.gsub(/\<br\>/, '') if notes.present?
-    lang = Freecen::LANGUAGE[language]
+    lang = Freecen::LANGUAGE[language.upcase] if language.present?
     case year
     when '1841' && ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
       [birth_county_name, birth, disability, note]
@@ -2611,6 +2631,37 @@ class FreecenCsvEntry
     number_records = list_of_records.length
     next_entry = (current_index + 1) <= number_records ? FreecenCsvEntry.find_by(_id: list_of_records[current_index + 1]) : nil
     previous_entry = (current_index - 1) < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_records[current_index - 1])
+    [next_entry, previous_entry]
+  end
+
+  def next_and_previous_warning
+
+    # Propagated and/or accepted pre_validation records can update multiple records will no longer be in the warnings list so look for next
+
+    list_of_warnings = freecen_csv_file.index_type('War').pluck(:_id)
+    return [nil, nil] if list_of_warnings.blank?
+
+    @number_warnings = list_of_warnings.length
+
+    current_index = list_of_warnings.find_index(_id)
+
+    if current_index.blank?
+
+      list_index = list_of_warnings.find_index { |rec_id| rec_id > _id }
+
+      current_index = list_index
+      next_entry = current_index.present? ? FreecenCsvEntry.find_by(_id: list_of_warnings[current_index]) : nil
+
+      if current_index.present?
+        previous_entry = (current_index - 1) < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_warnings[current_index - 1])
+      else
+        previous_entry = @number_warnings - 1 < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_warnings[@number_warnings - 1])
+      end
+    else
+      next_entry = (current_index + 1) <= @number_warnings ? FreecenCsvEntry.find_by(_id: list_of_warnings[current_index + 1]) : nil
+      previous_entry = (current_index - 1) < 0 ? nil : FreecenCsvEntry.find_by(_id: list_of_warnings[current_index - 1])
+    end
+
     [next_entry, previous_entry]
   end
 

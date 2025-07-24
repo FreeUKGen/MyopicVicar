@@ -435,7 +435,7 @@ class FreecenCsvFile
       [totals_csv_files, totals_csv_files_incorporated, totals_csv_entries, totals_individuals, totals_dwellings]
     end
 
-    def convert_freecen_csv_file_name_to_freecen1_vld_file_name(description)
+    def check_for_vld_file(description)
       # Need to add Ireland
       remove_extension = description.split('.')
       parts = remove_extension[0].split('_')
@@ -475,21 +475,86 @@ class FreecenCsvFile
       when 'RS9'
         series = 'RS9'
       end
-      vld = series.present? ? series + parts[1] + '.VLD' : ''
-      vld = vld.upcase if vld.present?
-      vld
+
+      pnumber_digits = parts[1].end_with?('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') ? parts[1] : parts[1].chop
+      vld = series.present? ? series + pnumber_digits + '.VLD' : ''
+      vld = vld.downcase if vld.present?
+
+      result = Freecen1VldFile.find_by(file_name_lower_case: vld) if vld.present?
+      unless result.present? || pnumber_digits.length > 3 || vld.blank?
+        piece_number = '0' + pnumber_digits
+        vld = series + piece_number + '.VLD'
+        vld = vld.downcase
+        result = Freecen1VldFile.find_by(file_name_lower_case: vld) if vld.present?
+      end
+      result
     end
 
     def vld_file_exists(file_name)
       if file_name.present?
-        vld = FreecenCsvFile.convert_freecen_csv_file_name_to_freecen1_vld_file_name(file_name)
-        vld = vld.present? ? vld.downcase : vld
-        result = Freecen1VldFile.find_by(file_name_lower_case: vld)
+        result = FreecenCsvFile.check_for_vld_file(file_name)
         return [true, 'There is a VLD file of that name that should be deleted first'] if result.present?
       end
 
       [false, '']
     end
+
+    def create_warnings_csv_file(file, entries)
+      file = "#{file}_warnings_#{Time.now.strftime('%Y%m%d')}.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = FreecenCsvFile.write_warnings_csv_file(file_location, entries)
+
+      [success, message, file_location, file]
+    end
+
+    def create_errors_csv_file(file, entries)
+      file = "#{file}_errors_#{Time.now.strftime('%Y%m%d')}.csv"
+      file_location = Rails.root.join('tmp', file)
+      success, message = FreecenCsvFile.write_errors_csv_file(file_location, entries)
+
+      [success, message, file_location, file]
+    end
+
+    def write_errors_csv_file(file_location, entries)
+      column_headers = %w(record_number error_messages)
+
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << column_headers
+        entries.each do |rec|
+          line = []
+          line = FreecenCsvFile.add_error_fields(line, rec)
+          csv << line
+        end
+      end
+      [true, '']
+    end 
+
+    def write_warnings_csv_file(file_location, entries)
+      column_headers = %w(record_number warning_messages)
+
+      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+        csv << column_headers
+        entries.each do |rec|
+          line = []
+          line = FreecenCsvFile.add_warning_fields(line, rec)
+          csv << line
+        end
+      end
+      [true, '']
+    end
+
+    def add_warning_fields(line, record)
+      line << record.record_number
+      line << record.warning_messages.gsub("<br>", " ")
+      line
+    end
+
+    def add_error_fields(line, record)
+      line << record.record_number
+      line << record.error_messages.gsub("<br>", " ")
+      line
+    end
+
   end # self
   # ######################################################################### instance methods
 
@@ -1398,4 +1463,6 @@ class FreecenCsvFile
     end
     result
   end
+
+
 end

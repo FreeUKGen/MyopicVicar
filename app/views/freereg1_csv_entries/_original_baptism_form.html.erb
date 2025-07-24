@@ -3,17 +3,17 @@
   <%= f.input :birth_date ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
   <%= f.input :baptism_date ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
   <%= f.input :person_forename ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+  <%= f.input :person_sex, collection: ['M','F','?'],
+               :input_html =>{:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3}%>
   <%= f.input :father_forename ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
   <%= f.input :father_surname,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
-  <%= f.input :father_occupation,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
   <%= f.input :mother_forename ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
   <%= f.input :mother_surname ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
   <%= f.input :person_abode ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
+  <%= f.input :father_occupation,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
   <%= f.input :notes, :label => 'Notes in register', :as => :text, :input_html => {:class => " simple_form_bgcolour  ",   :placeholder => "Enter your notes",  :size => "29x5" }%>
   <%= f.input :film   ,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }   %>
   <%= f.input :film_number,  :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 }%>
-  <%= f.input :person_sex, collection: ['M','F','?'],
-               :input_html =>{:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 3}%>
   <%= f.input :record_type, :input_html => {:disabled => true  ,  :size => 30}%>
   <%= f.input :line_id, :input_html => {:disabled => true  ,  :size => 30}%>
   <%= f.input :file_line_number, :input_html => { :disabled => true,  :size => 30} %>

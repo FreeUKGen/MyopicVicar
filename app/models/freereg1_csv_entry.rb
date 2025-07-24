@@ -81,7 +81,7 @@ class Freereg1CsvEntry
   field :mother_place_prior_to_marriage, type: String
   field :mother_county_prior_to_marriage, type: String
   field :mother_occupation, type: String
-  field :private_baptism, type: Boolean, default: false
+  field :private_baptism
 
   #field :witness1_forename, type: String
   #field :witness1_surname, type: String
@@ -155,20 +155,20 @@ class Freereg1CsvEntry
   #new marriage fields
   field :contract_date, type: String #actual date as written usage mainly in Scotland
   field :bride_title, type: String
-  field :bride_marked, type: Boolean, default: false
+  field :bride_marked
   field :bride_father_title, type: String
   field :bride_mother_forename, type: String
   field :bride_mother_surname, type: String
   field :bride_mother_title, type: String
   field :bride_mother_occupation, type: String
   field :groom_title, type: String
-  field :groom_marked, type: Boolean, default: false
+  field :groom_marked
   field :groom_father_title, type: String
   field :groom_mother_forename, type: String
   field :groom_mother_surname, type: String
   field :groom_mother_title, type: String
   field :groom_mother_occupation, type: String
-  field :marriage_by_licence, type: Boolean, default: false
+  field :marriage_by_licence
   field :witness3_forename, type: String
   field :witness3_surname, type: String
   field :witness4_forename, type: String
