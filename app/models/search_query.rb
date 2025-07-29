@@ -104,6 +104,7 @@ class SearchQuery
   DOB_START_QUARTER = 530
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
+  DEFAULT_RESULTS_PER_PAGE = 50
 
   field :first_name, type: String# , :required => false
   field :last_name, type: String# , :required => false
@@ -144,6 +145,7 @@ class SearchQuery
   field :runtime, type: Integer
   field :runtime_additional, type: Integer
   field :runtime_ucf, type: Integer
+  field :results_per_page, type: Integer, default: SearchQuery::DEFAULT_RESULTS_PER_PAGE
   field :order_field, type: String, default: SearchOrder::BMD_DATE
   validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
   field :order_asc, type: Boolean, default: true
@@ -210,7 +212,6 @@ class SearchQuery
     3 => "Year of Birth",
     4 => "Year of Birth Range"
   }
-  RESULTS_PER_PAGE = 20
   DEFAULT_PAGE = 1
 
   class << self
@@ -2128,7 +2129,7 @@ class SearchQuery
 
   def paginate_results(results,page_number,results_per_page)
     page_number ||= DEFAULT_PAGE
-    results_per_page ||= RESULTS_PER_PAGE
+    results_per_page ||= DEFAULT_RESULTS_PER_PAGE
     total = results.count
     Kaminari.paginate_array(results, total_count: total).page(page_number).per(results_per_page)
   end

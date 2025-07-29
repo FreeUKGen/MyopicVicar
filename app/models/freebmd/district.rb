@@ -89,5 +89,46 @@ class District < FreebmdDbBase
     hash
   end
 
+  def valid_start district
+    valid_start = ''
+    if district.YearStart && !(district.YearStart == 1837 && district.QuarterStart == 3)
+      district.QuarterStart == 3 ? quarter = '' : quarter = QuarterDetails.quarters.index(district.QuarterStart) 
+      valid_start = "#{quarter.to_s.titlecase} #{district.YearStart}"
+    end
+  end
+
+  def valid_end district
+    valid_end = ''
+    if district.YearEnd && !(district.YearEnd == 9999 && district.QuarterEnd == 9)
+      district.QuarterEnd == 4 ? quarter = '' : quarter = QuarterDetails.quarters.index(district.QuarterEnd)
+      valid_end = "#{quarter.to_s.titlecase} #{district.YearEnd}"
+    end
+  end
+
+  def district_validity_period district
+    case
+    when valid_start(district).present? && !valid_end(district).present?
+      "(from #{valid_start(district)})"
+    when !valid_start(district).present? && valid_end(district).present?
+      "(to #{valid_end district})"
+    when valid_start(district).present? && valid_end(district).present?
+      "(#{valid_start(district)} - #{valid_end(district)})"
+    else
+      "" 
+    end
+  end
+
+  def formatted_name_for_search district
+    logger.warn(clean(district.DistrictName))
+    "#{clean(district.DistrictName)} #{district.district_validity_period district}"
+  end
+
+  def clean name
+    return '' unless name.present?
+
+    name.gsub(/[\[\(\{].*?[\]\)\}]/, '')
+         .gsub(/\s+/, ' ')
+         .strip
+  end
 
 end
