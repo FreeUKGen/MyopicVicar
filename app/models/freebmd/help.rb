@@ -14,8 +14,8 @@ class Help
   }
 
   AboutPages = {
-    'about_freebmd' => 'About the FreeBMD Project',
-    'about_changing' => 'How is the FreeBMD web site changing?'
+    'about_changing' => 'Introducing the new FreeBMD web site',
+    'about_freebmd' => 'About the FreeBMD project'
   }
 
   Search = {
