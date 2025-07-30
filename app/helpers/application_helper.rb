@@ -33,7 +33,7 @@ module ApplicationHelper
 
   def nav_about_page_link
     #return if session[:userid_detail_id].present?
-    link_to( 'About FreeBMD', '/about')
+    link_to( 'About', '/help/about_changing')
     #check_current_page('/about')
   end
 
@@ -71,8 +71,8 @@ module ApplicationHelper
     end
   end
 
-  def nav_help_pages_link
-    link_to 'Help', '/help', class: check_current_page('help')
+  def nav_help_page_link
+    link_to 'Help', '/help/search_help'
   end
 
   def check_current_page(url)

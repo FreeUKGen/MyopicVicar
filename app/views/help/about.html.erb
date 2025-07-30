@@ -1,10 +1,9 @@
 <% title "About FreeBMD" %>
-<%= render partial: "help_menu_js" %>
 <section id="body_content">
 <h1 id="body_content_title">About FreeBMD</h1>
 <div class="grid">
   <%= Help.in_page_help_menu(Help::AboutPages) %>
-  <%= render partial: "about_changing", layout: "grid_item", locals: { id: "about_changing"} %>
-  <%= render partial: "about_freebmd", layout: "grid_item", locals: { id: "about_freebmd"} %>
+  <%#= render partial: "about_changing", layout: "grid_item", locals: { id: "about_changing"} %>
+  <%#= render partial: "about_freebmd", layout: "grid_item", locals: { id: "about_freebmd"} %>
 </div>
 </section>

@@ -8,7 +8,8 @@ class Help
     'download_help' => 'Download and Share your results',
     'entry_help' => 'Entry Information',
     'certificates_help' => 'Order a Certificate',
-    'explore_help' => 'Explore the database',
+    'database_help' => 'Database',
+    'accuracy_help' => 'Accuracy',
     'tips_and_tricks' => 'Tips and Tricks',
     #    'more_help' => 'More Help'
   }
@@ -103,11 +104,11 @@ class Help
     island.html_safe
   end
 
-  def self.create_help_menu(menu_hash, include_header = false)
+  def self.create_help_menu(menu_hash, title = 'Help topics')
     prefix = '/help/'
-    menu = '<div class="grid__item two-fifths lap-one-third palm-one-whole float--right">'
+    menu = '<div class="grid__item  one-third  lap-two-fifths  palm-one-whole  push-half--top float--right">'
     menu += '<nav aria-labelledby="thisPage"><div class="islet islet--bordered">'
-    menu += '<h2 class="title-block" id="thisPage">Help Pages</h2>' if include_header
+    menu += '<h2 class="title-block" id="thisPage">'+title+'</h2>'
     menu += '<ul class="sub-nav">'
     menu_hash.each do |key, value|
       if value.is_a? String

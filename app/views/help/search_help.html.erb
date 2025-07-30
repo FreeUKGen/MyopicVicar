@@ -1,4 +1,23 @@
-<h1 class="title text--center">Searching help</h1>
+<title>Searching help</title>
+<h1 class="title body_content_title">Help</h1>
 <div class="grid">
-<%= render partial: 'intro' %>
+  <%= render partial: "help_header" %>
+  <div id="help_search" class="grid__item two-thirds lap-three-fifths  palm-one-whole">
+    <h2>Search</h2>
+    <p>FreeBMD covers records for England and Wales only, not Scotland, Ireland or overseas.</p>
+    <p>Narrow your search by choosing start and end dates, single first name and/or surname, and limiting searches to one county or one district. </p>
+    <p><b>First name &amp; Surname</b>: if you don’t know the full first name or you are unsure about the exact spelling of a name, use a wildcard character (* an asterisk or star symbol) to search for variations. (e.g., "Ste*n" finds Stephen, Steven and Stefan, etc.) Additionally, you can check the ‘Phonetic search surnames’ box to match similar-sounding surnames.</p>
+    <p><b>Date Range</b>: limit the search by start or end date. The search defaults to a range from March 1837 to December 1999, but you can adjust it for more focused results. The data is not complete after 1992.  Each year was divided into quarters until 1984:</p>
+    <ul><li>Mar (January, February, March)</li>
+      <li>Jun (April, May, June)</li>
+      <li>Sep (July, August, September)</li>
+      <li>Dec (October, November, December)</li></ul>
+    <p><b>Record Types</b>: choose Birth, Marriage, or Death records based on what you are searching for.</p>
+    <ul><li>Birth Records: from September 1911, mother's maiden name is included.</li>
+      <li>Marriage Records: from 1912, the spouse's surname is shown.</li>
+      <li>Death Records: age at death is included from 1866, and date of birth is included from June 1969.</li></ul>
+    <p><b>Counties and Districts</b>: if you know the district or county, you can narrow the search, but note that larger districts may contain multiple locations.</p>
+    <p><b>Volume and Page</b> are optional fields. Each record includes a Volume and Page number to help you locate the record in the General Register Office index.</p>
+    <p>For more detailed information and other advanced search tips see the Further Help below.</p>
+  </div>
 </div>
