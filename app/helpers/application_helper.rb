@@ -33,8 +33,8 @@ module ApplicationHelper
 
   def nav_about_page_link
     #return if session[:userid_detail_id].present?
-    #link_to 'About', '/cms/about'
-    check_current_page('/about')
+    link_to( 'About FreeBMD', '/about')
+    #check_current_page('/about')
   end
 
   def nav_donate_page_link
