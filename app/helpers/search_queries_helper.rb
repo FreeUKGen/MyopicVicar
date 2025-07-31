@@ -362,12 +362,12 @@ module SearchQueriesHelper
     response = heading
     if order_field == search_query.order_field then
       if search_query.order_asc then
-        response = response+" <span aria-hidden=\"true\">&#9650;</span>"
+        response = response+" <i class='fas fa-sort-up' style='color:#00857e'></i>" #" <span aria-hidden=\"true\">&#9650;</span>"
       else
-        response = response+" <span aria-hidden=\"true\">&#9660;</span>"
+        response = response+" <i class='fas fa-sort-down' style='color:#00857e'></i>"#" <span aria-hidden=\"true\">&#9660;</span>"
       end
     else
-      response = response+" <span aria-hidden=\"true\">&#9674;</span>"
+      response = response+" <i class='fas fa-sort' style='color:#00857e'></i>"#" <span aria-hidden=\"true\">&#9674;</span>"
     end
     response.html_safe
   end
