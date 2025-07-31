@@ -1,5 +1,13 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% title "Search Results" %>
+<style type="text/css">
+.print { display:none !important; }
+@media print {
+  .print {
+    display: block !important;
+  }
+}
+  </style>
 <h1 class="accessibility">Search results</h1>
 <%= render 'flash_notice' %>
 <%# show_contents_link%>
@@ -28,7 +36,7 @@
             <%= render 'no_results' %>
           </div>
            <% unless device_type == :mobile%>
-            <div class="grid__item desk-one-fifth lap-one-third palm-one-whole float--right">
+            <div class="grid__item desk-one-fifth lap-one-third palm-one-whole float--right no_print">
               <span class=''>Advertisement</span><br>
               <%#= my_heritage_300_250_first %>
               <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @search_query.first_name %>&lastName=<%= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class=""></iframe>
