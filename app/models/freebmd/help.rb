@@ -9,6 +9,7 @@ class Help
     'entry_help' => 'Entry Information',
     'certificates_help' => 'Order a Certificate',
     'explore_help' => 'Database',
+    'accuracy' => 'Accuracy',
     'tips_and_tricks' => 'Tips and Tricks',
     #    'more_help' => 'More Help'
   }
