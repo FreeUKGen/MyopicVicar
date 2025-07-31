@@ -1,6 +1,7 @@
 <div class='container push--bottom'>
   <div class="grid">
-    <div class="desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole">
+    <div class="desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole print_only">
+      <h2 class="weight--bold print">Search Results</h2><br />
       <span class="weight--semibold">We found <%= pluralize(number_with_delimiter(@result_count, :delimiter => ','), ' result', ' results') %> for <%= titleize_string(@search_query[:first_name])  %> <%= upcase_string(@search_query[:last_name]) %></span>
       <hr/>
       <%= form_tag search_query_path(@search_query), method: :get, id: 'filter_form' do %>
