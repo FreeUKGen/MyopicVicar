@@ -9,7 +9,7 @@
           <%= label_tag 'results_per_page', 'Show' %>
           <%= select_tag :results_per_page, options_for_select([50,100,200], selected: @search_query[:results_per_page]), id: 'results_per_page', tabindex: 0 %>
         </div>
-        <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
+        <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole push-half--bottom">
           <%= button_tag 'Apply', class: 'spinner-controller ladda-button push--top update_results' , id: 'filter_form_submit', data: {style: "zoom-out", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
         </div>
       <% end %>
