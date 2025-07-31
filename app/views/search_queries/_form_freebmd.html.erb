@@ -24,6 +24,48 @@
 
 <style>
   .search_form li ol li {margin-bottom: 0px;}
+  /* Fixed action buttons container for mobile */
+  @media (max-width: 767px) {
+    .mobile-fixed-actions {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      background: #dedede;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 16px;
+    }
+    .mobile-fixed-actions .btn {
+      width: 100%; /* 48%;*/
+      font-size: 1.1em;
+      border-radius: 5px;
+      border: none;
+    }
+
+    .mobile-fixed-actions .btn-clear {
+      background: #f5f5f5;
+      color: #222;
+      border: 1px solid #ccc;
+    }
+    .small_screen_actions {
+      /*display: none !important;*/
+    }
+    .grid.action {
+      display: none !important;
+    }
+    /* Add padding bottom to prevent form fields from being hidden behind fixed buttons */
+    .bmd_search_form {
+      padding-bottom: 70px;
+    }
+  }
+  @media (min-width: 768px) {
+  .mobile-fixed-actions {
+    display: none;
+  }
+}
 </style>
 
 <script
@@ -365,9 +407,20 @@
                 <%= button_tag 'Clear Form', type: 'button', class: 'clear_forms ladda-button-reverse', data: {color: 'freebmd'} %>
             </div>
         </div>
-        <div class="small_screen_actions">
-            <%= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
+        <div class="grid small_screen_actions">
+          <div class="grid__item desk-one-third lap-one-third palm-one-half">
+            <span class="float--left" style="width: 125%;"><%= link_to 'Help with searching', '/help' %></span>
+          </div>
+          <div class="grid__item desk-one-third lap-one-third palm-one-half text--right">
+            <%= button_tag 'Clear Form', type: 'button', class: 'clear_forms ladda-button-reverse', data: {color: 'freebmd'} %>
+          </div>
+           <%#= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
         </div>
+        <div class="mobile-fixed-actions">
+          <%#= button_tag 'Clear', type: 'button', class: 'btn btn-clear clear_forms', data: {color: 'freebmd'} %>
+          <%= button_tag 'Search', type: 'submit', class: 'btn btn-search kittumani spinner-controller ladda-button', id: 'search_form_submit_mobile', data: {style: "contract", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
+        </div>
+
   <% end %>
 </div>
 <%# end %>
