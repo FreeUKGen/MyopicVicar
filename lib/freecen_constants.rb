@@ -93,8 +93,8 @@ module Freecen
 
   LOCATION_DWELLING = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
-                       location_flag folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag
-                       walls roof_type rooms rooms_with_windows class_of_house rooms_with_windows].freeze
+                       location_flag folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name
+                       walls roof_type rooms rooms_with_windows class_of_house school_children address_flag].freeze
 
   HOUSEHOLD = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name address_flag].freeze
 
@@ -104,10 +104,14 @@ module Freecen
   SCT_HOUSEHOLD = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name rooms_with_windows
                             address_flag].freeze
 
+  SCT_EXTRA_HOUSEHOLD = %w[folio_number page_number schedule_number uninhabited_flag house_number house_or_street_name rooms_with_windows
+                           school_children address_flag].freeze
+
   INDIVIDUAL = %w[surname forenames name_flag relationship marital_status sex age individual_flag].freeze
 
   EXTRA_INDIVIDUAL = %w[surname forenames name_flag relationship marital_status sex age years_married children_born_alive children_living
                                     children_deceased individual_flag].freeze
+
   OCCUPATION = %w[occupation industry occupation_category at_home occupation_flag].freeze
 
   BIRTH = %w[verbatim_birth_county verbatim_birth_place nationality birth_county birth_place birth_place_flag].freeze
@@ -164,10 +168,10 @@ module Freecen
               school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_SCT_1861 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
-              school_board] + SCT_HOUSEHOLD + INDIVIDUAL + %w[school_children] + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
+              school_board] + SCT_EXTRA_HOUSEHOLD +  INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_SCT_1871 = LOCATION - %w[poor_law_union special_water_district scavenging_district special_lighting_district school_board
-              school_board] + SCT_HOUSEHOLD + INDIVIDUAL + %w[school_children] + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
+              school_board] + SCT_EXTRA_HOUSEHOLD +  INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
   CEN2_SCT_1881 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
     SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]

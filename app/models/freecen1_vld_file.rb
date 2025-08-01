@@ -210,6 +210,7 @@ class Freecen1VldFile
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
     if success
       file_location = Rails.root.join('tmp', file)
+      p "AEV01 census_fields = #{census_fields}"
       success, message = write_csv_file(file_location, census_fields, series, year)
     end
     [success, message, file_location, file]
@@ -321,6 +322,7 @@ class Freecen1VldFile
     end
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << header
+      p "AEV02 header= #{header}"
       records = freecen1_vld_entries.order_by(_id: 1)
       @record_number = 0
       records.each do |rec|
@@ -428,7 +430,7 @@ class Freecen1VldFile
           'scavenging_district', 'special_lighting_district', 'school_board'
         entry = @use_blank ? @blank : @dash
         line << entry
-      when 'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'class_of_house', 'rooms_with_windows', 'industry', 'at_home', 'years_married',
+      when 'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'school_children', 'class_of_house', 'rooms_with_windows', 'industry', 'at_home', 'years_married',
           'children_born_alive', 'children_living', 'children_deceased', 'nationality', 'disability_notes'
         line << @blank
       else
