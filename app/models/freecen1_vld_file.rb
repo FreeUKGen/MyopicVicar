@@ -210,7 +210,6 @@ class Freecen1VldFile
     success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
     if success
       file_location = Rails.root.join('tmp', file)
-      p "AEV01 census_fields = #{census_fields}"
       success, message = write_csv_file(file_location, census_fields, series, year)
     end
     [success, message, file_location, file]
@@ -322,7 +321,6 @@ class Freecen1VldFile
     end
     CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
       csv << header
-      p "AEV02 header= #{header}"
       records = freecen1_vld_entries.order_by(_id: 1)
       @record_number = 0
       records.each do |rec|
