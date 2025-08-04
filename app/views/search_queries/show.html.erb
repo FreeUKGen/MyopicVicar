@@ -1,13 +1,5 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% title "Search Results" %>
-<style type="text/css">
-.print { display:none !important; }
-@media print {
-  .print {
-    display: block !important;
-  }
-}
-  </style>
 <h1 class="accessibility">Search results</h1>
 <%= render 'flash_notice' %>
 <%# show_contents_link%>
@@ -103,7 +95,7 @@
       <% if @result_count > 0 && @result_count < @max_result %>
         <% if appname_downcase == 'freebmd'%>
             <div>
-              <span><%= link_to 'Help with search results', '/help' %></span>
+              <span class="no_print"><%= link_to 'Help with search results', '/help' %></span>
             </div>
             <%#= render 'bmd_search_results_footer' %>
         <% else %>
