@@ -121,9 +121,9 @@ module ApplicationHelper
 
   def nav_volunteer_page_link
     return if session[:userid_detail_id].present?
-    link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}", class: check_current_page("cms/opportunities-to-volunteer-with-#{appname.downcase}")
+    link_to 'Volunteer', "/volunteer", class: check_current_page("volunteer")
   end
-
+  
   def nav_freecen_gazetteer
     link_to('Gazetteer', '/freecen2_places/search_names', target: :_blank, title: 'Search for an existing place name; opens in a new tab') if
     appname.downcase == 'freecen' && session[:userid_detail_id].present?
