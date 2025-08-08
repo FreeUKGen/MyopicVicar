@@ -254,10 +254,8 @@ class BestGuessController < ApplicationController
     port = URI.parse(request.original_url).port 
     domain = domain + ':' + port.to_s if port.present?
     record_hash = @current_record.record_hash
-    cleaned_hash = record_hash.gsub(/[^a-zA-Z0-9_.-]/) do |match|
-      "%%%02X" % match.ord
-    end 
-    url = protocol+'://'+domain+'/entry-information/'+cleaned_hash+'/hash' 
+    cleaned_hash = URI.encode_www_form_component(record_hash)
+    url = hash_url_path(id: cleaned_hash)
   end
 
   def prepare_for_show_search_entry

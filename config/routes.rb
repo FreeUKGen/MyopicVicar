@@ -623,6 +623,7 @@ MyopicVicar::Application.routes.draw do
   resources :gap_reasons
 
   get "/entry-information/:id/hash", :to => 'best_guess_hash#show', constraints: { id: /[^\/]+/ }
+  get "/entry-information/hash", to: 'best_guess_hash#show', as: :hash_url
   get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
   get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_non_search
   get ':search_id/:entry_id/marriage_details/', :to => 'best_guess#show_marriage', :as => :show_marriage_details

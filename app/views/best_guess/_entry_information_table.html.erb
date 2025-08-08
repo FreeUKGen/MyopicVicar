@@ -249,10 +249,7 @@
         <% domain = URI.parse(request.original_url).host %>
         <% port = URI.parse(request.original_url).port %>
         <% domain = domain + ':' + port.to_s if port.present? %>
-        <% record_hash = record.record_hash %>
-        <% cleaned_hash = record_hash.gsub(/[^a-zA-Z0-9_.-]/) { |char| "%#{char.ord.to_s(16).upcase}" } %>
-        <% url = protocol+'://'+domain+'/entry-information/'+cleaned_hash+'/hash' %>
-        <a id="persistentUrl" class="pUrl" href="<%= @url %>"><%= @url %></a>
+        <a id="persistentUrl" class="pUrl" href="<%= @url %>"><%= "#{protocol}://#{domain}#{@url}" %></a>
         <button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button>
         <!--a class="btn btn--small" href="" onclick=copy('persistentUrl') style="cursor: pointer">Copy URL</a-->
       </td>
