@@ -866,7 +866,7 @@ class SearchQuery
 
   def bmd_next_and_previous_records current
     if search_result.records.respond_to?(:values)
-      search_results = search_result.records.values
+      search_results = search_result.records.values.flatten
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
       next_record_id = nil
