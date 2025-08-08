@@ -279,17 +279,18 @@ class SearchQueriesController < ApplicationController
       @save_search_id = params[:saved_search] if params[:saved_search].present?
       if @search_query.result_count >= @max_result
         @result_count = @search_query.result_count
-        @search_results = []
-        @ucf_results = []
-      else
+        @search_query.result_truncated = true
+        #@search_results = []
+        #@ucf_results = []
+      end
+        #else
         response, @search_results, @ucf_results, @result_count = @search_query.get_and_sort_results_for_display unless MyopicVicar::Application.config.template_set == 'freebmd'
         response, @search_results, @ucf_results, @result_count = @search_query.get_bmd_search_results if MyopicVicar::Application.config.template_set == 'freebmd'
         @filter_condition = params[:filter_option]
         @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
-        # Issue 693: results_per_page is now a SearchQuery field, set to DEFAULT_RESULTS_PER_PAGE on creation.
-        # This allows the selected value to survive the reordering of search results.
-        #@search_query[:results_per_page] = assign_value(params[:results_per_page],SearchQuery::DEFAULT_RESULTS_PER_PAGE)
-        @search_query[:results_per_page] = params[:results_per_page] if params[:results_per_page].present?
+        #@search_query[:results_per_page] = assign_value(params[:results_per_page], SearchQuery::RESULTS_PER_PAGE) if @search_query[:results_per_page].nil? # issue 693
+        #@results_per_page = assign_value(params[:results_per_page],@search_query[:results_per_page]) #SearchQuery::RESULTS_PER_PAGE)
+        @results_per_page = assign_value(params[:results_per_page],SearchQuery::RESULTS_PER_PAGE)
         @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
         @paginatable_array = @search_query.paginate_results(@search_results, @page, @search_query[:results_per_page])
@@ -298,7 +299,7 @@ class SearchQueriesController < ApplicationController
           flash[:notice] = 'Your search results are not available. Please repeat your search'
           redirect_to(new_search_query_path(search_id: @search_query)) && return
         end
-      end
+        #end
     else
       @timeout=true
       @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])

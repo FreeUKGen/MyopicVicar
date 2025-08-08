@@ -33,8 +33,8 @@ module ApplicationHelper
 
   def nav_about_page_link
     #return if session[:userid_detail_id].present?
-    #link_to 'About', '/cms/about'
-    check_current_page('/about')
+    link_to( 'About FreeBMD', '/about')
+    #check_current_page('/about')
   end
 
   def nav_donate_page_link
@@ -79,9 +79,6 @@ module ApplicationHelper
     main_url = Rails.application.config.website
     my_class = current_page?("#{main_url}/#{url}") ? 'active' : ''
     my_class
-    #link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
-    #current_page?(url) ? (link_to nav_links.key(url).titleize, url, class: '') : (link_to nav_links.key(url), url, class: 'active')
-   # link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
   end
 
 
@@ -103,7 +100,7 @@ module ApplicationHelper
     return if controller_name == 'sessions'
 
     if session[:userid_detail_id].present?
-      link_to 'Logout', main_app.logout_manage_resources_path, class: current_page?(main_app.logout_manage_resources_path) ? 'active' : ''
+      link_to 'Logout', main_app.logout_manage_resources_path
     else
       link_to 'Member', refinery.login_path, class: check_current_page("cms/refinery/login")
     end
@@ -124,7 +121,6 @@ module ApplicationHelper
 
   def nav_volunteer_page_link
     return if session[:userid_detail_id].present?
-
     link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}", class: check_current_page("cms/opportunities-to-volunteer-with-#{appname.downcase}")
   end
 
@@ -806,7 +802,7 @@ module ApplicationHelper
       freereg: 'https://www.freereg.org.uk/',
       freecen: 'https://www.freecen.org.uk/',
       freebmd: 'https://www.freebmd.org.uk/',
-      freebmdAccuracy: '/cms/help#accuracy',
+      freebmdAccuracy: '/help',
       freebmdComplete: '/coverage?locale=en',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
