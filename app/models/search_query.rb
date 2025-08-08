@@ -104,6 +104,7 @@ class SearchQuery
   DOB_START_QUARTER = 530
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
+  DEFAULT_RESULTS_PER_PAGE = 50
 
   field :first_name, type: String# , :required => false
   field :last_name, type: String# , :required => false
@@ -144,6 +145,7 @@ class SearchQuery
   field :runtime, type: Integer
   field :runtime_additional, type: Integer
   field :runtime_ucf, type: Integer
+  field :results_per_page, type: Integer, default: SearchQuery::DEFAULT_RESULTS_PER_PAGE
   field :order_field, type: String, default: SearchOrder::BMD_DATE
   validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
   field :order_asc, type: Boolean, default: true
@@ -2132,7 +2134,7 @@ class SearchQuery
 
   def paginate_results(results,page_number,results_per_page)
     page_number ||= DEFAULT_PAGE
-    results_per_page ||= RESULTS_PER_PAGE
+    results_per_page ||= DEFAULT_RESULTS_PER_PAGE
     total = results.count
     Kaminari.paginate_array(results, total_count: total).page(page_number).per(results_per_page)
   end
@@ -2150,17 +2152,18 @@ class SearchQuery
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = this_record_atts["Surname"]
       given_names = this_record_atts["GivenName"].split(' ')
-      given_name = given_names[0]
-      given_names.shift()
-      other_given_names = given_names.join(' ') if given_names.present?
+      #given_name = given_names[0]
+      #given_names.shift()
+      #other_given_names = given_names.join(' ') if given_names.present?
       i = i+1
       f = f+1 if saved_record[:RecordTypeID] == 3
-      gedcom << ''
+      #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+given_name+' /'+surname+'/'
-      gedcom << '2 SURN '+surname
-      gedcom << '2 GIVN '+given_name
-      gedcom << '2 _MIDN '+other_given_names if other_given_names.present?
+      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
+      gedcom << '2 SURN '+surname.capitalize
+      given_names.each do |name|
+        gedcom << '2 GIVN '+name
+      end
       #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if saved_record[:RecordTypeID] == 1
       gedcom << '1 DEAT' if saved_record[:RecordTypeID] == 2
@@ -2169,6 +2172,8 @@ class SearchQuery
       gedcom << '2 PLAC '+this_record_atts['District']
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+saved_record.record_hash+'/'+saved_record.friendly_url
     end
+    gedcom << ''
+    gedcom << '0 TRLR'
     gedcom
   end
 
@@ -2182,18 +2187,19 @@ class SearchQuery
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = rec[:Surname]
       given_names = rec[:GivenName].split(' ')
-      given_name = given_names[0]
-      given_names.shift()
-      other_given_names = given_names.join(' ') if given_names.present?
+      #given_name = given_names[0]
+      #given_names.shift()
+      #other_given_names = given_names.join(' ') if given_names.present?
       i = i+1
       f = f+1 if rec[:RecordTypeID] == 3
       entry = BestGuess.where(RecordNumber: rec[:RecordNumber]).first
-      gedcom << ''
+      #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+given_name+' /'+surname+'/'
-      gedcom << '2 SURN '+surname
-      gedcom << '2 GIVN '+given_name
-      gedcom << '2 _MIDN '+other_given_names if other_given_names.present?
+      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
+      gedcom << '2 SURN '+surname.capitalize
+      given_names.each do |name|
+        gedcom << '2 GIVN '+name
+      end
       #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if rec[:RecordTypeID] == 1
       gedcom << '1 DEAT' if rec[:RecordTypeID] == 2
@@ -2202,6 +2208,7 @@ class SearchQuery
       gedcom << '2 PLAC '+rec[:District]
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
     end
+    gedcom << '0 TRLR'
     gedcom
   end
 

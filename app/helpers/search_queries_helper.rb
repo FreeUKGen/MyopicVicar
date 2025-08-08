@@ -230,6 +230,7 @@ module SearchQueriesHelper
   def set_value field_value=nil
     return field_value
   end
+
   def set_value_or_default default, val=nil
     val.present? ? value = val : value= default
     return value
@@ -245,7 +246,7 @@ module SearchQueriesHelper
   end
 
   def set_checkbox_checked_value field_value:, value: nil
-    return true if field_value.blank?
+    return false if field_value.blank?
     return field_value.include?value
   end
 
@@ -277,7 +278,15 @@ module SearchQueriesHelper
   end
 
   def set_district value=nil
-    return value
+    return value if value.blank?
+    districts = District.where(DistrictNumber: value)
+    d_init = District.new
+    formatted_districts = []
+    districts.each{|district|
+      formatted_name = d_init.formatted_name_for_search(district)
+      formatted_districts << formatted_name
+    }
+    formatted_districts.join(', ')
   end
 
   def set_district_value county_codes=nil, value=nil
@@ -353,12 +362,12 @@ module SearchQueriesHelper
     response = heading
     if order_field == search_query.order_field then
       if search_query.order_asc then
-        response = response+" <span aria-hidden=\"true\">&#9650;</span>"
+        response = response+" <i class='fas fa-sort-up' style='color:#00857e'></i>" #" <span aria-hidden=\"true\">&#9650;</span>"
       else
-        response = response+" <span aria-hidden=\"true\">&#9660;</span>"
+        response = response+" <i class='fas fa-sort-down' style='color:#00857e'></i>"#" <span aria-hidden=\"true\">&#9660;</span>"
       end
     else
-      response = response+" <span aria-hidden=\"true\">&#9674;</span>"
+      response = response+" <i class='fas fa-sort' style='color:#00857e'></i>"#" <span aria-hidden=\"true\">&#9674;</span>"
     end
     response.html_safe
   end

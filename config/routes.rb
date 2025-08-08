@@ -533,6 +533,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_queries/wildcard_options_dropdown' => 'search_queries#wildcard_options_dropdown'
   post 'search_queries/:id/analyze(.:format)', :to => 'search_queries#analyze', :as => :analyze_search_query
   get 'search_queries/:id/download_as_csv' => 'search_queries#download_as_csv', as: :search_results_download_as_csv
+  get 'search_queries/:id/download_as_tsv' => 'search_queries#download_as_tsv', as: :search_results_download_as_tsv
   get 'search_queries/:id/download_as_gedcom' => 'search_queries#download_as_gedcom', as: :search_results_download_as_gedcom
   #get 'search_queries/:id/saved_entries_as_csv' => 'search_queries#saved_entries_as_csv', as: :saved_entries_as_csv
   get 'search_queries/:id/save_search', to: 'saved_search#save_search', as: :save_search
@@ -621,7 +622,7 @@ MyopicVicar::Application.routes.draw do
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
   resources :gap_reasons
 
-  get "/entry-information/:id/hash", :to => 'best_guess_hash#show'
+  get "/entry-information/:id/hash", :to => 'best_guess_hash#show', constraints: { id: /[^\/]+/ }
   get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
   get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_non_search
   get ':search_id/:entry_id/marriage_details/', :to => 'best_guess#show_marriage', :as => :show_marriage_details
