@@ -104,6 +104,7 @@ class SearchQuery
   DOB_START_QUARTER = 530
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
+  DEFAULT_RESULTS_PER_PAGE = 50
 
   field :first_name, type: String# , :required => false
   field :last_name, type: String# , :required => false
@@ -144,6 +145,7 @@ class SearchQuery
   field :runtime, type: Integer
   field :runtime_additional, type: Integer
   field :runtime_ucf, type: Integer
+  field :results_per_page, type: Integer, default: SearchQuery::DEFAULT_RESULTS_PER_PAGE
   field :order_field, type: String, default: SearchOrder::BMD_DATE
   validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
   field :order_asc, type: Boolean, default: true
@@ -169,6 +171,8 @@ class SearchQuery
   field :language, type: String
   validates_inclusion_of :language, :in => Language::ALL_LANGUAGES + [nil]
   field :occupation, type: String
+  field :results_per_page, type: Integer # issue 693: make this a property of the search query
+  field :result_truncated, type: Boolean
 
   has_and_belongs_to_many :places, inverse_of: nil
   has_and_belongs_to_many :freecen2_places, inverse_of: nil
@@ -210,7 +214,7 @@ class SearchQuery
     3 => "Year of Birth",
     4 => "Year of Birth Range"
   }
-  RESULTS_PER_PAGE = 20
+  RESULTS_PER_PAGE = 50
   DEFAULT_PAGE = 1
 
   class << self
@@ -232,6 +236,7 @@ class SearchQuery
       return record, false, messagea if parameter.nil?
 
       record = SearchQuery.find(parameter)
+
       return record, false, messageb if record.blank?
 
       [record, true, '']
@@ -1449,6 +1454,7 @@ class SearchQuery
   def freebmd_search_records
     search_fields = bmd_adjust_field_names
     search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
+    search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present? # issue 689: given name punctuation not in data, so remove them from search
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     begin
@@ -1856,7 +1862,7 @@ class SearchQuery
     bmd_search_results.length
   end
 
-  def sort_search_results
+  def   sort_search_results
     self.sort_results(bmd_search_results) unless bmd_search_results.nil?
   end
 
@@ -2243,7 +2249,7 @@ class SearchQuery
 
   def paginate_results(results,page_number,results_per_page)
     page_number ||= DEFAULT_PAGE
-    results_per_page ||= RESULTS_PER_PAGE
+    results_per_page ||= DEFAULT_RESULTS_PER_PAGE
     total = results.count
     Kaminari.paginate_array(results, total_count: total).page(page_number).per(results_per_page)
   end
@@ -2261,17 +2267,18 @@ class SearchQuery
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = this_record_atts["Surname"]
       given_names = this_record_atts["GivenName"].split(' ')
-      given_name = given_names[0]
-      given_names.shift()
-      other_given_names = given_names.join(' ') if given_names.present?
+      #given_name = given_names[0]
+      #given_names.shift()
+      #other_given_names = given_names.join(' ') if given_names.present?
       i = i+1
       f = f+1 if saved_record[:RecordTypeID] == 3
-      gedcom << ''
+      #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+given_name+' /'+surname+'/'
-      gedcom << '2 SURN '+surname
-      gedcom << '2 GIVN '+given_name
-      gedcom << '2 _MIDN '+other_given_names if other_given_names.present?
+      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
+      gedcom << '2 SURN '+surname.capitalize
+      given_names.each do |name|
+        gedcom << '2 GIVN '+name
+      end
       #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if saved_record[:RecordTypeID] == 1
       gedcom << '1 DEAT' if saved_record[:RecordTypeID] == 2
@@ -2280,6 +2287,8 @@ class SearchQuery
       gedcom << '2 PLAC '+this_record_atts['District']
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+saved_record.record_hash+'/'+saved_record.friendly_url
     end
+    gedcom << ''
+    gedcom << '0 TRLR'
     gedcom
   end
 
@@ -2293,18 +2302,19 @@ class SearchQuery
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = rec[:Surname]
       given_names = rec[:GivenName].split(' ')
-      given_name = given_names[0]
-      given_names.shift()
-      other_given_names = given_names.join(' ') if given_names.present?
+      #given_name = given_names[0]
+      #given_names.shift()
+      #other_given_names = given_names.join(' ') if given_names.present?
       i = i+1
       f = f+1 if rec[:RecordTypeID] == 3
       entry = BestGuess.where(RecordNumber: rec[:RecordNumber]).first
-      gedcom << ''
+      #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+given_name+' /'+surname+'/'
-      gedcom << '2 SURN '+surname
-      gedcom << '2 GIVN '+given_name
-      gedcom << '2 _MIDN '+other_given_names if other_given_names.present?
+      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
+      gedcom << '2 SURN '+surname.capitalize
+      given_names.each do |name|
+        gedcom << '2 GIVN '+name
+      end
       #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if rec[:RecordTypeID] == 1
       gedcom << '1 DEAT' if rec[:RecordTypeID] == 2
@@ -2313,6 +2323,7 @@ class SearchQuery
       gedcom << '2 PLAC '+rec[:District]
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
     end
+    gedcom << '0 TRLR'
     gedcom
   end
 

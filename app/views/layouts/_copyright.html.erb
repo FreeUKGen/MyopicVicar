@@ -6,7 +6,8 @@
     We make no warranty whatsoever as to the
     <% if appname.downcase == 'freebmd' %>
       <%= link_to helpful_anchors[:freebmdAccuracy].html_safe, helpful_links[:freebmdAccuracy],
-      html_options2 %>
+      html_options2 %> or <%= link_to helpful_anchors[:freebmdComplete].html_safe, helpful_links[:freebmdComplete],
+      html_options2%>
     <% else %> accuracy or completeness <% end %>
     of the data.
     </p>

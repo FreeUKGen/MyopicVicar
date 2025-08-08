@@ -74,9 +74,6 @@
             <% if nav_transcription_page_link.present?%>
               <li><%= nav_transcription_page_link %></li>
             <% end %>
-            <% if nav_about_page_link.present?%>
-              <li><%= nav_about_page_link %></li>
-            <% end %>
             <% if nav_volunteer_page_link.present?%>
               <li><%= nav_volunteer_page_link %></li>
             <% end %>
@@ -92,6 +89,9 @@
             <%# if nav_help_bmd_context.present?%>
               <li><%= nav_help_pages_link %></li>
             <%# end %>
+             <% if nav_about_page_link.present?%>
+               <li><%= nav_about_page_link %></li>
+             <% end %>
           </ul>
         </nav>
       </div>
@@ -108,9 +108,6 @@
         <% if nav_transcription_page_link.present?%>
           <li><%=nav_transcription_page_link%></li>
         <% end%>
-        <% if nav_about_page_link.present?%>
-          <li><%=nav_about_page_link%></li>
-        <% end%>
         <% if nav_volunteer_page_link.present?%>
           <li><%=nav_volunteer_page_link%></li>
         <% end%>
@@ -123,8 +120,9 @@
         <% if nav_freecen_gazetteer.present?%>
           <li><%=nav_freecen_gazetteer%></li>
         <% end%>
-        <% if nav_help_pages_link.present?%>
-          <li><%= nav_help_pages_link %></li>
+        <li><%= link_to 'Help', '/help' %></li>
+        <% if nav_about_page_link.present?%>
+          <li><%=nav_about_page_link%></li>
         <% end%>
       </ul>
     </nav>

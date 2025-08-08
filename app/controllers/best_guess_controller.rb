@@ -17,13 +17,13 @@ class BestGuessController < ApplicationController
     # record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
     record_id = params[:id]
     @current_record = BestGuess.find(record_id)
+    @postems_count = @current_record.postems_list.count
     page_entries = @current_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(record_id, page_entries)
     @display_date = false
     show_postem_or_scan
     @url = generate_url
     return if @search_query.blank?
-
     @search_result = @search_query.search_result
     @viewed_records = @search_result.viewed_records
     @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
@@ -254,7 +254,9 @@ class BestGuessController < ApplicationController
     port = URI.parse(request.original_url).port 
     domain = domain + ':' + port.to_s if port.present?
     record_hash = @current_record.record_hash
-    cleaned_hash = record_hash.gsub(/[^a-zA-Z0-9_.-]/) { |char| "%#{char.ord.to_s(16).upcase}" } 
+    cleaned_hash = record_hash.gsub(/[^a-zA-Z0-9_.-]/) do |match|
+      "%%%02X" % match.ord
+    end 
     url = protocol+'://'+domain+'/entry-information/'+cleaned_hash+'/hash' 
   end
 

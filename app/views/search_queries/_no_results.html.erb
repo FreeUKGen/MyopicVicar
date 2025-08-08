@@ -1,6 +1,6 @@
   <h2 class="gamma text--negative push-half--bottom">No results found</h2>
   <p class= "push-half--bottom"><b>Maybe you need to change your search?</b><br>
-    See our <%= link_to "Help", "/cms/help", :title => "Help" %> for advice on how to get the most out of your searches.</p>
+    See our <%= link_to "Help", "/help", :title => "Help" %> for advice on how to get the most out of your searches.</p>
   <b>Maybe you were searching for records that we do not have?</b>
   <% case MyopicVicar::Application.config.template_set%>
   <% when'freereg' %>
@@ -26,10 +26,10 @@
   </ul>
 </p>
 <% when'freebmd' %>
-<p class= "read-length push-half--bottom">See the <%= link_to "Records", "/districts/alphabet_selection?locale=en", :title => "Records"  %> section for details of the events and years we have transcribed so far.<br>
+<p class= "read-length push-half--bottom">See the <%= link_to "Database", "/districts/districts_overview", :title => "Database"  %> section for details of the events and years we have transcribed so far.<br>
   Some reasons for missing records:
   <ul>
-    <li>we have yet to transcribe the relevant index images. Could you  <%= link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-freebmd"%>?</li>
+    <li>we have yet to transcribe the relevant index images. Could you  <%= link_to 'Volunteer', "/volunteer"%>?</li>
     <li>a complete index page was missed during scanning or transcription</li>
     <li>one or more entries within an index page were missed by the transcriber</li>
     <li>some records were lost before they were archived or reached the General Register Office</li>
