@@ -800,7 +800,7 @@ class SearchQuery
   end
 
   def locate(record_id)
-    records = search_result.records.values
+    records = search_result.records.values.flatten
     position = locate_index(records, record_id)
     record = position.present? ? records[position] : nil
     record
@@ -810,7 +810,7 @@ class SearchQuery
     n = 0
     records.each do |record|
       break if record[:_id].to_s == current unless SearchQuery.app_template.downcase == 'freebmd'
-      break if record[:RecordNumber].to_s == current if SearchQuery.app_template.downcase == 'freebmd'
+      break if record[:RecordNumber].to_s == current.to_s if SearchQuery.app_template.downcase == 'freebmd'
       n = n + 1
     end
     n
