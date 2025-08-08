@@ -80,7 +80,7 @@
               <% end %>
             </tbody>
           </table>
-          <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site (link opens in new tab)", "https://images.freebmd.org.uk/cgi/choose.pl", target: "_blank"%></p>
+          <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
         </div>
       <% end %>
       <% if @option == '2' %>
@@ -109,6 +109,11 @@
                 </tbody>
               </table>
             <% end %>
+            <div class="text--left push-half--bottom">
+              <small>
+                <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
+              </small>
+            </div>
             <p id="create_postem">Add a postem</p>
             <div class="create_postem_div">
               <%= semantic_form_for(@new_postem) do |f| %>

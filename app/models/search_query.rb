@@ -104,6 +104,7 @@ class SearchQuery
   DOB_START_QUARTER = 530
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
+  DEFAULT_RESULTS_PER_PAGE = 50
 
   field :first_name, type: String# , :required => false
   field :last_name, type: String# , :required => false
@@ -144,6 +145,7 @@ class SearchQuery
   field :runtime, type: Integer
   field :runtime_additional, type: Integer
   field :runtime_ucf, type: Integer
+  field :results_per_page, type: Integer, default: SearchQuery::DEFAULT_RESULTS_PER_PAGE
   field :order_field, type: String, default: SearchOrder::BMD_DATE
   validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
   field :order_asc, type: Boolean, default: true
@@ -169,6 +171,8 @@ class SearchQuery
   field :language, type: String
   validates_inclusion_of :language, :in => Language::ALL_LANGUAGES + [nil]
   field :occupation, type: String
+  field :results_per_page, type: Integer # issue 693: make this a property of the search query
+  field :result_truncated, type: Boolean
 
   has_and_belongs_to_many :places, inverse_of: nil
   has_and_belongs_to_many :freecen2_places, inverse_of: nil
@@ -210,7 +214,7 @@ class SearchQuery
     3 => "Year of Birth",
     4 => "Year of Birth Range"
   }
-  RESULTS_PER_PAGE = 20
+  RESULTS_PER_PAGE = 50
   DEFAULT_PAGE = 1
 
   class << self
@@ -232,6 +236,7 @@ class SearchQuery
       return record, false, messagea if parameter.nil?
 
       record = SearchQuery.find(parameter)
+
       return record, false, messageb if record.blank?
 
       [record, true, '']
@@ -386,6 +391,36 @@ class SearchQuery
   end
 
   def field_values_match(x, y, fieldname)
+    # Handle if x and y are arrays of hashes
+    if x.is_a?(Array) && y.is_a?(Array)
+      # Compare arrays by checking if any element in x matches any element in y
+      x.any? do |x_item|
+        y.any? do |y_item|
+          compare_values(x_item[fieldname], y_item[fieldname])
+        end
+      end
+    elsif x.is_a?(Array)
+      x.any? { |item| compare_values(item[fieldname], y[fieldname]) }
+    elsif y.is_a?(Array)
+      y.any? { |item| compare_values(x[fieldname], item[fieldname]) }
+    else
+      compare_values(x[fieldname], y[fieldname])
+    end
+  end
+
+  def compare_values(x_val, y_val)
+    if x_val.is_a?(String) && y_val.is_a?(String)
+      x_val.to_s.downcase == y_val.to_s.downcase
+    else
+      x_val == y_val
+    end
+  end
+
+  def field_values_match_old(x, y, fieldname)
+    logger.warn(fieldname)
+    logger.warn(x)
+    logger.warn(y)
+    logger.warn("#{x[fieldname]} : #{x[fieldname].class}")
     if x[fieldname].class == String && y[fieldname].class == String
       return x[fieldname].to_s.downcase == y[fieldname].to_s.downcase
     else
@@ -393,7 +428,7 @@ class SearchQuery
     end
   end
 
-  def compare_field_values(x, y, fieldname)
+  def compare_field_values_old(x, y, fieldname)
     if x[fieldname].class == String && y[fieldname].class == String
       return x[fieldname].to_s.downcase <=> y[fieldname].to_s.downcase
     else
@@ -401,8 +436,44 @@ class SearchQuery
     end
   end
 
-  def compare_name_bmd(x, y, order_field, next_order_field=nil)
+    def compare_field_values(x, y, fieldname)
+    # Handle arrays of hashes
+    if x.is_a?(Array) && y.is_a?(Array)
+      x.each do |x_item|
+        y.each do |y_item|
+          comparison = compare_single_values(x_item[fieldname], y_item[fieldname])
+          return comparison unless comparison == 0
+        end
+      end
+      return 0 # If all comparisons are equal
+    elsif x.is_a?(Array)
+      x.each do |item|
+        comparison = compare_single_values(item[fieldname], y[fieldname])
+        return comparison unless comparison == 0
+      end
+      return 0
+    elsif y.is_a?(Array)
+      y.each do |item|
+        comparison = compare_single_values(x[fieldname], item[fieldname])
+        return comparison unless comparison == 0
+      end
+      return 0
+    else
+      compare_single_values(x[fieldname], y[fieldname])
+    end
+  end
+
+  def compare_single_values(x_val, y_val)
+    if x_val.is_a?(String) && y_val.is_a?(String)
+      x_val.to_s.downcase <=> y_val.to_s.downcase
+    else
+      x_val <=> y_val
+    end
+  end
+
+  def compare_name_bmd_old(x, y, order_field, next_order_field=nil)
     if field_values_match(x, y, order_field)
+      logger.warn(next_order_field)
       next_order_field.each do |field|
         if x[field].nil? || y[field].nil?
           return compare_field_values(x, y, field)
@@ -411,6 +482,49 @@ class SearchQuery
         return compare_field_values(x, y, field)
       end
       return 0 # rbl 20.9.2022: only gets to here if all next_order_field values match, so return 'equals' in that situation.
+    else
+      return compare_field_values(x, y, order_field)
+    end
+  end
+
+    def compare_name_bmd(x, y, order_field, next_order_field=nil)
+    # arrays of hashes
+    if x.is_a?(Array) && y.is_a?(Array)
+      # Compare arrays by finding the first non-zero comparison
+      x.each do |x_item|
+        y.each do |y_item|
+          comparison = compare_single_name_bmd(x_item, y_item, order_field, next_order_field)
+          return comparison unless comparison == 0
+        end
+      end
+      return 0 # If all comparisons are equal
+    elsif x.is_a?(Array)
+      x.each do |item|
+        comparison = compare_single_name_bmd(item, y, order_field, next_order_field)
+        return comparison unless comparison == 0
+      end
+      return 0
+    elsif y.is_a?(Array)
+      y.each do |item|
+        comparison = compare_single_name_bmd(x, item, order_field, next_order_field)
+        return comparison unless comparison == 0
+      end
+      return 0
+    else
+      compare_single_name_bmd(x, y, order_field, next_order_field)
+    end
+  end
+
+  def compare_single_name_bmd(x, y, order_field, next_order_field)
+    if field_values_match(x, y, order_field)
+      next_order_field.each do |field|
+        if x[field].nil? || y[field].nil?
+          return compare_field_values(x, y, field)
+        end
+        next if field_values_match(x, y, field)
+        return compare_field_values(x, y, field)
+      end
+      return 0 # Only gets here if all next_order_field values match
     else
       return compare_field_values(x, y, order_field)
     end
@@ -686,7 +800,7 @@ class SearchQuery
   end
 
   def locate(record_id)
-    records = search_result.records.values
+    records = search_result.records.values.flatten
     position = locate_index(records, record_id)
     record = position.present? ? records[position] : nil
     record
@@ -696,7 +810,7 @@ class SearchQuery
     n = 0
     records.each do |record|
       break if record[:_id].to_s == current unless SearchQuery.app_template.downcase == 'freebmd'
-      break if record[:RecordNumber].to_s == current if SearchQuery.app_template.downcase == 'freebmd'
+      break if record[:RecordNumber].to_s == current.to_s if SearchQuery.app_template.downcase == 'freebmd'
       n = n + 1
     end
     n
@@ -752,7 +866,7 @@ class SearchQuery
 
   def bmd_next_and_previous_records current
     if search_result.records.respond_to?(:values)
-      search_results = search_result.records.values
+      search_results = search_result.records.values.flatten
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
       next_record_id = nil
@@ -807,9 +921,13 @@ class SearchQuery
       if SearchQuery.app_template == 'freebmd'
         rec_attr = record.attributes
         rec_hash = record.record_hash
-        #hash_attr = record.best_guess_hash.attributes
-        #res_atrr = rec_attr.merge(hash_attr)
-        records[rec_hash] = rec_attr
+        #Handle multiple records with same hash
+        if records.has_key? rec_hash
+          v1 = records[rec_hash]
+          records[rec_hash]=[v1, rec_attr]
+        else
+          records[rec_hash] = rec_attr
+        end
       end
       unless SearchQuery.app_template == 'freebmd'
         rec_id = record['_id'].to_s
@@ -1336,6 +1454,7 @@ class SearchQuery
   def freebmd_search_records
     search_fields = bmd_adjust_field_names
     search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
+    search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present? # issue 689: given name punctuation not in data, so remove them from search
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     begin
@@ -1360,7 +1479,7 @@ class SearchQuery
       logger.warn("#{App.name_upcase}: Timeout")
       [[], false, 1]
     rescue => e
-      logger.warn("#{App.name_upcase}:error: #{e}")
+      logger.warn("#{App.name_upcase}:error: #{e.inspect}")
       [[], false, 2]
     end
   end
@@ -1724,11 +1843,13 @@ class SearchQuery
   end
 
   def bmd_search_results
-    self.search_result.records.values
+   # raise self.search_result.records.values.flatten.inspect
+    self.search_result.records.values.flatten
   end
 
   def get_bmd_search_results
-    search_results = self.sort_search_results
+    search_results = self.sort_search_results.flatten
+    #raise search_results.inspect
     return get_bmd_search_response, search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_search_results, search_result_count if get_bmd_search_response
     return get_bmd_search_response if !get_bmd_search_response
   end
@@ -1741,7 +1862,7 @@ class SearchQuery
     bmd_search_results.length
   end
 
-  def sort_search_results
+  def   sort_search_results
     self.sort_results(bmd_search_results) unless bmd_search_results.nil?
   end
 
@@ -2128,7 +2249,7 @@ class SearchQuery
 
   def paginate_results(results,page_number,results_per_page)
     page_number ||= DEFAULT_PAGE
-    results_per_page ||= RESULTS_PER_PAGE
+    results_per_page ||= DEFAULT_RESULTS_PER_PAGE
     total = results.count
     Kaminari.paginate_array(results, total_count: total).page(page_number).per(results_per_page)
   end
@@ -2146,17 +2267,18 @@ class SearchQuery
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = this_record_atts["Surname"]
       given_names = this_record_atts["GivenName"].split(' ')
-      given_name = given_names[0]
-      given_names.shift()
-      other_given_names = given_names.join(' ') if given_names.present?
+      #given_name = given_names[0]
+      #given_names.shift()
+      #other_given_names = given_names.join(' ') if given_names.present?
       i = i+1
       f = f+1 if saved_record[:RecordTypeID] == 3
-      gedcom << ''
+      #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+given_name+' /'+surname+'/'
-      gedcom << '2 SURN '+surname
-      gedcom << '2 GIVN '+given_name
-      gedcom << '2 _MIDN '+other_given_names if other_given_names.present?
+      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
+      gedcom << '2 SURN '+surname.capitalize
+      given_names.each do |name|
+        gedcom << '2 GIVN '+name
+      end
       #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if saved_record[:RecordTypeID] == 1
       gedcom << '1 DEAT' if saved_record[:RecordTypeID] == 2
@@ -2165,6 +2287,8 @@ class SearchQuery
       gedcom << '2 PLAC '+this_record_atts['District']
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+saved_record.record_hash+'/'+saved_record.friendly_url
     end
+    gedcom << ''
+    gedcom << '0 TRLR'
     gedcom
   end
 
@@ -2178,18 +2302,19 @@ class SearchQuery
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = rec[:Surname]
       given_names = rec[:GivenName].split(' ')
-      given_name = given_names[0]
-      given_names.shift()
-      other_given_names = given_names.join(' ') if given_names.present?
+      #given_name = given_names[0]
+      #given_names.shift()
+      #other_given_names = given_names.join(' ') if given_names.present?
       i = i+1
       f = f+1 if rec[:RecordTypeID] == 3
       entry = BestGuess.where(RecordNumber: rec[:RecordNumber]).first
-      gedcom << ''
+      #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+given_name+' /'+surname+'/'
-      gedcom << '2 SURN '+surname
-      gedcom << '2 GIVN '+given_name
-      gedcom << '2 _MIDN '+other_given_names if other_given_names.present?
+      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
+      gedcom << '2 SURN '+surname.capitalize
+      given_names.each do |name|
+        gedcom << '2 GIVN '+name
+      end
       #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if rec[:RecordTypeID] == 1
       gedcom << '1 DEAT' if rec[:RecordTypeID] == 2
@@ -2198,6 +2323,7 @@ class SearchQuery
       gedcom << '2 PLAC '+rec[:District]
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
     end
+    gedcom << '0 TRLR'
     gedcom
   end
 

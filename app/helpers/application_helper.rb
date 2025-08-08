@@ -72,16 +72,13 @@ module ApplicationHelper
   end
 
   def nav_help_page_link
-    link_to 'Help', '/help/search_help'
+    link_to 'Help', '/help/search_help', class: check_current_page('/help/search_help')
   end
 
   def check_current_page(url)
     main_url = Rails.application.config.website
     my_class = current_page?("#{main_url}/#{url}") ? 'active' : ''
     my_class
-    #link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
-    #current_page?(url) ? (link_to nav_links.key(url).titleize, url, class: '') : (link_to nav_links.key(url), url, class: 'active')
-   # link_to_unless(current_page?(url), nav_links.key(url).titleize, url)
   end
 
 
@@ -103,7 +100,7 @@ module ApplicationHelper
     return if controller_name == 'sessions'
 
     if session[:userid_detail_id].present?
-      link_to 'Logout', main_app.logout_manage_resources_path, class: current_page?(main_app.logout_manage_resources_path) ? 'active' : ''
+      link_to 'Logout', main_app.logout_manage_resources_path
     else
       link_to 'Member', refinery.login_path, class: check_current_page("cms/refinery/login")
     end
@@ -124,10 +121,9 @@ module ApplicationHelper
 
   def nav_volunteer_page_link
     return if session[:userid_detail_id].present?
-
-    link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}", class: check_current_page("cms/opportunities-to-volunteer-with-#{appname.downcase}")
+    link_to 'Volunteer', "/volunteer", class: check_current_page("volunteer")
   end
-
+  
   def nav_freecen_gazetteer
     link_to('Gazetteer', '/freecen2_places/search_names', target: :_blank, title: 'Search for an existing place name; opens in a new tab') if
     appname.downcase == 'freecen' && session[:userid_detail_id].present?
@@ -806,7 +802,7 @@ module ApplicationHelper
       freereg: 'https://www.freereg.org.uk/',
       freecen: 'https://www.freecen.org.uk/',
       freebmd: 'https://www.freebmd.org.uk/',
-      freebmdAccuracy: '/cms/help#accuracy',
+      freebmdAccuracy: '/help',
       freebmdComplete: '/coverage?locale=en',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',

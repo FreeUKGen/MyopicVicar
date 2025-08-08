@@ -2,11 +2,8 @@ class BestGuessHashController < ApplicationController
   skip_before_action :require_login
 
   def show
-    #redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
-    redirect_to( new_search_query_path, notice: 'Hash '+params[:id]+' is no longer valid: please re-run your search') && return if BestGuessHash.where(Hash: params[:id]).empty?
-    clean_id = params[:id].gsub(/%([0-9A-F]{2})/i) { |match| 
-      $1.hex.chr 
-    }
+    clean_id = URI.decode_www_form_component(params[:id])
+    redirect_to( new_search_query_path, notice: 'Hash '+params[:id]+' is no longer valid: please re-run your search') && return if BestGuessHash.where(Hash: clean_id).empty?
     @record_number = BestGuessHash.where(Hash: clean_id).first.RecordNumber
     @search_record = BestGuess.where(RecordNumber: @record_number).first
     @display_date = false

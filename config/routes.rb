@@ -19,6 +19,8 @@ MyopicVicar::Application.routes.draw do
   root :to => 'search_queries#new'
   resources :reminder_to_donate
   resources :donate_cta_feedback
+  get 'donate', to: 'pages#donate'
+  get 'volunteer', to: 'pages#volunteer'
 
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
@@ -622,7 +624,8 @@ MyopicVicar::Application.routes.draw do
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
   resources :gap_reasons
 
-  get "/entry-information/:id/hash", :to => 'best_guess_hash#show'
+  get "/entry-information/:id/hash", :to => 'best_guess_hash#show', constraints: { id: /[^\/]+/ }
+  get "/entry-information/hash", to: 'best_guess_hash#show', as: :hash_url
   get ':search_id/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details
   get '/entry-information/:id/:friendly(.:format)', :to => 'best_guess#show', :as => :friendly_bmd_record_details_non_search
   get ':search_id/:entry_id/marriage_details/', :to => 'best_guess#show_marriage', :as => :show_marriage_details

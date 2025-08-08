@@ -10,7 +10,7 @@ class Help
     'certificates_help' => 'Order a Certificate',
     'database_help' => 'Database',
     'accuracy_help' => 'Accuracy',
-    'tips_and_tricks' => 'Tips and Tricks',
+    'tips_and_tricks' => 'Tips and Tricks'
     #    'more_help' => 'More Help'
   }
 
