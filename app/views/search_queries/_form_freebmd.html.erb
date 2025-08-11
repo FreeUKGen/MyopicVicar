@@ -128,11 +128,11 @@
                             <div class='flex_container'>
                                 <div class="flex_item">
                                     <label class="accessibility" for="from_quarter">Start Quarter</label>
-                                    <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years text-input', id: 'from_quarter', tabindex: "0") %>
+                                    <%= select_tag( 'search_query[start_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value(@search_query.start_quarter)), class: 'select_month_start date_years text-input', style: "padding-right:0px !important; padding-left:5px !important;",id: 'from_quarter', tabindex: "0") %>
                                 </div>
                                 <div class="flex_item">
                                     <label class="accessibility" for="from_year">Start Year</label>
-                                    <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1999, step:1, class: 'text-input', id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                                    <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
                                 </div>
                             </div>
                         </fieldset>
@@ -144,12 +144,12 @@
                             <div class='flex_container'>
                                 <div class="flex_item">
                                     <label class="accessibility" for="to_quarter">To Quarter</label>
-                                    <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value_or_default(4,@search_query.end_quarter)), class: 'select_month_end date_years text-input', id: 'to_quarter', tabindex: "0") %>
-                                    </div>
+                                    <%= select_tag( 'search_query[end_quarter]', options_for_select([['Mar', 1], ['Jun', 2], ['Sep', 3], ['Dec', 4]], set_value_or_default(4,@search_query.end_quarter)), class: 'select_month_end date_years text-input', style:"padding-right:0 !important; padding-left:5px !important; width:105%;",id: 'to_quarter', tabindex: "0") %>
+                                </div>
                                 <div class="flex_item">
                                     <label class="accessibility" for="to_year">To Year</label>
-                                    <%= number_field_tag 'search_query[end_year]', set_value_or_default(1999, @search_query.end_year), min: 1837, max:1999, step:1, class: 'text-input', id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
-                                    </div>
+                                    <%= number_field_tag 'search_query[end_year]', set_value_or_default(1999, @search_query.end_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+                                </div>
                             </div>
                         </fieldset>
                     </li>
@@ -449,7 +449,6 @@
     .flex_container {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
         column-gap: 25px;
     }
 

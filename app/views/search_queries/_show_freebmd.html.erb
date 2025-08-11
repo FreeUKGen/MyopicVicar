@@ -55,5 +55,9 @@
     </div>
   </div>
 <% else %>
-  <%= render(partial: app_specific_partial("mobile"), locals: { search_results: @paginatable_array, first_name: @search_query.first_name, last_name: @search_query.last_name, ucf_results: false})  %>
+  <div class="grid__item one-whole hard--left">
+    <%= render(partial: app_specific_partial("mobile"), locals: { search_results: @paginatable_array, first_name: @search_query.first_name, last_name: @search_query.last_name, ucf_results: false})  %>
+  </div>
+</div>
+</div>
 <% end %>
