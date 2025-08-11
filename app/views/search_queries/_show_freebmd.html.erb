@@ -25,28 +25,31 @@
       </div>
       <% unless print_friendly %>
         <% if device_type == :desktop %>
-          <% if @search_results.count > 6 %>
-            <div class="grid__item three-tenths lap-two-tenths palm-one-whole text--right push--left "  id='results_table_ad' style="flex-direction: column;">
+          <% first_name = @search_query.try(:first_name).to_s %>
+          <% last_name  = @search_query.try(:last_name).to_s %>
+          <% iframe_src = "https://www.myheritage.com/FP/partner-widget.php?" +
+    "partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&" +
+    "widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&" +
+    "tr_ifid=freereg_8035265&firstName=#{ERB::Util.url_encode(first_name)}&lastName=#{ERB::Util.url_encode(last_name)}" +
+    "&tr_device=&size=160x600" %>
+          <% show_large_ad = @search_results.size > 6 %>
+          <div class="grid__item <%= show_large_ad ? 'three-tenths' : 'two-tenths' %> lap-two-tenths palm-one-whole text--right push--left" id="results_table_ad" style="<%= show_large_ad ? 'flex-direction: column;' : '' %>">
+            <% if show_large_ad %>
               <span>Advertisements</span>
               <div data-fuse="22895564148" class="float--right"></div>
               <div class="float--right push--top">
-                <!--div data-fuse="22895564148"></div-->
-                <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @search_query.first_name %>&lastName=<%= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class="">
-                </iframe>
+                <iframe src="<%= iframe_src %>" height="650" width="170"></iframe>
               </div>
               <div class="float--right push--top" style="display:flex;position:sticky;top:0;align-self:start;">
                 <div data-fuse="22895564148"></div>
               </div>
-            </div>
-          <% else %>
-            <div class="grid__item two-tenths lap-two-tenths palm-one-whole text--right "  id='results_table_ad'>
-              <center>
+            <% else %>
+              <div class="ad-center">
                 <p>Advertisement</p>
-                <iframe src='https://www.myheritage.com/FP/partner-widget.php?partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&tr_ifid=freereg_8035265&firstName=<%= @search_query.first_name %>&lastName=<%= @search_query.last_name %>&tr_device=&size=160x600' height="650" width="170" class="">
-                </iframe>
-              </center>
-            </div>
-          <% end %>
+                <iframe src="<%= iframe_src %>" height="650" width="170"></iframe>
+              </div>
+            <% end %>
+          </div>
         <% end %>
       <% end %>
     </div>
