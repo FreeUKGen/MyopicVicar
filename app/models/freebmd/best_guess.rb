@@ -293,8 +293,10 @@ class BestGuess < FreebmdDbBase
     # }
   end
   def postems_list
-    get_hash = get_rec_hash.Hash
-    Postem.where(Hash: get_hash).all
+    if get_rec_hash.present?
+      get_hash = get_rec_hash.Hash
+      Postem.where(Hash: get_hash).all
+    end
   end
 
   def entries_in_the_page
