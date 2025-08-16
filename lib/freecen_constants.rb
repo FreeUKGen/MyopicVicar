@@ -129,30 +129,30 @@ module Freecen
     'E', 'X', 'CHP', 'Place of birth', 'X', 'Dis.', 'W', 'Notes', 'Alt. CHP', 'Alt. POB', 'deleted', 'ecclesiastical', 'address_flag'
   ].freeze
 
-  CEN2_1841 = LOCATION - %w[ecclesiastical_parish ward poor_law_union police_district sanitary_district special_water_district scavenging_district
+  CEN2_1841 = LOCATION - %w[petty_sessional_division county_court_district ecclesiastical_parish ward poor_law_union police_district sanitary_district special_water_district scavenging_district
               special_lighting_district school_board] + HOUSEHOLD + INDIVIDUAL - %w[relationship marital_status] + OCCUPATION - %w[industry
               occupation_category at_home] + BIRTH - %w[verbatim_birth_place nationality birth_place] + %w[notes]
 
-  CEN2_1851 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+  CEN2_1851 = LOCATION - %w[petty_sessional_division county_court_district ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
               school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_1861 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+  CEN2_1861 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
               school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_1871 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board
+  CEN2_1871 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board
               school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_1881 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board
+  CEN2_1881 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board
               school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_1891 = LOCATION - %w[poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board] +
+  CEN2_1891 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union police_district special_water_district scavenging_district special_lighting_district school_board] +
     HOUSEHOLD - %w[address_flag] + %w[rooms address_flag] + INDIVIDUAL + OCCUPATION - %w[industry at_home] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_1901 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+  CEN2_1901 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
               school_board] + HOUSEHOLD - %w[address_flag] + %w[rooms address_flag] + INDIVIDUAL + OCCUPATION - %w[industry] + BIRTH +
     FINAL - %w[disability_notes]
 
-  CEN2_1911 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+  CEN2_1911 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
               school_board] + HOUSEHOLD - %w[folio_number page_number uninhabited_flag address_flag] + %w[rooms address_flag] + EXTRA_INDIVIDUAL -
     %w[surname_maiden school_children] + OCCUPATION + BIRTH + FINAL
 
@@ -160,37 +160,37 @@ module Freecen
                               special_lighting_district school_board] - %w[birth_place_flag] + %w[father_place_of_birth birth_place_flag] + FINAL -
     %w[language]
 
-  CEN2_SCT_1841 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+  CEN2_SCT_1841 = LOCATION - %w[petty_sessional_division county_court_district ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
               school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language] -
     %w[nationality]
 
-  CEN2_SCT_1851 = LOCATION - %w[ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+  CEN2_SCT_1851 = LOCATION - %w[petty_sessional_division county_court_district ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
               school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes language]
 
-  CEN2_SCT_1861 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
+  CEN2_SCT_1861 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
               school_board] + SCT_EXTRA_HOUSEHOLD +  INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[children_under_sixteen disability_notes language]
 
-  CEN2_SCT_1871 = LOCATION - %w[poor_law_union special_water_district scavenging_district special_lighting_district school_board
+  CEN2_SCT_1871 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union special_water_district scavenging_district special_lighting_district school_board
               school_board] + SCT_EXTRA_HOUSEHOLD +  INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[children_under_sixteen disability_notes language]
 
-  CEN2_SCT_1881 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
+  CEN2_SCT_1881 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
     SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_SCT_1891 = LOCATION - %w[poor_law_union police_district sanitary_district special_water_district scavenging_district
+  CEN2_SCT_1891 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union police_district sanitary_district special_water_district scavenging_district
                   special_lighting_district school_board] + SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry
                   occupation_category at_home] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_SCT_1901 = LOCATION - %w[poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
+  CEN2_SCT_1901 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union sanitary_district special_water_district scavenging_district special_lighting_district] +
     SCT_HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry] + BIRTH + FINAL - %w[disability_notes]
 
-  CEN2_SCT_1911 = LOCATION - %w[poor_law_union police_district] + SCT_HOUSEHOLD + EXTRA_INDIVIDUAL - %w[children_deceased] + OCCUPATION + BIRTH +
+  CEN2_SCT_1911 = LOCATION - %w[petty_sessional_division county_court_district poor_law_union police_district] + SCT_HOUSEHOLD + EXTRA_INDIVIDUAL - %w[children_deceased] + OCCUPATION + BIRTH +
     FINAL - %w[disability_notes]
 
-  CEN2_IRL_1901 = LOCATION - %w[enumeration_district ecclesiastical_parish ward sanitary_district special_water_district scavenging_district
+  CEN2_IRL_1901 = LOCATION - %w[enumeration_district ecclesiastical_parish county_court_district ward sanitary_district special_water_district scavenging_district
                   special_lighting_district school_board] + IRE_HOUSEHOLD + INDIVIDUAL - %w[individual_flag] + %w[religion read_write individual_flag] +
     OCCUPATION - %w[industry occupation_category at_home] + BIRTH - %w[nationality] + FINAL - %w[disability_notes]
 
-  CEN2_IRL_1911 = LOCATION - %w[enumeration_district ecclesiastical_parish ward sanitary_district special_water_district scavenging_district
+  CEN2_IRL_1911 = LOCATION - %w[enumeration_district ecclesiastical_parish county_court_district ward sanitary_district special_water_district scavenging_district
                   special_lighting_district school_board] + IRE_HOUSEHOLD + EXTRA_INDIVIDUAL - %w[children_deceased individual_flag] + %w[religion
                   read_write individual_flag] + OCCUPATION - %w[industry occupation_category at_home] + BIRTH - %w[nationality] + FINAL - %w[disability_notes]
 
