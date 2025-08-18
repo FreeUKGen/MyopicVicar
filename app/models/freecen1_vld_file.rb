@@ -257,7 +257,6 @@ class Freecen1VldFile
       end
     when 'HS'
       success = false
-      message = 'Scotland Code not checked'
       case year
       when '1841'
         success = true
@@ -272,33 +271,32 @@ class Freecen1VldFile
       end
     when 'RS'
       success = false
-      message = 'Scotland Code not checked'
       case year
       when '1861'
         success = true
         message = ''
-        file = 'RS61' + '_' + piece.to_s + '.csv'
+        file = 'RS6' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1861
       when '1871'
         success = true
         message = ''
-        file = 'RS71' + '_' + piece.to_s + '.csv'
+        file = 'RS7' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1871
       when '1881'
         success = true
         message = ''
-        file = 'RS81' + '_' + piece.to_s + '.csv'
+        file = 'RS8' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1881
       when '1891'
         success = true
         message = ''
-        file = 'RS91' + '_' + piece.to_s + '.csv'
+        file = 'RS9' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1891
       when '1901'
-        file = 'RS' + '_' + piece.to_s + '.csv'
+        file = 'RS10' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1901
       when '1911'
-        file = 'RS' + '_' + piece.to_s + '.csv'
+        file = 'RS11' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1911
       end
     when 'HO'

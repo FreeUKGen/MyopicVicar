@@ -2034,7 +2034,8 @@ class FreecenCsvEntry
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
+        # ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency'] #927
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
       end
@@ -2345,19 +2346,19 @@ class FreecenCsvEntry
       ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children', 'Occupation']
       else
         ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children', 'Occupation']
       else
         ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children', 'Occupation']
       else
         ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
       end

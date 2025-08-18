@@ -98,7 +98,7 @@ class Freecen2Piece
     end
 
     def valid_series?(series)
-      return true if %w[HS4 HS5 HO107 RG9 RG10 RG11 RG12 RG13 RG14].include?(series.upcase)
+      return true if %w[HS4 HS5 HO107 RG9 RG10 RG11 RG12 RG13 RG14 RS6 RS7 RS8 RS9 RS10 RS11].include?(series.upcase)
 
       # Need to add Scotland after 1861 -> and Ireland
       false
