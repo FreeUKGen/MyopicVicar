@@ -802,7 +802,7 @@ module ApplicationHelper
       freereg: 'https://www.freereg.org.uk/',
       freecen: 'https://www.freecen.org.uk/',
       freebmd: 'https://www.freebmd.org.uk/',
-      freebmdAccuracy: '/help',
+      freebmdAccuracy: '/help/accuracy_help',
       freebmdComplete: '/coverage?locale=en',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
