@@ -33,8 +33,10 @@ class FreecenCsvEntry
   field :children_born_alive, type: Integer
   field :children_deceased, type: Integer
   field :children_living, type: Integer
+  field :children_under_sixteen, type: Integer
   field :civil_parish, type: String
   field :class_of_house, type: String
+  field :county_court_district, type: String
   field :data_transition, type: String
   field :deleted_flag, type: String
   field :individual_flag, type: String
@@ -42,6 +44,8 @@ class FreecenCsvEntry
   field :disability_notes, type: String
   field :dwelling_number, type: Integer # derived
   field :ecclesiastical_parish, type: String
+  field :education, type: String
+  field :employment, type: String
   field :enumeration_district, type: String
   field :error_messages, type: String
   field :father_place_of_birth, type: String
@@ -63,9 +67,11 @@ class FreecenCsvEntry
   field :occupation, type: String
   field :occupation_category, type: String
   field :occupation_flag, type: String
+  field :petty_sessional_division, type: String
   field :page_number, type: String
   field :parliamentary_constituency, type: String
   field :piece_number, type: String
+  field :place_of_work, type: String
   field :police_district, type: String
   field :poor_law_union, type: String
   field :read_write, type: String
@@ -335,6 +341,92 @@ class FreecenCsvEntry
         suffix = nil
       end
       [stem, suffix]
+    end
+
+    def validate_petty_sessional_division(record, previous_petty_sessional_division)
+      petty_sessional_division = record[:petty_sessional_division]
+      num = record[:record_number]
+      new_petty_sessional_division = previous_petty_sessional_division
+      info_messages = record[:messages]
+      message = ''
+      if %w[1921].include?(record[:year])
+        success, messagea = FreecenValidations.valid_petty_sessional_division?(petty_sessional_division)
+        unless success
+          if messagea == '?'
+            messagea = "Warning: line #{num} Petty sessional division #{petty_sessional_division} has trailing ?. Removed and location_flag set.<br>"
+            record[:warning_messages] += messagea
+            record[:location_flag] = 'x'
+            record[:petty_sessional_division] = record[:petty_sessional_division][0...-1].strip
+            petty_sessional_division = record[:petty_sessional_division]
+            message += messagea
+          else
+            messageb = "ERROR: line #{num} Petty sessional division #{petty_sessional_division} is #{messagea}.<br>"
+            record[:error_messages] += messageb
+            return [messageb, new_petty_sessional_division]
+          end
+        end
+        if previous_petty_sessional_division == ''
+          messagea = "Info: line #{num} New Petty sessional division #{petty_sessional_division}.<br>" if info_messages
+          record[:info_messages] += messagea if info_messages
+          new_petty_sessional_division = petty_sessional_division
+          message += messagea if info_messages
+        elsif petty_sessional_division.blank?
+        elsif previous_petty_sessional_division == petty_sessional_division
+        else
+          messagea = "Info: line #{num} Petty sessional division changed to #{petty_sessional_division}.<br>" if info_messages
+          record[:info_messages] += message if info_messages
+          message += messagea if info_messages
+          new_petty_sessional_division = petty_sessional_division
+        end
+      else
+        messageb = "ERROR: line #{num} Petty sessional division #{record[:petty_sessional_division]} should not be included for #{record[:year]}.<br>"
+        message += messageb
+        record[:error_messages] += messageb
+      end
+      [message, new_petty_sessional_division]
+    end
+
+    def validate_county_court_district(record, previous_county_court_district)
+      county_court_district = record[:county_court_district]
+      num = record[:record_number]
+      new_county_court_district = previous_county_court_district
+      info_messages = record[:messages]
+      message = ''
+      if %w[1921].include?(record[:year])
+        success, messagea = FreecenValidations.valid_county_court_district?(county_court_district)
+        unless success
+          if messagea == '?'
+            messagea = "Warning: line #{num} County Court District #{county_court_district} has trailing ?. Removed and location_flag set.<br>"
+            record[:warning_messages] += messagea
+            record[:location_flag] = 'x'
+            record[:county_court_district] = record[:county_court_district][0...-1].strip
+            county_court_district = record[:county_court_district]
+            message += messagea
+          else
+            messageb = "ERROR: line #{num} County Court District #{county_court_district} is #{messagea}.<br>"
+            record[:error_messages] += messageb
+            return [messageb, new_county_court_district]
+          end
+        end
+        if previous_county_court_district == ''
+          messagea = "Info: line #{num} New County Court District #{county_court_district}.<br>" if info_messages
+          record[:info_messages] += messagea if info_messages
+          new_county_court_district = county_court_district
+          message += messagea if info_messages
+        elsif county_court_district.blank?
+        elsif previous_county_court_district == county_court_district
+        else
+          messagea = "Info: line #{num} County Court District changed to #{county_court_district}.<br>" if info_messages
+          record[:info_messages] += message if info_messages
+          message += messagea if info_messages
+          new_county_court_district = county_court_district
+        end
+      else
+        messageb = "ERROR: line #{num} County Court District #{record[:county_court_district]} should not be included for #{record[:year]}.<br>"
+        message += messageb
+        record[:error_messages] += messageb
+      end
+      [message, new_county_court_district]
     end
 
     def validate_ecclesiastical_parish(record, previous_ecclesiastical_parish)
@@ -1032,7 +1124,7 @@ class FreecenCsvEntry
         end
 
         if record[:rooms].present?
-          if %w[1891 1901 1911].include?(record[:year])
+          if %w[1891 1901 1911 1921].include?(record[:year])
             success, messagea = FreecenValidations.rooms?(record[:rooms], record[:year])
             unless success
               messageb = "ERROR: line #{num} Rooms #{record[:rooms]} is #{messagea}.<br>"
@@ -1043,7 +1135,7 @@ class FreecenCsvEntry
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 5.<br>"
                 message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
                 record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
-              elsif record[:year] == '1911' && record[:rooms].to_i > 20
+              elsif %w[1911 1921].include?(record[:year]) && record[:rooms].to_i > 20
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 20.<br>"
                 message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
                 record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
@@ -1174,7 +1266,7 @@ class FreecenCsvEntry
       end
 
       unless record[:year] == '1841'
-        success, messagea = FreecenValidations.marital_status?(record[:marital_status])
+        success, messagea = FreecenValidations.marital_status?(record[:marital_status], record[:year])
         unless success
           if messagea == '?'
             messageb = "Warning: line #{num} Marital Status  #{record[:marital_status]} has trailing ?. Removed and flag set.<br>"
@@ -1343,6 +1435,27 @@ class FreecenCsvEntry
         end
       end
 
+      if record[:children_under_sixteen].present?
+        if %w[1921].include?(record[:year])
+          success, messagea = FreecenValidations.children_under_sixteen?(record[:children_under_sixteen])
+          unless success
+            if messagea == 'invalid number'
+              messageb = "ERROR: line #{num} Number of children under sixteen #{record[:children_under_sixteen]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            else
+              messageb = "Warning: line #{num} Number of children under sixteen #{record[:children_under_sixteen]} is #{messagea}.<br>"
+              message += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+              record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
+            end
+          end
+        else
+          messageb = "ERROR: line #{num} Number of children under sixteen #{record[:children_under_sixteen]} should not be included for #{record[:year]}.<br>"
+          message += messageb
+          record[:error_messages] += messageb
+        end
+      end
+
       if record[:religion].present?
         if %w[1901 1911].include?(record[:year])
           success, messagea = FreecenValidations.religion?(record[:religion])
@@ -1384,6 +1497,29 @@ class FreecenCsvEntry
         message += messagea
       end
 
+      if record[:education].present?
+        if %w[1921].include?(record[:year])
+          success, messagea = FreecenValidations.education?(record[:education])
+          unless success
+            if messagea == '?'
+              messageb = "Warning: line #{num} Education  #{record[:education]} has trailing ?. Removed and flag set.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+              record[:occupation_flag] = 'x'
+              record[:education] = record[:education][0...-1].strip
+            else
+              messageb = "ERROR: line #{num} Education #{record[:education]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            end
+          end
+        else
+          messageb = "ERROR: line #{num} Education #{record[:education]} should not be included for #{record[:year]}.<br>"
+          message += messageb
+          record[:error_messages] += messageb
+        end
+      end
+
       success, messagea = FreecenValidations.occupation?(record[:occupation], record[:age])
       unless success
         if messagea == '?'
@@ -1398,6 +1534,52 @@ class FreecenCsvEntry
           record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
         else
           messageb = "ERROR: line #{num} Occupation #{record[:occupation]} is #{messagea}.<br>"
+          message += messageb
+          record[:error_messages] += messageb
+        end
+      end
+
+      if record[:employment].present?
+        if %w[1921].include?(record[:year])
+          success, messagea = FreecenValidations.employment?(record[:employment])
+          unless success
+            if messagea == '?'
+              messageb = "Warning: line #{num} Employment #{record[:employment]} has trailing ?. Removed and flag set.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+              record[:occupation_flag] = 'x'
+              record[:employment] = record[:employment][0...-1].strip
+            else
+              messageb = "ERROR: line #{num} Employment #{record[:employment]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            end
+          end
+        else
+          messageb = "ERROR: line #{num} Employment #{record[:employment]} should not be included for #{record[:year]}.<br>"
+          message += messageb
+          record[:error_messages] += messageb
+        end
+      end
+
+      if record[:place_of_work].present?
+        if %w[1921].include?(record[:year])
+          success, messagea = FreecenValidations.place_of_work?(record[:place_of_work])
+          unless success
+            if messagea == '?'
+              messageb = "Warning: line #{num} Place of work  #{record[:place_of_work]} has trailing ?. Removed and flag set.<br>"
+              message += messageb
+              record[:warning_messages] += messageb
+              record[:occupation_flag] = 'x'
+              record[:place_of_work] = record[:place_of_work][0...-1].strip
+            else
+              messageb = "ERROR: line #{num} Place of work #{record[:place_of_work]} is #{messagea}.<br>"
+              message += messageb
+              record[:error_messages] += messageb
+            end
+          end
+        else
+          messageb = "ERROR: line #{num} place of work #{record[:place_of_work]} should not be included for #{record[:year]}.<br>"
           message += messageb
           record[:error_messages] += messageb
         end
@@ -1693,7 +1875,7 @@ class FreecenCsvEntry
       end
 
       if record[:language].present?
-        if %w[1881 1891 1901 1911].include?(record[:year])
+        if %w[1881 1891 1901 1911 1921].include?(record[:year])
           success, messagea = FreecenValidations.language?(record[:language])
           unless success
             messageb = "ERROR: line #{num} Language #{record[:language]} is #{messagea}.<br>"
@@ -2072,6 +2254,10 @@ class FreecenCsvEntry
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
       end
+    when '1921'
+      if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Petty Sessional Division', 'County Court District', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
+      end
     end
   end
 
@@ -2160,6 +2346,11 @@ class FreecenCsvEntry
         [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, ecclesiastical, taken, freecen2_piece.number.to_s,
          ward, parliamentary_constituency]
       end
+    when '1921'
+      if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
+        [freecen2_piece.year, disp_county, district_name, enumeration_district, civil, petty_sessional_division, county_court_district, ecclesiastical, taken, freecen2_piece.number.to_s,
+         ward, parliamentary_constituency]
+      end
     end
   end
 
@@ -2215,6 +2406,10 @@ class FreecenCsvEntry
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         ['Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Walls', 'Roof Type', 'Rooms', 'Rooms with Windows', 'Class of House']
       else
+        ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
+      end
+    when '1921'
+      if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
         ['Folio', 'Page', 'Dwelling Number', 'Schedule', 'House Number', 'House or Street Name', 'Rooms']
       end
     end
@@ -2276,6 +2471,10 @@ class FreecenCsvEntry
       else
         [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms]
       end
+    when '1921'
+      if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
+        [folio_number, page_number, dwelling_number, schedule_number, house_number, address, rooms]
+      end
     end
   end
 
@@ -2288,6 +2487,8 @@ class FreecenCsvEntry
     self.civil_parish = FreecenCsvEntry.mytitlieze(civil_parish)
     self.disability = FreecenCsvEntry.mytitlieze(disability)
     self.ecclesiastical_parish = FreecenCsvEntry.mytitlieze(ecclesiastical_parish)
+    self.education = FreecenCsvEntry.mytitlieze(education)
+    self.employment = FreecenCsvEntry.mytitlieze(employment)
     self.father_place_of_birth = FreecenCsvEntry.mytitlieze(father_place_of_birth)
     self.house_or_street_name = FreecenCsvEntry.mytitlieze(house_or_street_name)
     self.nationality = nationality.strip.capitalize if nationality.present?
@@ -2296,6 +2497,7 @@ class FreecenCsvEntry
     self.at_home = FreecenCsvEntry.myupcase(at_home)
     self.marital_status = FreecenCsvEntry.myupcase(marital_status)
     self.parliamentary_constituency = FreecenCsvEntry.mytitlieze(parliamentary_constituency)
+    self.place_of_work = FreecenCsvEntry.mytitlieze(place_of_work)
     self.police_district = FreecenCsvEntry.mytitlieze(police_district)
     self.poor_law_union = FreecenCsvEntry.mytitlieze(poor_law_union)
     self.read_write = FreecenCsvEntry.mytitlieze(read_write)
@@ -2394,6 +2596,10 @@ class FreecenCsvEntry
       else
         ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Years Married', 'Children Born Alive', 'Children Living', 'Children Deceased', 'Occupation', 'Occ Category', 'Industry', 'Works At Home']
       end
+    when '1921'
+      if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Age', 'Sex', 'Marital Status']
+      end
     end
   end
 
@@ -2415,7 +2621,15 @@ class FreecenCsvEntry
     home = at_home.present? ? 'Yes' : ''
     sx = sex
     note = notes.gsub(/\<br\>/, '') if notes.present?
+
+    birth = birth_place
+    birth = birth + ' (or ' + verbatim_birth_place + ')' if birth_place.present? && birth_place != verbatim_birth_place
+    birth = verbatim_birth_place if birth_place.blank?
+    birth_county_name = ChapmanCode.name_from_code(birth_county)
     verbatim_birth_county_name = ChapmanCode.name_from_code(verbatim_birth_county)
+    birth_county_name = birth_county_name + ' (or ' + verbatim_birth_county_name + ')' if birth_county_name.present? && birth_county_name != verbatim_birth_county_name
+    birth_county_name = verbatim_birth_county_name if birth_county_name.blank?
+
     case year
     when '1841'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
@@ -2469,13 +2683,18 @@ class FreecenCsvEntry
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, category, industry, home]
       elsif ChapmanCode::CODES['Ireland'].values.member?(chapman_code)
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, religion, read_and_write, disp_occupation, category]
-      elsif  %w[CHI ALD GSY JSY].include?(chapman_code)
+      elsif %w[CHI ALD GSY JSY].include?(chapman_code)
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, category, industry, home]
       else
         [sequence_in_household, sur, fore, relation, marital, sx, disp_age, years_married, children_born_alive, children_living, children_deceased, disp_occupation, category, industry, home]
       end
+    when '1921'
+      if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
+        [sequence_in_household, sur, fore, relation, sx, disp_age, marital]
+      end
     end
   end
+
 
   def self.part2_individual_display_labels(year, chapman_code)
     case year
@@ -2533,6 +2752,10 @@ class FreecenCsvEntry
         ['Nationality', 'Birth County',  'Birth Place', "Father's Place of Birth", 'Disability', 'Notes']
       else
         ['Nationality', 'Birth County',  'Birth Place', 'Disability', 'Disability Notes', 'Notes']
+      end
+    when '1921'
+      if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
+        ['Nationality', 'Birth County', 'Birth Place','Education', 'Occupation', 'Employment', 'Place Of Work', 'Total Children Under Sixteen', 'Notes']
       end
     end
   end
@@ -2608,6 +2831,10 @@ class FreecenCsvEntry
         [nationality, birth_county_name, birth, father_place_of_birth, disability, disability_notes, lang, note]
       else
         [nationality, birth_county_name, birth, disability, disability_notes, note]
+      end
+    when '1921'
+      if ChapmanCode::CODES['England'].values.member?(chapman_code) || ChapmanCode::CODES['Wales'].values.member?(chapman_code) || ChapmanCode::CODES['Islands'].values.member?(chapman_code)
+        [nationality, birth_county_name, birth, education, occupation, employment, place_of_work, children_under_sixteen, note]
       end
     end
   end
@@ -2707,7 +2934,7 @@ class FreecenCsvEntry
     errors.add(:birth_place_flag, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     success, message = FreecenValidations.notes?(fields[:notes])
-    errors.add(:language, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
+    errors.add(:notes, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
 
     if fields[:relationship].present?
       success, message = FreecenValidations.relationship?(fields[:relationship])
@@ -2715,7 +2942,7 @@ class FreecenCsvEntry
     end
 
     if fields[:marital_status].present?
-      success, message = FreecenValidations.marital_status?(fields[:marital_status])
+      success, message = FreecenValidations.marital_status?(fields[:marital_status], fields[:year])
       errors.add(:marital_status, "Invalid; #{message}") unless success || fields[:record_valid] == 'true'
     end
     if fields[:school_children].present?

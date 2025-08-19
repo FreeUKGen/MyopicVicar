@@ -86,13 +86,15 @@
               </thead>
               <tbody>
                 <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
-                  <tr>
-                    <td><%= census %></td>
-                    <td><%= @freecen2_contents.records[:total][census][:pieces_online] %></td>
-                    <td><%= @freecen2_contents.records[:total][census][:pieces] %></td>
-                    <%= contents_show_percentage(@freecen2_contents.records[:total][census][:pieces_online], @freecen2_contents.records[:total][census][:pieces]) %>
-                    <td><%= @freecen2_contents.records[:total][census][:added_pieces_online] %></td>
-                  </tr>
+                  <% unless census == '1921' %>
+                    <tr>
+                      <td><%= census %></td>
+                      <td><%= @freecen2_contents.records[:total][census][:pieces_online] %></td>
+                      <td><%= @freecen2_contents.records[:total][census][:pieces] %></td>
+                      <%= contents_show_percentage(@freecen2_contents.records[:total][census][:pieces_online], @freecen2_contents.records[:total][census][:pieces]) %>
+                      <td><%= @freecen2_contents.records[:total][census][:added_pieces_online] %></td>
+                    </tr>
+                  <% end %>
                 <% end %>
                 <tr>
                   <td>Total</td>
