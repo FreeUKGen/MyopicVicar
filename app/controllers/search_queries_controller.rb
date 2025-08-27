@@ -289,11 +289,11 @@ class SearchQueriesController < ApplicationController
         @filter_condition = params[:filter_option]
         @search_results = filtered_results if RecordType::BMD_RECORD_TYPE_ID.include?(@filter_condition.to_i)
         #@search_query[:results_per_page] = assign_value(params[:results_per_page], SearchQuery::RESULTS_PER_PAGE) if @search_query[:results_per_page].nil? # issue 693
-        #@results_per_page = assign_value(params[:results_per_page],@search_query[:results_per_page]) #SearchQuery::RESULTS_PER_PAGE)
-        @results_per_page = assign_value(params[:results_per_page],SearchQuery::RESULTS_PER_PAGE)
+        @results_per_page = assign_value(params[:results_per_page],@search_query[:results_per_page]) #SearchQuery::RESULTS_PER_PAGE)
+        #@results_per_page = assign_value(params[:results_per_page],SearchQuery::RESULTS_PER_PAGE)
         @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
-        @paginatable_array = @search_query.paginate_results(@search_results, @page, @search_query[:results_per_page])
+        @paginatable_array = @search_query.paginate_results(@search_results, @page, @results_per_page)
         if !response || @search_results.nil? || @search_query.result_count.nil?
           logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
           flash[:notice] = 'Your search results are not available. Please repeat your search'

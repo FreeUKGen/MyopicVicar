@@ -32,31 +32,31 @@
           <tr>
             <% unless print_friendly %>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::SURNAME) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::FIRSTNAME, 'First Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME, :results_per_page => @search_query[:results_per_page], 'anchor': 'result_table_Surname')) %>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::SURNAME, 'Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME, :results_per_page => @search_query[:results_per_page], 'anchor': 'result_table_Surname')) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::FIRSTNAME, 'First Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME, :results_per_page => @sresults_per_page, 'anchor': 'result_table_Surname')) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::SURNAME, 'Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME, :results_per_page => @results_per_page, 'anchor': 'result_table_Surname')) %>
               </th>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE) %>>
-                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE, 'Record Type'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE, :results_per_page => @search_query[:results_per_page], 'anchor': 'result_table_RecordTypeID')) %>
+                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_RECORD_TYPE, 'Record Type'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_RECORD_TYPE, :results_per_page => @results_per_page, 'anchor': 'result_table_RecordTypeID')) %>
               </th>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_DATE) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_DATE, 'Registration Date'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE, :results_per_page => @search_query[:results_per_page], 'anchor': 'result_table_QuarterNumber')) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_DATE, 'Registration Date'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_DATE, :results_per_page => @results_per_page, 'anchor': 'result_table_QuarterNumber')) %>
               </th>
               <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::DISTRICT) %>>
-                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::DISTRICT, 'Registration District & Reference'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT, :results_per_page => @search_query[:results_per_page], 'anchor': 'result_table_District')) %>
+                <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::DISTRICT, 'Registration District & Reference'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT, :results_per_page => @results_per_page, 'anchor': 'result_table_District')) %>
               </th>
               <% if blank_record_types or included_record_types.include? "1" %>
                 <th  <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Mother\'s Maiden Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, :results_per_page => @search_query[:results_per_page], 'anchor': 'result_table_AssociateName')) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Mother\'s Maiden Name'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, :results_per_page => @results_per_page, 'anchor': 'result_table_AssociateName')) %>
                 </th>
               <% end %>
               <% if blank_record_types or included_record_types.include? "3" %>
                 <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Spouse\'s Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, :results_per_page => @search_query[:results_per_page], 'anchor': 'result_table_AssociateName')) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, 'Spouse\'s Surname'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_ASSOCIATE_NAME, :results_per_page => @results_per_page, 'anchor': 'result_table_AssociateName')) %>
                 </th>
               <% end %>
               <% if blank_record_types or included_record_types.include? "2" %>
                 <th <%= sort_field_aria(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH) %>>
-                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, 'Age at Death/Date of Birth'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, :results_per_page => @search_query[:results_per_page], 'anchor': 'result_table_AgeAtDeath')) %>
+                  <%= link_to(sort_field_marker(@search_query, SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, 'Age at Death/Date of Birth'), reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::BMD_AGE_AT_DEATH, :results_per_page => @results_per_page, 'anchor': 'result_table_AgeAtDeath')) %>
                 </th>
               <% end %>
             <% else %>
