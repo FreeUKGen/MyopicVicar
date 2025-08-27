@@ -20,11 +20,14 @@
   <%= render 'nav_header_freebmd' %>
 </section>
   <div class="grid">
+    <% unless device_type == :desktop %>
+      <%= horz_advert('22895564151') %>
+    <% end %>
     <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
       <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s record" %></h1>
       <hr>
       <section>
-        <div>
+        <div class="table-wrapper">
           <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
           <% if params[:search_id].present? %>
             <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
@@ -143,11 +146,11 @@
     </div>
     <% unless print_friendly %>
       <% if device_type == :desktop %>
-        <div class="grid__item two-tenths"  id='results_table_ad'>
-          <center>
+        <div class="grid__item three-tenths text--right"  id='results_table_ad'>
+          <div>
             <p>Advertisement</p>
-            <%= advert_code("right_side","side_big") %>
-          </center>
+            <div data-fuse="22895564148" class="float--right"></div>
+          </div>
         </div>
       <% end %>
     <% end %>

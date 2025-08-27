@@ -3,6 +3,44 @@
   font-size: 20px;
   font-weight: bold;
 }
+
+  .hovier_active:hover {
+    background: #C84182 !important;
+    color: #fff !important;
+    cursor: pointer !important;
+  }
+  .active:focus, .hover_active:focus {
+    outline: 2px solid #005fcc;
+    outline-offset: 2px;
+  }
+  .visually-hidden {
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+    border: 0;
+    padding: 0;
+    margin: -1px;
+  }
+
+  .donate_link:hover .heart-icon {
+  display: none;
+}
+
+  .donate_link:hover .hand-heart-icon {
+    display: inline-block;
+  }
+
+/* By default, hide the hand-holding-heart icons */
+  .donate_link .hand-heart-icon {
+    display: none;
+  }
+
+  .fa-hand-holding-heart {
+    color: #00857e;
+  }
+
 </style>
 
 <!--div class='kittu'>
@@ -92,6 +130,7 @@
              <% if nav_about_page_link.present?%>
                <li><%= nav_about_page_link %></li>
              <% end %>
+             <li><%= nav_donate_page_link %></li>
           </ul>
         </nav>
       </div>

@@ -32,14 +32,11 @@ module ApplicationHelper
   end
 
   def nav_about_page_link
-    #return if session[:userid_detail_id].present?
-    link_to( 'About', '/help/about_changing')
-    #check_current_page('/about')
+    link_to( 'About', '/help/about_changing', class: check_current_page('help/about_changing'))
   end
 
   def nav_donate_page_link
-    # not currently in use
-    link_to 'Donate', "https://www.freeukgenealogy.org.uk/help-us-keep-history-free/", id: 'donate_nav', target: :_blank
+    link_to donate_nav, "/donate", id: 'donate_nav', class: donate_page? ? 'active donate_link' : 'donate_link'
   end
 
   def nav_help_pages_link_old
@@ -81,6 +78,22 @@ module ApplicationHelper
     my_class
   end
 
+  def donate_page?
+    root = Rails.application.config.website
+    current_page?("#{root}/donate")
+  end
+
+  def donate_nav
+    content_tag :div do
+      safe_join([
+        content_tag(:i, '',class: donate_page? ? 'fas fa-hand-holding-heart' :  'fas fa-heart heart-icon', style: 'margin-right: 5px'),
+        content_tag(:i, '', class: donate_page? ? '' : 'fas fa-hand-holding-heart hand-heart-icon', style: donate_page? ? '' : 'margin-right: 5px;'),
+        content_tag(:span, "Donate"),
+        content_tag(:i, '',class: donate_page? ? 'fas fa-hand-holding-heart' : 'fas fa-heart heart-icon', style: 'margin-left: 5px'),
+        content_tag(:i, '', class: donate_page? ? '' : 'fas fa-hand-holding-heart hand-heart-icon', style: donate_page? ? '' : 'margin-left:5px;')
+      ])
+    end
+  end
 
   def nav_help_bmd_context
     suffix = ""
@@ -802,7 +815,7 @@ module ApplicationHelper
       freereg: 'https://www.freereg.org.uk/',
       freecen: 'https://www.freecen.org.uk/',
       freebmd: 'https://www.freebmd.org.uk/',
-      freebmdAccuracy: '/help',
+      freebmdAccuracy: '/help/accuracy_help',
       freebmdComplete: '/coverage?locale=en',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
@@ -1164,5 +1177,15 @@ module ApplicationHelper
 
   def upcase_string(string)
     string.present? ? string.upcase : '' 
+  end
+
+  #publift
+  def horz_advert(fuse)
+    content_tag :div, class:'grid__item one-whole hard--left' do
+      content_tag :fieldset do
+        concat(content_tag(:legend,"Advertisement", align:'center'))
+        concat(content_tag(:div,'',"data-fuse"=>fuse))
+      end
+    end
   end
 end
