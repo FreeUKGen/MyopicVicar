@@ -288,6 +288,7 @@ module Freecen
     'occupation_flag' => 'occupation_flag',
     'page_number' => 'page_number',
     'parliamentary_constituency' => 'parliamentary_constituency',
+    'police_district' => 'police_district',
     'read_write' => 'read_write',
     'relationship' => 'relationship',
     'religion' => 'religion',
