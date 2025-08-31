@@ -361,7 +361,7 @@ module FreecenValidations
       return [true, ''] if field.blank?
 
       if field =~ VALID_NUMBER
-        return [true, ''] if field.to_i < 6 && field.to_i >= 0
+        return [true, ''] if field.to_i <= 6 && field.to_i >= 0
 
         return [false, 'is an unusual number']
       end

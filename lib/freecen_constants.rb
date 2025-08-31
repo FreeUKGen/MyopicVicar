@@ -161,7 +161,7 @@ module Freecen
     %w[children_under_sixteen language]
 
   CEN2_SCT_1841 = LOCATION - %w[petty_sessional_division county_court_district ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
-              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH + FINAL - %w[children_under_sixteen disability_notes language] -
+              school_board] + HOUSEHOLD + INDIVIDUAL + OCCUPATION - %w[industry occupation_category at_home] + BIRTH - %w[verbatim_birth_place birth_place] + FINAL - %w[children_under_sixteen disability_notes language] -
     %w[nationality]
 
   CEN2_SCT_1851 = LOCATION - %w[petty_sessional_division county_court_district ward poor_law_union police_district sanitary_district special_water_district scavenging_district special_lighting_district
