@@ -1,5 +1,6 @@
-<% title "Names found in #{@district.DistrictName} District" %>
 <div class="container">
+  <%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
+  <%= show_back_to_district_link({district: @district})%>
   <section class="island ">
     <div class="text--center">
       <%= link_to 'View Birth Names', unique_district_names_path(id: @district_number, record_type: "birth" ), method: :get, :class => "btn   btn--small" unless @record_type == "birth" %>
