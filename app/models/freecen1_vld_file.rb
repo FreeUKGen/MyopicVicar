@@ -415,7 +415,9 @@ class Freecen1VldFile
       when 'birth_county'
         county, place = compute_alternate(rec)
         line << county
-        line << place if census_fields.include?('ecclesiastical_parish') # birth place not in 1841 census
+        unless series == 'HS' && year == '1841'
+          line << place if census_fields.include?('ecclesiastical_parish') # birth place not in 1841 census
+        end
       when 'disability'
         line << rec['disability']
       when 'language'
