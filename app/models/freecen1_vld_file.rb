@@ -257,62 +257,56 @@ class Freecen1VldFile
       end
     when 'HS'
       success = false
+      fourth_fifth_characters = file_name[3, 2]
       case year
       when '1841'
         success = true
         message = ''
         part1 = 'HS4'
-        suffix = get_filename_sufffix(filename)
-        file = part1 + '_' + piece.to_s + suffix
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1841
       when '1851'
         success = true
         message = ''
         part1 = 'HS5'
-        suffix = get_filename_sufffix(filename)
-        file = part1 + '_' + piece.to_s + suffix
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1851
       end
     when 'RS'
       success = false
+      fourth_fifth_characters = file_name[3, 2]
       case year
       when '1861'
         success = true
         message = ''
         part1 = 'RS6'
-        suffix = get_filename_sufffix(filename)
-        file = part1 + '_' + piece.to_s + suffix
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1861
       when '1871'
         success = true
         message = ''
         part1 = 'RS7'
-        suffix = get_filename_sufffix(filename)
-        file = part1 + '_' + piece.to_s + suffix
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1871
       when '1881'
         success = true
         message = ''
         part1 = 'RS8'
-        suffix = get_filename_sufffix(filename)
-        file = part1 + '_' + piece.to_s + suffix
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1881
       when '1891'
         success = true
         message = ''
         part1 = 'RS9'
-        suffix = get_filename_sufffix(filename)
-        file = part1 + '_' + piece.to_s + suffix
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1891
       when '1901'
         part1 = 'RS10'
-        suffix = get_filename_sufffix(filename)
-        file = part1 + '_' + piece.to_s + suffix
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1901
       when '1911'
         part1 = 'RS11'
-        suffix = get_filename_sufffix(filename)
-        file = part1 + '_' + piece.to_s + suffix
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1911
       end
     when 'HO'
@@ -323,12 +317,6 @@ class Freecen1VldFile
     else
     end
     [success, message, file, census_fields]
-  end
-
-  def get_filename_sufffix(file_name)
-    a_to_j = ('a'..'j').to_a
-    fifth_character = file_name[4, 1]
-    suffix = fifth_character.match?(/[[:digit:]]/) ? '_' + a_to_j[fifth_character.to_i] + '.csv' : '.csv'
   end
 
   def write_csv_file(file_location, census_fields, series, year)
