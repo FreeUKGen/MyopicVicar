@@ -62,9 +62,6 @@
       <% unless device_type == :mobile %>
         <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
           <div class="bnner-horz bmd_adsenses header_ads">
-            <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/">
-              <%= image_tag 'png/header-donate.png',  class: "donations", alt: "Donations - FreeUKGenealogy" %>
-            </a>
             <%= advert_code("header", "horz") %>
           </div>
         <% end %>
