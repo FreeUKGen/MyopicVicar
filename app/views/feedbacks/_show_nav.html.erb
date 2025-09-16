@@ -6,5 +6,7 @@
   <%= link_to 'Restore', restore_feedback_path(@feedback.id), :class => "btn btn--small", data: { confirm: 'Are you sure you want to Archive this contact?' } if do_we_show_restore_feedback_action?(@feedback)%>
   <%= link_to 'Keep until I say so', keep_feedback_path(@feedback.id,:source => params[:action]), :class => 'btn btn--small',  data: { confirm: 'Are you sure you want keep this feedback' } unless @feedback.keep.present?%>
   <%= link_to 'Remove Keep Designation', unkeep_feedback_path(@feedback.id,:source => params[:action]), :class => 'btn btn--small',  data: { confirm: 'Are you sure you want remove the keep designation for this feedback' } if @feedback.keep.present? %>
-  <%= link_to "Convert to Issue", convert_feedback_to_issue_path(@feedback),method: :post, :class => "btn btn--small",  data: { confirm: 'Are you sure you want to convert to GITHUB issue' } if do_we_show_github_create_feedback_action?(@feedback) %>
+  <% if session[:role] == 'system_administrator'%>
+    <%= link_to "Convert to Issue", convert_feedback_to_issue_path(@feedback),method: :post, :class => "btn btn--small",  data: { confirm: 'Are you sure you want to convert to GITHUB issue' } if do_we_show_github_create_feedback_action?(@feedback) %>
+  <% end %>
 </div>

@@ -20,7 +20,7 @@ module FeedbacksHelper
   end
 
   def do_we_show_github_create_feedback_action?(feedback)
-    Contact.github_enabled ? do_we_permit = true : do_we_permit = false
+    (Contact.github_enabled &&  !feedback.github_number.present?) ? do_we_permit = true : do_we_permit = false
     do_we_permit
   end
 

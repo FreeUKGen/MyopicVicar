@@ -31,7 +31,7 @@ module Emendor
               #p "no sex on burial"
             when (name[:gender].nil? && name[:role] == "wt")
               #p "no sex on witness"
-            when (name[:gender].present? && (name[:gender] != rule[:gender]))
+            when (name[:gender].present? && (name[:gender].downcase != rule[:gender]))
               #p "genders do not match"
               next
             end
