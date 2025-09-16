@@ -27,7 +27,7 @@
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole push--bottom hard--left">
         <%= form_tag search_query_path(@search_query), method: :get, id: 'filter_form' do %>
           <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole hard--left">
-            <%= label_tag 'results_per_page', 'Show' %>
+            <%= label_tag 'results_per_page', '<span class="accessibility">Number of results to </span>'.html_safe+'Show' %>
             <%= select_tag :results_per_page, options_for_select([50,100,200], selected: @results_per_page), id: 'results_per_page', tabindex: 0 %>
           </div>
           <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole">
@@ -54,7 +54,7 @@
           <% show_large_ad = @search_results.size > 6 %>
           <div class="grid__item <%= show_large_ad ? 'three-tenths' : 'two-tenths' %> lap-two-tenths palm-one-whole text--right push--left" id="results_table_ad" style="<%= show_large_ad ? 'flex-direction: column;' : '' %>">
             <% if show_large_ad %>
-              <span>Advertisements</span>
+              <h2 class="smallprint">Advertisements</h2>
               <div data-fuse="22895564148" class="float--right"></div>
               <div class="float--right push--top">
                 <iframe src="<%= iframe_src %>" height="650" width="170"></iframe>
@@ -64,7 +64,7 @@
               </div>
             <% else %>
               <div class="ad-center">
-                <p>Advertisement</p>
+                <h2 class="smallprint">Advertisement</h2>
                 <iframe src="<%= iframe_src %>" height="650" width="170"></iframe>
               </div>
             <% end %>

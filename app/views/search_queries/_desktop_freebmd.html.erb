@@ -89,7 +89,7 @@
                     <% postems_count = rec.postems_list.count %>
                     <%else postems_count = 0 %>
                   <% end %>
-                  <% postems_count_text = postems_count.zero? ? '' : "#{app_icons[:postem]}" %>
+                  <% postems_count_text = postems_count.zero? ? '' : '<span class="accessibility">Postem available</span>'.html_safe+"#{app_icons[:postem]}" %>
                   <center>
                     <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
                     <br>
@@ -123,17 +123,17 @@
               </td>
               <% if blank_record_types or included_record_types.include? "1" %>
                 <td class="table--data">
-                  <%= if record_type == "BIRTHS" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
+                  <%= if record_type == "BIRTHS" then value_or_no_data(search_record[:AssociateName]) else '&ndash;'.html_safe end %>
                 </td>
               <% end %>
               <% if blank_record_types or included_record_types.include? "3" %>
                 <td class="table--data">
-                  <%= if record_type == "MARRIAGES" then value_or_no_data(search_record[:AssociateName]) else '-' end %>
+                  <%= if record_type == "MARRIAGES" then value_or_no_data(search_record[:AssociateName]) else '&ndash;'.html_safe end %>
                 </td>
               <% end %>
               <% if blank_record_types or included_record_types.include? "2" %>
                 <td class="table--data">
-                  <%= if record_type == "DEATHS" then value_or_no_data(search_record[:AgeAtDeath]) else '-' end %>
+                  <%= if record_type == "DEATHS" then value_or_no_data(search_record[:AgeAtDeath]) else '&ndash;'.html_safe end %>
                 </td>
               <% end %>
             </tr>
@@ -143,7 +143,7 @@
       <div>
         <h2 class="accessibility">Explanation of table entries</h2>
         <p><b>Mother’s Maiden Name</b>, <b>Spouse’s Surname</b>, and <b>Age at Death/Date of Birth</b> are relevant for the records from 1993 onward.
-        If no data is available for a specific record, these fields will display ‘No data.’ A dash (‘-’) will appear in fields
+        If no data is available for a specific record, these fields will display ‘No data.’ A dash (&ndash;) will appear in fields
         that are not relevant to a particular event type.</p>
       </div>
     <!--/div-->
