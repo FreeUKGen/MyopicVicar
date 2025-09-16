@@ -3,7 +3,7 @@
   <% search_criteria.each do |name, value| %>
     <%= name %>: <b><%= value %></b> ;
   <% end %><br>
-  <h4 class="accessiblity"><%= pluralize(@result_count, ' Search Result', ' Search Results') %></h4>
+  <h4 class="accessibility"><%= pluralize(@result_count, ' Search Result', ' Search Results') %></h4>
   <% unless appname_downcase == 'freebmd' %>
     <% if Rails.application.config.freecen2_place_cache %>
       <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
@@ -19,6 +19,7 @@
   <% end %>
 <% else %>
     <div class='container' id='search_criteria_container'>
+      <h2 class="accessibility">Search Criteria</h2>
       <div class="grid">
         <div class="grid__item  seven-tenths lap-three-quarters palm-one-whole">
           <section class="islet islet--light soft--left hard--bottom">
@@ -27,7 +28,7 @@
                 <i class="fa fa-times"  tabindex="0"></i>
               <% end %>
               <div class="grid__item one-whole lap-one-whole palm-one-whole">
-                <h2 class="epsilon flush--bottom push-half--bottom"><em>When you searched for:</em></h2>
+                <h3 class="epsilon flush--bottom push-half--bottom"><em>When you searched for:</em></h3>
                 <% if Rails.application.config.freecen2_place_cache %>
                   <div class="criteria-group">
                     <% search_freecen2_params_for_display(@search_query).each do |name, value| %>
