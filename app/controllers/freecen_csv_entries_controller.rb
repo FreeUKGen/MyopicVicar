@@ -307,8 +307,6 @@ class FreecenCsvEntriesController < ApplicationController
     if @freecen_csv_entry.errors.any?
       redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
     else
-      session[:propagate_alternate] = @freecen_csv_entry.id if @freecen_csv_entry.propagate?(params[:freecen_csv_entry])
-      session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.propagate_note?(params[:freecen_csv_entry])
       params[:freecen_csv_entry][:warning_messages] = '' if params[:freecen_csv_entry][:record_valid] == 'true'
       @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
       if params[:commit] == 'Override warnings'
@@ -316,6 +314,8 @@ class FreecenCsvEntriesController < ApplicationController
         @freecen_csv_entry.remove_flags if @freecen_csv_entry.flag
       end
       @freecen_csv_entry.reload
+      session[:propagate_alternate] = @freecen_csv_entry.id if @freecen_csv_entry.propagate?(params[:freecen_csv_entry])
+      session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.propagate_note?(params[:freecen_csv_entry])
       @warnings_now, @errors_now = @freecen_csv_entry.are_there_messages
       @freecen_csv_entry.check_valid
       @freecen_csv_file.update_messages_and_lock(@warnings, @errors, @warnings_now, @errors_now)
