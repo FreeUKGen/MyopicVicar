@@ -20,7 +20,7 @@ module DistrictsHelper
     logger.warn(link_hash)
     case
     when link_hash[:district].present?
-      a = link_to 'Back to district', districts_select_district_path(id: link_hash[:district].id)
+      a = link_to '#{app_icons[:left_arrow_pink]} Back to district', districts_select_district_path(id: link_hash[:district].id)
     end
     return a
   end
