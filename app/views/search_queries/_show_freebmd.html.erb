@@ -54,7 +54,7 @@
           <% show_large_ad = @search_results.size > 6 %>
           <div class="grid__item <%= show_large_ad ? 'three-tenths' : 'two-tenths' %> lap-two-tenths palm-one-whole text--right push--left" id="results_table_ad" style="<%= show_large_ad ? 'flex-direction: column;' : '' %>">
             <% if show_large_ad %>
-              <h2 class="smallprint">Advertisements</h2>
+              <h2 class="text--center" style="font-size:12pt;">Advertisements</h2>
               <div data-fuse="22895564148" class="float--right"></div>
               <div class="float--right push--top">
                 <iframe src="<%= iframe_src %>" height="650" width="170"></iframe>
@@ -64,7 +64,7 @@
               </div>
             <% else %>
               <div class="ad-center">
-                <h2 class="smallprint">Advertisement</h2>
+                <h2 class="text--center" style="font-size:12pt;">Advertisement</h2>
                 <iframe src="<%= iframe_src %>" height="650" width="170"></iframe>
               </div>
             <% end %>
