@@ -69,7 +69,7 @@ module ApplicationHelper
   end
 
   def nav_help_page_link
-    link_to 'Help', '/help/search_help', class: check_current_page('/help/search_help')
+    link_to 'Help', '/help/search_help', class: check_current_page('help/search_help')
   end
 
   def check_current_page(url)
@@ -110,8 +110,6 @@ module ApplicationHelper
   end
 
   def nav_member_page_link
-    return if controller_name == 'sessions'
-
     if session[:userid_detail_id].present?
       link_to 'Logout', main_app.logout_manage_resources_path
     else
