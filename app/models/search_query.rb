@@ -1452,7 +1452,7 @@ class SearchQuery
 
   def freebmd_search_records
     search_fields = bmd_adjust_field_names
-    search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
+    search_fields[:OtherNames] = search_fields.delete(:GivenName).delete_prefix('*')  if second_name_search?
     search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present? # issue 689: given name punctuation not in data, so remove them from search
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
@@ -1717,7 +1717,7 @@ class SearchQuery
 
   def second_name_wildcard
     if freebmd_app?
-      self.first_name.start_with?('*') && !self.first_name.start_with?('**')
+      self.first_name.start_with?('<') && !self.first_name.start_with?('**')
     end
   end
 
