@@ -1726,7 +1726,7 @@ class SearchQuery
    def first_name_wildcard_query
     unless second_name_wildcard
       if first_name.present? && !first_name_exact_match
-        if do_wildcard_seach??(first_name)
+        if do_wildcard_seach?(first_name)
             field, value = "BestGuess.GivenName like ?", "#{name_wildcard_search(first_name)}#{conditional_percentage_wildcard(first_name)}"
         end
       end
