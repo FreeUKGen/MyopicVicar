@@ -32,7 +32,7 @@ module ApplicationHelper
   end
 
   def nav_about_page_link
-    link_to( 'About', '/help/about_changing', class: check_current_page('help/about_changing'))
+    link_to( 'About', '/help/about_new', class: check_current_page('help/about_changing'))
   end
 
   def nav_donate_page_link
