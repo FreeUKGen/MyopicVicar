@@ -1717,7 +1717,7 @@ class SearchQuery
 
   def second_name_wildcard
     if freebmd_app?
-      self.first_name.start_with?('<') && !self.first_name.start_with?('**')
+      self.first_name.start_with?('>') && !self.first_name.start_with?('**')
     end
   end
 
