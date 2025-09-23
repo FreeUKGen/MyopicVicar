@@ -1460,9 +1460,9 @@ class SearchQuery
       max_time = Rails.application.config.max_search_time
       logger.warn(max_time)
       Timeout::timeout(max_time) do
-        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-        records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
-        records = records.where(search_conditions)
+        records = SearchQuery.get_search_table.includes(:CountyCombos).where(search_fields)#.joins(spouse_join_condition).where(bmd_marriage_params)
+        records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?#unless self.first_name_exact_match
+        records = records.where(search_conditions) if search_conditions.present?
         records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
         records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
         records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
@@ -1712,7 +1712,9 @@ class SearchQuery
   end
 
   def wildcard_search_conditions
-    [[sanitized_hash(first_name_wildcard_query).sanitize_keys, sanitized_hash(surname_wildcard_query).sanitize_keys, sanitized_hash(mother_surname_wildcard_query).sanitize_keys].compact.join(' and '), sanitized_hash(first_name_wildcard_query).sanitize_values, sanitized_hash(surname_wildcard_query).sanitize_values, sanitized_hash(mother_surname_wildcard_query).sanitize_values].flatten.compact
+    keys = [sanitized_hash(first_name_wildcard_query).sanitize_keys, sanitized_hash(surname_wildcard_query).sanitize_keys, sanitized_hash(mother_surname_wildcard_query).sanitize_keys].compact
+    keys = keys.join(' and ') if keys.present?
+    [keys, sanitized_hash(first_name_wildcard_query).sanitize_values, sanitized_hash(surname_wildcard_query).sanitize_values, sanitized_hash(mother_surname_wildcard_query).sanitize_values].flatten.compact
   end
 
   def second_name_wildcard
@@ -1722,9 +1724,11 @@ class SearchQuery
   end
 
    def first_name_wildcard_query
-    if first_name.present? && !first_name_exact_match
-      if has_wildcard?(first_name)
-          field, value = "BestGuess.GivenName like ?", "#{name_wildcard_search(first_name)}#{conditional_percentage_wildcard(first_name)}"
+    unless second_name_wildcard
+      if first_name.present? && !first_name_exact_match
+        if do_wildcard_seach??(first_name)
+            field, value = "BestGuess.GivenName like ?", "#{name_wildcard_search(first_name)}#{conditional_percentage_wildcard(first_name)}"
+        end
       end
     end
     {field => value}
