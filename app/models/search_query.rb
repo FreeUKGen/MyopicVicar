@@ -1452,7 +1452,6 @@ class SearchQuery
 
   def freebmd_search_records
     search_fields = bmd_adjust_field_names
-    search_fields[:OtherNames] = search_fields.delete(:GivenName).delete_prefix('>')  if second_name_wildcard
     search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present? # issue 689: given name punctuation not in data, so remove them from search
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
@@ -1460,7 +1459,7 @@ class SearchQuery
       max_time = Rails.application.config.max_search_time
       logger.warn(max_time)
       Timeout::timeout(max_time) do
-        records = SearchQuery.get_search_table.includes(:CountyCombos).where(search_fields)#.joins(spouse_join_condition).where(bmd_marriage_params)
+        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
         records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?#unless self.first_name_exact_match
         records = records.where(search_conditions) if search_conditions.present?
         records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
@@ -1750,7 +1749,8 @@ class SearchQuery
 
   def bmd_params_hash
     search_fields = bmd_adjust_field_names
-    #search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
+    search_fields[:OtherNames] = search_fields.delete(:GivenName).delete_prefix('>') if second_name_wildcard
+    search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present?
     first_name_exact_match ? search_fields : search_fields.except!(:GivenName)
     surname_middle_name_partial ? search_fields.except!(:Surname) : search_fields
   end
