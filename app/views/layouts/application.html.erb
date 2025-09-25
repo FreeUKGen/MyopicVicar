@@ -27,6 +27,12 @@
       });
     </script>
     <script>
+      window.googletag = window.googletag || { cmd: [] };
+        googletag.cmd.push(function () {
+          googletag.pubads().set("page_url", "https://www.freebmd.org.uk/");
+        });
+    </script>
+    <script>
     // Define dataLayer and the gtag function.
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
