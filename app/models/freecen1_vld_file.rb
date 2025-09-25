@@ -207,7 +207,7 @@ class Freecen1VldFile
   def create_csv_file
     @chapman_code = chapman_code
     year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
-    success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
+    success, message, file, census_fields = convert_file_name_to_csv(year, piece, series, file_name)
     if success
       file_location = Rails.root.join('tmp', file)
       success, message = write_csv_file(file_location, census_fields, series, year)
@@ -218,7 +218,7 @@ class Freecen1VldFile
   def create_entry_csv_file
     @chapman_code = chapman_code
     year, piece, series = FreecenPiece.extract_year_and_piece(file_name)
-    success, message, file, census_fields = convert_file_name_to_csv(year, piece, series)
+    success, message, file, census_fields = convert_file_name_to_csv(year, piece, series,file_name)
     if success
       file_location = Rails.root.join('tmp', file)
       success, message = write_entry_csv_file(file_location, Freecen1VldEntry.fields.keys, year)
@@ -226,7 +226,7 @@ class Freecen1VldFile
     [success, message, file_location, file]
   end
 
-  def convert_file_name_to_csv(year, piece, series)
+  def convert_file_name_to_csv(year, piece, series, filename)
     case series
     when 'RG'
       success = true
@@ -257,46 +257,56 @@ class Freecen1VldFile
       end
     when 'HS'
       success = false
+      fourth_fifth_characters = file_name[3, 2]
       case year
       when '1841'
         success = true
         message = ''
-        file = 'HS4' + '_' + piece.to_s + '.csv'
+        part1 = 'HS4'
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1841
       when '1851'
         success = true
         message = ''
-        file = 'HS5' + '_' + piece.to_s + '.csv'
+        part1 = 'HS5'
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1851
       end
     when 'RS'
       success = false
+      fourth_fifth_characters = file_name[3, 2]
       case year
       when '1861'
         success = true
         message = ''
-        file = 'RS6' + '_' + piece.to_s + '.csv'
+        part1 = 'RS6'
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1861
       when '1871'
         success = true
         message = ''
-        file = 'RS7' + '_' + piece.to_s + '.csv'
+        part1 = 'RS7'
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1871
       when '1881'
         success = true
         message = ''
-        file = 'RS8' + '_' + piece.to_s + '.csv'
+        part1 = 'RS8'
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1881
       when '1891'
         success = true
         message = ''
-        file = 'RS9' + '_' + piece.to_s + '.csv'
+        part1 = 'RS9'
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1891
       when '1901'
-        file = 'RS10' + '_' + piece.to_s + '.csv'
+        part1 = 'RS10'
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1901
       when '1911'
-        file = 'RS11' + '_' + piece.to_s + '.csv'
+        part1 = 'RS11'
+        file = part1 + '_' + piece.to_s + + '_' + fourth_fifth_characters + '.csv'
         census_fields = Freecen::CEN2_SCT_1911
       end
     when 'HO'
@@ -415,7 +425,9 @@ class Freecen1VldFile
       when 'birth_county'
         county, place = compute_alternate(rec)
         line << county
-        line << place if census_fields.include?('ecclesiastical_parish') # birth place not in 1841 census
+        unless series == 'HS' && year == '1841'
+          line << place if census_fields.include?('ecclesiastical_parish') # birth place not in 1841 census
+        end
       when 'disability'
         line << rec['disability']
       when 'language'
