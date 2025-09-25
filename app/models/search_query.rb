@@ -1462,6 +1462,7 @@ class SearchQuery
         records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
         records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?#unless self.first_name_exact_match
         records = records.where(search_conditions) if search_conditions.present?
+        records = records.where(all_secondname_filteration) if all_secondname_search
         records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
         records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
         records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
@@ -1563,6 +1564,13 @@ class SearchQuery
     if self.first_name.present? && !self.first_name_exact_match
      field, value = "BestGuess.GivenName like ?", "#{self.first_name}%" unless firstname_wildcard_query? || has_wildcard?(first_name)
       #{}"BestGuess.GivenName like '#{self.first_name}%'" unless do_wildcard_seach?(self.first_name)
+    end
+    {field => value}
+  end
+
+  def all_secondname_filteration
+    if self.first_name.present? && !self.first_name_exact_match
+     field, value = "BestGuess.OtherNames like ?", "%#{self.first_name}%"
     end
     {field => value}
   end
@@ -1718,7 +1726,13 @@ class SearchQuery
 
   def second_name_wildcard
     if freebmd_app?
-      self.first_name.start_with?('>') && !self.first_name.start_with?('**')
+      self.first_name.start_with?('>') && !self.first_name.start_with?('>>')
+    end
+  end
+
+  def all_secondname_search
+    if freebmd_app?
+      !self.first_name.start_with?('>') && self.first_name.start_with?('>>')
     end
   end
 
