@@ -1561,7 +1561,7 @@ class SearchQuery
 
   def first_name_filteration
     if self.first_name.present? && !self.first_name_exact_match
-     field, value = "BestGuess.GivenName like ?", "#{self.first_name.strip}%" unless firstname_wildcard_query? || has_wildcard?(first_name)
+     field, value = "BestGuess.GivenName like ?", "#{self.first_name.strip}%" unless firstname_wildcard_query? || has_wildcard?(first_name) || second_name_wildcard || all_secondname_search
      field, value = "BestGuess.GivenName like ?", "%#{self.first_name.delete_prefix('+').strip}%" if self.first_name.start_with?('+')
       #{}"BestGuess.GivenName like '#{self.first_name}%'" unless do_wildcard_seach?(self.first_name)
     end
@@ -1569,7 +1569,7 @@ class SearchQuery
   end
 
   def all_secondname_filteration
-    if self.first_name.present? && !self.first_name_exact_match
+    if first_name_not_exact_match
       fn = self.first_name.delete_prefix('>>').strip 
      field, value = "BestGuess.OtherNames like ?", "%#{fn}%"
     end
