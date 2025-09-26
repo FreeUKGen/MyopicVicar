@@ -1452,7 +1452,6 @@ class SearchQuery
 
   def freebmd_search_records
     search_fields = bmd_adjust_field_names
-    search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present? # issue 689: given name punctuation not in data, so remove them from search
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     begin
@@ -1462,9 +1461,6 @@ class SearchQuery
         records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
         records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?#unless self.first_name_exact_match
         records = records.where(search_conditions) if search_conditions.present?
-        records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
-        records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
-        records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
         records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
         records = spouse_given_name_filter(records) if self.spouse_first_name.present?
         records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
@@ -1569,7 +1565,7 @@ class SearchQuery
   end
 
   def all_secondname_filteration
-    if first_name_not_exact_match
+    if all_secondname_search
       fn = self.first_name.delete_prefix('>>').strip 
      field, value = "BestGuess.OtherNames like ?", "%#{fn}%"
     end
@@ -1715,7 +1711,7 @@ class SearchQuery
   
   def search_conditions
     #[sanitize_keys(first_name_filteration), sanitize_keys(name_wildcard_query), sanitize_values(first_name_filteration), sanitize_values(name_wildcard_query)].flatten.compact
-[[sanitized_hash(first_name_filteration).sanitize_keys, sanitized_hash(all_secondname_filteration).sanitize_keys, sanitized_hash(name_wildcard_query).sanitize_keys].compact.join(' and '), sanitized_hash(first_name_filteration).sanitize_values, sanitized_hash(all_secondname_filteration).sanitize_values, sanitized_hash(name_wildcard_query).sanitize_values].flatten.compact    #[first_name_filteration, name_field_wildcard_search, mother_surname_wildcard_query].compact.to_sentence
+    [[sanitized_hash(first_name_filteration).sanitize_keys, sanitized_hash(all_secondname_filteration).sanitize_keys, sanitized_hash(name_wildcard_query).sanitize_keys].compact.join(' and '), sanitized_hash(first_name_filteration).sanitize_values, sanitized_hash(all_secondname_filteration).sanitize_values, sanitized_hash(name_wildcard_query).sanitize_values].flatten.compact    #[first_name_filteration, name_field_wildcard_search, mother_surname_wildcard_query].compact.to_sentence
   end
 
   def wildcard_search_conditions
