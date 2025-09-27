@@ -124,7 +124,7 @@ class District < FreebmdDbBase
   end
 
   def valid?
-    !(self.YearStart == 9999) && !(self.QuarterEnd == 9)
+    !(self.YearStart == 9999) && !(self.QuarterStart == 9)
   end
 
   def clean name
