@@ -1765,7 +1765,7 @@ class SearchQuery
     search_fields = bmd_adjust_field_names
     search_fields[:OtherNames] = search_fields.delete(:GivenName).delete_prefix('>') if second_name_wildcard
     search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present?
-    search_fields[:Surname] = search_fields[:Surname].delete_prefix('#') if search_fields[:Surname].start_with?('#')
+    search_fields[:Surname] = search_fields[:Surname].delete_prefix('#') if search_fields[:Surname].present? && search_fields[:Surname].start_with?('#')
     first_name_exact_match ? search_fields : search_fields.except!(:GivenName)
     surname_middle_name_partial ? search_fields.except!(:Surname) : search_fields
   end
