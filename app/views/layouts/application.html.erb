@@ -184,7 +184,8 @@
       <main  class="site__content  icon__honeycomb--top-right" id="bmd_site_content">
         <% unless device_type == :mobile%>
         <% end %>
-        <div class="container hard--right" id="top">
+        <% excluded_paths = ['/', new_search_query_path] %>
+        <div class="container hard--right<%= ' id="top"' unless excluded_paths.any? { |path| current_page?(path) } %>">
           <%#= breadcrumbs  :class => "delta  text--magenta" if appname_downcase="freebmd"%>
           <% if session[:userid_detail_id].present?%>
             <%= breadcrumbs  :class => "delta  project-text-color"  unless controller_name == "refinery" ||
