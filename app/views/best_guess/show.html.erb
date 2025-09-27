@@ -19,152 +19,155 @@
 <section>
   <%= render 'nav_header_freebmd' %>
 </section>
-  <div class="grid">
-    <% unless device_type == :desktop %>
-      <%= horz_advert('22895564151') %>
-    <% end %>
-    <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
-      <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s record" %></h1>
-      <hr>
-      <section>
-        <div class="table-wrapper">
-          <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
-          <% if params[:search_id].present? %>
-            <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
-          <% else %>
-            <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, original_record: @original_record, type: "general"} %>
-          <% end %>
-        </div>
-      </section>
-      
-      <% if @option == '1' %>
-        <div id="display_scans">
-          <h4>Scans</h4>
-          <table class="table--bordered table--data ">
-            <thead>
-              <th>Scan</th>
-              <th>View Scan</th>
-            </thead>
-            <tbody>
-              <% if @scan_links.present? %>
-                <% @scan_links.each do |s| %>
-                    <% series = s.SeriesRangeFileName %>
-                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
+<div class="grid">
+  <% unless device_type == :desktop %>
+    <%= horz_advert('22895564151') %>
+  <% end %>
+  <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
+    <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s record" %></h1>
+    <hr>
+    <section>
+      <div class="table-wrapper">
+        <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
+        <% if params[:search_id].present? %>
+          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
+        <% else %>
+          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, original_record: @original_record, type: "general"} %>
+        <% end %>
+      </div>
+    </section>
+    
+    <% if @option == '1' %>
+      <div id="display_scans">
+        <h4>Scans</h4>
+        <table class="table--bordered table--data ">
+          <thead>
+            <th>Scan</th>
+            <th>View Scan</th>
+          </thead>
+          <tbody>
+            <% if @scan_links.present? %>
+              <% @scan_links.each do |s| %>
+                  <% series = s.SeriesRangeFileName %>
+                  <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
+                  <tr>
+                    <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                    <td><%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%></td>
+                  </tr>
+              <% end %>
+             <% end %>
+            <% if @acc_scans.present? %>
+              <% @acc_scans.each do |s| %>
+                  <% series = s.SeriesID %>
+                  <% range = "/#{s.range.Range}" if s.Range.present?%>
+                  <% file = s.Filename %>
+                  <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
+                  <tr>
+                    <td><%= image_tag(image_file_path,size: "100x100")%></td>
+                    <td><%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%></td>
+                  </tr>
+              <% end %>
+            <% end %>
+            <% if @acc_mul_scans.present? %>
+              <% @acc_mul_scans.each do |s| %>
+                  <% series = s.SeriesID %>
+                  <% range = "/#{s.Range}" if s.Range.present?%>
+                  <% @current_record.multi_image_filenames.each do |fn| %>
+                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
                     <tr>
                       <td><%= image_tag(image_file_path,size: "100x100")%></td>
-                      <td><%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%></td>
-                    </tr>
-                <% end %>
-               <% end %>
-              <% if @acc_scans.present? %>
-                <% @acc_scans.each do |s| %>
-                    <% series = s.SeriesID %>
-                    <% range = "/#{s.range.Range}" if s.Range.present?%>
-                    <% file = s.Filename %>
-                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
-                    <tr>
-                      <td><%= image_tag(image_file_path,size: "100x100")%></td>
-                      <td><%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%></td>
-                    </tr>
-                <% end %>
-              <% end %>
-              <% if @acc_mul_scans.present? %>
-                <% @acc_mul_scans.each do |s| %>
-                    <% series = s.SeriesID %>
-                    <% range = "/#{s.Range}" if s.Range.present?%>
-                    <% @current_record.multi_image_filenames.each do |fn| %>
-                      <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
-                      <tr>
-                        <td><%= image_tag(image_file_path,size: "100x100")%></td>
-                        <td><%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%></td>
-                      </tr>
-                    <% end %>
-                <% end %>
-              <% end %>
-            </tbody>
-          </table>
-          <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
-        </div>
-      <% end %>
-      <% if @option == '2' %>
-        <div id="display_postems">
-          <div>
-            <h4>Postems</h4>
-            <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
-            <% if @current_record.postems_list.present? %>
-              <p>Below are the list of postems</p>
-              <table class="table--bordered table--data">
-                <thead>
-                  <th>Date</th>
-                  <th>Postem</th>
-                </thead>
-                <tbody>
-                  <% @current_record.postems_list.each do |postem|%>
-                    <tr>
-                      <td>
-                        <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
-                      </td>
-                      <td>
-                        <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
-                      </td>
+                      <td><%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%></td>
                     </tr>
                   <% end %>
-                </tbody>
-              </table>
-            <% end %>
-            <div class="text--left push-half--bottom">
-              <small>
-                <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
-              </small>
-            </div>
-            <p id="create_postem">Add a postem</p>
-            <div class="create_postem_div">
-              <%= semantic_form_for(@new_postem) do |f| %>
-                <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
-                <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
-                <%= hidden_field_tag('search_query', @search_query.id) if @search %>
-                <ol class="grid">
-                  <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
-                    <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
-                  </li>
-                  <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
-                    <%= button_tag 'Add Postem', type: :submit, class: 'ladda-button kittumani' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
-                  </li>
-                </ol>
               <% end %>
-            </div>
-          </div>
-        </div>
-      <% end %>
-      <h3>Need help?</h3>
-      <p>You can find information about the Entry Information page in our <%= link_to 'Help', '/help/entry_help'%> section.</p>
-      <h3>Ordering a GRO certificate</h3>
-      <p>You can order certificates from the <%= link_to 'General Register Office (GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.</p>
-      <div class="grid__item two-thirds lap-two-thirds palm-one-whole text--center push--top ">
-          <%= link_to 'Suggest a correction', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
-        </div>
-    </div>
-    <% unless print_friendly %>
-      <% if device_type == :desktop %>
-        <div class="grid__item three-tenths text--right"  id='results_table_ad'>
-          <div>
-            <h2 class="text--center" style="font-size:12pt;">Advertisement</h2>
-            <div data-fuse="22895564148" class="float--right"></div>
-          </div>
-        </div>
-      <% end %>
+            <% end %>
+          </tbody>
+        </table>
+        <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
+      </div>
     <% end %>
-
-      
+    <% if @option == '2' %>
+      <div id="display_postems">
+        <div>
+          <h4>Postems</h4>
+          <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
+          <% if @current_record.postems_list.present? %>
+            <p>Below are the list of postems</p>
+            <table class="table--bordered table--data">
+              <thead>
+                <th>Date</th>
+                <th>Postem</th>
+              </thead>
+              <tbody>
+                <% @current_record.postems_list.each do |postem|%>
+                  <tr>
+                    <td>
+                      <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
+                    </td>
+                    <td>
+                      <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% end %>
+          <div class="text--left push-half--bottom">
+            <small>
+              <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
+            </small>
+          </div>
+          <p id="create_postem">Add a postem</p>
+          <div class="create_postem_div">
+            <%= semantic_form_for(@new_postem) do |f| %>
+              <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
+              <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
+              <%= hidden_field_tag('search_query', @search_query.id) if @search %>
+              <ol class="grid">
+                <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
+                  <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
+                </li>
+                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
+                  <%= button_tag 'Add Postem', type: :submit, class: 'ladda-button kittumani' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                </li>
+              </ol>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <h3>Need help?</h3>
+    <p>
+      You can find information about the Entry Information page in our <%= link_to 'Help', '/help/entry_help'%> section.
+    </p>
+    <h3>Ordering a GRO certificate</h3>
+    <p class="push-half--bottom">
+      You can order certificates from the <%= link_to 'General Register Office (GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.
+    </p>
+    <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left push-half--top push-half--bottom ">
+      <%= link_to 'Suggest a correction', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
+    </div>
   </div>
+  <% unless print_friendly %>
+    <% if device_type == :desktop %>
+      <div class="grid__item three-tenths text--right"  id='results_table_ad'>
+        <div>
+          <h2 class="text--center" style="font-size:12pt;">Advertisement</h2>
+          <div data-fuse="22895564148" class="float--right"></div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+  <%= horz_advert('22895564151') %>     
+</div>
 
-  <script type="text/javascript">
-    function more_options(){
-      $('#option_form').submit();
-    };
-    $("#create_postem").click(
-      function() {
-        $(".create_postem_div").show();
-        $("#create_postem").hide();
-    });
-  </script>
+<script type="text/javascript">
+  function more_options(){
+    $('#option_form').submit();
+  };
+  $("#create_postem").click(
+    function() {
+      $(".create_postem_div").show();
+      $("#create_postem").hide();
+  });
+</script>
