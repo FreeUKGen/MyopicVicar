@@ -112,11 +112,7 @@
                       <span class="ttip__text"> <%=" (Volume #{search_record[:Volume]} Page #{search_record[:Page]})"%></span>
                     <% else %>
                       <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
-                      <% if district.present? %>
-                        <%= link_to "#{titleize_string(search_record[:District])}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
-                     <% else %>
-                       <%= search_record[:District] %>
-                     <% end %>
+                      <%= district_link_or_name(district, search_record, @search_query) %>
                       <% @search_query.get_search_record_details(search_record).each do |key, value| %>
                         <br /><%= "#{key} #{value}" %>
                       <% end %>

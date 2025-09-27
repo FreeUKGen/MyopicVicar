@@ -123,6 +123,10 @@ class District < FreebmdDbBase
     "#{clean(district.DistrictName)} #{district.district_validity_period district}"
   end
 
+  def valid?
+    !(self.YearStart == 9999) && !(self.QuarterEnd == 9)
+  end
+
   def clean name
     return '' unless name.present?
 

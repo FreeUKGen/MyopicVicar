@@ -367,7 +367,7 @@ class SearchQueriesController < ApplicationController
   end
 
   def districts_of_selected_counties
-    term = params[:term].split(',').pop.strip.downcase
+    term = params[:term].split(',').pop.strip.downcase if params[:term].present?
     selected_counties = params[:selected_counties]
     selected_districts = params[:selected_districts]
 
