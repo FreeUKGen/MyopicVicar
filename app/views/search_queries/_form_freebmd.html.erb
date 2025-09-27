@@ -113,7 +113,7 @@
                                 <%= "Surname".html_safe %>
                             <% end %>
                         </div>
-                        <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', :autocomplete => autocomplete_BestGuess_Surname_search_queries_path, tabindex: "0"%>
+                        <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', :autocomplete => '/unique_surnames', tabindex: "0"%>
                         <label>
                             <small class="ttip__text">
                                 <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>

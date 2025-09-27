@@ -82,18 +82,19 @@
             <% n = n +1 %>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
-              <%# unless print_friendly %>
                 <td>
                   <% rec = BestGuess.find(search_record[:RecordNumber])%>
-                  <% if rec.postems_list.present? %>
-                    <% postems_count = rec.postems_list.count %>
-                    <%else postems_count = 0 %>
-                  <% end %>
-                  <% postems_count_text = postems_count.zero? ? '' : '<span class="accessibility">Postem available</span>'.html_safe+"#{app_icons[:postem]}" %>
+                  <% postems_count = rec.postems_list.present? ? rec.postems_list.count : 0 %>
+                  <% postems_count_text = postems_count.zero? ? '' : "#{app_icons[:postem]}" %>
                   <center>
                     <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
                     <br>
-                    <span><%= postems_count_text.html_safe %></span>
+                    <% if postems_count_text.present? %>
+                      <span class="accessibility">
+                        Postem Available
+                        <%= postems_count_text.html_safe %>
+                      </span>
+                    <% end %>
                     <i><%= seen(@search_query,search_record) %></i>
                   </center>
                 </td>

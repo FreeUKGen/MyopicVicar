@@ -1,5 +1,6 @@
 <% @county_code = params[:county_code] %>
 <% @county_name = ChapmanCode::name_from_code(@county_code) %>
+<% title "Counties - summary of Registration Districts in #{@county_name}" %>
 <%= show_page_back_link({district: @district, search_query: @search_query, search_record: @search_record})%>
 <h1 class="title">Districts summary for <%= @county_name %></h1>
 <div class="grid">

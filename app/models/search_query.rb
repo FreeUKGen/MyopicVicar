@@ -1452,8 +1452,6 @@ class SearchQuery
 
   def freebmd_search_records
     search_fields = bmd_adjust_field_names
-    search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
-    search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present? # issue 689: given name punctuation not in data, so remove them from search
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     begin
@@ -1461,11 +1459,8 @@ class SearchQuery
       logger.warn(max_time)
       Timeout::timeout(max_time) do
         records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-        records = records.where(wildcard_search_conditions) #unless self.first_name_exact_match
-        records = records.where(search_conditions)
-        records = records.where({ GivenName: first_name.split }).or(records.where(GivenName: first_name)) if wildcard_option == "Any"
-        records = records.where({ GivenName: first_name.split }).or(records.where({ OtherNames: first_name.split })).or(records.where(GivenName: first_name)).or(records.where(OtherNames: first_name)) if wildcard_option == "In First Name or Middle Name"
-        records = records.where({ Surname: last_name.split }).or(records.where({ OtherNames: last_name.split })) if wildcard_option == "In Middle Name or Surname"
+        records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?#unless self.first_name_exact_match
+        records = records.where(search_conditions) if search_conditions.present?
         records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
         records = spouse_given_name_filter(records) if self.spouse_first_name.present?
         records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
@@ -1562,8 +1557,17 @@ class SearchQuery
 
   def first_name_filteration
     if self.first_name.present? && !self.first_name_exact_match
-     field, value = "BestGuess.GivenName like ?", "#{self.first_name}%" unless firstname_wildcard_query? || has_wildcard?(first_name)
+     field, value = "BestGuess.GivenName like ?", "#{self.first_name.strip}%" unless firstname_wildcard_query? || has_wildcard?(first_name) || second_name_wildcard || all_secondname_search
+     field, value = "BestGuess.GivenName like ?", "%#{self.first_name.delete_prefix('+').strip}%" if self.first_name.start_with?('+')
       #{}"BestGuess.GivenName like '#{self.first_name}%'" unless do_wildcard_seach?(self.first_name)
+    end
+    {field => value}
+  end
+
+  def all_secondname_filteration
+    if all_secondname_search
+      fn = self.first_name.delete_prefix('>>').strip 
+     field, value = "BestGuess.OtherNames like ?", "%#{fn}%"
     end
     {field => value}
   end
@@ -1707,24 +1711,37 @@ class SearchQuery
   
   def search_conditions
     #[sanitize_keys(first_name_filteration), sanitize_keys(name_wildcard_query), sanitize_values(first_name_filteration), sanitize_values(name_wildcard_query)].flatten.compact
-    [[sanitized_hash(first_name_filteration).sanitize_keys, sanitized_hash(name_wildcard_query).sanitize_keys].compact.join(' and '), sanitized_hash(first_name_filteration).sanitize_values, sanitized_hash(name_wildcard_query).sanitize_values].flatten.compact
-    #[first_name_filteration, name_field_wildcard_search, mother_surname_wildcard_query].compact.to_sentence
+    [[sanitized_hash(first_name_filteration).sanitize_keys, sanitized_hash(all_secondname_filteration).sanitize_keys, sanitized_hash(name_wildcard_query).sanitize_keys].compact.join(' and '), sanitized_hash(first_name_filteration).sanitize_values, sanitized_hash(all_secondname_filteration).sanitize_values, sanitized_hash(name_wildcard_query).sanitize_values].flatten.compact    #[first_name_filteration, name_field_wildcard_search, mother_surname_wildcard_query].compact.to_sentence
   end
 
   def wildcard_search_conditions
-    [[sanitized_hash(first_name_wildcard_query).sanitize_keys, sanitized_hash(surname_wildcard_query).sanitize_keys, sanitized_hash(mother_surname_wildcard_query).sanitize_keys].compact.join(' and '), sanitized_hash(first_name_wildcard_query).sanitize_values, sanitized_hash(surname_wildcard_query).sanitize_values, sanitized_hash(mother_surname_wildcard_query).sanitize_values].flatten.compact
+    keys = [sanitized_hash(first_name_wildcard_query).sanitize_keys, sanitized_hash(surname_wildcard_query).sanitize_keys, sanitized_hash(mother_surname_wildcard_query).sanitize_keys].compact
+    keys = keys.join(' and ') if keys.present?
+    [keys, sanitized_hash(first_name_wildcard_query).sanitize_values, sanitized_hash(surname_wildcard_query).sanitize_values, sanitized_hash(mother_surname_wildcard_query).sanitize_values].flatten.compact
   end
 
   def second_name_wildcard
-    if freebmd_app?
-      self.first_name.start_with?('*') && !self.first_name.start_with?('**')
+    if freebmd_app? && first_name_not_exact_match 
+      self.first_name.start_with?('>') && !self.first_name.start_with?('>>')
     end
   end
 
+  def all_secondname_search
+    if freebmd_app? && first_name_not_exact_match
+      self.first_name.start_with?('>>')
+    end
+  end
+
+  def first_name_not_exact_match
+    first_name.present? && !first_name_exact_match
+  end
+
    def first_name_wildcard_query
-    if first_name.present? && !first_name_exact_match
-      if has_wildcard?(first_name)
-          field, value = "BestGuess.GivenName like ?", "#{name_wildcard_search(first_name)}#{conditional_percentage_wildcard(first_name)}"
+    unless second_name_wildcard
+      if first_name_not_exact_match
+        if do_wildcard_seach?(first_name)
+            field, value = "BestGuess.GivenName like ?", "#{name_wildcard_search(first_name)}#{conditional_percentage_wildcard(first_name)}"
+        end
       end
     end
     {field => value}
@@ -1732,21 +1749,23 @@ class SearchQuery
 
   def surname_wildcard_query
     if self.last_name.present?
-      field, value =  "BestGuess.Surname like ?", name_wildcard_search(last_name) if has_wildcard?(self.last_name)
+      field, value =  "BestGuess.Surname like ?", name_wildcard_search(last_name) if do_wildcard_seach?(self.last_name.strip)
     end
     {field => value}
   end
 
   def mother_surname_wildcard_query
     if self.mother_last_name.present?
-      field, value = "BestGuess.AssociateName like ?", "#{name_wildcard_search(mother_last_name)}#{conditional_percentage_wildcard(mother_last_name)}" if has_wildcard?self.mother_last_name
+      field, value = "BestGuess.AssociateName like ?", "#{name_wildcard_search(mother_last_name)}#{conditional_percentage_wildcard(mother_last_name)}" if do_wildcard_seach?self.mother_last_name
     end
     {field => value}
   end
 
   def bmd_params_hash
     search_fields = bmd_adjust_field_names
-    #search_fields[:OtherNames] = search_fields.delete(:GivenName) if second_name_search?
+    search_fields[:OtherNames] = search_fields.delete(:GivenName).delete_prefix('>') if second_name_wildcard
+    search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present?
+    search_fields[:Surname] = search_fields[:Surname].delete_prefix('#') if search_fields[:Surname].present? && search_fields[:Surname].start_with?('#')
     first_name_exact_match ? search_fields : search_fields.except!(:GivenName)
     surname_middle_name_partial ? search_fields.except!(:Surname) : search_fields
   end
@@ -1758,7 +1777,7 @@ class SearchQuery
   def name_search_params_bmd
     name_hash = self.attributes.symbolize_keys.except(:_id).keep_if {|k,v|  name_fields.include?(k) && v.present?}
     if name_hash.has_key?(:last_name)
-      name_hash.except!(:last_name) if has_wildcard?(self.last_name) || surname_partial_query?
+      name_hash.except!(:last_name) if do_wildcard_seach?(self.last_name) || surname_partial_query?
     end
     name_hash
   end
