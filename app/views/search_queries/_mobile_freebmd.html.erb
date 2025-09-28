@@ -43,11 +43,7 @@
           </td>
           <td>
             <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
-            <% if district.present? %>
-              <%= link_to "#{search_record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber, search_id: @search_query.id) %>
-           <% else %>
-             <%= search_record[:District] %>
-           <% end %>
+            <%= district_link_or_name(district, search_record, @search_query) %>
             <% if search_record.register_entry_number_format %>
               <% event_register_number = search_record.event_registration_number %>
               <% if event_register_number.present? %>
