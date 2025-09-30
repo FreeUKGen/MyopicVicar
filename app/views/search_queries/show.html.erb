@@ -3,7 +3,7 @@
 <h1 class="accessibility">Search results</h1>
 <%= render 'flash_notice' %>
 <div class='container'>
-  <% if device_type == :desktop %>
+  <% if device_type == :desktop || device_type == :tablet %>
     <%= render partial: 'navigation_links', locals: {device_style: "display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px 20px;"} %>
   <% else %>
     <%= render partial: 'navigation_links', locals: {device_style: "display: flex; list-style: none; flex-direction: column; justify-content: space-evenly; align-content: space-evenly; flex-wrap: wrap; gap: 10px 30px; margin-left: 0;" } %>
@@ -122,7 +122,7 @@
       }
     }
   };
-  var screen_width = window.matchMedia("(max-width: 1000px)")
+  var screen_width = window.matchMedia("(max-width: 1024px)")
   changeClass(screen_width)
   screen_width.addListener(changeClass);
 

@@ -61,7 +61,7 @@
     <div class="flush--sides soft--sides">
       <% unless device_type == :mobile %>
         <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
-          <div class="bnner-horz bmd_adsenses header_ads">
+          <div class="bnner-horz bmd_adsenses header_ads" id="non_mobile_advert">
             <%= my_heritage_720_90_first %>
           </div>
         <% end %>
