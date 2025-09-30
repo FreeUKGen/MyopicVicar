@@ -2,14 +2,12 @@
 <% title "Search Results" %>
 <h1 class="accessibility">Search results</h1>
 <%= render 'flash_notice' %>
-<%# show_contents_link%>
 <div class='container'>
   <% if device_type == :desktop %>
     <%= render partial: 'navigation_links', locals: {device_style: "display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px 20px;"} %>
   <% else %>
     <%= render partial: 'navigation_links', locals: {device_style: "display: flex; list-style: none; flex-direction: column; justify-content: space-evenly; align-content: space-evenly; flex-wrap: wrap; gap: 10px 30px; margin-left: 0;" } %>
   <% end %>
-  <!--h2 class="accessibility">Search Criteria</h2-->
 </div>
 <% if @search_query.present? %>
   <%= render 'nav_header' %>
@@ -19,10 +17,6 @@
     <% when @timeout == true %>
       <%= render 'timeout' %>
     <% when @timeout == false %>
-      <%# deal with too many results within the page.%>
-      <%# if @result_count >= @max_result %>
-        <%#= render 'too_many_results' %>
-      <%# else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
         <div class="grid">
           <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
@@ -104,7 +98,6 @@
         <% end %>
       <% end %>
       <% end %>
-    <%# end %>
     <%= horz_advert('22895564151') %>
   </section>
 <% else %>
@@ -117,6 +110,7 @@
   var result = window.canRunAds;
   function changeClass(screen_width) {
     if (screen_width.matches) {
+      $("#results_table_ad").hide();
       $("#results_table").removeClass("grid__item  seven-tenths  palm-one-whole").addClass('');
     } else {
       if(result === true) {

@@ -90,9 +90,9 @@
       <div id="display_postems">
         <div>
           <h4>Postems</h4>
-          <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you you know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know</p>
+          <p>Do you know more about the people or event in this record that you are willing to share with other researchers? We call these helpful additions to the database 'postems'. For example, you might know a more precise place or other details from a certificate or from a search of FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.</p>
           <% if @current_record.postems_list.present? %>
-            <p>Below are the list of postems</p>
+            <p>List of postems:</p>
             <table class="table--bordered table--data">
               <thead>
                 <th>Date</th>
@@ -117,7 +117,7 @@
               <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
             </small>
           </div>
-          <p id="create_postem">Add a postem</p>
+          <p>Submit a postem:</p>
           <div class="create_postem_div">
             <%= semantic_form_for(@new_postem) do |f| %>
               <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
@@ -127,8 +127,8 @@
                 <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
                   <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
                 </li>
-                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
-                  <%= button_tag 'Add Postem', type: :submit, class: 'ladda-button kittumani' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom">
+                  <%= button_tag 'Add Postem', type: :submit, class: 'btn btn--natural' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
                 </li>
               </ol>
             <% end %>

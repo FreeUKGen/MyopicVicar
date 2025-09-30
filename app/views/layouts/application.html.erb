@@ -230,6 +230,10 @@
               <div class="push--top" style="float:right;">
                 <a href="#top" class = "">Top of page</a>
               </div>
+              <!-- Floating What's New Button -->
+              <div>
+                <%= link_to "What's new?", "/help/about_new", class: "whats-new-button btn btn--small", title: "View latest updates and features", style: "background: #ecc5d9;color: inherit; border: 2px solid #ecc5d9; border-top: 2px solid black !important; font-size:16px;padding-top:0.5em; padding-bottom:0.5em" %>
+              </div>
           <% end %>
         </div>
       </main>
@@ -327,6 +331,52 @@
       @media print {
         .print {
           display: block !important;
+        }
+      }
+      /* Floating What's New Button - Pure CSS Flexbox */
+    .whats-new-button {
+        /* Positioning - Bottom Right Corner */
+        position: fixed;
+        bottom: 150px;
+        right: -35px;
+        z-index: 1000;
+        transform: rotate(90deg);
+
+        /* Flexbox Container */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: nowrap;
+
+        /* Flexbox Properties */
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: auto;
+        align-self: flex-end;
+        order: 0;
+
+        /* Responsive Design - Pure CSS */
+
+        @media only screen and (max-width: 1024px) {
+          font-size: 13px;
+          bottom: unset;
+          right: -30px;
+          display: flex;
+          top: 255px
+        }
+
+        @media only screen and (min-width:1300px) {
+          height: unset;
+
+        }
+
+        @media only screen and (min-width: 1024px) and (max-width:1300px) {
+          height: 45px;
+        }
+
+        @media only screen and (max-width: 768px) {
+          display: none;
         }
       }
     </style>

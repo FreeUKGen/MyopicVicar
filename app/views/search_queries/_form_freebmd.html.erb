@@ -66,6 +66,22 @@
     display: none;
   }
 }
+@media (max-width: 1299px) {
+    .big_screen_ads {
+        display: none;
+    }
+    .whole_advert {
+        display: block;
+    }
+}
+@media (min-width: 1300px) {
+    .big_screen_ads {
+        display: block;
+    }
+    .whole_advert {
+        display: none;
+    }
+}
 </style>
 
 <script
@@ -78,14 +94,11 @@
 </div>
 
 <div class="grid">
-    <% if device_type == :desktop  %>
-    <div class="grid__item one-sixth text--center push--bottom hard--left">
+    <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads">
       <p style="margin-bottom:5px;">Advertisement</p>
       <div data-fuse="freebmd_skyscraper_1"></div>
     </div>
-  <% else %>
       <%= horz_advert('22895564151') %>
-  <% end%>
   <div id="top" class="grid__item five-sixths palm-one-whole hard--left" style="padding-right:5px;">
     <div class="bmd_search_form">
         <%= semantic_form_for(@search_query) do |f| %>
