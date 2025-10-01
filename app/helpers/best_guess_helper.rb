@@ -164,7 +164,8 @@ private
 
   def render_scan_row(series_path, current_record)
     image_url = BestGuess.build_image_server_request(scan_link_url(current_record, series_path))
-    link_to_text = "#{series_path[:series]}/#{series_path[:range]}/#{series_path[:file]}"
+    range = series_path[:range].present? ? "/#{series_path[:range]}" : ''
+    link_to_text = "#{series_path[:series]}#{range}/#{series_path[:file]}"
     content_tag(:li, link_to(link_to_text, image_url, target: "_blank", class: "scan-link"))
   end
 
