@@ -13,10 +13,10 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
   filename_info = input_file.split('_') # get year from filename
   file_year = filename_info[0]
 
-  file_for_output = Rails.root.join('log', "#{input_file_name}_finslize.log")
+  file_for_output = Rails.root.join('log', "#{input_file_name}_finalise.log")
   FileUtils.mkdir_p(File.dirname(file_for_output))
   output_file = File.new(file_for_output, 'w')
-  file_for_messages = Rails.root.join('log', "#{input_file_name}_finalize_messages.csv")
+  file_for_messages = Rails.root.join('log', "#{input_file_name}_finslise_messages.csv")
   FileUtils.mkdir_p(File.dirname(file_for_messages))
   message_file = File.new(file_for_messages, 'w')
   file_for_missing_place_names = Rails.root.join('log', "#{input_file_name}_missing_place_names.txt")
@@ -24,7 +24,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
   missing_places = File.new(file_for_missing_place_names, 'w')
 
 
-  message_file.puts "Row;Chaoman;Piece;Message;Action Required"
+  message_file.puts "Row;Chapman;Piece;Message;Action Required"
   @missing_place_names = []
 
   # Print the time etc before start the process
