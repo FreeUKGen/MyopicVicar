@@ -121,7 +121,7 @@ module UseridRole
     'Feedback' => '/feedbacks',
     'Contacts' => '/contacts',
     'System Documentation' => '/cms/system-documents',
-    'Roadmap' => '/cms/system-documents/development-roadmap',
+    'Roadmap' => roadmap_url,
     'Logout' => '/refinery/logout',
     'Message System' => '/messages',
     'Manage Images' => '/sources',
@@ -357,4 +357,9 @@ module UseridRole
     'Other (please explain below)' => 'other'
   }
   REASONS_FOR_MAKING_EMAIL_INVALID = ['Mails to this email bounced', 'No Response', 'Cannot be reached']
+
+  def roadmap_url
+    url = Rails.application.config.template_set == 'freecen' ? 'https://docs.google.com/document/d/1tOX_6_fyslNIf-ArsChKnhv7XSgpKjAuBD3RwdoaGlg/edit?usp=sharing' : '/cms/system-documents/development-roadmap'
+    url
+  end
 end
