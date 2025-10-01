@@ -41,4 +41,22 @@ module DistrictsHelper
       district.DistrictName
     end
   end
+
+  def district_link_or_name_id(district, search_record, search_id)
+    return search_record[:District] unless district.present?
+    
+    if district.valid?
+      link_to(
+        titleize_string(search_record[:District]), 
+        district_friendly_url_path(
+          district.district_friendly_url, 
+          id: district.DistrictNumber,
+          entry_id: search_record.RecordNumber,
+          search_id: search_id
+        )
+      )
+    else
+      district.DistrictName
+    end
+  end
 end
