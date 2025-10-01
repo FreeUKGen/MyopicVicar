@@ -4,7 +4,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
   require 'extract_freecen2_piece_information'
   require 'csv'
 
-
   run_mode = args.mode
   input_file = args.file
   lim = args.limit.to_i
@@ -23,8 +22,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
   FileUtils.mkdir_p(File.dirname(file_for_missing_place_names))
   missing_places = File.new(file_for_missing_place_names, 'w')
 
-
-  message_file.puts "Row;Chapman;Piece;Message;Action Required"
+  message_file.puts 'Row;Chapman;Piece;Message;Action Required'
   @missing_place_names = []
 
   # Print the time etc before start the process
@@ -110,9 +108,23 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
       # check civil parishes
 
       unless fc2_piece.civil_parish_names == row['Parishes']
-        row_has_issue = true
 
-        message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Parishes']}] do not match existing fc2 Piece record civil parishes [#{fc2_piece.civil_parish_names}];#{row_has_issue}"
+        action = run_mode == 'UPDATE' ? 'so updating' : 'so can update'
+
+        civil_parish_names_string = fc2_piece.add_update_civil_parish_list
+
+        if civil_parish_names_string == row['Parishes']
+
+          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Parishes']}] civil parish links match existing fc2 Piece record but civil parish names string mismatch #{action} to [#{civil_parish_names_string}];#{row_has_issue}"
+
+          fc2_piece.update(civil_parish_names: civil_parish_names_string) if run_mode == 'UPDATE'
+
+        else
+
+          row_has_issue = true
+          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Parishes']}] do not match existing fc2 Piece record civil parishes [#{civil_parish_names_string}];#{row_has_issue}"
+
+        end
 
       end
 
@@ -148,12 +160,10 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
       piece_parts = row['Piece'].split('_')
 
-
       if piece_parts[1][0,1] == '0'
 
         piece_parts[1][0] = ''
         base_piece_number = piece_parts[0] + '_' + piece_parts[1]
-
 
         fc2_piece_base = Freecen2Piece.find_by(number: base_piece_number)
         if fc2_piece_base.present?
@@ -206,7 +216,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
           county_id = County.find_by(chapman_code: row['Chapman']).id if County.find_by(chapman_code: row['Chapman']).present?
 
           @district_object = Freecen2District.new(name: row['District'], chapman_code: row['Chapman'], county_id: county_id,
-                                                  year: file_year, tnaid: "None", freecen2_place_id: place_id)
+                                                  year: file_year, tnaid: 'None', freecen2_place_id: place_id)
           result = true
           result = @district_object.save if run_mode == 'UPDATE'
           unless result
@@ -232,7 +242,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
       civil_parishes = row['Parishes'].split(',')
 
       civil_parishes.each do |cp|
-
         fc2_cp = Freecen2CivilParish.find_by(chapman_code: row['Chapman'], year: file_year, name: cp)
 
         next if fc2_cp.present?
@@ -271,7 +280,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
           message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record and no fc2_place record (Gaz) for Civil Parish Place name ;#{row_has_issue}"
 
         end
-
       end
 
       #  end
@@ -305,14 +313,12 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
           piece_id = @fc2piece_object.id
 
           civil_parishes.each do |cp|
-
             fc2_cp = Freecen2CivilParish.find_by(chapman_code: row['Chapman'], year: file_year, name: cp)
             if fc2_cp.present?
               fc2_cp.update_attribute(:freecen2_piece_id, piece_id)
             else
               message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] error finding Civil Parish record for updating of fc2 Piece id ;#{row_has_issue}"
             end
-
           end
 
         end
@@ -325,7 +331,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
     @this_row = "#{row['Chapman']};#{row['Name']};#{row['District']};#{row['Parishes']};#{row['Piece']}"
 
     break if rec_count > lim
-
   end
 
   log_info = "Last data row processed:   #{@this_row}"
