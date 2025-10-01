@@ -17,7 +17,7 @@ class BestGuessController < ApplicationController
     # record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
     record_id = params[:id]
     @current_record = BestGuess.find(record_id)
-    @postems_count = @current_record.postems_list.count
+    @postems_count = @current_record&.postems_list&.count || 0
     page_entries = @current_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(record_id, page_entries)
     @display_date = false
