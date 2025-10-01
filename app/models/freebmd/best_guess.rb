@@ -14,6 +14,8 @@ class BestGuess < FreebmdDbBase
   scope :death_records,   -> { where(RecordTypeID: 2) }
   scope :marriage_records,   -> { where(RecordTypeID: 3) }
   extend SharedSearchMethods
+  require 'security_hash'
+
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
   ENTRY_REFERENCE = 512
@@ -25,6 +27,17 @@ class BestGuess < FreebmdDbBase
   PAGE_OUTSIDE_EXECTED_RANGE_FOR_DISTRICT = 32
   PAGE_RANGE_NOT_CHECKED = 64
   EVENT_YEAR_ONLY = 589
+
+  def self.build_image_server_request(url)
+    uri = URI(url)
+    logger.warn(uri)
+    request = Net::HTTP::Get.new(uri)
+    security_hash = SecurityHash.make_security_hash
+    query_params = URI.decode_www_form(uri.query || '')
+    query_params << ['security_hash', security_hash]
+    new_query = URI.encode_www_form(query_params)
+    "#{uri.scheme}://#{uri.host}#{uri.path}#{uri.query ? '?' + uri.query : ''}"
+  end
 
   def friendly_url
     particles = []

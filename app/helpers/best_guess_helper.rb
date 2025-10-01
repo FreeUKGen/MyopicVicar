@@ -1,4 +1,6 @@
 module BestGuessHelper
+  require 'uri'
+
   def seen(search_query, search_record)
     search_results = search_query.search_result
     viewed_records = search_results.viewed_records
@@ -83,16 +85,28 @@ module BestGuessHelper
     year = from_quarter_to_year(entry.QuarterNumber)
     event = "#{format_record_type_for_scan_url(entry)}s"
     quarter = QuarterDetails.quarters.key(calculate_quarter(entry.QuarterNumber)).capitalize
-    image_server = "https://images.freebmd.org.uk/SUG"
+    image_server = Rails.application.config.image_server
     [year, event, quarter, image_server]
   end
 
-  def scan_link_url entry
+  def scan_link_url entry, hash
     @year, @event, @quarter, @image_server = scan_url_constants(entry)
+    series = hash[:series]&.present? ? hash[:series] : ''
+    range = hash[:range]&.present? ? hash[:range] : ''
+    file = hash[:file]&.present? ? hash[:file] : ''
+    p = "#{series}/#{range}/#{file}"
+    event = @event.downcase[0]
+    v = SecurityHash.make_security_hash
+    detected_action = get_action_from_filename(file)
+    file = ensure_file_extension(file)
+    params_one = {y: @year,q: @quarter,e: event,l: 'A-Z', p: p, v: v,actiontype: detected_action}
+    params_two = {y: @year,e: event,l: 'A-Z', p: p, v: v,actiontype: detected_action}
+    query_string_one = URI.encode_www_form(params_one)
+    query_string_two = URI.encode_www_form(params_two)
     if entry.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR
-      image_path = "#{@image_server}/#{@year}/#{@event}/#{@quarter}/"
+      image_path = "#{@image_server}?#{query_string_one}"
     else
-      image_path = "#{@image_server}/#{@year}/#{@event}/"
+      image_path = "#{@image_server}?#{query_string_two}"
     end
     image_path
   end
@@ -115,6 +129,72 @@ module BestGuessHelper
     unless field_value.blank?
       field_value
     else "No data"
+    end
+  end
+
+  def render_scan_rows(scan_links, acc_scans, acc_mul_scans, current_record)
+    content = ""
+
+    # Process scan_links
+    scan_links&.each do |scan|
+      content += render_scan_row({series: scan.SeriesRangeFileName}, current_record)
+    end
+
+    # Process acc_scans
+    acc_scans&.each do |scan|
+      series = scan.SeriesID
+      range = scan.Range.present? ? scan.range.Range : ""
+      file = scan.Filename
+      content += render_scan_row({series:series, range: range, file: file}, current_record)
+    end
+
+    # Process acc_mul_scans
+    acc_mul_scans&.each do |scan|
+      series = scan.SeriesID
+      range = scan.Range.present? ? scan.Range : ""
+      current_record.multi_image_filenames.each do |filename|
+        content += render_scan_row({series:series, range: range, file: file}, current_record)
+      end
+    end
+
+    content.html_safe
+  end
+
+private
+
+  def render_scan_row(series_path, current_record)
+    image_url = BestGuess.build_image_server_request(scan_link_url(current_record, series_path))
+    link_to_text = "#{series_path[:series]}/#{series_path[:range]}/#{series_path[:file]}"
+    content_tag(:li, link_to(link_to_text, image_url, target: "_blank", class: "scan-link"))
+  end
+
+  def get_action_from_filename(filename)
+    return 'Original' if filename.blank?
+
+    extension = File.extname(filename).downcase
+
+    case extension
+    when '.jpg', '.jpeg'
+      'JPG'
+    when '.gif'
+      'GIF'
+    when '.tif', '.tiff'
+      'TIFF'
+    when '.pdf'
+      'PDF'
+    else
+      'Original'
+    end
+  end
+
+  def ensure_file_extension(file)
+    return file if file.blank?
+
+    # Add .jpg extension if missing or incomplete
+    if !file.match?(/\.(jpg|jpeg|gif|tif|tiff)$/i)
+      file + '.jpg'
+    else
+      file
     end
   end
 end

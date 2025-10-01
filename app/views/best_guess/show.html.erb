@@ -40,49 +40,9 @@
     <% if @option == '1' %>
       <div id="display_scans">
         <h4>Scans</h4>
-        <table class="table--bordered table--data ">
-          <thead>
-            <th>Scan</th>
-            <th>View Scan</th>
-          </thead>
-          <tbody>
-            <% if @scan_links.present? %>
-              <% @scan_links.each do |s| %>
-                  <% series = s.SeriesRangeFileName %>
-                  <% image_file_path = "#{scan_link_url(@current_record)}#{series}" %>
-                  <tr>
-                    <td><%= image_tag(image_file_path,size: "100x100")%></td>
-                    <td><%= link_to "#{series}".html_safe, image_file_path, target: "_blank"%></td>
-                  </tr>
-              <% end %>
-             <% end %>
-            <% if @acc_scans.present? %>
-              <% @acc_scans.each do |s| %>
-                  <% series = s.SeriesID %>
-                  <% range = "/#{s.range.Range}" if s.Range.present?%>
-                  <% file = s.Filename %>
-                  <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{file}" %>
-                  <tr>
-                    <td><%= image_tag(image_file_path,size: "100x100")%></td>
-                    <td><%= link_to "#{series}#{range}/#{file}".html_safe, image_file_path, target: "_blank"%></td>
-                  </tr>
-              <% end %>
-            <% end %>
-            <% if @acc_mul_scans.present? %>
-              <% @acc_mul_scans.each do |s| %>
-                  <% series = s.SeriesID %>
-                  <% range = "/#{s.Range}" if s.Range.present?%>
-                  <% @current_record.multi_image_filenames.each do |fn| %>
-                    <% image_file_path = "#{scan_link_url(@current_record)}#{series}#{range}/#{fn}" %>
-                    <tr>
-                      <td><%= image_tag(image_file_path,size: "100x100")%></td>
-                      <td><%= link_to "#{series}#{range}/#{fn}".html_safe, image_file_path, target: "_blank"%></td>
-                    </tr>
-                  <% end %>
-              <% end %>
-            <% end %>
-          </tbody>
-        </table>
+        <ul>
+          <%= render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @current_record) %>
+        </ul>
         <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
       </div>
     <% end %>
@@ -90,8 +50,10 @@
       <div id="display_postems">
         <div>
           <h4>Postems</h4>
-          <p>Do you know more about the people or event in this record that you are willing to share with other researchers? 
-          We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.</p>
+          <p>
+            Do you know more about the people or event in this record that you are willing to share with other researchers?<br /> 
+          We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
+          </p>
           <% if @current_record.postems_list.present? %>
             <p>List of postems:</p>
             <table class="table--bordered table--data">
