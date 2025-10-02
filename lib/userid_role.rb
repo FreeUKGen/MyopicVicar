@@ -89,7 +89,7 @@ module UseridRole
   end
 
   def self.roadmap_url
-    url = Rails.application.config.template_set == 'freecen' ? '/cms/freecen-roadmap' : '/cms/system-documents/development-roadmap'
+    url = MyopicVicar::Application.config.template_set == 'freecen' ? "/system/resources/W1siZiIsIjIwMjUvMTAvMDIvMmEwZGszNmFucF9Sb2FkbWFwX1JlX3dyaXR0ZW5fVXBkYXRlZF9TZXB0ZW1iZXJfMjAyNS5wZGYiXV0/Roadmap%20Re-written%20Updated%20September%202025.pdf?sha=1b96e21c842c18f5" : '/cms/system-documents/development-roadmap'
     url
   end
 
