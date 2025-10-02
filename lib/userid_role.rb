@@ -88,11 +88,6 @@ module UseridRole
     }
   end
 
-  def self.roadmap_url
-    url = MyopicVicar::Application.config.template_set == 'freecen' ? "/system/resources/W1siZiIsIjIwMjUvMTAvMDIvMmEwZGszNmFucF9Sb2FkbWFwX1JlX3dyaXR0ZW5fVXBkYXRlZF9TZXB0ZW1iZXJfMjAyNS5wZGYiXV0/Roadmap%20Re-written%20Updated%20September%202025.pdf?sha=1b96e21c842c18f5" : '/cms/system-documents/development-roadmap'
-    url
-  end
-
   #'/messages/communications?source=original',
   OPTIONS_TRANSLATION = {
     'Communicate' => '/messages/communications?source=original',
@@ -127,7 +122,7 @@ module UseridRole
     'Feedback' => '/feedbacks',
     'Contacts' => '/contacts',
     'System Documentation' => '/cms/system-documents',
-    'Roadmap' => UseridRole.roadmap_url,
+    'Roadmap' => '/cms/system-documents/development-roadmap',
     'Logout' => '/refinery/logout',
     'Message System' => '/messages',
     'Manage Images' => '/sources',
