@@ -79,9 +79,9 @@
               <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
                 <tr>
                   <td><%= census %></td>
-                  <%= contents_check_for_partials(@freecen2_county_contents.records[census][:piece_ids], @freecen2_county_contents.records[census][:pieces_online]) %>
+                  <%= county_contents_check_for_partials(@freecen2_county_contents.records[census][:piece_ids], @freecen2_county_contents.records[census][:pieces_online]) %>
                   <td><%= @freecen2_county_contents.records[census][:pieces] %></td>
-                  <%= contents_show_percentage(@freecen2_county_contents.records[census][:pieces_online], @freecen2_county_contents.records[census][:pieces]) %>
+                  <%= county_contents_show_percentage(@freecen2_county_contents.records[census][:pieces_online], @freecen2_county_contents.records[census][:pieces]) %>
                   <td><%= @freecen2_county_contents.records[census][:records_online] %></td>
                   <td><%= @freecen2_county_contents.records[census][:added_pieces_online] %></td>
                   <% if @freecen2_county_contents.records[census][:pieces] > 0 %>
@@ -93,9 +93,9 @@
               <% end %>
               <tr>
                 <td>Total</td>
-                <%= contents_check_for_partials(@freecen2_county_contents.records[:total][:piece_ids], @freecen2_county_contents.records[:total][:pieces_online]) %>
+                <%= county_contents_check_for_partials(@freecen2_county_contents.records[:total][:piece_ids], @freecen2_county_contents.records[:total][:pieces_online]) %>
                 <td><%= @freecen2_county_contents.records[:total][:pieces] %></td>
-                <%= contents_show_percentage(@freecen2_county_contents.records[:total][:pieces_online], @freecen2_county_contents.records[:total][:pieces]) %>
+                <%= county_contents_show_percentage(@freecen2_county_contents.records[:total][:pieces_online], @freecen2_county_contents.records[:total][:pieces]) %>
                 <td><%= @freecen2_county_contents.records[:total][:records_online] %></td>
                 <td><%= @freecen2_county_contents.records[:total][:added_pieces_online] %></td>
                 <td> N/A </td>

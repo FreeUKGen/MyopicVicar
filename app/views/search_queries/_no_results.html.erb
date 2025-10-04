@@ -1,29 +1,30 @@
-  <h2 class="gamma text--negative push-half--bottom">No results found</h2>
-  <p class= "push-half--bottom"><b>Maybe you need to change your search?</b><br>
-    For advice on how to get the most out of your searches, see the search tips in our <%= link_to "Help", "/cms/help", :title => "Help" %> page.</p>
-  <b>Maybe you were searching for records that we do not have?</b>
-  <% case MyopicVicar::Application.config.template_set%>
-  <% when'freereg' %>
-  <p class= "read-length push-half--bottom">See the <%= link_to "Records", "/freereg_contents/new?locale=en", :title => "Records"  %> section for details of the places and years we have transcribed. This includes lists of the actual names used in the registers which could help you consider alternative spellings.<br>
-    Some reasons for missing records:
-    <ul>
-      <li>we have yet to transcribe the register images. Could you <%= link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-freereg"%>?</li>
-      <li>we do not have the financial resources to purchase the registers images. Could you <%= link_to 'Donate', "https://www.freeukgenealogy.org.uk/help-us-keep-history-free"%>?</li>
-      <li>there are gaps in the registers, or they no longer exist</li>
-      <li>some registers remain in the possession of the church</li>
-      <li>the transcriptions are subject to an embargo on their publication</li>
-      <li>some Government Record Offices won’t permit us to acquire copies of the registers</li>
-    </ul>
-  </p>
-  <% when'freecen' %>
-  <p class= "read-length push-half--bottom">See the <%= link_to "Records", "/freecen2_contents?locale=en", :title => "Records"  %> section for details of the places and census years we have transcribed so far. This includes lists of the actual names used in the documents which could help you consider alternative spellings.</br>Some reasons for missing records:
+  
+<h2 class="gamma text--negative push-half--bottom">No results found</h2>
+<p class= "push-half--bottom"><b>Maybe you need to change your search?</b><br>
+  For advice on how to get the most out of your searches, see the search tips in our <%= link_to "Help", "/cms/help", :title => "Help" %> page.</p>
+<b>Maybe you were searching for records that we do not have?</b>
+<% case MyopicVicar::Application.config.template_set%>
+<% when'freereg' %>
+<p class= "read-length push-half--bottom">See the <%= link_to "Records", "/freereg_contents/new?locale=en", :title => "Records"  %> section for details of the places and years we have transcribed. This includes lists of the actual names used in the registers which could help you consider alternative spellings.<br>
+  Some reasons for missing records:
   <ul>
-    <li>we have yet to transcribe the census images. Could you <%= link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-freecen"%>?</li>
-    <li>we do not have the financial resources to purchase the census images. Could you <%= link_to 'Donate', "https://www.freeukgenealogy.org.uk/help-us-keep-history-free"%>?</li>
-    <li>some records were lost before they were archived or reached Government Record Offices</li>
+    <li>we have yet to transcribe the register images. Could you <%= link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-freereg"%>?</li>
+    <li>we do not have the financial resources to purchase the registers images. Could you <%= link_to 'Donate', "https://www.freeukgenealogy.org.uk/help-us-keep-history-free"%>?</li>
+    <li>there are gaps in the registers, or they no longer exist</li>
+    <li>some registers remain in the possession of the church</li>
     <li>the transcriptions are subject to an embargo on their publication</li>
-    <li>we do not have permission to transcribe some records</li>
+    <li>some Government Record Offices won’t permit us to acquire copies of the registers</li>
   </ul>
+</p>
+<% when'freecen' %>
+<p class= "read-length push-half--bottom">See the <%= link_to "Records", "/freecen2_county_contents?locale=en", :title => "Records"  %> section for details of the places and census years we have transcribed so far. This includes lists of the actual names used in the documents which could help you consider alternative spellings.</br>Some reasons for missing records:
+<ul>
+  <li>we have yet to transcribe the census images. Could you <%= link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-freecen"%>?</li>
+  <li>we do not have the financial resources to purchase the census images. Could you <%= link_to 'Donate', "https://www.freeukgenealogy.org.uk/help-us-keep-history-free"%>?</li>
+  <li>some records were lost before they were archived or reached Government Record Offices</li>
+  <li>the transcriptions are subject to an embargo on their publication</li>
+  <li>we do not have permission to transcribe some records</li>
+</ul>
 </p>
 <% when'freebmd' %>
 <p class= "read-length push-half--bottom">See the <%= link_to "Records", "/districts/alphabet_selection?locale=en", :title => "Records"  %> section for details of the events and years we have transcribed so far.<br>

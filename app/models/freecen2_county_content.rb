@@ -44,10 +44,14 @@ class Freecen2CountyContent
 
       ChapmanCode.merge_counties.each do |county|
 
+
         # AEV Testing - if county == "SOM" || county == "LND" || county == "ESS"
 
         p "Processing County: #{county}"
 
+        exclude_counties = %w[ENG OVB OVF OUC OTH SCT UNK]
+
+        next if exclude_counties.include?(county)
 
 
         #  ##############  AEV look for esisting country record
@@ -59,7 +63,7 @@ class Freecen2CountyContent
           stat = Freecen2CountyContent.find_by(interval_end: last_midnight, county: county)
           stat = Freecen2CountyContent.new if stat.blank?
         else
-          previous_stat_data = Freecen2CountyContent.find_by(county: county).order(interval_end: :desc).first
+          previous_stat_data = Freecen2CountyContent.where(county: county).order_by(interval_end: :desc).first
           no_previous_data_present = false
 
           if previous_stat_data.present?
@@ -75,7 +79,7 @@ class Freecen2CountyContent
         end
 
         if no_previous_data_present || update_all
-          records = Freecen2CountyContent.setup_records_county(records, 'total')
+          records = Freecen2CountyContent.setup_records_county(records)
           new_records = []
         else
           records = previous_stat_data.records
@@ -133,7 +137,7 @@ class Freecen2CountyContent
           end
 
           if no_previous_data_present || new_county || update_all
-            records = Freecen2CountyContent.setup_records_county(records, county)
+            records = Freecen2CountyContent.setup_records_county(records)
           end
           counties_array << county_name
 
@@ -272,7 +276,7 @@ class Freecen2CountyContent
           new_records.each do |entry|
 
             key_place = Freecen2CountyContent.get_place_key(entry[1])
-            #  chapman_code = entry[2]   #   not used ?? as county records now  AEV
+            chapman_code = entry[2]   #   not used ?? as county records now  AEV
             place_id = entry[3]
             year = entry[4]
             added_recs = entry[5]
@@ -307,18 +311,20 @@ class Freecen2CountyContent
 
         stat.records = records
         stat.new_records = new_records.sort
+        stat.county = county
+        stat.interval_end = last_midnight
+        stat.year = time.year
+        stat.month = time.month
+        stat.day = time.day
+        stat.save
+
+        p "AEV01 county_name = #{county_name}"
+
 
       end
 
-      stat.county = county
-      stat.interval_end = last_midnight
-      stat.year = time.year
-      stat.month = time.month
-      stat.day = time.day
-      stat.save
-
-
       # end county
+
 
       # AEV Testing -end
 
@@ -329,7 +335,7 @@ class Freecen2CountyContent
         stat = Freecen2CountyContent.find_by(interval_end: last_midnight, county: 'ALL')
         stat = Freecen2CountyContent.new if stat.blank?
       else
-        previous_stat_data = Freecen2CountyContent.find_by(county: 'ALL').order(interval_end: :desc).first
+        previous_stat_data = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
         no_previous_data_present = false
 
         if previous_stat_data.present?
@@ -345,7 +351,7 @@ class Freecen2CountyContent
       end
 
       if no_previous_data_present || update_all
-        records = Freecen2CountyContent.setup_records_county(records, 'total')
+        records = Freecen2CountyContent.setup_records_all(records)
         new_records = []
       else
         records = previous_stat_data.records
@@ -371,15 +377,18 @@ class Freecen2CountyContent
       records[:total][:added_pieces_online] = 0
 
       Freecen::CENSUS_YEARS_ARRAY.each do |year|
-        records[:total][year] = {}
-        records[:total][year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
-        records[:total][:total][:pieces] += records[:total][year][:pieces]
-        records[:total][year][:pieces_online] = fc2_totals_pieces_online[year]
-        records[:total][:total][:pieces_online] += records[:total][year][:pieces_online]
-        records[:total][year][:added_pieces_online] = fc2_added_pieces_online[year]
-        records[:total][:total][:added_pieces_online] += records[:total][year][:added_pieces_online]
+
+        records[year] = {}
+        records[year][:pieces] = fc2_totals_pieces[year] # fc2_pieces are all the pieces so no need to add fc1_pieces
+        records[:total][:pieces] += records[year][:pieces]
+        records[year][:pieces_online] = fc2_totals_pieces_online[year]
+        records[:total][:pieces_online] += records[year][:pieces_online]
+        records[year][:added_pieces_online] = fc2_added_pieces_online[year]
+        records[:total][:added_pieces_online] += records[year][:added_pieces_online]
+
       end
 
+      p "AEV04 counties_array #{counties_array}"
 
       counties_array_sorted = counties_array.sort
       records[:total][:counties] = counties_array_sorted
@@ -406,8 +415,22 @@ class Freecen2CountyContent
 
     # calc
 
-    def setup_records_county(records, field)
-      records[field] = {}
+    def setup_records_all(records)
+      records = {}
+      records[:total] = {}
+      records[:total][:counties] = []
+      records[:total][:piece_ids] = []
+      records[:total][:places] = []
+      records[:total][:pieces] = 0
+      records[:total][:pieces_online] = 0
+      records[:total][:records_online] = 0
+      records[:total][:added_pieces_online] = 0
+      records[:total][:added_records_online] = 0
+      return records
+    end
+
+    def setup_records_county(records)
+      records = {}
       records[:total] = {}
       records[:total][:piece_ids] = []
       records[:total][:places] = []

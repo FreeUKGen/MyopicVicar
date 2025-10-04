@@ -19,11 +19,13 @@ class Freecen2CountyContentArchive
       archive_date = date_in - 30.days
 
       # Never archive the most up to date record
-      most_recent_date = Freecen2CountyContent.find_by(county: 'ALL').order(interval_end: :desc).first.interval_end
+
+      most_recent_all = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
+      most_recent_id =  most_recent_all.id
 
       p "Will archive records more than 30 days old ie older than #{archive_date.strftime('%B %d, %Y')}"
 
-      Freecen2CountyContent.where(interval_end: {'$ne' => most_recent_date}, interval_end: {'$lte' =>  archive_date}).each do |stat|
+      Freecen2CountyContent.where(id: {'$ne' => most_recent_id}, interval_end: {'$lte' =>  archive_date}).each do |stat|
 
         arch = Freecen2CountyContentArchive.new
         arch.interval_end = stat.interval_end
@@ -56,7 +58,7 @@ class Freecen2CountyContentArchive
 
       end
 
-      p "#{deleted_records} Freecen2 County ontent Archive records deleted"
+      p "#{deleted_records} Freecen2 County Content Archive records deleted"
 
     end
   end

@@ -14,10 +14,10 @@
   <% if params[:new_records] == 'All' %>
     <%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %>
   <% else %>
-    <%= county_index_link(@county_description,@place_description) %>
+    <%= county_county_index_link(@county_description,@place_description) %>
     <% if @place_description != 'all' %>
       <%= link_to 'Back to Records for ' + @place_description, freecen2_county_contents_place_index_path(:county_description => @county_description, :place_description => @place_description), class: "btn btn--small", method: :get %>
-      <%= locate_place_link(@place_id,'small') %>
+      <%= county_locate_place_link(@place_id,'small') %>
     <% end %>
   <% end %>
   <p></p>
@@ -71,7 +71,7 @@
           <% else%>
             <td><%= 'N' %></td>
           <% end%>
-          <td><%= records_for_piece(piece.id, piece.status) %></td>
+          <td><%= county_records_for_piece(piece.id, piece.status) %></td>
           <% if piece.civil_parish_names == nil %>
             <td><i> n/a </i></td>
           <% else%>

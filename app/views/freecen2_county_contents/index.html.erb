@@ -50,7 +50,7 @@
             <%= c.submit 'View Place Records',  :class => "btn   btn--small"%>
           </fieldset>
         <% end %>
-        <% if @freecen2_county_contents.records[:total][:total][:added_pieces_online] > 0 &&  @freecen2_county_contents.new_records.present? %>
+        <% if @freecen2_county_contents.records[:total][:added_pieces_online] > 0 &&  @freecen2_county_contents.new_records.present? %>
           <fieldset>
             <legend>Recent Additions</legend>
             <div style="text-align: center">
@@ -88,18 +88,18 @@
                 <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
                   <tr>
                     <td><%= census %></td>
-                    <td><%= @freecen2_county_contents.records[:total][census][:pieces_online] %></td>
-                    <td><%= @freecen2_county_contents.records[:total][census][:pieces] %></td>
-                    <%= contents_show_percentage(@freecen2_county_contents.records[:total][census][:pieces_online], @freecen2_county_contents.records[:total][census][:pieces]) %>
-                    <td><%= @freecen2_county_contents.records[:total][census][:added_pieces_online] %></td>
+                    <td><%= @freecen2_county_contents.records[census][:pieces_online] %></td>
+                    <td><%= @freecen2_county_contents.records[census][:pieces] %></td>
+                    <%= contents_show_percentage(@freecen2_county_contents.records[census][:pieces_online], @freecen2_county_contents.records[census][:pieces]) %>
+                    <td><%= @freecen2_county_contents.records[census][:added_pieces_online] %></td>
                   </tr>
                 <% end %>
                 <tr>
                   <td>Total</td>
-                  <td><%= @freecen2_county_contents.records[:total][:total][:pieces_online] %></td>
-                  <td><%= @freecen2_county_contents.records[:total][:total][:pieces] %></td>
-                  <%= contents_show_percentage(@freecen2_county_contents.records[:total][:total][:pieces_online], @freecen2_county_contents.records[:total][:total][:pieces]) %>
-                  <td><%= @freecen2_county_contents.records[:total][:total][:added_pieces_online] %></td>
+                  <td><%= @freecen2_county_contents.records[:total][:pieces_online] %></td>
+                  <td><%= @freecen2_county_contents.records[:total][:pieces] %></td>
+                  <%= contents_show_percentage(@freecen2_county_contents.records[:total][:pieces_online], @freecen2_county_contents.records[:total][:pieces]) %>
+                  <td><%= @freecen2_county_contents.records[:total][:added_pieces_online] %></td>
                 </tr>
               </tbody>
             </table>

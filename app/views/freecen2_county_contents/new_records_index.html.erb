@@ -40,7 +40,7 @@
           <td><%= entry[5] %></td>
           <td><%= locate_place_link(entry[3], 'exsmall') %></td>
           <td><%= link_to 'View Pieces', display_pieces_by_status_freecen2_county_contents_path(:county_description => entry[0],  :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :order => 'status', :new_records => 'All'), class: "btn btn--exsmall", method: :get %></td>
-          <% if names_exist_for_place_year(entry[3], entry[4]) == true %>
+          <% if county_names_exist_for_place_year(entry[3], entry[4]) == true %>
             <td><%= link_to 'View Names', freecen2_county_contents_place_names_path(:county_description => entry[0], :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :new_records => 'All'), class: "btn btn--exsmall", method: :get %></td>
           <% else %>
             <td> N/A </td>

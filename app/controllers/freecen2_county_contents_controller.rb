@@ -6,7 +6,7 @@ class Freecen2CountyContentsController < ApplicationController
   def county_index
     redirect_back(fallback_location: freecen2_county_contents_path, notice: 'County not found') && return if set_county_vars == false
 
-    records_places = @freecen2_county_contents.records[@chapman_code][:total][:places]
+    records_places = @freecen2_county_contents.records[:total][:places]
     @places_for_county = {}
     @places_for_county =  { '' => "Select a Place in #{@county_description} ..." }
     records_places.each { |place| @places_for_county[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: @chapman_code, place_name: remove_dates_place(place)).present? }
@@ -23,7 +23,7 @@ class Freecen2CountyContentsController < ApplicationController
 
   def new_records_index
     if session[:contents_date].blank?
-      @freecen2_county_contents = Freecen2CountyContent.find_by(county: 'ALL').order(interval_end: :desc).first
+      @freecen2_county_contents = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
       session[:contents_date] = @freecen2_county_contents.interval_end
     end
     @interval_end = session[:contents_date]
@@ -54,7 +54,7 @@ class Freecen2CountyContentsController < ApplicationController
     redirect_back(fallback_location: freecen2_county_contents_path, notice: 'Place not found') && return if @place_description.blank?
 
     @key_place = Freecen2CountyContent.get_place_key(@place_description)
-    @place_id = @freecen2_county_contents.records[@chapman_code][@key_place][:total][:place_id]
+    @place_id = @freecen2_county_contents.records[@key_place][:total][:place_id]
     check_names_exist
   end
 
@@ -190,8 +190,9 @@ class Freecen2CountyContentsController < ApplicationController
   end
 
   def index
-    @freecen2_county_contents = Freecen2CountyContent.find_by(county: 'ALL').order(interval_end: :desc).first
+    @freecen2_county_contents = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
     @interval_end = @freecen2_county_contents.interval_end
+    p "AEV02 @interval_end = #{@interval_end}"
     session[:contents_date] = @freecen2_county_contents.interval_end
     records_counties = @freecen2_county_contents.records[:total][:counties]
     @all_counties = {}
@@ -210,6 +211,7 @@ class Freecen2CountyContentsController < ApplicationController
         redirect_to freecen2_county_contents_place_index_path and return
       end
     end
+    p "AEV03 end Index method"
   end
 
   def for_place_names
