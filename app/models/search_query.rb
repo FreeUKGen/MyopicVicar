@@ -135,7 +135,7 @@ class SearchQuery
   field :start_year, type: Integer
   field :start_quarter, type: Integer
   field :end_quarter, type: Integer
-  field :end_year, type: Integer
+  field :end_year, type: Integer, default: 1999
   field :radius_factor, type: Integer, default: 101
   field :search_nearby_places, type: Boolean
   field :result_count, type: Integer
@@ -2131,7 +2131,7 @@ class SearchQuery
       first_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:GivenName)
       #first_name_array.map(&:downcase).include?self.spouse_first_name.downcase unless self.identifiable_spouse_only?
       #raise first_name_array.inspect
-      first_name_array.map(&:downcase).include?self.spouse_first_name.downcase
+      first_name_array.map(&:downcase).any? {|n| n.include?(self.spouse_first_name.downcase)}
     }
     records
   end

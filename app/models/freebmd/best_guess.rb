@@ -67,8 +67,8 @@ class BestGuess < FreebmdDbBase
   end
 
   def record_hash
-    surname = self.Surname.upcase
-    given_name = self.GivenName.upcase
+    surname = self.Surname.encode('ISO-8859-1').upcase
+    given_name = self.GivenName.encode('ISO-8859-1').upcase
     Rails.env.development? ? district_name = self.District.upcase : district_name = self.district.DistrictName.upcase
     volume = self.Volume.upcase
     page = self.Page.upcase
