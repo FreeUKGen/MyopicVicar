@@ -1,0 +1,118 @@
+<% title "Records" %>
+<% content_for :meta_robots do %>
+  <meta name="robots" content="index, follow" />
+<% end %>
+<% content_for :meta_description do %>
+  <meta name="description" content="Find out about the coverage of our transcriptions">
+<% end %>
+<div class="grid">
+  <div class="grid__item one_whole palm-one-whole" >
+    <%= render 'flash_notice' %>
+    <br>
+    <h2 class="title text--center">Database Records as of <%= @interval_end.strftime('%d %b %Y')%>
+      <span class="accessibility">Database Record totals with option to view totals for a specific county or place or recent database addtions</span>
+    </h2>
+    <div class="grid">
+      <div class="grid__item one-third palm-one-whole" >
+        <%= simple_form_for :view_county_records,  method: :get do |c| %>
+          <fieldset class="inputs" >
+            <legend>Counties and Places</legend>
+            <div style="text-align: center">
+              <small class="additional">You may view the Database Records for <br>
+                a specific County. <br>
+              </small></div>
+            <label class="label ttip" tabindex="0" for="county_description" >
+              County
+              <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+              <span class="ttip__text">Required. <br>
+                Only Counties with Pieces are included.</span> </label>
+            <select class="select" id="county_description"  name="county_description" required="required">
+              <% @all_counties.each do |key, value| %>
+                <option value="<%=key%>" ><%=value%></option>
+              <% end %>
+            </select>
+            <%= c.submit 'View County Records',  :class => "btn   btn--small"%><br>
+            <div style="text-align: center">
+              <small class="additional">You may view the Database Records for a specific Place and if there are Pieces Online also get a list of Names currently in the Database.<br>
+                <i> Note: Brackets after the Place name indicate there are Pieces Online for those years.</i></small></div>
+            <label class="label ttip" tabindex="0" for="place_description" >
+              Place
+              <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
+              <span class="ttip__text">List fills when a County is selected. Only Places with Pieces are included.</span> </label>
+            <select class="select" id="place_description" name="place_description">
+              <option value="">List fills when you select a County</option>
+              <% if false %>
+                <% @places_for_county.each do |key, value| %>
+                  <option value="<%=key%>" ><%=value%></option>
+                <% end %>
+              <% end %>
+            </select>
+            <%= c.submit 'View Place Records',  :class => "btn   btn--small"%>
+          </fieldset>
+        <% end %>
+        <% if @freecen2_county_contents.records[:total][:total][:added_pieces_online] > 0 &&  @freecen2_county_contents.new_records.present? %>
+          <fieldset>
+            <legend>Recent Additions</legend>
+            <div style="text-align: center">
+              <p><small class="additional">You may view a list of Places across all counties that have had Pieces added to the Database in the previous 30 days</small></p>
+              <%= link_to 'View Recent Additions', freecen2_county_contents_new_records_index_path(:new_records => 'All'), class: "btn btn--small", method: :get %>
+            </div>
+          <% end %>
+        </fieldset>
+      </div>
+      <div class="grid__item two-thirds palm-one-whole" >
+        <fieldset style="border-style: none;">
+          <legend style="text-align: center">
+            <h3>Totals for All Counties</h3>
+          </legend>
+          <p style="text-align: center"><i> <small class="additional">Censuses are broken into Pieces by the National Archives<br>
+                (a Piece consists of a related set of census pages)<br>
+                New Pieces Online are those added to the database in the previous 30 days</small></i></p>
+          <div class='scrollable'>
+            <table  class="table--bordered table--data table--striped " >
+              <thead >
+                <tr>
+                  <th class='sticky-header'>Year</th>
+                  <th class='sticky-header'>Pieces<br>
+                    Online</th>
+                  <th class='sticky-header'>Total<br>
+                    Pieces</th>
+                  <th class='sticky-header'>%<br>
+                    Online</th>
+                  <th class='sticky-header'>New<br>
+                    Pieces<br>
+                    Online</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% Freecen::CENSUS_YEARS_ARRAY.each do |census|%>
+                  <tr>
+                    <td><%= census %></td>
+                    <td><%= @freecen2_county_contents.records[:total][census][:pieces_online] %></td>
+                    <td><%= @freecen2_county_contents.records[:total][census][:pieces] %></td>
+                    <%= contents_show_percentage(@freecen2_county_contents.records[:total][census][:pieces_online], @freecen2_county_contents.records[:total][census][:pieces]) %>
+                    <td><%= @freecen2_county_contents.records[:total][census][:added_pieces_online] %></td>
+                  </tr>
+                <% end %>
+                <tr>
+                  <td>Total</td>
+                  <td><%= @freecen2_county_contents.records[:total][:total][:pieces_online] %></td>
+                  <td><%= @freecen2_county_contents.records[:total][:total][:pieces] %></td>
+                  <%= contents_show_percentage(@freecen2_county_contents.records[:total][:total][:pieces_online], @freecen2_county_contents.records[:total][:total][:pieces]) %>
+                  <td><%= @freecen2_county_contents.records[:total][:total][:added_pieces_online] %></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</div>
+<% if true %>
+  <script type="text/javascript" charset="utf-8" >
+    (function($) {$("#place_description").remoteChained({
+    parents : "#county_description",
+    url : "/freecen2_county_contents/for_place_names"});})(jQuery);
+  </script>
+<% end %>
