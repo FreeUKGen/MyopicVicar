@@ -19,22 +19,13 @@ class Freecen2CountyContent
   class << self
 
     def calculate(time, mode)
-      if mode == 'FULL'
-        update_all = true
-      else
-        update_all = false
-      end
+      update_all = mode == 'FULL' ? true : false
 
       last_midnight = Time.utc(time.year, time.month, time.day)
       previous_midnight = Time.utc(time.year, time.month, time.day) - 30 * 24.hours
       start = Time.now.utc
 
       p "New Pieces Online = between #{previous_midnight} and #{last_midnight}"
-
-
-      # County
-
-      # look for record for county existing
 
       # County totals
 
@@ -45,48 +36,17 @@ class Freecen2CountyContent
 
       ChapmanCode.merge_counties.each do |county|
 
-
         # AEV Testing - if county == "SOM" || county == "LND" || county == "ESS"
-
-        p "Processing County: #{county}"
 
         exclude_counties = %w[ENG OVB OVF OUC OTH SCT UNK]
 
         next if exclude_counties.include?(county)
 
+        p "Processing County: #{county}"
+
         # look for record for county existing already
 
-        if update_all
-          stat = Freecen2CountyContent.find_by(interval_end: last_midnight, county: county)
-          stat = Freecen2CountyContent.new if stat.blank?
-        else
-          previous_stat_data = Freecen2CountyContent.where(county: county).order_by(interval_end: :desc).first
-          no_previous_data_present = false
-
-          if previous_stat_data.present?
-            if previous_stat_data.interval_end == last_midnight
-              stat = previous_stat_data
-            else
-              stat = Freecen2CountyContent.new
-            end
-          else
-            no_previous_data_present = true
-            stat = Freecen2CountyContent.new
-          end
-        end
-
-        if no_previous_data_present || update_all
-          records = Freecen2CountyContent.setup_records_county(records)
-          new_records = []
-        else
-          records = previous_stat_data.records
-          if previous_stat_data.new_records.blank?
-            new_records = []
-          else
-            new_records = previous_stat_data.new_records
-          end
-        end
-
+        previous_stat_data, no_previous_data_present, stat, records, new_records = setup_stat_and_new_records(update_all, last_midnight, county)
 
         fc2_totals_pieces, fc2_totals_pieces_online, fc2_totals_records_online, fc2_piece_ids = Freecen2Piece.before_county_year_totals(county, last_midnight)
         fc2_added_pieces_online, fc2_added_records_online = Freecen2Piece.between_dates_county_year_totals(county, previous_midnight, last_midnight)
@@ -105,7 +65,7 @@ class Freecen2CountyContent
         if update_all
           refresh_county = true
         else
-          if county_pieces_total > 0
+          if county_pieces_total.positive?
             if previous_stat_data
               if update_all || county_needs_updating(records, county, county_pieces_total, county_added_records_online)
                 refresh_county = true
@@ -124,15 +84,6 @@ class Freecen2CountyContent
           p "Collecting data for County: #{county}"
           chaps += 1
           new_records = []
-
-          # clear new_records entries for this county
-          # if new_records.size > 0
-          #   updated_array = []
-          #   new_records.each do |entry|
-          #     updated_array << entry unless entry[0] == county_name
-          #   end
-          #   new_records = updated_array
-          # end
 
           if no_previous_data_present || new_county || update_all
             records = Freecen2CountyContent.setup_records_county(records)
@@ -214,7 +165,7 @@ class Freecen2CountyContent
                   records[key_place][year][:added_pieces_online] = fc2_added_pieces_online[year]
                   records[key_place][:total][:added_pieces_online] += records[key_place][year][:added_pieces_online]
 
-                  if fc2_added_records_online[year] > 0
+                  if (fc2_added_records_online[year]).positive?
 
                     county_name = ChapmanCode.name_from_code(county)
                     new_records << [county_name, this_place.place_name, county, this_place._id, year, fc2_added_records_online[year]]
@@ -262,7 +213,6 @@ class Freecen2CountyContent
 
         end
 
-
         if !update_all && new_records.size.positive?
           # nb overall totals are always re-calculated so no need to adjust those
           #
@@ -278,7 +228,7 @@ class Freecen2CountyContent
             chapman_code = entry[2]
             place_id = entry[3]
             year = entry[4]
-            added_recs = entry[5]
+            # added_recs = entry[5]
 
             place_added_pieces_online, place_added_records = Freecen2Piece.between_dates_place_year_totals(place_id, previous_midnight, last_midnight)
             place_pieces_online_cnt =  place_added_pieces_online[year]
@@ -328,36 +278,8 @@ class Freecen2CountyContent
 
       # Overall totals
 
-      if update_all
-        stat = Freecen2CountyContent.find_by(interval_end: last_midnight, county: 'ALL')
-        stat = Freecen2CountyContent.new if stat.blank?
-      else
-        previous_stat_data = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
-        no_previous_data_present = false
-
-        if previous_stat_data.present?
-          if previous_stat_data.interval_end == last_midnight
-            stat = previous_stat_data
-          else
-            stat = Freecen2CountyContent.new
-          end
-        else
-          no_previous_data_present = true
-          stat = Freecen2CountyContent.new
-        end
-      end
-
-      if no_previous_data_present || update_all
-        records = Freecen2CountyContent.setup_records_all(records)
-        new_records = []
-      else
-        records = previous_stat_data.records
-        if previous_stat_data.new_records.blank?
-          new_records = []
-        else
-          new_records = previous_stat_data.new_records
-        end
-      end
+      previous_stat_data, no_previous_data_present, stat, records, _new_records = setup_stat_and_new_records(update_all, last_midnight, 'ALL')
+      new_records = total_new_records
 
       stat.county = 'ALL'
       stat.interval_end = last_midnight
@@ -389,14 +311,12 @@ class Freecen2CountyContent
       records[:total][:counties] = counties_array_sorted
 
       stat.records = records
-      stat.new_records = total_new_records.sort
+      stat.new_records = new_records.sort
       stat.save
 
       p 'Finished gathering latest data'
       p "Counties updated = #{chaps}"
       p "Places updated = #{total_places_cnt}"
-
-
 
       run_time = Time.now.utc - start
 
@@ -417,7 +337,7 @@ class Freecen2CountyContent
       records[:total][:records_online] = 0
       records[:total][:added_pieces_online] = 0
       records[:total][:added_records_online] = 0
-      return records
+      records
     end
 
     def setup_records_county(records)
@@ -430,7 +350,7 @@ class Freecen2CountyContent
       records[:total][:records_online] = 0
       records[:total][:added_pieces_online] = 0
       records[:total][:added_records_online] = 0
-      return records
+      records
     end
 
     def add_records_place(records, field)
@@ -442,7 +362,7 @@ class Freecen2CountyContent
       records[field][:total][:records_online] = 0
       records[field][:total][:added_pieces_online] = 0
       records[field][:total][:added_records_online] = 0
-      return records
+      records
     end
 
     def county_needs_updating(records, county, county_pieces_total, county_added_records_online)
@@ -460,7 +380,7 @@ class Freecen2CountyContent
           end
         end
       end
-      return needs_update
+      needs_update
     end
 
     def get_place_key(place)
@@ -478,12 +398,37 @@ class Freecen2CountyContent
       [new_list, remainder]
     end
 
+    def setup_stat_and_new_records(update_all, last_midnight, county)
+      if update_all
+        stat = Freecen2CountyContent.find_by(interval_end: last_midnight, county: county)
+        stat = Freecen2CountyContent.new if stat.blank?
+      else
+        previous_stat_data = Freecen2CountyContent.where(county: county).order_by(interval_end: :desc).first
+        no_previous_data_present = false
+
+        if previous_stat_data.present?
+          stat = previous_stat_data.interval_end == last_midnight ? previous_stat_data : Freecen2CountyContent.new
+        else
+          no_previous_data_present = true
+          stat = Freecen2CountyContent.new
+        end
+      end
+
+      if no_previous_data_present || update_all
+        records = county == 'ALL' ? Freecen2CountyContent.setup_records_all(records) : Freecen2CountyContent.setup_records_county(records)
+        new_records = []
+      else
+        records = previous_stat_data.records
+        new_records = previous_stat_data.new_records.presence ? previous_stat_data.new_records : [] unless county == 'ALL'
+      end
+
+      [previous_stat_data, no_previous_data_present, stat, records, new_records]
+    end
+
     def select_elements_starting_with(arr, letter)
       arr.select { |str| str.start_with?(letter) }
     end
-
   end
   # self
-
 end
 # class
