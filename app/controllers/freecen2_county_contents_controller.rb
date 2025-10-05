@@ -191,7 +191,6 @@ class Freecen2CountyContentsController < ApplicationController
   def index
     @freecen2_county_contents = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
     @interval_end = @freecen2_county_contents.interval_end
-    p "AEV02 @interval_end = #{@interval_end}"
     session[:contents_date] = @freecen2_county_contents.interval_end
     records_counties = @freecen2_county_contents.records[:total][:counties]
     @all_counties = {}

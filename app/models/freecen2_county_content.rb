@@ -10,7 +10,7 @@ class Freecen2CountyContent
   field :year, type: Integer
   field :month, type: Integer
   field :day, type: Integer
-  field :county, type: String  # added AEV
+  field :county, type: String
   field :records, type: Hash # [place_name]  - was [chapman_code] [place_name]
   field :new_records, type: Array
 
@@ -54,11 +54,7 @@ class Freecen2CountyContent
 
         next if exclude_counties.include?(county)
 
-
-        #  ##############  AEV look for esisting country record
-
         # look for record for county existing already
-
 
         if update_all
           stat = Freecen2CountyContent.find_by(interval_end: last_midnight, county: county)
@@ -220,12 +216,8 @@ class Freecen2CountyContent
 
                   if fc2_added_records_online[year] > 0
 
-                    p "AEV06 #{county} - fc2_added_records_online = #{fc2_added_records_online}"
-
                     county_name = ChapmanCode.name_from_code(county)
                     new_records << [county_name, this_place.place_name, county, this_place._id, year, fc2_added_records_online[year]]
-
-                    p "AEV07 #{county} - new_records = #{new_records}"
 
                   end
 
@@ -275,16 +267,15 @@ class Freecen2CountyContent
           # nb overall totals are always re-calculated so no need to adjust those
           #
           # adjust for 'new_records' that are no longer new (I.e. > 30 days old)
-          # new_records - [0] = County name, [1] = Place name, [2] = chapman_code, [3] = fc2_PLACE_id, [4] = year, [5] = added records - OLD AEV
           # new_records - [0] = County name, [1] = Place name, [2] = chapman_code, [3] = fc2_PLACE_id, [4] = year, [5] = added records
           #
-          p 'Adjusting Recently Added'   ######   AEV Do this at end of each county
+          p 'Adjusting Recently Added'
 
           adjusted_array = []
           new_records.each do |entry|
 
             key_place = Freecen2CountyContent.get_place_key(entry[1])
-            chapman_code = entry[2]   #   not used ?? as county records now  AEV
+            chapman_code = entry[2]
             place_id = entry[3]
             year = entry[4]
             added_recs = entry[5]
@@ -326,9 +317,6 @@ class Freecen2CountyContent
         stat.month = time.month
         stat.day = time.day
         stat.save
-
-        p "AEV01 county_name = #{county_name}"
-
 
       end
 
@@ -403,10 +391,6 @@ class Freecen2CountyContent
       stat.records = records
       stat.new_records = total_new_records.sort
       stat.save
-
-      # AEV end of overall totals section
-
-
 
       p 'Finished gathering latest data'
       p "Counties updated = #{chaps}"
