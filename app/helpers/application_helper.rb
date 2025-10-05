@@ -87,6 +87,7 @@ module ApplicationHelper
       link_to('Records', main_app.new_freereg_content_path)
     when 'freecen'
       link_to('Records', main_app.freecen2_county_contents_path)
+      # link_to('Records', main_app.freecen2_contents_path)  # AEV
     when 'freebmd'
       link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
     end
@@ -784,6 +785,7 @@ module ApplicationHelper
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
       #freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
       freecenStat: 'https://www.freecen.org.uk/freecen2_county_contents?locale=en',
+      #freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en', #AEV
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
     }
   end

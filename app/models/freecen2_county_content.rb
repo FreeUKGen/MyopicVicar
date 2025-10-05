@@ -41,6 +41,7 @@ class Freecen2CountyContent
       chaps = 0
       total_places_cnt = 0
       counties_array = []
+      total_new_records = []
 
       ChapmanCode.merge_counties.each do |county|
 
@@ -126,15 +127,16 @@ class Freecen2CountyContent
 
           p "Collecting data for County: #{county}"
           chaps += 1
+          new_records = []
 
-          # clear new_records enties for this county
-          if new_records.size > 0
-            updated_array = []
-            new_records.each do |entry|
-              updated_array << entry unless entry[0] == county_name
-            end
-            new_records = updated_array
-          end
+          # clear new_records entries for this county
+          # if new_records.size > 0
+          #   updated_array = []
+          #   new_records.each do |entry|
+          #     updated_array << entry unless entry[0] == county_name
+          #   end
+          #   new_records = updated_array
+          # end
 
           if no_previous_data_present || new_county || update_all
             records = Freecen2CountyContent.setup_records_county(records)
@@ -217,8 +219,14 @@ class Freecen2CountyContent
                   records[key_place][:total][:added_pieces_online] += records[key_place][year][:added_pieces_online]
 
                   if fc2_added_records_online[year] > 0
+
+                    p "AEV06 #{county} - fc2_added_records_online = #{fc2_added_records_online}"
+
                     county_name = ChapmanCode.name_from_code(county)
                     new_records << [county_name, this_place.place_name, county, this_place._id, year, fc2_added_records_online[year]]
+
+                    p "AEV07 #{county} - new_records = #{new_records}"
+
                   end
 
                   if fc2_totals_pieces_online[year].positive?
@@ -305,6 +313,7 @@ class Freecen2CountyContent
 
           end
           new_records = adjusted_array
+          total_new_records += new_records
 
         end
 
@@ -388,13 +397,11 @@ class Freecen2CountyContent
 
       end
 
-      p "AEV04 counties_array #{counties_array}"
-
       counties_array_sorted = counties_array.sort
       records[:total][:counties] = counties_array_sorted
 
       stat.records = records
-      stat.new_records = new_records.sort
+      stat.new_records = total_new_records.sort
       stat.save
 
       # AEV end of overall totals section
