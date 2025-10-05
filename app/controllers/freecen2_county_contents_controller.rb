@@ -23,20 +23,19 @@ class Freecen2CountyContentsController < ApplicationController
 
   def new_records_index
     if session[:contents_date].blank?
-      @freecen2_county_contents = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
+      @freecen2_contents = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
       session[:contents_date] = @freecen2_county_contents.interval_end
     end
     @interval_end = session[:contents_date]
-    @freecen2_county_contents = Freecen2CountyContent.find_by(interval_end: @interval_end, county: 'ALL') if @freecen2_county_contents.blank?
+
     @recent_additions = []
     @additions_county = params[:new_records] if params[:new_records].present?
-    return if @freecen2_county_contents.new_records.blank?
-    redirect_back(fallback_location: freecen2_county_contents_path, notice: 'Recent Additions not found') && return if @additions_county.blank?
 
     if @additions_county == 'All'
-      @recent_additions = @freecen2_county_contents.new_records
+      @freecen2_contents = Freecen2CountyContent.find_by(interval_end: @interval_end, county: 'ALL') if @freecen2_contents.blank?
+      @recent_additions = @freecen2_contents.new_records
     else
-      chapman = ChapmanCode.code_from_name(county)
+      chapman = ChapmanCode.code_from_name(@additions_county)
       @freecen2_county_contents = Freecen2CountyContent.find_by(interval_end: @interval_end, county: chapman)
       @recent_additions = @freecen2_county_contents.new_records if @freecen2_county_contents.present?
     end
@@ -211,7 +210,6 @@ class Freecen2CountyContentsController < ApplicationController
         redirect_to freecen2_county_contents_place_index_path and return
       end
     end
-    p "AEV03 end Index method"
   end
 
   def for_place_names
