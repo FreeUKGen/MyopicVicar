@@ -259,6 +259,7 @@ class Freereg1CsvEntriesController < ApplicationController
       message = 'The entry was incorrectly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+
     old_search_record = @freereg1_csv_entry.search_record
     @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
     params[:freereg1_csv_entry][:record_type] = @freereg1_csv_file.record_type
@@ -272,10 +273,14 @@ class Freereg1CsvEntriesController < ApplicationController
 
     @freereg1_csv_entry.check_and_correct_county
     @freereg1_csv_entry.check_year
-    search_version = calculate_software_version
+    
+    # search_version = calculate_software_version
     place, _church, _register = get_location_from_file(@freereg1_csv_file)
-    SearchRecord.update_create_search_record(@freereg1_csv_entry, search_version, place)
-    @freereg1_csv_file.update_statistics_and_access(session[:my_own])
+    # SearchRecord.update_create_search_record(@freereg1_csv_entry, search_version, place)
+    
+    update_file_statistics(place)
+    # @freereg1_csv_file.update_statistics_and_access(session[:my_own])
+
     @freereg1_csv_entry.reload
     @freereg1_csv_entry.update_place_ucf_list(place, @freereg1_csv_file, old_search_record)
     flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
