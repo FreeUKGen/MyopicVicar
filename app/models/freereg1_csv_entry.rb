@@ -203,7 +203,7 @@ class Freereg1CsvEntry
   embeds_many :embargo_records
   has_one :search_record, dependent: :restrict_with_error
 
-  before_save :sanitize_fields :add_digest, :captitalize_surnames, :check_register_type
+  before_save :sanitize_fields, :add_digest, :captitalize_surnames, :check_register_type
 
   before_destroy do |entry|
     SearchRecord.destroy_all(:freereg1_csv_entry_id => entry._id)
