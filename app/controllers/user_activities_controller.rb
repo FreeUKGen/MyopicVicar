@@ -12,22 +12,22 @@ class UserActivitiesController < ApplicationController
     end
 
     if params[:date_from].present?
-      @activities = @activities.where(c_at: Date.parse(params[:date_from]).beginning_of_day..)
-    end
+  @activities = @activities.where('c_at >= ?', Date.parse(params[:date_from]).beginning_of_day)
+end
 
-    if params[:date_to].present?
-      @activities = @activities.where(c_at: ..Date.parse(params[:date_to]).end_of_day)
-    end
+if params[:date_to].present?
+  @activities = @activities.where('c_at <= ?', Date.parse(params[:date_to]).end_of_day)
+end
+
+if params[:search].present?
+  @activities = @activities.where('description ILIKE ?', "%#{params[:search]}%")
+end
 
     if params[:success].present?
       @activities = @activities.where(success: params[:success] == 'true')
     end
 
-    # Search in description
-    if params[:search].present?
-      @activities = @activities.where(description: /#{Regexp.escape(params[:search])}/i)
-    end
-
+  
     @activity_types = UserActivity::ActivityType::ALL_TYPES
     @total_activities = UserActivity.for_user(@user_id).count
     @recent_activities = UserActivity.for_user(@user_id).recent(10)
@@ -42,5 +42,4 @@ class UserActivitiesController < ApplicationController
     end
   end
 end
-
 
