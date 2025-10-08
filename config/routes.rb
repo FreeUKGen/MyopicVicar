@@ -19,6 +19,7 @@ MyopicVicar::Application.routes.draw do
   root :to => 'search_queries#new'
   resources :reminder_to_donate
   resources :donate_cta_feedback
+  resources :user_activities
 
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs

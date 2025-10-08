@@ -21,6 +21,7 @@ class ApplicationController < ActionController::Base
   before_action :require_login
   before_action :load_last_stat
   before_action :load_message_flag
+  after_action :log_user_activity
   require 'record_type'
   require 'name_role'
   require 'chapman_code'
@@ -82,6 +83,26 @@ class ApplicationController < ActionController::Base
     if session[:message].blank?
       session[:message] = 'no'
       session[:message] = 'load' if Refinery::Page.where(slug: 'message').exists?
+    end
+  end
+
+  def log_user_activity
+    return unless @user.present?
+    
+    begin
+      UserActivity.log_controller_action(
+        @user,
+        controller_name,
+        action_name,
+        request,
+        {
+          resource_type: controller_name.humanize,
+          resource_id: params[:id],
+          description: "logging user activity for #{@user} in #{controller_name.humanize}",
+        }
+      )
+    rescue => e
+      Rails.logger.error "Failed to log user activity: #{e.message}"
     end
   end
 

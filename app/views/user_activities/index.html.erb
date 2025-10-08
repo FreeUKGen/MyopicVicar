@@ -1,0 +1,65 @@
+<% content_for :title, "My Activity Log" %>
+
+<div class="island">
+  <h1 class="title text--center">My Activity Log</h1>
+  <p class="text--center push-half--bottom">Track your activity on the <%= appname %> system</p>
+  <!-- Activities List -->
+  <div class="island">
+    <h3 class="beta">Recent Activities</h3>
+    <% if @activities.any? %>
+      <div style="overflow: hidden;">
+        <div class="scrollable">
+          <table class="table--bordered my-width table--data just--left">
+            <thead>
+              <tr>
+                <th class="sticky-header">Date/Time</th>
+                <th class="sticky-header">Type</th>
+                <th class="sticky-header">Action</th>
+                <th class="sticky-header">Description</th>
+                <th class="sticky-header">IP Address</th>
+                <th class="sticky-header">Status</th>
+                <th class="sticky-header">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @activities.each do |activity| %>
+                <tr>
+                  <td>
+                    <span class="text--small"><%= activity.c_at.strftime('%Y-%m-%d %H:%M:%S') %></span>
+                  </td>
+                  <td>
+                    <span class="lozenge lozenge--<%= activity.success? ? 'positive' : 'negative' %>">
+                      <%= activity.activity_type.humanize %>
+                    </span>
+                  </td>
+                  <td><%= activity.action.humanize %></td>
+                  <td>
+                    <%= truncate(activity.description, length: 50) %>
+                    <% if activity.resource_type.present? %>
+                      <br><span class="text--small">Resource: <%= activity.resource_type %></span>
+                    <% end %>
+                  </td>
+                  <td><span class="text--small"><%= activity.ip_address %></span></td>
+                  <td>
+                    <% if activity.success? %>
+                      <span class="lozenge lozenge--positive">Success</span>
+                    <% else %>
+                      <span class="lozenge lozenge--negative">Failed</span>
+                      <% if activity.error_message.present? %>
+                        <br><span class="text--small"><%= truncate(activity.error_message, length: 30) %></span>
+                      <% end %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link_to "View", user_activity_path(activity), class: "btn btn--small" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  </div>
+</div>
+
+
