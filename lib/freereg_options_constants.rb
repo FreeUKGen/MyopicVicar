@@ -263,7 +263,7 @@ module FreeregOptionsConstants
 
   ISSUES = ['Data Question', 'Website Problem', 'Volunteering Question', 'Genealogical Question', 'Enhancement Suggestion', 'Thank-you' , 'General Comment'];
 
-  LOCATION_FIELDS = ['county', 'place', 'church_name', 'register_type'];
+  LOCATION_FIELDS = ['church_name', 'register_type'];
 
   MARKED_OPTIONS = ['y', 'yes', 'marked', 'true'];
 

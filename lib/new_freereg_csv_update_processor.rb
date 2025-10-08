@@ -1293,7 +1293,7 @@ class CsvRecords <  CsvFile
         @data_entry_order[field.to_sym] = n
       else
         proceed = false
-        csvfile.header_error << "The field order definition at position #{n} contains an invalid field #{header_fields[n]}; (is it blank?)}. <br>"
+        csvfile.header_error << "The field order definition at position #{n} contains an invalid field: #{header_fields[n]} (is it blank?)}. <br>"
       end
       n = n + 1
     end
@@ -1376,7 +1376,16 @@ class CsvRecords <  CsvFile
   end
 
   def valid_field_definition?(fields)
-    entry_fields = Freereg1CsvEntry.attribute_names
+    record_type = csvfile.header[:record_type]
+    case record_type
+    when RecordType::BAPTISM
+      entry_fields = FreeregOptionsConstants::FLEXIBLE_CSV_FORMAT_BAPTISM
+    when RecordType::BURIAL
+      entry_fields = FreeregOptionsConstants::FLEXIBLE_CSV_FORMAT_BURIAL
+    when RecordType::MARRIAGE
+      entry_fields = FreeregOptionsConstants::FLEXIBLE_CSV_FORMAT_MARRIAGE
+    end
+    #entry_fields = Freereg1CsvEntry.attribute_names
     entry_fields << "chapman_code"
     entry_fields << "place_name"
     result = true
