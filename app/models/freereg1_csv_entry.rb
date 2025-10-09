@@ -792,9 +792,18 @@ class Freereg1CsvEntry
     rule = embargoes.find_by(record_type: record_type)
 
     return [false, ''] if rule.blank? #no rule for this record type
-    return [false, ''] if year.blank? #no year for this record type
 
-    end_year = EmbargoRecord.process_embargo_year(rule, year)
+    record_year =
+    year ||
+    baptism_date&.year ||
+    burial_date&.year ||
+    birth_date&.year ||
+    death_date&.year ||
+    confirmation_date&.year
+
+    return [false, ''] if record_year.blank?
+
+    end_year = EmbargoRecord.process_embargo_year(rule, record_year)
 
     if embargo_records.blank? && DateTime.now.year.to_i >= end_year
       return [false, '']
