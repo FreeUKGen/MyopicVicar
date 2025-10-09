@@ -1261,7 +1261,7 @@ class CsvRecords <  CsvFile
       csvfile.header[:def]  = true
       project.write_messages_to_all("Flexible csv flag detected. The next line will be taken a column specification. <p>", true)
 
-      if !valid_field_definition?(@data_lines[0][0].downcase)
+      if !valid_field_definition?(@data_lines[0][0].downcase,csvfile)
         proceed = false
         csvfile.header_error << "The field order definition is missing. "
       else
@@ -1289,7 +1289,7 @@ class CsvRecords <  CsvFile
     while n < header_fields.length
       #need to verify fields
       header_fields[n].nil? ? field = nil : field = header_fields[n].downcase
-      if field.present? && valid_field_definition?(field)
+      if field.present? && valid_field_definition?(field,csvfile)
         @data_entry_order[field.to_sym] = n
       else
         proceed = false
@@ -1375,7 +1375,7 @@ class CsvRecords <  CsvFile
     end
   end
 
-  def valid_field_definition?(fields)
+  def valid_field_definition?(fields,csvfile)
     record_type = csvfile.header[:record_type]
     case record_type
     when RecordType::BAPTISM
