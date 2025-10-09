@@ -1452,7 +1452,8 @@ class Freereg1CsvEntry
     def sanitize_fields
     attributes.each do |attr, value|
       if value.is_a?(String)
-        self[attr] = value.strip
+        sanitized = value.strip.gsub(/\s+/, ' ')
+        self[attr] = sanitized
       end
     end
   end
