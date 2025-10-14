@@ -81,7 +81,7 @@ gem 'zip-zip'
 group :development, :test do
   gem 'pry'
   gem 'pry-byebug'
-  gem 'rspec-rails', '~> 3.1'
+  gem 'rspec-rails'
 end
 
 # ------------------------------------------------------------
