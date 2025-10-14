@@ -63,7 +63,7 @@ gem 'json'
 gem 'mail-logger'
 gem 'mobvious'                 # Mobile device detection
 gem 'newrelic_rpm'             # Performance monitoring
-gem 'nokogiri', '>= 1.13.6'
+# gem 'nokogiri', '>= 1.13.6'
 gem 'octokit'                  # GitHub API client
 gem 'osgb', git: 'https://github.com/FreeUKGen/osgb.git'
 gem 'rubyzip'
@@ -87,7 +87,7 @@ end
 # Development Only
 # ------------------------------------------------------------
 group :development do
-  gem 'rubocop', '~> 1.23.0', require: false
+  # gem 'rubocop', '~> 1.23.0', require: false
   gem 'rubocop-rails'
 end
 
