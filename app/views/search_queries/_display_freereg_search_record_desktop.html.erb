@@ -5,15 +5,29 @@
       <%= viewed(@search_query,search_record) %></i>
   </td>
 <% end %>
-<td  >
+<td>
+  <% surnames = search_record[:transcript_names]
+                  .select { |n| n['type'] == 'primary' }
+                  .map { |n| n['last_name'] }
+                  .uniq
+                  .reject(&:blank?) %>
+
   <% search_record[:transcript_names].uniq.each_with_index do |name, i| %>
-    <% if  name['type'] == 'primary' %>
-      <% if i > 0 %>
-        <br />
-      <% end%>
-      <%= "#{name['first_name']} #{name['last_name']} " %>
+    <% if name['type'] == 'primary' %>
+      <% if i > 0 %><br><% end %>
+      <%= "#{name['first_name']} #{name['last_name']}" %>
     <% end %>
-  <% end%>
+  <% end %>
+
+  <% if surnames.size > 1 %>
+    <span 
+      class="tooltip-icon" 
+      data-bs-toggle="tooltip" 
+      data-bs-placement="top"
+      title="Two surnames are shown because both the mother's and father's surnames were recorded in the original register.">
+      &#9432;
+    </span>
+  <% end %>
 </td>
 <td  >
   <%= RecordType::display_name(search_record.record_type) %>
