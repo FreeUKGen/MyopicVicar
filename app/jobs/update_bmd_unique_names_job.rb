@@ -50,7 +50,7 @@ class UpdateBmdUniqueNamesJob < ApplicationJob
     end
     
     if Rails.env.production?
-      "sudo -u webserv bundle exec rake RAILS_ENV=#{@environment} #{task_name} --trace"
+      "bundle exec rake RAILS_ENV=#{@environment} #{task_name} --trace"
     else
       "bundle exec rake RAILS_ENV=#{@environment} #{task_name} --trace"
     end

@@ -95,24 +95,82 @@ class LatestDatabaseJob < ApplicationJob
     end
 
     begin
+      # Read the file as text to preserve comments and formatting
       yaml_content = File.read(@yaml_file)
-      yaml_data = YAML.load(yaml_content)
       
       # Update the database name for the environment
-      if yaml_data[@environment]
-        yaml_data[@environment]['database'] = latest_db
-        
-        # Write back to file
-        File.write(@yaml_file, yaml_data.to_yaml)
-        Rails.logger.info "Updated #{@yaml_file}: set #{@environment} database to #{latest_db}"
-        true
-      else
-        Rails.logger.error "Environment '#{@environment}' not found in #{@yaml_file}"
-        false
-      end
+      updated_content = update_database_name_in_content(yaml_content, latest_db)
+      
+      # Comment out variables lines for the environment
+      updated_content = comment_out_variables_lines(updated_content)
+      
+      # Write back to file
+      File.write(@yaml_file, updated_content)
+      Rails.logger.info "Updated #{@yaml_file}: set #{@environment} database to #{latest_db} and commented out variables lines"
+      true
     rescue => e
       Rails.logger.error "Error updating database config: #{e.message}"
       false
     end
+  end
+
+  def update_database_name_in_content(content, latest_db)
+    # Find the environment section and update the database name
+    lines = content.split("\n")
+    in_target_env = false
+    updated_lines = []
+    
+    lines.each do |line|
+      if line.match?(/^#{@environment}:/)
+        in_target_env = true
+        updated_lines << line
+      elsif in_target_env && line.match?(/^[a-zA-Z_]+:/)
+        # We've moved to the next environment section
+        in_target_env = false
+        updated_lines << line
+      elsif in_target_env && line.match?(/^\s*database:\s*/)
+        # Update the database line
+        updated_lines << "  database: #{latest_db}"
+      else
+        updated_lines << line
+      end
+    end
+    
+    updated_lines.join("\n")
+  end
+
+  def comment_out_variables_lines(content)
+    lines = content.split("\n")
+    in_target_env = false
+    in_variables_section = false
+    updated_lines = []
+    
+    lines.each do |line|
+      if line.match?(/^#{@environment}:/)
+        in_target_env = true
+        in_variables_section = false
+        updated_lines << line
+      elsif in_target_env && line.match?(/^[a-zA-Z_]+:/)
+        # We've moved to the next environment section
+        in_target_env = false
+        in_variables_section = false
+        updated_lines << line
+      elsif in_target_env && line.match?(/^\s*variables:\s*/)
+        # We're entering the variables section
+        in_variables_section = true
+        updated_lines << line
+      elsif in_target_env && in_variables_section && line.match?(/^\s*(sql_mode|max_execution_time):\s*/)
+        # Comment out sql_mode and max_execution_time lines
+        updated_lines << "    # #{line.strip}"
+      elsif in_target_env && in_variables_section && line.match?(/^\s*[a-zA-Z_]+:\s*/)
+        # We've moved to a different section within the environment
+        in_variables_section = false
+        updated_lines << line
+      else
+        updated_lines << line
+      end
+    end
+    
+    updated_lines.join("\n")
   end
 end
