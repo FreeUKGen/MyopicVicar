@@ -97,3 +97,7 @@ end
 group :test do
   # Add test-only gems here if needed
 end
+
+# Only load Gemfile.local if it exists
+local_gemfile = File.join(__dir__, "Gemfile.local")
+eval_gemfile(local_gemfile) if File.exist?(local_gemfile)
