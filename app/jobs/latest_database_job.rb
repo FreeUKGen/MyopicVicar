@@ -2,9 +2,10 @@ class LatestDatabaseJob < ApplicationJob
   require 'shellwords'
   require 'open3'
 
-  def perform(environment = 'production')
+  def perform(environment = 'production', mysql_password = nil)
     @environment = environment
     @yaml_file = 'config/freebmd_database.yml'
+    @mysql_password = mysql_password
     
     begin
       credentials = extract_mysql_credentials
@@ -41,7 +42,8 @@ class LatestDatabaseJob < ApplicationJob
     end
 
     username = env_config['username']
-    password = env_config['password']
+    # Use provided password or fall back to YAML file
+    password = @mysql_password.present? ? @mysql_password : env_config['password']
     
     if username.blank? || password.blank?
       Rails.logger.error "Missing username or password for environment: #{@environment}"
@@ -104,9 +106,18 @@ class LatestDatabaseJob < ApplicationJob
       # Comment out variables lines for the environment
       updated_content = comment_out_variables_lines(updated_content)
       
-      # Write back to file
-      File.write(@yaml_file, updated_content)
-      Rails.logger.info "Updated #{@yaml_file}: set #{@environment} database to #{latest_db} and commented out variables lines"
+      # Write back to file with proper error handling
+      begin
+        File.write(@yaml_file, updated_content)
+        Rails.logger.info "Updated #{@yaml_file}: set #{@environment} database to #{latest_db} and commented out variables lines"
+      rescue Errno::EACCES => e
+        Rails.logger.error "Permission denied writing to #{@yaml_file}: #{e.message}"
+        Rails.logger.error "Please run: sudo chmod 664 #{@yaml_file} && sudo chown $USER:$USER #{@yaml_file}"
+        raise "Permission denied: #{e.message}"
+      rescue => e
+        Rails.logger.error "Error writing to #{@yaml_file}: #{e.message}"
+        raise e
+      end
       true
     rescue => e
       Rails.logger.error "Error updating database config: #{e.message}"
