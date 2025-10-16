@@ -169,7 +169,8 @@ class LatestDatabaseJob < ApplicationJob
       elsif in_target_env && line.match?(/^\s*variables:\s*/)
         # We're entering the variables section
         in_variables_section = true
-        updated_lines << line
+        #updated_lines << line
+        updated_lines << "  # #{line}"
       elsif in_target_env && in_variables_section && line.match?(/^\s*(sql_mode|max_execution_time):\s*/)
         # Comment out sql_mode and max_execution_time lines
         updated_lines << "    # #{line.strip}"
