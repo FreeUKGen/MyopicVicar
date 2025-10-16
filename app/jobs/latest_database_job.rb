@@ -55,17 +55,13 @@ class LatestDatabaseJob < ApplicationJob
 
   def find_latest_database(credentials)
     # Connect to MySQL and find latest bmd_<epoch> database
-    # Use environment variables to avoid password exposure in process lists
-    env_vars = {
-      'MYSQL_PWD' => credentials[:password]
-    }
-    
-    # Escape username to prevent command injection
+    # Escape username and password to prevent command injection
     escaped_username = Shellwords.escape(credentials[:username])
-    mysql_command = "mysql -u#{escaped_username} -p -N -B -e \"SHOW DATABASES LIKE 'bmd\\\\_%';\""
+    escaped_password = Shellwords.escape(credentials[:password])
+    mysql_command = "mysql -u#{escaped_username} --password=#{escaped_password} -N -B -e \"SHOW DATABASES LIKE 'bmd\\\\_%';\""
     
     begin
-      result = Open3.capture3(env_vars, mysql_command)
+      result = Open3.capture3(mysql_command)
       stdout, stderr, status = result
       
       if status.success?
