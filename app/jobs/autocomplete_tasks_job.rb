@@ -1,4 +1,5 @@
 class AutocompleteTasksJob < ApplicationJob
+  include AirbrakeErrorFilter
   require 'open3'
 
   def perform(environment = 'production')
@@ -63,19 +64,9 @@ class AutocompleteTasksJob < ApplicationJob
     trace("Executing: #{command}")
     
     stdout, stderr, status = Open3.capture3(command)
-    
-    output = stdout.split("\n")
-    error_output = stderr.split("\n")
-    output.each { |line| trace("STDOUT: #{line}") }
-    error_output.each { |line| trace("STDERR: #{line}") }
-    
-    if status.success?
-      { success: true, output: output, error: nil }
-    else
-      { success: false, output: output, error: error_output.join("\n") }
-    end
+    handle_rake_task_result(stdout, stderr, status)
   rescue => e
-    { success: false, output: [], error: e.message }
+    handle_rake_task_exception(e)
   end
 
   def trace(message)
