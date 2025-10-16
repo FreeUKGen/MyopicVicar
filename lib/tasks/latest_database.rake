@@ -11,6 +11,39 @@ namespace :database do
     puts "LatestDatabaseJob completed successfully"
   end
   
+  desc "Uncomment variables in database configuration"
+  task :uncomment_variables, [:environment] => :environment do |t, args|
+    environment = args[:environment] || 'production'
+    
+    puts "Starting UncommentVariablesJob for environment: #{environment}"
+    
+    # Run the job synchronously for rake task
+    UncommentVariablesJob.new.perform(environment)
+    
+    puts "UncommentVariablesJob completed successfully"
+  end
+
+  desc "Run complete database deployment: update, uncomment, and copy"
+  task :full_deployment, [:environment] => :environment do |t, args|
+    environment = args[:environment] || 'production'
+    
+    puts "Starting full database deployment for environment: #{environment}"
+    puts "=" * 60
+    
+    # Step 1: Update latest database
+    puts "Step 1: Updating latest database..."
+    LatestDatabaseJob.new.perform(environment)
+    puts "✓ Latest database updated"
+    
+    # Step 2: Uncomment variables
+    puts "Step 2: Uncommenting variables..."
+    UncommentVariablesJob.new.perform(environment)
+    puts "✓ Variables uncommented"
+
+    puts "=" * 60
+    puts "Full database deployment completed successfully!"
+  end
+  
   desc "Schedule LatestDatabaseJob to run asynchronously"
   task :schedule_latest, [:environment] => :environment do |t, args|
     environment = args[:environment] || 'production'
@@ -115,28 +148,34 @@ namespace :all_tasks do
     
     begin
       # 1. Update Database Configuration
-      puts "\n[1/4] Updating Database Configuration..."
+      # Adds new database and comment out timeout variables
+      puts "\n[1/5] Updating Database Configuration..."
       puts "-" * 50
       LatestDatabaseJob.new.perform(environment)
       puts "✅ Database configuration updated successfully"
       
       # 2. Run Autocomplete Tasks
-      puts "\n[2/4] Running Autocomplete Tasks..."
+      puts "\n[2/5] Running Autocomplete Tasks..."
       puts "-" * 50
       AutocompleteTasksJob.new.perform(environment)
       puts "✅ Autocomplete tasks completed successfully"
       
       # 3. Calculate Record Statistics
-      puts "\n[3/4] Calculating Record Statistics..."
+      puts "\n[3/5] Calculating Record Statistics..."
       puts "-" * 50
       CalculateRecordStatisticsJob.new.perform(environment)
       puts "✅ Record statistics calculated successfully"
       
       # 4. Update BMD Unique Names
-      puts "\n[4/4] Updating BMD Unique Names..."
+      puts "\n[4/5] Updating BMD Unique Names..."
       puts "-" * 50
       UpdateBmdUniqueNamesJob.new.perform(environment)
       puts "✅ BMD unique names updated successfully"
+
+      # 5. Uncomment the variables
+      puts "\n[5/5]  Uncommenting variables..."
+      UncommentVariablesJob.new.perform(environment)
+      puts "✓ Variables uncommented"
       
       # Summary
       end_time = Time.current
