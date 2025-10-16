@@ -156,19 +156,19 @@ namespace :all_tasks do
       puts "-" * 50
       LatestDatabaseJob.new.perform(environment, mysql_password)
       puts "✅ Database configuration updated successfully"
-      
-      # 2. Run Autocomplete Tasks
-      puts "\n[2/5] Running Autocomplete Tasks..."
-      puts "-" * 50
-      AutocompleteTasksJob.new.perform(environment)
-      puts "✅ Autocomplete tasks completed successfully"
-      
-      # 3. Calculate Record Statistics
-      puts "\n[3/5] Calculating Record Statistics..."
+
+      # 2. Calculate Record Statistics
+      puts "\n[2/5] Calculating Record Statistics..."
       puts "-" * 50
       CalculateRecordStatisticsJob.new.perform(environment)
       puts "✅ Record statistics calculated successfully"
       
+      # 3. Run Autocomplete Tasks
+      puts "\n[3/5] Running Autocomplete Tasks..."
+      puts "-" * 50
+      AutocompleteTasksJob.new.perform(environment)
+      puts "✅ Autocomplete tasks completed successfully"
+
       # 4. Update BMD Unique Names
       puts "\n[4/5] Updating BMD Unique Names..."
       puts "-" * 50

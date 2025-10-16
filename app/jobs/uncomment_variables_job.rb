@@ -41,10 +41,17 @@ class UncommentVariablesJob < ApplicationJob
         in_target_env = false
         in_variables_section = false
         updated_lines << line
+      elsif in_target_env && line.match?(/^\s*#\s*variables:\s*/)
+        # Uncomment the variables: line
+        in_variables_section = true
+        uncommented_line = line.gsub(/^\s*#\s*/, '  ')
+        updated_lines << uncommented_line
       elsif in_target_env && line.match?(/^\s*variables:\s*/)
+        # Variables line is already uncommented
         in_variables_section = true
         updated_lines << line
       elsif in_target_env && in_variables_section && line.match?(/^\s*#\s*(sql_mode|max_execution_time):\s*/)
+        # Uncomment sql_mode and max_execution_time lines
         uncommented_line = line.gsub(/^\s*#\s*/, '    ')
         updated_lines << uncommented_line
       elsif in_target_env && in_variables_section && line.match?(/^\s*[a-zA-Z_]+:\s*/)
@@ -58,3 +65,4 @@ class UncommentVariablesJob < ApplicationJob
     updated_lines.join("\n")
   end
 end
+
