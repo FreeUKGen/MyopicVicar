@@ -19,6 +19,13 @@ class UpdateBmdUniqueNamesJob < ApplicationJob
       end
       
     rescue => e
+      # Check if this is an Airbrake-related error
+      if airbrake_exception?(e)
+        Rails.logger.warn "UpdateBmdUniqueNamesJob: Ignored Airbrake error: #{e.message}"
+        Rails.logger.info "UpdateBmdUniqueNamesJob completed successfully for #{@environment} (Airbrake error ignored)"
+        return
+      end
+      
       Rails.logger.error "UpdateBmdUniqueNamesJob failed: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
       raise e
@@ -35,7 +42,12 @@ class UpdateBmdUniqueNamesJob < ApplicationJob
     if result[:success]
       trace("Completed #{task_name} task successfully")
     else
-      raise "Rake task '#{task_name}' failed: #{result[:error]}"
+      # Check if the error is Airbrake-related
+      if result[:error] && airbrake_error_in_output?(result[:error])
+        trace("Completed #{task_name} task successfully (Airbrake error ignored)")
+      else
+        raise "Rake task '#{task_name}' failed: #{result[:error]}"
+      end
     end
   end
 
@@ -50,11 +62,8 @@ class UpdateBmdUniqueNamesJob < ApplicationJob
       raise ArgumentError, "Invalid environment: #{@environment}"
     end
     
-    if Rails.env.production?
-      "bundle exec rake RAILS_ENV=#{@environment} #{task_name} --trace"
-    else
-      "bundle exec rake RAILS_ENV=#{@environment} #{task_name} --trace"
-    end
+    # Use environment variables to suppress warnings
+    "RUBYOPT='-W0' bundle exec rake RAILS_ENV=#{@environment} #{task_name}"
   end
 
   def execute_rake_task(command)

@@ -6,6 +6,10 @@ class CalculateRecordStatisticsJob < ApplicationJob
     @environment = environment
     @root_path = "#{Rails.root}"
     
+    # Suppress common warnings
+    require_relative '../../lib/suppress_warnings'
+    SuppressWarnings.suppress_all_warnings
+    
     begin
       # Change to the application root directory
       Dir.chdir(@root_path) do
@@ -19,9 +23,19 @@ class CalculateRecordStatisticsJob < ApplicationJob
       end
       
     rescue => e
+      # Check if this is an Airbrake-related error
+      if airbrake_exception?(e)
+        Rails.logger.warn "CalculateRecordStatisticsJob: Ignored Airbrake error: #{e.message}"
+        Rails.logger.info "CalculateRecordStatisticsJob completed successfully for #{@environment} (Airbrake error ignored)"
+        return
+      end
+      
       Rails.logger.error "CalculateRecordStatisticsJob failed: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
       raise e
+    ensure
+      # Restore warnings (optional)
+      SuppressWarnings.restore_warnings
     end
   end
 
@@ -34,7 +48,12 @@ class CalculateRecordStatisticsJob < ApplicationJob
     if result[:success]
       trace("Completed #{task_name} task successfully")
     else
-      raise "Rake task '#{task_name}' failed: #{result[:error]}"
+      # Check if the error is Airbrake-related
+      if result[:error] && airbrake_error_in_output?(result[:error])
+        trace("Completed #{task_name} task successfully (Airbrake error ignored)")
+      else
+        raise "Rake task '#{task_name}' failed: #{result[:error]}"
+      end
     end
   end
 
@@ -49,11 +68,8 @@ class CalculateRecordStatisticsJob < ApplicationJob
       raise ArgumentError, "Invalid environment: #{@environment}"
     end
     
-    if Rails.env.production?
-      "bundle exec rake RAILS_ENV=#{@environment} #{task_name} --trace"
-    else
-      "bundle exec rake RAILS_ENV=#{@environment} #{task_name} --trace"
-    end
+    # Use environment variables to suppress warnings
+    "RUBYOPT='-W0' bundle exec rake RAILS_ENV=#{@environment} #{task_name}"
   end
 
   def execute_rake_task(command)

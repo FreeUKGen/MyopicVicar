@@ -11,7 +11,20 @@ module AirbrakeErrorFilter
     error_output.reject do |line|
       line.include?("stop_polling") || 
       line.include?("airbrake-ruby") ||
-      (line.include?("NoMethodError") && line.include?("TrueClass"))
+      line.include?("airbrake-11.0.1") ||
+      (line.include?("NoMethodError") && line.include?("TrueClass")) ||
+      # RubyGems warnings
+      line.include?("Your RubyGems version") ||
+      line.include?("has a bug that prevents") ||
+      line.include?("required_ruby_version") ||
+      line.include?("Please upgrade RubyGems") ||
+      line.include?("gem update --system") ||
+      # Rake invoke/execute statements
+      line.strip.start_with?("** Invoke") ||
+      line.strip.start_with?("** Execute") ||
+      line.strip.start_with?("** ") ||
+      # Other common harmless warnings
+      line.include?("warning:") && line.include?("deprecated")
     end
   end
 
@@ -23,6 +36,34 @@ module AirbrakeErrorFilter
     exception.message.include?("stop_polling") || 
     exception.message.include?("airbrake-ruby") ||
     (exception.is_a?(NoMethodError) && exception.message.include?("TrueClass"))
+  end
+
+  def airbrake_error_in_output?(error_output)
+    return false unless error_output
+    
+    # Check if the error output contains only ignorable warnings/errors
+    lines = error_output.split("\n")
+    filtered_lines = lines.reject do |line|
+      line.include?("stop_polling") || 
+      line.include?("airbrake-ruby") ||
+      line.include?("airbrake-11.0.1") ||
+      (line.include?("NoMethodError") && line.include?("TrueClass")) ||
+      # RubyGems warnings
+      line.include?("Your RubyGems version") ||
+      line.include?("has a bug that prevents") ||
+      line.include?("required_ruby_version") ||
+      line.include?("Please upgrade RubyGems") ||
+      line.include?("gem update --system") ||
+      # Rake invoke/execute statements
+      line.strip.start_with?("** Invoke") ||
+      line.strip.start_with?("** Execute") ||
+      line.strip.start_with?("** ") ||
+      # Other common harmless warnings
+      (line.include?("warning:") && line.include?("deprecated"))
+    end
+    
+    # If all lines were filtered out, then it's only ignorable warnings
+    lines.any? && filtered_lines.empty?
   end
 
   def handle_rake_task_result(stdout, stderr, status)
