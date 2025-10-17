@@ -50,7 +50,9 @@
                           "widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&" +
                           "tr_ifid=freereg_8035265&firstName=#{ERB::Util.url_encode(first_name)}&lastName=#{ERB::Util.url_encode(last_name)}" +
                           "&tr_device=&size=160x600" %>
-          <% show_large_ad = @search_results.size > 6 %>
+          <% iframe_src_square = "https://myheritagewidgets.com/widgets/iframe?firstName=#{first_name}&lastName=#{last_name}&adID=NkKer6rXHZIysKJX&clientId=4742&partnerName=freebmd&dimensions=300x250"  %>
+
+      <% show_large_ad = @search_results.size > 6 %>
           <div class="grid__item <%= show_large_ad ? 'three-tenths' : 'two-tenths' %> lap-two-tenths palm-one-whole text--right push--left" id="results_table_ad" style="<%= show_large_ad ? 'flex-direction: column;' : '' %>">
             <% if show_large_ad %>
               <h2 class="text--center" style="font-size:12pt;">Advertisements</h2>
@@ -59,12 +61,12 @@
                 <%= my_heritage_300_250_first %>
               </div>
               <div class="float--right push--top" style="display:flex;position:sticky;top:0;align-self:start;">
-                <div data-fuse="22895564148"></div>
+                <iframe src="<%= iframe_src_square %>" width="300" height="250" widget="records" frameborder="0" scrolling= "no"></iframe>
               </div>
             <% else %>
               <div class="ad-center">
                 <h2 class="text--center" style="font-size:12pt;">Advertisement</h2>
-                <iframe src="<%= iframe_src %>" height="650" width="170"></iframe>
+                <iframe src="<%= iframe_src %>" height="600" width="160"></iframe>
               </div>
             <% end %>
           </div>
