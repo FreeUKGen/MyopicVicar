@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # ------------------------------------------------------------
 # Core Framework
 # ------------------------------------------------------------
-gem 'rails'
+gem 'rails', '5.1.7'
 
 # ------------------------------------------------------------
 # Database & ODM
@@ -97,7 +97,7 @@ end
 # Test Only
 # ------------------------------------------------------------
 group :test do
-  # Add test-only gems here if needed
+  gem "capybara"
 end
 
 # Only load Gemfile.local if it exists
