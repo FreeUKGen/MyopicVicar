@@ -79,11 +79,11 @@ gem 'zip-zip'
 # Development & Test
 # ------------------------------------------------------------
 group :development, :test do
+  gem 'factory_bot_rails'
+  gem 'mongoid-rspec'
   gem 'pry'
   gem 'pry-byebug'
   gem 'rspec-rails'
-  gem 'mongoid-rspec'
-  gem 'factory_bot_rails'
 end
 
 # ------------------------------------------------------------
