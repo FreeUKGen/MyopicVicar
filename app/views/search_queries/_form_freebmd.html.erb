@@ -178,15 +178,15 @@
                                     <% end %>
                                 </li>
                                 <li class="choice">
+                                  <%= f.label :bmd_record_type_marriage, { :class => "optional_attributes", id: 'marriage_record_type_label'} do %>
+                                    <%= check_box_tag 'search_query[bmd_record_type][]', 3,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '3'),{ multiple: true, class: 'checkboxtag marriage' , id: 'search_query_bmd_record_type_marriage', tabindex: "0"} %>
+                                    <%= content_text(:optional_checkbox_label, 'Marriage') %>
+                                  <% end %>
+                                </li>
+                                <li class="choice">
                                     <%= f.label :bmd_record_type_death, { :class => "optional_attributes", id: 'death_record_type_label'} do %>
                                         <%= check_box_tag 'search_query[bmd_record_type][]', 2,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '2'),{ multiple: true, class: 'checkboxtag death', id: 'search_query_bmd_record_type_death', tabindex: "0" } %>
                                         <%= content_text(:optional_checkbox_label, 'Death') %>
-                                    <% end %>
-                                </li>
-                                <li class="choice">
-                                    <%= f.label :bmd_record_type_marriage, { :class => "optional_attributes", id: 'marriage_record_type_label'} do %>
-                                        <%= check_box_tag 'search_query[bmd_record_type][]', 3,set_checkbox_checked_value(field_value: @search_query.bmd_record_type, value: '3'),{ multiple: true, class: 'checkboxtag marriage' , id: 'search_query_bmd_record_type_marriage', tabindex: "0"} %>
-                                        <%= content_text(:optional_checkbox_label, 'Marriage') %>
                                     <% end %>
                                 </li>
                             </ol>
