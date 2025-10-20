@@ -90,6 +90,7 @@ end
 # Development Only
 # ------------------------------------------------------------
 group :development do
+  gem "puma"
   gem 'rubocop-rails'
 end
 

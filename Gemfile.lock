@@ -82,6 +82,15 @@ GEM
     bson (4.11.1)
     builder (3.3.0)
     byebug (11.1.3)
+    capybara (3.39.2)
+      addressable
+      matrix
+      mini_mime (>= 0.1.3)
+      nokogiri (~> 1.8)
+      rack (>= 1.6.0)
+      rack-test (>= 0.6.3)
+      regexp_parser (>= 1.5, < 3.0)
+      xpath (~> 3.2)
     carrierwave (2.1.0)
       activemodel (>= 5.0.0)
       activesupport (>= 5.0.0)
@@ -126,6 +135,11 @@ GEM
     erubi (1.13.1)
     excon (0.78.0)
     execjs (2.7.0)
+    factory_bot (6.4.5)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.4.3)
+      factory_bot (~> 6.4)
+      railties (>= 5.0.0)
     faraday (1.1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
@@ -203,6 +217,7 @@ GEM
       mini_mime (>= 0.1.1)
     mail-logger (0.0.4)
       mail
+    matrix (0.4.3)
     method_source (1.1.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
@@ -223,9 +238,15 @@ GEM
     mongoid (7.1.5)
       activemodel (>= 5.1, < 6.1)
       mongo (>= 2.7.0, < 3.0.0)
+    mongoid-compatibility (1.0.0)
+      activesupport
+      mongoid (>= 2.0)
     mongoid-grid_fs (2.4.0)
       mime-types (>= 1.0, < 4.0)
       mongoid (>= 3.0, < 8.0)
+    mongoid-rspec (4.2.0)
+      mongoid (>= 3.0, < 10.0)
+      mongoid-compatibility (>= 0.5.1)
     multi_json (1.15.0)
     multipart-post (2.1.1)
     mysql2 (0.5.3)
@@ -254,6 +275,8 @@ GEM
       pry (~> 0.13.0)
     psych (3.3.4)
     public_suffix (4.0.6)
+    puma (6.6.1)
+      nio4r (~> 2.0)
     racc (1.8.1)
     rack (2.2.20)
     rack-test (2.2.0)
@@ -446,6 +469,8 @@ GEM
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     will_paginate (3.3.0)
+    xpath (3.2.0)
+      nokogiri (~> 1.8)
     zilch-authorisation (0.0.1)
     zip-zip (0.3)
       rubyzip (>= 1.0.0)
@@ -459,12 +484,14 @@ DEPENDENCIES
   bcrypt
   bourbon
   browser
+  capybara
   carrierwave-mongoid
   coffee-rails
   devise
   devise-encryptable
   email_veracity
   execjs
+  factory_bot_rails
   font_awesome5_rails
   formtastic
   geocoder (= 1.3.7)
@@ -477,6 +504,7 @@ DEPENDENCIES
   mobvious
   mongo
   mongoid
+  mongoid-rspec
   mysql2
   newrelic_rpm
   nokogiri (~> 1.15.0)
@@ -485,7 +513,8 @@ DEPENDENCIES
   pry
   pry-byebug
   psych (~> 3.3.0)
-  rails
+  puma
+  rails (= 5.1.7)
   refinerycms
   refinerycms-authentication-devise
   refinerycms-county_pages!
