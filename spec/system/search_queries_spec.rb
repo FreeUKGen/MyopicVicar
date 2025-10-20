@@ -16,7 +16,7 @@ RSpec.describe 'SearchQueries', type: :system do
     fill_in 'end_year', with: '1850'
     choose 'ba'
     click_button 'Search'
-    save_page
+
     expect(page).to have_content 'We found'
     # expect(page).to have_content 'No results found'
   end
