@@ -1,0 +1,134 @@
+// Search Form Styles
+// Extracted from _form_freebmd.html.erb for better maintainability
+
+.search_form {
+  li ol li {
+    margin-bottom: 0px;
+  }
+  
+  li {
+    margin-bottom: 5px;
+  }
+}
+
+// Mobile responsive styles
+@media (max-width: 767px) {
+  .mobile-fixed-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    background: #dedede;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    
+    .btn {
+      width: 100%;
+      font-size: 1.1em;
+      border-radius: 5px;
+      border: none;
+      
+      &.btn-clear {
+        background: #f5f5f5;
+        color: #222;
+        border: 1px solid #ccc;
+      }
+    }
+  }
+  
+  .small_screen_actions {
+    display: none !important;
+  }
+  
+  .grid.action {
+    display: none !important;
+  }
+  
+  .bmd_search_form {
+    padding-bottom: 70px;
+  }
+}
+
+@media (min-width: 768px) {
+  .mobile-fixed-actions {
+    display: none;
+  }
+}
+
+// Advertisement responsive styles
+@media (max-width: 1299px) {
+  .big_screen_ads {
+    display: none;
+  }
+  .whole_advert {
+    display: block;
+  }
+}
+
+@media (min-width: 1300px) {
+  .big_screen_ads {
+    display: block;
+  }
+  .whole_advert {
+    display: none;
+  }
+}
+
+// Form-specific styles
+#spouse_or_mother_surname_div,
+#age_at_death_or_date_of_birth_div,
+#spouse_firstnames_div {
+  display: none;
+}
+
+#search_query_chapman_code {
+  overflow-x: scroll;
+}
+
+#search_query_chapman_codes optgroup option:hover {
+  position: relative;
+}
+
+.flex_container {
+  display: flex;
+  flex-direction: row;
+  column-gap: 15px;
+}
+
+.flex_item {
+  flex-grow: 2;
+}
+
+#all_record_types_label {
+  color: inherit;
+}
+
+// Form validation styles
+.validation-list {
+  &__error {
+    color: #d32f2f;
+    font-weight: 500;
+  }
+}
+
+// Accessibility improvements
+.accessibility {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+// Loading states
+.ladda-button {
+  &[data-loading] {
+    .ladda-spinner {
+      display: inline-block;
+    }
+  }
+}

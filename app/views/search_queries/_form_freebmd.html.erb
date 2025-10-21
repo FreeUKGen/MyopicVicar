@@ -1,11 +1,12 @@
 <% if flash[:notice] %>
-    <div class="weight--semibold text--center"><br>
-        <%= flash[:notice] %> <% flash[:notice] = nil %><br>
+    <div class="weight--semibold text--center alert alert-info" role="alert">
+        <%= sanitize(flash[:notice]) %>
+        <% flash[:notice] = nil %>
     </div>
 <% end %>
 
-<% if @search_query.present? && (@search_query.errors.present? || @search_query.errors.any?) %>
-    <div role="alert">
+<% if @search_query.present? && @search_query.errors.any? %>
+    <div role="alert" class="alert alert-danger">
         <fieldset class="input">
             <legend>Error List</legend>
             <h2 class="gamma">Following <%= pluralize(@search_query.errors.count, 'error') %> prohibited this search from being processed:</h2>
@@ -13,7 +14,9 @@
                 <% @search_query.errors.messages.each do |key, msg| %>
                     <% msg.each do |m| %>
                         <li>
-                            <label for="<%=SearchQueriesHelper::ID_HASH[key]%>" class="validation-list__error"><%= m %></label>
+                            <label for="<%= SearchQueriesHelper::ID_HASH[key] %>" class="validation-list__error">
+                                <%= sanitize(m) %>
+                            </label>
                         </li>
                     <% end %>
                 <% end %>
@@ -22,72 +25,15 @@
     </div>
 <% end %>
 
-<style>
-  .search_form li ol li {margin-bottom: 0px;}
-  /* Fixed action buttons container for mobile */
-  @media (max-width: 767px) {
-    .mobile-fixed-actions {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 999;
-      background: #dedede;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 16px;
-    }
-    .mobile-fixed-actions .btn {
-      width: 100%; /* 48%;*/
-      font-size: 1.1em;
-      border-radius: 5px;
-      border: none;
-    }
+<%= stylesheet_link_tag 'search_form' %>
 
-    .mobile-fixed-actions .btn-clear {
-      background: #f5f5f5;
-      color: #222;
-      border: 1px solid #ccc;
-    }
-    .small_screen_actions {
-      /*display: none !important;*/
-    }
-    .grid.action {
-      display: none !important;
-    }
-    /* Add padding bottom to prevent form fields from being hidden behind fixed buttons */
-    .bmd_search_form {
-      padding-bottom: 70px;
-    }
-  }
-  @media (min-width: 768px) {
-  .mobile-fixed-actions {
-    display: none;
-  }
-}
-@media (max-width: 1299px) {
-    .big_screen_ads {
-        display: none;
-    }
-    .whole_advert {
-        display: block;
-    }
-}
-@media (min-width: 1300px) {
-    .big_screen_ads {
-        display: block;
-    }
-    .whole_advert {
-        display: none;
-    }
-}
-</style>
-
-<script
-    src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+<!-- Load jQuery UI before our custom script -->
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
     integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
     crossorigin="anonymous"></script>
+
+<%= javascript_include_tag 'search_form' %>
+<%= javascript_include_tag 'autocomplete_test' %>
 
 <div class='text--left push-half--bottom'>
   <small><strong>Tip: Double-tab to move through name fields</strong></small>
@@ -95,44 +41,68 @@
 
 <div class="grid">
     <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads">
-      <p style="margin-bottom:5px;">Advertisement</p>
+      <p class="advertisement-label">Advertisement</p>
       <div data-fuse="freebmd_skyscraper_1"></div>
     </div>
-      <%= horz_advert_whole('22895564151') %>
-  <div id="top" class="grid__item desk-wide-five-sixths desk-one-whole lap-one-whole palm-one-whole hard--left" style="padding-right:5px;">
-    <div class="bmd_search_form">
-        <%= semantic_form_for(@search_query) do |f| %>
+    <%= horz_advert_whole('22895564151') %>
+    
+    <div id="top" class="grid__item desk-wide-five-sixths desk-one-whole lap-one-whole palm-one-whole hard--left search-form-container">
+        <div class="bmd_search_form">
+            <%= semantic_form_for(@search_query, id: 'new_search_query', local: true, html: { novalidate: false }) do |f| %>
             <fieldset class="input" style="padding-right:10px;">
                 <legend>Search options</legend>
                 <ol class="grid search_form">
                     <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">
                         <div class='labels push-half--bottom'>
-                            <%= label_tag 'first_name','' , class: "ttip", id: 'firstname'  do %>
-                                <%="First name(s)".html_safe %>
-                            <% end %>
+                            <%= label_tag 'first_name', 'First name(s)', class: "ttip", id: 'firstname' %>
                         </div>
-                        <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0" %>
-                        <label>
-                            <small>
-                                <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
-                            Exact match on first names
-                            </small>
-                        </label>
+                        <%= text_field_tag 'search_query[first_name]', 
+                            set_value(@search_query.first_name), 
+                            class: 'text-input flush--bottom', 
+                            role: 'textbox', 
+                            id: 'first_name', 
+                            autocomplete: 'given-name',
+                            tabindex: "1",
+                            maxlength: 100,
+                            'aria-describedby' => 'firstname-help' %>
+                        <div id="firstname-help" class="help-text">
+                            <label for="search_query_first_name_exact_match">
+                                <small>
+                                    <%= check_box_tag 'search_query[first_name_exact_match]', 
+                                        set_value(@search_query.first_name_exact_match), 
+                                        set_value(@search_query.first_name_exact_match),
+                                        id: 'search_query_first_name_exact_match',
+                                        tabindex: "2" %>
+                                    Exact match on first names
+                                </small>
+                            </label>
+                        </div>
                     </li>
 
                   <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
                         <div class='labels push-half--bottom'>
-                            <%= label_tag 'last_name', "Surname".html_safe, class: "ttip" do %>
-                                <%= "Surname".html_safe %>
-                            <% end %>
+                            <%= label_tag 'last_name', 'Surname', class: "ttip" %>
                         </div>
-                        <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', :autocomplete => '/unique_surnames', tabindex: "0"%>
-                        <label>
-                            <small class="ttip__text">
-                                <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
-                                Phonetic search surnames
-                            </small>
-                        </label>
+                        <%= text_field_tag 'search_query[last_name]', 
+                            set_value(@search_query.last_name), 
+                            class: 'text-input flush--bottom', 
+                            id: 'last_name', 
+                            autocomplete: 'family-name',
+                            tabindex: "3",
+                            maxlength: 50,
+                            'aria-describedby' => 'lastname-help' %>
+                        <div id="lastname-help" class="help-text">
+                            <label for="search_query_fuzzy">
+                                <small class="ttip__text">
+                                    <%= check_box_tag 'search_query[fuzzy]', 
+                                        set_value(@search_query.fuzzy), 
+                                        set_value(@search_query.fuzzy), 
+                                        id: 'search_query_fuzzy',
+                                        tabindex: "4" %>
+                                    Phonetic search surnames
+                                </small>
+                            </label>
+                        </div>
                   </li>
 
                   <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
@@ -316,589 +286,81 @@
                             <%= text_field_tag 'search_query[page]', set_value(@search_query.page), class: 'text-input', id: 'page', placeholder: 'Enter Page', tabindex: "0"%>
                         </li>
                     </ol>
-                    <script>
-                        $( "#first_name" ).autocomplete({
-                            source: '/unique_forenames/?term='
-                        });
-                        $( "#last_name" ).autocomplete({
-                            source: '/unique_surnames/?term='
-                        });
-                        function split( val ) {
-                            return val.split( /,\s*/ );
-                        }
-                        $('#search_query_chapman_codes').autocomplete({
-                            source: function (request, response) {
-                            $.ajax({
-                                  autoFocus: true,
-                                  url: "/search_queries/select_counties/", // should be with '/'
-                                  dataType: 'json',
-                                  data: { prefix: request.term },
-                                  success: function(data) {
-                                        // call response to return the result to autocomplete box
-                                        console.log(data);
-                                        response(data);
-                                    }
-                                });
-                            },
-                            focus: function() {
-                                // prevent value inserted on focus
-                                return false;
-                            },
-                            select: function( event, ui ) {
-                                var terms = split( this.value );
-                                // remove the current input
-                                terms.pop();
-                                // add the selected item
-                                terms.push( ui.item.value );
-                                // add placeholder to get the comma-and-space at the end
-                                terms.push( "" );
-                                this.value = terms.join( ", " );
-                                return false;
-                            }
-                        });
-
-                        $('#search_query_districts').autocomplete({
-                      source: function (request, response) {
-                        $.ajax({
-                          autoFocus: true,
-                          url: "/search_queries/districts_of_selected_counties/",
-                          dataType: 'json',
-                          data: {
-                            selected_counties: $('#search_query_chapman_codes').val(),
-                            term: request.term
-                          },
-                          success: function(data) {
-                            // call response to return the result to autocomplete box
-                          //  console.log(data);
-                            //response(data);
-                            // Transform the array of arrays into the format jQuery UI autocomplete expects
-                          var transformedData = data.map(function(item) {
-                            return {
-                              label: item[0], // DistrictName
-                              value: item[0], // DistrictName
-                              id: item[1]     // DistrictID
-                            };
-                          });
-                          response(transformedData);
-                          }
-                        });
-                      },
-                      focus: function() {
-                        // prevent value inserted on focus
-                          return false;
-                      },
-                                select: function(event, ui) {
-                      var terms = split(this.value);
-                      // remove the current input
-                      terms.pop();
-                      // add the selected item's ID
-                      terms.push(ui.item.value);
-                      // add placeholder to get the comma-and-space at the end
-                      terms.push("");
-                      this.value = terms.join(", ");
-                      
-                      // Store the display names in a data attribute
-                      var displayNames = this.getAttribute('data-display-names') || '';
-                      displayNames = displayNames ? displayNames.split(',') : [];
-                      displayNames.push(ui.item.name);
-                      this.setAttribute('data-display-names', displayNames.join(','));
-                      
-                      return false;S
-                    }
-                  });
-                  // Add a hidden input to store the display names
-                  $('<input>').attr({
-                    type: 'hidden',
-                    name: 'search_query[district_names]',
-                    id: 'district_names'
-                  }).insertAfter('#search_query_districts');
-
-                  // Update the hidden input when districts change
-                  $('#search_query_districts').on('change', function() {
-                    $('#district_names').val($(this).attr('data-display-names'));
-                    });
-                    </script>
+                    <!-- Autocomplete functionality moved to search_form.js -->
             </fieldset>
             <div class="grid action">
                 <div class="grid__item desk-one-third lap-one-third palm-one-whole">
-                    <span class="float--left"><%= link_to 'Help with searching', '/help/search_help' %></span>
+                    <span class="float--left">
+                        <%= link_to 'Help with searching', '/help/search_help', 
+                            class: 'help-link',
+                            'aria-label' => 'Get help with search functionality' %>
+                    </span>
                 </div>
                 <div class="grid__item desk-one-third lap-one-third palm-one-whole text--center">
-                    <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                    <%= button_tag 'Search', 
+                        type: 'submit', 
+                        class: 'kittumani spinner-controller ladda-button', 
+                        id: 'search_form_submit', 
+                        data: {
+                            style: "contract", 
+                            color: appname.downcase, 
+                            size: "s", 
+                            "spinner-color" => "#ffffff"
+                        },
+                        'aria-label' => 'Submit search form' %>
                 </div>
                 <div class="grid__item desk-one-third lap-one-third palm-one-whole">
-                    <%= button_tag 'Clear Form', type: 'button', class: 'clear_forms ladda-button-reverse', data: {color: 'freebmd'} %>
+                    <%= button_tag 'Clear Form', 
+                        type: 'button', 
+                        class: 'clear_forms ladda-button-reverse', 
+                        data: {color: 'freebmd'},
+                        'aria-label' => 'Clear all form fields' %>
                 </div>
             </div>
+            
             <div class="grid small_screen_actions">
               <div class="grid__item desk-one-third lap-one-third palm-one-half">
-                <span class="float--left" style="width: 125%;"><%= link_to 'Help with searching', '/help' %></span>
+                <span class="float--left help-link-container">
+                    <%= link_to 'Help with searching', '/help', 
+                        class: 'help-link',
+                        'aria-label' => 'Get help with search functionality' %>
+                </span>
               </div>
               <div class="grid__item desk-one-third lap-one-third palm-one-half text--right">
-                <%= button_tag 'Clear Form', type: 'button', class: 'clear_forms ladda-button-reverse', data: {color: 'freebmd'} %>
+                <%= button_tag 'Clear Form', 
+                    type: 'button', 
+                    class: 'clear_forms ladda-button-reverse', 
+                    data: {color: 'freebmd'},
+                    'aria-label' => 'Clear all form fields' %>
               </div>
-               <%#= button_tag "#{app_icons[:search]}".html_safe, type: 'submit', class: ' floating_action_buttons' , id: 'small_screen_search_button' %>
             </div>
+            
             <div class="mobile-fixed-actions">
-              <%#= button_tag 'Clear', type: 'button', class: 'btn btn-clear clear_forms', data: {color: 'freebmd'} %>
-              <%= button_tag 'Search', type: 'submit', class: 'btn btn-search kittumani spinner-controller ladda-button', id: 'search_form_submit_mobile', data: {style: "contract", color: appname.downcase, size: "s", "spinner-color" => "#ffffff"} %>
+              <%= button_tag 'Search', 
+                  type: 'submit', 
+                  class: 'btn btn-search kittumani spinner-controller ladda-button', 
+                  id: 'search_form_submit_mobile', 
+                  data: {
+                      style: "contract", 
+                      color: appname.downcase, 
+                      size: "s", 
+                      "spinner-color" => "#ffffff"
+                  },
+                  'aria-label' => 'Submit search form' %>
             </div>
 
       <% end %>
     </div>
+  </div>
 </div>
 <%# end %>
 <%= horz_advert('22895564151') %>
-<style>
-    #spouse_or_mother_surname_div, #age_at_death_or_date_of_birth_div, #spouse_firstnames_div {
-        display: none;
-    }
-    #search_query_chapman_code {
-        overflow-x: scroll;
-    }
 
-    #search_query_chapman_codes optgroup option:hover {
-        position: relative;
-    }
-    .flex_container {
-        display: flex;
-        flex-direction: row;
-        column-gap: 15px;
-    }
-
-    .flex_item {
-        flex-grow: 2;
-    }
-    #all_record_types_label {
-        color: inherit;
-    }
-
-    .search_form li {
-        margin-bottom: 5px;
-    }
-</style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<!-- Pass data to JavaScript for initialization -->
 <script type="text/javascript">
-    $('.checkAll').on('change', function(e) {
-        var $inputs = $('.checkboxtag');
-        if (e.originalEvent === undefined) {
-            var allChecked = true;
-            $inputs.each(function() {
-                allChecked = allChecked && this.checked;
-            });
-            this.checked = allChecked;
-        } else {
-            $inputs.prop('checked', this.checked);
-        }
-    });
-    $('.checkboxtag').on('change', function() {
-        $('.checkAll').trigger('change');
-    });
-</script>
-
-<script>
-    $('#search_query_districts').empty();
-    $(document).ready(function() {
-        $("#search_query_chapman_codess").change(function() {
-            var counties = [];
-            function pushValue(item) {
-                counties.push(item);
-            };
-            $.each($("#search_query_chapman_codes option:selected"), function() {
-                var valuesArray = $(this).val().split(" ");
-                valuesArray.forEach(pushValue);
-            });
-            $.ajax({
-                url: "/search_queries/districts_of_selected_counties",
-                type: "GET",
-                data: {
-                    selected_counties: counties
-                }
-            });
-        });
-        $("#search_query_chapman_codes").change(function(event) {
-                var counties =  $(this).val();
-            //$.each($("#search_query_chapman_codes option:selected"), function() {
-              //  counties.push($(this).val())
-            //});
-                $.ajax({
-                    url: "/search_queries/districts_of_selected_counties",
-                    type: "GET",
-                    data: {
-                        selected_counties: counties
-                    }
-                });
-        });
-
-        var chapman_codes = <%= raw @search_query.chapman_codes %>;
-        if (chapman_codes && chapman_codes.length > 0) {
-            $.ajax({
-                url: "/search_queries/districts_of_selected_counties",
-                type: "GET",
-                data: {
-                  selected_counties: chapman_codes,
-                  county_code: true,
-                  selected_districts: <%= raw @search_query.districts %>
-                }
-            });
-        } else {
-
-      $.ajax({
-        url: "/search_queries/districts_of_selected_counties",
-        type: "GET",
-        data: {
-          selected_counties: 'all',
-          county_code: false,
-          selected_districts: <%= raw @search_query.districts %>
-        }
-      });
-      }
-
-        $("#from_year").change(function() {
-            var year = $("#from_year").val();
-            $("#to_year").val(year);
-            $("#to_year").attr({
-                "min" : year
-            });
-        });
-
-        $('#wildcard_field').change(function(){
-            var field = ""
-            $.each($("#wildcard_field option:selected"), function() {
-            value = $(this).val()
-            console.log(value)
-          });
-          if(value) {
-            field = value;
-            console.log(field);
-            $.ajax({
-              url: "/search_queries/wildcard_options_dropdown",
-              type: "GET",
-              data : {
-                field: field
-              }
-            });
-          } else {
-            $("#wildcard_options_dropdown").find('option').remove().end().append('<option value="">None</option>');
-             };
-        });
-
-        if ($("#wildcard_field option:selected").length) {
-            var field = ""
-            var option = "<%= @search_query.wildcard_option %>"
-            $.each($("#wildcard_field option:selected"), function() {
-                field = $(this).val();
-                console.log(field);
-                console.log(option);
-            });
-            if(field) {
-                $.ajax({
-                  url: "/search_queries/wildcard_options_dropdown",
-                  type: "GET",
-                  data : {
-                    field: field,
-                    option: option
-                  }
-                });
-            };
-        };
-
-        var aad_value = $('#death_select_box').val();
-        var aad_selection = document.getElementById('death_select_box');
-        var aad_select_value = aad_selection.options[0].value
-
-
-        var hide_all_death_options = function() {
-            $('#death_age_and_dob').css('display', 'block')
-            $('#search_query_age_at_death').hide();
-            $('#search_query_min_age_at_death').hide();
-            $('#search_query_max_age_at_death').hide();
-            $('#search_query_dob_at_death').hide();
-            $('#search_query_min_dob_at_death').hide();
-            $('#search_query_max_dob_at_death').hide();
-        }
-        hide_all_death_options();
-
-        var aad_selection_function = function() {
-            var aad_value = $('#death_select_box').val();
-            var aad_selection = document.getElementById('death_select_box');
-            var aad_select_value = aad_selection.options[0].value
-            if (aad_value === '1') {
-                $('#search_query_age_at_death').show();
-                $('#search_query_min_age_at_death').val('');
-                $('#search_query_max_age_at_death').val('');
-                $('#search_query_dob_at_death').val('');
-                $('#search_query_min_dob_at_death').val('');
-                $('#search_query_max_dob_at_death').val('');
-            } else if (aad_value === '2') {
-                $('#search_query_min_age_at_death').show();
-                $('#search_query_max_age_at_death').show();
-                $('#search_query_age_at_death').val('');
-                $('#search_query_dob_at_death').val('');
-                $('#search_query_min_dob_at_death').val('');
-                $('#search_query_max_dob_at_death').val('');
-            } else if (aad_value === '3') {
-                $('#search_query_dob_at_death').show();
-                $('#search_query_min_age_at_death').val('');
-                $('#search_query_max_age_at_death').val('');
-                $('#search_query_age_at_death').val('');
-                $('#search_query_min_dob_at_death').val('');
-                $('#search_query_max_dob_at_death').val('');
-            } else if (aad_value === '4') {
-                $('#search_query_min_dob_at_death').show();
-                $('#search_query_max_dob_at_death').show();
-                $('#search_query_min_age_at_death').val('');
-                $('#search_query_max_age_at_death').val('');
-                $('#search_query_age_at_death').val('');
-                $('#search_query_dob_at_death').val('');
-            } else if (aad_value === '' || aad_value === null) {
-                $('#death_select_box').val(aad_select_value);
-                $('#search_query_min_dob_at_death').val('');
-                $('#search_query_max_dob_at_death').val('');
-                $('#search_query_min_age_at_death').val('');
-                $('#search_query_max_age_at_death').val('');
-                $('#search_query_age_at_death').val('');
-                $('#search_query_dob_at_death').val('');
-            }
-        };
-
-        var vol_and_page_display_controller = function() {
-            var district_val = <%= raw @search_query.districts %>;
-            if (district_val.length != 0) {
-                $('.volumes').show();
-                $('.pages').show();
-            } else {
-                $('#volume').val('');
-                $('#page').val('');
-                $('.volumes').hide();
-                $('.pages').hide();
-            }
-        };
-        //vol_and_page_display_controller();
-        aad_selection_function();
-
-        $('#search_query_districts').change(function(){
-           // vol_and_page_display_controller();
-        });
-
-        //$('#death_select_box').prop('disabled', 'disabled');
-        $('.checkboxtag, .checkAll').change(function() {
-            hide_all_death_options();
-            $('#spouses_mother_surname').removeAttr('value');
-            $('#spouse_first_name').removeAttr('value');
-            $('#spouses_mother_surname').prop('name', '')
-            if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
-                $('#spouses_mother_surname').prop('disabled', false);
-                $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
-                $('.spouse_or_mother_surname_label').attr('tabindex', '0');
-                $('.spouse_or_mother_surname_label').text("Mother\'s Maiden Name");
-                $('#death_select_box').prop('disabled', 'disabled');
-                $('#death_select_box').val([]);
-                aad_selection_function();
-                $('#spouse_or_mother_surname_div').show();
-                $('#age_at_death_or_date_of_birth_div').hide();
-            } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
-                $('#spouse_or_mother_surname_div').show();
-                $('#spouse_firstnames_div').show();
-                $('#spuse_checkbox').show();
-                $('#spouses_mother_surname').prop('disabled', false)
-                $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                $('.spouse_or_mother_surname_label').text("Spouse's Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
-                $('#death_select_box').prop('disabled', 'disabled');
-                $('#death_select_box').val([]);
-                aad_selection_function();
-                $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                $('#spouse_first_name').prop('disabled', false)
-                $('#age_at_death_or_date_of_birth_div').hide();
-            } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
-                $('#age_at_death_or_date_of_birth_div').show();
-                $('#death_select_box').prop('disabled', false);
-                aad_selection_function();
-            } else {
-                $('#death_select_box').prop('disabled', 'disabled');
-                $('#death_select_box').val([]);
-                aad_selection_function();
-                $('#spouse_firstnames_div').hide();
-                $('#spuse_checkbox').hide();
-                $('#spouse_or_mother_surname_div').hide();
-                $('#age_at_death_or_date_of_birth_div').hide();
-            }
-        });
-
-        if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
-            //$('#spouses_mother_surname').prop('disabled', false)
-            $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
-            $('.spouse_or_mother_surname_label').text("Mother\'s Maiden Name");
-            $('.spouse_or_mother_surname_label').attr('tabindex', '0');
-           // $('#spouses_mother_surname').css('background', 'white');
-           // $('#death_select_box').prop('disabled', 'disabled');
-           // $('#death_select_box').css('background', '#ccc');
-            $('#death_select_box').val([]);
-            aad_selection_function();
-            $('#spouse_or_mother_surname_div').show();
-            $('#spouse_firstnames_div').hide();
-            $('#spouse_first_name').val('');
-            $('#age_at_death_or_date_of_birth_div').hide();
-        } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
-            //$('#spouses_mother_surname').prop('disabled', false)
-           // $('#spouse_first_name').prop('disabled', false)
-            $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-            $('.spouse_or_mother_surname_label').text("Spouses Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
-            //$('#spouses_mother_surname').css('background', 'white');
-            //$('#death_select_box').prop('disabled', 'disabled');
-            //$('#death_select_box').css('background', '#ccc');
-            $('#death_select_box').val([]);
-            aad_selection_function();
-            //$('#spouse_first_name').css('background', 'white');
-            $('#spouse_or_mother_surname_div').show();
-            $('#spouse_firstnames_div').show();
-            $('#spuse_checkbox').show();
-            $('#age_at_death_or_date_of_birth_div').hide();
-        } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
-            $('#death_select_box').prop('disabled', false);
-            //$('#spouses_mother_surname').val('').prop('disabled', true)
-            //$('#spouses_mother_surname').css('background', '#ccc');
-            //$('#spouses_mother_surname').prop('name', '');
-            aad_selection_function();
-            //$('#death_select_box').css('background', 'white');
-            $('#spouses_mother_surname').val('');
-            $('#spouse_firstnames_div').hide();
-            $('#spuse_checkbox').hide();
-            $('#spouse_or_mother_surname_div').hide();
-            $('#spouse_first_name').val('');
-            $('#age_at_death_or_date_of_birth_div').show();
-        } else {
-            $('#spouse_firstnames_div').hide();
-            $('#spuse_checkbox').hide();
-            $('#spouse_or_mother_surname_div').hide();
-            $('#age_at_death_or_date_of_birth_div').hide();
-            $('#spouse_first_name').val('');
-            //$('#spouses_mother_surname').val('').prop('disabled', true)
-            //$('#spouses_mother_surname').prop('name', '');
-            //$('#death_select_box').prop('disabled', 'disabled');
-            //$('#death_select_box').css('background', '#ccc');
-            //$('#spouses_mother_surname').css('background', '#ccc');
-            $('#spouses_mother_surname').val('');
-            $('#death_select_box').val([]);
-            aad_selection_function();
-            //$('#spouse_first_name').prop('disabled', true)
-            //$('#spouse_first_name').css('background', '#ccc');
-        };
-
-        $('#death_select_box').on('change', function() {
-            hide_all_death_options();
-            aad_selection_function();
-        });
-
-
-
-        $('#search_form_submit').click( function() {
-            var l = Ladda.create(document.querySelector('.ladda-button'));
-            l.stop();
-            if ($("#new_search_query").valid()) {
-                l.start();
-               $('#new_search_query').submit()
-            }
-        });
-
-        $('#search_form_submit_small_screen').click( function() {
-            var l = Ladda.create(document.querySelector('.ladda-button'));
-            l.stop();
-            if ($("#new_search_query").valid()) {
-                l.start();
-               $('#new_search_query').submit()
-            }
-        });
-
-
-        $('#search_query_first_name_exact_match, #search_query_fuzzy').change(function() {
-            if ($("#search_query_first_name_exact_match").is(":checked") || $('#search_query_fuzzy').is(':checked')) {
-                $("#advanced_search").hide();
-                $("#wildcard_field").val('');
-                $("#wildcard_options_dropdown").val('');
-            } else {
-                $("#advanced_search").show();
-            }
-
-        });
-
-        if ($("#search_query_first_name_exact_match").is(":checked") || $('#search_query_fuzzy').is(':checked')) {
-                $("#advanced_search").hide()
-            } else {
-                $("#advanced_search").show();
-            };
-
-        $('#bmd_record_type_death').change(function() {
-            var aad_disabled = $('#death_select_box').prop('disabled');
-            var aad_selection = document.getElementById('death_select_box');
-            var aad_select_value = aad_selection.options[0].value
-            if (aad_disabled === true) {
-                //$('#death_select_box').css('background', '#ccc')
-                $('#death_select_box').val([])
-            } else {
-                $('#death_select_box').val(aad_select_value)
-                //$('#death_select_box').css('background', 'white')
-            }
-        });
-
-        $('.clear_forms').click(function() {
-            // Reset the form using the native reset method
-            $('#new_search_query')[0].reset();
-            
-            // Clear all text inputs
-            $('#new_search_query input[type="text"]').val('');
-            $('#new_search_query input[type="number"]').val('');
-            
-            // Clear select dropdowns
-            $('#new_search_query select').val('');
-            
-            // Uncheck all checkboxes
-            $('#new_search_query input[type="checkbox"]').prop('checked', false);
-            
-            // Reset record type checkboxes - check "Select All" and uncheck others
-            $('#search_query_bmd_record_type_birth').prop('checked', false);
-            $('#search_query_bmd_record_type_death').prop('checked', false);
-            $('#search_query_bmd_record_type_marriage').prop('checked', false);
-            
-            // Reset specific fields to defaults
-            $('#from_year').val('1837');
-            $('#to_year').val('1999');
-            $('#from_quarter').val('1');
-            $('#to_quarter').val('4');
-            
-            // Clear districts selection
-            $('#search_query_districts').empty();
-            
-            // Reset form state
-            hide_all_death_options();
-            $('#death_select_box').val([]);
-            $('#death_select_box').prop('disabled', 'disabled');
-            
-            // Hide conditional fields
-            $('#spouse_firstnames_div').hide();
-            $('#spouse_or_mother_surname_div').hide();
-            $('#age_at_death_or_date_of_birth_div').hide();
-            $('#spouse_first_name').val('');
-            $('#spouses_mother_surname').val('');
-            
-            // Reset labels
-            $('.spouse_or_mother_surname_label').text("Spouse/Mothers surname");
-            
-            // Show advanced search
-            $("#advanced_search").show();
-            
-            // Clear any validation errors
-            $('#new_search_query').find('.error').removeClass('error');
-            $('#new_search_query').find('.validation-list').hide();
-            
-            // Reset autocomplete fields
-            $('#first_name').val('');
-            $('#last_name').val('');
-            $('#search_query_chapman_codes').val('');
-            
-            // Trigger change events to update form state
-            $('.checkboxtag, .checkAll').trigger('change');
-        });
-    });
+  window.searchQueryData = {
+    chapman_codes: <%= raw @search_query.chapman_codes.to_json %>,
+    districts: <%= raw @search_query.districts.to_json %>,
+    wildcard_option: "<%= j @search_query.wildcard_option %>"
+  };
 </script>
