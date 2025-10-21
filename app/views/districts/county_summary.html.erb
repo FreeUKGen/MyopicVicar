@@ -33,4 +33,17 @@
         </tbody>
       </table>
   </div>
+  <% unless print_friendly %>
+    <% if device_type == :desktop %>
+      <div class="grid__item three-tenths text--right"  id='results_table_ad'>
+        <div>
+          <h2 class="text--center" style="font-size:12pt;">Advertisement</h2>
+          <!-- GAM 71161633/FRBMD_freebmd2orguk/Vrec_Sticky -->
+          <div data-fuse="Vrec_Sticky" class="float--right"></div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+  <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
+  <%= horz_advert('freebmd_hrec_1') %>   
 </div>
