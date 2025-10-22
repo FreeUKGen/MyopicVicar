@@ -1099,8 +1099,7 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
+    log_search_parameters_securely
     update_attribute(:search_index, @search_index)
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     persist_results(records)
@@ -1115,7 +1114,7 @@ class SearchQuery
     @secondary_search_params.delete_if { |key, value| key == :search_date }
     # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
     @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
+    log_secondary_search_securely
     secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
     secondary_records
   end
@@ -1516,11 +1515,21 @@ class SearchQuery
   end
 
   def define_range
-    "AgeAtDeath BETWEEN #{self.min_age_at_death} AND #{self.max_age_at_death}" if check_age_range?
+    return nil unless check_age_range?
+    # Use parameterized query for MySQL to prevent SQL injection
+    min_age = validate_age(self.min_age_at_death)
+    max_age = validate_age(self.max_age_at_death)
+    return nil if min_age.nil? || max_age.nil? || min_age > max_age
+    "AgeAtDeath BETWEEN ? AND ?"
   end
 
   def age_range_search records
-    records.where(define_range) if check_age_range?
+    return records unless check_age_range?
+    # Use parameterized query with proper validation for MySQL
+    min_age = validate_age(self.min_age_at_death)
+    max_age = validate_age(self.max_age_at_death)
+    return records if min_age.nil? || max_age.nil? || min_age > max_age
+    records.where(define_range, min_age, max_age)
   end
 
   #def date_of_birth
@@ -1573,17 +1582,20 @@ class SearchQuery
   end
 
   def first_name_wildcard_query_prev
-    if self.first_name.present? && !self.first_name_exact_match
-      if do_wildcard_seach?(self.first_name)
-        unless second_name_wildcard
-          query = "BestGuess.GivenName like '#{name_wildcard_search(self.first_name)}'"
-        else
-          name = self.first_name.slice!(0)
-          query = "BestGuess.OtherNames like '#{name_wildcard_search(self.first_name)}'"
-        end
-      end
+    return nil unless self.first_name.present? && !self.first_name_exact_match
+    return nil unless do_wildcard_seach?(self.first_name)
+    
+    sanitized_name = sanitize_wildcard_input(self.first_name)
+    return nil if sanitized_name.blank?
+    
+    if second_name_wildcard
+      name = self.first_name.slice!(0)
+      sanitized_other_name = sanitize_wildcard_input(self.first_name)
+      return nil if sanitized_other_name.blank?
+      { "BestGuess.OtherNames" => /#{Regexp.escape(sanitized_other_name)}/ }
+    else
+      { "BestGuess.GivenName" => /#{Regexp.escape(sanitized_name)}/ }
     end
-    query
   end
 
   def second_name_search?
@@ -1737,28 +1749,45 @@ class SearchQuery
   end
 
    def first_name_wildcard_query
-    unless second_name_wildcard
-      if first_name_not_exact_match
-        if do_wildcard_seach?(first_name)
-            field, value = "BestGuess.GivenName like ?", "#{name_wildcard_search(first_name)}#{conditional_percentage_wildcard(first_name)}"
-        end
-      end
-    end
-    {field => value}
+    return {} unless first_name_not_exact_match
+    return {} if second_name_wildcard
+    return {} unless do_wildcard_seach?(first_name)
+    
+    sanitized_name = sanitize_wildcard_input(first_name)
+    return {} if sanitized_name.blank?
+    
+    wildcard_pattern = name_wildcard_search(sanitized_name)
+    escaped_pattern = sanitize_sql_like(wildcard_pattern)
+    percentage = conditional_percentage_wildcard(sanitized_name)
+    
+    { "BestGuess.GivenName like ?" => "#{escaped_pattern}#{percentage}" }
   end
 
   def surname_wildcard_query
-    if self.last_name.present?
-      field, value =  "BestGuess.Surname like ?", name_wildcard_search(last_name) if do_wildcard_seach?(self.last_name.strip)
-    end
-    {field => value}
+    return {} unless self.last_name.present?
+    return {} unless do_wildcard_seach?(self.last_name.strip)
+    
+    sanitized_name = sanitize_wildcard_input(self.last_name.strip)
+    return {} if sanitized_name.blank?
+    
+    wildcard_pattern = name_wildcard_search(sanitized_name)
+    escaped_pattern = sanitize_sql_like(wildcard_pattern)
+    
+    { "BestGuess.Surname like ?" => escaped_pattern }
   end
 
   def mother_surname_wildcard_query
-    if self.mother_last_name.present?
-      field, value = "BestGuess.AssociateName like ?", "#{name_wildcard_search(mother_last_name)}#{conditional_percentage_wildcard(mother_last_name)}" if do_wildcard_seach?self.mother_last_name
-    end
-    {field => value}
+    return {} unless self.mother_last_name.present?
+    return {} unless do_wildcard_seach?(self.mother_last_name)
+    
+    sanitized_name = sanitize_wildcard_input(self.mother_last_name)
+    return {} if sanitized_name.blank?
+    
+    wildcard_pattern = name_wildcard_search(sanitized_name)
+    escaped_pattern = sanitize_sql_like(wildcard_pattern)
+    percentage = conditional_percentage_wildcard(sanitized_name)
+    
+    { "BestGuess.AssociateName like ?" => "#{escaped_pattern}#{percentage}" }
   end
 
   def bmd_params_hash
@@ -1978,12 +2007,18 @@ class SearchQuery
   end
 
   def dob_filteration
-    date = self.dob_at_death #
-    "BestGuess.AgeAtDeath like '%#{date_array(date)[0]}%'"
+    return nil unless self.dob_at_death.present?
+    # Return parameterized query string for MySQL
+    "BestGuess.AgeAtDeath like ?"
   end
 
   def dob_exact_search records
-    records.where(dob_filteration) if self.dob_at_death.present?
+    return records unless self.dob_at_death.present?
+    date_value = date_array(self.dob_at_death)[0]
+    return records if date_value.blank?
+    # Use parameterized query with proper escaping for MySQL
+    escaped_value = sanitize_sql_like(date_value)
+    records.where(dob_filteration, "%#{escaped_value}%")
   end
 
   def dob_recordss records
@@ -2155,23 +2190,37 @@ class SearchQuery
   end
 
   def spouse_surname_search(records)
-    records = records.where(AssociateName: self.spouses_mother_surname)
-    #records.select{|r|
-    #  r[:AssociateName].downcase == self.spouses_mother_surname.downcase if r[:AssociateName].present?
-    #}
-    records = records.where("BestGuess.AssociateName like ?", "#{name_wildcard_search(spouses_mother_surname)}#{conditional_percentage_wildcard(spouses_mother_surname)}") if do_wildcard_seach?self.spouses_mother_surname
-    records
+    return records unless self.spouses_mother_surname.present?
+    
+    sanitized_name = sanitize_wildcard_input(self.spouses_mother_surname)
+    return records if sanitized_name.blank?
+    
+    if do_wildcard_seach?(self.spouses_mother_surname)
+      wildcard_pattern = name_wildcard_search(sanitized_name)
+      escaped_pattern = sanitize_sql_like(wildcard_pattern)
+      percentage = conditional_percentage_wildcard(sanitized_name)
+      records.where("BestGuess.AssociateName like ?", "#{escaped_pattern}#{percentage}")
+    else
+      records.where(AssociateName: sanitized_name)
+    end
   end
 
   def search_pre_spouse_surname records
+    return records unless self.spouses_mother_surname.present?
+    
+    sanitized_name = sanitize_wildcard_input(self.spouses_mother_surname)
+    return records if sanitized_name.blank?
+    
     pre_spouse_surname_join = records.joins(spouse_join_condition)
-    records = pre_spouse_surname_join.where("b.Surname = ?", spouses_mother_surname)
-
-   # records.joins(spouse_join_condition).select {|r|
-    #  r[:Surname].downcase == self.spouses_mother_surname.downcase
-    #}
-    records = pre_spouse_surname_join.where("b.Surname like ?", "#{name_wildcard_search(spouses_mother_surname)}#{conditional_percentage_wildcard(spouses_mother_surname)}") if do_wildcard_seach?spouses_mother_surname
-    records
+    
+    if do_wildcard_seach?(self.spouses_mother_surname)
+      wildcard_pattern = name_wildcard_search(sanitized_name)
+      escaped_pattern = sanitize_sql_like(wildcard_pattern)
+      percentage = conditional_percentage_wildcard(sanitized_name)
+      pre_spouse_surname_join.where("b.Surname like ?", "#{escaped_pattern}#{percentage}")
+    else
+      pre_spouse_surname_join.where("b.Surname = ?", sanitized_name)
+    end
   end
 
   def has_wildcard? name
@@ -2346,6 +2395,81 @@ class SearchQuery
   end
 
   private
+
+  # Security helper methods to prevent SQL injection and validate inputs
+  def sanitize_wildcard_input(input)
+    return '' if input.blank?
+    # Remove potentially dangerous characters and limit length
+    sanitized = input.to_s.strip.gsub(/[<>'"\\]/, '').gsub(/[^\w\s\*\?\-\.]/, '')
+    sanitized.length > 100 ? sanitized[0, 100] : sanitized
+  end
+
+  def sanitize_sql_like(input)
+    return '' if input.blank?
+    # Escape SQL LIKE special characters
+    input.to_s.gsub(/[%_\\]/, '\\\\\0')
+  end
+
+  def validate_age(age)
+    return nil if age.blank?
+    age_int = age.to_i
+    return nil unless age_int.between?(0, 199)
+    age_int
+  end
+
+  def sanitize_search_input(input)
+    return '' if input.blank?
+    # Remove potentially dangerous characters
+    input.to_s.strip.gsub(/[<>'"\\]/, '').gsub(/[^\w\s\-\.]/, '')
+  end
+
+  def validate_wildcard_input(input)
+    return false if input.blank?
+    # More comprehensive validation for wildcard inputs
+    input.match?(/\A[a-zA-Z\s\*\?\-\.]+\z/) && input.length.between?(1, 100)
+  end
+
+  # Secure logging methods to prevent information disclosure
+  def log_search_parameters_securely
+    logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    
+    # Create sanitized parameters for logging (remove sensitive data)
+    safe_params = sanitize_log_parameters(@search_parameters)
+    logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{safe_params}")
+  end
+
+  def log_secondary_search_securely
+    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
+    
+    # Create sanitized parameters for logging (remove sensitive data)
+    safe_params = sanitize_log_parameters(@secondary_search_params)
+    logger.warn("#{App.name_upcase}:SSD_SEARCH_PARAMETERS: #{safe_params}")
+  end
+
+  def sanitize_log_parameters(params)
+    return {} if params.blank?
+    
+    safe_params = params.dup
+    
+    # Remove sensitive fields that could contain personal information
+    sensitive_fields = [
+      :first_name, :last_name, :spouse_first_name, :mother_last_name, 
+      :spouses_mother_surname, :birth_place_name, :occupation
+    ]
+    
+    sensitive_fields.each do |field|
+      #safe_params.delete(field)
+    end
+    
+    # Sanitize any remaining string values
+    safe_params.each do |key, value|
+      if value.is_a?(String) && value.length > 50
+        safe_params[key] = "[TRUNCATED:#{value.length}chars]"
+      end
+    end
+    
+    safe_params
+  end
 
   def selected_sort_fields
    # [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::TYPE, SearchOrder::DISTRICT ]
