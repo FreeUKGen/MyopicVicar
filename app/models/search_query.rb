@@ -1661,11 +1661,6 @@ class SearchQuery
     query.present? ? query : {}
   end
 
-  def search_form_validation
-    
-
-  end
-
   def max_age_at_death_greater_than_min_age_at_death
     if self.min_age_at_death.to_i > self.max_age_at_death.to_i
       errors.add(:max_age_at_death, "Max Age at Death should be greater than Min Age at Death")
@@ -1749,45 +1744,28 @@ class SearchQuery
   end
 
    def first_name_wildcard_query
-    return {} unless first_name_not_exact_match
-    return {} if second_name_wildcard
-    return {} unless do_wildcard_seach?(first_name)
-    
-    sanitized_name = sanitize_wildcard_input(first_name)
-    return {} if sanitized_name.blank?
-    
-    wildcard_pattern = name_wildcard_search(sanitized_name)
-    escaped_pattern = sanitize_sql_like(wildcard_pattern)
-    percentage = conditional_percentage_wildcard(sanitized_name)
-    
-    { "BestGuess.GivenName like ?" => "#{escaped_pattern}#{percentage}" }
+    unless second_name_wildcard
+      if first_name_not_exact_match
+        if do_wildcard_seach?(first_name)
+            field, value = "BestGuess.GivenName like ?", "#{name_wildcard_search(first_name)}#{conditional_percentage_wildcard(first_name)}"
+        end
+      end
+    end
+    {field => value}
   end
 
   def surname_wildcard_query
-    return {} unless self.last_name.present?
-    return {} unless do_wildcard_seach?(self.last_name.strip)
-    
-    sanitized_name = sanitize_wildcard_input(self.last_name.strip)
-    return {} if sanitized_name.blank?
-    
-    wildcard_pattern = name_wildcard_search(sanitized_name)
-    escaped_pattern = sanitize_sql_like(wildcard_pattern)
-    
-    { "BestGuess.Surname like ?" => escaped_pattern }
+    if self.last_name.present?
+      field, value =  "BestGuess.Surname like ?", name_wildcard_search(last_name) if do_wildcard_seach?(self.last_name.strip)
+    end
+    {field => value}
   end
 
   def mother_surname_wildcard_query
-    return {} unless self.mother_last_name.present?
-    return {} unless do_wildcard_seach?(self.mother_last_name)
-    
-    sanitized_name = sanitize_wildcard_input(self.mother_last_name)
-    return {} if sanitized_name.blank?
-    
-    wildcard_pattern = name_wildcard_search(sanitized_name)
-    escaped_pattern = sanitize_sql_like(wildcard_pattern)
-    percentage = conditional_percentage_wildcard(sanitized_name)
-    
-    { "BestGuess.AssociateName like ?" => "#{escaped_pattern}#{percentage}" }
+    if self.mother_last_name.present?
+      field, value = "BestGuess.AssociateName like ?", "#{name_wildcard_search(mother_last_name)}#{conditional_percentage_wildcard(mother_last_name)}" if do_wildcard_seach?self.mother_last_name
+    end
+    {field => value}
   end
 
   def bmd_params_hash
@@ -2016,8 +1994,7 @@ class SearchQuery
     return records unless self.dob_at_death.present?
     date_value = date_array(self.dob_at_death)[0]
     return records if date_value.blank?
-    # Use parameterized query with proper escaping for MySQL
-    escaped_value = sanitize_sql_like(date_value)
+    escaped_value = sanitize_sql_like(date_value) #sanitization for MySQL
     records.where(dob_filteration, "%#{escaped_value}%")
   end
 
@@ -2190,37 +2167,15 @@ class SearchQuery
   end
 
   def spouse_surname_search(records)
-    return records unless self.spouses_mother_surname.present?
-    
-    sanitized_name = sanitize_wildcard_input(self.spouses_mother_surname)
-    return records if sanitized_name.blank?
-    
-    if do_wildcard_seach?(self.spouses_mother_surname)
-      wildcard_pattern = name_wildcard_search(sanitized_name)
-      escaped_pattern = sanitize_sql_like(wildcard_pattern)
-      percentage = conditional_percentage_wildcard(sanitized_name)
-      records.where("BestGuess.AssociateName like ?", "#{escaped_pattern}#{percentage}")
-    else
-      records.where(AssociateName: sanitized_name)
-    end
+    records = records.where(AssociateName: self.spouses_mother_surname)
+    records = records.where("BestGuess.AssociateName like ?", "#{name_wildcard_search(spouses_mother_surname)}#{conditional_percentage_wildcard(spouses_mother_surname)}") if do_wildcard_seach?self.spouses_mother_surname
+    records
   end
 
   def search_pre_spouse_surname records
-    return records unless self.spouses_mother_surname.present?
-    
-    sanitized_name = sanitize_wildcard_input(self.spouses_mother_surname)
-    return records if sanitized_name.blank?
-    
-    pre_spouse_surname_join = records.joins(spouse_join_condition)
-    
-    if do_wildcard_seach?(self.spouses_mother_surname)
-      wildcard_pattern = name_wildcard_search(sanitized_name)
-      escaped_pattern = sanitize_sql_like(wildcard_pattern)
-      percentage = conditional_percentage_wildcard(sanitized_name)
-      pre_spouse_surname_join.where("b.Surname like ?", "#{escaped_pattern}#{percentage}")
-    else
-      pre_spouse_surname_join.where("b.Surname = ?", sanitized_name)
-    end
+    records = pre_spouse_surname_join.where("b.Surname = ?", spouses_mother_surname)
+    records = pre_spouse_surname_join.where("b.Surname like ?", "#{name_wildcard_search(spouses_mother_surname)}#{conditional_percentage_wildcard(spouses_mother_surname)}") if do_wildcard_seach?spouses_mother_surname
+    records
   end
 
   def has_wildcard? name
@@ -2396,11 +2351,11 @@ class SearchQuery
 
   private
 
-  # Security helper methods to prevent SQL injection and validate inputs
+  # Security methods to prevent SQL injection and validate inputs
   def sanitize_wildcard_input(input)
     return '' if input.blank?
-    # Remove potentially dangerous characters and limit length
-    sanitized = input.to_s.strip.gsub(/[<>'"\\]/, '').gsub(/[^\w\s\*\?\-\.]/, '')
+    # Remove potentially dangerous characters but preserve > for wildcard operations
+    sanitized = input.to_s.strip.gsub(/[<'"\\]/, '').gsub(/[^\w\s\*\?\-\.>]/, '')
     sanitized.length > 100 ? sanitized[0, 100] : sanitized
   end
 
@@ -2425,8 +2380,8 @@ class SearchQuery
 
   def validate_wildcard_input(input)
     return false if input.blank?
-    # More comprehensive validation for wildcard inputs
-    input.match?(/\A[a-zA-Z\s\*\?\-\.]+\z/) && input.length.between?(1, 100)
+    # More comprehensive validation for wildcard inputs (including > for special operations)
+    input.match?(/\A[a-zA-Z\s\*\?\-\.>]+\z/) && input.length.between?(1, 100)
   end
 
   # Secure logging methods to prevent information disclosure
@@ -2447,28 +2402,6 @@ class SearchQuery
   end
 
   def sanitize_log_parameters(params)
-    return {} if params.blank?
-    
-    safe_params = params.dup
-    
-    # Remove sensitive fields that could contain personal information
-    sensitive_fields = [
-      :first_name, :last_name, :spouse_first_name, :mother_last_name, 
-      :spouses_mother_surname, :birth_place_name, :occupation
-    ]
-    
-    sensitive_fields.each do |field|
-      #safe_params.delete(field)
-    end
-    
-    # Sanitize any remaining string values
-    safe_params.each do |key, value|
-      if value.is_a?(String) && value.length > 50
-        safe_params[key] = "[TRUNCATED:#{value.length}chars]"
-      end
-    end
-    
-    safe_params
   end
 
   def selected_sort_fields
