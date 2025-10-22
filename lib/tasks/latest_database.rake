@@ -1,13 +1,12 @@
 namespace :database do
   desc "Update database configuration with latest bmd_<epoch> database"
-  task :update_latest, [:environment, :mysql_password] => :environment do |t, args|
+  task :update_latest, [:environment] => :environment do |t, args|
     environment = args[:environment] || 'production'
-    mysql_password = args[:mysql_password]
     
     puts "Starting LatestDatabaseJob for environment: #{environment}"
     
     # Run the job synchronously for rake task
-    LatestDatabaseJob.new.perform(environment, mysql_password)
+    LatestDatabaseJob.new.perform(environment)
     
     puts "LatestDatabaseJob completed successfully"
   end
@@ -25,16 +24,15 @@ namespace :database do
   end
 
   desc "Run complete database deployment: update, uncomment, and copy"
-  task :full_deployment, [:environment, :mysql_password] => :environment do |t, args|
+  task :full_deployment, [:environment] => :environment do |t, args|
     environment = args[:environment] || 'production'
-    mysql_password = args[:mysql_password]
     
     puts "Starting full database deployment for environment: #{environment}"
     puts "=" * 60
     
     # Step 1: Update latest database
     puts "Step 1: Updating latest database..."
-    LatestDatabaseJob.new.perform(environment, mysql_password)
+    LatestDatabaseJob.new.perform(environment)
     puts "✓ Latest database updated"
     
     # Step 2: Uncomment variables
@@ -139,9 +137,8 @@ end
 
 namespace :all_tasks do
   desc "Run all database management tasks sequentially"
-  task :run_all, [:environment, :mysql_password] => :environment do |t, args|
+  task :run_all, [:environment] => :environment do |t, args|
     environment = args[:environment] || 'production'
-    mysql_password = args[:mysql_password]
     start_time = Time.current
     
     puts "=" * 80
@@ -154,7 +151,7 @@ namespace :all_tasks do
       # Adds new database and comment out timeout variables
       puts "\n[1/5] Updating Database Configuration..."
       puts "-" * 50
-      LatestDatabaseJob.new.perform(environment, mysql_password)
+      LatestDatabaseJob.new.perform(environment)
       puts "✅ Database configuration updated successfully"
 
       # 2. Calculate Record Statistics

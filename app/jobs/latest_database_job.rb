@@ -2,21 +2,24 @@ class LatestDatabaseJob < ApplicationJob
   require 'shellwords'
   require 'open3'
 
-  def perform(environment = 'production', mysql_password = nil)
+  def perform(environment = 'production')
     @environment = environment
     @yaml_file = 'config/freebmd_database.yml'
-    @mysql_password = mysql_password
+    @database_name_file = MyopicVicar::Application.config.latest_db_file_path
     
     begin
-      credentials = extract_mysql_credentials
-      return unless credentials
-      latest_db = find_latest_database(credentials)
+      # Read database name from file
+      latest_db = read_database_name_from_file
       return unless latest_db
       
-      # Update the YAML file
-      update_database_config(latest_db)
-      
-      Rails.logger.info "LatestDatabaseJob completed: Updated #{@yaml_file} with database #{latest_db}"
+      # Check if update is needed
+      if database_name_changed?(latest_db)
+        # Update the YAML file
+        update_database_config(latest_db)
+        Rails.logger.info "LatestDatabaseJob completed: Updated #{@yaml_file} with database #{latest_db}"
+      else
+        Rails.logger.info "LatestDatabaseJob completed: Database name #{latest_db} is already current, no update needed"
+      end
       
     rescue => e
       Rails.logger.error "LatestDatabaseJob failed: #{e.message}"
@@ -26,65 +29,63 @@ class LatestDatabaseJob < ApplicationJob
 
   private
 
-  def extract_mysql_credentials
-    unless File.exist?(@yaml_file)
-      Rails.logger.error "YAML file not found: #{@yaml_file}"
+  # Read database name from file
+  def read_database_name_from_file
+    unless File.exist?(@database_name_file)
+      Rails.logger.error "Database name file not found: #{@database_name_file}"
       return nil
     end
 
-    yaml_content = File.read(@yaml_file)
-    yaml_data = YAML.load(yaml_content)
-    
-    env_config = yaml_data[@environment]
-    unless env_config
-      Rails.logger.error "Environment '#{@environment}' not found in #{@yaml_file}"
-      return nil
-    end
-
-    username = env_config['username']
-    # Use provided password or fall back to YAML file
-    password = @mysql_password.present? ? @mysql_password : env_config['password']
-    
-    if username.blank? || password.blank?
-      Rails.logger.error "Missing username or password for environment: #{@environment}"
-      return nil
-    end
-
-    { username: username, password: password }
-  end
-
-  def find_latest_database(credentials)
-    # Connect to MySQL and find latest bmd_<epoch> database
-    # Escape username and password to prevent command injection
-    escaped_username = Shellwords.escape(credentials[:username])
-    escaped_password = Shellwords.escape(credentials[:password])
-    mysql_command = "mysql -u#{escaped_username} --password=#{escaped_password} -N -B -e \"SHOW DATABASES LIKE 'bmd\\\\_%';\""
-    
     begin
-      result = Open3.capture3(mysql_command)
-      stdout, stderr, status = result
+      database_name = File.read(@database_name_file).strip
       
-      if status.success?
-        databases = stdout.split("\n").select { |db| db.match?(/^bmd_\d+$/) }
-        
-        if databases.empty?
-          Rails.logger.error "No bmd_<epoch> databases found"
-          return nil
-        end
-        
-        # Sort by epoch number and get the latest
-        latest_db = databases.max_by { |db| db.split('_')[1].to_i }
-        Rails.logger.info "Latest database found: #{latest_db}"
-        latest_db
-      else
-        Rails.logger.error "MySQL command failed: #{stderr}"
-        nil
+      if database_name.blank?
+        Rails.logger.error "Database name file is empty: #{@database_name_file}"
+        return nil
       end
+      
+      Rails.logger.info "Read database name from file: #{database_name}"
+      database_name
+      
     rescue => e
-      Rails.logger.error "Error finding latest database: #{e.message}"
+      Rails.logger.error "Error reading database name file #{@database_name_file}: #{e.message}"
       nil
     end
   end
+
+  # Check if database name has changed
+  def database_name_changed?(new_database_name)
+    unless File.exist?(@yaml_file)
+      Rails.logger.error "YAML file not found: #{@yaml_file}"
+      return true # Assume change needed if YAML doesn't exist
+    end
+
+    begin
+      yaml_content = File.read(@yaml_file)
+      yaml_data = YAML.load(yaml_content)
+      
+      env_config = yaml_data[@environment]
+      unless env_config
+        Rails.logger.error "Environment '#{@environment}' not found in #{@yaml_file}"
+        return true # Assume change needed if environment not found
+      end
+
+      current_database = env_config['database']
+      
+      if current_database == new_database_name
+        Rails.logger.info "Database name unchanged: #{current_database}"
+        false
+      else
+        Rails.logger.info "Database name changed: #{current_database} -> #{new_database_name}"
+        true
+      end
+      
+    rescue => e
+      Rails.logger.error "Error checking database name change: #{e.message}"
+      true # Assume change needed on error
+    end
+  end
+
 
   def update_database_config(latest_db)
     unless File.exist?(@yaml_file)
@@ -100,7 +101,7 @@ class LatestDatabaseJob < ApplicationJob
       updated_content = update_database_name_in_content(yaml_content, latest_db)
       
       # Comment out variables lines for the environment
-      updated_content = comment_out_variables_lines(updated_content)
+     ## updated_content = comment_out_variables_lines(updated_content)
       
       # Write back to file with proper error handling
       begin
