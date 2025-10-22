@@ -5,6 +5,7 @@ class Feedback
   field :body, type: String
   field :user_name, type: String
   field :feedback_time, type: DateTime
+  field :feedback_nature, type: String
   field :user_id, type: String
   field :name, type: String
   field :email_address, type: String

@@ -11,9 +11,10 @@
 <%= simple_form_for(@feedback, :html => {:multipart => true}) do |f| %>
   <%= f.input :title, :label => "Summary" , :input_html => {:class => "simple_form_bgcolour ", :size => 40 }%>
   <%= f.input :body, :label =>"Description" ,as: :text, :input_html => { :class => "simple_form_bgcolour ",:rows => 10, :cols =>60 , :placeholder => "Enter your comments"}%>
-  <%= f.input :feedback_type, required: true, include_blank:'Select the feedback type', label:  "Nature of feedback",  collection: [['Problem/Bug', 'bug'], ['Improvement/Suggestion', 'website']], :input_html => {class: "simple_form_bgcolour overide_selection_field_width", prompt:"Choose the feedback type, include_blank: false, required: true"} %>
+  <%= f.input :feedback_nature, required: true, include_blank:'Select the feedback type', label:  "Nature of feedback",  collection: [['Problem/Bug', 'bug'], ['Improvement/Suggestion', 'website']], :input_html => {class: "simple_form_bgcolour overide_selection_field_width", prompt:"Choose the feedback type, include_blank: false, required: true"} %>
   <%= f.input :screenshot, :label => "Screenshot: Only jpg, jpeg, png or gif file" %>
   <%= f.input :feedback_time, :as => :hidden %>
+  <%= f.input :feedback_type, :as => :hidden %>
   <% if @user.present? %>
     <%= f.input :user_id, as: :hidden %>
   <% else %>
