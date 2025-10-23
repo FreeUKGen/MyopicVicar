@@ -5,13 +5,13 @@ class LatestDatabaseJob < ApplicationJob
   def perform(environment = 'production')
     @environment = environment
     @yaml_file = 'config/freebmd_database.yml'
-    @database_name_file = MyopicVicar::Application.config.latest_db_file_path
-    
+    @database_name_file = Rails.application.config.latest_db_file_path
+
     begin
       # Read database name from file
       latest_db = read_database_name_from_file
       return unless latest_db
-      
+
       # Check if update is needed
       if database_name_changed?(latest_db)
         # Update the YAML file
@@ -20,7 +20,7 @@ class LatestDatabaseJob < ApplicationJob
       else
         Rails.logger.info "LatestDatabaseJob completed: Database name #{latest_db} is already current, no update needed"
       end
-      
+
     rescue => e
       Rails.logger.error "LatestDatabaseJob failed: #{e.message}"
       raise e
@@ -38,15 +38,15 @@ class LatestDatabaseJob < ApplicationJob
 
     begin
       database_name = File.read(@database_name_file).strip
-      
+
       if database_name.blank?
         Rails.logger.error "Database name file is empty: #{@database_name_file}"
         return nil
       end
-      
+
       Rails.logger.info "Read database name from file: #{database_name}"
       database_name
-      
+
     rescue => e
       Rails.logger.error "Error reading database name file #{@database_name_file}: #{e.message}"
       nil
@@ -63,7 +63,7 @@ class LatestDatabaseJob < ApplicationJob
     begin
       yaml_content = File.read(@yaml_file)
       yaml_data = YAML.load(yaml_content)
-      
+
       env_config = yaml_data[@environment]
       unless env_config
         Rails.logger.error "Environment '#{@environment}' not found in #{@yaml_file}"
@@ -71,7 +71,7 @@ class LatestDatabaseJob < ApplicationJob
       end
 
       current_database = env_config['database']
-      
+
       if current_database == new_database_name
         Rails.logger.info "Database name unchanged: #{current_database}"
         false
@@ -79,7 +79,7 @@ class LatestDatabaseJob < ApplicationJob
         Rails.logger.info "Database name changed: #{current_database} -> #{new_database_name}"
         true
       end
-      
+
     rescue => e
       Rails.logger.error "Error checking database name change: #{e.message}"
       true # Assume change needed on error
@@ -96,14 +96,10 @@ class LatestDatabaseJob < ApplicationJob
     begin
       # Read the file as text to preserve comments and formatting
       yaml_content = File.read(@yaml_file)
-      
+
       # Update the database name for the environment
       updated_content = update_database_name_in_content(yaml_content, latest_db)
-      
-      # Comment out variables lines for the environment
-     ## updated_content = comment_out_variables_lines(updated_content)
-      
-      # Write back to file with proper error handling
+
       begin
         File.write(@yaml_file, updated_content)
         Rails.logger.info "Updated #{@yaml_file}: set #{@environment} database to #{latest_db} and commented out variables lines"
@@ -123,11 +119,10 @@ class LatestDatabaseJob < ApplicationJob
   end
 
   def update_database_name_in_content(content, latest_db)
-    # Find the environment section and update the database name
     lines = content.split("\n")
     in_target_env = false
     updated_lines = []
-    
+
     lines.each do |line|
       if line.match?(/^#{@environment}:/)
         in_target_env = true
@@ -143,7 +138,7 @@ class LatestDatabaseJob < ApplicationJob
         updated_lines << line
       end
     end
-    
+
     updated_lines.join("\n")
   end
 
@@ -152,7 +147,7 @@ class LatestDatabaseJob < ApplicationJob
     in_target_env = false
     in_variables_section = false
     updated_lines = []
-    
+
     lines.each do |line|
       if line.match?(/^#{@environment}:/)
         in_target_env = true
@@ -179,7 +174,7 @@ class LatestDatabaseJob < ApplicationJob
         updated_lines << line
       end
     end
-    
+
     updated_lines.join("\n")
   end
 end

@@ -91,9 +91,8 @@ class SearchQueriesController < ApplicationController
       selected_districts.each{ |sd|
         all_districts.each{|d|
           district = District.new
-          formatted_dn = district.formatted_name_for_search(d)
+          formatted_dn = district.formatted_name_for_search(d).strip
           next if formatted_dn != sd
-          logger.warn("dnnnnnnnnnnnnnnnnnnnnnnnnnnnnn: #{formatted_dn}")
           district_ids << d.DistrictNumber if formatted_dn == sd
         }
       }
