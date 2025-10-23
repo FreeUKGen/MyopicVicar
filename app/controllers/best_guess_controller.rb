@@ -52,17 +52,27 @@ class BestGuessController < ApplicationController
   end
 
   def show_marriage
-    @search = params[:search_id].present? ? true : false
-    record_number = params[:entry_id]
-    @search_id = params[:search_id] if @search
-    @record = BestGuess.where(RecordNumber: record_number).first
-    spouse_surname = @record.AssociateName
-    volume = @record.Volume
-    page = @record.Page
-    quarter = @record.QuarterNumber
-    district_number = @record.DistrictNumber
-    record_type = @record.RecordTypeID
-    @spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).first
+    record_number = validate_and_sanitize_record_number(params[:entry_id])
+    return handle_invalid_record unless record_number
+
+    set_search_context
+    
+    @record = find_record_safely(record_number)
+    return handle_record_not_found unless @record
+
+    # Find spouse records with enhanced navigation
+    spouse_data = find_spouse_records_with_navigation(@record, record_number)
+    @spouse_records = spouse_data[:records]
+    @spouse_navigation = spouse_data[:navigation]
+    @current_spouse_index = spouse_data[:current_index]
+    
+    # Create navigation cycle for spouse records
+    @current_spouse_record, @next_spouse_record, @previous_spouse_record = spouse_record_cycle(
+      params[:spouse_referral_number], 
+      @spouse_records
+    )
+    
+    @spouse_records
   end
 
   def show_reference_entry
@@ -282,6 +292,172 @@ class BestGuessController < ApplicationController
 
   def clean_session_for_saved_entry
     session.delete(:search_entry_number)
+  end
+
+  private
+  def validate_and_sanitize_record_number(entry_id)
+    return nil if entry_id.blank?
+    record_number = entry_id.to_i
+    record_number
+  rescue ArgumentError, TypeError
+    nil
+  end
+  def set_search_context
+    @search = params[:search_id].present?
+    @search_id = params[:search_id] if @search
+  end
+
+  def find_record_safely(record_number)
+    BestGuess.find_by(RecordNumber: record_number)
+  rescue ActiveRecord::RecordNotFound
+    nil
+  rescue => e
+    Rails.logger.error "Error finding record #{record_number}: #{e.message}"
+    nil
+  end
+  def find_spouse_records(record, record_number)
+    return [] unless record
+
+    record_attributes = extract_record_attributes(record)
+
+    if record_attributes[:spouse_surname].present?
+      find_spouse_by_surname(record_attributes)
+    else
+      find_possible_spouses_on_page(record_attributes, record_number)
+    end
+  end
+
+  # Create navigation cycle for spouse records (similar to record_cycle)
+  def spouse_record_cycle(current_spouse_id = nil, spouse_records = [])
+    return [nil, nil, nil] if spouse_records.empty?
+
+    # Convert spouse records to array of IDs for navigation
+    spouse_ids = spouse_records.map(&:RecordNumber)
+    
+    # Determine current spouse record
+    current_spouse_id = current_spouse_id.to_i if current_spouse_id.present?
+    current_spouse_id = spouse_ids.first if current_spouse_id.blank? || !spouse_ids.include?(current_spouse_id)
+    
+    # Find current spouse record
+    current_spouse_record = spouse_records.find { |record| record.RecordNumber == current_spouse_id }
+    
+    # Find next and previous spouse records
+    current_index = spouse_ids.index(current_spouse_id)
+    next_spouse_id = spouse_ids[current_index + 1] if current_index && current_index < spouse_ids.length - 1
+    previous_spouse_id = spouse_ids[current_index - 1] if current_index && current_index > 0
+    
+    next_spouse_record = spouse_records.find { |record| record.RecordNumber == next_spouse_id } if next_spouse_id
+    previous_spouse_record = spouse_records.find { |record| record.RecordNumber == previous_spouse_id } if previous_spouse_id
+    
+    [current_spouse_record, next_spouse_record, previous_spouse_record]
+  end
+
+  # Enhanced spouse record finding with navigation metadata
+  def find_spouse_records_with_navigation(record, record_number)
+    spouse_records = find_spouse_records(record, record_number)
+    
+    # Create navigation metadata
+    navigation = {
+      total_count: spouse_records.length,
+      has_spouse_surname: record.AssociateName.present?,
+      search_type: record.AssociateName.present? ? 'surname_based' : 'page_based'
+    }
+
+    # Find current spouse index based on parameters
+    current_spouse_id = params[:spouse_referral_number].to_i if params[:spouse_referral_number].present?
+    current_index = 0
+    
+    if current_spouse_id.present? && spouse_records.any?
+      current_index = spouse_records.find_index { |spouse| spouse.RecordNumber == current_spouse_id } || 0
+    end
+    
+    {
+      records: spouse_records,
+      current_index: current_index,
+      navigation: navigation
+    }
+  end
+
+  # Extract record attributes for reuse
+  def extract_record_attributes(record)
+    {
+      spouse_surname: record.AssociateName,
+      volume: record.Volume,
+      page: record.Page,
+      quarter: record.QuarterNumber,
+      district_number: record.DistrictNumber,
+      record_type: record.RecordTypeID
+    }
+  end
+
+  # Find spouse by surname with optimized query
+  def find_spouse_by_surname(attributes)
+    spouse_record = BestGuess.where(
+      Surname: attributes[:spouse_surname],
+      Volume: attributes[:volume],
+      Page: attributes[:page],
+      QuarterNumber: attributes[:quarter],
+      DistrictNumber: attributes[:district_number],
+      RecordTypeID: attributes[:record_type]
+    ).first
+
+    spouse_record ? [spouse_record] : []
+  end
+
+  def find_possible_spouses_on_page(attributes, record_number)
+    # Use a single optimized query instead of multiple queries
+    possible_spouse_records = BestGuess.where(
+      Volume: attributes[:volume],
+      Page: attributes[:page],
+      QuarterNumber: attributes[:quarter],
+      DistrictNumber: attributes[:district_number],
+      RecordTypeID: attributes[:record_type]
+    ).where.not(RecordNumber: record_number).to_a
+
+    possible_spouse_records
+  end
+
+  def handle_invalid_record
+    Rails.logger.warn "Invalid record number provided: #{params[:entry_id]}"
+    flash[:error] = "Invalid record number provided"
+    redirect_to root_path
+  end
+
+  def handle_record_not_found
+    Rails.logger.warn "Record not found: #{params[:entry_id]}"
+    flash[:error] = "Record not found"
+    redirect_to root_path
+  end
+
+  # Get spouse record by index with bounds checking
+  def get_spouse_by_index(index, spouse_records)
+    return nil if spouse_records.empty? || index < 0 || index >= spouse_records.length
+    spouse_records[index]
+  end
+
+  # Get spouse navigation information
+  def get_spouse_navigation_info(current_index, total_count)
+    {
+      current_position: current_index + 1,
+      total_count: total_count,
+      has_previous: current_index > 0,
+      has_next: current_index < total_count - 1,
+      is_first: current_index == 0,
+      is_last: current_index == total_count - 1
+    }
+  end
+
+  # Validate spouse referral number
+  def validate_spouse_referral_number(spouse_referral_number, spouse_records)
+    return nil if spouse_referral_number.blank?
+    
+    referral_id = spouse_referral_number.to_i
+    return nil if referral_id <= 0
+    
+    # Check if the referral ID exists in spouse records
+    spouse_records.any? { |spouse| spouse.RecordNumber == referral_id } ? referral_id : nil
+  rescue ArgumentError, TypeError
+    nil
   end
 
 end

@@ -24,15 +24,45 @@
 
       <section>
       <div class="grid__item one-half lap-one-half palm-one-whole">
-        <% if @spouse_record.present? %>
-          <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
-          <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
-        <hr>
-          <% if @search %>
-            <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @record, more_info: true } %>
+        <% if @spouse_records.present? %>
+          <% if @spouse_records.length == 1 %>
+            <% @spouse_record = @spouse_records.first %>
+            <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
+            <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
+            <hr>
+            <% if @search %>
+              <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @record, more_info: true } %>
+            <% else %>
+                <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @record, more_info: true } %>
+            <% end %>
+          <% else %>
+            <!-- Navigation buttons -->
+            <% if @previous_spouse_record %>
+              <%= link_to "Previous Spouse",
+                          show_marriage_path(entry_id: @record.RecordNumber,
+                                             spouse_referral_number: @previous_spouse_record.RecordNumber) %>
+            <% end %>
+
+            <% if @next_spouse_record %>
+              <%= link_to "Next Spouse",
+                          show_marriage_path(entry_id: @record.RecordNumber,
+                                             spouse_referral_number: @next_spouse_record.RecordNumber) %>
+            <% end %>
+
+            <!-- Current spouse info -->
+            <% if @current_spouse_record %>
+              <h3>Current Spouse: <%= @current_spouse_record.Surname %></h3>
+            <% end %>
+            <% @spouse_record = @current_spouse_record.present? ? @current_spouse_record : @spouse_records.first
+            <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
+            <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
+            <hr>
+            <% if @search %>
+              <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @record, more_info: true } %>
             <% else %>
               <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @record, more_info: true } %>
             <% end %>
+          <% end %>
         <% else %>
           <p>We do not have information on spouse yet.</p>
         <% end %>
