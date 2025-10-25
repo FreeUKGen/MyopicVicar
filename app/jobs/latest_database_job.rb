@@ -1,25 +1,38 @@
 class LatestDatabaseJob < ApplicationJob
   require 'shellwords'
   require 'open3'
+  require 'fileutils'
 
-  def perform(environment = 'production')
+  def perform(environment = 'production', database_name_file=nil, restart_server=true)
     @environment = environment
     @yaml_file = 'config/freebmd_database.yml'
-    @database_name_file = Rails.application.config.latest_db_file_path
+    @database_name_file = database_name_file
+    @restart_server = restart_server
+    @database_updated = false
 
     begin
       # Read database name from file
       latest_db = read_database_name_from_file
-      return unless latest_db
+      return false unless latest_db
 
       # Check if update is needed
       if database_name_changed?(latest_db)
         # Update the YAML file
         update_database_config(latest_db)
+        @database_updated = true
         Rails.logger.info "LatestDatabaseJob completed: Updated #{@yaml_file} with database #{latest_db}"
+        
+        # Restart the server after database change (if enabled)
+        if @restart_server
+          restart_server
+        else
+          Rails.logger.info "Server restart disabled, please restart manually"
+        end
       else
         Rails.logger.info "LatestDatabaseJob completed: Database name #{latest_db} is already current, no update needed"
       end
+
+      return @database_updated
 
     rescue => e
       Rails.logger.error "LatestDatabaseJob failed: #{e.message}"
@@ -104,16 +117,16 @@ class LatestDatabaseJob < ApplicationJob
         File.write(@yaml_file, updated_content)
         Rails.logger.info "Updated #{@yaml_file}: set #{@environment} database to #{latest_db} and commented out variables lines"
       rescue Errno::EACCES => e
-        Rails.logger.error "Permission denied writing to #{@yaml_file}: #{e.message}"
+        puts "Permission denied writing to #{@yaml_file}: #{e.message}"
         Rails.logger.error "Please run: sudo chmod 664 #{@yaml_file} && sudo chown $USER:$USER #{@yaml_file}"
         raise "Permission denied: #{e.message}"
       rescue => e
-        Rails.logger.error "Error writing to #{@yaml_file}: #{e.message}"
+        puts "Error writing to #{@yaml_file}: #{e.message}"
         raise e
       end
       true
     rescue => e
-      Rails.logger.error "Error updating database config: #{e.message}"
+      puts "Error updating database config: #{e.message}"
       false
     end
   end
@@ -177,4 +190,21 @@ class LatestDatabaseJob < ApplicationJob
 
     updated_lines.join("\n")
   end
+
+  # Restart the server after database configuration change
+  def restart_server
+    puts "Restarting server due to database configuration change..."
+    
+    begin
+      restart_file = Rails.root.join('tmp', 'restart.txt')
+      FileUtils.touch(restart_file)
+      puts "Touched restart file: #{restart_file}"
+      puts "Server restart initiated successfully"
+      
+    rescue => e
+      puts "Failed to restart server: #{e.message}"
+      puts "Please restart the server manually"
+    end
+  end
+
 end
