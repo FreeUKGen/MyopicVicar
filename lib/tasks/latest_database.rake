@@ -8,7 +8,7 @@ namespace :database do
     puts "Using database file: #{database_file}"
     
     # Run the job synchronously for rake task
-    LatestDatabaseJob.new.perform(environment, database_file)
+    LatestDatabaseJob.new.perform(environment, database_file, true)
     
     puts "LatestDatabaseJob completed successfully"
   end
