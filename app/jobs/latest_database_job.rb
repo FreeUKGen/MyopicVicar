@@ -155,42 +155,6 @@ class LatestDatabaseJob < ApplicationJob
     updated_lines.join("\n")
   end
 
-  def comment_out_variables_lines(content)
-    lines = content.split("\n")
-    in_target_env = false
-    in_variables_section = false
-    updated_lines = []
-
-    lines.each do |line|
-      if line.match?(/^#{@environment}:/)
-        in_target_env = true
-        in_variables_section = false
-        updated_lines << line
-      elsif in_target_env && line.match?(/^[a-zA-Z_]+:/)
-        # We've moved to the next environment section
-        in_target_env = false
-        in_variables_section = false
-        updated_lines << line
-      elsif in_target_env && line.match?(/^\s*variables:\s*/)
-        # We're entering the variables section
-        in_variables_section = true
-        #updated_lines << line
-        updated_lines << "  # #{line}"
-      elsif in_target_env && in_variables_section && line.match?(/^\s*(sql_mode|max_execution_time):\s*/)
-        # Comment out sql_mode and max_execution_time lines
-        updated_lines << "    # #{line.strip}"
-      elsif in_target_env && in_variables_section && line.match?(/^\s*[a-zA-Z_]+:\s*/)
-        # We've moved to a different section within the environment
-        in_variables_section = false
-        updated_lines << line
-      else
-        updated_lines << line
-      end
-    end
-
-    updated_lines.join("\n")
-  end
-
   # Restart the server after database configuration change
   def restart_server
     puts "Restarting server due to database configuration change..."

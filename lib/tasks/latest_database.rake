@@ -194,8 +194,8 @@ namespace :all_tasks do
 
       # 5. Uncomment the variables
       puts "\n[5/5]  Uncommenting variables..."
-      UncommentVariablesJob.new.perform(environment)
-      puts "✓ Variables uncommented"
+      # UncommentVariablesJob.new.perform(environment)
+      puts "Task commented out"
       
       # Summary
       end_time = Time.current
