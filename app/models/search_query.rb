@@ -2127,21 +2127,55 @@ class SearchQuery
   end
 
   def spouse_first_name_filteration(records)
-    records = records.select{|r|
-      first_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:GivenName)
-      #first_name_array.map(&:downcase).include?self.spouse_first_name.downcase unless self.identifiable_spouse_only?
-      #raise first_name_array.inspect
-      first_name_array.map(&:downcase).any? {|n| n.include?(self.spouse_first_name.downcase)}
-    }
-    records
+    return records if records.blank? || records.empty?
+    return records if self.spouse_first_name.blank?
+    # Extract unique volume/page/quarter combinations from input records
+    volume_page_quarter_combinations = records.map { |r| [r[:Volume], r[:Page], r[:QuarterNumber]] }.uniq
+    return records if volume_page_quarter_combinations.empty?
+    #Note: here database query is built, we are not querying the database yet
+    conditions = volume_page_quarter_combinations.map do |v, p, q|
+      BestGuessMarriage.where(Volume: v, Page: p, QuarterNumber: q)
+    end
+    # Query
+    marriage_data = conditions.reduce(:or).pluck(:Volume, :Page, :QuarterNumber, :GivenName)
+    # Group first names by volume/page/quarter key . Attempt to create a lookup for further comparision
+    marriage_first_names_by_key = marriage_data
+      .group_by { |v, p, q, first_name| [v, p, q] }
+      .transform_values { |first_names| first_names.map(&:last).map(&:downcase) }
+    # Filter records lookup data
+    records.select do |record|
+      key = [record[:Volume], record[:Page], record[:QuarterNumber]]
+      first_names = marriage_first_names_by_key[key] || []
+      spouse_first_name = self.spouse_first_name&.downcase
+      
+      # Keep if spouse first name is found in any marriage first name (partial match)
+      spouse_first_name.present? && first_names.any? { |name| name.include?(spouse_first_name) }
+    end
   end
 
-  def reject_unidentified_spouses_records (records)
-    records = records.reject{|r|
-      last_name_array = BestGuessMarriage.where(Volume: r[:Volume], Page: r[:Page], QuarterNumber: r[:QuarterNumber]).pluck(:Surname)
-      last_name_array.map(&:downcase).exclude?r[:AssociateName].downcase
-    }
-    records
+  def reject_unidentified_spouses_records(records)
+    return records if records.blank? || records.empty?
+    # Extract unique volume/page/quarter combinations from input records
+    volume_page_quarter_combinations = records.map { |r| [r[:Volume], r[:Page], r[:QuarterNumber]] }.uniq
+    return records if volume_page_quarter_combinations.empty?
+    #note: we are not yet querying the database, instead building the mysql query
+    conditions = volume_page_quarter_combinations.map do |v, p, q|
+      BestGuessMarriage.where(Volume: v, Page: p, QuarterNumber: q)
+    end
+    # Database querying
+    marriage_data = conditions.reduce(:or).pluck(:Volume, :Page, :QuarterNumber, :Surname)
+    # store data for future lookup
+    marriage_surnames_by_key = marriage_data
+      .group_by { |v, p, q, surname| [v, p, q] }
+      .transform_values { |surnames| surnames.map(&:last).map(&:downcase).to_set }
+    # Filter records against the stored look up data
+    records.reject do |record|
+      key = [record[:Volume], record[:Page], record[:QuarterNumber]]
+      surnames = marriage_surnames_by_key[key] || Set.new
+      associate_name = record[:AssociateName]&.downcase
+      # Reject if associate name is blank or not found in marriage surnames
+      associate_name.blank? || !surnames.include?(associate_name)
+    end
   end
 
   def spouse_surname_records(records)
