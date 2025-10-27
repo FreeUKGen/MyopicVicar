@@ -1,3 +1,4 @@
+<% title "Entries on page #{@page}, volume #{@volume} for #{@district} in #{format_quarter(@quarter.to_i)}" %>
 <% breadcrumb :same_page_entries, @record  unless @search %>
 <div class='container'>
   <% if @search %>
@@ -35,11 +36,9 @@
                   <i><%#= seen(@search_query,search_record) %></i></center>
                 </td>
               <td class="table--data">
-                <dl>
-                  <strong><dt><%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></dt></strong>
-                  <dt><%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%></dt>
-                  <dt><%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record[:District].downcase}.html", target: "_blank" %></dt>
-                  </dl>
+                  <strong><%= "#{search_record[:GivenName]} #{search_record[:Surname]}" %></strong>
+                  <%= "#{QuarterDetails.quarters.key((search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(search_record[:QuarterNumber]-1)/4 + 1837}"%>
+                  <%= link_to "#{search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{search_record[:District].downcase}.html", target: "_blank" %>
               </td>
               
               <td class="<%#= record_type.downcase %>">

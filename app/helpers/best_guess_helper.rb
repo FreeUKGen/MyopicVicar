@@ -132,6 +132,13 @@ module BestGuessHelper
     end
   end
 
+  def value_or_refer_to_page(field_value)
+    unless field_value.blank?
+      field_value
+    else "See Page link for possible spouses"
+    end
+  end
+
   def render_scan_rows(scan_links, acc_scans, acc_mul_scans, current_record)
     content = ""
 
