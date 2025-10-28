@@ -11,6 +11,7 @@
               <th class='sticky-header'>Email</th>
               <th class='sticky-header'>Active</th>
               <th class='sticky-header' title="Transcriber Agreement Accepted">Agreement</th>
+              <th class='sticky-header'>Signed Up Date</th>
               <% unless MyopicVicar::Application.config.template_set == 'freecen'%>
                 <th class='sticky-header'>Last Upload</th>
                 <th class='sticky-header'>Files </th>
@@ -31,6 +32,7 @@
                   <td > <%= userid.email_address %> </td>
                   <td >  <%= active_user(userid.active)%></td>
                   <td >  <%= userid.new_transcription_agreement%></td>
+                  <td ><%= userid.sign_up_date.strftime("%d %b %Y") unless userid.sign_up_date.nil? %></td>
                   <% unless MyopicVicar::Application.config.template_set == 'freecen'%>
                     <td > <%= userid.last_upload.strftime("%d %b %Y") unless  userid.last_upload.nil?%>  </td>
                     <td > <%= Freereg1CsvFile.userid(userid.userid).count  %>  </td>
