@@ -1,5 +1,5 @@
 <% if @search_record.present? %>
-  <% title "Record details for #{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}" %>
+  <% title "Record details for #{@search_record[:GivenName].camelize} #{@search_record[:Surname].upcase}" %>
 <% else %>
   <% title "Record Details" %>
 <% end %>
@@ -16,13 +16,13 @@
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <div class="grid">
   <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
-    <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@search_record[:Surname].upcase}'s record" %></h1>
+    <h1 class="beta push-half--top flush--bottom"><%= "#{@search_record[:GivenName].camelize} #{@search_record[:Surname].upcase}'s record" %></h1>
     <hr>
     <section>
       <div class="table-wrapper">
         <% record_type = RecordType::display_name(@search_record.RecordTypeID) %>
         <% if params[:search_id].present? %>
-          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
+          <%= render partial: 'entry_information_table', locals: {record: @search_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
         <% else %>
           <%= render partial: 'entry_information_table', locals: {record: @search_record, search: @search, entry_type: record_type.downcase, original_record: @search_record, type: "general"} %>
         <% end %>
