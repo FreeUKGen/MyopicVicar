@@ -15,7 +15,7 @@ class Freecen2PlaceExtractUniqueName
       else
         previous_time = Time.utc(time_start.year, time_start.month, time_start.day) - days*24.hours
         p "previous_time #{previous_time}"
-        place_ids = SearchRecord.between(u_at: previous_time..time_start).map{|p| p.freecen2_place_id.to_s }.uniq
+        place_ids = SearchRecord.between(u_at: previous_time..time_start).no_timeout.map{|p| p.freecen2_place_id.to_s }.uniq
       end
 
       place_ids.each do |place_id|
