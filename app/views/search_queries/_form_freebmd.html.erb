@@ -556,15 +556,7 @@
         }
       });
       }
-
-        $("#from_year").change(function() {
-            var year = $("#from_year").val();
-            $("#to_year").val(year);
-            $("#to_year").attr({
-                "min" : year
-            });
-        });
-
+        
         $('#wildcard_field').change(function(){
             var field = ""
             $.each($("#wildcard_field option:selected"), function() {
