@@ -149,10 +149,14 @@ module BestGuessHelper
       case field_name
         when "RecordType"
           content = id_to_event_type(field_value)
-          result = "<meta name='freebmd.#{field_name}' content='" + content + "'>"
+          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
         when "Quarter"
-          content = format_quarter(field_value)
-          result = "<meta name='freebmd.#{field_name}' content='" + content + "'>"
+          content = format_quarter_year(field_value)
+          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+        when "OfficialDistrict"
+          district = District.where(DistrictNumber: field_value).first
+          content = district[:DistrictName]
+          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
         else
           result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
       end
