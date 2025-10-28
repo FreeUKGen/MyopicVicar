@@ -1,0 +1,324 @@
+<script>
+    document.getElementById("citation-toggle").addEventListener("click", citationToggle);
+    /*Hide citation blocks unless citation type is selected*/
+    const citations = ['wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
+    function hide_citation_block(cite){
+        cite_element =  document.getElementById(`${cite}_citation_container`);
+        if (cite_element) {
+            cite_element.style.display = "none";
+        }
+    }
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function citationToggle() {
+        var x = document.getElementById("citation-dropdown");
+        //var y = document.getElementById('wikitree_citation_container');
+        citations.forEach(hide_citation_block);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+    window.addEventListener("load", function(){
+        const no_javascript_elements = document.getElementsByClassName("no-javascript");
+        const javascript_elements = document.getElementsByClassName("javascript");
+
+        for(let i = 0; i < no_javascript_elements.length; i++){
+            no_javascript_elements[i].remove();
+        }
+        for(let i = 0; i < javascript_elements.length; i++){
+            javascript_elements[i].style.display = "block";
+        }
+        //if(!document.getElementById("citation_section")){
+        document.getElementById("citation-dropdown").style.display = "none";
+        //}
+    })
+    function urlCopy(elm, btn) {
+        var button = document.getElementById(btn);
+        var btnText = button.innerHTML;
+        var target = document.getElementById(elm).innerHTML;
+        navigator.clipboard.writeText(target);
+        button.innerHTML = "Copied"
+        setTimeout(function(){
+            button.innerHTML = btnText;
+        }, 1000);
+    }
+
+    function copy(elm) {
+        var button = event.currentTarget || event.srcElement;
+        var btnText = button.innerHTML;
+        var target = document.getElementById(elm);
+        var citation = target.querySelectorAll('.citation_container')[0];
+        var range, select;
+        if (document.createRange) {
+            range = document.createRange();
+            range.selectNode(citation);
+            select = window.getSelection();
+            select.removeAllRanges();
+            select.addRange(range);
+            document.execCommand('copy');
+            select.removeAllRanges();
+        } else {
+            range = document.body.createTextRange();
+            range.moveToElementText(citation);
+            range.select();
+            document.execCommand('copy');
+        }
+        button.innerHTML = "Copied"
+        setTimeout(function(){
+            button.innerHTML = btnText;
+        }, 1000);
+    }
+</script>
+<style type="text/css">
+    .citation_container {border: 1px solid black; padding: 5px;}
+</style>
+<table class="table--bordered table--data">
+  <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
+  <tbody>
+  <% record_type = RecordType::display_name(record.RecordTypeID)%>
+  <tr>
+    <th scope="row">
+      Record Type
+    </th>
+    <td>
+      <%= "#{record_type}".capitalize %>
+    </td>
+  </tr>
+  <%# if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
+  <tr>
+    <th scope="row">
+      Registration Date
+    </th>
+    <td>
+      <%= format_quarter_year(record.QuarterNumber) %>
+    </td>
+  </tr>
+  <%# end %>
+  <tr>
+    <th scope="row">
+      District
+    </th>
+    <td>
+      <% district = District.where(DistrictNumber: record[:DistrictNumber]).first %>
+      <% if district.present? %>
+        <% if @search %>
+          <%= district_link_or_name_id(district, record, search_id) %>
+        <% else%>
+          <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber)%>
+        <% end %>
+      <% else %>
+        <%= record.display_district_name %>
+      <% end %>
+      <% if record.District.blank? %>
+        <%= 'No data' %>
+        <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+      <% end %>
+      <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+        <a class="footnote-link" id="link-to-district-query" href="#district-query">
+          [district query] <span class="accessibility">potential issue with this District name</span>
+        </a>
+      <% end %>
+    </td>
+  </tr>
+  <% unless entry_type == "death" %>
+    <tr>
+      <th scope="row">
+        <%= mother_or_spouse_surname(record_type)%>
+      </th>
+      <td>
+        <% if record.AssociateName.present? %>
+          <% if entry_type == 'marriage' %>
+            <% if @search %>
+              <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+            <% else %>
+              <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+            <% end %>
+            <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+          <% else %>
+            <%= record.AssociateName %>
+          <% end %>
+        <% end %>
+        <% if record.AssociateName.blank? %>
+          <%= 'No data' %>
+          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+  <% if record.register_entry_number_format %>
+    <tr>
+      <th scope="row">
+        Register number
+      </th>
+      <td >
+        <% event_register_number = record.event_registration_number %>
+        <% if event_register_number.present? %>
+          <%= event_register_number  %>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Entry number
+      </th>
+      <td>
+        <% event_entry_number = record.event_entry_number %>
+        <% if event_entry_number.present?  %>
+          <%= event_entry_number %>
+        <% else %>
+          <%= "#{ record.Page }" %>
+        <% end %>
+      </td>
+    </tr>
+  <% else %>
+    <tr>
+      <th scope="row">
+        Volume
+      </th>
+      <td>
+        <%= "#{ record.Volume }" %>
+        <% if record.bad_volume_for_district %>
+          <a class="footnote-link" id="link-to-volume-query" href="#volume-query">
+            [volume query] <span class="accessibility">potential issue with this volume number</span>
+          </a>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Page
+      </th>
+      <td>
+        <% unless record.Page.to_i == 0 %>
+          <div class= "grid__item one-whole palm-one-whole hard--left">
+            <div class='grid__item one-third lap-one-half palm-one-half'>
+              <%= link_to "#{record.Page}", same_page_entries_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, hash_id: record.RecordNumber) %>
+            </div>
+          </div>
+        <% else%>
+          <%= record.Page %>
+        <% end %>
+        <% if record.bad_page_range_for_district or record.page_range_not_checked %>
+          <a class="footnote-link" id="link-to-page-query" href="#page-query">
+            [page query] <span class="accessibility">potential issue with this page number</span>
+          </a>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+  <% if entry_type == "death" %>
+    <tr>
+      <th scope="row">
+        <% if record.AgeAtDeath.present? && record.AgeAtDeath.to_i.to_s == record.AgeAtDeath %>
+          Age at Death
+        <% else %>
+          Date of Birth
+        <% end %>
+      </th>
+      <td>
+        <%= record.AgeAtDeath %>
+        <% if record.AgeAtDeath.blank? %>
+          <%= 'No data' %>
+          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+  <tr>
+    <th scope="row">
+      Transcriber
+    </th>
+    <td>
+      <%= record.transcribers.join(', ') if record.transcribers.present? %>
+      <% if record.transcribers.blank? %>
+        <%= 'No data' %>
+        <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+      <% end %>
+    </td>
+  </tr>
+  <% if record.get_comments.present? %>
+    <tr>
+      <th scope="row">
+        Comment
+      </th>
+      <%  record.get_comments.each do |cl| %>
+        <td>
+          <%= cl.comment.CommentText %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+  <% unless search %>
+    <% if type == "reference" %>
+      <tr>
+        <th scope="row">
+          Help Text
+        </th>
+        <td>
+          <% case %>
+          <% when record.reference_entry_description_text_display? %>
+            <%= ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE %>
+          <% when !original_record.late_entry_description_text_display?%>
+            <%= ApplicationText::REFERENCE_ENTRY_TEXT %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  <% end %>
+  <% event_registered = record.event_registration %>
+  <% if event_registered.present?%>
+    <tr>
+      <th scope="row">
+        Registered
+      </th>
+      <td >
+        <%= format_registered(event_registered, record.QuarterNumber) %>
+      </td>
+    </tr>
+  <% end %>
+  <tr>
+    <th scope="row">More Information</th>
+    <td class="project-text-color">
+      <%= render partial: 'more_information' %>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<% if record.DistrictFlag > 0 or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+  <div>
+    <h3>Queries relating to this entry</h3>
+    <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+      <div id="district-query">
+        <h4>District name</h4>
+        <p>
+          <% if record[:District].strip.downcase != district.DistrictName.strip.downcase %><%= " District recorded as #{record[:District]} not #{district.DistrictName}. " %><% end %>
+          <% if record.district_misspelt  %> The District name is a misspelt alternative form of the official name <%= "'#{district.DistrictName.strip}'" %>.<% end %>
+          <% if record.district_invented %> The District name is not an official name or a recognized alternative form of name. <% end %>
+          <% if record.bad_date_for_district %> The date does not fall within the range of dates when this District was active.<% end %>
+          <a href="#link-to-district-query">[back to district]</a>
+        </p>
+      </div>
+    <% end %>
+    <% if record.bad_volume_for_district %>
+      <div id="volume-query">
+        <h4>Volume number</h4>
+        <p>
+          <% if record.bad_volume_for_district %> The volume number does not have one of the expected values for this District/Quarter.<% end %>
+          <a href="#link-to-volume-query">[back to volume]</a>
+        </p>
+      </div>
+    <% end %>
+    <% if record.bad_page_range_for_district or record.page_range_not_checked %>
+      <div id="page-query">
+        <h4>Page number</h4>
+        <p>
+          <% if record.bad_page_range_for_district %> The page number does not have one of the expected values for this District/Quarter.<% end %>
+          <% if record.page_range_not_checked %> The page range cannot be checked because the data provided is not sufficiently precise.<% end %>
+          <a href="#link-to-page-query">[back to page]</a>
+        </p>
+      </div>
+    <% end %>
+  </div>
+<% end %>
