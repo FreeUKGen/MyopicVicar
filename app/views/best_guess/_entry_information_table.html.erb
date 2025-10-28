@@ -141,7 +141,9 @@
             <% end %>
           <% end %>
           <% if record.AssociateName.blank? %>
-            <%= 'See Page link for possible spouses' %>
+            <% if entry_type == 'marriage' %>
+               <%= 'See Page link for possible spouses' %>
+              <% end %>>
             <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
           <% end %>
         </td>
