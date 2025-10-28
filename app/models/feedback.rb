@@ -245,9 +245,22 @@ class Feedback
       logger.info("#{appname}:GITHUB response: #{response}")
       logger.info(response.inspect)
       self.update_attributes(:github_issue_url => response[:html_url],:github_comment_url => response[:comments_url], :github_number => response[:number])
+      UserMailer.communicate_github_issue_creation(self).deliver_now
     else
       logger.error("#{appname}:Tried to create an issue, but Github integration is not enabled!")
     end
+  end
+
+  def self.github_issue_status_closed
+    self.each {|feedback|
+      next unless feedback.github_issue_url.present?
+      issue = Octokit.issue(Rails.application.config.github_issues_repo, feedback.github_number)
+      issue_state = issue.state if issue.present?
+      if issue_state != feedback.github_issue_state && issue_state == 'closed'
+        UserMailer.communicate_github_issue_closed(feedback).deliver_now
+        feedback.update_attributes(github_issue_state: issue_state, notified_issue_closed: true)
+      end
+    }
   end
 
   def has_replies?(feedback_id)
