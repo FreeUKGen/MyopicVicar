@@ -121,8 +121,19 @@ module BestGuessHelper
       result = "Deaths"
     else
       result = "Unknown Event Type #{event_type}"
-    result
+      result
     end
+  end
+  def id_to_event_type event_type
+    case event_type
+      when 1
+        result = "Births"
+      when 2
+        result = "Deaths"
+      when 3
+        result = "Marriages"
+    end
+    result
   end
 
   def value_or_no_data(field_value)
@@ -130,6 +141,23 @@ module BestGuessHelper
       field_value
     else "No data"
     end
+  end
+
+  def bmd_metadata(field_name, field_value)
+    result = ""
+    unless field_value.blank?
+      case field_name
+        when "RecordType"
+          content = id_to_event_type(field_value)
+          result = "<meta name='freebmd.#{field_name}' content='" + content + "'>"
+        when "Quarter"
+          content = format_quarter(field_value)
+          result = "<meta name='freebmd.#{field_name}' content='" + content + "'>"
+        else
+          result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
+      end
+    end
+    result.html_safe
   end
 
   def render_scan_rows(scan_links, acc_scans, acc_mul_scans, current_record)

@@ -167,7 +167,10 @@
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
     <% end %>
     <%= csrf_meta_tags %>
-  </head>
+    <% if appname_downcase == 'freebmd'%>
+      <%= render 'best_guess/bmd_metadata'%>
+    <% end %>
+      </head>
   <body ontouchstart class="offcanvas  offcanvas--rev">
     <a href="#top" class="skip-link">Skip to main content</a>
     <% if appname_downcase == 'freecen' || appname_downcase == 'freebmd'%>

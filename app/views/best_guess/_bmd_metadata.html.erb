@@ -1,0 +1,12 @@
+<% if @current_record.present? %>
+  <%= bmd_metadata('Surname', @current_record[:Surname]) %>
+  <%= bmd_metadata('GivenName', @current_record[:GivenName]) %>
+  <%= bmd_metadata('OtherNames', @current_record[:OtherNames]) %>
+  <%= bmd_metadata('AgeAtDeath', @current_record[:AgeAtDeath]) %>
+  <%= bmd_metadata('AssociateName', @current_record[:AssociateName]) %>
+  <%= bmd_metadata('District', @current_record[:District]) %>
+  <%= bmd_metadata('Volume', @current_record[:Volume]) %>
+  <%= bmd_metadata('Page', @current_record[:Page]) %>
+  <%= bmd_metadata('RecordType', @current_record[:RecordTypeID]) %>
+  <%= bmd_metadata('Quarter', @current_record[:QuarterNumber]) %>
+<% end %>
