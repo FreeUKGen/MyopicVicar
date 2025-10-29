@@ -1,14 +1,62 @@
 
 task :unique_surnames => :environment do
   require 'unique_surnames'
-  puts 'Starting surnames'
-  UniqueSurname.delete_all
-  BestGuess.distinct.pluck(:Surname).uniq.sort.each do |surname|
-    records = BestGuess.where(Surname: surname).count
-    puts "#{surname}, #{records}"
-    UniqueSurname.create(:Name => surname, :count => records)
+  
+  # Override max_execution_time for this task
+  puts "Setting max_execution_time to 0 (unlimited) for this task..."
+  
+  # Set max_execution_time to 0 (unlimited) for the current connection
+  # This works for MySQL 5.7+ and MariaDB 10.1.1+
+  begin
+    BestGuess.connection.execute("SET SESSION max_execution_time = 0")
+    puts "✅ Successfully disabled query timeout"
+  rescue => e
+    puts "⚠️  Warning: Could not disable query timeout: #{e.message}"
+    puts "   The task continues but may timeout if it takes longer than 25 seconds"
   end
-  puts "Finished surnames"
+  
+  begin
+    start_time = Time.current
+    puts 'Starting unique surnames extraction'
+    
+    # Clear existing data (no_timeout prevents timeout on large collections)
+    UniqueSurname.no_timeout.delete_all
+    puts "Cleared existing UniqueSurname records"
+    
+    # Use MySQL GROUP BY aggregation to get counts in a single query
+    # This is much more efficient than individual COUNT queries
+    puts "Counting surnames using MySQL aggregation..."
+    surname_counts = BestGuess.group(:Surname).count
+    
+    puts "Found #{surname_counts.size} unique surnames"
+    puts "Inserting records into MongoDB..."
+    
+    # Batch insert surnames with counts
+    bulk_insert_unique_surnames(surname_counts)
+    
+    end_time = Time.current
+    duration = (end_time - start_time).round(2)
+    
+    puts "Finished surnames extraction in #{duration} seconds"
+    puts "Created #{UniqueSurname.no_timeout.count} unique surname records"
+    
+  rescue => e
+    puts "\n❌ Task failed: #{e.message}"
+    puts "Backtrace:"
+    puts e.backtrace.first(10).join("\n")
+    raise e
+    
+  ensure
+    # Restore original max_execution_time setting
+    begin
+      puts "\nRestoring original max_execution_time setting..."
+      BestGuess.connection.execute("SET SESSION max_execution_time = 25000")
+      puts "✅ Original timeout setting restored (25000ms)"
+    rescue => restore_error
+      puts "⚠️  Warning: Could not restore original timeout setting: #{restore_error.message}"
+      puts "   The connection will use the default timeout for future queries"
+    end
+  end
 end
 
 task :unique_forenames => :environment do
@@ -41,8 +89,8 @@ task :unique_individual_forenames => :environment do
     start_time = Time.current
     puts 'Starting individual forenames extraction'
     
-    # Clear existing data
-    UniqueForename.delete_all
+    # Clear existing data (no_timeout prevents timeout on large collections)
+    UniqueForename.no_timeout.delete_all
     puts "Cleared existing UniqueForename records"
     
     # Track unique names in memory to avoid database lookups
@@ -84,7 +132,7 @@ task :unique_individual_forenames => :environment do
     duration = (end_time - start_time).round(2)
     
     puts "Finished individual forenames in #{duration} seconds"
-    puts "Created #{UniqueForename.count} unique forename records"
+    puts "Created #{UniqueForename.no_timeout.count} unique forename records"
     
   rescue => e
     puts "\n❌ Task failed: #{e.message}"
@@ -138,16 +186,16 @@ def bulk_insert_unique_forenames(names)
       }
     end
     
-    # Bulk insert into MongoDB collection
+    # Bulk insert into MongoDB collection with no timeout
     begin
-      UniqueForename.collection.insert_many(records)
+      UniqueForename.collection.insert_many(records, { max_time_ms: 0 })
       puts "  Inserted batch #{batch_index + 1}/#{total_batches} (#{records.size} records)"
     rescue Mongo::Error::BulkWriteError => e
       # If bulk insert fails, fall back to individual inserts (handles duplicates)
       puts "  Bulk insert failed, falling back to individual inserts for batch #{batch_index + 1}"
       fallback_individual_inserts(name_counts)
     rescue => e
-      Rails.logger.error "Failed to insert unique forenames: #{e.message}"
+      puts "\n❌ Error: Failed to insert unique forenames: #{e.message}"
       fallback_individual_inserts(name_counts)
     end
   end
@@ -168,11 +216,60 @@ end
 def fallback_individual_inserts(name_counts)
   name_counts.each do |name, count|
     begin
-      UniqueForename.create!(Name: name, count: count)
+      # Use no_timeout to prevent cursor timeout for long-running operations
+      UniqueForename.no_timeout.create!(Name: name, count: count)
     rescue Mongoid::Errors::Validations => e
-      Rails.logger.warn "Skipped duplicate or invalid UniqueForename for #{name}: #{e.message}"
+      puts "⚠️  Warning: Skipped duplicate or invalid UniqueForename for #{name}: #{e.message}"
     rescue => e
-      Rails.logger.error "Failed to create UniqueForename for #{name}: #{e.message}"
+      puts "\n❌ Failed to create UniqueForename for #{name}: #{e.message}"
+    end
+  end
+end
+
+# Bulk insert unique surnames with batch processing
+def bulk_insert_unique_surnames(surname_counts)
+  return if surname_counts.empty?
+  
+  insert_batch_size = 100
+  surnames_array = surname_counts.to_a
+  total_batches = (surnames_array.size.to_f / insert_batch_size).ceil
+  
+  surnames_array.each_slice(insert_batch_size).with_index do |surname_batch, batch_index|
+    # Prepare records for bulk insert
+    records = surname_batch.map do |surname, count|
+      {
+        Name: surname,
+        count: count,
+        created_at: Time.current,
+        updated_at: Time.current
+      }
+    end
+    
+    # Bulk insert into MongoDB collection with no timeout
+    begin
+      UniqueSurname.collection.insert_many(records, { max_time_ms: 0 })
+      puts "  Inserted batch #{batch_index + 1}/#{total_batches} (#{records.size} records)"
+    rescue Mongo::Error::BulkWriteError => e
+      # If bulk insert fails, fall back to individual inserts (handles duplicates)
+      puts "  Bulk insert failed, falling back to individual inserts for batch #{batch_index + 1}"
+      fallback_individual_surname_inserts(surname_batch)
+    rescue => e
+      puts "\n❌ Error: Failed to insert unique surnames: #{e.message}"
+      fallback_individual_surname_inserts(surname_batch)
+    end
+  end
+end
+
+# Fallback to individual inserts if bulk operations fail
+def fallback_individual_surname_inserts(surname_counts)
+  surname_counts.each do |surname, count|
+    begin
+      # Use no_timeout to prevent cursor timeout for long-running operations
+      UniqueSurname.no_timeout.create!(Name: surname, count: count)
+    rescue Mongoid::Errors::Validations => e
+      puts "⚠️  Warning: Skipped duplicate or invalid UniqueSurname for #{surname}: #{e.message}"
+    rescue => e
+      puts "\n❌ Error: Failed to create UniqueSurname for #{surname}: #{e.message}"
     end
   end
 end
