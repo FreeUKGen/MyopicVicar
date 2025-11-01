@@ -494,4 +494,21 @@ class BestGuess < FreebmdDbBase
     hash_array.map{|h| BestGuessHash.find_by(Hash: h).best_guess}
   end
 
+  def self.birth_month_hash
+    {
+      "ja" => "Jan",
+      "fe" => "Feb",
+      "mr" => "Mar",
+      "ap" => "Apr",
+      "my" => "May",
+      "je" => "Jun",
+      "jy" => "Jul",
+      "au" => "Aug",
+      "se" => "Sep",
+      "oc" => "Oct",
+      "no" => "Nov",
+      "de" => "Dec",
+    }
+  end
+
 end

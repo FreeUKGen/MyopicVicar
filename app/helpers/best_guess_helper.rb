@@ -143,6 +143,16 @@ module BestGuessHelper
     end
   end
 
+  def tidy_date_of_birth(field_value)
+    if field_value.match?(/([0-9]+)([A-Za-z]+)([0-9]+)/)
+      m = field_value.match(/(?<d>[0-9]+)(?<m>[A-Za-z]+)(?<y>[0-9]+)/)
+      result = m[:d] + ' ' + BestGuess.birth_month_hash[m[:m].downcase] + ' ' + m[:y]
+    else
+      result = field_value
+    end
+    result
+  end
+
   def bmd_metadata(field_name, field_value)
     result = ""
     unless field_value.blank?
@@ -157,7 +167,20 @@ module BestGuessHelper
           district = District.where(DistrictNumber: field_value).first
           content = district[:DistrictName]
           result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
-        else
+        when "AgeAtDeath"
+          if field_value.to_i.to_s == field_value
+            result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
+          else
+            content = tidy_date_of_birth(field_value)
+            result = "<meta name='freebmd.DateOfBirth' content='" + content + "' />"
+          end
+      when "Registered"
+        event_registered = @current_record.event_registration
+        if event_registered.present?
+          content = format_registered(event_registered, field_value)
+          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+        end
+      else
           result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
       end
     end
