@@ -1109,6 +1109,12 @@ class SearchQuery
     records
   end
 
+  def count
+    @search_parameters = search_params
+    hitCount = SearchRecord.collection.count_documents(@search_parameters).max_time_ms(Rails.application.config.max_search_time)
+    hitcount
+  end
+
   def secondary_date_results
     @secondary_search_params = @search_parameters
     @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
