@@ -1,13 +1,14 @@
 namespace :database do
   desc "Update database configuration with latest bmd_<epoch> database"
-  task :update_latest, [:environment, :mysql_password] => :environment do |t, args|
+  task :update_latest, [:environment, :database_file] => :environment do |t, args|
     environment = args[:environment] || 'production'
-    mysql_password = args[:mysql_password]
+    database_file = args[:database_file]
     
     puts "Starting LatestDatabaseJob for environment: #{environment}"
+    puts "Using database file: #{database_file}"
     
     # Run the job synchronously for rake task
-    LatestDatabaseJob.new.perform(environment, mysql_password)
+    LatestDatabaseJob.new.perform(environment, database_file, true)
     
     puts "LatestDatabaseJob completed successfully"
   end
@@ -25,16 +26,15 @@ namespace :database do
   end
 
   desc "Run complete database deployment: update, uncomment, and copy"
-  task :full_deployment, [:environment, :mysql_password] => :environment do |t, args|
+  task :full_deployment, [:environment] => :environment do |t, args|
     environment = args[:environment] || 'production'
-    mysql_password = args[:mysql_password]
     
     puts "Starting full database deployment for environment: #{environment}"
     puts "=" * 60
     
     # Step 1: Update latest database
     puts "Step 1: Updating latest database..."
-    LatestDatabaseJob.new.perform(environment, mysql_password)
+    LatestDatabaseJob.new.perform(environment, nil) # Use default database file
     puts "✓ Latest database updated"
     
     # Step 2: Uncomment variables
@@ -47,13 +47,15 @@ namespace :database do
   end
   
   desc "Schedule LatestDatabaseJob to run asynchronously"
-  task :schedule_latest, [:environment] => :environment do |t, args|
+  task :schedule_latest, [:environment, :database_file] => :environment do |t, args|
     environment = args[:environment] || 'production'
+    database_file = args[:database_file] || nil
     
     puts "Scheduling LatestDatabaseJob for environment: #{environment}"
+    puts "Using database file: #{database_file || 'default'}"
     
     # Queue the job asynchronously
-    LatestDatabaseJob.perform_later(environment)
+    LatestDatabaseJob.perform_later(environment, database_file)
     
     puts "LatestDatabaseJob queued successfully"
   end
@@ -139,9 +141,9 @@ end
 
 namespace :all_tasks do
   desc "Run all database management tasks sequentially"
-  task :run_all, [:environment, :mysql_password] => :environment do |t, args|
+  task :run_all, [:environment, :database_file] => :environment do |t, args|
     environment = args[:environment] || 'production'
-    mysql_password = args[:mysql_password]
+    database_file = args[:database_file]
     start_time = Time.current
     
     puts "=" * 80
@@ -154,31 +156,46 @@ namespace :all_tasks do
       # Adds new database and comment out timeout variables
       puts "\n[1/5] Updating Database Configuration..."
       puts "-" * 50
-      LatestDatabaseJob.new.perform(environment, mysql_password)
-      puts "✅ Database configuration updated successfully"
+      
+      # Run the database update job and check if it was updated
+      database_updated = LatestDatabaseJob.new.perform(environment,  database_file, true)
+      
+      if database_updated
+        puts "✅ Database configuration updated successfully - continuing with remaining tasks"
+      else
+        puts "ℹ️  Database configuration unchanged - skipping remaining tasks"
+        puts "\n" + "=" * 80
+        puts "🎯 TASK COMPLETED (No database update needed)"
+        puts "Environment: #{environment}"
+        puts "Started: #{start_time.strftime('%Y-%m-%d %H:%M:%S')}"
+        puts "Finished: #{Time.current.strftime('%Y-%m-%d %H:%M:%S')}"
+        puts "Duration: #{(Time.current - start_time).round(2)} seconds"
+        puts "=" * 80
+        return
+      end
 
       # 2. Calculate Record Statistics
       puts "\n[2/5] Calculating Record Statistics..."
       puts "-" * 50
       CalculateRecordStatisticsJob.new.perform(environment)
       puts "✅ Record statistics calculated successfully"
+
+      # 3. Update BMD Unique Names
+      puts "\n[3/5] Updating BMD Unique Names..."
+      puts "-" * 50
+      UpdateBmdUniqueNamesJob.new.perform(environment)
+      puts "✅ BMD unique names updated successfully"
       
-      # 3. Run Autocomplete Tasks
-      puts "\n[3/5] Running Autocomplete Tasks..."
+      # 4. Run Autocomplete Tasks
+      puts "\n[4/5] Running Autocomplete Tasks..."
       puts "-" * 50
       AutocompleteTasksJob.new.perform(environment)
       puts "✅ Autocomplete tasks completed successfully"
 
-      # 4. Update BMD Unique Names
-      puts "\n[4/5] Updating BMD Unique Names..."
-      puts "-" * 50
-      UpdateBmdUniqueNamesJob.new.perform(environment)
-      puts "✅ BMD unique names updated successfully"
-
       # 5. Uncomment the variables
       puts "\n[5/5]  Uncommenting variables..."
-      UncommentVariablesJob.new.perform(environment)
-      puts "✓ Variables uncommented"
+      # UncommentVariablesJob.new.perform(environment)
+      puts "Task commented out"
       
       # Summary
       end_time = Time.current
@@ -202,4 +219,5 @@ namespace :all_tasks do
       raise e
     end
   end
+  
 end

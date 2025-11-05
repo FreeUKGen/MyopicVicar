@@ -122,3 +122,5 @@ data/*
 
 doc/design/data_flow/OneNote Table Of Contents.onetoc2
 *.onetoc2
+lib/tasks/scripts/grant_script.sh
+lib/tasks/scripts/latest_db.sh

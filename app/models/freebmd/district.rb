@@ -119,7 +119,6 @@ class District < FreebmdDbBase
   end
 
   def formatted_name_for_search district
-    logger.warn(clean(district.DistrictName))
     "#{clean(district.DistrictName)} #{district.district_validity_period district}"
   end
 

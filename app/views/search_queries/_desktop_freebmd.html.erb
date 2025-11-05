@@ -114,8 +114,10 @@
                       <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
                       <%= district_link_or_name(district, search_record, @search_query) %>
                       <% @search_query.get_search_record_details(search_record).each do |key, value| %>
-                        <br /><%= "#{key} #{value}" %>
+                        <%= "#{key} #{value}" %>
                       <% end %>
+                      Page
+                      <%= link_to "#{search_record[:Page]}", same_page_entries_path(volume: search_record[:Volume], page: search_record[:Page], record: search_record[:RecordTypeID], quarter: search_record[:QuarterNumber], district: search_record[:District], search_id: @search_query.id, entry_id: search_record[:RecordNumber]) %>
                     <% end %>
               </td>
               <% if blank_record_types or included_record_types.include? "1" %>
@@ -125,7 +127,7 @@
               <% end %>
               <% if blank_record_types or included_record_types.include? "3" %>
                 <td class="table--data">
-                  <%= if record_type == "MARRIAGES" then value_or_no_data(search_record[:AssociateName]) else '&ndash;'.html_safe end %>
+                  <%= if record_type == "MARRIAGES" then value_or_refer_to_page(search_record[:AssociateName]) else '&ndash;'.html_safe end %>
                 </td>
               <% end %>
               <% if blank_record_types or included_record_types.include? "2" %>

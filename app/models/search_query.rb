@@ -2462,6 +2462,9 @@ class SearchQuery
 
   def volume_page_details(result_hash, search_result)
     result_hash['Volume'] = search_result[:Volume]
-    result_hash['Page'] = search_result[:Page]
+    # original version:
+    # result_hash['Page'] = search_result[:Page]
+    # attempt to replace it by a link, which fails because same_page_entries is a BestGuess method:
+    # result_hash['Page'] = link_to "#{search_result[:Page]}", same_page_entries_path(volume: search_result[:Volume], page: search_result[:Page], record: search_result[:RecordTypeID], quarter: search_result[:QuarterNumber], district: search_result[:District], search_id: self.id, entry_id: search_result[:RecordNumber])
   end
 end

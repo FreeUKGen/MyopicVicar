@@ -98,5 +98,7 @@ MyopicVicar::Application.configure do
   config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
   config.register_embargo_list = MyopicVicar::MongoConfig['register_embargo_list']
   config.freecen2_place_cache = MyopicVicar::MongoConfig['freecen2_place_cache']
+  config.image_secret = MyopicVicar::MongoConfig['img_secret']
+  config.validity = MyopicVicar::MongoConfig['token_validity']
 
 end

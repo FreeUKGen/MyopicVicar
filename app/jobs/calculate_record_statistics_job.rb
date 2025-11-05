@@ -69,7 +69,7 @@ class CalculateRecordStatisticsJob < ApplicationJob
     end
     
     # Use environment variables to suppress warnings
-    "RUBYOPT='-W0' bundle exec rake RAILS_ENV=#{@environment} #{task_name}"
+    "bundle exec rake RAILS_ENV=#{@environment} #{task_name}"
   end
 
   def execute_rake_task(command)

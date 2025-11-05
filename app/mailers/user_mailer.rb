@@ -17,6 +17,19 @@ class UserMailer < ActionMailer::Base
     MyopicVicar::Application.config.freexxx_display_name
   end
 
+  def communicate_github_issue_creation(feedback)
+    @feedback = feedback
+    @user_email = feedback.email_address
+    mail(to: @user_email, :subject => 'Notification of github issue creation')
+  end
+
+  def communicate_github_issue_closed(feedback)
+    @feedback = feedback
+    @user_email = feedback.email_address
+    mail(to: @user_email, :subject => 'Notification of github issue closed')
+  end
+
+
   def freecen_processing_report(to_email, subj, report)
     @appname = appname
     @freecen_report = report
