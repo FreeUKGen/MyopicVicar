@@ -87,6 +87,7 @@ module UseridRole
       'reporter_transcriber' => ['CSV Batches', 'Find Pieces', 'Gazetteer', 'FreeCEN Handbook', 'Communicate', 'Profile', 'Roadmap', 'Display County Coordinators', 'Display Syndicate Coordinators', 'FreeUKGenealogy  Policies', 'Manage Counties', 'GAP Report']
     }
   end
+
   #'/messages/communications?source=original',
   OPTIONS_TRANSLATION = {
     'Communicate' => '/messages/communications?source=original',

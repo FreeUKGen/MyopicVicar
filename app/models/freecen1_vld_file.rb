@@ -257,7 +257,6 @@ class Freecen1VldFile
       end
     when 'HS'
       success = false
-      message = 'Scotland Code not checked'
       case year
       when '1841'
         success = true
@@ -269,23 +268,35 @@ class Freecen1VldFile
         message = ''
         file = 'HS5' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1851
+      end
+    when 'RS'
+      success = false
+      case year
       when '1861'
-        file = 'RS61' + '_' + piece.to_s + '.csv'
+        success = true
+        message = ''
+        file = 'RS6' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1861
       when '1871'
-        file = 'RS71' + '_' + piece.to_s + '.csv'
+        success = true
+        message = ''
+        file = 'RS7' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1871
       when '1881'
-        file = 'RS81' + '_' + piece.to_s + '.csv'
+        success = true
+        message = ''
+        file = 'RS8' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1881
       when '1891'
-        file = 'RS91' + '_' + piece.to_s + '.csv'
+        success = true
+        message = ''
+        file = 'RS9' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1891
       when '1901'
-        file = 'RS' + '_' + piece.to_s + '.csv'
+        file = 'RS10' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1901
       when '1911'
-        file = 'RS' + '_' + piece.to_s + '.csv'
+        file = 'RS11' + '_' + piece.to_s + '.csv'
         census_fields = Freecen::CEN2_SCT_1911
       end
     when 'HO'
@@ -415,7 +426,7 @@ class Freecen1VldFile
           'scavenging_district', 'special_lighting_district', 'school_board'
         entry = @use_blank ? @blank : @dash
         line << entry
-      when 'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'class_of_house', 'rooms_with_windows', 'industry', 'at_home', 'years_married',
+      when 'walls', 'roof_type', 'rooms', 'rooms_with_windows', 'school_children', 'class_of_house', 'rooms_with_windows', 'industry', 'at_home', 'years_married',
           'children_born_alive', 'children_living', 'children_deceased', 'nationality', 'disability_notes'
         line << @blank
       else
