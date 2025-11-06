@@ -358,7 +358,13 @@ module FreecenValidations
     end
 
     def school_children?(field)
-      return [true, ''] if field =~ VALID_NUMBER
+      return [true, ''] if field.blank?
+
+      if field =~ VALID_NUMBER
+        return [true, ''] if field.to_i <= 5 && field.to_i >= 0
+
+        return [false, 'is an unusual number']
+      end
 
       [false, 'invalid number']
     end
