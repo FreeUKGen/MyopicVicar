@@ -343,4 +343,30 @@ module FreeregValidations
     end
     return false
   end
+
+  def FreeregValidations.valid_record_date?(date_string)
+    # Blank dates are considered valid
+    return true if date_string.blank?
+    
+    match = date_string.strip.match(/\A(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\z/)
+    return false unless match
+
+    day_str, month_name, year_str = match.captures
+    day = day_str.to_i
+    year = year_str.to_i
+
+    month = Date::ABBR_MONTHNAMES.index(month_name.capitalize) || Date::MONTHNAMES.index(month_name.capitalize)
+    return false unless month
+
+    return false if year < YEAR_MIN || year > YEAR_MAX
+
+    begin
+      Date.new(year, month, day)
+      true
+      rescue ArgumentError
+      false
+    end
+  end
+
+
 end

@@ -1583,6 +1583,20 @@ class CsvRecord < CsvRecords
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
+
+    # -------------------
+    # Per Record Data Validation
+    # -------------------
+
+    # Validate baptism date
+    unless FreeregValidations.valid_record_date?(@data_record[:baptism_date])
+    csvfile.data[line] ||= {}
+    csvfile.data[line][:baptism_date_error] = "Invalid date: #{@data_record[:baptism_date]}"
+    end
+
+    
+
+
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if @data_record[:year].blank?
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:confirmation_date]) if @data_record[:year].blank?
