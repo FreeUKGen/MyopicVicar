@@ -45,23 +45,11 @@ module ApplicationHelper
       get_user_info_from_userid
       if @user.present? && session[:role].present?
         if session[:role] == 'transcriber' || session[:role] == 'trainee' || session[:role] == 'pending'
-          if controller_name == 'pages'
-            link_to 'Help', '/cms/help'
-          else
-            link_to 'Help', '/cms/information-for-transcribers'
-          end
+          link_to 'Help', '/cms/information-for-transcribers'
         elsif session[:role] == 'researcher'
-          if controller_name == 'pages'
-            link_to 'Help', '/cms/help'
-          else
-            link_to 'Help', '/cms/registered-researchers'
-          end
+          link_to 'Help', '/cms/registered-researchers'
         else
-          if controller_name == 'pages'
-            link_to 'Help', '/cms/help'
-          else
-            link_to 'Help', '/cms/information-for-coordinators'
-          end
+          link_to 'Help', '/cms/information-for-coordinators'
         end
       end
     else
