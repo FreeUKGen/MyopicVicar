@@ -3,11 +3,11 @@ source 'https://rubygems.org'
 gem 'rails'
 gem 'tzinfo-data' #needed by windows
 gem 'mysql2'
-gem 'refinerycms'
+#gem 'refinerycms'
 #gem 'refinerycms-authentication-devise'
-gem 'refinerycms-wymeditor'
+#gem 'refinerycms-wymeditor'
 # We use this version of refinerycms-i18n because of the crash in story 1831. IT MUST BE REMOVED on bump of refinery to version 5
-gem 'refinerycms-i18n', '4.0.2', git: 'https://github.com/refinery/refinerycms-i18n', ref: '30059ea'
+#gem 'refinerycms-i18n', '4.0.2', git: 'https://github.com/refinery/refinerycms-i18n', ref: '30059ea'
 # See above
 gem 'mongoid'
 gem 'mongo'
@@ -48,7 +48,7 @@ gem 'coffee-rails'#, '~> 3.2.1'
 gem 'uglifier'#, '>= 1.0.3'
 gem 'jquery-rails'
 gem 'font_awesome5_rails'
-gem 'refinerycms-county_pages', :path => 'vendor/extensions'
+#gem 'refinerycms-county_pages', :path => 'vendor/extensions'
 gem 'rubocop-rails'
 gem 'rubocop', '~> 1.23.0', require: false
 gem 'browser'
