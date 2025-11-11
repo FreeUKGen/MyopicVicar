@@ -22,6 +22,17 @@ MyopicVicar::Application.routes.draw do
   get 'donate', to: 'pages#donate'
   get 'volunteer', to: 'pages#volunteer'
 
+  devise_for :users, controllers: {sessions: 'users/sessions', passwords: 'users/passwords'} do
+    get '/users/sign_in(.:format)', to: 'users/sessions#new', as: :new_user_session
+    post '/users/sign_in(.:format)', to: 'users/sessions#create', as: :user_session
+    delete '/users/sign_out(.:format)', to: 'users/sessions#destroy', as: :destroy_user_session
+    get '/users/password/new(.:format)', to: 'users/passwords#new', as: :new_user_password
+    get ' /users/password/edit(.:format)', to: 'users/passwords#edit', as: :edit_user_password
+    patch '/users/password(.:format)', to: 'users/passwords#update', as: :user_password
+    put '/users/password(.:format)', to: 'users/passwords#update', as: :update_user_password
+    post '/users/password(.:format)', to: 'users/passwords#create', as: :create_user_password
+  end
+
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
 

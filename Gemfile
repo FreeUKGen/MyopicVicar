@@ -4,7 +4,7 @@ gem 'rails'
 gem 'tzinfo-data' #needed by windows
 gem 'mysql2'
 gem 'refinerycms'
-gem 'refinerycms-authentication-devise'
+#gem 'refinerycms-authentication-devise'
 gem 'refinerycms-wymeditor'
 # We use this version of refinerycms-i18n because of the crash in story 1831. IT MUST BE REMOVED on bump of refinery to version 5
 gem 'refinerycms-i18n', '4.0.2', git: 'https://github.com/refinery/refinerycms-i18n', ref: '30059ea'
