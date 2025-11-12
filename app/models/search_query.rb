@@ -1460,12 +1460,31 @@ class SearchQuery
         records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
         records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?#unless self.first_name_exact_match
         records = records.where(search_conditions) if search_conditions.present?
+        
+        # Check if we need array-based filtering (these methods return Arrays and load all records)
+        needs_array_filtering = (self.spouses_mother_surname.present? && self.bmd_record_type == ['3']) ||
+                                self.spouse_first_name.present? ||
+                                date_of_birth_range? || self.dob_at_death.present? ||
+                                self.age_at_death.present? || check_age_range?
+        
+        # If still a Relation and no array filtering needed, count and limit early (most efficient)
+        if !needs_array_filtering && !records.is_a?(Array) && records.respond_to?(:limit)
+          record_count = records.count
+          records = records.limit(1000) if record_count > 1000
+        end
+        
+        # Apply array-based filters (these convert Relation to Array)
         records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
         records = spouse_given_name_filter(records) if self.spouse_first_name.present?
         records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
         records = combined_age_results records if self.age_at_death.present? || check_age_range?
+        
+        # If records is now an Array (from filter methods), limit to 1000
+        if records.is_a?(Array) && records.size > 1000
+          records = records.take(1000)
+        end
+        
         persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
-        records
         [records, true, 0]
       end
     rescue Timeout::Error
@@ -2128,9 +2147,40 @@ class SearchQuery
   end
 
   def marriage_surname_filteration(records)
-    records_with_spouse_surname = spouse_surname_records(records)
-    records_without_spouse_surname = non_spouse_surname_records(records)
-    spouse_surname_search(records_with_spouse_surname).to_a + search_pre_spouse_surname(records_without_spouse_surname).to_a if self.spouses_mother_surname.present?
+    return records unless self.spouses_mother_surname.present?
+    
+    # Build a single query using OR conditions instead of converting to arrays
+    # This keeps it as an ActiveRecord::Relation for better performance
+    
+    # For records with QuarterNumber >= 301: search AssociateName directly
+    # For records with QuarterNumber < 301: join with BestGuessMarriages and search b.Surname
+    
+    # Get table names from models for maintainability
+    best_guess_table = SearchQuery.get_search_table.table_name
+    marriage_table = BestGuessMarriage.table_name
+    
+    # Use LEFT JOIN so we can search both paths in one query
+    records_with_join = records.joins("LEFT JOIN #{marriage_table} as b ON b.Volume = #{best_guess_table}.Volume AND b.Page = #{best_guess_table}.Page AND b.QuarterNumber = #{best_guess_table}.QuarterNumber AND b.RecordNumber != #{best_guess_table}.RecordNumber")
+    
+    # Build OR conditions for both search paths
+    if do_wildcard_seach?(self.spouses_mother_surname)
+      # Wildcard search
+      associate_name_pattern = "#{name_wildcard_search(spouses_mother_surname)}#{conditional_percentage_wildcard(spouses_mother_surname)}"
+      surname_pattern = "#{name_wildcard_search(spouses_mother_surname)}#{conditional_percentage_wildcard(spouses_mother_surname)}"
+      
+      records_with_join.where(
+        "(#{best_guess_table}.QuarterNumber >= ? AND #{best_guess_table}.AssociateName LIKE ?) OR (#{best_guess_table}.QuarterNumber < ? AND b.Surname LIKE ?)",
+        SPOUSE_SURNAME_START_QUARTER, associate_name_pattern,
+        SPOUSE_SURNAME_START_QUARTER, surname_pattern
+      )
+    else
+      # Exact match search
+      records_with_join.where(
+        "(#{best_guess_table}.QuarterNumber >= ? AND #{best_guess_table}.AssociateName = ?) OR (#{best_guess_table}.QuarterNumber < ? AND b.Surname = ?)",
+        SPOUSE_SURNAME_START_QUARTER, self.spouses_mother_surname,
+        SPOUSE_SURNAME_START_QUARTER, self.spouses_mother_surname
+      )
+    end
   end
 
   def spouse_given_name_filter records
