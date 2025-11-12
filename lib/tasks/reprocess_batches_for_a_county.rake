@@ -15,6 +15,22 @@ namespace :freereg do
     end
   end
 
+  desc "Reprocess batches for a specific county chapman code (e.g. 'rake batches:reprocess_county[YKS]')"
+  task :reprocess_batches_for_a_county_freecen, [:chapman_code] => :environment do |t, args|
+    validate_chapman_code(args[:chapman_code])
+    chapman_code = args[:chapman_code].upcase
+
+    puts "Starting batch reprocessing for #{ChapmanCode.name_from_code(chapman_code)} (#{chapman_code})"
+
+    begin
+      process_batches_for_county_freecen(chapman_code)
+    rescue => e
+      handle_fatal_error(e)
+    end
+  end
+
+
+
   desc "clean up"
   task :clean_up_processed_batch, [:chapman_code] => :environment do |t, args|
     rake_lock_file = File.join(Rails.root, 'tmp', 'cleanup_lock_file.txt')
@@ -116,6 +132,44 @@ namespace :freereg do
           process_single_batch(batch, processed + 1, total_batches, software_version, chapman_code)
           processed += 1
           
+          if (processed % PROGRESS_INTERVAL).zero?
+            print_progress(processed, total_batches, start_time)
+          end
+        rescue => e
+          handle_batch_error(batch, e, failed)
+        end
+      end
+    end
+
+    print_summary(total_batches, processed, failed, start_time)
+  end
+
+  def process_batches_for_county_freecen(chapman_code)
+    batches = FreecenCsvFile.where(chapman_code: chapman_code).order_by(file_name: 1)#.skip(195)
+    total_batches = batches.count
+
+    if total_batches.zero?
+      puts "No batches found for #{chapman_code}"
+      return
+    end
+
+    puts "Found #{total_batches} batches to process"
+
+    processed = 0
+    failed = []
+    start_time = Time.now
+    software_version = get_software_version
+
+    batches.no_timeout.each_slice(BATCH_SIZE) do |batch_group|
+      batch_group.each do |batch|
+        begin
+          skip, place, freecen2_place = CreateSearchRecordsFreecen2.setup(file, @number, message_file)
+
+          CreateSearchRecordsFreecen2.process(file, freecen2_place) if search_record_creation
+          p "refreshing place cache #{file.dir_name}"
+          Freecen2PlaceCache.refresh(file.dir_name)
+          processed += 1
+
           if (processed % PROGRESS_INTERVAL).zero?
             print_progress(processed, total_batches, start_time)
           end
