@@ -6,7 +6,7 @@
   <%= render 'nav_header' %>
   <%= render 'display_search_criteria' %>
   <section>
-    <% if @result_count >= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+    <% if @result_count >= FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %>
       <%= render 'too_many_results' %>
     <% else %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
@@ -32,11 +32,11 @@
                   <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
                 </div>
                 <div class="grid__item one-whole">
-                  <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+                  <% if @result_count > 0 && @result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %>
                     <%= render 'please_donate' %>
                     <!-- GAM 71161633/FRBMD_freeregorg/freereg_hrec_3-->
                     <div data-fuse="22945846128"></div>
-                    <% if @result_count > 10 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+                    <% if @result_count > 10 && @result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %>
                       <br>
                       <%= render 'nav_header' %>
                     <% end %>
@@ -65,7 +65,7 @@
                   <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => false})  %>
                 </div>
                 <div class="grid__item one-whole">
-                  <% if @result_count > 0 && @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %>
+                  <% if @result_count > 0 && @result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %>
                     <%= render 'please_donate' %>
                   <% end %>
                 </div>
