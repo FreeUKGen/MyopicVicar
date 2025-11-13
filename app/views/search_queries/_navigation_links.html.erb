@@ -4,7 +4,7 @@
 	  <nav class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom flush--left hard--left" role="navigation" aria-label="Search menu">
 	  	<ul class='nav' style="<%= device_style %>" >
 				<li><%= link_to '<i class="fas fa-eye" style="padding-right:5px;"></i>View Search Criteria'.html_safe, '#search_criteria_container', id: "view_search_criteria"%></li>
-		    <li><%= link_to '<i class="far fa-edit" style="padding-right:5px;"></i>Revise Search'.html_safe, new_search_query_path(:search_id => @search_query) %></li>
+		    <li><%= link_to '<i class="far fa-edit" style="padding-right:5px;"></i>Revise Search'.html_safe, new_search_query_path(:search_id => @search_query, :result_count => @result_count) %></li>
 		    <li><%= link_to '<i class="fas fa-search" style="padding-right:5px;"></i>New Search'.html_safe, new_search_query_path %></li>
 		    <% if @results_per_page.to_i <= 50 %>
 					<li><%= link_to( '<i class="fas fa-print" style="padding-right:5px"></i>Print'.html_safe, "#", :onclick => 'window.print();return false;') %></li>

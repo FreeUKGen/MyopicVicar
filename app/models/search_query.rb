@@ -138,6 +138,7 @@ class SearchQuery
   field :end_year, type: Integer, default: 1999
   field :radius_factor, type: Integer, default: 101
   field :search_nearby_places, type: Boolean
+  field :count_hits, type: Boolean
   field :result_count, type: Integer
   field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
   field :ucf_filtered_count, type: Integer
@@ -1446,6 +1447,14 @@ class SearchQuery
     end
   end
 
+  def count_records
+    if MyopicVicar::Application.config.template_set = 'freebmd'
+      self.result_count = self.freebmd_count_records
+    else
+      #self.count
+    end
+  end
+
   def move_to_array hash
     [] << hash.select{|key, value| value.present?}
   end
@@ -1465,7 +1474,8 @@ class SearchQuery
         records = spouse_given_name_filter(records) if self.spouse_first_name.present?
         records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
         records = combined_age_results records if self.age_at_death.present? || check_age_range?
-        persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        persist_results(records) unless self.count_hits # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        self.result_count = records.count
         records
         [records, true, 0]
       end
@@ -1478,6 +1488,31 @@ class SearchQuery
     end
   end
 
+  def freebmd_count_records
+    search_fields = bmd_adjust_field_names
+    @search_index = SearchQuery.get_search_table.index_hint(search_fields)
+    logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    begin
+      max_time = Rails.application.config.max_search_time
+      logger.warn(max_time)
+      Timeout::timeout(max_time) do
+        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
+        records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?
+        records = records.where(search_conditions) if search_conditions.present?
+        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
+        records = spouse_given_name_filter(records) if self.spouse_first_name.present?
+        records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
+        records = combined_age_results records if self.age_at_death.present? || check_age_range?
+        records.count
+      end
+    rescue Timeout::Error
+      logger.warn("#{App.name_upcase}: Timeout")
+      [[], false, 1]
+    rescue => e
+      logger.warn("#{App.name_upcase}:error: #{e.inspect}")
+      [[], false, 2]
+    end
+  end
 
   def bmd_record_type_params
     params = {}
