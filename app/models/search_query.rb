@@ -1970,17 +1970,43 @@ class SearchQuery
   end
 
   def invalid_age_records records
-    records = records.reject{|r|
-      month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
-    }
-    records
+    # Use SQL for Relations, fallback to in-memory for Arrays
+    if records.is_a?(ActiveRecord::Relation)
+      invalid_age_records_sql(records)
+    else
+      invalid_age_records_array(records)
+    end
+  end
+  
+  def invalid_age_records_sql(records)
+    # SQL version: Reject records where AgeAtDeath contains month indicators
+    # Month indicators: JA, FE, MR, AP, MY, JE, JY, AU, SE, OC, NO, DE
+    best_guess_table = SearchQuery.get_search_table.table_name
+    month_patterns = month.values.map { |v| "UPPER(#{best_guess_table}.AgeAtDeath) LIKE ?" }.join(' OR ')
+    month_like_patterns = month.values.map { |v| "%#{v}%" }
+    
+    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+      .where.not(month_patterns, *month_like_patterns)
   end
 
   def records_with_dob records
-    records = records.select{|r|
-      month.values.any?{|v| r.AgeAtDeath.upcase[v]} if r.QuarterNumber >= DOB_START_QUARTER
-    }
-    records
+    # Use SQL for Relations, fallback to in-memory for Arrays
+    if records.is_a?(ActiveRecord::Relation)
+      records_with_dob_sql(records)
+    else
+      records_with_dob_array(records)
+    end
+  end
+  
+  def records_with_dob_sql(records)
+    # SQL version: Select records where AgeAtDeath contains month indicators
+    # Month indicators: JA, FE, MR, AP, MY, JE, JY, AU, SE, OC, NO, DE
+    best_guess_table = SearchQuery.get_search_table.table_name
+    month_patterns = month.values.map { |v| "UPPER(#{best_guess_table}.AgeAtDeath) LIKE ?" }.join(' OR ')
+    month_like_patterns = month.values.map { |v| "%#{v}%" }
+    
+    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+      .where(month_patterns, *month_like_patterns)
   end
 
   def calculate_age_range_for_dob records
@@ -2083,12 +2109,12 @@ class SearchQuery
   def combined_results records
     return records if records.blank?
     
-    # Optimized: Keep Relations lazy as long as possible, convert to array only at the end
+    # Optimized: Keep Relations lazy as long as possible, use UNION for combining Relations
     # Split records by quarter threshold
     non_dob_results = non_dob_records(records)  # QuarterNumber < 530
     dob_results = dob_recordss(records)          # QuarterNumber >= 530
     
-    # Collect Relations and Arrays separately
+    # Collect Relations and Arrays separately - avoid arrays until the very end
     relations = []
     arrays = []
     
@@ -2102,16 +2128,14 @@ class SearchQuery
     
     # 2. Modern records: Multiple search strategies
     if dob_results.is_a?(ActiveRecord::Relation)
-      # SQL-optimized path for Relations
+      # SQL-optimized path for Relations - all methods now return Relations
       relations << dob_exact_search(dob_results)
       
-      # Get invalid_age_records and date_of_birth_records efficiently
-      # These need in-memory filtering due to complex string matching (month indicators)
-      dob_results_array = dob_results.to_a
-      invalid_age_records = invalid_age_records_array(dob_results_array)
-      date_of_birth_records = records_with_dob_array(dob_results_array)
+      # Get invalid_age_records and date_of_birth_records - now SQL-optimized
+      invalid_age_records = invalid_age_records(dob_results)
+      date_of_birth_records = records_with_dob(dob_results)
       
-      # Apply filters - these now return Relations when possible
+      # Apply filters - all return Relations when input is Relation
       invalid_age_range_result = date_of_birth_search_range_a(invalid_age_records)
       if invalid_age_range_result.is_a?(ActiveRecord::Relation)
         relations << invalid_age_range_result
@@ -2133,13 +2157,15 @@ class SearchQuery
         arrays.concat(year_result) if year_result.present?
       end
     else
-      # Fallback for Array records
+      # Fallback for Array records - these will be arrays
+      arrays.concat(dob_exact_search(dob_results).to_a)
+      
       invalid_age_records = invalid_age_records(dob_results)
       date_of_birth_records = records_with_dob(records)
       
       arrays.concat(date_of_birth_search_range_a(invalid_age_records))
-      arrays.concat(dob_exact_search(dob_results).to_a)
       arrays.concat(date_of_birth_uncertain_aad(invalid_age_records))
+      
       year_result = age_at_death_with_year(date_of_birth_records)
       arrays.concat(year_result) if year_result.present?
     end
@@ -2153,6 +2179,8 @@ class SearchQuery
     end
     
     # Convert all Relations to arrays at once (single conversion point)
+    # This is more efficient than multiple conversions throughout the method
+    # All Relations are kept lazy until this final conversion
     relation_arrays = relations.map(&:to_a)
     
     # Combine everything and remove duplicates
