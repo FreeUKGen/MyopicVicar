@@ -1461,6 +1461,9 @@ class SearchQuery
         records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?#unless self.first_name_exact_match
         records = records.where(search_conditions) if search_conditions.present?
         
+        # Initialize record count
+        record_count = 0
+        
         # Check if we need methods that always return Arrays (combined_results, combined_age_results)
         needs_array_result = date_of_birth_range? || self.dob_at_death.present? ||
                              self.age_at_death.present? || check_age_range?
@@ -1487,8 +1490,10 @@ class SearchQuery
         
         # If records is now an Array (from combined_results or combined_age_results), limit to 1000
         if records.is_a?(Array) && records.size > 1000
-          record_count = record_count + records.size
+          record_count = records.size  # Total count before limiting
           records = records.take(1000)
+        elsif records.is_a?(Array)
+          record_count = records.size  # Set count if not already set
         end
         
         persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
@@ -1496,10 +1501,10 @@ class SearchQuery
       end
     rescue Timeout::Error
       logger.warn("#{App.name_upcase}: Timeout")
-      [[], 0,false, 1]
+      [[], 0, false, 1]
     rescue => e
       logger.warn("#{App.name_upcase}:error: #{e.inspect}")
-      [[], 0,false, 2]
+      [[], 0, false, 2]
     end
   end
 
@@ -2446,19 +2451,63 @@ class SearchQuery
 
   def reject_unidentified_spouses_records(records)
     return records if records.blank? || records.empty?
-    # Extract unique volume/page/quarter combinations from input records
+    
+    # Use SQL for Relations, fallback to in-memory for Arrays
+    if records.is_a?(ActiveRecord::Relation)
+      reject_unidentified_spouses_records_sql(records)
+    else
+      reject_unidentified_spouses_records_array(records)
+    end
+  end
+  
+  def reject_unidentified_spouses_records_sql(records)
+    # SQL-optimized version: Use EXISTS subquery to filter records
+    # Keep only records where AssociateName is present AND matches a Surname in BestGuessMarriages
+    # 
+    # Optimization notes:
+    # 1. EXISTS is more efficient than INNER JOIN for filtering (stops at first match)
+    # 2. Join conditions use Volume/Page/QuarterNumber (no composite index, but MySQL can optimize)
+    # 
+    # Security: Table names are quoted to prevent SQL injection (defense-in-depth)
+    best_guess_table = SearchQuery.get_search_table.table_name
+    marriage_table = BestGuessMarriage.table_name
+    
+    # Quote table names for security (defense-in-depth, even though they come from trusted sources)
+    quoted_best_guess_table = SearchQuery.get_search_table.connection.quote_table_name(best_guess_table)
+    quoted_marriage_table = BestGuessMarriage.connection.quote_table_name(marriage_table)
+    
+    # EXISTS is more efficient than JOIN for filtering - stops at first match
+    # No LOWER() needed due to case-insensitive collation (allows index usage)
+    records.where.not(AssociateName: [nil, ''])
+      .where(
+        "EXISTS (
+          SELECT 1 FROM #{quoted_marriage_table} bgm
+          WHERE bgm.Volume = #{quoted_best_guess_table}.Volume
+            AND bgm.Page = #{quoted_best_guess_table}.Page
+            AND bgm.QuarterNumber = #{quoted_best_guess_table}.QuarterNumber
+            AND bgm.Surname = #{quoted_best_guess_table}.AssociateName
+        )"
+      )
+  end
+  
+  def reject_unidentified_spouses_records_array(records)
+    # Fallback for Array records: Extract unique volume/page/quarter combinations
     volume_page_quarter_combinations = records.map { |r| [r[:Volume], r[:Page], r[:QuarterNumber]] }.uniq
     return records if volume_page_quarter_combinations.empty?
-    #note: we are not yet querying the database, instead building the mysql query
+    
+    # Build MySQL query conditions
     conditions = volume_page_quarter_combinations.map do |v, p, q|
       BestGuessMarriage.where(Volume: v, Page: p, QuarterNumber: q)
     end
+    
     # Database querying
     marriage_data = conditions.reduce(:or).pluck(:Volume, :Page, :QuarterNumber, :Surname)
-    # store data for future lookup
+    
+    # Store data for future lookup
     marriage_surnames_by_key = marriage_data
       .group_by { |v, p, q, surname| [v, p, q] }
       .transform_values { |surnames| surnames.map(&:last).map(&:downcase).to_set }
+    
     # Filter records against the stored look up data
     records.reject do |record|
       key = [record[:Volume], record[:Page], record[:QuarterNumber]]
