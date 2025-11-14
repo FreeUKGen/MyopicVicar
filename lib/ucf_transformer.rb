@@ -85,15 +85,22 @@ module UcfTransformer
   end
 
   def self.ucf_to_regex(name_part)
-    if name_part.match(/(.{.,\d?})/).present?
-      # _{2,3}
-      name_part = name_part.gsub(/(.{.,\d?})/, '\w+')
-    else
-      name_part = name_part.gsub(/\./, '\.').gsub(/_/, ".").gsub(/\*/, '\w+')
-    end
+    transformed =
+       name_part
+        .gsub(/\./, '\.')              # escape literal dots
+        .gsub(/_\{(\d+,\d+|\d+,\s*|\d+)\}/) { |m|
+          # Handle underscore + curly brace quantifiers
+          quantifier = m.match(/_\{(.+)\}/)[1]
+          "\\w{#{quantifier}}"
+        }
+        .gsub(/_/, ".")                # underscore → any single char
+        .gsub(/\*/, '\w+')             # asterisk → word characters
+        .gsub(/\[([^\]]+)\]/, '[\1]')  # preserve square bracket groups
+
     begin
-      ::Regexp.new(name_part)
-    rescue RegexpError
+      Regexp.new(transformed)
+    rescue RegexpError => e
+      Rails.logger.warn("[#{Time.current.iso8601}] UCF regex error: #{e.message}")
       name_part
     end
   end
