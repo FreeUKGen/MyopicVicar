@@ -19,10 +19,10 @@ module FreeregValidations
   #\A\d{1,2}[\s+\/][A-Za-z\d]{0,3}[\s+\/]\d{2,4}\/?\d{0,2}?\z checks 01 mmm 1567/8
   #\A[\d{1,2}\*\-\?][\s+\/][A-Za-z\d\*\-\?]{0,3}[\s+\/][\d\*\-\?]{0,4}\/?[\d\*\-\?]{0,2}?\z
   VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
-  VALID_DAY = /\A(\d*|_)(\d|_)\z/
+  VALID_DAY = /\A[\d_]{1,2}\z/
   VALID_MONTH = %w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec *].freeze
   VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
-  VALID_YEAR = /\A\d{4,5}\z/
+  VALID_YEAR = /\A\d{4}\z/
   DATE_SPLITS = {
     " " => /\s/,
     "-" => /\-/,
