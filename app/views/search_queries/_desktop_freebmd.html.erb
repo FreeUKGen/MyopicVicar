@@ -141,7 +141,16 @@
       </table>
       <div>
         <h2 class="accessibility">Explanation of table entries</h2>
-        <p><b>Mother’s Maiden Name</b>, <b>Spouse’s Surname</b>, and <b>Age at Death/Date of Birth</b> are relevant for the records from 1993 onward.
+        <p>
+          <% if blank_record_types or included_record_types.include? "1" %>
+            <b>Mother’s Maiden Name</b> only appears for records from September quarter 1911.
+          <% end %>
+          <% if blank_record_types or included_record_types.include? "2" %>
+            <b>Age at death</b> only appears for records from March quarter 1866, and <b>date of birth</b> from March quarter 1970.
+          <% end %>
+          <% if blank_record_types or included_record_types.include? "3" %>
+            <b>Spouse's surname</b> only appears for records from March quarter 1912. For earlier marriages, you can click on the Page link in the Registration District & Reference column to see all the people listed on that page of the Register.
+          <% end %>
         If no data is available for a specific record, these fields will display ‘No data.’ A dash (&ndash;) will appear in fields
         that are not relevant to a particular event type.</p>
       </div>
