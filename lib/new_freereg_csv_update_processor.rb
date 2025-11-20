@@ -144,7 +144,7 @@ class NewFreeregCsvUpdateProcessor
     file = @message_file
     # @message_file.close if @project.type_of_project == "individual"
     user = UseridDetail.where(userid: 'REGManager').first
-    #UserMailer.update_report_to_freereg_manager(file, user).deliver_now
+    UserMailer.update_report_to_freereg_manager(file, user).deliver_now
   end
 
   def self.convert_to_bolean(create_search_records, force)
@@ -570,7 +570,7 @@ class CsvFile < CsvFiles
   def communicate_failure_to_member(project, message)
     file = project.member_message_file
     file.close
-    #UserMailer.batch_processing_failure(file,@userid,@file_name).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
+    UserMailer.batch_processing_failure(file,@userid,@file_name).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
     self.clean_up_message(project)
     return true
   end
@@ -579,7 +579,7 @@ class CsvFile < CsvFiles
     #  p "communicating success"
     file = project.member_message_file
     file.close
-    #UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
+    UserMailer.batch_processing_success(file,@header[:userid],@header[:file_name]).deliver_now unless project.type_of_project == "special_selection_1" ||  project.type_of_project == "special_selection_2"
     self.clean_up_message(project)
     return true
   end
