@@ -16,7 +16,7 @@ module FreecenValidations
   TIGHT_VALID_TEXT = /\A[\w\s,'\.]*\z/.freeze
   NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/.freeze
   BROAD_VALID_TEXT = /\A[-\w\s()\.,&'":;]*\z/.freeze
-  BROAD_VALID_TEXT_PLUS = /\A[-\w\s()\/\.,&'":;?]*\z/.freeze
+  BROAD_VALID_TEXT_PLUS = /\A[-\w\s()\/\.,&'":;?!]*\z/.freeze
   VALID_PIECE = /\A(R|H)(G|O|S)/i.freeze
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
                         'days' => 100, 'hours' => 100 }.freeze
@@ -488,6 +488,14 @@ module FreecenValidations
 
     def occupation?(field, age)
       return [true, ''] if field.blank?
+
+      unless field.match? BROAD_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
+          return [false, '?']
+        else
+          return [false, 'invalid text']
+        end
+      end
 
       if age.present?
 
