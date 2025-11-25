@@ -193,7 +193,14 @@
                                 </ol>
                             </fieldset>
                         </li>
-
+                      <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spouseormothersurname display_none" id="spouse_or_mother_surname_div">
+                        <div class='labels'>
+                          <%= label_tag 'mother_surname', "Mothers surname".html_safe, class: "ttip spouse_or_mother_surname_label" do %>
+                            <%=  "Mothers surname".html_safe %>
+                          <% end %>
+                        </div>
+                        <%= text_field_tag '', set_value(@search_query.mother_last_name), class: 'text-input', id: 'mother_surname'%>
+                      </li>
                         <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
                             <div class='labels'>
                                 <%= label_tag 'spouse_first_name', "Spouse first name(s)".html_safe, class: "ttip" do %>
@@ -215,7 +222,7 @@
                                     <%= "Spouse/Mothers surname".html_safe %>
                                 <% end %>
                             </div>
-                            <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', id: 'spouses_mother_surname'%>
+                            <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) , class: 'text-input', id: 'spouses_mother_surname'%>
                         </li>
                         
                         <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
@@ -678,34 +685,52 @@
 
         //$('#death_select_box').prop('disabled', 'disabled');
         $('.checkboxtag, .checkAll').change(function() {
-            hide_all_death_options();
-            $('#spouses_mother_surname').removeAttr('value');
-            $('#spouse_first_name').removeAttr('value');
-            $('#spouses_mother_surname').prop('name', '')
-            if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
+            //hide_all_death_options();
+           // $('#spouses_mother_surname').removeAttr('value');
+            //$('#spouse_first_name').removeAttr('value');
+            
+            // Check which record types are selected
+            var birthChecked = $(".birth").is(":checked");
+            var marriageChecked = $(".marriage").is(":checked");
+            var deathChecked = $(".death").is(":checked");
+            
+            // Handle birth and marriage fields together (they share the same surname field)
+            if (birthChecked || marriageChecked) {
+                $('#spouse_or_mother_surname_div').show();
                 $('#spouses_mother_surname').prop('disabled', false);
-                $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
                 $('.spouse_or_mother_surname_label').attr('tabindex', '0');
-                $('.spouse_or_mother_surname_label').text("Mother\'s Maiden Name");
-                $('#death_select_box').prop('disabled', 'disabled');
-                $('#death_select_box').val([]);
-                aad_selection_function();
-                $('#spouse_or_mother_surname_div').show();
-                $('#age_at_death_or_date_of_birth_div').hide();
-            } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
-                $('#spouse_or_mother_surname_div').show();
+                
+                // Determine label and name attribute based on what's checked
+                if (birthChecked && marriageChecked) {
+                    // Both checked - use marriage name attribute, show combined label
+                    $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
+                    $('.spouse_or_mother_surname_label').text("Spouse/Mother's Surname");
+                } else if (birthChecked) {
+                    // Only birth checked
+                    $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
+                    $('.spouse_or_mother_surname_label').text("Mother\'s Maiden Name");
+                } else {
+                    // Only marriage checked
+                    $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
+                    $('.spouse_or_mother_surname_label').text("Spouse's Surname");
+                }
+            } else {
+                // Neither birth nor marriage checked - hide the field
+                $('#spouse_or_mother_surname_div').hide();
+            }
+            
+            // Handle marriage-specific fields (Spouse First Name)
+            if (marriageChecked) {
                 $('#spouse_firstnames_div').show();
                 $('#spuse_checkbox').show();
-                $('#spouses_mother_surname').prop('disabled', false)
-                $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                $('.spouse_or_mother_surname_label').text("Spouse's Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
-                $('#death_select_box').prop('disabled', 'disabled');
-                $('#death_select_box').val([]);
-                aad_selection_function();
-                $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                $('#spouse_first_name').prop('disabled', false)
-                $('#age_at_death_or_date_of_birth_div').hide();
-            } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
+                $('#spouse_first_name').prop('disabled', false);
+            } else {
+                $('#spouse_firstnames_div').hide();
+                $('#spuse_checkbox').hide();
+            }
+            
+            // Handle death fields (Age at Death/Birth Year)
+            if (deathChecked) {
                 $('#age_at_death_or_date_of_birth_div').show();
                 $('#death_select_box').prop('disabled', false);
                 aad_selection_function();
@@ -713,72 +738,61 @@
                 $('#death_select_box').prop('disabled', 'disabled');
                 $('#death_select_box').val([]);
                 aad_selection_function();
-                $('#spouse_firstnames_div').hide();
-                $('#spuse_checkbox').hide();
-                $('#spouse_or_mother_surname_div').hide();
                 $('#age_at_death_or_date_of_birth_div').hide();
             }
         });
 
-        if ($(".birth").is(":checked") && !$('.death, .marriage, .checkAll').is(':checked')) {
-            //$('#spouses_mother_surname').prop('disabled', false)
-            $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
-            $('.spouse_or_mother_surname_label').text("Mother\'s Maiden Name");
+        // Initial state setup - check which record types are selected on page load
+        var birthChecked = $(".birth").is(":checked");
+        var marriageChecked = $(".marriage").is(":checked");
+        var deathChecked = $(".death").is(":checked");
+        
+        // Handle birth and marriage fields together (they share the same surname field)
+        if (birthChecked || marriageChecked) {
+            $('#spouse_or_mother_surname_div').show();
+            $('#spouses_mother_surname').prop('disabled', false);
             $('.spouse_or_mother_surname_label').attr('tabindex', '0');
-           // $('#spouses_mother_surname').css('background', 'white');
-           // $('#death_select_box').prop('disabled', 'disabled');
-           // $('#death_select_box').css('background', '#ccc');
-            $('#death_select_box').val([]);
-            aad_selection_function();
-            $('#spouse_or_mother_surname_div').show();
-            $('#spouse_firstnames_div').hide();
-            $('#spouse_first_name').val('');
-            $('#age_at_death_or_date_of_birth_div').hide();
-        } else if ($(".marriage").is(":checked") && !$('.birth, .death, .checkAll').is(':checked')) {
-            //$('#spouses_mother_surname').prop('disabled', false)
-           // $('#spouse_first_name').prop('disabled', false)
-            $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-            $('.spouse_or_mother_surname_label').text("Spouses Surname");//.append(' <i class="fa fa-info-circle" aria-hidden="true"></i>');
-            //$('#spouses_mother_surname').css('background', 'white');
-            //$('#death_select_box').prop('disabled', 'disabled');
-            //$('#death_select_box').css('background', '#ccc');
-            $('#death_select_box').val([]);
-            aad_selection_function();
-            //$('#spouse_first_name').css('background', 'white');
-            $('#spouse_or_mother_surname_div').show();
+            
+            // Determine label and name attribute based on what's checked
+            if (birthChecked && marriageChecked) {
+                // Both checked - use marriage name attribute, show combined label
+                $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
+                $('.spouse_or_mother_surname_label').text("Spouse/Mother's Surname");
+            } else if (birthChecked) {
+                // Only birth checked
+                $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
+                $('.spouse_or_mother_surname_label').text("Mother\'s Maiden Name");
+            } else {
+                // Only marriage checked
+                $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
+                $('.spouse_or_mother_surname_label').text("Spouse's Surname");
+            }
+        } else {
+            // Neither birth nor marriage checked - hide the field
+            $('#spouse_or_mother_surname_div').hide();
+        }
+        
+        // Handle marriage-specific fields (Spouse First Name)
+        if (marriageChecked) {
             $('#spouse_firstnames_div').show();
             $('#spuse_checkbox').show();
-            $('#age_at_death_or_date_of_birth_div').hide();
-        } else if ($(".death").is(":checked") && !$('.birth, .marriage, .checkAll').is(':checked')) {
-            $('#death_select_box').prop('disabled', false);
-            //$('#spouses_mother_surname').val('').prop('disabled', true)
-            //$('#spouses_mother_surname').css('background', '#ccc');
-            //$('#spouses_mother_surname').prop('name', '');
-            aad_selection_function();
-            //$('#death_select_box').css('background', 'white');
-            $('#spouses_mother_surname').val('');
-            $('#spouse_firstnames_div').hide();
-            $('#spuse_checkbox').hide();
-            $('#spouse_or_mother_surname_div').hide();
-            $('#spouse_first_name').val('');
-            $('#age_at_death_or_date_of_birth_div').show();
+            $('#spouse_first_name').prop('disabled', false);
         } else {
             $('#spouse_firstnames_div').hide();
             $('#spuse_checkbox').hide();
-            $('#spouse_or_mother_surname_div').hide();
-            $('#age_at_death_or_date_of_birth_div').hide();
-            $('#spouse_first_name').val('');
-            //$('#spouses_mother_surname').val('').prop('disabled', true)
-            //$('#spouses_mother_surname').prop('name', '');
-            //$('#death_select_box').prop('disabled', 'disabled');
-            //$('#death_select_box').css('background', '#ccc');
-            //$('#spouses_mother_surname').css('background', '#ccc');
-            $('#spouses_mother_surname').val('');
+        }
+        
+        // Handle death fields (Age at Death/Birth Year)
+        if (deathChecked) {
+            $('#age_at_death_or_date_of_birth_div').show();
+            $('#death_select_box').prop('disabled', false);
+            aad_selection_function();
+        } else {
+            $('#death_select_box').prop('disabled', 'disabled');
             $('#death_select_box').val([]);
             aad_selection_function();
-            //$('#spouse_first_name').prop('disabled', true)
-            //$('#spouse_first_name').css('background', '#ccc');
-        };
+            $('#age_at_death_or_date_of_birth_div').hide();
+        }
 
         $('#death_select_box').on('change', function() {
             hide_all_death_options();
