@@ -407,6 +407,9 @@ class CsvFile < CsvFiles
   end
 
   def check_and_create_db_record_for_entry(project,data_record,freereg1_csv_file)
+
+    data_record[:transcribed_by] ||= @header[:transcriber_name] || @userid || 'unknown_user'
+
     #p " check and create"
     if !project.force_rebuild
       #p "processing create_db_record_for_entry"
