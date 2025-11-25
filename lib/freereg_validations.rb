@@ -172,7 +172,6 @@ module FreeregValidations
   end
 
 
-
   def  FreeregValidations.cleansex(field)
     case
     when field.nil?
@@ -252,8 +251,9 @@ module FreeregValidations
   end
 
   def self.check_year(yyyy)
-    return true if yyyy == '*' || yyyy =~ /\d{2}\*/ || yyyy =~ /\d{3}_/ || yyyy =~ /\d{2}_{1}/ || yyyy =~ /\d{4}\?/
-
+    return true if yyyy == '*' || yyyy =~ /\A\d{1,3}[\*_\?]\z/ || yyyy =~ /\A\d{4}\?\z/
+    #return true if yyyy == '*' || yyyy =~ /\d{2}\*/ || yyyy =~ /\d{3}_/ || yyyy =~ /\d{2}_{1}/ || yyyy =~ /\d{4}\?/
+    
     characters = yyyy.split('')
     if characters.length == 4
       # deal with the yyyy and permit the wild character
@@ -282,6 +282,16 @@ module FreeregValidations
     else
       p 'greater than 9 digits and character position 5 was not / '
       return false
+    end
+  end
+
+  def self.validate_record_date!(record, field_sym)
+    record[:date_errors] ||= []
+    date_value = record[field_sym]
+    return if date_value.blank?
+
+    unless valid_record_date?(date_value)
+      record[:date_errors] << "Invalid #{field_sym.to_s.humanize}: #{date_value}"
     end
   end
 
