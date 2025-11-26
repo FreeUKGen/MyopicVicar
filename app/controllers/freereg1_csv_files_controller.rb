@@ -360,7 +360,7 @@ class Freereg1CsvFilesController < ApplicationController
       session[:selectcountry] = nil
       session[:selectcounty] = nil
       session[:selectplace] = session[:selectchurch] = nil
-      @countries = ['Select Country', 'England', 'Islands', 'Scotland', 'Wales']
+      @countries = ['England', 'Islands', 'Scotland', 'Wales']
       @counties = []
       @placenames = []
       @churches = []
@@ -437,7 +437,7 @@ class Freereg1CsvFilesController < ApplicationController
       session[:selectplace] = params[:place]
       @placenames = []
       @placenames << place.place_name
-      @churches = place.churches.map{ |a| [a.church_name, a.id] }.insert(0, 'Select Church')
+      @churches = place.churches.map{ |a| [a.church_name, a.id] }
       @churches[1] = 'Has no churches' if place.churches.blank?
       @freereg1_csv_file.county == session[:selectcounty] && session[:selectplace] == @freereg1_csv_file.place ? @selected_church = @freereg1_csv_file.church_name : @selected_place = ''
       @selected_place = session[:selectplace]
@@ -462,7 +462,7 @@ class Freereg1CsvFilesController < ApplicationController
       @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
       @countries = [params[:country]]
       session[:selectcountry] = params[:country]
-      @counties = ChapmanCode::CODES[params[:country]].keys.insert(0, 'Select County')
+      @counties = ChapmanCode::CODES[params[:country]].keys
       @placenames = []
       @churches = []
       @register_types = RegisterType::APPROVED_OPTIONS
@@ -504,7 +504,7 @@ class Freereg1CsvFilesController < ApplicationController
       @selected_place = @selected_church = ''
     end
     @counties << session[:selectcounty]
-    @placenames = places.map { |a| [a.place_name, a.id] }.insert(0, 'Select Place')
+    @placenames = places.map { |a| [a.place_name, a.id] }
     @placechurches = Place.chapman_code(session[:selectcounty]).place(@freereg1_csv_file.place).not_disabled.first
     if @placechurches.present?
       @churches = @placechurches.churches.map { |a| [a.church_name, a.id] }

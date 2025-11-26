@@ -9,20 +9,63 @@
   Please wait for selection boxes to fill after selecting the preceding option. You MUST select an option even if there is only one.
   <%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid", novalidate: "novalidate"} do |f| %>
     <% if session[:role] == 'system_administrator' || session[:role] == 'data_manager'%>
-      <%= f.input :country,:label => "Select country from following list",
-    :required => true, :collection =>  options_for_select(@countries,'Select Country'),
-    :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",'onchange' =>   @update_counties_location,:size => 3} %>
+      <%= f.input :country,
+        label: "Select country from following list",
+        required: true, 
+        collection: @countries,
+        selected: @selected_country,
+        include_blank: false,
+        input_html: {
+          class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
+          onchange:  @update_counties_location,
+          size: 3
+        } %>
       <% if @counties.present? %>
-        <%= f.input :county,:label => "Select county from following list",:include_blank => true,
-      :required => true, :collection => options_for_select(@counties,"Select County"),
-      :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",'onchange' => @update_places_location,:size => 3}   %>
+        <%= f.input :county,
+          label: "Select county from following list",
+          required: true,
+          collection: @counties,
+          selected: @selected_county,
+          include_blank: false,
+          input_html: {
+            class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
+            onchange: @update_places_location,
+            size: 3
+          }%>
       <% end %>
     <% end %>
-    <%= f.input :place,:label => "Select place name from the following list of Approved Names",:include_blank => true,
-:required => true, :collection => options_for_select(@placenames,@selected_place),
-:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",'onchange' =>@update_churches_location,:size => 3}  %>
-    <%= f.input :church_name, :label => "Select church name from the following list",:include_blank => true, :required => true, :collection => options_for_select(@churches,@selected_church), :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",'onchange' =>@update_registers_location,:size => 3}   %>
-    <%= f.input :register_type,:label => "Select Type of Register :",:include_blank => true, :required => true, :collection => options_for_select(@register_types,@selected_register), :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 3}%>
+    <%= f.input :place,
+      label: "Select place name from the following list of Approved Names",
+      required: true,
+      collection: @placenames,
+      selected: @selected_place,
+      include_blank: false,
+      input_html: {
+        class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
+        onchange: @update_churches_location,
+        size: 3
+      } %>
+    <%= f.input :church_name, 
+      label: "Select church name from the following list",
+      required: true,
+      collection: @churches,
+      selected: @selected_church,
+      include_blank: false, 
+      input_html: {
+        class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
+        onchange: @update_registers_location,
+        size: 3
+      }%>
+    <%= f.input :register_type,
+      label: "Select Type of Register",
+      required: true,
+      collection: @register_types,
+      selected: @selected_register,
+      include_blank: false, 
+      input_html: {
+        class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
+        size: 3
+      }%>
     <div style="text-align: center">
       <%= f.action :submit,  :label => 'Relocate', :as => :input, :button_html => {:class => "btn  ", :data => { disable_with: false } }  %>
     </div>
