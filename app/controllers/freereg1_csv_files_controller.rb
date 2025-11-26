@@ -438,11 +438,22 @@ class Freereg1CsvFilesController < ApplicationController
       @placenames = []
       @placenames << place.place_name
       @churches = place.churches.map{ |a| [a.church_name, a.id] }
-      @churches[1] = 'Has no churches' if place.churches.blank?
+      @churches = [['Has no churches', '']] if @churches.blank?
       @freereg1_csv_file.county == session[:selectcounty] && session[:selectplace] == @freereg1_csv_file.place ? @selected_church = @freereg1_csv_file.church_name : @selected_place = ''
       @selected_place = session[:selectplace]
       @register_types = RegisterType::APPROVED_OPTIONS
       @selected_register = ''
+
+      respond_to do |format|
+        format.html
+        format.json do
+          render json: {
+            placenames: @placenames,
+            churches: @churches,
+            register_types: @register_types
+          }
+        end
+      end
     end
   end
 
@@ -460,13 +471,20 @@ class Freereg1CsvFilesController < ApplicationController
       get_user_info_from_userid
       locations
       @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-      @countries = [params[:country]]
+      
+      @countries = ['England', 'Islands', 'Scotland', 'Wales']
+      @selected_country = params[:country]
       session[:selectcountry] = params[:country]
-      @counties = ChapmanCode::CODES[params[:country]].keys
+
+      @counties = ChapmanCode::CODES[@selected_country].map { |name, code| [name, code] }
+      @selected_county = @freereg1_csv_file.county
+
+      respond_to do |format| format.json { render json: { counties: @counties } } end
+
       @placenames = []
       @churches = []
       @register_types = RegisterType::APPROVED_OPTIONS
-      @selected_county = @freereg1_csv_file.county
+      
       @selected_place = @selected_church = @selected_register = ''
     end
   end
@@ -488,14 +506,17 @@ class Freereg1CsvFilesController < ApplicationController
     locations
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     @countries = [session[:selectcountry]]
+
     if session[:selectcounty].blank?
       #means we are a DM selecting the county
-      session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]]
+      #session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]]
+      session[:selectcounty] = params[:county]
       places = Place.chapman_code(session[:selectcounty]).not_disabled.all.order_by(place_name: 1)
     else
       #we are a CC
       places = Place.chapman_code(session[:selectcounty]).not_disabled.all.order_by(place_name: 1)
     end
+
     @counties = []
     if @freereg1_csv_file.county == session[:selectcounty]
       @selected_place = @freereg1_csv_file.place
@@ -504,6 +525,7 @@ class Freereg1CsvFilesController < ApplicationController
       @selected_place = @selected_church = ''
     end
     @counties << session[:selectcounty]
+
     @placenames = places.map { |a| [a.place_name, a.id] }
     @placechurches = Place.chapman_code(session[:selectcounty]).place(@freereg1_csv_file.place).not_disabled.first
     if @placechurches.present?
@@ -513,6 +535,16 @@ class Freereg1CsvFilesController < ApplicationController
     end
     @register_types = RegisterType::APPROVED_OPTIONS
     @selected_register = ''
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: {
+          placenames: @placenames,
+          churches: @churches,
+          register_types: @register_types
+        }
+      end
+    end
   end
 
   def update_places_not_ok?(param)
@@ -542,6 +574,19 @@ class Freereg1CsvFilesController < ApplicationController
       @selected_place = session[:selectplace]
       @selected_church = session[:selectchurch]
       @selected_register = ''
+
+      Rails.logger.info "DEBUG: register_types = #{@register_types.inspect}"
+
+      respond_to do |format|
+        format.html
+        format.json do
+          render json: {
+            placenames: @placenames,
+            churches: @churches,
+            register_types: @register_types
+          }
+        end
+      end
     end
   end
 

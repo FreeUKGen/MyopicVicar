@@ -1,72 +1,181 @@
-<p style="text-align: center"><b><%= file_name(@freereg1_csv_file) %> (<%= userid(@freereg1_csv_file) %>) in <b><%= register_name_for_file(@freereg1_csv_file) %></b> of <b> <%= church_name(@freereg1_csv_file)%></b> in <b><%= place_name(@freereg1_csv_file) %></b> of <b><%= county_name(@freereg1_csv_file) %></b><br>
-  </p>
-  <% if flash[:notice] %>
-    <div id="notice" style="color:blue"><br>
-      <%= flash[:notice] %>  <% flash[:notice] = nil%> <br>
-    </div>
-  <% end %>
-  <p><b>You may change the following parameters but do so with care as they will change where the batch is located. You are changing <%= session[:records]%> records so it may take some time.  </b></p>
-  Please wait for selection boxes to fill after selecting the preceding option. You MUST select an option even if there is only one.
-  <%= semantic_form_for @freereg1_csv_file,:html => { :class =>  "grid", novalidate: "novalidate"} do |f| %>
-    <% if session[:role] == 'system_administrator' || session[:role] == 'data_manager'%>
+<div class="file-info text-center mb-3">
+  <strong>File:</strong> <%= file_name(@freereg1_csv_file) %> (<%= userid(@freereg1_csv_file) %>)<br>
+  <strong>Register:</strong> <%= register_name_for_file(@freereg1_csv_file) %><br>
+  <strong>Church:</strong> <%= church_name(@freereg1_csv_file) %><br>
+  <strong>Place:</strong> <%= place_name(@freereg1_csv_file) %><br>
+  <strong>County:</strong> <%= county_name(@freereg1_csv_file) %>
+</div>
+
+<p class="mb-3">
+  <strong>Care:</strong> You may change the following parameters, but this will move <%= session[:records] %> records. Please wait for selection boxes to populate after each choice.
+</p>
+
+<% if flash[:notice] %>
+  <div id="notice" class="alert alert-info text-center mb-3">
+    <%= flash[:notice] %>
+    <% flash[:notice] = nil %>
+  </div>
+<% end %>
+
+<%= semantic_form_for @freereg1_csv_file, html: { class: "grid", novalidate: "novalidate" } do |f| %>
+
+  <% if session[:role] == 'system_administrator' || session[:role] == 'data_manager' %>
+    <div class="form-group">
       <%= f.input :country,
-        label: "Select country from following list",
-        required: true, 
+        label: "Select country",
         collection: @countries,
         selected: @selected_country,
-        include_blank: false,
-        input_html: {
-          class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
-          onchange:  @update_counties_location,
-          size: 3
-        } %>
-      <% if @counties.present? %>
-        <%= f.input :county,
-          label: "Select county from following list",
-          required: true,
-          collection: @counties,
-          selected: @selected_county,
-          include_blank: false,
-          input_html: {
-            class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
-            onchange: @update_places_location,
-            size: 3
-          }%>
-      <% end %>
-    <% end %>
-    <%= f.input :place,
-      label: "Select place name from the following list of Approved Names",
-      required: true,
-      collection: @placenames,
-      selected: @selected_place,
-      include_blank: false,
-      input_html: {
-        class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
-        onchange: @update_churches_location,
-        size: 3
-      } %>
-    <%= f.input :church_name, 
-      label: "Select church name from the following list",
-      required: true,
-      collection: @churches,
-      selected: @selected_church,
-      include_blank: false, 
-      input_html: {
-        class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
-        onchange: @update_registers_location,
-        size: 3
-      }%>
-    <%= f.input :register_type,
-      label: "Select Type of Register",
-      required: true,
-      collection: @register_types,
-      selected: @selected_register,
-      include_blank: false, 
-      input_html: {
-        class: "simple_form_bgcolour simple_form_position overide_selection_field_width",
-        size: 3
-      }%>
-    <div style="text-align: center">
-      <%= f.action :submit,  :label => 'Relocate', :as => :input, :button_html => {:class => "btn  ", :data => { disable_with: false } }  %>
+        include_blank: "Select country",
+        required: true,
+        input_html: { id: "country_select" } %>
+    </div>
+
+    <div class="form-group">
+      <%= f.input :county,
+        label: "Select county",
+        collection: @counties,
+        selected: @selected_county,
+        include_blank: "Select county",
+        required: true,
+        input_html: { id: "county_select" } %>
     </div>
   <% end %>
+
+  <div class="form-group">
+    <%= f.input :place,
+      label: "Select place name (Approved Names)",
+      collection: @placenames,
+      selected: @selected_place,
+      include_blank: "Select place",
+      required: true,
+      input_html: { id: "place_select" } %>
+  </div>
+
+  <div class="form-group">
+    <%= f.input :church_name,
+      label: "Select church",
+      collection: @churches,
+      selected: @selected_church,
+      include_blank: "Select church",
+      required: true,
+      input_html: { id: "church_select" } %>
+  </div>
+
+  <div class="form-group">
+    <%= f.input :register_type,
+      label: "Select Type of Register",
+      collection: @register_types,
+      selected: @selected_register,
+      include_blank: "Select type",
+      required: true,
+      input_html: { id: "register_select" } %>
+  </div>
+
+  <div class="text-center mt-4">
+    <%= f.action :submit, label: 'Relocate', as: :input, button_html: { class: "btn btn-primary", data: { disable_with: false } } %>
+  </div>
+
+<% end %>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const countrySelect = document.getElementById("country_select");
+    const countySelect  = document.getElementById("county_select");
+    const placeSelect   = document.getElementById("place_select");
+    const churchSelect  = document.getElementById("church_select");
+    const registerSelect  = document.getElementById("register_select");
+
+    // --- COUNTRY → COUNTY ---
+    if (countrySelect) {
+      countrySelect.addEventListener("change", function() {
+        const country = this.value;
+
+        fetch(`/freereg1_csv_files/update_counties?country=${country}`, {
+          headers: { "Accept": "application/json" }
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Reset county and place boxes
+          countySelect.innerHTML = '<option value="">Select county</option>';
+          placeSelect.innerHTML  = '<option value="">Select place</option>';
+          churchSelect.innerHTML = '<option value="">Select church</option>';
+
+          data.counties.forEach(c => {
+            const option = document.createElement("option");
+            option.value = c[1]; // Chapman code
+            option.text  = c[0]; // County name
+            countySelect.appendChild(option);
+          });
+        });
+      });
+    }
+
+    // --- COUNTY → PLACE ---
+    if (countySelect) {
+      countySelect.addEventListener("change", function() {
+        const county = this.value;
+
+        fetch(`/freereg1_csv_files/update_places?county=${county}`, {
+          headers: { "Accept": "application/json" }
+        })
+        .then(response => response.json())
+        .then(data => {
+          placeSelect.innerHTML  = '<option value="">Select place</option>';
+
+          data.placenames.forEach(p => {
+            const opt = document.createElement("option");
+            //opt.value = p[1]; // place.id
+            opt.value = typeof p[1] === "object" && p[1].$oid ? p[1].$oid : p[1];
+            opt.text  = p[0]; // place_name
+            placeSelect.appendChild(opt);
+          });
+        });
+      });
+    }
+
+    // --- PLACE → CHURCH ---
+    if (placeSelect) {
+      placeSelect.addEventListener("change", function() {
+        const place = this.value;
+
+        fetch(`/freereg1_csv_files/update_churches?place=${place}`, {
+          headers: { "Accept": "application/json" }
+        })
+        .then(response => response.json())
+        .then(data => {
+          const churchSelect = document.getElementById("church_select");
+          churchSelect.innerHTML = '<option value="">Select church</option>';
+
+          data.churches.forEach(c => {
+            const opt = document.createElement("option");
+            //opt.value = c[1]; // church.id
+            opt.value = typeof c[1] === "object" && c[1].$oid ? c[1].$oid : c[1];
+            opt.text  = c[0]; // church_name
+            churchSelect.appendChild(opt);
+          });
+        });
+      });
+    }
+        // --- CHURCH → REGISTER TYPE ---
+    if (churchSelect) {
+      churchSelect.addEventListener("change", function() {
+        const church = this.value;
+
+        fetch(`/freereg1_csv_files/update_registers?church=${church}`, {
+          headers: { "Accept": "application/json" }
+        })
+        .then(response => response.json())
+        .then(data => {
+          const registerSelect = document.getElementById("register_select");
+          registerSelect.innerHTML = '<option value="">Select Register</option>';
+
+          Object.entries(data.register_types).forEach(([key, value]) => {
+            const opt = document.createElement("option");
+            opt.value = value;
+            opt.text  = key; 
+            registerSelect.appendChild(opt);
+          });
+        });
+      });
+    }
+  });
+</script>
