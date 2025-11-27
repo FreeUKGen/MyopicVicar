@@ -56,12 +56,11 @@ class Freereg1CsvEntriesController < ApplicationController
     else
       file_line_number, line_id = @freereg1_csv_file.determine_line_information(session[:error_id])
     end
-    Rails.logger.debug "Current user: #{current_user.inspect}"
     proceed = @freereg1_csv_entry.update_attributes(freereg1_csv_file_id: session[:freereg1_csv_file_id],
                                                     register_type: @freereg1_csv_file.register_type, year: year,
                                                     line_id: line_id, record_type: @freereg1_csv_file.record_type,
                                                     file_line_number: file_line_number, county: place.chapman_code,
-                                                    place: place.place_name, church_name: church.church_name, transcribed_by: current_user.userid)
+                                                    place: place.place_name, church_name: church.church_name, transcribed_by: @fir)
     unless proceed
       message = "The entry update failed #{@freereg1_csv_entry.errors.full_messages}"
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
