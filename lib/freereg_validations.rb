@@ -23,7 +23,7 @@ module FreeregValidations
   VALID_MONTH = %w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec *].freeze
   VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_YEAR = /\A\d{4}\z/
-  VALID_YEAR_PATTERNS = [/\A\d{3}[\*\_\?]\z/, /\A\d{2}__\z/, /\A\d{2}\*\z/]
+  VALID_YEAR_PATTERNS = [/\A\d{3}[\*\_]\z/, /\A\d{4}\?\z/, /\A\d{2}__\z/, /\A\d{2}\*\z/]
   DATE_SPLITS = {
     " " => /\s/,
     "-" => /\-/,
@@ -253,7 +253,6 @@ module FreeregValidations
 
   def self.check_year(yyyy)
     return true if VALID_YEAR_PATTERNS.any? { |re| yyyy.match?(re) }
-    #return true if yyyy == '*' || yyyy =~ /\d{2}\*/ || yyyy =~ /\d{3}_/ || yyyy =~ /\d{2}_{1}/ || yyyy =~ /\d{4}\?/
     
     characters = yyyy.split('')
     if characters.length == 4
