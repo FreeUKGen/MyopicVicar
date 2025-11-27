@@ -337,41 +337,77 @@ class Freereg1CsvFilesController < ApplicationController
 
   def relocate
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
+
     unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
       message = 'The file was not correctly linked. Have your coordinator contact the web master'
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
+
     redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
 
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
     session[:initial_page] = @return_location
-    session[:selectcountry] = nil
-    session[:selectcounty] = nil
+    
     @records = @freereg1_csv_file.freereg1_csv_entries.count
     max_records = get_max_records(@user)
+    
     redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
 
     session[:records] = @records
+
     if session[:role] == 'system_administrator' || session[:role] == 'data_manager'
-      @county = session[:county]
-      locations
-      # setting these means that we are a DM
-      session[:selectcountry] = nil
-      session[:selectcounty] = nil
-      session[:selectplace] = session[:selectchurch] = nil
+
+      # Extract current location from the file
+      place  = @freereg1_csv_file.register.church.place
+      church = @freereg1_csv_file.register.church
+
+      # Preselect values
+      @selected_country = place.country
+      @selected_county  = place.chapman_code
+      @selected_place   = place.id.to_s
+      @selected_church  = church.id.to_s
+      @selected_register = ''
+
+      # Store into session
+      session[:selectcountry] = @selected_country
+      session[:selectcounty]  = @selected_county
+      session[:selectplace]   = @selected_place
+      session[:selectchurch]  = @selected_church
+
+      # Load Lists for dropdown 
       @countries = ['England', 'Islands', 'Scotland', 'Wales']
-      @counties = []
-      @placenames = []
-      @churches = []
-      @register_types = []
-      @selected_place = @selected_church = @selected_register = ''
+      @counties = ChapmanCode::CODES[@selected_country].map { |name, code| [name, code] }
+      #@placenames = Place.where(county: @selected_county).map { |p| [p.place_name, p.id.to_s] }
+      @placenames = Place.where(chapman_code: @selected_county).map { |p| [p.place_name, p.id.to_s] }
+      @churches = Church.where(place_id: @selected_place).map { |c| [c.church_name, c.id.to_s] }
+      @register_types = RegisterType::APPROVED_OPTIONS.map { |k, v| [k, v] }
+
     else
-      # only senior managers can move between counties and countries; coordinators could loose files
-      place = @freereg1_csv_file.register.church.place
-      session[:selectcountry] = place.country
-      session[:selectcounty] = place.chapman_code
-      redirect_to(action: 'update_places') && return
+      place  = @freereg1_csv_file.register.church.place
+      church = @freereg1_csv_file.register.church
+
+      # Pre-selected values
+      @selected_country  = place.country
+      @selected_county   = place.chapman_code
+      @selected_place    = place.id.to_s
+      @selected_church   = church.id.to_s
+      @selected_register = ''
+
+      # Store into session
+      session[:selectcountry] = @selected_country
+      session[:selectcounty]  = @selected_county
+      session[:selectplace]   = @selected_place
+      session[:selectchurch]  = @selected_church
+      
+      # Load lists for dropdowns
+      # Non-admins cannot change country/county, so we can just populate places/churches/register types
+      @countries = ['England', 'Islands', 'Scotland', 'Wales']
+      @counties = ChapmanCode::CODES[@selected_country].map { |name, code| [name, code] }
+      @placenames = Place.where(chapman_code: @selected_county).map { |p| [p.place_name, p.id.to_s] }
+      @churches = Church.where(place_id: @selected_place).map { |c| [c.church_name, c.id.to_s] }
+      @register_types = RegisterType::APPROVED_OPTIONS.map { |k, v| [k, v] }
+
     end
   end
 
@@ -479,7 +515,9 @@ class Freereg1CsvFilesController < ApplicationController
       @counties = ChapmanCode::CODES[@selected_country].map { |name, code| [name, code] }
       @selected_county = @freereg1_csv_file.county
 
-      respond_to do |format| format.json { render json: { counties: @counties } } end
+      respond_to do |format|
+        format.json {render json: {counties: @counties}}
+      end
 
       @placenames = []
       @churches = []
@@ -541,7 +579,9 @@ class Freereg1CsvFilesController < ApplicationController
         render json: {
           placenames: @placenames,
           churches: @churches,
-          register_types: @register_types
+          register_types: @register_types, 
+          selected_place: @selected_place,
+          selected_church: @selected_church 
         }
       end
     end
@@ -574,8 +614,6 @@ class Freereg1CsvFilesController < ApplicationController
       @selected_place = session[:selectplace]
       @selected_church = session[:selectchurch]
       @selected_register = ''
-
-      Rails.logger.info "DEBUG: register_types = #{@register_types.inspect}"
 
       respond_to do |format|
         format.html

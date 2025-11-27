@@ -39,6 +39,37 @@
         required: true,
         input_html: { id: "county_select" } %>
     </div>
+
+  <% else %>
+    
+    <div class="form-group">
+      <%= f.input :country,
+        label: "Country",
+        collection: @countries,
+        selected: @selected_country,
+        input_html: {
+          id: "country_select",
+          disabled: true
+        } %>
+
+        <%= f.hidden_field :country, value: @selected_country %>
+
+    </div>
+
+    <div class="form-group">
+      <%= f.input :county,
+        label: "County",
+        collection: @counties,
+        selected: @selected_county,
+        input_html: {
+          id: "county_select",
+          disabled: true
+        } %>
+
+        <%= f.hidden_field :county, value: @selected_county %>
+
+    </div>
+
   <% end %>
 
   <div class="form-group">
@@ -119,13 +150,15 @@
         })
         .then(response => response.json())
         .then(data => {
+          const placeSelect = document.getElementById("place_select");
           placeSelect.innerHTML  = '<option value="">Select place</option>';
 
           data.placenames.forEach(p => {
             const opt = document.createElement("option");
-            //opt.value = p[1]; // place.id
-            opt.value = typeof p[1] === "object" && p[1].$oid ? p[1].$oid : p[1];
+            const id = typeof p[1] === "object" && p[1].$oid ? p[1].$oid : p[1];
+            opt.value = id;
             opt.text  = p[0]; // place_name
+
             placeSelect.appendChild(opt);
           });
         });
