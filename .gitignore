@@ -119,6 +119,9 @@ package-lock.json
 # local environment files
 .env.*.local
 
+# local Gemfile file
+Gemfile.local
+
 data/*
 
 .robocop.yml
