@@ -12,7 +12,7 @@
             <!--div class="" id="main_box"-->
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole logo_div text--center" style="">
                   <%#= image_tag("png/donate_title_text.png", alt: "Help us keep your family history free", id:'help_text')%><%#= "Free#{appname_downcase[4,4].upcase}"%>
-                  <h3>Double your donation to help us<br>launch the new  <%= image_tag("png/FreePRO no hex.png", style:"width:17%;", alt: "FreePRO") %>  website</h3>
+                  <h3>Double your donation to help us<br>launch the new  <%= image_tag("png/FreePRO no hex.png", style:"", alt: "FreePRO", id: "freepro_image") %>  website</h3>
                 </div>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                     <p id="" class="push-half--bottom">This week, you can double the impact of a donation to our charity.</p>
@@ -122,6 +122,10 @@
             width: 70%;
             max-width: 800px;
         }*/
+
+      #freepro_image {
+        width: 17%;
+      }
     }
     
     
@@ -142,6 +146,10 @@
         }
         #donate_now_button{
            /* width: 70%;*/
+        }
+
+        #freepro_image {
+          width: 25%;
         }
     }
 
@@ -181,6 +189,10 @@
         #fundraising_box_2 {
             display: block;
             text-align: center;
+        }
+
+        #freepro_image {
+          width: 25%;
         }
 
     }
@@ -224,6 +236,10 @@
 
         #read_more {
             width:  55%;
+        }
+
+        #freepro_image {
+          width: 17%;
         }
 
     }
