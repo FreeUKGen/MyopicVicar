@@ -34,6 +34,7 @@ $(document).ready(function() {
     document.getElementById("myDialog").close(); 
       $("#donate_cta_pop_up").hide();
       document.getElementById("overlay").style.display = "none";
+      location.reload();
 
   };
 
