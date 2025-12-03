@@ -243,20 +243,20 @@
         <% end %>
       </td>
     </tr>
-    <tr>
+    <!--tr>
       <th scope="row">
         Persistent URL for entry
       </th>
-      <td>
-        <% protocol = URI.parse(request.original_url).scheme %>
-        <% domain = URI.parse(request.original_url).host %>
-        <% port = URI.parse(request.original_url).port %>
-        <% domain = domain + ':' + port.to_s if port.present? %>
-        <a id="persistentUrl" class="pUrl" href="<%= @url %>"><%= "#{protocol}://#{domain}#{@url}" %></a>
-        <button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button>
+      <td-->
+        <%# protocol = URI.parse(request.original_url).scheme %>
+        <%# domain = URI.parse(request.original_url).host %>
+        <%# port = URI.parse(request.original_url).port %>
+        <%# domain = domain + ':' + port.to_s if port.present? %>
+        <!--a id="persistentUrl" class="pUrl" href="<%#= @url %>"><%#= "#{protocol}://#{domain}#{@url}" %></a-->
+        <!--button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button-->
         <!--a class="btn btn--small" href="" onclick=copy('persistentUrl') style="cursor: pointer">Copy URL</a-->
-      </td>
-    </tr>
+      <!--/td>
+    </tr-->
     <% if search == true %>
       <% unless (record.Confirmed & 512).zero? %>
         <tr>

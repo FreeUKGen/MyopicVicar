@@ -17,6 +17,7 @@
       <p>Choose the format and the citation will appear below and may be copied. Select Generate Citation button above to close this selection:</p>
       <div>
         <button class="btn btn--small" onclick="citationSwitch(`compact_text`)">Compact text</button>
+        <button class="btn btn--small" onclick="citationSwitch(`persistent_url`)">Persistent URL</button>
         <%#= link_to "WikiTree", show_citation_record_path(params[:search_entry], :citation_type => "wikitree"), :class => "btn  btn--small " %>
         <button class="btn btn--small" onclick="citationSwitch(`wikitree_inline`)">Wikitree inline</button>
         <button class="btn btn--small" onclick="citationSwitch(`wikitree_ref`)">Wikitree reference</button>
