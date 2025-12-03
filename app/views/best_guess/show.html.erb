@@ -24,12 +24,12 @@
     <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
     <%= horz_advert('freebmd_hrec_1') %>
   <% end %>
+  <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
   <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
-    <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s record" %></h1>
+    <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s #{record_type.downcase} record" %></h1>
     <hr>
     <section>
       <div class="table-wrapper">
-        <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
         <% if params[:search_id].present? %>
           <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
         <% else %>
@@ -38,7 +38,7 @@
       </div>
     </section>
     
-    <% if @option == '1' %>
+    <%# if @option == '1' %>
       <div id="display_scans">
         <h4>Scans</h4>
         <ul>
@@ -46,8 +46,8 @@
         </ul>
         <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
       </div>
-    <% end %>
-    <% if @option == '2' %>
+    <%# end %>
+    <%# if @option == '2' %>
       <div id="display_postems">
         <div>
           <h4>Postems</h4>
@@ -81,25 +81,25 @@
               <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
             </small>
           </div>
-          <p>Submit a postem:</p>
-          <div class="">
-            <%= semantic_form_for(@new_postem) do |f| %>
-              <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
-              <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
-              <%= hidden_field_tag('search_query', @search_query.id) if @search %>
-              <ol class="grid">
-                <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
-                  <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
-                </li>
-                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom">
-                  <%= button_tag 'Submit Postem', type: :submit, class: 'btn btn--natural' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
-                </li>
-              </ol>
-            <% end %>
-          </div>
+          <!--p>Submit a postem:</p>
+          <div class=""-->
+            <%#= semantic_form_for(@new_postem) do |f| %>
+              <%#= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
+              <%#= f.hidden_field('Hash', value: @new_postem.Hash) %>
+              <%#= hidden_field_tag('search_query', @search_query.id) if @search %>
+              <!--ol class="grid">
+                <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom"-->
+                  <%#= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
+                <!--/li>
+                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom"-->
+                  <%#= button_tag 'Submit Postem', type: :submit, class: 'btn btn--natural' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                <!--/li>
+              </ol-->
+            <%# end %>
+          <!--/div-->
         </div>
       </div>
-    <% end %>
+    <%# end %>
     <h3>Need help?</h3>
     <p>
       You can find information about the Entry Information page in our <%= link_to 'Help', '/help/entry_help'%> section.

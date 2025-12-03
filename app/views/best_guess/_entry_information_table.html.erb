@@ -73,11 +73,28 @@
 </script>
 <style type="text/css">
   .citation_container {border: 1px solid black; padding: 5px;}
+  .table--left-aligned th,td {text-align: left !important;}
 </style>
-<table class="table--bordered table--data">
+<table class="table--bordered table--data table--left-aligned">
   <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
   <tbody>
     <% record_type = RecordType::display_name(record.RecordTypeID)%>
+    <tr>
+      <th scope="row">
+        Surname
+      </th>
+      <td>
+        <%= record.Surname %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Given Name
+      </th>
+      <td>
+        <%= record.GivenName %>
+      </td>
+    </tr>
     <tr>
       <th scope="row">
         Record Type
@@ -243,20 +260,20 @@
         <% end %>
       </td>
     </tr>
-    <tr>
+    <!--tr>
       <th scope="row">
         Persistent URL for entry
       </th>
-      <td>
-        <% protocol = URI.parse(request.original_url).scheme %>
-        <% domain = URI.parse(request.original_url).host %>
-        <% port = URI.parse(request.original_url).port %>
-        <% domain = domain + ':' + port.to_s if port.present? %>
-        <a id="persistentUrl" class="pUrl" href="<%= @url %>"><%= "#{protocol}://#{domain}#{@url}" %></a>
-        <button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button>
+      <td-->
+        <%# protocol = URI.parse(request.original_url).scheme %>
+        <%# domain = URI.parse(request.original_url).host %>
+        <%# port = URI.parse(request.original_url).port %>
+        <%# domain = domain + ':' + port.to_s if port.present? %>
+        <!--a id="persistentUrl" class="pUrl" href="<%#= @url %>"><%#= "#{protocol}://#{domain}#{@url}" %></a-->
+        <!--button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button-->
         <!--a class="btn btn--small" href="" onclick=copy('persistentUrl') style="cursor: pointer">Copy URL</a-->
-      </td>
-    </tr>
+      <!--/td>
+    </tr-->
     <% if search == true %>
       <% unless (record.Confirmed & 512).zero? %>
         <tr>
@@ -311,16 +328,16 @@
         </tr>
       <% end %>
     <% end %>
-    <% if search %>
-      <tr>
+    <%# if search %>
+      <!--tr>
         <th scope="row">
           More Information
         </th>
-        <td class="project-text-color">
-          <%= render partial: 'more_information' %>
-        </td>
-      </tr>
-    <% end %>
+        <td class="project-text-color"-->
+          <%#= render partial: 'more_information' %>
+        <!--/td>
+      </tr-->
+    <%# end %>
     <%# if more_info %>
       <!--td  colspan=2>
         <%# if  search %>
