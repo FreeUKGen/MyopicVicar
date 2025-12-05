@@ -50,6 +50,7 @@ class Freereg1CsvFile
   field :file_name, type: String
   field :transcriber_name, type: String
   field :transcriber_email, type: String
+  field :transcribed_by, type: String
   field :transcriber_syndicate, type: String
   field :credit_email, type: String
   field :credit_name, type: String
