@@ -505,6 +505,9 @@ module ApplicationHelper
   def place_name_for_entry
     place_name = @place.present? ? @place.place_name : 'Unknown place'
   end
+   def entry_place_name(entry)
+    place_name = entry.place.present? ? entry.place : "Unknown Place"
+  end
   def church_name_for_entry
     church_name = @church.present? ? @church.church_name : 'Unknown church'
   end
