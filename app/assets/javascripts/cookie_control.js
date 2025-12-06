@@ -19,7 +19,7 @@ $(document).ready(function() {
     };
   };
 */
-  /*donate cta 
+  /*donate cta */
   window.setBigGiveCookie = function(name,value) {
     var expires = "";
     var date = new Date();
@@ -34,6 +34,7 @@ $(document).ready(function() {
     document.getElementById("myDialog").close(); 
       $("#donate_cta_pop_up").hide();
       document.getElementById("overlay").style.display = "none";
+      location.reload();
 
   };
 
