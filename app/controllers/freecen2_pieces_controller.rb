@@ -457,10 +457,10 @@ class Freecen2PiecesController < ApplicationController
       @type = session[:type]
       params[:freecen2_piece].delete :type
       @freecen2_piece.update(freecen2_piece_params)
-      if @@freecen2_piece.reason_changed.blank?
+      if @freecen2_piece.reason_changed.blank?
         get_user_info_from_userid
-        @@freecen2_piece.reason_changed = "Updated by #{session[:role]} (#{@user.userid})"
-        @@freecen2_piece.save
+        @freecen2_piece.reason_changed = "Updated by #{session[:role]} (#{@user.userid})"
+        @freecen2_piece.save
       end
       if @freecen2_piece.errors.any?
         flash[:notice] = "The update of the piece failed #{@freecen2_piece.errors.full_messages}."
