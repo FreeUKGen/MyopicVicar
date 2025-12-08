@@ -120,10 +120,14 @@ module ApplicationHelper
   end
 
   def transcriber_entry(entry)
-    transcriber = nil
-    file = entry.freereg1_csv_file
-    transcriber = file.userid_detail if file.userid_detail.present?
-    answer, transcriber = UseridDetail.can_we_acknowledge_the_transcriber(transcriber) if transcriber.present?
+    transcriber = entry.transcribed_by if entry.transcribed_by.present?
+
+    if transcriber.blank?
+      file = entry.freereg1_csv_file
+      transcriber = file.userid_detail if file.userid_detail.present?
+      answer, transcriber = UseridDetail.can_we_acknowledge_the_transcriber(transcriber) if transcriber.present?
+    end
+
     transcriber
   end
 
