@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class SearchQuery
+ class SearchQuery
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
@@ -947,7 +947,6 @@ class SearchQuery
     end
     self.search_result = SearchResult.new
     self.search_result.records = records
-    self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime('%F')
     self.save
@@ -1449,7 +1448,204 @@ class SearchQuery
     [] << hash.select{|key, value| value.present?}
   end
 
-  def freebmd_search_records
+  def search_conditions_arel
+  table = BestGuess.arel_table
+  conditions = []
+
+  # First name with LIKE
+  if first_name.present? && !first_name_exact_match && !skip_first_name?
+    pattern = first_name.start_with?('+') ? "%#{first_name.delete_prefix('+').strip}%" : "#{first_name.strip}%"
+    conditions << table[:GivenName].matches(pattern)
+  end
+
+  # Second name
+  if all_secondname_search
+    fn = first_name.delete_prefix('>>').strip
+    conditions << table[:OtherNames].matches("%#{fn}%")
+  end
+
+  conditions.reduce(:and)  # Combine with AND
+end
+
+def skip_first_name?
+  firstname_wildcard_query? || has_wildcard?(first_name) ||
+  second_name_wildcard || all_secondname_search
+end
+
+def freebmd_search_records
+  search_fields = bmd_adjust_field_names
+  @search_index = SearchQuery.get_search_table.index_hint(search_fields)
+  logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+
+  begin
+    max_time = Rails.application.config.max_search_time
+    logger.warn(max_time)
+
+    Timeout::timeout(max_time) do
+      # Build base query
+      records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
+
+      # Apply wildcard conditions (returns [sql, *values] array)
+      if wildcard_search_conditions.present?
+        sql, *values = wildcard_search_conditions
+        records = records.where(sql, *values)
+      end
+
+      if conditions = search_conditions_arel
+        records = records.where(conditions)
+      end
+
+      # Log SQL once
+      logger.warn("SQL: #{records.to_sql}")
+
+      # Check if we need array-returning methods
+      needs_array_result = date_of_birth_range? || dob_at_death.present? ||
+                           age_at_death.present? || check_age_range?
+
+      # Apply filters that return Relations
+      records = marriage_surname_filteration(records) if spouses_mother_surname.present? && bmd_record_type == ['3']
+      records = spouse_given_name_filter(records) if spouse_first_name.present?
+
+      # Get count early if we don't need array methods (more efficient)
+      record_count = 0
+      max_limit = 1000
+
+      if !needs_array_result && records.respond_to?(:count)
+        record_count = records.count
+        logger.warn("Record count before limit: #{record_count}")
+        #records = records.limit(max_limit) if record_count > max_limit
+      end
+
+      # Apply array-returning methods (these may convert Relation to Array)
+      records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
+      records = combined_age_results(records) if age_at_death.present? || check_age_range?
+
+      # Handle both Relation and Array results AFTER combined methods
+      if records.is_a?(Array)
+        record_count = records.size
+        logger.warn("Final array size: #{record_count}")
+        records = records.take(max_limit) if record_count > max_limit
+      elsif records.respond_to?(:count)
+        # This handles Relations returned from combined_results
+        record_count = records.count
+        logger.warn("Total records found (Relation): #{record_count}")
+        records = records.limit(max_limit) if record_count > max_limit
+      end
+
+      persist_results(records)
+      [records, record_count, true, 0]
+    end
+  rescue Timeout::Error
+    logger.warn("#{App.name_upcase}: Timeout")
+    [[], 0, false, 1]
+  rescue ActiveRecord::StatementInvalid => e
+    if e.message.include?('max_execution_time') || e.message.include?('timeout') ||
+       e.message.include?('Query execution was interrupted') ||
+       (e.original_exception && e.original_exception.message.include?('max_execution_time'))
+      logger.warn("#{App.name_upcase}: MySQL max_execution_time exceeded: #{e.message}")
+      [[], 0, false, 3]
+    else
+      logger.warn("#{App.name_upcase}: SQL error: #{e.inspect}")
+      [[], 0, false, 2]
+    end
+  rescue => e
+    logger.warn("#{App.name_upcase}:error: #{e.inspect}")
+    [[], 0, false, 2]
+  end
+end
+
+def freebmd_search_records_ooo
+  search_fields = bmd_adjust_field_names
+  @search_index = SearchQuery.get_search_table.index_hint(search_fields)
+  logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+
+  begin
+    max_time = Rails.application.config.max_search_time
+    logger.warn(max_time)
+
+    Timeout::timeout(max_time) do
+      # Build base query
+      records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
+
+      # Combine WHERE conditions instead of chaining
+      all_conditions = []
+
+      if wildcard_search_conditions.present?
+        all_conditions << wildcard_search_conditions
+      end
+
+      if conditions = search_conditions_arel
+        all_conditions << conditions
+      end
+
+      # Apply all WHERE conditions at once
+      all_conditions.each { |cond| records = records.where(cond) }
+
+      # Log SQL once
+      logger.warn("SQL: #{records.to_sql}") #if Rails.env.development?
+
+      # Check if we need array-returning methods
+      needs_array_result = date_of_birth_range? || dob_at_death.present? ||
+                           age_at_death.present? || check_age_range?
+
+      # Get count and limit early if possible
+      if !needs_array_result && records.respond_to?(:limit)
+        record_count = records.count  # Single count call
+        logger.warn("Record count before limit: #{record_count}")
+        records = records.limit(1000) if record_count > 1000
+      else
+        record_count = 0
+      end
+
+      # Apply filters
+      records = marriage_surname_filteration(records) if spouses_mother_surname.present? && bmd_record_type == ['3']
+      records = spouse_given_name_filter(records) if spouse_first_name.present?
+
+      # Log count only if it changed
+      if records.respond_to?(:count) && !needs_array_result
+        new_count = records.count
+        logger.warn("Record count after filters: #{new_count}") if new_count != record_count
+        record_count = new_count
+      end
+
+      # Apply array-returning methods
+      records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
+      records = combined_age_results(records) if age_at_death.present? || check_age_range?
+  
+      # Handle array results
+      if records.is_a?(Array)
+        if records.size > 1000
+          record_count = records.size
+          records = records.take(1000)
+        else
+          record_count = records.size
+        end
+        logger.warn("Final array size: #{record_count}")
+      end
+      raise record_count.inspect
+      persist_results(records)
+      [records, record_count, true, 0]
+    end
+  rescue Timeout::Error
+    logger.warn("#{App.name_upcase}: Timeout")
+    [[], 0, false, 1]
+  rescue ActiveRecord::StatementInvalid => e
+    if e.message.include?('max_execution_time') || e.message.include?('timeout') ||
+       e.message.include?('Query execution was interrupted') ||
+       (e.original_exception && e.original_exception.message.include?('max_execution_time'))
+      logger.warn("#{App.name_upcase}: MySQL max_execution_time exceeded: #{e.message}")
+      [[], 0, false, 3]
+    else
+      logger.warn("#{App.name_upcase}: SQL error: #{e.inspect}")
+      [[], 0, false, 2]
+    end
+  rescue => e
+    logger.warn("#{App.name_upcase}:error: #{e.inspect}")
+    [[], 0, false, 2]
+  end
+end
+
+  def freebmd_search_records_oo
     search_fields = bmd_adjust_field_names
     @search_index = SearchQuery.get_search_table.index_hint(search_fields)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
@@ -1457,51 +1653,54 @@ class SearchQuery
       max_time = Rails.application.config.max_search_time
       logger.warn(max_time)
       Timeout::timeout(max_time) do
-        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)#.joins(spouse_join_condition).where(bmd_marriage_params)
-        records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?#unless self.first_name_exact_match
-        records = records.where(search_conditions) if search_conditions.present?
+        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
+        records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?
         
-        # Initialize record count
+        if conditions = search_conditions_arel
+          records = records.where(conditions)
+        end
+        
+        # Apply filters that return Relations
+        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && bmd_record_type == ['3']
+        records = spouse_given_name_filter(records) if spouse_first_name.present?
+        
+        # Apply combined search methods (now return Relations via UNION, not Arrays)
+        records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
+        records = combined_age_results(records) if age_at_death.present? || check_age_range?
+        
+        # Now records should still be a Relation - count and limit efficiently
         record_count = 0
+        max_limit = 1000
         
-        # Check if we need methods that always return Arrays (combined_results, combined_age_results)
-        needs_array_result = date_of_birth_range? || self.dob_at_death.present? ||
-                             self.age_at_death.present? || check_age_range?
-        
-        # If still a Relation and no array-result methods needed, count and limit early (most efficient)
-        if !needs_array_result && !records.is_a?(Array) && records.respond_to?(:limit)
+        if records.respond_to?(:count)
           record_count = records.count
-          records = records.limit(1000) if record_count > 1000
-        end
-        
-        # Apply filters (some return Relations, some return Arrays)
-        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
-        records = spouse_given_name_filter(records) if self.spouse_first_name.present?
-        
-        # If still a Relation after SQL filters, count and limit before array-based methods
-        if records.is_a?(ActiveRecord::Relation) && records.respond_to?(:limit) && needs_array_result
-          record_count = records.count
-          records = records.limit(1000) if record_count > 1000
-        end
-        
-        # Apply methods that always return Arrays (combine multiple search strategies)
-        records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
-        records = combined_age_results records if self.age_at_death.present? || check_age_range?
-        
-        # If records is now an Array (from combined_results or combined_age_results), limit to 1000
-        if records.is_a?(Array) && records.size > 1000
-          record_count = records.size  # Total count before limiting
-          records = records.take(1000)
+          logger.warn("Total records found: #{record_count}")
+          records = records.limit(max_limit) if record_count > max_limit
         elsif records.is_a?(Array)
-          record_count = records.size  # Set count if not already set
+          # Fallback for edge cases where it's still an array
+          record_count = records.size
+          logger.warn("Array size: #{record_count}")
+          records = records.take(max_limit) if record_count > max_limit
         end
         
-        persist_results(records) # if records.count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+        persist_results(records)
         [records, record_count, true, 0]
       end
     rescue Timeout::Error
       logger.warn("#{App.name_upcase}: Timeout")
       [[], 0, false, 1]
+    rescue ActiveRecord::StatementInvalid => e
+      # Check for MySQL max_execution_time errors
+      # Security: Don't expose detailed error messages
+      if e.message.include?('max_execution_time') || e.message.include?('timeout') ||
+         e.message.include?('Query execution was interrupted') ||
+         (e.cause && e.cause.message.include?('max_execution_time'))
+        logger.warn("#{App.name_upcase}: MySQL max_execution_time exceeded")
+        [[], 0, false, 3]
+      else
+        logger.error("#{App.name_upcase}: SQL error - #{e.class}")
+        [[], 0, false, 2]
+      end
     rescue => e
       logger.warn("#{App.name_upcase}:error: #{e.inspect}")
       [[], 0, false, 2]
@@ -1560,7 +1759,7 @@ class SearchQuery
     min_age = validate_age(self.min_age_at_death)
     max_age = validate_age(self.max_age_at_death)
     return records if min_age.nil? || max_age.nil? || min_age > max_age
-    records.where(define_range, min_age, max_age)
+    records.where("AgeAtDeath BETWEEN ? AND ?", min_age, max_age)
   end
 
   #def date_of_birth
@@ -1753,9 +1952,29 @@ class SearchQuery
   end
 
   def wildcard_search_conditions
-    keys = [sanitized_hash(first_name_wildcard_query).sanitize_keys, sanitized_hash(surname_wildcard_query).sanitize_keys, sanitized_hash(mother_surname_wildcard_query).sanitize_keys].compact
-    keys = keys.join(' and ') if keys.present?
-    [keys, sanitized_hash(first_name_wildcard_query).sanitize_values, sanitized_hash(surname_wildcard_query).sanitize_values, sanitized_hash(mother_surname_wildcard_query).sanitize_values].flatten.compact
+    conditions = []
+    values = []
+  
+    # First name wildcard
+    if fn_cond = build_first_name_wildcard_condition
+      conditions << fn_cond[:sql]
+      values << fn_cond[:value]
+    end
+  
+    # Surname wildcard
+    if sn_cond = build_surname_wildcard_condition
+      conditions << sn_cond[:sql]
+      values << sn_cond[:value]
+    end
+  
+    # Mother surname wildcard
+    if mn_cond = build_mother_surname_wildcard_condition
+      conditions << mn_cond[:sql]
+      values << mn_cond[:value]
+    end
+  
+    return nil if conditions.empty?
+    [conditions.join(' AND '), *values]
   end
 
   def second_name_wildcard
@@ -1818,6 +2037,7 @@ class SearchQuery
       name_hash.except!(:last_name) if do_wildcard_seach?(self.last_name) || surname_partial_query?
     end
     name_hash
+   # raise name_hash.inspect
   end
 
   def surname_partial_query?
@@ -2108,83 +2328,59 @@ class SearchQuery
 
   def combined_results records
     return records if records.blank?
+    return records unless records.is_a?(ActiveRecord::Relation)
     
-    # Optimized: Keep Relations lazy as long as possible, use UNION for combining Relations
-    # Split records by quarter threshold
-    non_dob_results = non_dob_records(records)  # QuarterNumber < 530
-    dob_results = dob_recordss(records)          # QuarterNumber >= 530
+    # MySQL 5.7 compatible: Use UNION to combine queries at database level
+    # Security: Validate input parameters
+    return records if DOB_START_QUARTER.nil?
     
-    # Collect Relations and Arrays separately - avoid arrays until the very end
-    relations = []
-    arrays = []
+    # Collect subquery SQLs for UNION
+    subqueries = []
     
-    # 1. Old records: Calculate DOB from age
-    old_records_result = date_of_birth_search_range_a(non_dob_results)
-    if old_records_result.is_a?(ActiveRecord::Relation)
-      relations << old_records_result
-    else
-      arrays.concat(old_records_result)
-    end
+    # 1. Old records (QuarterNumber < 530): Calculate DOB from age
+    non_dob_results = records.where('QuarterNumber < ?', DOB_START_QUARTER)
+    old_records_query = date_of_birth_search_range_a(non_dob_results)
+    # Security: Only add if it's a proper ActiveRecord::Relation
+    subqueries << old_records_query.to_sql if old_records_query.is_a?(ActiveRecord::Relation) && old_records_query.respond_to?(:to_sql)
     
-    # 2. Modern records: Multiple search strategies
-    if dob_results.is_a?(ActiveRecord::Relation)
-      # SQL-optimized path for Relations - all methods now return Relations
-      relations << dob_exact_search(dob_results)
-      
-      # Get invalid_age_records and date_of_birth_records - now SQL-optimized
-      invalid_age_records = invalid_age_records(dob_results)
-      date_of_birth_records = records_with_dob(dob_results)
-      
-      # Apply filters - all return Relations when input is Relation
-      invalid_age_range_result = date_of_birth_search_range_a(invalid_age_records)
-      if invalid_age_range_result.is_a?(ActiveRecord::Relation)
-        relations << invalid_age_range_result
-      else
-        arrays.concat(invalid_age_range_result)
-      end
-      
-      uncertain_result = date_of_birth_uncertain_aad(invalid_age_records)
-      if uncertain_result.is_a?(ActiveRecord::Relation)
-        relations << uncertain_result
-      else
-        arrays.concat(uncertain_result)
-      end
-      
-      year_result = age_at_death_with_year(date_of_birth_records)
-      if year_result.is_a?(ActiveRecord::Relation)
-        relations << year_result
-      else
-        arrays.concat(year_result) if year_result.present?
-      end
-    else
-      # Fallback for Array records - these will be arrays
-      arrays.concat(dob_exact_search(dob_results).to_a)
-      
-      invalid_age_records = invalid_age_records(dob_results)
-      date_of_birth_records = records_with_dob(records)
-      
-      arrays.concat(date_of_birth_search_range_a(invalid_age_records))
-      arrays.concat(date_of_birth_uncertain_aad(invalid_age_records))
-      
-      year_result = age_at_death_with_year(date_of_birth_records)
-      arrays.concat(year_result) if year_result.present?
-    end
+    # 2. Modern records (QuarterNumber >= 530): Multiple search strategies
+    dob_results = records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+    
+    # 2a. Exact DOB match
+    exact_dob_query = dob_exact_search(dob_results)
+    subqueries << exact_dob_query.to_sql if exact_dob_query.is_a?(ActiveRecord::Relation) && exact_dob_query.respond_to?(:to_sql)
+    
+    # 2b. Invalid age records (no month indicators)
+    invalid_age_records = invalid_age_records_sql(dob_results)
+    
+    # Range search on invalid age records
+    invalid_range_query = date_of_birth_search_range_a(invalid_age_records)
+    subqueries << invalid_range_query.to_sql if invalid_range_query.is_a?(ActiveRecord::Relation) && invalid_range_query.respond_to?(:to_sql)
+    
+    # Uncertain date indicators
+    uncertain_query = date_of_birth_uncertain_aad(invalid_age_records)
+    subqueries << uncertain_query.to_sql if uncertain_query.is_a?(ActiveRecord::Relation) && uncertain_query.respond_to?(:to_sql)
+    
+    # 2c. Records with DOB (has month indicators)
+    date_of_birth_records = records_with_dob_sql(dob_results)
+    year_query = age_at_death_with_year(date_of_birth_records)
+    subqueries << year_query.to_sql if year_query.is_a?(ActiveRecord::Relation) && year_query.respond_to?(:to_sql)
     
     # 3. Records with no age/DOB data
-    no_age_result = no_aad_or_dob(records)
-    if no_age_result.is_a?(ActiveRecord::Relation)
-      relations << no_age_result
-    else
-      arrays.concat(no_age_result)
-    end
+    no_age_query = no_aad_or_dob(records)
+    subqueries << no_age_query.to_sql if no_age_query.is_a?(ActiveRecord::Relation) && no_age_query.respond_to?(:to_sql)
     
-    # Convert all Relations to arrays at once (single conversion point)
-    # This is more efficient than multiple conversions throughout the method
-    # All Relations are kept lazy until this final conversion
-    relation_arrays = relations.map(&:to_a)
+    # Combine with UNION (automatically removes duplicates)
+    return records.none if subqueries.empty?
     
-    # Combine everything and remove duplicates
-    (relation_arrays + [arrays]).flatten.uniq
+    combined_sql = subqueries.compact.map { |sql| "(#{sql})" }.join(' UNION ')
+    
+    # Execute as single query - MySQL handles deduplication
+    SearchQuery.get_search_table.from("(#{combined_sql}) AS combined_results")
+  rescue ActiveRecord::StatementInvalid => e
+    # Security: Log error but don't expose details to user
+    logger.error("Combined results query error: #{e.class}")
+    records.none
   end
   
   def date_of_birth_search_range_sql(records)
@@ -2226,51 +2422,60 @@ class SearchQuery
     end
   end
 
+  def combined_age_resultsi(records)
+  return records if records.blank?
+  return records unless records.is_a?(ActiveRecord::Relation)
+
+  # Start with base conditions
+  conditions = []
+
+  # 1. Direct age at death match
+  if match_recorded_ages_or_dates
+    conditions << records.arel_table[:AgeAtDeath].eq(age_at_death)
+  else
+    conditions << records.arel_table[:AgeAtDeath].in(['', age_at_death])
+  end
+
+  # 2. Age range
+  if check_age_range?
+    min_age = validate_age(min_age_at_death)
+    max_age = validate_age(max_age_at_death)
+    conditions << records.arel_table[:AgeAtDeath].between(min_age..max_age)
+  end
+
+  # Combine all conditions with OR
+  combined_condition = conditions.reduce { |acc, cond| acc.or(cond) }
+
+  records.where(combined_condition)
+end
+
   def combined_age_results records
-    return [] if records.blank?
-    
-    # Collect results from multiple search strategies
+    records = records
     results = []
-    
-    # These methods return Relations, convert to arrays
-    results.concat(aad_search(records).to_a)
-    results.concat(age_range_search(records).to_a)
-    
-    # These methods need in-memory filtering (complex string matching)
-    # They always return Arrays, so handle accordingly
-    if records.is_a?(ActiveRecord::Relation)
-      records_array = records.to_a
-      dob_records = records_with_dob_array(records_array)
-      invalid_age_records = invalid_age_records_array(records_array)
-    else
-      dob_records = records_with_dob(records)
-      invalid_age_records = invalid_age_records(records)
-    end
-    
-    # date_of_birth_uncertain_aad can return Relation or Array
-    uncertain_result = date_of_birth_uncertain_aad(invalid_age_records)
-    if uncertain_result.is_a?(ActiveRecord::Relation)
-      results.concat(uncertain_result.to_a)
-    else
-      results.concat(uncertain_result)
-    end
-    
-    # These always return Arrays (in-memory filtering)
-    results.concat(calculate_age_range_for_dob(dob_records))
-    results.concat(calculate_age_for_dob(dob_records))
-    
-    # Remove duplicates and return
+    results.concat(aad_search(records)) unless self.age_at_death.blank?
+    results.concat(age_range_search(records)) if check_age_range?
+    invalid_age_records = invalid_age_records(records)
+    results.concat(date_of_birth_uncertain_aad(invalid_age_records))
+    dob_records = records_with_dob(records)
+    results.concat(calculate_age_range_for_dob(dob_records)) if check_age_range?
+    results.concat(calculate_age_for_dob(dob_records)) if age_at_death.present?
     results.uniq
   end
 
   def aad_search records
-    #raise self.min_age_at_death.inspect
     unless self.match_recorded_ages_or_dates
-      records = records.where(AgeAtDeath: ['', self.age_at_death])
+      records.where(AgeAtDeath: ["", self.age_at_death])
+     # records.select {|r|
+      #  [self.age_at_death, ''].include?(r.AgeAtDeath)
+     # }
     else
-      records = records.where(AgeAtDeath: [self.age_at_death])
+     # records.select {|r|
+      #  r.AgeAtDeath == self.age_at_death
+      #}
+      records.where(AgeAtDeath: [self.age_at_death])
     end
-    records
+
+
   end
 
   def min_dob_range_quarter
@@ -2370,6 +2575,49 @@ class SearchQuery
   end
 
   def marriage_surname_filteration(records)
+    return records unless spouses_mother_surname.present?
+    
+    # Security: Validate and sanitize spouse surname input
+    sanitized_surname = sanitize_search_input(spouses_mother_surname)
+    return records if sanitized_surname.blank?
+    
+    best_guess_table = SearchQuery.get_search_table.table_name
+    marriage_table = BestGuessMarriage.table_name
+    quarter_threshold = SPOUSE_SURNAME_START_QUARTER
+    
+    # Security: Use ActiveRecord's quote_table_name for extra safety
+    connection = SearchQuery.get_search_table.connection
+    quoted_best_guess = connection.quote_table_name(best_guess_table)
+    quoted_marriage = connection.quote_table_name(marriage_table)
+    
+    # String JOIN with properly quoted table names
+    records_with_join = records.joins(
+      "LEFT JOIN #{quoted_marriage} AS b ON " \
+      "b.Volume = #{quoted_best_guess}.Volume AND " \
+      "b.Page = #{quoted_best_guess}.Page AND " \
+      "b.QuarterNumber = #{quoted_best_guess}.QuarterNumber AND " \
+      "b.RecordNumber != #{quoted_best_guess}.RecordNumber"
+    )
+    
+    # Generate pattern with sanitized input
+    if do_wildcard_seach?(sanitized_surname)
+      pattern = "#{name_wildcard_search(sanitized_surname)}#{conditional_percentage_wildcard(sanitized_surname)}"
+      operator = "LIKE"
+      value = pattern
+    else
+      operator = "="
+      value = sanitized_surname
+    end
+    
+    # Parameterized WHERE (safe from SQL injection)
+    records_with_join.where(
+      "(#{quoted_best_guess}.QuarterNumber >= ? AND #{quoted_best_guess}.AssociateName #{operator} ?) OR " \
+      "(#{quoted_best_guess}.QuarterNumber < ? AND b.Surname #{operator} ?)",
+      quarter_threshold, value, quarter_threshold, value
+    ).distinct
+  end
+
+  def marriage_surname_filteration_o(records)
     return records unless self.spouses_mother_surname.present?
     
     # Build a single query using OR conditions instead of converting to arrays
@@ -2424,6 +2672,37 @@ class SearchQuery
     spouse_first_name_filteration_array(records)
   end
   
+  def spouse_first_name_filteration_sql_oo(records)
+    # Build a single query using JOIN instead of separate query + in-memory filtering
+  # This keeps it as an ActiveRecord::Relation for better performance
+
+  # Get table names from models for maintainability
+  best_guess_table = SearchQuery.get_search_table.table_name
+  marriage_table = BestGuessMarriage.table_name
+
+  # Sanitize the search term
+  search_term = self.spouse_first_name&.strip
+  return records if search_term.blank?
+
+  # Use INNER JOIN to only get records that have matching marriage records
+  # Join condition: same Volume, Page, QuarterNumber, but different RecordNumber
+  records_with_join = records.joins("INNER JOIN #{marriage_table} as m ON m.Volume = #{best_guess_table}.Volume AND m.Page = #{best_guess_table}.Page AND m.QuarterNumber = #{best_guess_table}.QuarterNumber AND m.RecordNumber != #{best_guess_table}.RecordNumber")
+
+  # Use LIKE with word boundary checks (spaces or start/end of string)
+  # This matches whole words only, not substrings
+  escaped_term = sanitize_sql_like(search_term.downcase)
+
+  # Match: start of string, space before, space after, or end of string
+  # This prevents 'eliza' from matching 'elizabeth'
+  pattern = "% #{escaped_term} %"
+  records_with_join.where(
+    "(LOWER(m.GivenName) LIKE ? OR LOWER(m.GivenName) LIKE ? OR LOWER(m.GivenName) = ?)",
+    "#{escaped_term} %",  # Word at start
+    "% #{escaped_term} %", # Word in middle
+    "#{escaped_term}"      # Exact match (single word)
+  ).distinct
+end
+
   def spouse_first_name_filteration_sql(records)
     # Build a single query using JOIN instead of separate query + in-memory filtering
     # This keeps it as an ActiveRecord::Relation for better performance
@@ -2598,8 +2877,11 @@ class SearchQuery
   end
 
   def name_wildcard_search name_field
-    name_field.gsub(/[*?]/, '*' => '%', '?' => '_')
-    #query = "BestGuess.Surname like '#{surname}'"
+    return '' if name_field.blank?
+    # Security: Sanitize input first, then convert wildcards
+    sanitized = sanitize_search_input(name_field.to_s)
+    # Convert user wildcards to SQL wildcards
+    sanitized.gsub(/[*?]/, '*' => '%', '?' => '_')
   end
   
   def percentage_wildcard_not_required? name_string
@@ -2765,8 +3047,15 @@ class SearchQuery
 
   def sanitize_search_input(input)
     return '' if input.blank?
-    # Remove potentially dangerous characters
-    input.to_s.strip.gsub(/[<>'"\\]/, '').gsub(/[^\w\s\-\.]/, '')
+    # Security: Remove potentially dangerous characters for SQL injection
+    sanitized = input.to_s.strip
+    # Remove quotes, brackets, semicolons, and SQL special characters
+   # sanitized = sanitized.gsub(/[<>'"\\\/;()[\]{}]/, '')
+    sanitized = sanitized.gsub(/[<>'"\\\/;()\[\]{}]/, '')
+    # Only allow alphanumeric, spaces, hyphens, dots, and safe wildcards
+    sanitized = sanitized.gsub(/[^\w\s\-\.\*\?]/, '')
+    # Limit length to prevent DoS attacks
+    sanitized.length > 100 ? sanitized[0, 100] : sanitized
   end
 
   def validate_wildcard_input(input)
@@ -2854,5 +3143,26 @@ class SearchQuery
   def volume_page_details(result_hash, search_result)
     result_hash['Volume'] = search_result[:Volume]
     result_hash['Page'] = search_result[:Page]
+  end
+
+  def build_first_name_wildcard_condition
+    return nil if second_name_wildcard || !first_name_not_exact_match
+    return nil unless do_wildcard_seach?(first_name)
+
+    pattern = "#{name_wildcard_search(first_name)}#{conditional_percentage_wildcard(first_name)}"
+    { sql: "BestGuess.GivenName LIKE ?", value: pattern }
+  end
+
+  def build_surname_wildcard_condition
+    return nil unless last_name.present? && do_wildcard_seach?(last_name.strip)
+
+    { sql: "BestGuess.Surname LIKE ?", value: name_wildcard_search(last_name) }
+  end
+
+  def build_mother_surname_wildcard_condition
+    return nil unless mother_last_name.present? && do_wildcard_seach?(mother_last_name)
+
+    pattern = "#{name_wildcard_search(mother_last_name)}#{conditional_percentage_wildcard(mother_last_name)}"
+    { sql: "BestGuess.AssociateName LIKE ?", value: pattern }
   end
 end
