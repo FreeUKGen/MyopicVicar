@@ -1624,6 +1624,7 @@ class CsvRecord < CsvRecords
     @data_record[:relative_surname] = Unicode::upcase(@data_record[:relative_surname]) unless @data_record[:relative_surname].nil?
     @data_record[:burial_person_surname] = Unicode::upcase( @data_record[:burial_person_surname])  unless @data_record[:burial_person_surname].nil?
     @data_record[:female_relative_surname] = Unicode::upcase( @data_record[:female_relative_surname])  unless @data_record[:female_relative_surname].nil?
+    @data_record[:alternate_forenames] = @data_record[:alternate_forenames].split(",").map(&:strip)
     @data_record[:processed_date] = Time.now
     csvfile.data[line] = @data_record
 
