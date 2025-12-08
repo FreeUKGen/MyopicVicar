@@ -45,12 +45,6 @@
         <% if device_type == :desktop %>
           <% first_name = @search_query.try(:first_name).to_s %>
           <% last_name  = @search_query.try(:last_name).to_s %>
-          <% iframe_src = "https://www.myheritage.com/FP/partner-widget.php?" +
-                          "partnerName=freereg&clientId=4672&campaignId=freereg_recordwidget_may22&" +
-                          "widget=records_carousel&width=160&height=600&onSitePlacement=160x600+Records+Carousel+freereg&" +
-                          "tr_ifid=freereg_8035265&firstName=#{ERB::Util.url_encode(first_name)}&lastName=#{ERB::Util.url_encode(last_name)}" +
-                          "&tr_device=&size=160x600" %>
-          <% iframe_src_square = "https://myheritagewidgets.com/widgets/iframe?firstName=#{first_name}&lastName=#{last_name}&adID=NkKer6rXHZIysKJX&clientId=4742&partnerName=freebmd&dimensions=300x250"  %>
           <% iframe_src_tall = "https://www.myheritagewidgets.com/widgets/iframe?firstName=#{first_name}&lastName=#{last_name}&adID=uud54WaX7rXpPTt1&clientId=4742&partnerName=FreeBMD&dimensions=160x600" %>
 
       <% show_large_ad = @search_results.size > 6 %>
@@ -61,7 +55,6 @@
               <div data-fuse="Vrec_Sticky"></div>
               <div class="float--right push--top">
                 <iframe src="<%= iframe_src_tall %>" width='160' height='600' widget='records' frameborder='0' scrolling= 'no'></iframe>
-                <!--iframe src="<%= iframe_src_square %>" width="300" height="250" widget="records" frameborder="0" scrolling= "no"></iframe-->
               </div>
               <div class="float--right push--top" style="display:flex;position:sticky;top:0;align-self:start;">
                 <!-- GAM 71161633/FRBMD_freebmd2orguk/Vrec_Sticky -->
@@ -70,7 +63,7 @@
             <% else %>
               <div class="ad-center">
                 <h2 class="text--right" style="font-size:12pt;">Advertisement</h2>
-                <iframe src="<%= iframe_src_tall %>" height="600" width="160"></iframe>
+                <iframe src="<%= iframe_src_tall %>" width='160' height='600' widget='records' frameborder='0' scrolling= 'no'></iframe>
               </div>
             <% end %>
           </div>

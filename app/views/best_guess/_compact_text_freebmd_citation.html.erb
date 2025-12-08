@@ -1,0 +1,13 @@
+<section>
+  <div id="compact_text_citation_container" style="display: none;">
+    <% @entry = entry %>
+    <h4>Compact text (FreeBMD1 style):</h4>
+    <p class = "citation_container"><%= format_record_type_for_scan_url(@entry)%>s&#9;<%= format_quarter(@entry['QuarterNumber']) %><br/>
+      <%= @entry['Surname'] %>&#9;<%= @entry['GivenName'] %>&#9;<%= @entry['AssociateName'] %>&#9;<%= @entry['AgeAtDeath'] %>&#9;<%=@entry['District']%>&#9;<%=@entry['Volume']%> <%=@entry['Page']%>
+    </p>
+  <div class = "text--center">
+    <button class = "btn  btn--small ", onclick = copy("compact_text_citation_container") style = "cursor: pointer">Copy</button>
+    <button class = "btn  btn--small ", onclick = this.parentElement.parentElement.style.display='none' style = "cursor: pointer">Close</button>
+  </div>
+  </div>
+</section>
