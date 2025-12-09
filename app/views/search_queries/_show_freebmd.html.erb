@@ -24,9 +24,7 @@
             <% end %>
           <hr/>
         </div>
-        <% if @search_query.result_truncated %>
-          <%= render(partial: "freebmd_too_many_results") %>
-        <% end %>
+
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left">
           <%= form_tag search_query_path(@search_query), method: :get, id: 'filter_form' do %>
             <div class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole hard--left">
