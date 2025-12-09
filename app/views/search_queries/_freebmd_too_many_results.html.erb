@@ -1,10 +1,10 @@
-<div class="island float--right">
-  <p class="read-length"><%= pluralize(number_with_delimiter(@result_count, :delimiter => ','), ' result', ' results') %> is too large a result set to be useful. Consider narrowing down your search. If you did not include all of the following in your search, try adding one or more of them:</p>
+<div class="">
+  <p class=""><%= pluralize(number_with_delimiter(@result_count, :delimiter => ','), ' result', ' results') %> is too large a result set to be useful. Consider narrowing down your search. If you did not include all of the following in your search, try adding one or more of them:</p>
   <ul>
     <li>Forename</li>
     <li>Event (e.g. only marriages)</li>
     <li>Date range</li>
     <li>County, and District</li>
   </ul>
-  <p class='read-length'>If you’ve used a wildcard, this is particularly good advice. For more information about searching, see the FreeBMD <%= link_to "Help", '/help/search_help' %> page.</p>
+  <p class=''>If you’ve used a wildcard, this is particularly good advice. For more information about searching, see the FreeBMD <%= link_to "Help", '/help/search_help' %> page.</p>
 </div>

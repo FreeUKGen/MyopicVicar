@@ -16,8 +16,12 @@
     <!--div class="grid"-->
       <div class="grid__item desk-wide-seven-tenths desk-one-whole lap-one-whole palm-one-whole" id='bmd_results'>
         <div class="desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
-          <span class="weight--semibold">We found <%= pluralize(number_with_delimiter(@result_count, :delimiter => ','), ' result', ' results') %> for <%= titleize_string(@search_query[:first_name])  %> <%= upcase_string(@search_query[:last_name]) %>
+          <span class="weight--semibold">We found <%= pluralize(number_with_delimiter(@search_query.result_count, :delimiter => ','), ' result', ' results') %> for <%= titleize_string(@search_query[:first_name])  %> <%= upcase_string(@search_query[:last_name]) %>.
+            <% if @search_query.result_count > 1000 %>
+               However we display first 1000 results.
           </span>
+              <%= render(partial: "freebmd_too_many_results") %>
+            <% end %>
           <hr/>
         </div>
         <% if @search_query.result_truncated %>
