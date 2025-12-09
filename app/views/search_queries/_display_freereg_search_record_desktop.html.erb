@@ -18,16 +18,6 @@
       <%= "#{name['first_name']} #{name['last_name']}" %>
     <% end %>
   <% end %>
-
-  <% if surnames.size > 1 %>
-    <!--span 
-      class="tooltip-icon" 
-      data-bs-toggle="tooltip" 
-      data-bs-placement="top"
-      title="Two surnames are shown because both the mother's and father's surnames were recorded in the original register.">
-      &#9432;
-    </span>
-  <% end %>
 </td>
 <td  >
   <%= RecordType::display_name(search_record.record_type) %>
