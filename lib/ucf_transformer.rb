@@ -74,14 +74,30 @@ module UcfTransformer
     name_array + transformed_names
   end
 
+  # Detect if a string contains any wildcard UCF characters
   def self.contains_wildcard_ucf?(name_part)
-    # print "\tcontains_wildcard_ucf?(#{name_part}) => #{name_part.match(/[\*_]/) ? 'true' : 'false'}\n"
+    # Early return if blank
     if name_part.blank?
-      result = false
-    else
-      result = name_part.match(/[\*_]/).present? ? true : false
+      Rails.logger.debug "[UCF Check] Received blank input"
+      return false
     end
-    result
+
+    # Define the set of wildcard UCF characters
+    wildcard_chars = ['*', '_', '?', '{', '}', '[', ']']
+
+    # Build a regex that matches any of them
+    regex = Regexp.union(wildcard_chars)
+
+    # Perform the match
+    flagged = name_part.match?(regex)
+
+    # Debugging output
+    Rails.logger.info "[UCF Check] Scanning string: #{name_part.inspect}"
+    Rails.logger.debug "[UCF Check] Wildcard characters: #{wildcard_chars.join(' ')}"
+    Rails.logger.debug "[UCF Check] Regex built: #{regex.inspect}"
+    Rails.logger.debug "[UCF Check] Flagged? #{flagged}"
+
+    flagged
   end
 
   def self.ucf_to_regex(name_part)
