@@ -9,8 +9,6 @@ require 'rspec/rails'
 
 # Replaces ActiveRecord
 require 'mongoid'
-# RSpec helpers (matchers) for Mongoid
-require 'mongoid-rspec'
 
 # Load the Mongoid config and explicitly use the :test environment
 Mongoid.load!(Rails.root.join("config", "mongoid.yml"), :test )
@@ -70,9 +68,4 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  # mongoid-rspec matchers
-  config.include Mongoid::Matchers, type: :model
-
-  # This lets you call `create(:user)` instead of `FactoryBot.create(:user)`
-  config.include FactoryBot::Syntax::Methods
 end
