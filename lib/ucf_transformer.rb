@@ -83,7 +83,7 @@ module UcfTransformer
     end
 
     # Define the set of wildcard UCF characters
-    wildcard_chars = ['*', '_', '?', '{', '}', '[', ']']
+    wildcard_chars = ['*', '_', '?', '{', '}']
 
     # Build a regex that matches any of them
     regex = Regexp.union(wildcard_chars)
