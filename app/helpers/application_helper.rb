@@ -32,7 +32,7 @@ module ApplicationHelper
   def nav_about_page_link
     #return if session[:userid_detail_id].present?
 
-    link_to 'About', '/cms/about'
+    link_to 'About', '/about'
   end
 
   def nav_donate_page_link
@@ -45,15 +45,15 @@ module ApplicationHelper
       get_user_info_from_userid
       if @user.present? && session[:role].present?
         if session[:role] == 'transcriber' || session[:role] == 'trainee' || session[:role] == 'pending'
-          link_to 'Help', '/cms/information-for-transcribers'
+          link_to 'Help', '/information-for-transcribers'
         elsif session[:role] == 'researcher'
-          link_to 'Help', '/cms/registered-researchers'
+          link_to 'Help', '/registered-researchers'
         else
-          link_to 'Help', '/cms/information-for-coordinators'
+          link_to 'Help', '/information-for-coordinators'
         end
       end
     else
-      link_to 'Help', '/cms/help'
+      link_to 'Help', '/help'
     end
   end
 
@@ -84,7 +84,7 @@ module ApplicationHelper
   def nav_volunteer_page_link
     return if session[:userid_detail_id].present?
 
-    link_to 'Volunteer', "/cms/opportunities-to-volunteer-with-#{appname}"
+    link_to 'Volunteer', "/opportunities-to-volunteer-with-#{appname}"
   end
 
   def nav_freecen_gazetteer
@@ -761,17 +761,17 @@ module ApplicationHelper
 
   def helpful_links
     {
-      cookiePolicy: '/cms/about/cookie-policy',
+      cookiePolicy: '/about/cookie-policy',
       privacyNotice: 'https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view?usp=sharing',
-      termAndConditions: '/cms/terms-and-conditions',
+      termAndConditions: '/terms-and-conditions',
       contactUs: contact_us_path,
-      accessibility: 'https://www.freereg.org.uk/cms/about/accessibility-statement',
+      accessibility: 'https://www.freereg.org.uk/about/accessibility-statement',
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
       freecen: 'https://www.freecen.org.uk/',
       freebmd: 'https://www.freebmd.org.uk/',
-      freebmdAccuracy: '/cms/help#Accuracy',
+      freebmdAccuracy: '/help#Accuracy',
       freeukgen: 'http://www.freeukgenealogy.org.uk/',
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
       #freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
@@ -784,7 +784,7 @@ module ApplicationHelper
   def contact_us_path
     case appname_downcase
     when "freereg"
-      path = '/cms/help/frequently-asked-questions-researchers?'
+      path = '/help/frequently-asked-questions-researchers?'
     when "freecen"
       path = '/contacts/new'
     end
