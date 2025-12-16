@@ -722,4 +722,10 @@ MyopicVicar::Application.routes.draw do
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id(.:format)))'
+    # Catch-all route for dynamic pages copied from Refinery
+  # This must come after specific page routes (donate, volunteer)
+  # Matches paths like /about, /help/getting-started, etc.
+  # The controller will check if the view file exists and handle 404 if not
+  get '*path', to: 'pages#show', as: :page, format: false
+
 end
