@@ -1,7 +1,7 @@
 ##############################################
 # This file is in desperate need of refactoring
 ##############################################
-class UserMailer < ActionMailer::Base
+class UserMailer < Devise::Mailer
   reg_website = MyopicVicar::Application.config.website == 'https://www.freereg.org.uk' ? '' : 'Test'
   cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
   if MyopicVicar::Application.config.template_set == 'freereg'

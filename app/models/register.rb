@@ -96,7 +96,7 @@ class Register
         my_church_id = @@my_church[:_id]
         register = Register.where(:church_id =>my_church_id, :alternate_register_name=> args[:alternate_register_name] ).first
         unless register then
-          register = Register.where(:church_id =>my_church_id, :register_name=> args[:alternate_register_name] ).first
+          register = Register.where(:church_id =>my_church_id,register_type: args[:register_type]  ).first
           unless register
             register = nil
           end

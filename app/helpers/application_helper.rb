@@ -63,7 +63,7 @@ module ApplicationHelper
     if session[:userid_detail_id].present?
       link_to 'Logout', main_app.logout_manage_resources_path
     else
-      link_to 'Member', refinery.login_path
+      link_to 'Member', new_user_session_path
     end
   end
 
@@ -151,6 +151,7 @@ module ApplicationHelper
       @user_id = @user.id
       @userid = @user.id
       @manager = manager?(@user)
+      role = session[:role].present? ? session[:role] : @user.person_role
       @roles = UseridRole::OPTIONS.fetch(session[:role])
     end
   end
