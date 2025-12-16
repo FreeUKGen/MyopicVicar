@@ -19,7 +19,8 @@
     <% end %>
   <% end %>
 
-  <% if surnames.size > 1 %>
+  <%# Baptisms only 'ba': show tooltip when both parents' surnames are present %>
+  <% if surnames.size > 1 && search_record.record_type == 'ba' %>
     <span 
       class="tooltip-icon" 
       data-bs-toggle="tooltip" 
