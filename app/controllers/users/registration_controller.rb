@@ -6,7 +6,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # Protect these actions behind an admin login
   before_action :redirect?, :only => [:new, :create]
   skip_before_action :require_login
-  layout 'refinery/layouts/login'
+  #layout 'refinery/layouts/login'
 
 
   def new

@@ -13,10 +13,6 @@
 #
 class ManageDocumentController < ApplicationController
 	def freecen_handbook
-		if Refinery::Page.where(slug: 'freecen-handbook').exists?
-			@page = Refinery::Page.where(slug: 'freecen-handbook').first.parts.first.body.html_safe
-			@title = Refinery::Page.where(slug: 'freecen-handbook').first.title.html_safe
-		end
 		render 'handbook'
 	end
 end
