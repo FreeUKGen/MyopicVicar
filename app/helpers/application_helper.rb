@@ -13,6 +13,7 @@
 # limitations under the License.
 #
 module ApplicationHelper
+  include SortableTableHelper
   DONATE_ID = {
     #field: id
     "freebmd" => '5007',
