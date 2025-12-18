@@ -325,13 +325,28 @@ class Freereg1CsvFilesController < ApplicationController
     clean_session_for_county
     clean_session_for_syndicate
     get_user_info_from_userid
+
     session[:my_own] = true
     @who = @first_name
-    @sorted_by = ' Ordered by most recent'
-    session[:sorted_by] = @sorted_by
-    session[:sort] = 'uploaded_date DESC'
+
+    #Handle sorting
+    session[:sort] = params[:sort] if params[:sort].present?
+    session[:sort] ||= 'uploaded_date DESC'
+    @sorted_by = session[:sorted_by].presence || ' Ordered by most recent'
+
     batches = FreeregOptionsConstants::FILES_PER_PAGE
-    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(session[:sort]).all.page(params[:page]).per(batches)
+
+    # Split session[:sort] into field and direction
+    field, dir = session[:sort].to_s.split
+    field_sym = field.to_sym
+    dir_sym = dir&.downcase == 'desc' ? :desc : :asc
+
+    # Ensure field exists in the database
+    field_sym = :uploaded_date unless Freereg1CsvFile.fields.keys.include?(field)
+
+    # Fetch files with proper sorting
+    @freereg1_csv_files = Freereg1CsvFile.userid(session[:userid]).order_by(field_sym => dir_sym).page(params[:page]).per(batches)
+
     render 'index'
   end
 
