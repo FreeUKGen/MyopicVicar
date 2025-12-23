@@ -274,7 +274,7 @@ class Freecen2CountyContentsController < ApplicationController
 
   private
 
-  def freecen2_content_params
+  def freecen2_county_content_params
     params.require(:freecen2_county_content).permit!
   end
 end
