@@ -90,9 +90,9 @@ class ApplicationController < ActionController::Base
     session[:userid_detail_id] = current_user.userid_detail_id
     session[:devise] = current_user.id
     logger.warn "#{appname_upcase}::USER current  #{current_user.username}"
-    scope = Devise::Mapping.find_scope!(resource_or_scope)
-    home_path = "#{scope}_root_path"
-    respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
+    # Explicitly set format to HTML
+    request.format = :html if request.format.nil?  || request.format == "*/*"
+    new_manage_resource_path
   end
 
   def check_for_mobile

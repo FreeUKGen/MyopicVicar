@@ -101,7 +101,7 @@ class ManageResourcesController < ApplicationController
   end
 
   def pages
-    current_authentication_devise_user = User.where(:id => session[:devise]).first
+    current_user = User.where(:id => session[:devise]).first
   end
 
   def selection

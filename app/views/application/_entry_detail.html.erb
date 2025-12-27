@@ -6,7 +6,7 @@
           <%case%>
           <%when @display_date%>
           <span class='additional'> search made on <%=Time.now.strftime('%d %b %Y') %></span><br>
-          <%when !current_authentication_devise_user.present?%>
+          <%when !current_user.present?%>
           <span  class='additional'>While we have made all efforts to correctly record the information in the original document there may be different interpretations of the written words. <b>If you have access to the original document</b> and believe we have made a mistake you are encouraged to report this to us.
             <%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn btn--natural' unless  @search_record.blank? || @search_query.blank? %></span>
         <% end%>
@@ -87,28 +87,28 @@
             </tr>
           <% end %>
           <% when 'film' %>
-          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
+          <% if @entry[field].present? && (current_user.present? || @all_data.present?) %>
             <tr>
               <td >Film</td>
               <td ><%= @entry.film %></td>
             </tr>
           <% end%>
           <% when 'film_number' %>
-          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
+          <% if @entry[field].present? && (current_user.present? || @all_data.present?) %>
             <tr>
               <td >Film Number</td>
               <td ><%= @entry.film_number %></td>
             </tr>
           <% end%>
           <% when 'processed_date' %>
-          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
+          <% if @entry[field].present? && (current_user.present? || @all_data.present?) %>
             <tr>
               <td ><%= field.gsub('_',' ').capitalize %></td>
               <td ><%= @entry.processed_date.strftime('%d %b %Y') %></td>
             </tr>
           <% end%>
           <% when 'line_id' %>
-          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
+          <% if @entry[field].present? && (current_user.present? || @all_data.present?) %>
             <tr>
               <td ><%= field.gsub('_',' ').capitalize %></td>
               <td ><%= @entry.line_id %></td>
@@ -131,7 +131,7 @@
             </tr>
           <% end %>
           <% when 'error_flag'  %>
-          <% if @entry[field].present? && (current_authentication_devise_user.present? || @all_data.present?) %>
+          <% if @entry[field].present? && (current_user.present? || @all_data.present?) %>
             <% if @entry.error_flag == 'true' %>
               <tr style= 'color:blue'>
               <% else%>
@@ -152,7 +152,7 @@
             <% end %>
           <% end %>
         <% end %>
-        <% if  current_authentication_devise_user.present? && @embargoed %>
+        <% if  current_user.present? && @embargoed %>
           <% @entry.embargo_records.order_by(updated_at: -1).each do |record| %>
             <tr>
               <td> History of embargo changes</td>
@@ -160,7 +160,7 @@
             </tr>
           <% end%>
         <% end%>
-        <% if  !current_authentication_devise_user.present?%>
+        <% if  !current_user.present?%>
           <td  colspan=2><%= link_to 'Report an Error in this Data', report_error_contact_path(@search_record[:_id], :query => @search_query), class: 'btn btn--natural' unless  @search_record.blank? || @search_query.blank? %></td>
         <% end %>
       </tbody>
