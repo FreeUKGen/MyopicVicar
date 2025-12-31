@@ -1,0 +1,23 @@
+<% content_for :header, t('enter_email_address', :scope => 'refinery.authentication.devise.users.forgot') %>
+<h2 class=" text--center">Request a reset of your <%= MyopicVicar::Application.config.freexxx_display_name %> password</h2>
+<% if flash.now[:error] %>
+  <div class="push-half--bottom" id="notice" style="color:blue;">
+    <%= flash.now[:error] %>  <% flash.now[:error]%><br>
+  </div>
+<% end %>
+<%= form_for resource, :as => resource_name,
+             :url => user_password_path,
+             :html => { :method => :post } do |f| %>
+  <p></p>
+  <div class='field'>
+    <%= f.text_field :email, :class => "larger widest",
+                     :placeholder => 'Email' %>
+  </div>
+  <p></p>
+  <%= render '/refinery/admin/form_actions', :f => f,
+             :continue_editing => false,
+             :submit_button_text => 'Reset Password',
+             :cancel_url => user_session_path,
+             :cancel_title => nil %>
+  <p></p>
+<% end %>

@@ -1,13 +1,31 @@
 source 'https://rubygems.org'
+# Workaround for mimemagic yanked versions (marcel/activestorage dependency)
+# Use a GitHub tag that provides a 0.3.x release so `marcel ~> 0.3.x` is satisfied.
+# If your environment doesn't have the system mime database, you may need to
+# install `shared-mime-info` (Ubuntu/Debian: `sudo apt-get install shared-mime-info`).
+# Try a GitHub tag for the original mimemagic repository (v0.3.10). If this tag
+# is unavailable, you can try another fork that exposes a 0.3.x tag.
+gem 'mimemagic', git: 'https://github.com/mimemagicrb/mimemagic', tag: 'v0.3.10'
 
-gem 'rails'
+# Some stdlib features were converted to default gems in newer Rubies;
+# add explicit dependency to ensure Bundler can provide it when required
+# under the Bundler environment (resolves LoadError: cannot load such file -- mutex_m).
+gem 'mutex_m'
+
+# Some stdlib features were converted to default gems in newer Rubies and
+# may not be available under Bundler unless declared; add `csv` explicitly
+# because `config/application.rb` requires it and Ruby 3.4 warns/removes it
+# from the default gems.
+gem 'csv'
+
+gem 'rails', '5.2'
 gem 'tzinfo-data' #needed by windows
 gem 'mysql2'
-gem 'refinerycms'
-gem 'refinerycms-authentication-devise'
-gem 'refinerycms-wymeditor'
+#gem 'refinerycms'
+#gem 'refinerycms-authentication-devise'
+#gem 'refinerycms-wymeditor'
 # We use this version of refinerycms-i18n because of the crash in story 1831. IT MUST BE REMOVED on bump of refinery to version 5
-gem 'refinerycms-i18n', '4.0.2', git: 'https://github.com/refinery/refinerycms-i18n', ref: '30059ea'
+#gem 'refinerycms-i18n', '4.0.2', git: 'https://github.com/refinery/refinerycms-i18n', ref: '30059ea'
 # See above
 gem 'mongoid'
 gem 'mongo'
@@ -48,7 +66,7 @@ gem 'coffee-rails'#, '~> 3.2.1'
 gem 'uglifier'#, '>= 1.0.3'
 gem 'jquery-rails'
 gem 'font_awesome5_rails'
-gem 'refinerycms-county_pages', :path => 'vendor/extensions'
+#gem 'refinerycms-county_pages', :path => 'vendor/extensions'
 gem 'rubocop-rails'
 gem 'rubocop', '~> 1.23.0', require: false
 gem 'browser'
