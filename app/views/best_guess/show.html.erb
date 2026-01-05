@@ -25,7 +25,7 @@
     <%= horz_advert('freebmd_hrec_1') %>
   <% end %>
   <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
-  <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
+  <div class="grid__item one-half lap-one-whole palm-one-whole ">
     <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s #{record_type.downcase} record" %></h1>
     <hr>
     <section>
