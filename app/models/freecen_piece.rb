@@ -153,12 +153,15 @@ class FreecenPiece
     def extract_year_and_piece(description)
       parts = description.split('.')
       stem = parts[0]
+
       first_two_characters = stem.slice(0, 2).upcase if stem.slice(0, 2).present?
       third_character = stem.slice(2, 1)
       third_and_fourth = stem.slice(2, 2)
       last_three = stem.slice(5, 3)
       last_four = stem.slice(4, 4)
-      last_five = stem.slice(3, 5)
+      # last_five = stem.slice(3, 5)
+      first_five = stem.slice(0, 5).upcase
+
       case first_two_characters
       when 'RG'
         if third_character == '9' || third_and_fourth == '09'
@@ -181,13 +184,15 @@ class FreecenPiece
           year = '1911'
         end
       when 'HO'
-        if third_and_fourth == '51'
-          piece = last_four
-          year = '1851'
-        else
+
+        if first_five == 'HO107'
           piece = last_three
-          year = '1841'
+        else
+          piece = last_four.to_i.to_s
         end
+
+        year = piece.to_i <= 1465 ? '1841' : '1851'
+
       when 'HS'
         if third_and_fourth == '51'
           piece = last_three

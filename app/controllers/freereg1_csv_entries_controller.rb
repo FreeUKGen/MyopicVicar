@@ -104,7 +104,6 @@ class Freereg1CsvEntriesController < ApplicationController
 
     redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     @freereg1_csv_entry.clean_up_ucf_list
-    @freereg1_csv_file.freereg1_csv_entries.delete(@freereg1_csv_entry)
     @freereg1_csv_entry.destroy
     @freereg1_csv_file.update_statistics_and_access(session[:my_own])
     flash[:notice] = 'The deletion of the entry was successful and the batch is locked'

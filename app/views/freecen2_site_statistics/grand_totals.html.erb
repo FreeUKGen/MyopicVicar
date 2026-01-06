@@ -12,16 +12,16 @@
   <% Freecen::CENSUS_YEARS_ARRAY.each.each do |year| %>
     <tr >
       <td> <%= year %></td>
-      <td> <%= number_with_delimiter(@freecen2_contents.records[:total][year][:pieces_online]) %></td>
-      <td> <%= number_with_delimiter(@freecen2_contents.records[:total][year][:pieces])%></td>
+      <td> <%= number_with_delimiter(@freecen2_county_contents.records[year][:pieces_online]) %></td>
+      <td> <%= number_with_delimiter(@freecen2_county_contents.records[year][:pieces])%></td>
       <td> <%= number_with_delimiter(@freecen2_site_statistics.records[:total][year][:search_records]) %></td>
       <td> <%= number_with_delimiter(@freecen2_site_statistics.records[:total][year][:dwellings]) %></td>
     </tr>
   <% end%>
   <tr >
     <td> Total</td>
-    <td> <%= number_with_delimiter(@freecen2_contents.records[:total][:total][:pieces_online]) %></td>
-    <td> <%= number_with_delimiter(@freecen2_contents.records[:total][:total][:pieces])%></td>
+    <td> <%= number_with_delimiter(@freecen2_county_contents.records[:total][:pieces_online]) %></td>
+    <td> <%= number_with_delimiter(@freecen2_county_contents.records[:total][:pieces])%></td>
     <td> <%= number_with_delimiter(@freecen2_site_statistics.records[:total][:total][:search_records]) %></td>
     <td> <%= number_with_delimiter(@freecen2_site_statistics.records[:total][:total][:dwellings]) %></td>
   </tr>

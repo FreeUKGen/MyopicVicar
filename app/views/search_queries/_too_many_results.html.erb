@@ -7,6 +7,6 @@
       You can also select the type of event that is searched (e.g. baptism).<br>
     <% end%>
     If you are using the Nearby Option then select the Narrow Search button above to halve the number of additional places. It can be used again and again if desired. <br>
-    The number of results for this search equals or exceeds our display limit of <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS%>. This limit is there to avoid overloading your device with too much information at one time.
+    The number of results for this search equals or exceeds our display limit of <%= FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")%>. This limit is there to avoid overloading your device with too much information at one time.
   </p>
 </div>
