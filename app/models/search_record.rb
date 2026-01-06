@@ -53,6 +53,7 @@ class SearchRecord
   field :search_record_version, type: String
   field :digest, type: String
   field :line_id, type: String
+  field :transcribed_by, type: String
 
   # It contains hashes with keys :first_name, :last_name, :role
   field :transcript_names, type: Array # , :required => true
@@ -492,6 +493,7 @@ class SearchRecord
       search_record = entry.search_record
       new_search_record = SearchRecord.new(search_record_parameters)
       new_search_record[:freereg1_csv_entry_id] = entry.id
+      new_search_record[:transcribed_by] = entry.transcribed_by if entry.transcribed_by.present?      
       new_search_record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
       new_search_record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
       new_search_record.transform
