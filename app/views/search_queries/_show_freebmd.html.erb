@@ -52,9 +52,9 @@
       <% show_large_ad = @search_results.size > 6 %>
           <div class="grid__item <%= show_large_ad ? 'three-tenths' : 'two-tenths' %> lap-two-tenths palm-one-whole text--right push--left" id="results_table_ad" style="<%= show_large_ad ? 'flex-direction: column;' : '' %>">
             <% if show_large_ad %>
-              <h2 class="text--center" style="font-size:12pt;">Advertisements</h2>
+              <h2 class="text--right" style="font-size:12pt;">Advertisements</h2>
               <!-- GAM 71161633/FRBMD_freebmd2orguk/Vrec_Sticky -->
-              <div data-fuse="Vrec_Sticky"></div>
+              <div data-fuse="Vrec_Sticky" class="float--right"></div>
               <div class="float--right push--top">
                 <iframe src="<%= iframe_src_tall %>" width='160' height='600' widget='records' frameborder='0' scrolling= 'no'></iframe>
               </div>
