@@ -116,8 +116,7 @@
                       <% @search_query.get_search_record_details(search_record).each do |key, value| %>
                         <%= "#{key} #{value}" unless key == "Page" %>
                       <% end %>
-                      Page
-                      <%= link_to "#{search_record[:Page]}", same_page_entries_path(volume: search_record[:Volume], page: search_record[:Page], record: search_record[:RecordTypeID], quarter: search_record[:QuarterNumber], district: search_record[:District], search_id: @search_query.id, entry_id: search_record[:RecordNumber]) %>
+                      <%= link_to "Page #{search_record[:Page]}", same_page_entries_path(volume: search_record[:Volume], page: search_record[:Page], record: search_record[:RecordTypeID], quarter: search_record[:QuarterNumber], district: search_record[:District], search_id: @search_query.id, entry_id: search_record[:RecordNumber]) %>
                     <% end %>
               </td>
               <% if blank_record_types or included_record_types.include? "1" %>
@@ -132,18 +131,18 @@
                     <% if search_record[:AssociateName].present? %>
                       <% spouse_records = same_page_as_record(search_record, search_record[:AssociateName]) %>
                       <% if search_record[:AssociateName].upcase == search_record[:Surname].upcase %>
-                        <%= "Spouse has the same surname #{search_record[:AssociateName]}: check Page link to clarify the situation" %>
+                        <%= "Spouse has the same surname #{search_record[:AssociateName]}: check 'Page #{search_record[:Page]}' link to clarify the situation" %>
                       <% elsif spouse_records.count == 1 %>
                         <% spouse_record = spouse_records[0] %>
                         <%= link_to("#{titleize_string(spouse_record[:GivenName])} #{spouse_record[:Surname].upcase}".html_safe,
                                     friendly_bmd_record_details_path(@search_query.id, spouse_record.id, spouse_record.friendly_url, search_entry: spouse_record.RecordNumber), :rel => "nofollow", :title => "")%>
                       <% elsif spouse_records.count > 1 %>
-                        <%= "More than one matching spouse surname #{search_record[:AssociateName]}: check Page link to see possible spouses" %>
+                        <%= "More than one matching spouse surname #{search_record[:AssociateName]}: follow 'Page #{search_record[:Page]}' link to see possible spouses" %>
                       <% else %>
-                        <%= 'See Page link for possible spouses' %>
+                        <%= "Follow 'Page #{search_record[:Page]}' link to see possible spouses" %>
                       <% end %>
                     <% else %>
-                      <%= 'See Page link for possible spouses' %>
+                      <%= "Follow 'Page #{search_record[:Page]}' link to see possible spouses" %>
                     <% end %>
                   <% end %>
                 </td>
