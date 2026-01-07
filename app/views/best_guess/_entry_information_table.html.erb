@@ -140,35 +140,6 @@
         <% end %>
       </td>
     </tr>
-    <% unless entry_type == "death" %>
-      <tr>
-        <th scope="row">
-          <%= mother_or_spouse_surname(record_type)%>
-        </th>
-        <td>
-          <% if search && record.AssociateName.present? %>
-            <% if entry_type == 'marriage' %>
-              <% if @search %>
-                <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
-              <% else %>
-                <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
-              <% end %>
-              <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
-            <% else %>
-              <%= record.AssociateName %>
-            <% end %>
-          <% end %>
-          <% if record.AssociateName.blank? %>
-            <% if entry_type == 'marriage' %>
-               <%= 'See Page link for possible spouses' %>
-            <% else %>
-               No data
-                <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-              <% end %>
-          <% end %>
-        </td>
-      </tr>
-    <% end %>
     <% if record.register_entry_number_format %>
     <tr>
       <th scope="row">
@@ -231,7 +202,36 @@
       </td>
     </tr>
     <% end %>
-    <% if entry_type == "marriage" %>
+    <% if entry_type != "death" && record.AssociateName.present? %>
+    <tr>
+      <th scope="row">
+        <%= mother_or_spouse_surname(record_type)%>
+      </th>
+      <td>
+        <% if search && record.AssociateName.present? %>
+          <% if entry_type == 'marriage' %>
+            <% if @search %>
+              <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+            <% else %>
+              <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+            <% end %>
+            <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+          <% else %>
+            <%= record.AssociateName %>
+          <% end %>
+        <% end %>
+        <% if record.AssociateName.blank? %>
+          <% if entry_type == 'marriage' %>
+            <%= render partial: 'best_guess/same_page_block', locals: {record: @current_record} %>
+          <% else %>
+            No data
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+    <% if entry_type == "marriage" && !record.AssociateName.present? %>
     <tr>
       <th scope="row">Entries on page <%= record.Page %></th>
       <td>
