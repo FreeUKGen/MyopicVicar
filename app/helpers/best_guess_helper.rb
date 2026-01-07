@@ -180,6 +180,13 @@ module BestGuessHelper
           content = format_registered(event_registered, field_value)
           result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
         end
+      when "PersistentURL"
+        protocol = URI.parse(request.original_url).scheme
+        domain = URI.parse(request.original_url).host
+        port = URI.parse(request.original_url).port
+        domain = domain + ':' + port.to_s if port.present?
+        content = protocol+"://"+domain+field_value
+        result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
       else
           result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
       end
