@@ -231,6 +231,14 @@
       </td>
     </tr>
     <% end %>
+    <% if entry_type == "marriage" %>
+    <tr>
+      <th scope="row">Entries on page <%= record.Page %></th>
+      <td>
+        <%= render partial: 'best_guess/same_page_block', locals: {record: @current_record} %>
+      </td>
+    </tr>
+  <% end %>
      <% if entry_type == "death" %>
       <tr>
         <th scope="row">
