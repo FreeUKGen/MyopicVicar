@@ -24,6 +24,7 @@
 
 <style>
   .search_form li ol li {margin-bottom: 0px;}
+  .ladda-button-reverse {padding-top: 3px; padding-bottom: 3px;}
   /* Fixed action buttons container for mobile */
   @media (max-width: 767px) {
     .mobile-fixed-actions {
@@ -424,14 +425,12 @@
                   <div class="grid__item desk-one-quarter lap-one-quarter palm-one-whole">
                     <span class="float--left"><%= link_to 'Help with searching', '/help/search_help' %></span>
                   </div>
-                  <div class="grid__item desk-one-quarter lap-one-quarter palm-one-whole text--center">
+                  <div class="grid__item desk-one-half lap-one-quarter palm-one-whole text--center">
                     <%= button_tag 'Search', type: 'submit', class: ' kittumani spinner-controller ladda-button' , id: 'search_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
                   </div>
-                  <div class="grid__item desk-one-quarter lap-one-quarter palm-one-whole">
-                    <%= button_tag 'Count hits', type: 'submit', name: 'search_query[count_hits]', value: true, class: 'ladda-button', data: {size: "s", color: 'freebmd'} %>
-                    &nbsp;&nbsp;<span id="hit_count"><%= @result_count.to_s %><% if @result_count.present? %> hits<% end %></span>
-                  </div>
-                  <div class="grid__item desk-one-quarter lap-one-quarter palm-one-whole">
+                  <div class="grid__item desk-one-quarter lap-one-quarter palm-one-whole float--right">
+                    <%= button_tag 'Count', type: 'submit', name: 'search_query[count_hits]', value: true, class: 'ladda-button-reverse', data: {size: "s", color: 'freebmd'} %>
+                    &nbsp;&nbsp;<span id="hit_count"><%= @result_count.to_s %><% if @result_count.present? %> hits<% end %></span>&nbsp;&nbsp;
                     <%= button_tag 'Clear Form', type: 'button', class: 'clear_forms ladda-button-reverse', data: {color: 'freebmd'} %>
                   </div>
                 </div>
