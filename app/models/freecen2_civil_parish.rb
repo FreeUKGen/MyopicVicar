@@ -192,7 +192,7 @@ class Freecen2CivilParish
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods :::::::::::::::::::::::::::::::::::::::
 
   def add_standard_names
-    self.standard_name = Freecen2Place.standard_place(name)
+    self.standard_name = Freecen2Place.standard_place(name) unless self.standard_name.nil?
   end
 
   def check_new_name(new_name)
