@@ -493,7 +493,17 @@ module FreecenValidations
         if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
           return [false, '?']
         else
-          return [false, 'invalid text']
+          if field.include?('/')
+
+            slash_char_posn = (0...field.length).find_all { |i| field[i, 1] == '/' }
+
+            slash_char_posn.each do |slash_char|
+              char_before_slash = slash_char - 1
+              char_after_slash = slash_char + 1
+              return [false, 'invalid text'] unless char_before_slash.positive? && char_after_slash <= field.length && field[char_before_slash] =~ /\d/ && field[char_after_slash] =~ /\d/
+
+            end
+          end
         end
       end
 
