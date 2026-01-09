@@ -775,7 +775,7 @@ module ApplicationHelper
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
       #freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
       freecenStat: 'https://www.freecen.org.uk/freecen2_county_contents?locale=en',
-      #freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en', #AEV
+      #freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en',
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
     }
   end
