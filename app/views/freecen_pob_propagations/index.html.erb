@@ -15,22 +15,22 @@
       <ol class="grid">
         <p>To switch the Verbatim County, click the appropriate radio button and then the <b>Refresh</b> button.</p>
         <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_county">
-          <%= f.radio_button :pob_index_county, 'index_county' %> <b><%= @chapman_code_manage%></b> <small> (<%= @county_manage%>) </small>
+          <%= f.radio_button :pob_index_county, 'index_county', :checked => @chapman_code_manage == @chapman_code %> <b><%= @chapman_code_manage%></b> <small> (<%= @county_manage%>) </small>
         </li>
         <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_eng">
-          <%= f.radio_button :pob_index_county, 'ENG' %> <b>ENG</b> <small> (England) </small>
+          <%= f.radio_button :pob_index_county, 'ENG', :checked => @chapman_code == 'ENG' %> <b>ENG</b> <small> (England) </small>
         </li>
         <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_irl">
-          <%= f.radio_button :pob_index_county, 'IRL' %> <b>IRL</b> <small> (Ireland) </small>
+          <%= f.radio_button :pob_index_county, 'IRL', :checked => @chapman_code == 'IRL' %> <b>IRL</b> <small> (Ireland) </small>
         </li>
         <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_ovf">
-          <%= f.radio_button :pob_index_county, 'OVF' %> <b>OVF</b> <small> (Born Overseas) </small>
+          <%= f.radio_button :pob_index_county, 'OVF', :checked => @chapman_code == 'OVF' %> <b>OVF</b> <small> (Born Overseas) </small>
         </li>
         <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_sct">
-          <%= f.radio_button :pob_index_county, 'SCT' %> <b>SCT</b> <small> (Scotland) </small>
+          <%= f.radio_button :pob_index_county, 'SCT', :checked => @chapman_code == 'SCT' %> <b>SCT</b> <small> (Scotland) </small>
         </li>
         <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_wls">
-          <%= f.radio_button :pob_index_county, 'WLS' %> <b>WLS</b> <small> (Wales) </small>
+          <%= f.radio_button :pob_index_county, 'WLS', :checked => @chapman_code == 'WLS' %> <b>WLS</b> <small> (Wales) </small>
         </li>
         <li class="grid__item one-whole lap-one-whole palm-one-whole" id="b_submit"><br>
           <%= submit_tag "Refresh", :class => "btn  btn--small"%>
