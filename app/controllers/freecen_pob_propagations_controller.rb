@@ -55,8 +55,8 @@ class FreecenPobPropagationsController < ApplicationController
     redirect_back(fallback_location: { action: 'index' }, notice: 'The pob propagation was not found ') && return if @pob_propagation.blank?
 
     get_user_info_from_userid
-    @chapman_code = session[:chapman_code]
-    @county = session[:county]
+    @chapman_code = @pob_propagation.match_verbatim_birth_county
+    @county = ChapmanCode.name_from_code(@chapman_code)
   end
 
   private
