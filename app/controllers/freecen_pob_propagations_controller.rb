@@ -17,9 +17,12 @@ class FreecenPobPropagationsController < ApplicationController
     @pob_propagation = FreecenPobPropagation.find(params[:id])
     redirect_back(fallback_location: { action: 'index' }, notice: 'The pob propagation was not found ') && return if @pob_propagation.blank?
 
+    @chapman_code = @pob_propagation.match_verbatim_birth_county
+    @county = ChapmanCode.name_from_code(@chapman_code)
     @pob_propagation.delete
     flash[:notice] = 'The destruction of the pob propagation was successful'
-    redirect_to action: 'index'
+    # redirect_to action: 'index'
+    redirect_to freecen_pob_propagations_path(county: @county)
   end
 
   def index
