@@ -1,13 +1,42 @@
 <% breadcrumb :freecen_pob_propagations,@chapman_code %>
 <h1 style="text-align: center">Listing of FreeCen POB Propagations for <%= @county%> (<%= @chapman_code%>)</h1>
-<h2 style="text-align: center">ordered by <%=@sorted_by%></h2>
 <div class=" text--center push--bottom">
-  Click button to change the order of display :
-  <% if @sorted_by != 'Most Recent Creation Date' %>
-    <%= link_to 'Most Recent Creation Date', freecen_pob_propagations_path(county: @county, sorted_by: 'Most Recent Creation Date'), method: :get , :class => "btn btn--small", title: 'Reorder the list showing most recently created first' %>
-  <% end %>
-  <% if @sorted_by != 'Verbatim Birth Place' %>
-    <%= link_to 'Verbatim Birth Place', freecen_pob_propagations_path(county: @county, sorted_by: 'Verbatim Birth Place'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical Verbatim Place Name' %>
+  <%= form_for(:pob_propagations_index, url: freecen_pob_propagations_path, method: :get) do |f| %>
+    Ordered by: <b><%=@sorted_by%></b>. Click button to change the order of display :
+    <% if @sorted_by != 'Most Recent Creation Date' %>
+      <%= link_to 'Most Recent Creation Date', freecen_pob_propagations_path(county: @county, sorted_by: 'Most Recent Creation Date'), method: :get , :class => "btn btn--small", title: 'Reorder the list showing most recently created first' %>
+    <% end %>
+    <% if @sorted_by != 'Verbatim Birth Place' %>
+      <%= link_to 'Verbatim Birth Place', freecen_pob_propagations_path(county: @county, sorted_by: 'Verbatim Birth Place'), method: :get , :class => "btn btn--small", title: 'Reorder the list according to the alphabetical Verbatim Place Name' %>
+    <% end %>
+  </div>
+  <div>
+    <fieldset class="input" style="text-align: center">
+      <ol class="grid">
+        <p>To switch the Verbatim County, click the appropriate radio button and then the <b>Refresh</b> button.</p>
+        <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_county">
+          <%= f.radio_button :pob_index_county, 'index_county' %> <b><%= @chapman_code_manage%></b> <small> (<%= @county_manage%>) </small>
+        </li>
+        <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_eng">
+          <%= f.radio_button :pob_index_county, 'ENG' %> <b>ENG</b> <small> (England) </small>
+        </li>
+        <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_irl">
+          <%= f.radio_button :pob_index_county, 'IRL' %> <b>IRL</b> <small> (Ireland) </small>
+        </li>
+        <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_ovf">
+          <%= f.radio_button :pob_index_county, 'OVF' %> <b>OVF</b> <small> (Born Overseas) </small>
+        </li>
+        <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_sct">
+          <%= f.radio_button :pob_index_county, 'SCT' %> <b>SCT</b> <small> (Scotland) </small>
+        </li>
+        <li class="grid__item one-sixth lap-one-quarter palm-one-whole" id="rb_wls">
+          <%= f.radio_button :pob_index_county, 'WLS' %> <b>WLS</b> <small> (Wales) </small>
+        </li>
+        <li class="grid__item one-whole lap-one-whole palm-one-whole" id="b_submit"><br>
+          <%= submit_tag "Refresh", :class => "btn  btn--small"%>
+        </li>
+      </ol>
+    </fieldset>
   <% end %>
 </div>
 <div class="scrollable ">
