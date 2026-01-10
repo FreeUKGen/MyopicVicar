@@ -17,15 +17,32 @@ class FreecenPobPropagationsController < ApplicationController
     @pob_propagation = FreecenPobPropagation.find(params[:id])
     redirect_back(fallback_location: { action: 'index' }, notice: 'The pob propagation was not found ') && return if @pob_propagation.blank?
 
+    @chapman_code = @pob_propagation.match_verbatim_birth_county
+    @county = ChapmanCode.name_from_code(@chapman_code)
     @pob_propagation.delete
     flash[:notice] = 'The destruction of the pob propagation was successful'
-    redirect_to action: 'index'
+    # redirect_to action: 'index'
+    redirect_to freecen_pob_propagations_path(county: @county)
   end
 
   def index
     get_user_info_from_userid
-    @chapman_code = session[:chapman_code]
-    @county = session[:county]
+    if params[:county].present?
+      @county = params[:county]
+      @chapman_code = ChapmanCode.code_from_name(@county)
+    else
+      @chapman_code = session[:chapman_code]
+      @county = session[:county]
+    end
+    @chapman_code_manage = session[:chapman_code]
+    @county_manage = session[:county]
+
+    if params[:commit] == 'Refresh'
+      @index_chapman_code = params[:pob_propagations_index][:pob_index_county]
+      @chapman_code = @index_chapman_code unless @index_chapman_code == 'index_county'
+      @county = ChapmanCode.name_from_code(@chapman_code)
+    end
+
     params[:sorted_by] = 'Most Recent Creation Date' if params[:sorted_by].blank?
     @sorted_by = params[:sorted_by]
     case @sorted_by
@@ -36,14 +53,13 @@ class FreecenPobPropagationsController < ApplicationController
     end
   end
 
-
   def show
     @pob_propagation = FreecenPobPropagation.find(params[:id])
     redirect_back(fallback_location: { action: 'index' }, notice: 'The pob propagation was not found ') && return if @pob_propagation.blank?
 
     get_user_info_from_userid
-    @chapman_code = session[:chapman_code]
-    @county = session[:county]
+    @chapman_code = @pob_propagation.match_verbatim_birth_county
+    @county = ChapmanCode.name_from_code(@chapman_code)
   end
 
   private
