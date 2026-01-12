@@ -75,7 +75,7 @@ class BestGuessController < ApplicationController
     quarter = @record.QuarterNumber
     district_number = @record.DistrictNumber
     record_type = @record.RecordTypeID
-    @spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).first
+    @spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).where.not(RecordNumber: record_number).first
   end
 
   def show_reference_entry
