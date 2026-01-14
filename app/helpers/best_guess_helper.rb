@@ -132,10 +132,24 @@ module BestGuessHelper
     end
   end
 
-  def value_or_refer_to_page(field_value)
-    unless field_value.blank?
-      field_value
-    else "See Page link for possible spouses"
+  def same_page_as_record(record, surname)
+    same_page_records = BestGuess.where(DistrictNumber: record[:DistrictNumber], Volume: record[:Volume], Page: record[:Page], QuarterNumber: record[:QuarterNumber], RecordTypeID: record[:RecordTypeID], Surname: surname)
+    same_page_records
+  end
+
+  def value_or_refer_to_page(field_value, record)
+    if field_value.present?
+      i = 0
+      this_page_records = same_page_as_record record
+      this_page_records.each do |this_page_record|
+        if this_page_record[:Surname] == field_value
+          i = i+1
+        end
+      end
+      if i == 1
+        return field_value + " found"
+      end
+    else return "See Page link for possible spouses"
     end
   end
 

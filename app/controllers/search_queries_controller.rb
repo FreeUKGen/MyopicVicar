@@ -103,14 +103,20 @@ class SearchQueriesController < ApplicationController
     if @search_query.save
       session[:query] = @search_query.id
       #raise @search_query.search_records.to_a.inspect
-      @search_results, success, error_type = @search_query.search_records.to_a
+      @search_results, @result_count, success, error_type = @search_query.search_records.to_a
+      @search_query.result_count = @result_count
+      @search_query.save
       error = error_type.to_i if error_type.present?
       redirect_to search_query_path(@search_query) and return if success
       redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
       redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
+      redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'It takes too long to execute the query. Please consider adding more filter.') and return if error == 3
     else
       render :new
     end
+  end
+
+  def search_records
   end
 
   def valid_wildcard_qurey
@@ -120,7 +126,7 @@ class SearchQueriesController < ApplicationController
 
   def edit
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+    redirect_back(falmaximum_lback_location: new_search_query_path, notice: message) && return unless proceed
   end
 
   def index
@@ -219,7 +225,7 @@ class SearchQueriesController < ApplicationController
     @session_id = params[:session_id]
     @feedback = nil
     @feedback = Feedback.find(params[:feedback_id]) if params[:feedback_id]
-    @search_queries = SearchQuery.where(session_id: @session_id).order_by(c_at: 1)
+    @search_queriesmaximum_ = SearchQuery.where(session_id: @session_id).order_by(c_at: 1)
   end
 
   def search_taking_too_long(message)

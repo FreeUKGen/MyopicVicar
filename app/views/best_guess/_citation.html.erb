@@ -1,4 +1,4 @@
-<% citation_types = ['compact_text', 'wikitree_ref', 'wikitree_inline', 'familytree', 'evidence_explained', 'wikipedia'] %>
+<% citation_types = ['compact_text', 'persistent_url', 'wikitree_ref', 'wikitree_inline', 'familytree', 'evidence_explained', 'wikipedia'] %>
 <% citation_types.each do |cite| %>
 	<%= render partial: "#{cite}_freebmd_citation", locals: {entry: @current_record} if lookup_context.find_all("best_guess/_#{cite}_freebmd_citation").any? %>
 <% end %>
