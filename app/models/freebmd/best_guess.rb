@@ -477,7 +477,7 @@ class BestGuess < FreebmdDbBase
       records.each do |rec|
         field_array << rec.send("#{field}")
       end
-      entries[field] = field_array.distinct.compact.sort
+      entries[field] = field_array.uniq.compact.sort
     end
     entries.delete_if { |_, v| v.blank? }.sort.to_h    
   end
