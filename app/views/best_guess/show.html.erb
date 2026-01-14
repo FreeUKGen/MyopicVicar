@@ -37,17 +37,14 @@
         <% end %>
       </div>
     </section>
-    
-    <%# if @option == '1' %>
-      <div id="display_scans">
-        <h4>Scans</h4>
-        <ul>
-          <%= render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @current_record) %>
-        </ul>
-        <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
-      </div>
-    <%# end %>
-    <%# if @option == '2' %>
+    <div id="display_scans">
+      <h4>Scans</h4>
+      <ul>
+        <%= render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @current_record) %>
+      </ul>
+      <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
+    </div>
+    <% if @option == '2' %>
       <div id="display_postems">
         <div>
           <h4>Postems</h4>
@@ -81,25 +78,25 @@
               <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
             </small>
           </div>
-          <!--p>Submit a postem:</p>
-          <div class=""-->
-            <%#= semantic_form_for(@new_postem) do |f| %>
-              <%#= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
-              <%#= f.hidden_field('Hash', value: @new_postem.Hash) %>
-              <%#= hidden_field_tag('search_query', @search_query.id) if @search %>
-              <!--ol class="grid">
-                <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom"-->
-                  <%#= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
-                <!--/li>
-                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom"-->
+          <p>Submit a postem:</p>
+          <div class="">
+            <%= semantic_form_for(@new_postem) do |f| %>
+              <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
+              <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
+              <%= hidden_field_tag('search_query', @search_query.id) if @search %>
+              <ol class="grid">
+                <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
+                  <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
+                </li>
+                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom">
                   <%#= button_tag 'Submit Postem', type: :submit, class: 'btn btn--natural' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
-                <!--/li>
-              </ol-->
-            <%# end %>
-          <!--/div-->
+                </li>
+              </ol>
+            <% end %>
+          </div>
         </div>
       </div>
-    <%# end %>
+    <% end %>
     <h3>Need help?</h3>
     <p>
       You can find information about the Entry Information page in our <%= link_to 'Help', '/help/entry_help'%> section.
