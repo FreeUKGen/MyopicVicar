@@ -217,11 +217,11 @@ private
 
   def render_scan_row(series_path, current_record, scan_number)
     image_url = BestGuess.build_image_server_request(scan_link_url(current_record, series_path))
-    link_to_text = "Scan #{scan_number}"
+    link_to_text = "Download Scan #{scan_number}"
     link_to(link_to_text, image_url, target: "_blank", class: "scan-link")
-    #content_tag(:li, link_to(link_to_text, image_url, target: "_blank", class: "scan-link"))
+    content_tag(:li, link_to(link_to_text, image_url, target: "_blank", class: "scan-link"))
   end
-safe_join(render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @current_record), ', '.html_safe)
+
   def render_scan_row_old(series_path, current_record)
     image_url = BestGuess.build_image_server_request(scan_link_url(current_record, series_path))
     range = series_path[:range].present? ? "/#{series_path[:range]}" : ''
