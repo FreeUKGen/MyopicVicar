@@ -254,6 +254,18 @@ class SearchQueriesController < ApplicationController
 
     flash[:notice] = 'Your search results are not available. Please repeat your search' if @search_query.result_count.blank?
     redirect_back(fallback_location: new_search_query_path) && return if @search_query.result_count.blank?
+
+    # Performance optimization: Cache viewed_records lookup once instead of querying for each record
+    @viewed_records_set = if @search_query.search_result.present? && @search_query.search_result.viewed_records.present?
+      Set.new(@search_query.search_result.viewed_records.map(&:to_s))
+    else
+      Set.new
+    end
+    
+    # Performance optimization: Preload associations to avoid N+1 queries for freereg location
+    if MyopicVicar::Application.config.template_set == 'freereg' && @search_results.present?
+      preload_freereg_associations(@search_results)
+    end
     if @search_query.result_count >= FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
       @result_count = @search_query.result_count
       @search_results = []
@@ -307,6 +319,35 @@ class SearchQueriesController < ApplicationController
   end
 
   private
+
+  def preload_freereg_associations(search_results)
+    entry_ids = search_results.map { |sr| sr[:freereg1_csv_entry_id] }.compact.uniq
+    return if entry_ids.empty?
+    
+    # Batch load entries
+    entries = Freereg1CsvEntry.where(:_id.in => entry_ids).to_a
+    entry_hash = entries.index_by(&:id)
+    
+    # Preload files
+    file_ids = entries.map(&:freereg1_csv_file_id).compact.uniq
+    files = Freereg1CsvFile.where(:_id.in => file_ids).to_a
+    file_hash = files.index_by(&:id)
+    
+    # Attach preloaded associations to search records
+    search_results.each do |search_record|
+      entry_id = search_record[:freereg1_csv_entry_id]
+      next unless entry_id
+      
+      entry = entry_hash[entry_id]
+      next unless entry
+      
+      # Cache the entry and file on the search_record object
+      search_record.instance_variable_set(:@preloaded_entry, entry)
+      if entry.freereg1_csv_file_id && file_hash[entry.freereg1_csv_file_id]
+        search_record.instance_variable_set(:@preloaded_file, file_hash[entry.freereg1_csv_file_id])
+      end
+    end
+  end
 
   def search_params
     params.require(:search_query).permit!

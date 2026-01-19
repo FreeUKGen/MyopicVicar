@@ -12,11 +12,12 @@
                   .uniq
                   .reject(&:blank?) %>
 
-  <% search_record[:transcript_names].uniq.each_with_index do |name, i| %>
-    <% if name['type'] == 'primary' %>
-      <% if i > 0 %><br><% end %>
-      <%= "#{name['first_name']} #{name['last_name']}" %>
-    <% end %>
+ <% primary_names = search_record[:transcript_names]&.select { |n| n['type'] == 'primary' } || [] %>
+  <% primary_names.each_with_index do |name, i| %>
+    <% if i > 0 %>
+      <br />
+    <% end%>
+    <%= "#{name['first_name']} #{name['last_name']} " %>
   <% end %>
 
   <%# Baptisms only 'ba': show tooltip when both parents' surnames are present %>

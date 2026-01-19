@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'set'
 module ApplicationHelper
   DONATE_ID = {
     #field: id
@@ -415,6 +416,16 @@ module ApplicationHelper
   def valid_directory?
     File.directory?(output_directory_path)
   end
+
+   def viewed(search_query, search_record)
+    # Performance optimization: Use cached viewed_records_set from controller if available
+    viewed_records_set = @viewed_records_set || begin
+      search_results = search_query.search_result
+      viewed_records = search_results.viewed_records
+      viewed_records.present? ? Set.new(viewed_records.map(&:to_s)) : Set.new
+    end
+    viewed_records_set.include?("#{search_record[:_id]}") ? '(Seen)' : ''
+  end 
 
   # Create a new file named as current date and time
   def new_file(name)

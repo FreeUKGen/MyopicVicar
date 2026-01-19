@@ -97,14 +97,18 @@ module SearchQueriesHelper
   end
 
   def format_freereg_location(search_record)
-    result = false
-    entry = search_record.freereg1_csv_entry
-    file = entry.freereg1_csv_file if entry.present?
-    result, place, church, register = file.location_from_file if file.present?
-    if file.present? && result
+    # Performance optimization: Use preloaded entry/file if available
+    entry = search_record.instance_variable_get(:@preloaded_entry) || search_record.freereg1_csv_entry
+    return 'Unknown location' unless entry.present?
+    
+    file = search_record.instance_variable_get(:@preloaded_file) || entry.freereg1_csv_file
+    return 'Unknown location' unless file.present?
+    
+    result, place, church, register = file.location_from_file
+    if result && place.present? && church.present?
       location = "#{place.place_name} : #{church.church_name} : #{RegisterType.display_name(register.register_type)}"
     else
-      location =  'Unknown location'
+      location = 'Unknown location'
       logger.warn "#{appname_upcase}::SEARCH::RECORD ID is  #{search_record.id}"
     end
     location
@@ -149,12 +153,12 @@ module SearchQueriesHelper
   def county(search_record)
     chapman = search_record[:chapman_code]
     if chapman.present?
-      county = ChapmanCode.has_key(chapman)
+      ChapmanCode.has_key(chapman) || ""
     else
-      place = Place.id(search_record[:place_id].to_s).first
-      place.present? ? county = place.county : county = ""
+      # Performance optimization: Use preloaded place if available
+      place = search_record.instance_variable_get(:@preloaded_place) || Place.id(search_record[:place_id].to_s).first
+      place.present? ? place.county : ""
     end
-    county
   end
 
   def transcript_date(search_record)
