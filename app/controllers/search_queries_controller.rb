@@ -328,7 +328,7 @@ class SearchQueriesController < ApplicationController
       entries_by_id = entries.index_by { |e| e.id.to_s }
     end
     
-    # Batch load files with their register associations
+    # Batch load files
     file_ids = entries_by_id.values.map(&:freereg1_csv_file_id).compact.uniq
     files_by_id = {}
     if file_ids.any?
@@ -337,50 +337,53 @@ class SearchQueriesController < ApplicationController
       
       # Batch load registers for all files
       register_ids = files.map(&:register_id).compact.uniq
+      registers_by_id = {}
       if register_ids.any?
         registers = Register.where(:_id.in => register_ids).to_a
         registers_by_id = registers.index_by { |r| r.id.to_s }
         
         # Batch load churches for all registers
         church_ids = registers.map(&:church_id).compact.uniq
+        churches_by_id = {}
         if church_ids.any?
           churches = Church.where(:_id.in => church_ids).to_a
           churches_by_id = churches.index_by { |c| c.id.to_s }
           
           # Batch load places for all churches
           church_place_ids = churches.map(&:place_id).compact.uniq
+          church_places_by_id = {}
           if church_place_ids.any?
             church_places = Place.where(:_id.in => church_place_ids).to_a
             church_places_by_id = church_places.index_by { |p| p.id.to_s }
-            
-            # Associate places with churches
-            churches.each do |church|
-              if church.place_id.present? && church_places_by_id[church.place_id.to_s]
-                church.association(:place).target = church_places_by_id[church.place_id.to_s]
-              end
+          end
+          
+          # Cache places in churches using instance variables
+          churches.each do |church|
+            if church.place_id.present? && church_places_by_id[church.place_id.to_s]
+              church.instance_variable_set(:@place, church_places_by_id[church.place_id.to_s])
             end
           end
           
-          # Associate churches with registers
+          # Cache churches in registers using instance variables
           registers.each do |register|
             if register.church_id.present? && churches_by_id[register.church_id.to_s]
-              register.association(:church).target = churches_by_id[register.church_id.to_s]
+              register.instance_variable_set(:@church, churches_by_id[register.church_id.to_s])
             end
           end
         end
         
-        # Associate registers with files
+        # Cache registers in files using instance variables
         files.each do |file|
           if file.register_id.present? && registers_by_id[file.register_id.to_s]
-            file.association(:register).target = registers_by_id[file.register_id.to_s]
+            file.instance_variable_set(:@register, registers_by_id[file.register_id.to_s])
           end
         end
       end
       
-      # Associate files with entries
+      # Cache files in entries using instance variables
       entries.each do |entry|
         if entry.freereg1_csv_file_id.present? && files_by_id[entry.freereg1_csv_file_id.to_s]
-          entry.association(:freereg1_csv_file).target = files_by_id[entry.freereg1_csv_file_id.to_s]
+          entry.instance_variable_set(:@freereg1_csv_file, files_by_id[entry.freereg1_csv_file_id.to_s])
         end
       end
     end
@@ -388,29 +391,28 @@ class SearchQueriesController < ApplicationController
     # Batch load places for search records
     places_by_id = {}
     if place_ids.any?
-      # Convert place_ids to strings for comparison
       place_id_strings = place_ids.map(&:to_s).uniq
       places = Place.where(:_id.in => place_id_strings).to_a
       places_by_id = places.index_by { |p| p.id.to_s }
     end
     
-    # Pre-associate the loaded objects with search records
+    # Cache entries and places in search records using instance variables
     search_results.each do |search_record|
-      # Preload entry and its associations
+      # Cache entry
       if search_record[:freereg1_csv_entry_id].present?
         entry_id_str = search_record[:freereg1_csv_entry_id].to_s
         entry = entries_by_id[entry_id_str]
         if entry
-          search_record.association(:freereg1_csv_entry).target = entry
+          search_record.instance_variable_set(:@freereg1_csv_entry, entry)
         end
       end
       
-      # Preload place
+      # Cache place
       if search_record[:place_id].present?
         place_id_str = search_record[:place_id].to_s
         place = places_by_id[place_id_str]
         if place
-          search_record.association(:place).target = place
+          search_record.instance_variable_set(:@place, place)
         end
       end
     end
