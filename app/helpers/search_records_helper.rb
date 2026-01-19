@@ -25,11 +25,15 @@ module SearchRecordsHelper
   end
 
   def viewed(search_query, search_record)
-    search_results = search_query.search_result
-    viewed_records = search_results.viewed_records
+    # Cache the viewed_records lookup to avoid repeated access to search_result
+    @viewed_records_cache ||= begin
+      search_results = search_query.search_result
+      search_results.viewed_records || []
+    end
+    
     field = ''
-    if viewed_records.present?
-      field = '(Seen)' if viewed_records.include?("#{search_record[:_id]}")
+    if @viewed_records_cache.present?
+      field = '(Seen)' if @viewed_records_cache.include?("#{search_record[:_id]}")
     end
     field
   end

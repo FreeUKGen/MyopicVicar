@@ -265,6 +265,8 @@ class SearchQueriesController < ApplicationController
         flash[:notice] = 'Your search results are not available. Please repeat your search'
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
+      preload_search_record_associations(@search_results) if @search_results.present?
+      preload_search_record_associations(@ucf_results) if @ucf_results.present?
     end
   end
 
@@ -310,5 +312,107 @@ class SearchQueriesController < ApplicationController
 
   def search_params
     params.require(:search_query).permit!
+  end
+
+  def preload_search_record_associations(search_results)
+    return if search_results.blank?
+    
+    # Collect all IDs that need to be loaded
+    entry_ids = search_results.map { |sr| sr[:freereg1_csv_entry_id] }.compact.uniq
+    place_ids = search_results.map { |sr| sr[:place_id] }.compact.uniq
+    
+    # Batch load entries
+    entries_by_id = {}
+    if entry_ids.any?
+      entries = Freereg1CsvEntry.where(:_id.in => entry_ids).to_a
+      entries_by_id = entries.index_by { |e| e.id.to_s }
+    end
+    
+    # Batch load files with their register associations
+    file_ids = entries_by_id.values.map(&:freereg1_csv_file_id).compact.uniq
+    files_by_id = {}
+    if file_ids.any?
+      files = Freereg1CsvFile.where(:_id.in => file_ids).to_a
+      files_by_id = files.index_by { |f| f.id.to_s }
+      
+      # Batch load registers for all files
+      register_ids = files.map(&:register_id).compact.uniq
+      if register_ids.any?
+        registers = Register.where(:_id.in => register_ids).to_a
+        registers_by_id = registers.index_by { |r| r.id.to_s }
+        
+        # Batch load churches for all registers
+        church_ids = registers.map(&:church_id).compact.uniq
+        if church_ids.any?
+          churches = Church.where(:_id.in => church_ids).to_a
+          churches_by_id = churches.index_by { |c| c.id.to_s }
+          
+          # Batch load places for all churches
+          church_place_ids = churches.map(&:place_id).compact.uniq
+          if church_place_ids.any?
+            church_places = Place.where(:_id.in => church_place_ids).to_a
+            church_places_by_id = church_places.index_by { |p| p.id.to_s }
+            
+            # Associate places with churches
+            churches.each do |church|
+              if church.place_id.present? && church_places_by_id[church.place_id.to_s]
+                church.association(:place).target = church_places_by_id[church.place_id.to_s]
+              end
+            end
+          end
+          
+          # Associate churches with registers
+          registers.each do |register|
+            if register.church_id.present? && churches_by_id[register.church_id.to_s]
+              register.association(:church).target = churches_by_id[register.church_id.to_s]
+            end
+          end
+        end
+        
+        # Associate registers with files
+        files.each do |file|
+          if file.register_id.present? && registers_by_id[file.register_id.to_s]
+            file.association(:register).target = registers_by_id[file.register_id.to_s]
+          end
+        end
+      end
+      
+      # Associate files with entries
+      entries.each do |entry|
+        if entry.freereg1_csv_file_id.present? && files_by_id[entry.freereg1_csv_file_id.to_s]
+          entry.association(:freereg1_csv_file).target = files_by_id[entry.freereg1_csv_file_id.to_s]
+        end
+      end
+    end
+    
+    # Batch load places for search records
+    places_by_id = {}
+    if place_ids.any?
+      # Convert place_ids to strings for comparison
+      place_id_strings = place_ids.map(&:to_s).uniq
+      places = Place.where(:_id.in => place_id_strings).to_a
+      places_by_id = places.index_by { |p| p.id.to_s }
+    end
+    
+    # Pre-associate the loaded objects with search records
+    search_results.each do |search_record|
+      # Preload entry and its associations
+      if search_record[:freereg1_csv_entry_id].present?
+        entry_id_str = search_record[:freereg1_csv_entry_id].to_s
+        entry = entries_by_id[entry_id_str]
+        if entry
+          search_record.association(:freereg1_csv_entry).target = entry
+        end
+      end
+      
+      # Preload place
+      if search_record[:place_id].present?
+        place_id_str = search_record[:place_id].to_s
+        place = places_by_id[place_id_str]
+        if place
+          search_record.association(:place).target = place
+        end
+      end
+    end
   end
 end
