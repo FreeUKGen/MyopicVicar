@@ -315,106 +315,110 @@ class SearchQueriesController < ApplicationController
   end
 
   def preload_search_record_associations(search_results)
-    return if search_results.blank?
-    
-    # Collect all IDs that need to be loaded
-    entry_ids = search_results.map { |sr| sr[:freereg1_csv_entry_id] }.compact.uniq
-    place_ids = search_results.map { |sr| sr[:place_id] }.compact.uniq
-    
-    # Batch load entries
-    entries_by_id = {}
-    if entry_ids.any?
-      entries = Freereg1CsvEntry.where(:_id.in => entry_ids).to_a
-      entries_by_id = entries.index_by { |e| e.id.to_s }
-    end
-    
-    # Batch load files
-    file_ids = entries_by_id.values.map(&:freereg1_csv_file_id).compact.uniq
-    files_by_id = {}
-    if file_ids.any?
-      files = Freereg1CsvFile.where(:_id.in => file_ids).to_a
-      files_by_id = files.index_by { |f| f.id.to_s }
+    def preload_search_record_associations(search_results)
+      return if search_results.blank?
       
-      # Batch load registers for all files
-      register_ids = files.map(&:register_id).compact.uniq
+      # Collect all IDs that need to be loaded
+      entry_ids = search_results.map { |sr| sr[:freereg1_csv_entry_id] }.compact.uniq
+      place_ids = search_results.map { |sr| sr[:place_id] }.compact.uniq
+      
+      # Batch load entries
+      entries_by_id = {}
+      if entry_ids.any?
+        entries = Freereg1CsvEntry.where(:_id.in => entry_ids).only(:id, :freereg1_csv_file_id).to_a
+        entries_by_id = entries.index_by { |e| e.id.to_s }
+      end
+      
+      # Batch load files
+      file_ids = entries_by_id.values.map(&:freereg1_csv_file_id).compact.uniq
+      files_by_id = {}
+      register_ids = []
+      if file_ids.any?
+        files = Freereg1CsvFile.where(:_id.in => file_ids).only(:id, :register_id).to_a
+        files_by_id = files.index_by { |f| f.id.to_s }
+        register_ids = files.map(&:register_id).compact.uniq
+      end
+      
+      # Batch load registers
       registers_by_id = {}
+      church_ids = []
       if register_ids.any?
-        registers = Register.where(:_id.in => register_ids).to_a
+        registers = Register.where(:_id.in => register_ids).only(:id, :church_id, :register_type).to_a
         registers_by_id = registers.index_by { |r| r.id.to_s }
-        
-        # Batch load churches for all registers
         church_ids = registers.map(&:church_id).compact.uniq
-        churches_by_id = {}
-        if church_ids.any?
-          churches = Church.where(:_id.in => church_ids).to_a
-          churches_by_id = churches.index_by { |c| c.id.to_s }
+      end
+      
+      # Batch load churches
+      churches_by_id = {}
+      church_place_ids = []
+      if church_ids.any?
+        churches = Church.where(:_id.in => church_ids).only(:id, :place_id, :church_name).to_a
+        churches_by_id = churches.index_by { |c| c.id.to_s }
+        church_place_ids = churches.map(&:place_id).compact.uniq
+      end
+      
+      # Batch load places for churches
+      church_places_by_id = {}
+      if church_place_ids.any?
+        church_places = Place.where(:_id.in => church_place_ids).only(:id, :place_name).to_a
+        church_places_by_id = church_places.index_by { |p| p.id.to_s }
+      end
+      
+      # Batch load places for search records
+      places_by_id = {}
+      if place_ids.any?
+        place_id_strings = place_ids.map(&:to_s).uniq
+        places = Place.where(:_id.in => place_id_strings).only(:id, :place_name, :county).to_a
+        places_by_id = places.index_by { |p| p.id.to_s }
+      end
+      
+      # Pre-compute location strings and cache them
+      location_cache = {}
+      county_cache = {}
+      
+      search_results.each do |search_record|
+        # Pre-compute location string
+        if search_record[:freereg1_csv_entry_id].present?
+          entry_id_str = search_record[:freereg1_csv_entry_id].to_s
+          entry = entries_by_id[entry_id_str]
           
-          # Batch load places for all churches
-          church_place_ids = churches.map(&:place_id).compact.uniq
-          church_places_by_id = {}
-          if church_place_ids.any?
-            church_places = Place.where(:_id.in => church_place_ids).to_a
-            church_places_by_id = church_places.index_by { |p| p.id.to_s }
-          end
-          
-          # Cache places in churches using instance variables
-          churches.each do |church|
-            if church.place_id.present? && church_places_by_id[church.place_id.to_s]
-              church.instance_variable_set(:@place, church_places_by_id[church.place_id.to_s])
-            end
-          end
-          
-          # Cache churches in registers using instance variables
-          registers.each do |register|
-            if register.church_id.present? && churches_by_id[register.church_id.to_s]
-              register.instance_variable_set(:@church, churches_by_id[register.church_id.to_s])
+          if entry && entry.freereg1_csv_file_id.present?
+            file = files_by_id[entry.freereg1_csv_file_id.to_s]
+            
+            if file && file.register_id.present?
+              register = registers_by_id[file.register_id.to_s]
+              
+              if register && register.church_id.present?
+                church = churches_by_id[register.church_id.to_s]
+                
+                if church && church.place_id.present?
+                  place = church_places_by_id[church.place_id.to_s]
+                  
+                  if place && register.register_type.present?
+                    location_str = "#{place.place_name} : #{church.church_name} : #{RegisterType.display_name(register.register_type)}"
+                    location_cache[search_record.id.to_s] = location_str
+                  end
+                end
+              end
             end
           end
         end
         
-        # Cache registers in files using instance variables
-        files.each do |file|
-          if file.register_id.present? && registers_by_id[file.register_id.to_s]
-            file.instance_variable_set(:@register, registers_by_id[file.register_id.to_s])
+        # Pre-compute county
+        if search_record[:chapman_code].present?
+          county_cache[search_record.id.to_s] = ChapmanCode.has_key(search_record[:chapman_code])
+        elsif search_record[:place_id].present?
+          place_id_str = search_record[:place_id].to_s
+          place = places_by_id[place_id_str]
+          if place
+            county_cache[search_record.id.to_s] = place.county || ""
           end
         end
       end
       
-      # Cache files in entries using instance variables
-      entries.each do |entry|
-        if entry.freereg1_csv_file_id.present? && files_by_id[entry.freereg1_csv_file_id.to_s]
-          entry.instance_variable_set(:@freereg1_csv_file, files_by_id[entry.freereg1_csv_file_id.to_s])
-        end
-      end
-    end
-    
-    # Batch load places for search records
-    places_by_id = {}
-    if place_ids.any?
-      place_id_strings = place_ids.map(&:to_s).uniq
-      places = Place.where(:_id.in => place_id_strings).to_a
-      places_by_id = places.index_by { |p| p.id.to_s }
-    end
-    
-    # Cache entries and places in search records using instance variables
-    search_results.each do |search_record|
-      # Cache entry
-      if search_record[:freereg1_csv_entry_id].present?
-        entry_id_str = search_record[:freereg1_csv_entry_id].to_s
-        entry = entries_by_id[entry_id_str]
-        if entry
-          search_record.instance_variable_set(:@freereg1_csv_entry, entry)
-        end
-      end
-      
-      # Cache place
-      if search_record[:place_id].present?
-        place_id_str = search_record[:place_id].to_s
-        place = places_by_id[place_id_str]
-        if place
-          search_record.instance_variable_set(:@place, place)
-        end
-      end
+      # Store caches as instance variables for use in helpers
+      @location_cache = location_cache
+      @county_cache = county_cache
     end
   end
 end

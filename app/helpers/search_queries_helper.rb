@@ -97,6 +97,12 @@ module SearchQueriesHelper
   end
 
   def format_freereg_location(search_record)
+    # Use cached location if available (from preloading)
+    if @location_cache && @location_cache[search_record.id.to_s]
+      return @location_cache[search_record.id.to_s]
+    end
+    
+    # Fallback to original method if cache not available
     result = false
     entry = search_record.freereg1_csv_entry
     file = entry.freereg1_csv_file if entry.present?
@@ -147,6 +153,12 @@ module SearchQueriesHelper
   end
 
   def county(search_record)
+    # Use cached county if available (from preloading)
+    if @county_cache && @county_cache[search_record.id.to_s]
+      return @county_cache[search_record.id.to_s]
+    end
+    
+    # Fallback to original method if cache not available
     chapman = search_record[:chapman_code]
     if chapman.present?
       county = ChapmanCode.has_key(chapman)
