@@ -123,6 +123,8 @@
         <% if district.present? %>
           <% if @search %>
             <%= district_link_or_name_id(district, record, search_id) %>
+          <% elsif @hash %>
+            <%= district.DistrictName %>
           <% else%>
             <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber)%>
           <% end %>
@@ -185,12 +187,7 @@
       </th>
       <td>
         <% unless record.Page.to_i == 0 %>
-          <% if @search %>
-            <%= render partial: 'page_records_navigation_search', locals: {record: @current_record, search_id: params[:search_id], original_record: @original_record} %>
-          <% end %>
-          <% if params[:saved_record] %>
-            <%= render partial: 'page_records_navigation_saved', locals: {record: @current_record, original_record: @original_record} %>
-          <% end %>
+          <%= link_to "#{record.Page}", same_page_entries_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: @original_record.RecordNumber) %>
         <% else%>
           <%= record.Page %>
         <% end %>
@@ -212,6 +209,8 @@
           <% if entry_type == 'marriage' %>
             <% if @search %>
               <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+            <% elsif @hash %>
+              <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber) %><br>
             <% else %>
               <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
             <% end %>
