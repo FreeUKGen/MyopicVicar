@@ -1,0 +1,53 @@
+<% if @additions_county == 'All' %>
+  <h2 style="text-align: center">Recent Additions for All Counties as of  <%= @interval_end.strftime('%d %b %Y') %>
+    <span class="accessibility">Database Record totals for Pieces added online in the last 30 days</span></h2>
+<% else %>
+  <h2 style="text-align: center">Recent Additions for <%= @additions_county %>  as of  <%= @interval_end.strftime('%d %b %Y') %>
+    <span class="accessibility">Database Record totals for Pieces for a specific County added online in the last 30 days</span>
+  </h2>
+<% end %>
+<h3 style="text-align: center">Places with Pieces added to the database in the previous 30 days </h3>
+<div  style="text-align: center">
+  <% if @additions_county == 'All' %>
+    <%= link_to 'Back to Totals for All Counties' , freecen2_county_contents_path, method: :get , :class => "btn btn--small" %>
+  <% else %>
+    <%= link_to 'Back to Totals for ' + @additions_county , index_by_county_freecen2_county_contents_path(county_description: @additions_county), method: :get , :class => "btn btn--small" %>
+  <% end %>
+</div>
+<p></p>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width " >
+    <thead >
+      <tr>
+        <% if @additions_county == 'All' %>
+          <th class='sticky-header'>County</th>
+        <% end %>
+        <th class='sticky-header'>Place</th>
+        <th class='sticky-header'>Year</th>
+        <th class='sticky-header'>New Records Online</th>
+        <th colspan = "3" class='sticky-header t15'>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%  @recent_additions.each do |entry| %>
+        <%#  # [0] = county name, [1] = place name, [2] = chapman code, [3] = freecen2_place_id, [4] = year, [5] = added records %>
+        <tr>
+          <% if @additions_county == 'All' %>
+            <td><%= entry[0] %></td>
+          <% end %>
+          <td><%= entry[1] %></td>
+          <td><%= entry[4] %></td>
+          <td><%= entry[5] %></td>
+          <td><%= locate_place_link(entry[3], 'exsmall') %></td>
+          <td><%= link_to 'View Pieces', display_pieces_by_status_freecen2_county_contents_path(:county_description => entry[0],  :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :order => 'status', :new_records => 'All'), class: "btn btn--exsmall", method: :get %></td>
+          <% if county_names_exist_for_place_year(entry[3], entry[4]) == true %>
+            <td><%= link_to 'View Names', freecen2_county_contents_place_names_path(:county_description => entry[0], :place_description => entry[1], :place_id => entry[3], :census_year => entry[4], :new_records => 'All'), class: "btn btn--exsmall", method: :get %></td>
+          <% else %>
+            <td> N/A </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<br />

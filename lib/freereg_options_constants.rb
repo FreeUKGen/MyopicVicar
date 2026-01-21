@@ -263,13 +263,16 @@ module FreeregOptionsConstants
 
   ISSUES = ['Data Question', 'Website Problem', 'Volunteering Question', 'Genealogical Question', 'Enhancement Suggestion', 'Thank-you' , 'General Comment'];
 
-  LOCATION_FIELDS = ['county', 'place', 'church_name', 'register_type'];
+  LOCATION_FIELDS = ['church_name', 'register_type'];
 
   MARKED_OPTIONS = ['y', 'yes', 'marked', 'true'];
 
   MARRIAGE_BY_LICENCE_OPTIONS = ['y', 'yes', 'licence', 'by licence', 'by_licence', 'marriage_by_licence', 'true'];
 
   MAXIMUM_NUMBER_OF_RESULTS = 500;
+  MAXIMUM_NUMBER_OF_RESULTS_FREECEN = 1000;
+
+  MAXIMUM_NUMBER_OF_RESULTS_FREEREG = 500;
 
   MAXIMUM_NUMBER_OF_SCANS = 500;
 

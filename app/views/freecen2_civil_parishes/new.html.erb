@@ -12,7 +12,7 @@
   <%= f.input :freecen2_place_id,  label: 'Freecen2 Place name:',required: true, selected:  @freecen2_place_name, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour very_large_selection_field_width', size:5 }%>
   <% if @scotland %>
     <%= f.input :number ,  label: 'Civil Parish Number: e.g. 10', required: true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
-    <%= f.input :suffix ,  label: 'Civil Parish Suffix: e.g. a or b', required: true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
+    <%= f.input :suffix ,  label: 'Civil Parish Suffix: e.g. a or b', input_html: {class: ' simple_form_bgcolour', size:40 }%>
   <%else%>
     <%= f.input :note, label: 'TNA Notes',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
     <%= f.input :prenote, label: 'TNA Prenote',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>

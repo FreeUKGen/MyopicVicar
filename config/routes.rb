@@ -100,6 +100,17 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index # not active
   resources :freecen2_contents
 
+  get 'freecen2_county_contents/county_index', to: 'freecen2_county_contents#county_index', as: :index_by_county_freecen2_county_contents
+  get 'freecen2_county_contents/place_index', to: 'freecen2_county_contents#place_index', as: :freecen2_county_contents_place_index
+  get 'freecen2_county_contents/place_names', to: 'freecen2_county_contents#place_names', as: :freecen2_county_contents_place_names
+  get 'freecen2_county_contents/display_pieces_by_status', to: 'freecen2_county_contents#display_pieces_by_status', as: :display_pieces_by_status_freecen2_county_contents
+  get 'freecen2_county_contents/display_pieces_by_name', to: 'freecen2_county_contents#display_pieces_by_name', as: :display_pieces_by_name_freecen2_county_contents
+  get 'freecen2_county_contents/display_pieces_by_number', to: 'freecen2_county_contents#display_pieces_by_number', as: :display_pieces_by_number_freecen2_county_contents
+  get 'freecen2_county_contents/new_records_index', to: 'freecen2_county_contents#new_records_index', as: :freecen2_county_contents_new_records_index
+  get 'freecen2_county_contents/for_place_names', to: 'freecen2_county_contents#for_place_names', as: :freecen2_county_contents_for_place_names
+  get 'freecen2_county_contents/piece_index', to: 'freecen2_county_contents#piece_index', as: :freecen2_county_contents_piece_index # not active
+  resources :freecen2_county_contents
+
   get 'freecen2_search_statistics/graphic', to: 'freecen2_search_statistics#graphic', as: :graphic_freecen2_search_statistics
   get 'freecen2_search_statistics/export_csv', to: 'freecen2_search_statistics#export_csv', as: :export_csv_freecen2_search_statistics
   resources :freecen2_search_statistics

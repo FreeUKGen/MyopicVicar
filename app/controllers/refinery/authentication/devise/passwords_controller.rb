@@ -13,9 +13,9 @@ module Refinery
         # POST /registrations/password
         def create
           if params[:authentication_devise_user].present? &&
-              (email = params[:authentication_devise_user][:email]).present?
+             (email = params[:authentication_devise_user][:email]).present? && (userid = params[:authentication_devise_user][:username]).present?
 
-            user = User.where(email: email).first
+            user = User.where(email: email, username: userid).first
             if user.present?
               token = user.generate_reset_password_token!
               UserMailer.reset_notification(user, request, token).deliver_now
