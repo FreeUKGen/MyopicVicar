@@ -50,7 +50,7 @@ class FavoriteActionsController < ApplicationController
     @user.save
     
     flash[:notice] = "Favorites updated successfully"
-    redirect_to manage_favorites_path
+    redirect_to main_app.new_manage_resource_path(current_role: session[:role])
   end
 
   private
