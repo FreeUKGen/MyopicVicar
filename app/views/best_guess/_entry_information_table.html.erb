@@ -202,20 +202,18 @@
       </td>
     </tr>
     <% end %>
-    <% if entry_type == "marriage" %>
+    <% if entry_type == "marriage" && @spouse.present? %>
       <tr>
         <th scope="row">
           Spouse Name
         </th>
         <td>
-          <% if @spouse.present? %>
-            <% if @search %>
-              <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
-            <% else %>
-              <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
-            <% end %>
-            <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+          <% if @search %>
+            <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+          <% else %>
+            <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
           <% end %>
+          <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
         </td>
       </tr>
     <% end %>
