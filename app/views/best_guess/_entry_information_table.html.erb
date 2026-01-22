@@ -208,11 +208,11 @@
           Spouse Name
         </th>
         <td>
-          <% if @spouse_record.present? %>
+          <% if @spouse.present? %>
             <% if @search %>
-              <%= link_to "#{spouse_record.GivenName} #{spouse_record.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+              <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
             <% else %>
-              <%= link_to "#{spouse_record.GivenName} #{spouse_record.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+              <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
             <% end %>
             <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
           <% end %>
