@@ -187,6 +187,9 @@ module BestGuessHelper
         domain = domain + ':' + port.to_s if port.present?
         content = protocol+"://"+domain+field_value
         result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+      when "OtherNamesOnPage"
+        #other_names = @current_record.same_page_entries
+        result = "<meta name='freebmd.#{field_name}' content='' />"
       else
           result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
       end
