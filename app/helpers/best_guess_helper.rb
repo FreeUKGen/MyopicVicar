@@ -188,8 +188,19 @@ module BestGuessHelper
         content = protocol+"://"+domain+field_value
         result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
       when "OtherNamesOnPage"
-        #other_names = @current_record.same_page_entries
-        result = "<meta name='freebmd.#{field_name}' content='' />"
+        content = ''
+        i = 0
+        @current_record.entries_in_the_page.each do |entry|
+          page_record = BestGuess.find(entry)
+          if (@current_record[:RecordNumber] != page_record[:RecordNumber])
+            if i > 0
+              content = content + '; '
+            end
+            i = i + 1
+            content = content + page_record[:Surname]+', ' + page_record[:GivenName]
+          end
+        end
+        result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
       else
           result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
       end
