@@ -96,24 +96,63 @@
         <%= record.GivenName %>
       </td>
     </tr>
-    <tr>
+    <% if entry_type == "birth" %>
+      <tr>
       <th scope="row">
-        Record Type
+        Mother's Maiden Name
       </th>
       <td>
-        <%= "#{record_type}".capitalize %>
+        <% if record.AssociateName.present? %>
+          <%= record.AssociateName %>
+        <% else %>
+          <%= 'No data' %>
+          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+        <% end %>
       </td>
-    </tr>
-    <%# if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
+    <% end%>
+    <% if entry_type == "death" %>
       <tr>
         <th scope="row">
-          Registration Date
+          <% if record.AgeAtDeath.present? && record.AgeAtDeath.to_i.to_s == record.AgeAtDeath %>
+            Age at Death
+          <% else %>
+            Date of Birth
+          <% end %>
         </th>
         <td>
-          <%= format_quarter_year(record.QuarterNumber) %>
+          <%= record.AgeAtDeath %>
+          <% if record.AgeAtDeath.blank? %>
+            <%= 'No data' %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
         </td>
       </tr>
-    <%# end %>
+    <% end %>
+    <% if entry_type == "marriage" %>
+      <% if @spouse.present? %>
+        <tr>
+          <th scope="row">
+            Spouse Name
+          </th>
+          <td>
+            <% if @search %>
+              <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+            <% else %>
+              <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+            <% end %>
+            <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+          </td>
+        </tr>
+      <% end %>
+      <% if !record.AssociateName.present? %>
+        <tr>
+          <th scope="row">Entries on page <%= record.Page %></th>
+          <td>
+            <%= render partial: 'best_guess/same_page_block', locals: {record: @current_record} %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
     <tr>
       <th scope="row">
         District
@@ -140,32 +179,6 @@
         <% end %>
       </td>
     </tr>
-    <% if record.register_entry_number_format %>
-    <tr>
-      <th scope="row">
-        Register number
-      </th>
-      <td >
-        <% event_register_number = record.event_registration_number %>
-        <% if event_register_number.present? %>
-          <%= event_register_number  %>
-        <% end %>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        Entry number
-      </th>
-      <td>
-        <% event_entry_number = record.event_entry_number %>
-        <% if event_entry_number.present?  %>
-          <%= event_entry_number %>
-        <% else %>
-          <%= "#{ record.Page }" %>
-        <% end %>
-      </td>
-    </tr>
-    <% else %>
     <tr>
       <th scope="row">
         Volume
@@ -187,10 +200,15 @@
         <% unless record.Page.to_i == 0 %>
           <% if @search %>
             <%= render partial: 'page_records_navigation_search', locals: {record: @current_record, search_id: params[:search_id], original_record: @original_record} %>
+            <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
+            <% end %>
+          <% if @hash %>
+            <%= record.Page %>
           <% end %>
           <% if params[:saved_record] %>
             <%= render partial: 'page_records_navigation_saved', locals: {record: @current_record, original_record: @original_record} %>
-          <% end %>
+            <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
+            <% end %>
         <% else%>
           <%= record.Page %>
         <% end %>
@@ -201,63 +219,89 @@
         <% end %>
       </td>
     </tr>
-    <% end %>
-    <% if entry_type == "marriage" && @spouse.present? %>
-      <tr>
-        <th scope="row">
-          Spouse Name
-        </th>
-        <td>
-          <% if @search %>
-            <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
-          <% else %>
-            <%= link_to "#{@spouse.GivenName} #{@spouse.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
-          <% end %>
-          <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
-        </td>
-      </tr>
-    <% end %>
-    <% if entry_type == "birth" %>
-      <tr>
+    <tr>
       <th scope="row">
-        Mother's Maiden Name
+        Record Type
       </th>
       <td>
-        <% if record.AssociateName.present? %>
-          <%= record.AssociateName %>
-        <% else %>
-          <%= 'No data' %>
-          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-        <% end %>
-      </td>
-    <% end%>
-    <% if entry_type == "marriage" && !record.AssociateName.present? %>
-    <tr>
-      <th scope="row">Entries on page <%= record.Page %></th>
-      <td>
-        <%= render partial: 'best_guess/same_page_block', locals: {record: @current_record} %>
+        <%= "#{record_type}".capitalize %>
       </td>
     </tr>
-  <% end %>
-     <% if entry_type == "death" %>
+    <% unless post_1994_marriage? %>
       <tr>
         <th scope="row">
-          <% if record.AgeAtDeath.present? && record.AgeAtDeath.to_i.to_s == record.AgeAtDeath %>
-            Age at Death
-          <% else %>
-            Date of Birth
-          <% end %>
+          Registration Date
         </th>
         <td>
-          <%= record.AgeAtDeath %>
-          <% if record.AgeAtDeath.blank? %>
-            <%= 'No data' %>
-            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-          <% end %>
+          <%= format_quarter_year(record.QuarterNumber) %>
         </td>
       </tr>
     <% end %>
-    <tr>
+    
+    <% if record.register_entry_number_format %>
+      <tr>
+        <th scope="row">
+          Register number
+        </th>
+        <td >
+          <% event_register_number = record.event_registration_number %>
+          <% if event_register_number.present? %>
+            <%= event_register_number  %>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          Entry number
+        </th>
+        <td>
+          <% event_entry_number = record.event_entry_number %>
+          <% if event_entry_number.present?  %>
+            <%= event_entry_number %>
+          <% else %>
+            <%= "#{ record.Page }" %>
+          <% end %>
+        </td>
+      </tr>
+    <% else %>
+      
+      
+    <% end %>
+    <% if entry_type == "marriage" %>
+      <% if post_1994_marriage? %>
+        <% sub = record.get_submission %>
+        <% if sub.present? %>
+          <tr>
+            <th scope="row">
+              Registered
+            </th>
+            <td>
+              <%= record.get_submission.Registered %>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              Entry number
+            </th>
+            <td>
+              <%= record.get_submission.EntryNumber %>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              SourceCode
+            </th>
+            <td>
+              <%= record.get_submission.SourceCode %>
+            </td>
+          </tr>
+       <% end %>
+      <% end %>
+    <% end %>
+    
+      
+    
+    <tr><span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})<span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>" %></span>
       <th scope="row">
         Transcriber
       </th>
@@ -269,20 +313,6 @@
         <% end %>
       </td>
     </tr>
-    <!--tr>
-      <th scope="row">
-        Persistent URL for entry
-      </th>
-      <td-->
-        <%# protocol = URI.parse(request.original_url).scheme %>
-        <%# domain = URI.parse(request.original_url).host %>
-        <%# port = URI.parse(request.original_url).port %>
-        <%# domain = domain + ':' + port.to_s if port.present? %>
-        <!--a id="persistentUrl" class="pUrl" href="<%#= @url %>"><%#= "#{protocol}://#{domain}#{@url}" %></a-->
-        <!--button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button-->
-        <!--a class="btn btn--small" href="" onclick=copy('persistentUrl') style="cursor: pointer">Copy URL</a-->
-      <!--/td>
-    </tr-->
     <% if search == true %>
       <% unless (record.Confirmed & 512).zero? %>
         <tr>
@@ -324,17 +354,19 @@
         </tr>
       <% end %>
     <% end %>
-    <% if search %>
-      <% event_registered = record.event_registration %>
-      <% if event_registered.present?%>
-        <tr>
-          <th scope="row">
-            Registered
-          </th>
-          <td >
-            <%= format_registered(event_registered, record.QuarterNumber) %>
-          </td>
-        </tr>
+    <% unless post_1994_marriage? %>
+      <% if search %>
+        <% event_registered = record.event_registration %>
+        <% if event_registered.present?%>
+          <tr>
+            <th scope="row">
+              Registered
+            </th>
+            <td >
+              <%= format_registered(event_registered, record.QuarterNumber) %>
+            </td>
+          </tr>
+        <% end %>
       <% end %>
     <% end %>
     <%# if search %>
