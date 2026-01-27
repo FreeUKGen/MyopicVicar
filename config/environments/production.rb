@@ -123,6 +123,7 @@ MyopicVicar::Application.configure do
   config.image_secret = MyopicVicar::MongoConfig['img_secret']
   config.validity = MyopicVicar::MongoConfig['token_validity']
   config.latest_db_file_path = MyopicVicar::MongoConfig['latest_db_file_path']
+  config.donate_color = MyopicVicar::MongoConfig['donate_color']
   #rails 4 changes
   config.eager_load = true
 end

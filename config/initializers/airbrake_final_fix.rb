@@ -2,8 +2,7 @@ begin
   #fix for airbrake-ruby stop_polling error
 
   if defined?(Airbrake)
-    # Override the close met    # Additional patch for the airbrake-ruby gem
-hod
+    # Override the close met    # Additional patch for the airbrake-ruby gem hod
     module Airbrake
       def self.close
         # Do nothing to prevent stop_polling errors

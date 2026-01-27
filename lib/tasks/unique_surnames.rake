@@ -156,7 +156,12 @@ end
 # Helper method to extract clean names from compound forenames
 def extract_clean_names(forename)
   # Split on non-word characters and filter out blanks
-  forename.to_s.split(/[^[[:word:]]]+/).reject(&:blank?)
+  #forename.to_s.split(/[^[[:word:]]]+/).reject(&:blank?)
+  original = forename.to_s
+  split_values = original.split(/[^[[:word:]]]+/).reject(&:blank?)
+  # Return original first, then split values
+  names = [original] + split_values
+  names.uniq
 end
 
 # Helper method to capitalize names properly

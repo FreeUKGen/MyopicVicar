@@ -1,7 +1,7 @@
 <script>
     document.getElementById("citation-toggle").addEventListener("click", citationToggle);
     /*Hide citation blocks unless citation type is selected*/
-     const citations = ['wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
+     const citations = ['compact_text', 'wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
     function hide_citation_block(cite){
       cite_element =  document.getElementById(`${cite}_citation_container`);
       if (cite_element) {
@@ -73,11 +73,29 @@
 </script>
 <style type="text/css">
   .citation_container {border: 1px solid black; padding: 5px;}
+  .table--left-aligned th {width: 200px; text-align: left !important; padding-left: 20px !important;}
+  .table--left-aligned td {text-align: left !important; padding-left: 20px !important;}
 </style>
-<table class="table--bordered table--data">
+<table class="table--bordered table--data table--left-aligned">
   <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
   <tbody>
     <% record_type = RecordType::display_name(record.RecordTypeID)%>
+    <tr>
+      <th scope="row">
+        Surname
+      </th>
+      <td>
+        <%= record.Surname %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Given Name
+      </th>
+      <td>
+        <%= record.GivenName %>
+      </td>
+    </tr>
     <tr>
       <th scope="row">
         Record Type
@@ -122,35 +140,6 @@
         <% end %>
       </td>
     </tr>
-    <% unless entry_type == "death" %>
-      <tr>
-        <th scope="row">
-          <%= mother_or_spouse_surname(record_type)%>
-        </th>
-        <td>
-          <% if search && record.AssociateName.present? %>
-            <% if entry_type == 'marriage' %>
-              <% if @search %>
-                <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
-              <% else %>
-                <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
-              <% end %>
-              <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
-            <% else %>
-              <%= record.AssociateName %>
-            <% end %>
-          <% end %>
-          <% if record.AssociateName.blank? %>
-            <% if entry_type == 'marriage' %>
-               <%= 'See Page link for possible spouses' %>
-            <% else %>
-               No data
-                <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-              <% end %>
-          <% end %>
-        </td>
-      </tr>
-    <% end %>
     <% if record.register_entry_number_format %>
     <tr>
       <th scope="row">
@@ -213,6 +202,43 @@
       </td>
     </tr>
     <% end %>
+    <% if entry_type != "death" && record.AssociateName.present? %>
+    <tr>
+      <th scope="row">
+        <%= mother_or_spouse_surname(record_type)%>
+      </th>
+      <td>
+        <% if search && record.AssociateName.present? %>
+          <% if entry_type == 'marriage' %>
+            <% if @search %>
+              <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+            <% else %>
+              <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+            <% end %>
+            <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+          <% else %>
+            <%= record.AssociateName %>
+          <% end %>
+        <% end %>
+        <% if record.AssociateName.blank? %>
+          <% if entry_type == 'marriage' %>
+            <%= render partial: 'best_guess/same_page_block', locals: {record: @current_record} %>
+          <% else %>
+            No data
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+    <% if entry_type == "marriage" && !record.AssociateName.present? %>
+    <tr>
+      <th scope="row">Entries on page <%= record.Page %></th>
+      <td>
+        <%= render partial: 'best_guess/same_page_block', locals: {record: @current_record} %>
+      </td>
+    </tr>
+  <% end %>
      <% if entry_type == "death" %>
       <tr>
         <th scope="row">
@@ -243,20 +269,20 @@
         <% end %>
       </td>
     </tr>
-    <tr>
+    <!--tr>
       <th scope="row">
         Persistent URL for entry
       </th>
-      <td>
-        <% protocol = URI.parse(request.original_url).scheme %>
-        <% domain = URI.parse(request.original_url).host %>
-        <% port = URI.parse(request.original_url).port %>
-        <% domain = domain + ':' + port.to_s if port.present? %>
-        <a id="persistentUrl" class="pUrl" href="<%= @url %>"><%= "#{protocol}://#{domain}#{@url}" %></a>
-        <button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button>
+      <td-->
+        <%# protocol = URI.parse(request.original_url).scheme %>
+        <%# domain = URI.parse(request.original_url).host %>
+        <%# port = URI.parse(request.original_url).port %>
+        <%# domain = domain + ':' + port.to_s if port.present? %>
+        <!--a id="persistentUrl" class="pUrl" href="<%#= @url %>"><%#= "#{protocol}://#{domain}#{@url}" %></a-->
+        <!--button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button-->
         <!--a class="btn btn--small" href="" onclick=copy('persistentUrl') style="cursor: pointer">Copy URL</a-->
-      </td>
-    </tr>
+      <!--/td>
+    </tr-->
     <% if search == true %>
       <% unless (record.Confirmed & 512).zero? %>
         <tr>
@@ -311,16 +337,16 @@
         </tr>
       <% end %>
     <% end %>
-    <% if search %>
-      <tr>
+    <%# if search %>
+      <!--tr>
         <th scope="row">
           More Information
         </th>
-        <td class="project-text-color">
-          <%= render partial: 'more_information' %>
-        </td>
-      </tr>
-    <% end %>
+        <td class="project-text-color"-->
+          <%#= render partial: 'more_information' %>
+        <!--/td>
+      </tr-->
+    <%# end %>
     <%# if more_info %>
       <!--td  colspan=2>
         <%# if  search %>

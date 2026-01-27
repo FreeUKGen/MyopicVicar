@@ -9,7 +9,7 @@
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
     <!-- publift fuse tag -->
-    <script async src="https://cdn.fuseplatform.net/publift/tags/2/4135/fuse.js"></script>
+      <script async src="https://cdn.fuseplatform.net/publift/tags/2/4135/fuse.js"></script>
     <!-- fusetag ends here-->
     <script>
       // Get an initialisation-safe reference to the Fuse Queue
@@ -158,11 +158,12 @@
     <%= javascript_include_tag "jquery.validate.min.js"%>
     <%= javascript_include_tag "jquery.chained.remote.js"%>
     <%= javascript_include_tag "cookie_control.js"%>
-    <%= javascript_include_tag "jquery.cookiesDirective.js"%>
+    <%#= javascript_include_tag "jquery.cookiesDirective.js"%>
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
     <%= javascript_include_tag "#{appname.downcase}_advert_control.js" %>
+     <%#= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
     <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
     <% end %>

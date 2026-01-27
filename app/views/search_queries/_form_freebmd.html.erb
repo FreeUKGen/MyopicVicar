@@ -912,4 +912,8 @@
            // $('#hit_count').text('456 hits');
         // });
     });
+    $(window).bind("pagehide", function(event) {
+        var l = Ladda.create(document.querySelector('.ladda-button'));
+        l.stop();
+    });
 </script>
