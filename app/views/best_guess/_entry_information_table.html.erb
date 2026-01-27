@@ -98,17 +98,18 @@
     </tr>
     <% if entry_type == "birth" %>
       <tr>
-      <th scope="row">
-        Mother's Maiden Name
-      </th>
-      <td>
-        <% if record.AssociateName.present? %>
-          <%= record.AssociateName %>
-        <% else %>
-          <%= 'No data' %>
-          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-        <% end %>
-      </td>
+        <th scope="row">
+          Mother's Maiden Name
+        </th>
+        <td>
+          <% if record.AssociateName.present? %>
+            <%= record.AssociateName %>
+          <% else %>
+            <%= 'No data' %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        </td>
+      </tr>
     <% end%>
     <% if entry_type == "death" %>
       <tr>
@@ -297,11 +298,8 @@
           </tr>
        <% end %>
       <% end %>
-    <% end %>
-    
-      
-    
-    <tr><span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})<span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>" %></span>
+    <% end %>    
+    <tr>
       <th scope="row">
         Transcriber
       </th>
