@@ -2,24 +2,24 @@
 <% title "Marriage Details" %>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% if @search %>
-  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @record.RecordNumber), class: " btn   btn--small" if @search_id.present?%>
-  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @record, @record.friendly_url, search_entry: @record), class: " btn   btn--small" unless @record.blank?%>
+  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @current_record.RecordNumber), class: " btn   btn--small" if @search_id.present?%>
+  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @current_record, @current_record.friendly_url, search_entry: @current_record), class: " btn   btn--small" unless @current_record.blank?%>
 <% end %>
   <h1 class="accessibility">Marriage Informations</h1>
   <div class="grid">
     <div class="grid__item one-whole lap-one-whole palm-one-whole ">
-      <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
+      <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
       <section>
         <div class="grid__item one-half lap-one-half palm-one-whole">
-          <% record_type = RecordType::display_name(@record.RecordTypeID)%>
-          <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
+          <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
+          <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
           <hr>
           <% if @search %>
-            <%#= render partial: 'partial_entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id, original_record: @record, more_info: true} %>
-            <%= render partial: 'entry_information_table', locals: {record: @record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @record, type: "marriages"} %>
+            <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id, original_record: @current_record, more_info: true} %>
+            <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
           <% else %>
-            <%#= render partial: 'partial_entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @record, more_info: true} %>
-            <%= render partial: 'entry_information_table', locals: {record: @record, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @record, type: "marriages"} %>
+            <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true} %>
+            <%= render partial: 'entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
           <% end %>
         </div>
         <div id="display_scans">
@@ -77,10 +77,10 @@
             <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
             <hr>
             <% if @search %>
-              <%#= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @record, more_info: true } %>
-              <%= render partial: 'entry_information_table', locals: {record: @spouse_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @original_record, type: "marriages"} %>
+              <%#= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @current_record, more_info: true } %>
+              <%= render partial: 'entry_information_table', locals: {record: @spouse_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
             <% else %>
-              <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @record, more_info: true } %>
+              <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true } %>
             <% end %>
           <% else %>
             <p>We do not have information on spouse yet.</p>
