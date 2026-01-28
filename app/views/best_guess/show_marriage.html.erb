@@ -21,50 +21,52 @@
             <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true} %>
             <%= render partial: 'entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
           <% end %>
-        </div>
-        <div id="display_scans">
-          <h4>Scans</h4>
-          <% scan_links_array = render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @current_record) %>
-          <% if scan_links_array.present? && scan_links_array.any? %>
-            <% valid_links = scan_links_array.reject { |link| link.blank? || link.to_s.strip.empty? } %>
-            <% if valid_links.any? %>
-              <ul>
-                <% valid_links.each do |link| %>
-                  <%= raw link %>
-                <% end %>
-              </ul>
-            <% end %>
-          <% end %>
-          <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
-        </div>
-        <div id="display_postems">
-          <div>
-            <h4>Postems</h4>
-            <% if @current_record.postems_list.present? %>
-              <p>List of postems:</p>
-              <table class="table--bordered table--data">
-                <thead>
-                  <th>Date</th>
-                  <th>Postem</th>
-                </thead>
-                <tbody>
-                  <% @current_record.postems_list.each do |postem|%>
-                    <tr>
-                      <td>
-                        <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
-                      </td>
-                      <td>
-                        <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
-                      </td>
-                    </tr>
+          <br />
+          <div id="display_scans">
+            <h4>Scans</h4>
+            <% scan_links_array = render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @current_record) %>
+            <% if scan_links_array.present? && scan_links_array.any? %>
+              <% valid_links = scan_links_array.reject { |link| link.blank? || link.to_s.strip.empty? } %>
+              <% if valid_links.any? %>
+                <ul>
+                  <% valid_links.each do |link| %>
+                    <%= raw link %>
                   <% end %>
-                </tbody>
-              </table>
+                </ul>
+              <% end %>
             <% end %>
-            <div class="text--left push-half--bottom">
-              <small>
-                <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
-              </small>
+            <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
+          </div>
+          <br />
+          <div id="display_postems">
+            <div>
+              <h4>Postems</h4>
+              <% if @current_record.postems_list.present? %>
+                <p>List of postems:</p>
+                <table class="table--bordered table--data">
+                  <thead>
+                    <th>Date</th>
+                    <th>Postem</th>
+                  </thead>
+                  <tbody>
+                    <% @current_record.postems_list.each do |postem|%>
+                      <tr>
+                        <td>
+                          <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
+                        </td>
+                        <td>
+                          <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              <% end %>
+              <div class="text--left push-half--bottom">
+                <small>
+                  <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
+                </small>
+              </div>
             </div>
           </div>
         </div>
@@ -85,50 +87,52 @@
           <% else %>
             <p>We do not have information on spouse yet.</p>
           <% end %>
-        </div>
-        <div id="display_scans">
-          <h4>Scans</h4>
-          <% scan_links_array = render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @spouse_record) %>
-          <% if scan_links_array.present? && scan_links_array.any? %>
-            <% valid_links = scan_links_array.reject { |link| link.blank? || link.to_s.strip.empty? } %>
-            <% if valid_links.any? %>
-              <ul>
-                <% valid_links.each do |link| %>
-                  <%= raw link %>
-                <% end %>
-              </ul>
-            <% end %>
-          <% end %>
-          <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
-        </div>
-        <div id="display_postems">
-          <div>
-            <h4>Postems</h4>
-            <% if @spouse_record.postems_list.present? %>
-              <p>List of postems:</p>
-              <table class="table--bordered table--data">
-                <thead>
-                  <th>Date</th>
-                  <th>Postem</th>
-                </thead>
-                <tbody>
-                  <% @spouse_record.postems_list.each do |postem|%>
-                    <tr>
-                      <td>
-                        <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
-                      </td>
-                      <td>
-                        <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
-                      </td>
-                    </tr>
+          <br />
+          <div id="display_scans">
+            <h4>Scans</h4>
+            <% scan_links_array = render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @spouse_record) %>
+            <% if scan_links_array.present? && scan_links_array.any? %>
+              <% valid_links = scan_links_array.reject { |link| link.blank? || link.to_s.strip.empty? } %>
+              <% if valid_links.any? %>
+                <ul>
+                  <% valid_links.each do |link| %>
+                    <%= raw link %>
                   <% end %>
-                </tbody>
-              </table>
+                </ul>
+              <% end %>
             <% end %>
-            <div class="text--left push-half--bottom">
-              <small>
-                <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
-              </small>
+            <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
+          </div>
+          <br />
+          <div id="display_postems">
+            <div>
+              <h4>Postems</h4>
+              <% if @spouse_record.postems_list.present? %>
+                <p>List of postems:</p>
+                <table class="table--bordered table--data">
+                  <thead>
+                    <th>Date</th>
+                    <th>Postem</th>
+                  </thead>
+                  <tbody>
+                    <% @spouse_record.postems_list.each do |postem|%>
+                      <tr>
+                        <td>
+                          <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
+                        </td>
+                        <td>
+                          <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              <% end %>
+              <div class="text--left push-half--bottom">
+                <small>
+                  <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
+                </small>
+              </div>
             </div>
           </div>
         </div>
