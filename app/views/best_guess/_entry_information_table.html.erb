@@ -228,7 +228,7 @@
         <%= "#{record_type}".capitalize %>
       </td>
     </tr>
-    <% unless post_1994_marriage? %>
+    <% unless record.post_1994_marriage? %>
       <tr>
         <th scope="row">
           Registration Date
@@ -267,7 +267,7 @@
     <% else %>     
     <% end %>
     <% if entry_type == "marriage" %>
-      <% if post_1994_marriage? %>
+      <% if record.post_1994_marriage? %>
         <% sub = record.get_submission %>
         <% if sub.present? %>
           <tr>
@@ -350,7 +350,7 @@
         </tr>
       <% end %>
     <% end %>
-    <% unless post_1994_marriage? %>
+    <% unless record.post_1994_marriage? %>
       <% if search %>
         <% event_registered = record.event_registration %>
         <% if event_registered.present?%>
