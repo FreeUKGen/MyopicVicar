@@ -15,27 +15,30 @@
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@record[:GivenName].upcase} #{@record[:Surname].upcase}" %></strong></p>
       <hr>
           <% if @search %>
-            <%= render partial: 'partial_entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id, original_record: @record, more_info: true} %>
+            <%#= render partial: 'partial_entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id, original_record: @record, more_info: true} %>
+            <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "marriages"} %>
           <% else %>
-            <%= render partial: 'partial_entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @record, more_info: true} %>
+            <%#= render partial: 'partial_entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @record, more_info: true} %>
+            <%= render partial: 'entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
           <% end %>
         </div>
       </section>
 
       <section>
-      <div class="grid__item one-half lap-one-half palm-one-whole">
-        <% if @spouse_record.present? %>
-          <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
-          <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
-        <hr>
-          <% if @search %>
-            <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @record, more_info: true } %>
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <% if @spouse_record.present? %>
+            <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
+            <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
+          <hr>
+            <% if @search %>
+              <%#= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @record, more_info: true } %>
+              <%= render partial: 'entry_information_table', locals: {record: @spouse_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "marriages"} %>
             <% else %>
               <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @record, more_info: true } %>
             <% end %>
-        <% else %>
-          <p>We do not have information on spouse yet.</p>
-        <% end %>
+          <% else %>
+            <p>We do not have information on spouse yet.</p>
+          <% end %>
         </div>
       </section>
     </div>
