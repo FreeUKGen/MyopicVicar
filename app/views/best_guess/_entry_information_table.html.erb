@@ -200,7 +200,7 @@
       <td>
         <% unless record.Page.to_i == 0 %>
           <% if @search %>
-            <%= render partial: 'page_records_navigation_search', locals: {record: @current_record, search_id: params[:search_id], original_record: @original_record} %>
+            <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: search_id, original_record: original_record} %>
             <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
             <% end %>
           <% if @hash %>
@@ -264,9 +264,7 @@
           <% end %>
         </td>
       </tr>
-    <% else %>
-      
-      
+    <% else %>     
     <% end %>
     <% if entry_type == "marriage" %>
       <% if post_1994_marriage? %>
@@ -367,37 +365,20 @@
         <% end %>
       <% end %>
     <% end %>
-    <%# if search %>
-      <!--tr>
-        <th scope="row">
-          More Information
-        </th>
-        <td class="project-text-color"-->
-          <%#= render partial: 'more_information' %>
-        <!--/td>
-      </tr-->
-    <%# end %>
-    <%# if more_info %>
-      <!--td  colspan=2>
-        <%# if  search %>
-          <%#= link_to 'Complete Details', friendly_bmd_record_details_path(@search_id, record.id, record.friendly_url, search_entry: record), :rel => "nofollow", :title => "", class: 'btn btn--natural'%>
-        <%# else %>
-          <%#= link_to 'Complete Details', friendly_bmd_record_details_non_search_path(record.id, record.friendly_url, search_entry: record), class: 'btn btn--natural'%>
-        <%# end %>
-      </td-->
-    <%# end %>
   </tbody>
 </table>
-<div class='push-half--top'>
-  <% if params[:search_id].present? %>
-    <div class="grid">
-      <div class='grid__item text--center'>
-        <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
-        <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
+<% if type == "general" %>
+  <div class='push-half--top'>
+    <% if params[:search_id].present? %>
+      <div class="grid">
+        <div class='grid__item text--center'>
+          <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
+          <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
+        </div>
       </div>
-    </div>
-  <% end %>
-</div>
+    <% end %>
+  </div>
+<% end %>
 <% if record.DistrictFlag > 0 or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
   <div>
     <h3>Queries relating to this entry</h3>

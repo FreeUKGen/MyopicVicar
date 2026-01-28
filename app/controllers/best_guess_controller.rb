@@ -21,7 +21,7 @@ class BestGuessController < ApplicationController
     page_entries = @current_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(record_id, page_entries)
     @display_date = false
-    show_scans
+    show_show_scansscans
     show_postem_or_scan
     @url = generate_url
     return if @search_query.blank?
@@ -56,14 +56,9 @@ class BestGuessController < ApplicationController
     @search = params[:search_id].present? ? true : false
     record_number = params[:entry_id]
     @search_id = params[:search_id] if @search
-    @record = BestGuess.where(RecordNumber: record_number).first
-    spouse_surname = @record.AssociateName
-    volume = @record.Volume
-    page = @record.Page
-    quarter = @record.QuarterNumber
-    district_number = @record.DistrictNumber
-    record_type = @record.RecordTypeID
-    @spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).where.not(RecordNumber: record_number).first
+    @currentrecord = BestGuess.where(RecordNumber: record_number).first
+    @spouse_record = get_spouse_record
+    #@spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).where.not(RecordNumber: record_number).first
   end
 
   def get_spouse_record
