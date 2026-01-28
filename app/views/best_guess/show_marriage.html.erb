@@ -35,13 +35,12 @@
                 </ul>
               <% end %>
             <% end %>
-            <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
           </div>
           <br />
-          <div id="display_postems">
-            <div>
-              <h4>Postems</h4>
-              <% if @current_record.postems_list.present? %>
+          <% if @current_record.postems_list.present? %>
+            <div id="display_postems">
+              <div>
+                <h4>Postems</h4>
                 <p>List of postems:</p>
                 <table class="table--bordered table--data">
                   <thead>
@@ -61,14 +60,15 @@
                     <% end %>
                   </tbody>
                 </table>
-              <% end %>
-              <div class="text--left push-half--bottom">
-                <small>
-                  <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
-                </small>
+             
+                <div class="text--left push-half--bottom">
+                  <small>
+                    <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
+                  </small>
+                </div>
               </div>
             </div>
-          </div>
+          <% end %>
         </div>
       </section>
 
@@ -101,13 +101,13 @@
                 </ul>
               <% end %>
             <% end %>
-            <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
+            
           </div>
           <br />
-          <div id="display_postems">
-            <div>
-              <h4>Postems</h4>
-              <% if @spouse_record.postems_list.present? %>
+          <% if @spouse_record.postems_list.present? %>
+            <div id="display_postems">
+              <div>
+                <h4>Postems</h4>
                 <p>List of postems:</p>
                 <table class="table--bordered table--data">
                   <thead>
@@ -127,15 +127,16 @@
                     <% end %>
                   </tbody>
                 </table>
-              <% end %>
-              <div class="text--left push-half--bottom">
-                <small>
-                  <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
-                </small>
+                <div class="text--left push-half--bottom">
+                  <small>
+                    <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
+                  </small>
+                </div>
               </div>
             </div>
-          </div>
+          <% end %>
         </div>
       </section>
+      <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
     </div>
   </div>
