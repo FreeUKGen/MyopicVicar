@@ -1,0 +1,37 @@
+<%# app/views/best_guess/_entry_queries.html.erb %>
+<% if record.DistrictFlag > 0 or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+  <div>
+    <h3>Queries relating to this entry</h3>
+    <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+      <div id="district-query">
+        <h4>District name</h4>
+        <p>
+          <% if record[:District].strip.downcase != district.DistrictName.strip.downcase %><%= " District recorded as #{record[:District]} not #{district.DistrictName}. " %><% end %>
+          <% if record.district_misspelt  %> The District name is a misspelt alternative form of the official name <%= "'#{district.DistrictName.strip}'" %>.<% end %>
+          <% if record.district_invented %> The District name is not an official name or a recognized alternative form of name. <% end %>
+          <% if record.bad_date_for_district %> The date does not fall within the range of dates when this District was active.<% end %>
+          <a href="#link-to-district-query">[back to district]</a>
+        </p>
+      </div>
+    <% end %>
+    <% if record.bad_volume_for_district %>
+      <div id="volume-query">
+        <h4>Volume number</h4>
+        <p>
+          <% if record.bad_volume_for_district %> The volume number does not have one of the expected values for this District/Quarter.<% end %>
+          <a href="#link-to-volume-query">[back to volume]</a>
+        </p>
+      </div>
+    <% end %>
+    <% if record.bad_page_range_for_district or record.page_range_not_checked %>
+      <div id="page-query">
+        <h4>Page number</h4>
+        <p>
+          <% if record.bad_page_range_for_district %> The page number does not have one of the expected values for this District/Quarter.<% end %>
+          <% if record.page_range_not_checked %> The page range cannot be checked because the data provided is not sufficiently precise.<% end %>
+          <a href="#link-to-page-query">[back to page]</a>
+        </p>
+      </div>
+    <% end %>
+  </div>
+<% end %>
