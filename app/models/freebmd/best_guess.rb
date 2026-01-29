@@ -299,6 +299,17 @@ class BestGuess < FreebmdDbBase
     get_rec_hash.scan_lists
   end
 
+  def get_spouse_record
+    BestGuess.where(
+      Surname: self.AssociateName,
+      Volume: self.Volume,
+      Page: self.Page,
+      QuarterNumber: self.QuarterNumber,
+      DistrictNumber: self.DistrictNumber,
+      RecordTypeID: self.RecordTypeID
+    ).where.not(RecordNumber: self.RecordNumber).first
+  end
+
   def image_fileds
     'ImagePage.PageNumber, ImagePage.Implied, ImageFile.ImageID, ImageFile.MultipleFiles, ImageFile.Filename, ImageFile.StartLetters, ImageFile.EndLetters, Range.RangeID, Range.Range, Source.SourceID, Source.SeriesID'
   end
