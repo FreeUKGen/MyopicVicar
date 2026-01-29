@@ -423,7 +423,7 @@ class BestGuess < FreebmdDbBase
     year, event_type = record_year_and_event_type
     
     # New format: 1993 with birth/death records, or any record from 1994+
-    (year == 1993 && event_type < 3) || year >= 1994
+    (year == 1993 && event_type < 3) || ( year >= 1994 && event_type < 3 )
   end
 
   def post_1994_marriage?
