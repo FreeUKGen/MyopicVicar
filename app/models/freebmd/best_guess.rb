@@ -434,6 +434,12 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_submission
+    bg_link = BestGuessLink.where(RecordNumber: self.RecordNumber, PrimaryEntry: 1)
+    #Submission.find_by(Surname: self.Surname, GivenName: self.GivenName, District: self.District, Volume: self.Volume, Page: page)
+    Submission.find_by(AccessionNumber: bg_link.AccessionNumber, SequenceNumber: bg_link.SequenceNumber)
+  end
+
+  def get_submission_old
     page = self.Page.rjust(4, '0') if self.Page.present? && self.Page.length < 4
     Submission.find_by(Surname: self.Surname, GivenName: self.GivenName, District: self.District, Volume: self.Volume, Page: page)
   end
