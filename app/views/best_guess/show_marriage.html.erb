@@ -17,18 +17,15 @@
           <% if @search %>
             <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id, original_record: @current_record, more_info: true} %>
             <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
+            <div class="islet islet--bordered">
+              <%= render partial: 'entry_queries', locals: { record: @current_record } %>
+              <%= render partial: 'display_scans', locals: { record: @current_record } %>
+              <%= render partial: 'display_postems', locals: { record: @current_record } %>
+          </div>
           <% else %>
             <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true} %>
             <%= render partial: 'entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
           <% end %>
-          <br />
-          <div class="islet islet--bordered">
-            <%= render partial: 'entry_queries', locals: { record: @current_record, district: @current_record.District } %>
-            <br />
-            <%= render partial: 'display_scans', locals: { record: @current_record } %>
-            <br />
-            <%= render partial: 'display_postems', locals: { record: @current_record } %>
-          </div>
         </div>
       </section>
 
@@ -45,10 +42,8 @@
               <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true } %>
             <% end %>
             <div class="islet islet--bordered">
-              <%= render partial: 'entry_queries', locals: { record: @spouse_record, district: @spouse_record.District } %>
-              <br />
+              <%= render partial: 'entry_queries', locals: { record: @spouse_record } %>
               <%= render partial: 'display_scans', locals: { record: @spouse_record } %>
-              <br />
               <%= render partial: 'display_postems', locals: { record: @spouse_record } %>
             </div>
           <% else %>

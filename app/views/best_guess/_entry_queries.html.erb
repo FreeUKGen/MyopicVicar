@@ -1,4 +1,5 @@
 <%# app/views/best_guess/_entry_queries.html.erb %>
+<% district = District.where(DistrictNumber: record[:DistrictNumber]).first %>
 <% if record.DistrictFlag > 0 or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
   <div>
     <h3>Queries relating to this entry</h3>
