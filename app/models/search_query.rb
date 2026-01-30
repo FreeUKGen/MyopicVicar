@@ -1499,42 +1499,41 @@
         end
 		    [[], record_count, true, 0]
       end
-	    rescue Timeout::Error
-        logger.warn("#{App.name_upcase}: Timeout")
-        [[], 0, false, 1]
-	    rescue ActiveRecord::StatementInvalid => e
-		    error_message = e.message.to_s.downcase
+    rescue Timeout::Error
+      logger.warn("#{App.name_upcase}: Timeout")
+      [[], 0, false, 1]
+    rescue ActiveRecord::StatementInvalid => e
+      error_message = e.message.to_s.downcase
 
-        # Try to get the underlying exception message (Ruby 2.1+ uses 'cause', older versions may use 'original_exception')
-        underlying_message = ''
-        if e.respond_to?(:cause) && e.cause
-          underlying_message = e.cause.message.to_s.downcase
-        elsif e.respond_to?(:original_exception) && e.original_exception
-          underlying_message = e.original_exception.message.to_s.downcase
-        end
+      # Try to get the underlying exception message (Ruby 2.1+ uses 'cause', older versions may use 'original_exception')
+      underlying_message = ''
+      if e.respond_to?(:cause) && e.cause
+        underlying_message = e.cause.message.to_s.downcase
+      elsif e.respond_to?(:original_exception) && e.original_exception
+        underlying_message = e.original_exception.message.to_s.downcase
+      end
 
-        # Check for specific MySQL max_execution_time error patterns
-        is_max_execution_time_error = error_message.include?('max_execution_time') ||
-                        error_message.include?('maximum statement execution time exceeded') ||
-                        error_message.include?('query execution was interrupted') ||
-                        error_message.include?('execution time exceeded') ||
-                        underlying_message.include?('max_execution_time') ||
-                        underlying_message.include?('maximum statement execution time exceeded') ||
-                        underlying_message.include?('query execution was interrupted') ||
-                        underlying_message.include?('execution time exceeded')
+      # Check for specific MySQL max_execution_time error patterns
+      is_max_execution_time_error = error_message.include?('max_execution_time') ||
+                      error_message.include?('maximum statement execution time exceeded') ||
+                      error_message.include?('query execution was interrupted') ||
+                      error_message.include?('execution time exceeded') ||
+                      underlying_message.include?('max_execution_time') ||
+                      underlying_message.include?('maximum statement execution time exceeded') ||
+                      underlying_message.include?('query execution was interrupted') ||
+                      underlying_message.include?('execution time exceeded')
 
-        if is_max_execution_time_error
-          # MySQL has killed the query - search must end here
-          logger.warn("#{App.name_upcase}: MySQL max_execution_time (15000ms) exceeded - search terminated: #{e.message}")
-          [[], 0, false, 3]
-        else
-          logger.warn("#{App.name_upcase}: SQL error: #{e.inspect}")
-          [[], 0, false, 2]
-        end
-	    rescue => e
-        logger.warn("#{App.name_upcase}:error: #{e.inspect}")
+      if is_max_execution_time_error
+        # MySQL has killed the query - search must end here
+        logger.warn("#{App.name_upcase}: MySQL max_execution_time (15000ms) exceeded - search terminated: #{e.message}")
+        [[], 0, false, 3]
+      else
+        logger.warn("#{App.name_upcase}: SQL error: #{e.inspect}")
         [[], 0, false, 2]
-	    end
+      end
+    rescue => e
+      logger.warn("#{App.name_upcase}:error: #{e.inspect}")
+      [[], 0, false, 2]
     end
   end
 
