@@ -15,7 +15,8 @@
           <%# if @record.reference_entry_description_text_display? %>
             <p><%#= @referral_record.present? ? ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE : ApplicationText::LATE_ENTRY_TEXT_WITHOUT_REFERENCE%></p>
           <%# end %>
-          <%= render partial: 'partial_entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, original_record: @record , type: "reference", search_id: @search_id, more_info: true} %>
+          <%#= render partial: 'partial_entry_information_table', locals: {record: @record, entry_type: record_type.downcase, search: false, original_record: @record , type: "reference", search_id: @search_id, more_info: true} %>
+          <%= render partial: 'entry_information_table', locals: {record: @record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @record, type: "reference"} %>
           <div class='push-half--top'>
               <div class="grid__item one-whole">
                 <div class='grid__item one-quarter lap-one-quarter palm-one-half'>
@@ -38,7 +39,8 @@
           <% record_type = RecordType::display_name(@secondary_referral_record.RecordTypeID)%>
           <p class="epsilon push-half--top flush--bottom"><strong><%= "Referal Information: #{@secondary_referral_record[:GivenName].upcase} #{@secondary_referral_record[:Surname].upcase}" %></strong></p>
 	        <hr>
-	        <%= render partial: 'partial_entry_information_table', locals: {record: @secondary_referral_record, entry_type: record_type.downcase, search: false, original_record: @record, type: "reference", search_id: @search_id, more_info: true } %>
+	        <%#= render partial: 'partial_entry_information_table', locals: {record: @secondary_referral_record, entry_type: record_type.downcase, search: false, original_record: @record, type: "reference", search_id: @search_id, more_info: true } %>
+          <%= render partial: 'entry_information_table', locals: {record: @secondary_referral_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @record, type: "reference"} %>
 	          <div class='push-half--top'>
           		<div class="grid__item one-whole">
 	              <div class='grid__item one-half lap-one-half palm-one-whole'>
