@@ -38,11 +38,11 @@
       </div>
     </section>
     <%= render partial: 'display_scans', locals: { record: @current_record } %>
-    <p><%= raw ERB.new(APPLICATION_TEXT::SCAN_HELP_TEXT).result(binding) %></p>
+    <p class="push-half--bottom"><%= raw ERB.new(ApplicationText::SCAN_HELP_TEXT).result(binding) %></p>
     <% if @option == '2' %>
       <div id="postems">
         <div>
-          <h4 class="flush--bottom">Postems</h4>
+          <h4 class="push-half--bottom">Postems</h4>
           <p class="push-half--bottom">
             Do you know more about the people or event in this record that you are willing to share with other researchers?<br /> 
             We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
@@ -58,7 +58,7 @@
                 <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push-half--bottom">
                   <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
                 </li>
-                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom">
+                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
                   <%= button_tag 'Submit Postem', type: :submit, class: 'btn btn--small' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
                 </li>
               </ol>
