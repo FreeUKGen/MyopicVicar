@@ -441,7 +441,7 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_submission
-    bg_link = BestGuessLink.where(RecordNumber: self.RecordNumber, PrimaryEntry: 1)
+    bg_link = BestGuessLink.where(RecordNumber: self.RecordNumber, PrimaryEntry: 1).first
     #Submission.find_by(Surname: self.Surname, GivenName: self.GivenName, District: self.District, Volume: self.Volume, Page: page)
     Submission.find_by(AccessionNumber: bg_link.AccessionNumber, SequenceNumber: bg_link.SequenceNumber)
   end
