@@ -96,6 +96,24 @@
         <%= record.GivenName %>
       </td>
     </tr>
+    <tr>
+      <th scope="row">
+        Record Type
+      </th>
+      <td>
+        <%= "#{record_type}".capitalize %>
+      </td>
+    </tr>
+    <%# unless record.post_1994_marriage? %>
+      <tr>
+        <th scope="row">
+          Registration Date
+        </th>
+        <td>
+          <%= format_quarter_year(record.QuarterNumber) %>
+        </td>
+      </tr>
+    <%# end %>
     <% if entry_type == "birth" %>
       <tr>
         <th scope="row">
@@ -219,40 +237,7 @@
           </a>
         <% end %>
       </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        Record Type
-      </th>
-      <td>
-        <%= "#{record_type}".capitalize %>
-      </td>
-    </tr>
-    <%# unless record.post_1994_marriage? %>
-      <tr>
-        <th scope="row">
-          Registration Date
-        </th>
-        <td>
-          <%= format_quarter_year(record.QuarterNumber) %>
-        </td>
-      </tr>
-    <%# end %>
-    <% unless record.post_1994_marriage? %>
-      <% if search %>
-        <% event_registered = record.event_registration %>
-        <% if event_registered.present?%>
-          <tr>
-            <th scope="row">
-              Registered
-            </th>
-            <td >
-              <%= format_registered(event_registered, record.QuarterNumber) %>
-            </td>
-          </tr>
-        <% end %>
-      <% end %>
-    <% end %>    
+    </tr>   
     <% if record.register_entry_number_format %>
       <tr>
         <th scope="row">
@@ -280,18 +265,25 @@
       </tr>
     <% else %>     
     <% end %>
-    <% if entry_type == "marriage" %>
-      <% if record.post_1994_marriage? %>
-        <% sub = record.get_submission %>
-        <% if sub.present? %>
+    <% unless record.post_1994_marriage? %>
+      <% if search %>
+        <% event_registered = record.event_registration %>
+        <% if event_registered.present?%>
           <tr>
             <th scope="row">
               Registered
             </th>
-            <td>
-              <%= "#{ QuarterDetails.month_hash_abbreviated[record.get_submission.Registered] } #{ format_quarter_year(record.QuarterNumber)}" %>
+            <td >
+              <%= format_registered(event_registered, record.QuarterNumber) %>
             </td>
           </tr>
+        <% end %>
+      <% end %>
+    <% end %> 
+    <% if entry_type == "marriage" %>
+      <% if record.post_1994_marriage? %>
+        <% sub = record.get_submission %>
+        <% if sub.present? %>
           <tr>
             <th scope="row">
               Entry number
@@ -306,6 +298,14 @@
             </th>
             <td>
               <%= record.get_submission.SourceCode %>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              Registered
+            </th>
+            <td>
+              <%= "#{ QuarterDetails.month_hash_abbreviated[record.get_submission.Registered] } #{ format_quarter_year(record.QuarterNumber)}" %>
             </td>
           </tr>
        <% end %>
