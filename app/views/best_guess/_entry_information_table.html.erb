@@ -238,7 +238,21 @@
         </td>
       </tr>
     <%# end %>
-    
+    <% unless record.post_1994_marriage? %>
+      <% if search %>
+        <% event_registered = record.event_registration %>
+        <% if event_registered.present?%>
+          <tr>
+            <th scope="row">
+              Registered
+            </th>
+            <td >
+              <%= format_registered(event_registered, record.QuarterNumber) %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>    
     <% if record.register_entry_number_format %>
       <tr>
         <th scope="row">
@@ -348,21 +362,6 @@
             <% end %>
           </td>
         </tr>
-      <% end %>
-    <% end %>
-    <% unless record.post_1994_marriage? %>
-      <% if search %>
-        <% event_registered = record.event_registration %>
-        <% if event_registered.present?%>
-          <tr>
-            <th scope="row">
-              Registered
-            </th>
-            <td >
-              <%= format_registered(event_registered, record.QuarterNumber) %>
-            </td>
-          </tr>
-        <% end %>
       <% end %>
     <% end %>
   </tbody>
