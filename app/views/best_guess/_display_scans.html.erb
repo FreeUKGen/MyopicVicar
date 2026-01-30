@@ -1,7 +1,8 @@
 <%# app/views/best_guess/_display_scans.html.erb %>
 <div id="display_scans">
   <h4 class="flush--bottom">Scans</h4>
-  <% scan_links_array = render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, record) %>
+  <% scan_links, acc_scans, acc_mul_scans = record.get_scans %>
+  <% scan_links_array = render_scan_rows(scan_links, acc_scans, acc_mul_scans, record) %>
   <% if scan_links_array.present? && scan_links_array.any? %>
     <% valid_links = scan_links_array.reject { |link| link.blank? || link.to_s.strip.empty? } %>
     <% if valid_links.any? %>

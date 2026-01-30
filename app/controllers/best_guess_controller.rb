@@ -58,7 +58,7 @@ class BestGuessController < ApplicationController
     @search_id = params[:search_id] if @search
     @current_record = BestGuess.where(RecordNumber: record_number).first
     @spouse_record =  @current_record.get_spouse_record
-    show_scans
+    #show_scans
     show_postem_or_scan
     @url = generate_url
     #@spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).where.not(RecordNumber: record_number).first

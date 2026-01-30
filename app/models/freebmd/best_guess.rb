@@ -433,6 +433,13 @@ class BestGuess < FreebmdDbBase
     year >= 1994 && event_type == 3
   end
 
+  def get_scans
+    scan_links = self.uniq_scanlists if self.uniq_scanlists.present?
+    acc_scans = self.get_non_multiple_scans if self.get_non_multiple_scans.present?
+    acc_mul_scans = self.multiple_best_probable_scans if self.multiple_best_probable_scans.present?
+    [scan_links, acc_scans, acc_mul_scans]
+  end
+
   def get_submission
     bg_link = BestGuessLink.where(RecordNumber: self.RecordNumber, PrimaryEntry: 1)
     #Submission.find_by(Surname: self.Surname, GivenName: self.GivenName, District: self.District, Volume: self.Volume, Page: page)
