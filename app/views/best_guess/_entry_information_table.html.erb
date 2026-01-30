@@ -228,7 +228,7 @@
         <%= "#{record_type}".capitalize %>
       </td>
     </tr>
-    <% unless record.post_1994_marriage? %>
+    <%# unless record.post_1994_marriage? %>
       <tr>
         <th scope="row">
           Registration Date
@@ -237,7 +237,7 @@
           <%= format_quarter_year(record.QuarterNumber) %>
         </td>
       </tr>
-    <% end %>
+    <%# end %>
     
     <% if record.register_entry_number_format %>
       <tr>
@@ -275,7 +275,7 @@
               Registered
             </th>
             <td>
-              <%= record.get_submission.Registered %>
+              <%= "#{ QuarterDetails.month_hash_abbreviated[record.get_submission.Registered] } #{ format_quarter_year(record.QuarterNumber)}" %>
             </td>
           </tr>
           <tr>

@@ -42,6 +42,23 @@ module QuarterDetails
     }
   end
 
+  def self.month_hash_abbreviated
+    {
+      "JAN" => "January",
+      "FEB" => "February",
+      "MAR" => "March",
+      "APR" => "April",
+      "MAY" => "May",
+      "JUN" => "June",
+      "JUL" => "July",
+      "AUG" => "August",
+      "SEP" => "September",
+      "OCT" => "October",
+      "NOV" => "November",
+      "DEC" => "December",
+    }
+  end
+
   def self.quarter_hash
     {
       "1" => "Jan to Mar",
