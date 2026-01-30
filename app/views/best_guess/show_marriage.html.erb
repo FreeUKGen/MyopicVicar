@@ -5,54 +5,56 @@
   <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @current_record.RecordNumber), class: " btn   btn--small" if @search_id.present?%>
   <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @current_record, @current_record.friendly_url, search_entry: @current_record), class: " btn   btn--small" unless @current_record.blank?%>
 <% end %>
-  <h1 class="accessibility">Marriage Informations</h1>
-  <div class="grid">
-    <div class="grid__item one-whole lap-one-whole palm-one-whole ">
-      <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
-      <section>
-        <div class="grid__item one-half lap-one-half palm-one-whole">
-          <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
-          <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
+<h1 class="accessibility">Marriage Informations</h1>
+<div class="grid">
+  <div class="grid__item one-whole lap-one-whole palm-one-whole ">
+    <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
+    <section>
+      <div class="grid__item one-half lap-one-half palm-one-whole">
+        <% record_type = RecordType::display_name(@current_record.RecordTypeID)%>
+        <p class="epsilon push-half--top flush--bottom"><strong><%= "Entry Information: #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
+        <hr>
+        <% if @search %>
+          <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id, original_record: @current_record, more_info: true} %>
+          <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
+          <div class="islet islet--bordered">
+            <%= render partial: 'entry_queries', locals: { record: @current_record } %>
+            <%= render partial: 'display_scans', locals: { record: @current_record } %>
+            <%= render partial: 'display_postems', locals: { record: @current_record } %>
+        </div>
+        <% else %>
+          <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true} %>
+          <%= render partial: 'entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
+        <% end %>
+      </div>
+    </section>
+
+    <section>
+      <div class="grid__item one-half lap-one-half palm-one-whole">
+        <% if @spouse_record.present? %>
+          <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
+          <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
           <hr>
           <% if @search %>
-            <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id, original_record: @current_record, more_info: true} %>
-            <%= render partial: 'entry_information_table', locals: {record: @current_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
-            <div class="islet islet--bordered">
-              <%= render partial: 'entry_queries', locals: { record: @current_record } %>
-              <%= render partial: 'display_scans', locals: { record: @current_record } %>
-              <%= render partial: 'display_postems', locals: { record: @current_record } %>
-          </div>
+            <%#= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @current_record, more_info: true } %>
+            <%= render partial: 'entry_information_table', locals: {record: @spouse_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
           <% else %>
-            <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true} %>
-            <%= render partial: 'entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
+            <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true } %>
           <% end %>
-        </div>
-      </section>
-
-      <section>
-        <div class="grid__item one-half lap-one-half palm-one-whole">
-          <% if @spouse_record.present? %>
-            <% record_type = RecordType::display_name(@spouse_record.RecordTypeID)%>
-            <p class="epsilon push-half--top flush--bottom"><strong><%= "Spouse Information: #{@spouse_record[:GivenName].upcase} #{@spouse_record[:Surname].upcase}" %></strong></p>
-            <hr>
-            <% if @search %>
-              <%#= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", search_id: @search_id,original_record: @current_record, more_info: true } %>
-              <%= render partial: 'entry_information_table', locals: {record: @spouse_record, search: true, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
-            <% else %>
-              <%= render partial: 'partial_entry_information_table', locals: {record: @spouse_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true } %>
-            <% end %>
-            <div class="islet islet--bordered">
-              <%= render partial: 'entry_queries', locals: { record: @spouse_record } %>
-              <%= render partial: 'display_scans', locals: { record: @spouse_record } %>
-              <%= render partial: 'display_postems', locals: { record: @spouse_record } %>
-            </div>
-          <% else %>
-            <p>We do not have information on spouse yet.</p>
-          <% end %>  
-        </div>
-      </section>
-      <div class="text--center">
-        <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
+          <div class="islet islet--bordered">
+            <%= render partial: 'entry_queries', locals: { record: @spouse_record } %>
+            <%= render partial: 'display_scans', locals: { record: @spouse_record } %>
+            <%= render partial: 'display_postems', locals: { record: @spouse_record } %>
+          </div>
+        <% else %>
+          <p>We do not have information on spouse yet.</p>
+        <% end %>  
       </div>
+    </section>
+    <div class="text--center">
+      <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
     </div>
   </div>
+</div>
+<!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
+<%= horz_advert('freebmd_hrec_1') %>

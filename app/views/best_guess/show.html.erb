@@ -37,55 +37,17 @@
         <% end %>
       </div>
     </section>
-    <div id="display_scans">
-      <h4>Scans</h4>
-      <% scan_links_array = render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @current_record) %>
-      <% if scan_links_array.present? && scan_links_array.any? %>
-        <% valid_links = scan_links_array.reject { |link| link.blank? || link.to_s.strip.empty? } %>
-        <% if valid_links.any? %>
-          <ul>
-            <% valid_links.each do |link| %>
-              <%= raw link %>
-            <% end %>
-          </ul>
-        <% end %>
-      <% end %>
-      <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
-    </div>
+    <%= render partial: 'display_scans', locals: { record: @current_record } %>
+    <p><%= APPLICATION_TEXT::SCAN_HELP_TEXT %></p>
     <% if @option == '2' %>
-      <div id="display_postems">
+      <div id="postems">
         <div>
-          <h4>Postems</h4>
+          <h4 class="flush--bottom">Postems</h4>
           <p>
             Do you know more about the people or event in this record that you are willing to share with other researchers?<br /> 
-          We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
+            We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
           </p>
-          <% if @current_record.postems_list.present? %>
-            <p>List of postems:</p>
-            <table class="table--bordered table--data">
-              <thead>
-                <th>Date</th>
-                <th>Postem</th>
-              </thead>
-              <tbody>
-                <% @current_record.postems_list.each do |postem|%>
-                  <tr>
-                    <td>
-                      <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
-                    </td>
-                    <td>
-                      <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          <% end %>
-          <div class="text--left push-half--bottom">
-            <small>
-              <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
-            </small>
-          </div>
+          <%= render partial: 'display_postems', locals: { record: @current_record } %>
           <p>Submit a postem:</p>
           <div class="">
             <%= semantic_form_for(@new_postem) do |f| %>
