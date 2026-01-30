@@ -21,7 +21,7 @@ module SearchQueriesHelper
   end
 
   def results_revise_search_form_link
-    link_to "Revise Search", new_search_query_path(:search_id => @search_query), :class => "btn  btn--small"
+    link_to "Revise Search", new_search_query_path(:search_id => @search_query, :result_count => @result_count), :class => "btn  btn--small"
   end
 
   def results_about_search_link

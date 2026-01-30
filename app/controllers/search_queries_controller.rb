@@ -102,15 +102,21 @@ class SearchQueriesController < ApplicationController
     adjust_search_query_parameters
     if @search_query.save
       session[:query] = @search_query.id
-      #raise @search_query.search_records.to_a.inspect
-      @search_results, @result_count, success, error_type = @search_query.search_records.to_a
-      @search_query.result_count = @result_count
-      @search_query.save
-      error = error_type.to_i if error_type.present?
-      redirect_to search_query_path(@search_query) and return if success
-      redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
-      redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
-      redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'It takes too long to execute the query. Please consider adding more filter.') and return if error == 3
+      if params[:search_query][:count_hits].present?
+        count
+        redirect_to new_search_query_path(:search_id => @search_query, :result_count => @result_count)
+        return
+      else
+        #raise @search_query.search_records.to_a.inspect
+        @search_results, @result_count, success, error_type = @search_query.search_records.to_a
+        @search_query.result_count = @result_count
+        @search_query.save
+        error = error_type.to_i if error_type.present?
+        redirect_to search_query_path(@search_query) and return if success
+        redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'It takes too long to execute the query. Please consider adding more filter.') and return if error == 3
+    end
     else
       render :new
     end
@@ -162,6 +168,7 @@ class SearchQueriesController < ApplicationController
     @search_query = SearchQuery.new
     session.delete(:query)
     old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?
+    @result_count = params[:result_count] if params[:result_count].present?
     old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
     @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
     @chapman_codes = ChapmanCode::CODES
@@ -573,6 +580,15 @@ class SearchQueriesController < ApplicationController
         render json: @counties
       }
     end
+  end
+
+  def count
+    #@search_query.count_hits = true
+    #@search_results, success, error_type = @search_query.search_records.to_a
+    @result_count = @search_query.count_records
+    #error_type.present? ? hit_list = 0 : hit_list = @search_results.count
+    #hit_list
+    #@search_query
   end
 
   private

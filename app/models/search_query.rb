@@ -132,6 +132,7 @@
   #field :extern_ref, type: String
   field :inclusive, type: Boolean
   field :witness, type: Boolean
+  field :count_hits, type: Boolean
   field :start_year, type: Integer
   field :start_quarter, type: Integer
   field :end_quarter, type: Integer
@@ -1434,6 +1435,134 @@
 
   def quarter_number(year:, quarter: 1)
     (year.to_i-1837)*4 + quarter.to_i
+  end
+
+  def count_records
+		if MyopicVicar::Application.config.template_set = 'freebmd'
+		  self.result_count = self.freebmd_count_records
+		else
+		  #self.count
+		end
+  end
+
+  def freebmd_count_records
+    	  search_fields = bmd_adjust_field_names
+	  @search_index = SearchQuery.get_search_table.index_hint(search_fields)
+	  logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+
+	  begin
+      max_time = Rails.application.config.max_search_time
+      logger.warn(max_time)
+
+      Timeout::timeout(max_time) do
+        # Build base query
+        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
+
+        # Apply wildcard conditions (returns [sql, *values] array)
+        if wildcard_search_conditions.present?
+          sql, *values = wildcard_search_conditions
+          records = records.where(sql, *values)
+        end
+
+        if conditions = search_conditions_arel
+          records = records.where(conditions)
+        end
+
+        # Log SQL once
+        logger.warn("SQL: #{records.to_sql}")
+
+        # Check if we need array-returning methods
+        needs_array_result = date_of_birth_range? || dob_at_death.present? ||
+                  age_at_death.present? || check_age_range?
+
+        # Apply filters that return Relations
+        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && bmd_record_type == ['3']
+        records = spouse_given_name_filter(records) if spouse_first_name.present?
+
+        # Get count early if we don't need array methods (more efficient)
+        record_count = 0
+        max_limit = 1000
+
+        if !needs_array_result && records.respond_to?(:count)
+          record_count = records.count
+        else
+          # Apply array-returning methods (these may convert Relation to Array)
+          records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
+          records = combined_age_results(records) if age_at_death.present? || check_age_range?
+
+          # Handle both Relation and Array results AFTER combined methods
+          if records.is_a?(Array)
+            record_count = records.size
+            
+          elsif records.respond_to?(:count)
+            # This handles Relations returned from combined_results
+            record_count = records.count
+          end
+        end
+		record_count
+      end
+	  rescue Timeout::Error
+      logger.warn("#{App.name_upcase}: Timeout")
+      [[], 0, false, 1]
+	rescue ActiveRecord::StatementInvalid => e
+		  error_message = e.message.to_s.downcase
+
+      # Try to get the underlying exception message (Ruby 2.1+ uses 'cause', older versions may use 'original_exception')
+      underlying_message = ''
+      if e.respond_to?(:cause) && e.cause
+        underlying_message = e.cause.message.to_s.downcase
+      elsif e.respond_to?(:original_exception) && e.original_exception
+        underlying_message = e.original_exception.message.to_s.downcase
+      end
+
+      # Check for specific MySQL max_execution_time error patterns
+      is_max_execution_time_error = error_message.include?('max_execution_time') ||
+                      error_message.include?('maximum statement execution time exceeded') ||
+                      error_message.include?('query execution was interrupted') ||
+                      error_message.include?('execution time exceeded') ||
+                      underlying_message.include?('max_execution_time') ||
+                      underlying_message.include?('maximum statement execution time exceeded') ||
+                      underlying_message.include?('query execution was interrupted') ||
+                      underlying_message.include?('execution time exceeded')
+
+      if is_max_execution_time_error
+        # MySQL has killed the query - search must end here
+        logger.warn("#{App.name_upcase}: MySQL max_execution_time (15000ms) exceeded - search terminated: #{e.message}")
+        [[], 0, false, 3]
+      else
+        logger.warn("#{App.name_upcase}: SQL error: #{e.inspect}")
+        [[], 0, false, 2]
+      end
+	  rescue => e
+      logger.warn("#{App.name_upcase}:error: #{e.inspect}")
+      [[], 0, false, 2]
+	  end
+  end
+
+  def freebmd_count_records_old
+    search_fields = bmd_adjust_field_names
+    @search_index = SearchQuery.get_search_table.index_hint(search_fields)
+    logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    begin
+      max_time = Rails.application.config.max_search_time
+      logger.warn(max_time)
+      Timeout::timeout(max_time) do
+        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
+        records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?
+        records = records.where(search_conditions) if search_conditions.present?
+        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
+        records = spouse_given_name_filter(records) if self.spouse_first_name.present?
+        records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
+        records = combined_age_results records if self.age_at_death.present? || check_age_range?
+        records.count
+      end
+    rescue Timeout::Error
+      logger.warn("#{App.name_upcase}: Timeout")
+      [[], false, 1]
+    rescue => e
+      logger.warn("#{App.name_upcase}:error: #{e.inspect}")
+      [[], false, 2]
+    end
   end
 
   def search_records
