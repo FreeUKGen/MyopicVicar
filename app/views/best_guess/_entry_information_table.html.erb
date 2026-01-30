@@ -154,12 +154,17 @@
             Spouse Name
           </th>
           <td>
-            <% if @search %>
+            <% type ||= "general" %>
+            <% if @search && type != "marriages" %>
               <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+            <% elsif type == "marriages" %>
+              <%= "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}" %><br>
             <% else %>
               <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
             <% end %>
-            <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+            <% if type != "marriages" %>
+              <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+            <% end %>
           </td>
         </tr>
       <% end %>
