@@ -38,28 +38,28 @@
       </div>
     </section>
     <%= render partial: 'display_scans', locals: { record: @current_record } %>
-    <p><%= APPLICATION_TEXT::SCAN_HELP_TEXT %></p>
+    <p><%= raw ERB.new(APPLICATION_TEXT::SCAN_HELP_TEXT).result(binding) %></p>
     <% if @option == '2' %>
       <div id="postems">
         <div>
           <h4 class="flush--bottom">Postems</h4>
-          <p>
+          <p class="push-half--bottom">
             Do you know more about the people or event in this record that you are willing to share with other researchers?<br /> 
             We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
           </p>
           <%= render partial: 'display_postems', locals: { record: @current_record } %>
-          <p>Submit a postem:</p>
+          <p class="push-half--bottom">Submit a postem:</p>
           <div class="">
             <%= semantic_form_for(@new_postem) do |f| %>
               <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
               <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
               <%= hidden_field_tag('search_query', @search_query.id) if @search %>
               <ol class="grid">
-                <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
+                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push-half--bottom">
                   <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
                 </li>
                 <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom">
-                  <%= button_tag 'Submit Postem', type: :submit, class: 'btn btn--natural' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                  <%= button_tag 'Submit Postem', type: :submit, class: 'btn btn--small' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
                 </li>
               </ol>
             <% end %>
@@ -67,11 +67,11 @@
         </div>
       </div>
     <% end %>
-    <h3>Need help?</h3>
-    <p>
+    <h3 class="push-half--top push-half--bottom">Need help?</h3>
+    <p class="push-half--bottom">
       You can find information about the Entry Information page in our <%= link_to 'Help', '/help/entry_help'%> section.
     </p>
-    <h3>Ordering a GRO certificate</h3>
+    <h3 class="push-half--top push-half--bottom">Ordering a GRO certificate</h3>
     <p class="push-half--bottom">
       You can order certificates from the <%= link_to 'General Register Office (GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.
     </p>
