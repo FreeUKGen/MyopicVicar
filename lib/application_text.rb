@@ -1,6 +1,7 @@
 module ApplicationText
+	ALTERNATE_NAMES_TEXT = "View possible alternate names."
 	NEW_TAB_LINK_TEXT = "External Link: Opens in new tab."
-	SAME_PAGE_ENTRIES_TEXT = "View other Entries on this page"
+	SAME_PAGE_ENTRIES_TEXT = "View other entries on this page."
 	VIEW_MARRIAGE_TEXT = "View Marriage"
 	LATE_ENTRY_TEXT_WITH_REFERENCE = "This entry appears to be a Late Entry referring to entry displayed on Right."
 	LATE_ENTRY_TEXT_WITHOUT_REFERENCE = "This entry appears to be a Late Entry however the entry referred to cannot be found, either because it is not identical to this entry or because it has not yet been transcribed."

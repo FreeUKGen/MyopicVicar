@@ -168,7 +168,7 @@ module BestGuessHelper
           result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
         when "Quarter"
           content = format_quarter_year(field_value)
-          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+          result = "<meta name='freebmd.#{field_name}' content='" + content.to_s + "' />"
         when "OfficialDistrict"
           district = District.where(DistrictNumber: field_value).first
           content = district[:DistrictName]
