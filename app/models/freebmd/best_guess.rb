@@ -206,7 +206,7 @@ class BestGuess < FreebmdDbBase
 
   def event_entry_number
     submissions = Submission.find_by(AccessionNumber: record_accessions, SequenceNumber: record_sequence_number)
-    submissions.Page if submissions.present?
+    submissions.EntryNumber if submissions.present?
   end
 
   def event_quarter_number
