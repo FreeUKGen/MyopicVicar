@@ -1,6 +1,6 @@
-# robots.txt for freebmd2 - no url yet, perhaps freebmd2.freebmd.org.uk/ ?
-
-User-agent: *
+# robots.txt for freebmd2 - no url yet, perhaps freebmd2.freebmd.org.uk/ ?#User-agent: *
+User-agent: Mediapartners-Google
+User-agent: AmazonAdBot
 Allow: /cms/about
 Allow: /cms/donate
 Allow: /cms/help

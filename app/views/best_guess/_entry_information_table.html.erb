@@ -1,7 +1,7 @@
 <script>
     document.getElementById("citation-toggle").addEventListener("click", citationToggle);
     /*Hide citation blocks unless citation type is selected*/
-     const citations = ['wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
+     const citations = ['compact_text', 'wikitree_inline', 'wikitree_ref', 'familytree', 'evidence_explained', 'wikipedia'];
     function hide_citation_block(cite){
       cite_element =  document.getElementById(`${cite}_citation_container`);
       if (cite_element) {
@@ -73,11 +73,29 @@
 </script>
 <style type="text/css">
   .citation_container {border: 1px solid black; padding: 5px;}
+  .table--left-aligned th {width: 200px; text-align: left !important; padding-left: 20px !important;}
+  .table--left-aligned td {text-align: left !important; padding-left: 20px !important;}
 </style>
-<table class="table--bordered table--data">
+<table class="table--bordered table--data table--left-aligned">
   <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
   <tbody>
     <% record_type = RecordType::display_name(record.RecordTypeID)%>
+    <tr>
+      <th scope="row">
+        Surname
+      </th>
+      <td>
+        <%= record.Surname %>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">
+        Given Name
+      </th>
+      <td>
+        <%= record.GivenName %>
+      </td>
+    </tr>
     <tr>
       <th scope="row">
         Record Type
@@ -86,7 +104,7 @@
         <%= "#{record_type}".capitalize %>
       </td>
     </tr>
-    <%# if record.QuarterNumber <  Constant::EVENT_QUARTER_TO_YEAR %>
+    <%# unless record.post_1994_marriage? %>
       <tr>
         <th scope="row">
           Registration Date
@@ -96,6 +114,69 @@
         </td>
       </tr>
     <%# end %>
+    <% if entry_type == "birth" %>
+      <tr>
+        <th scope="row">
+          Mother's Maiden Name
+        </th>
+        <td>
+          <% if record.AssociateName.present? %>
+            <%= record.AssociateName %>
+          <% else %>
+            <%= 'No data' %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        </td>
+      </tr>
+    <% end%>
+    <% if entry_type == "death" %>
+      <tr>
+        <th scope="row">
+          <% if record.AgeAtDeath.present? && record.AgeAtDeath.to_i.to_s == record.AgeAtDeath %>
+            Age at Death
+          <% else %>
+            Date of Birth
+          <% end %>
+        </th>
+        <td>
+          <%= record.AgeAtDeath %>
+          <% if record.AgeAtDeath.blank? %>
+            <%= 'No data' %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if entry_type == "marriage" %>
+      <% if @spouse_record.present? %>
+        <tr>
+          <th scope="row">
+            Spouse Name
+          </th>
+          <td>
+            <% type ||= "general" %>
+            <% if @search && type != "marriages" %>
+              <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+            <% elsif type == "marriages" %>
+              <%= "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}" %><br>
+            <% else %>
+              <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+            <% end %>
+            <% if type != "marriages" %>
+              <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      <% if !record.AssociateName.present? %>
+        <tr>
+          <th scope="row">Entries on page <%= record.Page %></th>
+          <td>
+            <%= render partial: 'best_guess/same_page_block', locals: {record: @current_record} %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
     <tr>
       <th scope="row">
         District
@@ -122,57 +203,6 @@
         <% end %>
       </td>
     </tr>
-    <% unless entry_type == "death" %>
-      <tr>
-        <th scope="row">
-          <%= mother_or_spouse_surname(record_type)%>
-        </th>
-        <td>
-          <% if search && record.AssociateName.present? %>
-            <% if entry_type == 'marriage' %>
-              <% if @search %>
-                <%= link_to "#{record.AssociateName}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
-              <% else %>
-                <%= link_to "#{record.AssociateName}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
-              <% end %>
-              <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
-            <% else %>
-              <%= record.AssociateName %>
-            <% end %>
-          <% end %>
-          <% if record.AssociateName.blank? %>
-            <%= 'No data' %>
-            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-          <% end %>
-        </td>
-      </tr>
-    <% end %>
-    <% if record.register_entry_number_format %>
-    <tr>
-      <th scope="row">
-        Register number
-      </th>
-      <td >
-        <% event_register_number = record.event_registration_number %>
-        <% if event_register_number.present? %>
-          <%= event_register_number  %>
-        <% end %>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        Entry number
-      </th>
-      <td>
-        <% event_entry_number = record.event_entry_number %>
-        <% if event_entry_number.present?  %>
-          <%= event_entry_number %>
-        <% else %>
-          <%= "#{ record.Page }" %>
-        <% end %>
-      </td>
-    </tr>
-    <% else %>
     <tr>
       <th scope="row">
         Volume
@@ -193,11 +223,16 @@
       <td>
         <% unless record.Page.to_i == 0 %>
           <% if @search %>
-            <%= render partial: 'page_records_navigation_search', locals: {record: @current_record, search_id: params[:search_id], original_record: @original_record} %>
+            <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: search_id, original_record: original_record} %>
+            <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
+            <% end %>
+          <% if @hash %>
+            <%= record.Page %>
           <% end %>
           <% if params[:saved_record] %>
             <%= render partial: 'page_records_navigation_saved', locals: {record: @current_record, original_record: @original_record} %>
-          <% end %>
+            <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
+            <% end %>
         <% else%>
           <%= record.Page %>
         <% end %>
@@ -207,26 +242,80 @@
           </a>
         <% end %>
       </td>
-    </tr>
-    <% end %>
-     <% if entry_type == "death" %>
+    </tr>   
+    <% if record.register_entry_number_format %>
       <tr>
         <th scope="row">
-          <% if record.AgeAtDeath.present? && record.AgeAtDeath.to_i.to_s == record.AgeAtDeath %>
-            Age at Death
-          <% else %>
-            Date of Birth
-          <% end %>
+          Register number
         </th>
-        <td>
-          <%= record.AgeAtDeath %>
-          <% if record.AgeAtDeath.blank? %>
-            <%= 'No data' %>
-            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+        <td >
+          <% event_register_number = record.event_registration_number %>
+          <% if event_register_number.present? %>
+            <%= event_register_number  %>
           <% end %>
         </td>
       </tr>
+      <tr>
+        <th scope="row">
+          Entry number
+        </th>
+        <td>
+          <% event_entry_number = record.event_entry_number %>
+          <% if event_entry_number.present?  %>
+            <%= event_entry_number %>
+          <% else %>
+            <%= "#{ record.Page }" %>
+          <% end %>
+        </td>
+      </tr>
+    <% else %>     
     <% end %>
+    <% unless record.post_1994_marriage? %>
+      <% if search %>
+        <% event_registered = record.event_registration %>
+        <% if event_registered.present?%>
+          <tr>
+            <th scope="row">
+              Registered
+            </th>
+            <td >
+              <%= format_registered(event_registered, record.QuarterNumber) %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %> 
+    <% if entry_type == "marriage" %>
+      <% if record.post_1994_marriage? %>
+        <% sub = record.get_submission %>
+        <% if sub.present? %>
+          <tr>
+            <th scope="row">
+              Entry number
+            </th>
+            <td>
+              <%= record.get_submission.EntryNumber %>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              SourceCode
+            </th>
+            <td>
+              <%= record.get_submission.SourceCode %>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              Registered
+            </th>
+            <td>
+              <%= "#{ QuarterDetails.month_hash_abbreviated[record.get_submission.Registered] } #{ format_quarter_year(record.QuarterNumber)}" %>
+            </td>
+          </tr>
+       <% end %>
+      <% end %>
+    <% end %>    
     <tr>
       <th scope="row">
         Transcriber
@@ -237,20 +326,6 @@
           <%= 'No data' %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        Persistent URL for entry
-      </th>
-      <td>
-        <% protocol = URI.parse(request.original_url).scheme %>
-        <% domain = URI.parse(request.original_url).host %>
-        <% port = URI.parse(request.original_url).port %>
-        <% domain = domain + ':' + port.to_s if port.present? %>
-        <a id="persistentUrl" class="pUrl" href="<%= @url %>"><%= "#{protocol}://#{domain}#{@url}" %></a>
-        <button id="copyBtn" class ="btn  btn--small", onclick="urlCopy('persistentUrl', 'copyBtn')" style = "cursor: pointer">Copy URL</button>
-        <!--a class="btn btn--small" href="" onclick=copy('persistentUrl') style="cursor: pointer">Copy URL</a-->
       </td>
     </tr>
     <% if search == true %>
@@ -294,83 +369,18 @@
         </tr>
       <% end %>
     <% end %>
-    <% if search %>
-      <% event_registered = record.event_registration %>
-      <% if event_registered.present?%>
-        <tr>
-          <th scope="row">
-            Registered
-          </th>
-          <td >
-            <%= format_registered(event_registered, record.QuarterNumber) %>
-          </td>
-        </tr>
-      <% end %>
-    <% end %>
-    <% if search %>
-      <tr>
-        <th scope="row">
-          More Information
-        </th>
-        <td class="project-text-color">
-          <%= render partial: 'more_information' %>
-        </td>
-      </tr>
-    <% end %>
-    <%# if more_info %>
-      <!--td  colspan=2>
-        <%# if  search %>
-          <%#= link_to 'Complete Details', friendly_bmd_record_details_path(@search_id, record.id, record.friendly_url, search_entry: record), :rel => "nofollow", :title => "", class: 'btn btn--natural'%>
-        <%# else %>
-          <%#= link_to 'Complete Details', friendly_bmd_record_details_non_search_path(record.id, record.friendly_url, search_entry: record), class: 'btn btn--natural'%>
-        <%# end %>
-      </td-->
-    <%# end %>
   </tbody>
 </table>
-<div class='push-half--top'>
-  <% if params[:search_id].present? %>
-    <div class="grid">
-      <div class='grid__item text--center'>
-        <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
-        <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
+<% if type == "general" %>
+  <div class='push-half--top'>
+    <% if params[:search_id].present? %>
+      <div class="grid">
+        <div class='grid__item text--center'>
+          <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
+          <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
+        </div>
       </div>
-    </div>
-  <% end %>
-</div>
-<% if record.DistrictFlag > 0 or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
-  <div>
-    <h3>Queries relating to this entry</h3>
-  <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
-      <div id="district-query">
-        <h4>District name</h4>
-        <p>
-          <% if record[:District].strip.downcase != district.DistrictName.strip.downcase %><%= " District recorded as #{record[:District]} not #{district.DistrictName}. " %><% end %>
-          <% if record.district_misspelt  %> The District name is a misspelt alternative form of the official name <%= "'#{district.DistrictName.strip}'" %>.<% end %>
-          <% if record.district_invented %> The District name is not an official name or a recognized alternative form of name. <% end %>
-          <% if record.bad_date_for_district %> The date does not fall within the range of dates when this District was active.<% end %>
-          <a href="#link-to-district-query">[back to district]</a>
-        </p>
-      </div>
-  <% end %>
-  <% if record.bad_volume_for_district %>
-      <div id="volume-query">
-        <h4>Volume number</h4>
-        <p>
-          <% if record.bad_volume_for_district %> The volume number does not have one of the expected values for this District/Quarter.<% end %>
-          <a href="#link-to-volume-query">[back to volume]</a>
-        </p>
-      </div>
-  <% end %>
-  <% if record.bad_page_range_for_district or record.page_range_not_checked %>
-      <div id="page-query">
-        <h4>Page number</h4>
-        <p>
-          <% if record.bad_page_range_for_district %> The page number does not have one of the expected values for this District/Quarter.<% end %>
-          <% if record.page_range_not_checked %> The page range cannot be checked because the data provided is not sufficiently precise.<% end %>
-          <a href="#link-to-page-query">[back to page]</a>
-        </p>
-      </div>
-  <% end %>
+    <% end %>
   </div>
+  <%= render partial: 'entry_queries', locals: { record: record, district: district } %>
 <% end %>

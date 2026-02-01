@@ -1,0 +1,32 @@
+<%# app/views/best_guess/_display_postems.html.erb %>
+<% if record.postems_list.present? %>
+  <div id="display_postems">
+    <div>
+      <h4 class="flush--bottom">Postems</h4>
+      <p>List of postems:</p>
+      <table class="table--bordered table--data">
+        <thead>
+          <th>Date</th>
+          <th>Postem</th>
+        </thead>
+        <tbody>
+          <% record.postems_list.each do |postem|%>
+            <tr>
+              <td>
+                <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
+              </td>
+              <td>
+                <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <div class="text--left push-half--bottom">
+        <small>
+          <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
+        </small>
+      </div>
+    </div>
+  </div>
+<% end %>

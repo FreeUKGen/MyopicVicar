@@ -171,26 +171,26 @@ namespace :all_tasks do
         puts "Finished: #{Time.current.strftime('%Y-%m-%d %H:%M:%S')}"
         puts "Duration: #{(Time.current - start_time).round(2)} seconds"
         puts "=" * 80
-        return
+        next
       end
 
-      # 2. Calculate Record Statistics
-      puts "\n[2/5] Calculating Record Statistics..."
-      puts "-" * 50
-      CalculateRecordStatisticsJob.new.perform(environment)
-      puts "✅ Record statistics calculated successfully"
-
-      # 3. Update BMD Unique Names
-      puts "\n[3/5] Updating BMD Unique Names..."
+      # 2. Update BMD Unique Names
+      puts "\n[2/5] Updating BMD Unique Names..."
       puts "-" * 50
       UpdateBmdUniqueNamesJob.new.perform(environment)
       puts "✅ BMD unique names updated successfully"
       
-      # 4. Run Autocomplete Tasks
-      puts "\n[4/5] Running Autocomplete Tasks..."
+      # 3. Run Autocomplete Tasks
+      puts "\n[3/5] Running Autocomplete Tasks..."
       puts "-" * 50
       AutocompleteTasksJob.new.perform(environment)
       puts "✅ Autocomplete tasks completed successfully"
+
+      #4. Calculate Record Statistics
+      puts "\n[4/5] Calculating Record Statistics..."
+      puts "-" * 50
+      CalculateRecordStatisticsJob.new.perform(environment)
+      puts "✅ Record statistics calculated successfully"
 
       # 5. Uncomment the variables
       puts "\n[5/5]  Uncommenting variables..."

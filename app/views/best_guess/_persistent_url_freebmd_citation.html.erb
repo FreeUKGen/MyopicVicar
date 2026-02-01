@@ -1,0 +1,16 @@
+<section>
+  <div id="persistent_url_citation_container" style="display: none;">
+    <% @entry = entry %>
+    <% protocol = URI.parse(request.original_url).scheme %>
+    <% domain = URI.parse(request.original_url).host %>
+    <% port = URI.parse(request.original_url).port %>
+    <% domain = domain + ':' + port.to_s if port.present? && port != 443 %>
+    <%# encoded_url = URI.encode_www_form_component(@url) %>
+    <h4>Persistent URL for this record:</h4>
+    <p class = "citation_container"><%="#{protocol}://#{domain}#{@url}"%></p>
+    <div class = "text--center">
+      <button class = "btn  btn--small ", onclick = copy("persistent_url_citation_container") style = "cursor: pointer">Copy</button>
+      <button class = "btn  btn--small ", onclick = this.parentElement.parentElement.style.display='none' style = "cursor: pointer">Close</button>
+    </div>
+  </div>
+</section>

@@ -24,12 +24,12 @@
     <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
     <%= horz_advert('freebmd_hrec_1') %>
   <% end %>
-  <div class="grid__item seven-tenths lap-one-whole palm-one-whole ">
-    <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s record" %></h1>
+  <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
+  <div class="grid__item one-half lap-one-whole palm-one-whole ">
+    <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s #{record_type.downcase} record" %></h1>
     <hr>
     <section>
       <div class="table-wrapper">
-        <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
         <% if params[:search_id].present? %>
           <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
         <% else %>
@@ -37,62 +37,29 @@
         <% end %>
       </div>
     </section>
-    
-    <% if @option == '1' %>
-      <div id="display_scans">
-        <h4>Scans</h4>
-        <ul>
-          <%= render_scan_rows(@scan_links, @acc_scans, @acc_mul_scans, @current_record) %>
-        </ul>
-        <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
-      </div>
-    <% end %>
+    <%= render partial: 'display_scans', locals: { record: @current_record } %>
+    <p class="push-half--bottom"><%= raw ERB.new(ApplicationText::SCAN_HELP_TEXT).result(binding) %></p>
     <% if @option == '2' %>
-      <div id="display_postems">
+      <div id="postems">
         <div>
-          <h4>Postems</h4>
-          <p>
+          <h4 class="push-half--bottom">Postems</h4>
+          <p class="push-half--bottom">
             Do you know more about the people or event in this record that you are willing to share with other researchers?<br /> 
-          We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
+            We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
           </p>
-          <% if @current_record.postems_list.present? %>
-            <p>List of postems:</p>
-            <table class="table--bordered table--data">
-              <thead>
-                <th>Date</th>
-                <th>Postem</th>
-              </thead>
-              <tbody>
-                <% @current_record.postems_list.each do |postem|%>
-                  <tr>
-                    <td>
-                      <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
-                    </td>
-                    <td>
-                      <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          <% end %>
-          <div class="text--left push-half--bottom">
-            <small>
-              <strong>Disclaimer: FreeBMD has not verified the info in the Postems in any way.</strong>
-            </small>
-          </div>
-          <p>Submit a postem:</p>
+          <%= render partial: 'display_postems', locals: { record: @current_record } %>
+          <p class="push-half--bottom">Submit a postem:</p>
           <div class="">
             <%= semantic_form_for(@new_postem) do |f| %>
               <%= f.hidden_field('honeypot', value: @new_postem[:honeypot])%>
               <%= f.hidden_field('Hash', value: @new_postem.Hash) %>
               <%= hidden_field_tag('search_query', @search_query.id) if @search %>
               <ol class="grid">
-                <li class="grid__item desk-wide-three-quarters desk-three-quarters lap-three-quarters palm-one-whole push--bottom">
+                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push-half--bottom">
                   <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
                 </li>
-                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push--bottom">
-                  <%= button_tag 'Submit Postem', type: :submit, class: 'btn btn--natural' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
+                <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
+                  <%= button_tag 'Submit Postem', type: :submit, class: 'btn btn--small' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
                 </li>
               </ol>
             <% end %>
@@ -100,11 +67,11 @@
         </div>
       </div>
     <% end %>
-    <h3>Need help?</h3>
-    <p>
+    <h3 class="push-half--top push-half--bottom">Need help?</h3>
+    <p class="push-half--bottom">
       You can find information about the Entry Information page in our <%= link_to 'Help', '/help/entry_help'%> section.
     </p>
-    <h3>Ordering a GRO certificate</h3>
+    <h3 class="push-half--top push-half--bottom">Ordering a GRO certificate</h3>
     <p class="push-half--bottom">
       You can order certificates from the <%= link_to 'General Register Office (GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.
     </p>

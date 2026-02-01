@@ -13,5 +13,5 @@ ROOT=/home/apache/hosts/freebmd2/production
 FILE_PATH=/home/apache/hosts/freebmd/status/current_db
 cd $ROOT
 umask 0002
-sudo -u webserv bundle exec rake RAILS_ENV=production all_tasks:run_all[production,FILE_PATH] --trace
+sudo -u webserv bundle exec rake RAILS_ENV=production all_tasks:run_all[production,$FILE_PATH] --trace
 exit

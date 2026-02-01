@@ -13,14 +13,15 @@ class BestGuessController < ApplicationController
     prepare_to_show_saved_entry if show_saved_record == 'true'
     @original_record = get_original_record(search_id, show_saved_record)
     @page_number = params[:page_number].to_i
-    @option = params[:filter_option] if params[:filter_option].present?
-    # record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
+    @option = params[:filter_option].present? ? params[:filter_option] : '2'    # record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
     record_id = params[:id]
     @current_record = BestGuess.find(record_id)
+    @spouse_record = @current_record.get_spouse_record
     @postems_count = @current_record&.postems_list&.count || 0
     page_entries = @current_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(record_id, page_entries)
     @display_date = false
+    show_scans
     show_postem_or_scan
     @url = generate_url
     return if @search_query.blank?
@@ -55,14 +56,12 @@ class BestGuessController < ApplicationController
     @search = params[:search_id].present? ? true : false
     record_number = params[:entry_id]
     @search_id = params[:search_id] if @search
-    @record = BestGuess.where(RecordNumber: record_number).first
-    spouse_surname = @record.AssociateName
-    volume = @record.Volume
-    page = @record.Page
-    quarter = @record.QuarterNumber
-    district_number = @record.DistrictNumber
-    record_type = @record.RecordTypeID
-    @spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).first
+    @current_record = BestGuess.where(RecordNumber: record_number).first
+    @spouse_record =  @current_record.get_spouse_record
+    #show_scans
+    show_postem_or_scan
+    @url = generate_url
+    #@spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).where.not(RecordNumber: record_number).first
   end
 
   def show_reference_entry
@@ -229,6 +228,11 @@ class BestGuessController < ApplicationController
     @scan_links = @current_record.uniq_scanlists if @current_record.uniq_scanlists.present?
     @acc_scans = @current_record.get_non_multiple_scans if @current_record.get_non_multiple_scans.present?
     @acc_mul_scans = @current_record.multiple_best_probable_scans if @current_record.multiple_best_probable_scans.present?
+  end
+
+  def show_postems
+    record_hash = @current_record.record_hash
+    @postems = Postem.where(Hash: record_hash)
   end
 
   def list_postems

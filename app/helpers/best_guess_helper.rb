@@ -124,6 +124,7 @@ module BestGuessHelper
       result
     end
   end
+  
   def id_to_event_type event_type
     case event_type
       when 1
@@ -141,6 +142,11 @@ module BestGuessHelper
       field_value
     else "No data"
     end
+  end
+
+  def same_page_as_record(record, surname)
+    same_page_records = BestGuess.where(DistrictNumber: record[:DistrictNumber], Volume: record[:Volume], Page: record[:Page], QuarterNumber: record[:QuarterNumber], RecordTypeID: record[:RecordTypeID], Surname: surname)
+    same_page_records
   end
 
   def tidy_date_of_birth(field_value)
@@ -187,6 +193,20 @@ module BestGuessHelper
         domain = domain + ':' + port.to_s if port.present?
         content = protocol+"://"+domain+field_value
         result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+      when "OtherNamesOnPage"
+        content = ''
+        i = 0
+        @current_record.entries_in_the_page.each do |entry|
+          page_record = BestGuess.find(entry)
+          if (@current_record[:RecordNumber] != page_record[:RecordNumber])
+            if i > 0
+              content = content + '; '
+            end
+            i = i + 1
+            content = content + page_record[:Surname]+', ' + page_record[:GivenName]
+          end
+        end
+        result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
       else
           result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
       end
@@ -194,7 +214,24 @@ module BestGuessHelper
     result.html_safe
   end
 
-  def render_scan_rows(scan_links, acc_scans, acc_mul_scans, current_record)
+
+  def value_or_refer_to_page(field_value, record)
+    if field_value.present?
+      i = 0
+      this_page_records = same_page_as_record record
+      this_page_records.each do |this_page_record|
+        if this_page_record[:Surname] == field_value
+          i = i+1
+        end
+      end
+      if i == 1
+        return field_value + " found"
+      end
+    else return "See Page link for possible spouses"
+    end
+  end
+
+  def render_scan_rows_old(scan_links, acc_scans, acc_mul_scans, current_record)
     content = ""
 
     # Process scan_links
@@ -222,9 +259,48 @@ module BestGuessHelper
     content.html_safe
   end
 
+  def render_scan_rows(scan_links, acc_scans, acc_mul_scans, current_record)
+    links = []
+    scan_number = 1
+
+    # Process scan_links
+    scan_links&.each do |scan|
+      links << render_scan_row({series: scan.SeriesRangeFileName}, current_record, scan_number)
+      scan_number += 1
+    end
+
+    # Process acc_scans
+    acc_scans&.each do |scan|
+      series = scan.SeriesID
+      range = scan.Range.present? ? scan.range.Range : ""
+      file = scan.Filename
+      links << render_scan_row({series:series, range: range, file: file}, current_record, scan_number)
+      scan_number += 1
+    end
+
+    # Process acc_mul_scans
+    acc_mul_scans&.each do |scan|
+      series = scan.SeriesID
+      range = scan.Range.present? ? scan.Range : ""
+      current_record.multi_image_filenames.each do |filename|
+        links <<  render_scan_row({series:series, range: range, file: filename}, current_record, scan_number)
+        scan_number += 1
+      end
+    end
+
+    links
+  end
+
 private
 
-  def render_scan_row(series_path, current_record)
+  def render_scan_row(series_path, current_record, scan_number)
+    image_url = BestGuess.build_image_server_request(scan_link_url(current_record, series_path))
+    link_to_text = "Download Scan #{scan_number}"
+    link_to(link_to_text, image_url, target: "_blank", class: "scan-link")
+    content_tag(:li, link_to(link_to_text, image_url, target: "_blank", class: "scan-link"))
+  end
+
+  def render_scan_row_old(series_path, current_record)
     image_url = BestGuess.build_image_server_request(scan_link_url(current_record, series_path))
     range = series_path[:range].present? ? "/#{series_path[:range]}" : ''
     link_to_text = "#{series_path[:series]}#{range}/#{series_path[:file]}"

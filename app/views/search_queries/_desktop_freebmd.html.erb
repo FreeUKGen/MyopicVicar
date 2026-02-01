@@ -114,8 +114,10 @@
                       <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
                       <%= district_link_or_name(district, search_record, @search_query) %>
                       <% @search_query.get_search_record_details(search_record).each do |key, value| %>
-                        <br /><%= "#{key} #{value}" %>
+                        <%= "#{key} #{value}" unless key == "Page" %>
                       <% end %>
+                      Page
+                      <%= link_to "#{search_record[:Page]}", same_page_entries_path(volume: search_record[:Volume], page: search_record[:Page], record: search_record[:RecordTypeID], quarter: search_record[:QuarterNumber], district: search_record[:District], search_id: @search_query.id, entry_id: search_record[:RecordNumber]) %>
                     <% end %>
               </td>
               <% if blank_record_types or included_record_types.include? "1" %>
@@ -125,7 +127,25 @@
               <% end %>
               <% if blank_record_types or included_record_types.include? "3" %>
                 <td class="table--data">
-                  <%= if record_type == "MARRIAGES" then value_or_no_data(search_record[:AssociateName]) else '&ndash;'.html_safe end %>
+                  <%#= if record_type == "MARRIAGES" then value_or_refer_to_page(search_record[:AssociateName], search_record) else '&ndash;'.html_safe end %>
+                  <% if record_type == "MARRIAGES" %>
+                    <% if search_record[:AssociateName].present? %>
+                      <% spouse_records = same_page_as_record(search_record, search_record[:AssociateName]) %>
+                      <% if search_record[:AssociateName].upcase == search_record[:Surname].upcase %>
+                        <%= "Spouse has the same surname #{search_record[:AssociateName]}: check Page link to clarify the situation" %>
+                      <% elsif spouse_records.count == 1 %>
+                        <% spouse_record = spouse_records[0] %>
+                        <%= link_to("#{titleize_string(spouse_record[:GivenName])} #{spouse_record[:Surname].upcase}".html_safe,
+                                    friendly_bmd_record_details_path(@search_query.id, spouse_record.id, spouse_record.friendly_url, search_entry: spouse_record.RecordNumber), :rel => "nofollow", :title => "")%>
+                      <% elsif spouse_records.count > 1 %>
+                        <%= "More than one matching spouse surname #{search_record[:AssociateName]}: check Page link to see possible spouses" %>
+                      <% else %>
+                        <%= 'See Page link for possible spouses' %>
+                      <% end %>
+                    <% else %>
+                      <%= 'See Page link for possible spouses' %>
+                    <% end %>
+                  <% end %>
                 </td>
               <% end %>
               <% if blank_record_types or included_record_types.include? "2" %>
@@ -139,7 +159,16 @@
       </table>
       <div>
         <h2 class="accessibility">Explanation of table entries</h2>
-        <p><b>Mother’s Maiden Name</b>, <b>Spouse’s Surname</b>, and <b>Age at Death/Date of Birth</b> are relevant for the records from 1993 onward.
+        <p>
+          <% if blank_record_types or included_record_types.include? "1" %>
+            <b>Mother’s Maiden Name</b> only appears for records from September quarter 1911.
+          <% end %>
+          <% if blank_record_types or included_record_types.include? "2" %>
+            <b>Age at death</b> only appears for records from March quarter 1866, and <b>date of birth</b> from March quarter 1970.
+          <% end %>
+          <% if blank_record_types or included_record_types.include? "3" %>
+            <b>Spouse's surname</b> only appears for records from March quarter 1912. For earlier marriages, you can click on the Page link in the Registration District & Reference column to see all the people listed on that page of the Register.
+          <% end %>
         If no data is available for a specific record, these fields will display ‘No data.’ A dash (&ndash;) will appear in fields
         that are not relevant to a particular event type.</p>
       </div>
