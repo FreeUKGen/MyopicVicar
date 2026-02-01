@@ -214,7 +214,6 @@ module BestGuessHelper
     result.html_safe
   end
 
-
   def value_or_refer_to_page(field_value, record)
     if field_value.present?
       i = 0
