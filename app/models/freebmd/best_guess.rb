@@ -387,6 +387,14 @@ class BestGuess < FreebmdDbBase
       .select('Accessions.Year,Accessions.EntryQuarter, Accessions.RecordTypeID, BestGuessLink.RecordNumber, b.Confirmed').group("BestGuessLink.RecordNumber")
   end
 
+  def possible_alternate_names
+    record_submission = self.get_submission
+    submissions = Submission.where(AccessionNumber: record_submission.AccessionNumber,  RegistrationNumber: record_submission.RegistrationNumber)
+    get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumbers: submissions.pluck(:SequenceNumber))
+    records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber))
+    records
+  end
+
   def postems_list
     if get_rec_hash.present?
       get_hash = get_rec_hash.Hash

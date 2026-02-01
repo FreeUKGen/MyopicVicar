@@ -106,7 +106,10 @@ class BestGuessController < ApplicationController
     @district = params[:district]
     @quarter = params[:quarter]
     @page_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
+    @page_records = @record.possible_alternate_names if from_quarter_to_year(@record.QuarterNumber) >= 1993 && @record.RecordTypeID != 3
   end
+
+  
 
   def sort_records(records)
     results.sort! do |x, y|

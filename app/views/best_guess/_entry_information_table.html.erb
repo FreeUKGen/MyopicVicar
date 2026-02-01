@@ -216,33 +216,35 @@
         <% end %>
       </td>
     </tr>
-    <tr>
-      <th scope="row">
-        Page
-      </th>
-      <td>
-        <% unless record.Page.to_i == 0 %>
-          <% if @search %>
-            <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: search_id, original_record: original_record} %>
-            <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
+    <% unless record.register_entry_number_format %>
+      <tr>
+        <th scope="row">
+          Page
+        </th>
+        <td>
+          <% unless record.Page.to_i == 0 %>
+            <% if @search %>
+              <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: search_id, original_record: original_record} %>
+              <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
+              <% end %>
+            <% if @hash %>
+              <%= record.Page %>
             <% end %>
-          <% if @hash %>
+            <% if params[:saved_record] %>
+              <%= render partial: 'page_records_navigation_saved', locals: {record: @current_record, original_record: @original_record} %>
+              <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
+              <% end %>
+          <% else%>
             <%= record.Page %>
           <% end %>
-          <% if params[:saved_record] %>
-            <%= render partial: 'page_records_navigation_saved', locals: {record: @current_record, original_record: @original_record} %>
-            <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
-            <% end %>
-        <% else%>
-          <%= record.Page %>
-        <% end %>
-        <% if record.bad_page_range_for_district or record.page_range_not_checked %>
-          <a class="footnote-link" id="link-to-page-query" href="#page-query">
-            [page query] <span class="accessibility">potential issue with this page number</span>
-          </a>
-        <% end %>
-      </td>
-    </tr>   
+          <% if record.bad_page_range_for_district or record.page_range_not_checked %>
+            <a class="footnote-link" id="link-to-page-query" href="#page-query">
+              [page query] <span class="accessibility">potential issue with this page number</span>
+            </a>
+          <% end %>
+        </td>
+      </tr>
+    <% end %> 
     <% if record.register_entry_number_format %>
       <tr>
         <th scope="row">
