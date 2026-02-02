@@ -148,27 +148,28 @@
       </tr>
     <% end %>
     <% if entry_type == "marriage" %>
-      <% if @spouse_record.present? %>
-        <tr>
-          <th scope="row">
-            Spouse Name
-          </th>
-          <td>
-            <% type ||= "general" %>
-            <% if @search && type != "marriages" %>
-              <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
-            <% elsif type == "marriages" %>
-              <%= "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}" %><br>
-            <% else %>
-              <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
-            <% end %>
-            <% if type != "marriages" %>
-              <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-      <% if !record.AssociateName.present? %>
+      <% if record.AssociateName.present? %>
+        <% if @spouse_record.present? %>
+          <tr>
+            <th scope="row">
+              Spouse Name
+            </th>
+            <td>
+              <% type ||= "general" %>
+              <% if @search && type != "marriages" %>
+                <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+              <% elsif type == "marriages" %>
+                <%= "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}" %><br>
+              <% else %>
+                <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+              <% end %>
+              <% if type != "marriages" %>
+                <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
         <tr>
           <th scope="row">Entries on page <%= record.Page %></th>
           <td>
