@@ -406,7 +406,7 @@ class BestGuess < FreebmdDbBase
     record_submission = self.get_submission
     submissions = Submission.where(RomanVolume: record_submission.RomanVolume, EntryNumber: record_submission.EntryNumber, RegistrationNumber: record_submission.RegistrationNumber)
     get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumber: submissions.pluck(:SequenceNumber))
-    records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber))
+    records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber), DistrictNumber: self.DistrictNumber)
     records
   end
 
@@ -464,7 +464,7 @@ class BestGuess < FreebmdDbBase
     year, event_type = record_year_and_event_type
     
     # New format: 1993 with birth/death records, or any record from 1994+
-    (year == 1993 && event_type < 3) || ( year >= 1994 && event_type < 3 )
+    (year >= 1993 && event_type < 3)# || ( year >= 1994 && event_type < 3 )
   end
 
   def post_1994_marriage?
