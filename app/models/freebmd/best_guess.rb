@@ -397,7 +397,7 @@ class BestGuess < FreebmdDbBase
   def possible_alternate_names_by_accession_number_and_sequence_number
     record_submission = self.get_submission
     submissions = Submission.where(AccessionNumber: record_submission.AccessionNumber,  RegistrationNumber: record_submission.RegistrationNumber)
-    get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumbers: submissions.pluck(:SequenceNumber))
+    get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumber: submissions.pluck(:SequenceNumber))
     records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber))
     records
   end
@@ -405,7 +405,7 @@ class BestGuess < FreebmdDbBase
   def possible_alternate_names_by_vol_page_registration_number
     record_submission = self.get_submission
     submissions = Submission.where(RomanVolume: record_submission.RomanVolume, EntryNumber: record_submission.EntryNumber, RegistrationNumber: record_submission.RegistrationNumber)
-    get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumbers: submissions.pluck(:SequenceNumber))
+    get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumber: submissions.pluck(:SequenceNumber))
     records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber))
     records
   end
