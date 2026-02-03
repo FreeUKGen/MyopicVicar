@@ -3,8 +3,5 @@
   <% record_type = RecordType::display_name(["#{@search_record[:RecordTypeID]}"])%>
   <strong><%= "#{@search_record[:Surname]} #{@search_record[:GivenName]}" %></strong>
   <%= "#{@search_record[:AssociateName]}" %>
-  <%= "#{QuarterDetails.quarters.key((@search_record[:QuarterNumber]-1)%4 + 1).upcase} #{(@search_record[:QuarterNumber]-1)/4 + 1837}"%>
-  <%= link_to "#{@search_record[:District]}", "http://www.ukbmd.org.uk/reg/districts/#{@search_record[:District].downcase}.html", target: "_blank" %>
-  <%#= "#{record_type}" %>
   <br/>
 <% end %>
