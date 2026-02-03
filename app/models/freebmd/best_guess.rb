@@ -406,7 +406,7 @@ class BestGuess < FreebmdDbBase
     record_submission = self.get_submission
     submissions = Submission.where(RomanVolume: record_submission.RomanVolume, EntryNumber: record_submission.EntryNumber, RegistrationNumber: record_submission.RegistrationNumber)
     get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumber: submissions.pluck(:SequenceNumber))
-    records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber), DistrictNumber: self.DistrictNumber)
+    records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber), DistrictNumber: self.DistrictNumber, RecordTypeID: self.RecordTypeID)
     records
   end
 
