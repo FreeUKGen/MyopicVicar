@@ -3,19 +3,27 @@ class BestGuessController < ApplicationController
   skip_before_action :require_login
 
   def show
+    # Initialize search_query to nil for non-search contexts (e.g., hash-based access)
+    @search_query = nil
     search_id = params[:search_id]
     show_saved_record = params[:saved_record]
-    @search = params[:search_id].present? ? true : false
+    @search = search_id.present?
     @search_entry = params[:search_entry]
     @saved_entry_number = params[:saved_entry]
     prepare_for_show_search_entry if @search
+    return if @search && @search_query.blank?
     get_user_info_from_userid if cookies.signed[:userid].present?
     prepare_to_show_saved_entry if show_saved_record == 'true'
     @original_record = get_original_record(search_id, show_saved_record)
     @page_number = params[:page_number].to_i
     @option = params[:filter_option].present? ? params[:filter_option] : '2'    # record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
     record_id = params[:id]
-    @current_record = BestGuess.find(record_id)
+    @current_record = BestGuess.find_by(RecordNumber: record_id)
+    unless @current_record
+      flash[:notice] = 'The record you requested does not exist.'
+      redirect_back(fallback_location: root_path) && return
+    end
+      
     @spouse_record = @current_record.get_spouse_record
     @postems_count = @current_record&.postems_list&.count || 0
     page_entries = @current_record.entries_in_the_page
@@ -24,11 +32,12 @@ class BestGuessController < ApplicationController
     show_scans
     show_postem_or_scan
     @url = generate_url
-    return if @search_query.blank?
-    @search_result = @search_query.search_result
-    @viewed_records = @search_result.viewed_records
-    @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
-    @search_result.update(viewed_records: @viewed_records)
+    if @search_query.present?
+      @search_result = @search_query.search_result
+      @viewed_records = @search_result.viewed_records
+      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+      @search_result.update(viewed_records: @viewed_records)
+    end
   end
 
   def current_record_number_to_display(search_record_number, page_record_number = nil)
@@ -241,6 +250,7 @@ class BestGuessController < ApplicationController
   def list_postems
     record_hash_value = @current_record.record_hash
     record_best_guess_hash = BestGuessHash.where(Hash: record_hash_value).first
+    return unless record_best_guess_hash
     @new_postem = record_best_guess_hash.postems.new
     @postem_honeypot = "postem#{rand.to_s[2..11]}"
     session[:postem_honeypot] = @postem_honeypot
