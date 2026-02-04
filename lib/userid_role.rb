@@ -130,7 +130,7 @@ module UseridRole
     'CSV Batches' => '/freecen_csv_files/my_own',
     'Manage Pieces' => '/freecen_pieces',
     'FreeCen Errors' => '/freecen_errors',
-    'Manage FreeCen Coverage' => '/freecen_coverage/edit',
+    'Manage FreeCen Coverage' => '/freecen2_county_contents',
     'FreeUKGenealogy  Policies' => '/cms/freeukgenealogy-policies',
     'Gazetteer' => '/freecen2_places/search_names',
     'Gazetteer CSV Download' => '/freecen2_places/download_csv',
