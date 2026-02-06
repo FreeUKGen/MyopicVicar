@@ -663,6 +663,8 @@ MyopicVicar::Application.routes.draw do
 
   mount Refinery::Core::Engine, :at => '/cms'
 
+  get '*path', to: 'pages#show', as: :page, format: false
+
   #ActiveAdmin.routes(self)
 
   #devise_for :admin_users, ActiveAdmin::Devise.config
