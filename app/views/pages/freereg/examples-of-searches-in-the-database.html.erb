@@ -1,0 +1,213 @@
+<h1>Examples of searches in the database</h1>
+
+<style scoped="scoped">
+    h2.coloured { color: #895f49; } /* brown--brighter */
+    .site img { border: 1px solid #a3897a; padding: 10px 10px 15px; width: 100%; height: auto; }
+    figcaption { font-style: italic; color: #895f49; margin-top: 0.3rem; }
+    .btnPress { font-weight: bold; color: #895f49; } /* brown--brighter */
+</style>
+<p><span class="loz islet--orange">Page needs: attention to images + everything else</span> </p>
+
+<div class="grid">
+    <aside class="grid__item one-third palm-one-whole float--right">
+        <div class="islet islet--bordered">
+            <h2 id="index" class="title-block weight--semibold" style="color: #657275">On this page</h2>
+<ul class="sub-nav">
+    <li><a href="#simplest">Simplest search</a> </li>
+    <li><a href="#simple">Simple search for a baptism</a> </li>
+    <li><a href="#simplesound">Simple soundex search for a baptism</a> </li>
+    <li><a href="#forename">Adding a forename to the search</a> </li>
+    <li><a href="#timeframe">Adding a timeframe to the search</a> </li>
+    <li><a href="#counties">Multiple counties</a> </li>
+    <li><a href="#parish">Limiting the search to a single Place</a> </li>
+    <li><a href="#marriage">Searching for a marriage</a> </li>
+    <li><a href="#burial">Searching for a burial</a> </li>
+</ul>
+        </div>
+    </aside>
+
+    <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+<h2 id="simplest" class="coloured">Simplest search</h2>
+<p>The simplest search possible is for a Surname in a County: leaving the Record type box blank wil return baptisms, marriages and burials. This could be useful for an uncommon surname, but most names will return too many records to display more than the first 250 found. Note that the results are found in no particular order.</p>
+
+<p>[ Brandis in WAR? or Shorten in NFK? or both? ]</p>
+
+<p>The following examples illustrate the effects of using the other search options so that all the matching records can be found.</p>
+
+<hr class="rule" />
+
+<h2 id="simple" class="coloured">Simple search for a baptism</h2>
+
+<p class="flush--bottom">You can search the database for baptisms in a County by:</p>
+<ul>
+    <li>entering a <strong>Surname</strong> </li>
+    <li>selecting a <strong>County</strong> from the drop down list </li>  
+    <li>selecting <strong>Baptism</strong> from the Record type box</li>
+</ul>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Search 01" title="Search 01" src="/system/images/W1siZiIsIjIwMTUvMDIvMTUvMTdfMzJfNDRfMTcxX3NlYXJjaF8wMS5QTkciXV0/search%2001.PNG?sha=ddb6c21b5a6dde4e" height="540" width="842" />
+    <figcaption>search 01.png: A search on surname, county and record type </figcaption>
+</figure>
+
+<p>This search gives the following results:</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Search000" title="Search000" src="/system/images/W1siZiIsIjIwMTUvMDIvMTUvMjBfMzNfMTdfNjM4X3NlYXJjaDAwMC5QTkciXV0/search000.PNG?sha=111867dba7cc562d" height="520" width="842" />
+    <figcaption>search000.png</figcaption>
+</figure>
+
+<p>The first thing to notice is the number of results displayed is 250, the maximum that will be found for a single search. Note also that the Surname column contains the Surname of the Father which may or may not be known. In this specific example the first set of records were retrieved based on the Mother's surname. [ ?? ]</p>
+
+<p>The detail:</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Detail 01" title="Detail 01" src="/system/images/W1siZiIsIjIwMTUvMDIvMTUvMTdfMzNfMzhfNTI5X2RldGFpbF8wMS5QTkciXV0/detail%2001.PNG?sha=53e4f3b7055d6234" height="753" width="842" />
+    <figcaption>detail 01.png</figcaption>
+</figure>
+
+<hr class="rule" />
+
+<h2 id="simplesound" class="coloured">Simple Soundex search for a baptism</h2>
+
+<p>Selecting <span class="btnPress">Revise Search</span> will allow you to do just that. (Whereas using the browser Back button will not keep all settings.)</p>
+<p>Then you can add a tick to the <strong>Soundex</strong> box to use the Soundex algorithm on the name.</p>
+<p>Please remember that Soundex always assumes that the first letter is correct. So you may need multiple searches with different first letters to check for say, Kendall and Rendall.</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Search 1" title="Free Reg2 Revised Search 1" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTJfMjNfODY5X0ZyZWVSRUcyX1JldmlzZWRfU2VhcmNoXzEuSlBHIl1d/FreeREG2%20Revised%20Search%201.JPG?sha=509723f8489f7a33" height="563" width="842" />
+    <figcaption>Free Reg2 Revised Search 1</figcaption>
+</figure>
+
+<p>This search gives the following results: Note that there are an additional 193 records retrieved with the soundex version of the search.[ use different example? ]</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Result 1" title="Free Reg2 Revised Result 1" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTVfMzRfNzkwX0ZyZWVSRUcyX1JldmlzZWRfUmVzdWx0XzEuSlBHIl1d/FreeREG2%20Revised%20Result%201.JPG?sha=b7efbd86ee2a082f" height="457" width="842" />
+    <figcaption>Free Reg2 Revised Result 1</figcaption>
+</figure>
+
+<hr class="rule" />
+
+<h2 id="forename" class="coloured">Adding a forename to the search</h2>
+
+<p>You can add a forename to the search criteria. <strong>But please be aware of the strengths and limitations of adding a forename</strong>. See the <a href="/cms/help#firstnames">Help section on forenames</a> for details.</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Search 2" title="Free Reg2 Revised Search 2" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTJfNDVfNjQyX0ZyZWVSRUcyX1JldmlzZWRfU2VhcmNoXzIuSlBHIl1d/FreeREG2%20Revised%20Search%202.JPG?sha=7de43ebf06b9eb88" height="554" width="842" />
+    <figcaption>Free Reg2 Revised Search 2</figcaption>
+</figure>
+
+<p>This search gives the following results:</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Result 2" title="Free Reg2 Revised Result 2" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTVfNDZfOTI4X0ZyZWVSRUcyX1JldmlzZWRfUmVzdWx0XzIuSlBHIl1d/FreeREG2%20Revised%20Result%202.JPG?sha=8ceb200fe3f1e65f" height="564" width="842" />
+    <figcaption>Free Reg2 Revised Result 2</figcaption>
+</figure>
+
+<hr class="rule" />
+
+<h2 id="timeframe" class="coloured">Adding a timeframe to the search</h2>
+
+<p>You can add a time period to the search criteria: enter a <strong>First year</strong>, or a <strong>Last year</strong>, or both.</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Search 3" title="Free Reg2 Revised Search 3" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTNfMTRfODMxX0ZyZWVSRUcyX1JldmlzZWRfU2VhcmNoXzMuSlBHIl1d/FreeREG2%20Revised%20Search%203.JPG?sha=a077e4493ee24ac8" height="576" width="842" />
+    <figcaption>Free Reg2 Revised Search 3</figcaption>
+</figure>
+
+<p>This search gives the following results:</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Result 3" title="Free Reg2 Revised Result 3" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTZfNDBfNDM0X0ZyZWVSRUcyX1JldmlzZWRfUmVzdWx0XzMuSlBHIl1d/FreeREG2%20Revised%20Result%203.JPG?sha=1abfef7f7ac09dc9" height="411" width="842" />
+    <figcaption>Free Reg2 Revised Result 3</figcaption>
+</figure>
+
+<hr class="rule" />
+
+<h2 id="counties" class="coloured">Multiple counties</h2>
+
+<p>You can search more than one County at a time. Simply hold down the Ctrl key (Cmd on a Mac) while selecting up to three counties.</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Search 4" title="Free Reg2 Revised Search 4" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTNfNDRfMjM5X0ZyZWVSRUcyX1JldmlzZWRfU2VhcmNoXzQuSlBHIl1d/FreeREG2%20Revised%20Search%204.JPG?sha=9720cde4d8be833b" height="565" width="842" />
+    <figcaption>Free Reg2 Revised Result 4</figcaption>
+</figure>
+
+<p>This search gives the following results:</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Result 4" title="Free Reg2 Revised Result 4" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTZfMTZfNjQ5X0ZyZWVSRUcyX1JldmlzZWRfUmVzdWx0XzQuSlBHIl1d/FreeREG2%20Revised%20Result%204.JPG?sha=e781f7aa3f3bd4c8" height="563" width="842" />
+    <figcaption>Free Reg2 Revised Result 4</figcaption>
+</figure>
+
+<hr class="rule" />
+
+<h2 id="parish" class="coloured">Limiting the search to a single Place</h2>
+
+<p>You can limit your search to a single Place. After selecting a County, open the Place box, move down to the Place that you wish to search and select it. This will find all Churches and Registers for that Place.</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Search 5" title="Free Reg2 Revised Search 5" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTRfMDJfOTk3X0ZyZWVSRUcyX1JldmlzZWRfU2VhcmNoXzUuSlBHIl1d/FreeREG2%20Revised%20Search%205.JPG?sha=b8b678590bf21b7f" height="586" width="842" />
+    <figcaption>FR2 Revised Search 5</figcaption>
+</figure>
+
+<p>This search gives the following results:</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Result 5" title="Free Reg2 Revised Result 5" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTZfNTlfNzU3X0ZyZWVSRUcyX1JldmlzZWRfUmVzdWx0XzUuSlBHIl1d/FreeREG2%20Revised%20Result%205.JPG?sha=1c136eed1b6adb10" height="312" width="842" />
+    <figcaption>Free Reg2 Revised Result 5</figcaption>
+</figure>
+
+<hr class="rule" />
+
+<h2 id="marriage" class="coloured">Searching for a marriage</h2>
+
+<p class="flush--bottom">With marriage searches, you must at least:</p>
+<ul>
+    <li>enter the <strong>Surname of the Groom</strong> or the <strong>surname of the Bride</strong> </li>
+    <li>select a <strong>County</strong> from the drop down list</li>
+</ul>
+<p>More complex searches can be done using any of the other search options.</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Search 6" title="Free Reg2 Revised Search 6" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTRfNDlfMjM0X0ZyZWVSRUcyX1JldmlzZWRfU2VhcmNoXzYuSlBHIl1d/FreeREG2%20Revised%20Search%206.JPG?sha=8f994af8279dad86" height="568" width="842" />
+    <figcaption>Free Reg2 Revised Search 6</figcaption>
+</figure>
+
+<p>This search gives the following results:</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Result 6" title="Free Reg2 Revised Result 6" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTdfMjhfNjgzX0ZyZWVSRUcyX1JldmlzZWRfUmVzdWx0XzYuSlBHIl1d/FreeREG2%20Revised%20Result%206.JPG?sha=8c9b8b6074f9c353" height="569" width="842" />
+    <figcaption>Free Reg2 Revised Result 6</figcaption>
+</figure>
+
+<p>Note, as in this case, that the surname can appear multiple times for a given record. This is because Search family members was ticked. [ check ]</p>
+
+<hr class="rule" />
+
+<h2 id="burial" class="coloured">Searching for a burial</h2>
+
+<p class="flush--bottom">You can search the databases for burials by:</p>
+<ul>
+    <li>entering a <strong>Surname</strong> </li>
+    <li>selecting a <strong>County</strong> from the drop down list </li>
+</ul>
+
+<p>More complex searches can be done using the other search parameters. These follow exactly the same process as were described for baptisms.</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Search 7" title="Free Reg2 Revised Search 7" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTVfMDdfMTQ4X0ZyZWVSRUcyX1JldmlzZWRfU2VhcmNoXzcuSlBHIl1d/FreeREG2%20Revised%20Search%207.JPG?sha=b4eab8546c0fd987" height="575" width="842" />
+    <figcaption>Free Reg2 Revised Search 7</figcaption>
+</figure>
+
+<p>This search gives the following results:</p>
+
+<figure class="site">
+    <img data-rel="225x255" alt="Free Reg2 Revised Result 7" title="Free Reg2 Revised Result 7" src="/system/images/W1siZiIsIjIwMTUvMDIvMTEvMTdfNTdfNDZfMTYxX0ZyZWVSRUcyX1JldmlzZWRfUmVzdWx0XzcuSlBHIl1d/FreeREG2%20Revised%20Result%207.JPG?sha=5244f3e41c04bfc4" height="566" width="842" />
+    <figcaption>Free Reg2 Revised Result 7</figcaption>
+</figure>
+
+</div>
+
+</div>

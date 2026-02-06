@@ -1,0 +1,172 @@
+<h1>File and batch actions</h1>
+
+<style scoped="scoped">
+  .btnPress { font-weight: bold; color: #895f49; }
+  figcaption {
+    font-style: italic;
+    color: #737373; /* 4.74:1 */
+    margin-top: 0.3em;
+  }
+  figure.site img {
+    border: 2px solid #00a099;
+    padding: 0.3em;
+  }
+  figure.image-wide img {
+    width: 100%;
+    height: auto;
+  }
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">This page has details of all the Actions you can use when working online with your files and batches.</p>
+  </div>
+
+  <div class="grid__item one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#uploadNew">Uploading a new file</a> </li>
+          <li><a href="#replace">Replacing a file</a> </li>
+          <li><a href="#troubleshooting">Troubleshooting upload/replace</a> </li>
+          <li><a href="#uniqueNames">View names</a> </li>
+          <li><a href="#correct">Correcting errors</a> </li>
+          <li><a href="#lock">Batch and file locks</a> </li>
+          <li><a href="#edit">Edit entries</a> </li>
+          <li><a href="#fileBatch">Files vs batches</a> </li>
+          <li><a href="#gaps">The Gap system (summary)</a> </li>
+        </ul>
+      </div>
+    </nav>
+
+    <aside aria-labelledby="relatedPages" class="islet islet--bordered">
+      <h2 class="title-block" id="relatedPages">Transcriber Help</h2>
+      <ul class="sub-nav">
+        <li><a href="/cms/information-for-transcribers">Information for transcribers</a> </li>
+        <li><a href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file</a> </li>
+        <li><a href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a> </li>
+        <li><a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a> </li>
+        <li><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV format</a> </li>
+        <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty">Dealing with uncertainty</a> </li>
+        <li><a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a> </li>
+        <li><a href="/cms/information-for-transcribers/chapman-codes">Chapman codes</a> </li>
+        <li class="active"><a href="/cms/information-for-transcribers/file-and-batch-actions">File and Batch actions (this page)</a> </li>
+        <li><a href="/cms/information-for-transcribers/the-gap-system">The Gap system (details)</a> </li>
+        <li><a href="/cms/information-for-transcribers/file-headers">File headers</a> </li>
+        <li><a href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> </li>
+        <li><a href="/cms/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a> </li>
+      </ul>
+    </aside>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 id="uploadNew">Uploading a new file</h2>
+    <p>A file can be Uploaded, Verified (i.e. checked) and Processed (i.e. added to the database) either immediately or overnight, depending on its size.</p>
+    <p>You should Upload a new file when you have finished a batch. A batch should preferably contain either a Register Book or one Microfiche and have no more than 2,000 records.</p>
+    <p>Only <em>new</em> files can be Uploaded: you will need to Replace a file that has been previously Uploaded.</p>
+
+    <ol>
+      <li>transcribe your file on your computer until you have finished a batch</li>
+      <li>log in by selecting <span class="btnPress">Members</span> </li>
+      <li>select <span class="btnPress">Batches</span> </li>
+      <li>select <span class="btnPress">Upload New Batch</span> </li>
+      <li><span class="btnPress">Browse</span> to find the file on your computer</li>
+      <li>select <span class="btnPress">Upload</span> </li>
+      <li>once uploaded, your file will be processed automatically:
+        <ul>
+          <li>a small file will be processed straight away</li>
+          <li>a larger file will be processed overnight</li>
+          <li>if you are a <strong>Trainee</strong>, your file will be verified only, that is, checked it for errors. You will not be able to add records to the database. (Such batches will be listed <strong style="color: orange;">in orange</strong> once verified.)</li>
+        </ul>
+      </li>
+      <li>you will get an email to say when your file has been processed and whether or not it has errors:
+        <ul>
+          <li>if your file has errors, then you can correct them online (see next section)</li>
+          <li>your SC will also get a copy of the email, as will the relevant CC (if they are not the same person as your SC)</li>
+          <li>you cannot Upload this file again —  you will need to <strong>Replace</strong> it. See the <a href="#editReplace">Replace instructions</a> for details</li>
+          <li>If you do not receive the ‘File Processed’ email (or any other automatic email) from FreeREG, you should contact your coordinator who will investigate</li>     
+        </ul>
+      </li>
+    </ol>
+    <hr class="rule" />
+
+    <h2 id="replace">Replacing a file</h2>
+    <p class="push-half--bottom">After uploading a file, if you do more work on the transcription on your computer, then you will need to <strong>Replace</strong> the file on the server:</p>
+    <ol>
+      <li>log in, then select <span class="btnPress">Batches</span> </li>
+      <li>find your file in the list, then select <span class="btnPress">RL</span> to Replace it</li>
+      <li>the file will be processed automatically, depending on its size</li>
+    </ol> 
+    <figure class="site image-wide">
+      <img data-rel="225x255" alt="List of batches with actions" src="/system/images/W1siZiIsIjIwMTYvMDcvMzEvMTRfNDZfNTRfODkwX2JhdGNoX3JlcG9ydC5wbmciXV0/batch-report.png?sha=87b155c42f99393e" width="842" height="205" />
+      <figcaption>A list of Batches: hover over the ‘i’ symbol for a key to the available Actions</figcaption>
+    </figure>
+    <hr class="rule" />
+
+    <h2 id="troubleshooting">Troubleshooting upload and replace</h2>
+    <p class="push-half--bottom">There are two situations where you (and your coordinator) might need some extra help:</p>
+    <ol>
+      <li>a file remains in the <span class="btnPress">Waiting for processing</span> list more than a day after you ask for it to be Processed</li>
+      <li>a file disappears from the <span class="btnPress">Waiting for processing</span> list, but does not appear in the <span class="btnPress">Most Recent</span> batches list</li>
+    </ol>
+
+    <p>In each case there has probably been an issue with its Processing. It is also likely that the file cannot be Replaced, either by you or your coordinator. You will need to contact a System Administrator by selecting <strong>Website problem</strong> on the Contact form. In your message, please include your UserID and the file name.</p>
+    <hr class="rule" />
+
+    <h2 id="uniqueNames">View names</h2>
+    <p>There is a new feature to help you and your coordinator identify possible transcription errors, problems and typos: you can now view a listing of all the names in a batch. This applies to both forenames and surnames, for each of the participants.</p>
+    <ul>
+      <li>log in and select <span class="btnPress">Batches</span> </li>
+      <li>find the batch you want to check and select <span class="btnPress">SH</span> (show)</li>
+      <li>select the <span class="btnPress">Names</span> action</li>
+    </ul>
+    <hr class="rule" />
+
+    <h2 id="correct">Correcting errors</h2>
+    <p>Log in and select <span class="btnPress">Batches</span>. You will see all your batches with the latest first. Batches with errors will be shown <strong class="text--red">in red</strong>:</p>
+    <ul>
+      <li>select <span class="btnPress">ER</span> (Errors) and you will see the errors. You can correct them there and then</li>
+      <li>after making the changes, you will find that your batch is <strong>Locked</strong> — this is to prevent your corrections being accidentally overwritten:
+        <ul> 
+          <li>download your corrected file using <span class="btnPress">DL</span> so that the version on your computer matches what is now in the database</li>
+          <li>you will find that your file is now Unlocked</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>If you are a <strong>Trainee</strong>, you will need to use <span class="btnPress">DE</span> to delete your file, listed <strong style="color: orange;">in orange</strong>, once you have completed your training.</p>
+
+    <div id="lock" class="island island--navy">
+      <h3 class="banner__title push-half--bottom">Batch and file locks</h3>
+      <p>When a batch is locked, the whole file is locked. There are actually two locks: one for you and one for your coordinator. Yours will be set if you make an online edit; your coordinator’s will be set if they make an online edit to your batch. You can remove your own lock by downloading a copy of the edited file: from any listing of your files, find the file and then select <strong>DL</strong>.</p>
+      <p>If your coordinator has set the lock after editing your batch, then they will remove it when they are sure that you have downloaded a copy of the edited file. If your coordinator has locked the batch for any other reason, they will unlock it when the reason for the lock is no longer a problem.</p>
+    </div>
+
+    <h2 id="edit">Edit entries</h2>
+    <p>If you want to do an online edit of any entry in your batch, then select <span class="btnPress">ED</span> from one of the report screens. After you have made the change, remember that your file will be Locked — you will need to Download (<strong class="btnPress">DL</strong>) the corrected version of the file to Unlock it again.</p>
+    <p>If you have a lot of changes to make to a batch, it might be simpler to make the changes off-line, then Replace and Process the file.</p>
+    <p><strong>Note for Coordinators:</strong> if you are making a lot of changes on behalf of a transcriber, Download the file, make the changes in a text editor, then Replace it.</p>
+
+    <h3>Seeing your edits</h3>
+    <p>After you have edited an entry, the changes will be available in the database pretty much immediately. <em>However</em>, any resulting changes in information <em>about</em> the batch, such as date of last update, or entry counts by decade, will not be available until the following day: this is because information about the batch is only updated overnight.</p>   
+
+    <div id="fileBatch" class="island island--light">
+      <h3 class="banner__title push-half--bottom">Files vs batches</h3>
+      <p><em>What is the difference between a file and a batch? Sometimes it seems as if they are the same thing, at others they seem different.</em> </p>
+      <p>It all depends on what is in your file…</p>
+      <p>If you follow our advice to only include records from a single Register Book or Microfiche in a file, then that file will comprise one batch. In this case, the file and the batch will have the same records, and in that sense are the same thing. The difference is that files are what get uploaded to (and downloaded from) the server, whilst batches are one aspect of how the database is organised.</p>
+      <p>On the other hand, if you include records from more than one Church and Register Type, or even from more than one Place, your file will be split into more than one batch in the database. Your file is, in effect, a collection of batches. We do <em>not</em> recommend this approach.</p>
+    </div>
+
+    <h2 id="gaps">The Gap system (summary)</h2>
+    <p><strong>Gaps</strong> are <em>periods for which we have no entries </em>. They are available only for <strong>registers and batches</strong> associated with the <strong>Parish Register</strong> (PR) type. (Gaps are not available for other register types as they would have little value for a transcript.)</p>
+    <p>A gap has a minimum period of 1 year. A gap is either associated with a specific batch (and therefore one record type) or with a register, in which case the gap can be associated either with a specific record type or with <em>all</em> record types.</p>
+    <p>Any <strong>member</strong> can list and view gaps. (The ability for researchers to list and view gaps will be developed upon acceptance of the Gap management system.)</p>
+    <p>As a <strong>transcriber</strong>, you can create and or edit a gap for any of your <strong>batches</strong> associated with a Parish Register. You can also delete a gap you have created.</p>
+    <p>Your <strong>SC</strong> and the relevant <strong>County</strong> and <strong>Country Coordinator</strong> can also create, edit or delete gaps for any of your batches.</p>
+    <p>For full details, please see the <a href="/cms/information-for-transcribers/the-gap-system">the Gap system page</a>.</p>
+
+  </div>
+</div>

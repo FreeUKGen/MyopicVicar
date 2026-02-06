@@ -1,0 +1,334 @@
+<h1>Coordinator actions</h1>
+
+<style scoped="scoped">
+  section { margin-bottom: 1rem; } 
+  h2.title--medium {
+    font-size: 2.2rem;
+    font-weight: lighter;
+    line-height: 1.2;
+  }
+  h3.title--medium {
+    font-size: 2rem;
+    font-weight: lighter;
+    line-height: 1.2;
+  }
+  img.fullWidth { width: 100%; height: auto; }
+  img.site { padding:10px 10px 15px; border: 1px solid #a3897a; }
+  figcaption { margin-top: 0.3rem; font-style: italic; color: #a3897a; } /* '--brown' */
+  figcaption span {
+    background: #f4f4f4 none repeat scroll 0 0;
+    color: #888888;
+    padding: 6px;
+}
+.btnPress { font-weight: bold; color: #895f49; }
+
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">Please take great care with these actions. Together they are a powerful set of tools, producing results that are live and usually instantaneous. Whatever you do is permanent.</p>
+    <h2>See also</h2>
+    <p>On the Information for transcribers page, details of how to <a href="/cms/information-for-transcribers#communicate">use the Communicate Action to send a message to a member of the FreeREG team</a>.</p>    
+  </div>
+
+  <div class="grid__item one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="firstThings">Things to know first</a> </li>
+          <li class="open"><a href="#ccActions">County Coordinator actions </a>
+            <ul>
+              <li><a href="#credit">Giving credit in batch headers</a> </li>
+              <li><a href="#contacts">Responding to contacts (Data Problems)</a>  </li>
+              <li><a href="#multiBatch">Files with more than one batch</a>  </li>
+              <li><a href="#relocateMerge">Correcting place, church and register</a>  </li>
+              <li><a href="#editChurch">Adding church information</a> </li>
+              <li><a href="#createChurch">Creating a church</a> </li>
+              <li><a href="#otherInfo">Editing register and place information</a> </li>
+              <li><a href="#reports">Offline reports</a> </li>
+              <li><a href="#embargo">The embargo system</a> </li>
+              <li><a href="#gaps">The gap system</a> </li>
+            </ul>
+          </li>
+          <li class="open"><a href="#sca">Syndicate Coordinator actions</a>
+            <ul>
+              <li><a href="#skill">Transcriber skill level</a> </li>
+              <li><a href="#report">Notable reports</a> </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <aside aria-labelledby="relatedInfo">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="relatedInfo">Coordinator Help</h2>
+        <ul class="sub-nav">
+          <li><a href="/cms/information-for-coordinators">Information for coordinators</a> </li>
+          <li class="active"><a href="/cms/information-for-coordinators/coordinator-actions">Coordinator actions (this page)</a> </li>
+          <li><a href="/cms/information-for-coordinators/other-sources-for-transcribing">Other sources for transcribing</a> </li>
+          <li><a href="/cms/information-for-coordinators/obtaining-the-approval-of-the-church-of-england">Obtaining the approval of The Church of England</a> </li>
+          <li><a href="/cms/information-for-coordinators/behind-the-scenes">Behind the scenes</a> </li>
+          <li><a href="/cms/information-for-coordinators/the-embargo-system">Embargo system</a> </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="title--medium" id="firstThings">Some things you should know first</h2>
+    <h3>Logging in</h3>
+    <p>To log in, select ‘Members’ from the main menu.</p>
+    <div class="islet islet--navy">
+      <p>Once you are logged in, please take a moment to read the comments about recent and/or planned changes to FreeREG: these are relevant to all Members, not just the technical team.</p> 
+      <p>You can view the comments at any time by choosing ‘Your Actions’ from the main menu.</p>
+    </div>
+    <h4>Timed out?</h4>
+    <p>Be aware that you could get unexpectedly timed out if you have more than one Members-only page open at the same time. If you are inactive on one such page for longer than the maximum time allowed, you will be timed out based on your inactivity on that page.</p>
+
+    <h3>County vs Syndicate</h3>
+    <ul>
+      <li>County Coordinator (CC) actions deal with the data, and</li>
+      <li>Syndicate Coordinator (SC) actions deal with the transcribers.</li>  
+    </ul>
+    <p>With just one UserID, you can look at the database from two different points of view depending on whether you are dealing with data or transcribers. As a CC, you may have more than one County, so when using CC actions you will be asked which county you want to work on. Typically, as a SC, there will be just one group of all the transcribers in your team.</p>
+
+    <h3>The database structure</h3>
+
+    <p class="flush--bottom">The FR2 database structure is: </p>
+    <ul>
+      <li>County</li>
+      <li>Place</li>
+      <li>Church</li>
+      <li>Register — the type of data, for example PR (Parish Register)</li>
+      <li>Batch — the file header information</li>
+      <li>Entries</li>
+      <li>Search Records</li>
+    </ul>
+
+    <h3>The list of Places</h3>
+    <p>The contents of the Place collection have been set up from master lists for the whole of the country. Transcription places are checked against this list — if a match is found, the connection is made. However if no match is found, the batch is rejected.</p>
+
+    <h3>Churches and Registers</h3>
+    <p>Churches and Registers were initially set up from uploaded transcriptions. From now on, you will need to set up any additional Churches and Registers <em>before</em> transcription starts, so we can validate against them. See <a href="#createChurch">Creating a church</a> (below) for details of how to name a Church unambiguously.</p>
+    <hr class="rule rule--ornament" />
+  </div>
+</div>
+
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 class="title--medium" id="ccActions">County Coordinator actions</h2>
+    <h3 class="title--medium" id="credit">Giving credit in batch headers</h3>
+    <p>The Database Contents pages are able to display a lot of information about a Batch: this is useful to a researcher and gives transcribers and other contributors their due credit — but only if it is there.</p>
+    <p>If you become aware that any of the Header fields for a Batch are empty or misspelt, for example, then select <span class="btnPress">ED</span> (edit) for that Batch and type the additions or corrections.</p>
+    <p>Note that if you select <span class="btnPress">SH</span> (show) for a Batch, you will see the Headers but will not be able to edit them: simply select <span class="btnPress">Edit batch headers</span>, if desired.</p>
+    <hr class="rule" />
+
+    <h3 class="title--medium" id="contacts">Responding to Contacts (Data Problems)</h3>
+    <p>From time to time you might receive an email message passed on to you by the Contact system and described as a <strong>Data Problem</strong>, together with a reference number. This will be from a researcher and will usually be a query about a possible transcription error.</p>
+    <p>Under <span class="btnPress">Actions</span>, select <span class="btnPress">Contacts</span>. This will show you the list of all Contact messages for your county.</p>
+    
+    <h4>How to respond to Contact messages</h4>
+    
+    <p>To open a Contact, select <span class="btnPress">Show</span> for the message: this will show you all the message details, including a link to the <span class="btnPress">Record in question</span>.</p>
+    <ol>
+      <li class="push--bottom">Please investigate the issue and take whatever measures are required. If you prefer this to be handled by the transcriber (if active) or you need more information from the researcher, please refer to the next section.
+        <ul>
+          <li class="push-half--top">Select the <span class="btnPress">Record in question</span> button. Then select <span class="btnPress">Edit Record</span>.</li>
+          <li class="push-half--top">Where the error is simple, such as transposed letters, you can correct this yourself.</li>
+          <li class="push-half--top">If the researcher has sent in a copy of the parish register or you have access to the register yourself, you can make any amendments and/or corrections to the records as needed. (See also: <a href="/cms/information-for-transcribers/file-and-batch-actions#lock">File and batch actions: Batch and file locks</a>) </li>
+          <li class="push-half--top">Navigate back to the Contacts page.</li>
+        </ul>
+      </li>
+      <li class="push-half--bottom">Reply to the researcher using the <span class="btnPress">Create Reply</span> button. Explain what you have done, including any relevant information you feel is needed. Select <span class="btnPress">Reply Contact</span> to send.</li>
+      <li>Use the <span class="btnPress">Archive</span> button to move the Contact from the Active list to the Archive list. This is important as it allows the System Administrators to know that the issue has been dealt with.</li>
+    </ol>
+    
+    <h4>Getting further information or input</h4>
+    <p class="push-half--bottom">If you need further information or input from a researcher or transcriber:</p>
+    <ol>
+      <li class="push-half--bottom">Send an initial response to the researcher to let them know there will be a delay in resolving their query or request additional information (if needed).  Send an email to the transcriber letting them know about the Contact message and request they complete any amendments and/or corrections needed.</li>
+
+      <li class="push-half--bottom">Select the <span class="btnPress">Keep until I say so</span> button to hold the Contact and prevent deletion. Leave a note using the <span class="btnPress">Comment</span> button as to why you are holding the Contact (i.e. waiting for more information from the researcher; waiting for the transcriber to amend the record). Do not forget to save.
+        <ul>
+          <li class="push-half--top">If the researcher has not supplied the additional requested information within 60 days, then add a comment to the Contact stating this, and archive the Contact. </li>
+          <li class="push-half--top">Similarly, if the transcriber has not responded within 60 days, you can amend the record yourself (as long as you have looked up the image yourself or it was provided) or add a note to reflect the researcher’s comment when you cannot verify the information (e.g. the surname could be either Burnett or Bennett).</li> 
+          <li class="push-half--top">Send a final response to the researcher letting them know the outcome, and archive the Contact messages.</li>
+        </ul>
+      </li>
+      <li>If your transcriber is no longer transcribing, or you can no longer message them, you can amend the record or add notes as above at your earliest convenience.</li>
+    </ol>
+
+    <h4>Policy for dealing with Data Problem Contacts</h4>
+    <p>We want to maintain a good reputation for FreeREG and need to respond to these researcher queries within a reasonable time frame.</p>
+    <p>Please answer any Contacts within 45 days unless you have made a special arrangement with the Comms Team or you have set the <span class="btnPress">Keep until I say so</span> action. Otherwise, the Comms Team will deal with the issue when 45 days are reached.</p>
+    <p>If you would like Comms to deal with your county’s Data Problems either permanently or for a temporary period, please send an email to the Comms Team.</p>
+    <p>Contacts will be automatically archived after 60 days. Archived Contacts will be automatically deleted after a further 60 days unless you have set the <span class="btnPress">Keep until I say so</span> action.</p>
+    <hr class="rule" />
+
+    <h3 id="multiBatch" class="title--medium">Files with more than one batch</h3>
+    <p>We recommend that new transcription files contain a single batch. Having more than one batch in a file can cause problems if you need to make corrections or edit the associated information. If you want to fix a multiple-batch file, then follow the appropriate set of instructions below.</p>
+    <ol>
+      <li><p class="push-half--bottom"><strong>If there should be only <em>one</em> batch</strong> because the extra batches are created by errors in the Church name, Register type or Place name, then correct the errors and merge into a single batch. In brief:</p>
+        <ul>
+          <li>Correct the error in each batch in turn — you will then see multiple batches that all have the same Place/Church/Register</li>
+          <li>Then Merge the batches with the same filename into the largest batch. </li>
+          <li>Finally, Destroy any empty Registers and/or Churches</li>
+        </ul>
+        <p class="push-half--top">For more detailed instructions, see <a href="#relocateMerge">Correcting Place, Church and Register</a>, below.</p>
+      </li>
+      <li><p class="push-half--bottom"><strong>If the batches are genuinely different</strong>:</p>
+        <ul>
+          <li>Download each batch in turn, renaming all but the main (largest) file as soon as downloaded — they will all download with the same file name.</li>
+          <li>Once all the batches are downloaded, then Replace the main file: this should remove all but the main batch.</li>
+          <li>Finally, Upload the other, new files that were created, to restore the other batches.</li>
+        </ul>
+        <p class="push-half--top">You now have one batch per file.</p>
+      </li>
+    </ol>
+    <hr class="rule" />
+
+    <h3 class="title--medium" id="relocateMerge">Correcting Place, Church and Register</h3>
+    <p><strong>Relocate</strong> and <strong>Merge</strong> let you correct Place, Church and Register Type problems without the need to move or amend batches.  Just click the buttons.</p>
+
+    <p><strong>Relocate</strong> will move a Batch to a different Place, Church or Register Type.  If this error Batch was created because of a spelling error in part of the file, then you will end up with more than one batch with the same UserID/Filename, and that is where <strong>Merge</strong> comes in: it puts the corrected entries back into the main Batch and removes the unwanted one.</p>
+
+    <p>The instructions below use a misspelt Church name as the example, but the same process is used for Places and Register Types.</p>
+
+    <h4>Step by step corrections</h4>
+
+    <ol>
+      <li>Log in and select <span class="btnPress">Manage Counties</span> then <span class="btnPress">Active Places</span>.</li>
+      <li>Look through the "Churches" column until you find something that looks wrong. For example, in the same Place, you see a church called "St John" with a register type of "Parish Register", plus a church called "St John Gr" with an "Unspecified" register type (see fig. 1). You decide that the second church is a typing error. Click on the register type of the misspelt church:
+        <ul>
+          <li>If no Batches are listed, you can select <span class="btnPress">Destroy Register</span>. And if you return to "Church Information" and find no registers, you can <span class="btnPress">Destroy Church</span>. Returning to the list of "Places" you will find it all tidied up.</li>
+          <li>If you find that the Register does have Batches, then these will need to be moved first.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <figure class="grid__item one-whole">
+    <img class="fullWidth site" data-rel="225x255" alt="A mis-typed Church name" src="/system/images/W1siZiIsIjIwMTUvMDkvMDkvMDNfMjBfMzhfMjEyX2NjYV9yZWxvY2F0ZV8wMS5wbmciXV0/cca-relocate-01.png?sha=98a5d931507ac730" width="1202" height="124" />
+    <figcaption>Fig. 1 — The miss-typed Church name, ‘St John Gr’ </figcaption> 
+  </figure>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h4 id="moveBatch">Moving batches</h4>
+
+    <ol>
+      <li>Click on the first Batch</li>
+      <li>Click on <span class="btnPress">Relocate Batch</span> and check that the proposed Type of Register and Place name boxes show the correct values</li>
+      <li>Edit the Church name box so that the spelling is correct and select <span class="btnPress">Relocate</span> </li>
+      <li>Now go to the destination and you should see that the batch has arrived there</li>
+      <li>If you have moved just part of a Batch, you will see that Batch listed twice:
+        <ul>
+          <li>Have a look at each of these and go back to the larger</li>
+          <li>Select <span class="btnPress">Merge batches for the same UserID/Filename into this one</span> </li>
+          <li>Go back to register level and you will see that there is now just one Batch of that name</li>
+        </ul>
+      </li>
+    </ol>
+
+    <p class="island island--navy">After a relocate the File is automatically locked so that the transcriber cannot upload the error again.  All files are identified by UserID/Filename, so no matter where the batches are that have been created from this file, they will be locked.  If you know that the transcriber is still working on a file that has now become locked, <em>and you know that they now have the correct Place / Church / Register</em>, you can unlock the file by using "Edit Batch Header".</p>
+
+
+    <h4>Place and Church names</h4>
+
+    <p>The same principle applies for miss-spelt Place names, but if you need to destroy a Place, you will have to ask our Data Manager: use <a href="/contacts/new">Contact us</a>, and select Data in that form.</p>
+
+    <p>Please note that Place and Church names cannot be amended.  This is to avoid problems with links, so it is necessary to move everything to the correct Place / Church and then destroy the wrong one.  This does not happen often.</p>
+    <hr class="rule" />
+
+    <h3 id="editChurch" class="title--medium">Adding Church information</h3>
+
+    <p>For any Church, you can add some other useful information.  Select the Church and then <span class="btnPress">Edit Church Fields</span>.</p>
+
+    <p>There are five fields:</p>
+    <ol>
+      <li><strong>Church name:</strong> You cannot edit this.  You will have to <a href="#createChurch">create a new Church</a> and then <a href="#moveBatch">Relocate batches</a> if necessary.</li>
+      <li><strong>Alternate Name:</strong> This is used when the Church Dedication changes.  For example "St Michael" becomes "St Michael and All Saints".  All registers will now be associated with either name.</li>
+      <li><strong>Denomination:</strong> For now, type the denomination: a pick-list is scheduled to be added in version 1.5</li>
+      <li><strong>Church Location:</strong> This to help researchers find the Church, so is the address or postcode.  We included this because some Churches are shared by a number of villages or are not near the Place from which they take their name.  The location does not need to be entered for every Church, just those which are unusual.</li>
+      <li><strong>Church website:</strong> Many Churches now have their own website which might be a help to researchers. Publishing the site address is a way of saying thank you to the Church for allowing us to use their registers and helps to smooth the way for future requests.</li>
+    </ol>
+
+    <p>Please enter this extra information, if you know it.</p>
+    <hr class="rule" />
+
+    <h3 id="createChurch" class="title--medium">Creating a Church</h3>
+
+    <p>You can also add new Churches for places where you have the data but have not yet started to transcribe it.  This is needed before someone starts to transcribe: any record with a non-existent Church will be rejected.  Select <span class="btnPress">All Places</span>, the Place and then <span class="btnPress">Create New Church</span> (see fig. 2).</p>
+    <p>For larger Places, it might be necessary to add a street name in order to distinguish one Church clearly from another. For example, for a Place with two Methodist congregations, one meeting in the High Street, the other in Winding Lane, the names should be styled as: Methodist (High Street), Methodist (Winding Lane). Two more unusual examples in the database are All Saints (North Street) and All Saints (Pavement), both being in York.</p>
+    <p>Please don’t use an apostrophe (a right single quotation mark) in this field, even in the rare case where it would be correct to do so. The processor will remove the apostrophe plus any following letters from that word: John’s would become John, for instance.</p>
+    <p>Fill all the information fields that you can.  If the Place you need is not in the list, then you need to contact our Data Manager by using <a href="/contacts/new">Contact us</a>, selecting Data in that form.</p>
+    <figure>
+      <img class="fullWidth site" data-rel="225x255" alt="Creating a new Church" src="/system/images/W1siZiIsIjIwMTUvMDkvMDkvMDNfNTBfNTNfODUzX2NjYV9yZWxvY2F0ZV8xMC5wbmciXV0/cca-relocate-10.png?sha=ab9105b8e5366338" width="789" height="173" />
+      <figcaption>Fig. 2 — Creating a new Church </figcaption> 
+    </figure>
+    <hr class="rule" />
+  </div>
+  
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h3 id="otherInfo" class="title--medium">Editing Register and Place information</h3>
+    <p>In much the same way as you can enter information about a Church, you can enter or edit the information for a Register or a Place: it will then be displayed on Database Contents pages, and both researchers and contributors will thank you.</p>
+    <p>For example, if you want to recognise the contribution of someone or some organisation to the Register itself, select the <span class="btnPress">Edit Register</span> action for that Register and add the details into the Credit field. While you are there, consider adding some notes about the Register: its source, its status (finished, in progress, needing assistance), the official start and end date of the register, even a comment on the copyright.</p>
+    <p>For those Registers that are being worked on, a note about its quality would be useful.</p>
+   <hr class="rule" />
+
+   <h3 id="reports" class="title--medium">Offline Reports</h3>
+   <p class="push-half--bottom">Use this action to request a report that will be sent to you by email. Current reports include:</p>
+   <ul>
+     <li>
+        <h4 class="push-half--bottom">County Content Report</h4>
+        <p>This is a complete listing of all places, churches, registers and their associated batches for the county. Empty fields are noted with ‘No church’, ‘No register’, or ‘No files’ respectively. The report is a CSV file that can be imported into Excel or any other spreadsheet software for viewing, sorting or editing.</p>   
+        <p>Use the filters on the various headers to view places with no churches, churches with no registers and registers with no files. The report also lists the number of records, the first and last years for each file as well as its owner.</p>
+      </li>
+    </ul>
+    <hr class="rule" />
+
+    <h3 id="embargo" class="title--medium">The embargo system</h3>
+    <p>The embargo system is designed to permit the creation and upload of transcription entries from register documents that have been provided to us under a licence that prohibits their retrieval and/or viewing by a researcher either for a certain <strong>period</strong> or until a certain <strong>year</strong>. In other words, it <em>prohibits the retrieval of embargoed records by the search engine until the embargo year is reached</em>.</p>
+    <p>It means that a <strong>transcriber</strong> can <strong>transcribe a complete register</strong>, whilst a <strong>coordinator</strong> can <strong>establish rules</strong> that allow the system to decide <strong>when to release each record</strong>. For example, say we have a register document with entries for burials up until 2018. Then say, the Record Office requests that that burials are subject to an embargo, so that they cannot be retrieved until 50 years after the event: the coordinator would establish the 50-year rule; all records can be transcribed; but only records that are old enough to meet the criteria will be found in a search.
+    </p>
+    <p>Each year the system will automatically release a new set of records that are no longer subject to the embargo. There can be different rules for each record type — ba, ma, and bu.</p>
+    <p>There is one additional action that permits a <em>single</em> record to be embargoed or un-embargoed on the authority of the Trustees.</p>
+    <p>In summary, embargoes are <em>applied</em> to a record, embargo rules are <em>established</em> for a register. There are two types of embargo rule: one establishes a <strong>period of up to 125 years</strong> for the embargo; the other establishes a <strong>specific year when the embargo ends</strong>.</p>
+    <p>We have PDF file which explains how to <a href="/system/resources/W1siZiIsIjIwMjAvMDEvMjIvNXQwYXg3ejE4Ml9UaGVfRW1iYXJnb19TeXN0ZW0ucGRmIl1d/The%20Embargo%20System.pdf?sha=fc28b815b48fc1ca">enter and edit embargo rules (PDF, 1.64 MB)</a>. See also the <a href="/cms/information-for-coordinators/the-embargo-system">Embargo system page</a>.</p>
+
+    <hr class="rule" />
+
+    <h3 id="gaps" class="title--medium">The gap system</h3>
+
+    <p><strong>Gaps</strong> are <em>periods for which we have no entries </em>. They are available only for <strong>registers and batches</strong> associated with the <strong>Parish Register</strong> (PR) type. (Gaps are not available for other register types as they would have little value for a transcript.)</p>
+    
+    <p>A gap has a minimum period of 1 year. A gap is either associated with a specific batch (and therefore one record type) or with a register, in which case the gap can be associated either with a specific record type or with <em>all</em> record types.</p>
+    
+    <h4>Gap actions by role</h4>
+    <p>Any <strong>member</strong> can list and view gaps. (The ability for researchers to list and view gaps will be developed upon acceptance of the Gap management system.)</p>
+    <p>A <strong>transcriber</strong> can create and or edit a gap for any of their <strong>batches</strong> associated with a Parish Register. They can also delete a gap they have created.</p>
+    <p><strong>Syndicate coordinators</strong> can create and or edit a gap for any of the <strong>batches</strong> for a <em>member of their syndicate</em> associated with a Parish Register. An SC can also delete any gap that they or their <em>syndicate members</em> have created if they feel the gap is unwarranted.</p>
+    <p><strong>County and Country coordinators</strong> can create and or edit a gap for any of the <strong>batches</strong> for their <strong>counties</strong> associated with a Parish Register. They can <em>also</em> create and or edit a gap for any <strong>register</strong> in their counties associated with a Parish Register. They can delete <em>any gaps for registers or batches</em> in their counties: typically, when they see a need to combine gaps.</p>
+    <p><strong>Data managers, system administrators and the Executive Director</strong> have the same abilities as a county coordinator.</p>
+      
+    <h4>How to use the gap system</h4>
+    <p>We have a PDF file which explains how to <a href="/system/resources/W1siZiIsIjIwMjAvMDEvMDcvN2d3azNyNGtpcF9NaW5kX3RoZV9HYXAucGRmIl1d/Mind%20the%20Gap.pdf?sha=ec4e019de921365e">enter and edit Gap information (PDF, 1.58 MB)</a>.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="sca" class="title--medium">Syndicate Coordinator actions</h2>
+    <p>When you log in and select <span class="btnPress">Manage Syndicate</span> you will see a list of reports. Select a report and you will see that you are able to edit fields in a similar way to the CC actions.</p>
+
+    <h3 id="skill">Transcriber skill level</h3>
+    <p>The main thing you need to concentrate on now is the <strong>Skill</strong> level of a transcriber, which you can change. It is set by default to Learning.  This is the same default as that for the images and so should not be a problem. You might want to assess each of your transcribers and update this field.</p>
+
+    <h3 id="report">Notable reports</h3>
+    <p>The <span class="btnPress">Review Batches with Errors</span> is worth a look: files that have errors will be processed, and any good records will be extracted, but records with errors will need correcting.</p>
+
+    <p>The last action, <span class="btnPress">Change Recruiting Status</span>, is also useful.  This determines if your Syndicate is shown as one that a new volunteer can choose when they select “Become a transcriber”.</p>
+    <p>See also the information above on the <a href="#gaps">Gap system</a>.</p>
+  </div>
+
+</div>

@@ -1,0 +1,422 @@
+<h1>Information for Transcribers</h1>
+
+<style scoped="scoped">
+  .btnPress { font-weight: bold; color: #895f49; }
+  figcaption {
+    font-style: italic;
+    color: #737373; /* 4.74:1 */
+    margin-top: 0.3em;
+  }
+  figure.site img {
+    border: 2px solid #00a099;
+    padding: 0.3em;
+    max-width: 100%;
+  }
+  figure.image-wide img {
+    width: 100%;
+    height: auto;
+  }
+  .do, .dont { list-style-type: none; margin-left: 3.5rem; text-indent: -1.2rem; }
+  .do > li::before { content: "\2713"; color: green; font-weight: bold; padding-right: 0.5rem; }
+  .dont > li::before { content: "\2718"; color: red; font-weight: bold; padding-right: 0.5rem; }
+  .do ul, .dont ul { list-style-type: disc; text-indent: 0; }
+
+  figure.bq {
+    border-left: 5px solid #007fad;
+    margin: 0;
+    margin-left: 1.556rem;
+    margin-bottom: 1.556rem;
+    padding: 1em;
+    padding-left: 50px;
+  }
+  figure.bq:nth-of-type(2n) {
+    border-color: #919191;
+  }
+  figure.bq blockquote {
+    position: relative;
+    text-indent: 0;
+    margin: 0;
+    padding: 0;
+  }
+  figure.bq blockquote::before {
+    content: "\201C";
+    color: #007fad;
+    font-size: 3.6em;
+    font-family: 'Helvetica', Arial, sans-serif;
+    position: absolute;  
+    left: -30px;
+    top: -23px;
+  }
+  figure.bq:nth-of-type(2n) blockquote::before {
+    color: #919191;
+  }
+  figure.bq blockquote p { margin: 0; margin-bottom: 14px; }
+  figure.bq blockquote p:last-of-type { margin-bottom: 0; }
+  figure.bq blockquote p::before, figure.bq blockquote p::after {
+    content: ' ';
+  }
+  figure.bq figcaption {
+    margin-top: 1em;
+    margin-top: 0.3em;
+    font-style: italic;
+    color: #737373; /* value in use for image captions */
+  }
+  figure.bq figcaption:before {
+    content: '— ';
+  }  
+</style>
+    
+<div class="grid">
+  
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">This page contains general information and advice about being a transcriber. The other pages for transcribers cover selected topics in more detail. Please browse these pages so that you know what help is available and where to find it.</p>
+    <p>Topics covered on this page are listed in the <a href="#pageMenu">On this page menu</a>.</p>
+    <p>The <a href="#helpMenu">Transcriber Help menu</a> has links to the pages that are available. For details of what each page covers, see the list of <a href="#transcriberContents">Help contents by page</a>.</p>    
+  </div>
+
+  <div class="grid__item one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered" id="pageMenu">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#accessData">Syndicates and Counties</a> </li>
+          <li><a href="#frdb">The database</a> </li>
+          <li><a href="#actions">Transcriber Actions</a> </li>
+          <li><a href="#problemLogin">Problems logging in?</a> </li>
+          <li><a href="#transcribe">Making a transcription</a> </li>
+          <li><a href="#bestPractice">Best practice</a> </li>
+          <li><a href="#tipsForBy">Tips for transcribers</a> </li>
+          <li><a href="#messages">Sending messages</a> </li>
+          <li><a href="#communicate">Communicate with team Members</a> </li>
+          <li><a href="#acquiringData">Do you know of data we may be able to share?</a> </li>
+          <li><a href="#transcriberContents">Help pages contents</a> </li>
+        </ul>
+      </div>
+    </nav>
+    
+    <aside aria-labelledby="relatedPages">
+      <div class="islet islet--bordered" id="helpMenu">      
+        <h2 class="title-block" id="relatedPages">Transcriber Help</h2>
+        <ul class="sub-nav">
+          <li class="active"><a href="/cms/information-for-transcribers">Information for transcribers (this page)</a> </li>
+          <li><a href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file</a> </li>
+          <li><a href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a> </li>
+          <li><a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a> </li>
+          <li><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV format</a> </li>
+          <li><a href="/cms/information-for-transcribers/register-types">Register types &amp; codes</a> </li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty">Dealing with uncertainty</a> </li>
+          <li><a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a> </li>
+          <li><a href="/cms/information-for-transcribers/chapman-codes">Chapman codes</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions">File and batch actions</a> </li>
+          <li><a href="/cms/information-for-transcribers/the-gap-system">The Gap system</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-headers">File headers</a> </li>
+          <li><a href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> </li>
+          <li><a href="/cms/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a> </li>
+        </ul>
+      </div>
+    </aside>
+    <aside aria-labelledby="otherHelp">
+      <div class="islet islet--bordered" id="otherMenu">
+        <h2 class="title-block" id="otherHelp">Other Help sections</h2>
+        <ul class="sub-nav">
+          <li><a href="/cms/help">Researcher Help</a> </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <hr class="rule" />
+    <h2 id="accessData">Syndicates and Counties</h2>
+    <p>You will be assigned a <strong>Syndicate Coordinator</strong> (SC) who will deal with you as a person.  Your SC will answer questions, monitor your work, and upgrade your skill level if you want to work with more difficult registers: your SC is your mentor.</p>
+    <p>A <strong>County Coordinator</strong> (CC) manages the list of Place and Church names as well as the data available for transcribing.  You will need to contact the relevant CC when you want more work.</p>
+
+     <h3>Working with images assigned to you</h3>
+    <p>We now have an automated system for accessing images for transcription from the Image Server (the I.S.) through your login to the FreeREG site — GetScan no longer works.</p>
+    <p>From your Actions, select Assignments. This will give you access to a number of new Assignment Actions that allow you to request and work with the images that have been assigned to you. Communicating with you SC about your assignment is also done within your Assignments actions: you can contact your SC when you have finished an assignment, and then to request more work. For full details, visit the page on <a href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a>.</p>
+    <p class="push-half--bottom">You can view images directly on the I.S. or download them to your computer, but please be aware of the copyright restrictions:</p>
+    <ul>
+      <li>you must not keep a copy of the image file once you have transcribed it, and you must not pass a copy on to any third party</li>
+      <li>the prohibition on passing copies on <em>includes</em> downloading images on behalf of another transcriber</li>
+    </ul>
+    <div class="islet islet--navy">
+      <p>If you have access to new images that have not come from the Image Server, or access to new data (e.g. a transcription made by a friend), you must inform the relevant County Coordinator before accepting the images or data.</p>
+      <p>Please note that we cannot use images (or accept transcriptions of images) purchased from commercial sites such as Ancestry, FindMyPast, Scotlands People, etc., because the licence accepted by the purchaser permits only personal use of those images and their contents. For more details see <a href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a>.</p>
+    </div>
+    <h3 class="push-half--bottom">Working for more than one county</h3>
+    <p>When you first begin to transcribe for FreeREG, your Syndicate and County Coordinators will most likely be the same person. If you want to work for a different county, there is no need to create a new UserID: you simply remain with the same Syndicate, but contact the new County Coordinator for work. Each CC can see all your work for their county, no matter which Syndicate you belong to. Your Syndicate Coordinator can see your work for all counties.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="frdb">The database</h2>
+    <p>You need to be familiar with the terms we use to describe the FreeREG database and how these relate to the transcription files you create.</p>
+    <p>FreeREG has a single database which is organised by <strong>County</strong>, <strong>Place</strong>, and <strong>Church</strong>: these names are set up by the County Coordinator.</p>
+    <p>Within a Church are <strong>Register Types</strong>, the kind of source from which the transcription was made. These provide useful information to a researcher, especially if a particular register entry is not the same from one source to another.</p>
+    <p>Within the Register Type are <strong>Batches</strong> (or groups of register entries), which can be uploaded by different transcribers.  A Batch is not the same as a file that you have created on your computer, because within your file you may have created entries for multiple Places and Churches, so your file would then be split into more than one Batch. Note that we recommend having only one batch per file.</p>
+    <p>Within the Batch are the <strong>Records</strong> or Register Entries. The <strong>Fields</strong> within each Record are described on <a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a>. New fields are available for spreadsheet users only — see <a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV</a> for full details. One such new field is ‘Transcriber Notes’, for entering your comments, such as where you have assumed something, or to link Records for twins or aliases.</p>
+    <p>You have full control to edit all the variable information in any of your Batches, but when you do, the Batch will be locked so that your changes cannot be accidentally overwritten. You can read about Batch locking and unlocking on <a href="/cms/information-for-transcribers/file-and-batch-actions">File and batch actions</a>.</p>
+    <hr class="rule rule--ornament" />
+  </section>
+</div>
+
+<div class="grid">
+  <div class="grid__item one-third palm-one-whole float--right">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDgvMTQvMTdrNjJoY2Ewb190cmFuc2NyaWJlcl9hY3Rpb25zLnBuZyJdXQ/transcriber-actions.png?sha=ac1af1dd754313c7" alt="Transcriber Actions" data-rel="225x255" width="314" height="378" />
+      <figcaption>Transcriber actions</figcaption>
+    </figure>
+  </div>
+
+  <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 id="actions">Transcriber Actions</h2>
+    <ol>
+      <li>If you are not logged in, select Members from the main menu. Log in using your UserID (or email address) and Password.  You can avoid the need to type these every time by checking the Remember me box and allowing your browser to save passwords. (Every few months, you will be asked to confirm your current email address — this is to help ensure that we send important messages to the correct address.)</li>
+      <li>Once logged in, you will see some information about the system status: this is for <em>all</em> members, not only the technical team! You will also see a set of buttons: these are your <strong>Actions</strong> — a set of online tools for managing your batches and more.</li>
+      <li><span class="btnPress">Assignments</span> takes you to a page where you can view and manage your Assignments on the Image Server.</li>
+      <li>The <span class="btnPress">Batches</span> actions deal with all your transcription files. Information on <strong>uploading, replacing and editing</strong> your Files and Batches is on the <a href="/cms/information-for-transcribers/file-and-batch-actions">File and batch actions</a> page.</li>
+      <li>The <span class="btnPress">Communicate</span> action allows you to communicate directly with members of the FreeREG team — the <a href="#communicate">details of the Communicate action</a> are given below.</li>
+      <li><span class="btnPress">Profile</span> is <strong>your details</strong>.  Please make sure that these are kept up-to-date by selecting <span class="btnPress">Edit</span>. The coloured fields are those that you can edit. Your telephone number is not essential but it is useful if we find that we cannot contact you by email: it is not made public. We decided to use this rather than your postal address.</li>
+      <li><span class="btnPress">Roadmap</span> takes you to a page detailing how FreeREG is set to develop over time, with new features and enhancements for Transcribers, Coordinators and Researchers.</li>
+    </ol>
+    <p>Once you have selected an action, you will notice that there is a row of ‘breadcrumbs’ (or links) just under the main menu that guides you back to previously-visited pages. It is a good idea to use the breadcrumb links, rather than your browser’s Back button — especially if you have made any edits to your Batches. If you do use the Back button, then please reload the page (Ctrl+R on Windows, Cmd+R on a Mac) before you click on any further links.</p>
+    <hr class="rule rule--ornament" />
+  </section>
+
+  <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 id="problemLogin">Problems logging in?</h2>
+
+    <p class="push-half--bottom"><strong>If your UserID is reported as incorrect</strong>:</p>
+    <ul>
+      <li>remember that it is case-sensitive: SuperUser is not the same as superuser, for example</li>
+      <li>if you cannot get your UserID accepted, try using your email address instead. Once you are logged in, check the details of your UserID in your Profile</li>
+      <li>if neither UserID or email address is working for you, contact your Syndicate Coordinator. Please help them by explaining what you have already tried</li>
+    </ul>
+
+    <p><strong>If you get no message</strong>, then either your Profile is marked as Inactive or you are using the wrong password. Ask your SC to check your Profile: if you are correctly marked as Active, then your SC will request a password reset for you. Please follow the instructions in that email.</p>
+
+    <h3 id="passwordReset">Problem with password reset request?</h3>
+
+    <p>If you have requested a password reset, but have not received the email, then please ask your SC to make the request for you. (This is a known problem and we hope to have it fixed soon.)</p>
+    <hr class="rule rule--ornament" />
+  </section>
+
+  <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 id="transcribe">Making a transcription</h2>
+    <p>Details of the fields (columns) used for Baptisms, Marriages and Burials can be found on <a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a>.</p>
+    <p>Need some help deciding how to create your files? See <a href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file</a>.</p>
+    <hr class="rule rule--ornament" />
+  </section>
+
+  <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 id="bestPractice">Best practice</h2>
+    <p>These guidelines will help you to work in ways that fit well with the working of the FreeREG database.</p>
+    <p class="flush--bottom">The best way to transcribe is also the simplest:</p>
+    <ul>
+      <li>only Upload your file when you have completed it (no more than two thousand records or so)</li>
+      <li>start a new file (or files) for any remaining entries in the register book</li>
+      <li>make any corrections online</li>
+    </ul>
+    <p>This way of working will avoid the issues around dealing with potentially <strong>two different</strong> versions of a file/batch — one on your computer, the other online. The guidelines below expand on this way of working and include some other aspects of best practice, where the simplest way is not quite enough.</p>
+    <p class="push-half--bottom">The do’s:</p>
+    <ul class="do">
+      <li>please use separate files for each location (county, place, church) and register type: mixing more than one location or register type into a single file will cause difficulties in the future</li>
+      <li>when your working file reaches 2,000 entries, give or take a few, start a new one</li>
+      <li>please feel free to do an off-line edit of the register type or correct a church name in an existing file and then <span class="btnPress">Replace</span> it, no matter the size of the file. In addition:
+        <ul>
+          <li>coordinators can do register type changes online for files of less than 4,000 entries</li>
+          <li>the Data Manager can do the same for larger files</li>
+        </ul>
+      </li>
+      <li>it does not matter if you submit the same file for processing multiple times: we will only process the latest file</li>
+    </ul>
+    <p class="push-half--bottom">Some do nots:</p>
+    <ul class="dont">
+      <li>please do not delete a file and its records unless you have no choice: for example, the file is a duplicate.</li>
+      <li>please do not split an existing large file into smaller parts. There is no need: it has been processed and it’s fine to make corrections to the file as it is</li>
+      <li>please do not combine files from different transcribers into one large file</li>
+      <li>the System Administrator can move a file between users although we strongly encourage you to keep files with the original transcriber</li>
+    </ul>
+    <p class="push-half--bottom">The confirmation email:</p>
+    <ul>
+      <li>if you do not get your email after processing, make sure that your email address is correct in your <span class="btnPress">Profile</span>. If the address is correct, please report the problem to your coordinator: we have had issues with email not being delivered by some Internet Service Providers</li>
+      <li>if you do not get the email within 24 hours, let us know. Occasionally a file does get overlooked: it is not lost and we can bump it along for you</li>
+    </ul>
+
+    <p>If you are technically inclined and want to know the reasons behind this advice, please read on …</p>
+
+    <h3>The workings of the FreeREG system</h3>
+
+    <p>FreeREG is not a file-based system but an entry/record-based system. This results in many benefits when treated in the appropriate way.</p>
+    <p>At the bottom level of FreeREG are the entries that you and all of the other volunteers are creating. These are the individual event records that you have transcribed from a register or other source. After checking, these entries are transformed into a search record that is used by the search engine to respond to a researcher’s queries.</p>
+
+    <h4>What does this mean in practice?</h4>
+
+    <p>Each entry and its associated search record are linked (indexed) to the register, church and place to which they belong as well as to the file that conveyed them into the system. These entries and their search records can be changed online. New records can be added. They can also have their “location” indexing updated online.</p>
+    <p>When a file is first uploaded we store a “digest” of the non-location fields of the entry with it (i.e. we exclude the county, place and church fields from the digest). This allows us to easily detect when an entry changes. </p>
+    <p>When a file is replaced, we only reprocess those entries for which the “digest” has changed. This way, only new and changed entries are processed, whilst unchanged entries are not processed.</p>
+    <p>If only the location information associated with the entry is changed, i.e. the place, church or register type is different, we simply update the indexes for the entry/search record. These processes are extremely efficient.</p>
+    <p>If a file is deleted, we must destroy all its entries/search records and their indexes.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="tipsForBy">Tips for transcribers</h2>
+    <p>These tips are recommendations by yourselves, our transcribers. Some tips are given here in full. Where your tips go with a topic covered in the help pages, we have published them on that page so that all the related information is in one place. If you have anything to add, please leave a comment on the transcribers’ forum.</p>
+    
+    <h3>Latin words and abbreviations</h3>
+    <p>For Latin dictionaries and guides to abbreviations and usage, see our page, <a href="/cms/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a>, where there are many suggestions.</p>
+
+    <h3>Palaeography</h3>
+    <p>For help with reading old handwriting, see <a href="/cms/information-for-transcribers/dealing-with-uncertainty#oldLetterForms">Dealing with uncertainty, handwriting resources</a>.</p>
+
+    <h3>Maps</h3>
+    <figure class="bq">
+      <blockquote>I have used the  <a href="https://maps.nls.uk/">National Library of Scotland</a>’s old maps to help with place names</blockquote>
+      <figcaption>Susan</figcaption>
+    </figure>
+    <figure class="bq">
+      <blockquote>Susan’s suggestion of the excellent NLS maps site has reminded me of this one: <a href="https://www.familysearch.org/mapp/">FamilySearch historical maps</a> — a layer of parishes and counties (as at 1851) for England and Wales layered over Google Maps with deanery, poor law, registration district, etc. info for each parish too. It’s really helpful!</blockquote>
+    </figure>
+
+    <h3>Occupations</h3>
+    <figure class="bq">
+      <blockquote>… and I’ve found this one useful for <a href="https://rmhh.co.uk/occup/index.html">old occupations</a> — the same website also has a link to old medical complaints — names and descriptions of symptoms — not for the queasy!</blockquote>
+    </figure>
+
+    <h3>Hyphenated forenames</h3>
+    <p>Please be aware that WinREG will change each forename to an upper case letter (a capital letter) followed by lower case letters and that a hyphenated forename is treated as a single forename. So, ‘Mary-Ann’ will become ‘Mary-ann’. The only way to restore the letter casing (if needed for TWYS) is by editing it online.</p>
+
+    <h3>Miscellaneous</h3>
+    <figure class="bq">
+      <blockquote><a href="https://efotinis.neocities.org/deskpins/">DeskPins</a> [for Windows only] is a little app I wouldn’t be without and use every time I am transcribing. It lets you pin a window on top so it doesn’t keep disappearing when you click elsewhere.</blockquote>
+    </figure>
+    <p>If something does not seem right, such as a file missing from your list of transcription files, please contact your SC for help.</p>
+    <p>Although the <a href="https://theclergydatabase.org.uk/">Clergy Database site</a> will not help with transcribing, you might find it interesting — you can search by parish or name.</p>
+
+    <hr class="rule rule--ornament" />
+
+    <h2 id="messages">Sending messages</h2>
+    <p>To avoid overloading us with messages, please follow these guidelines:</p>
+    <ul>
+      <li><strong>if your message is about improvements to the system</strong>, you need to log in, and then select <span class="btnPress">Roadmap</span> to see if we already have it on the to-do list. If it is not there and:
+        <ul>
+          <li>if the improvement is for version 1.5 (improvements for transcribers), please tell us your idea via the Contact page with full details of what is needed</li>
+          <li>if the message is about an improvement for a coordinator (version 1.6) or a nice-to-have improvement for a researcher (version 1.7), please jot your idea down somewhere so you can check the Roadmap again once we open to new suggestions for these later versions</li>
+        </ul>
+      </li>
+      <li><strong>if the message is about a bug or a system failure</strong>, ask your Syndicate Coordinator (SC) to trouble-shoot for you. And try to replicate the problem. Remember to include details of your system, what you were doing, screen shots, etc. SCs can use Contact us, if necessary</li>
+      <li><strong>all queries about data</strong> need to go to our Data Manager: use <a href="/contacts/new">Contact us</a>, selecting Data on that form</li>
+      <li>everything else needing a response should go to our Contacts Coordinator: go to <a href="/contacts/new">Contact us</a> and select the appropriate category (type) on that form. Remember to include your UserID and as many details as possible: having to get back to you to ask for them takes us time</li>
+    </ul>
+    <p>Thank you!</p>
+    <hr class="rule rule--ornament" />
+  </section>
+  
+  <section id="communicate" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2>Communicate with team members</h2>
+    <p class="push-half--bottom">You can use the <strong>Communicate action</strong> to get in touch with members of the FreeREG team as follows:
+
+      </p>
+<ol>
+        <li>select ‘Communicate’ from the listing on the ‘Your Actions’ page
+        </li>
+<li>select ‘Create Communication’</li>
+        <li>type your message</li>
+        <li>select ‘Save Communication’</li>
+        <li>select ‘Show’ against the message</li>
+        <li>to choose the recipient, select ‘Send Communication’  (and then ‘OK’ in the pop-up box)</li>
+        <li>use the drop-down menu to select the role of the person you are sending to</li>
+        <li>select ‘Select Role’</li>
+        <li>use the drop-down menu to select the actual person you are sending to</li>
+        <li>select ‘Send Communication’</li>
+      </ol>
+
+    
+    <hr class="rule rule--ornament" />
+  </section>
+
+  <section id="acquiringData" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2>Do you know of data we may be able to share?</h2> 
+    <p>Do you know an individual, organisation or project which creates transcriptions of registers of baptism, marriage or burial (or similar processes) which would be of interest to the users of FreeREG? If so, please ask them if they would be willing to share their data with us.</p>
+
+    <p>Please let them know that we are happy to share our data with others (where permitted), whether or not they share with us.</p>
+
+    <h3>The benefits</h3>
+    <p>Having data available on two (or more) websites is beneficial because the searches possible on the two sites are likely to be different, reflecting the special needs and interests of the people for whom the transcriptions were made — FreeREG is great for family historians, but not so good for those who are interested in local history. A user can find their ancestors more easily on FreeREG, especially if the user does not know where exactly their relative lived, or where they were married. On the other hand, a website restricted to a geographical area (or say, a shared occupation) is usually backed by local knowledge, such as links and volunteers or staff who can provide advice.</p> 
+
+    <p>We ask that those who share their data with us, permit us to share their data with others, alongside our data, using Open Database licence 1.0.</p>
+
+    <h3>Next step</h3>
+    <p>Please put the individual, organisation or project in touch with your Coordinator so that the technical details can be discussed.</p>
+
+    <p>Potential donors can read more on the Free UK Genealogy website: <a href="https://www.freeukgenealogy.org.uk/about/opendata/open-data-for-donors/">Open data for donors</a>.</p>
+    <hr class="rule rule--ornament" />
+  </section>
+
+  <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 id="transcriberContents">Help contents by page</h2>
+    <ul class="contents-listing">
+      <li><strong>Information for Transcribers (this page)</strong> — see the <a href="#pageMenu">On this page menu</a> for a list of topics covered</li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a> — view your Assignments, view and download your Images, mark your progress and choose your next Assignment</li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file</a>
+        <ul>
+          <li><a href="/cms/information-for-transcribers/creating-a-transcription-file#winReg">WinREG</a> — the benefits of using WinREG, plus a download link</li>
+          <li><a href="/cms/information-for-transcribers/creating-a-transcription-file#spreadsheet">Spreadsheet</a> — suitable software and how to set it up; how to save a completed file for upload to the database</li>
+          <li><a href="/cms/information-for-transcribers/creating-a-transcription-file#database">Database</a> — suitable software and how to set it up</li>
+          <li><a href="/cms/information-for-transcribers/creating-a-transcription-file#textEditor">Text Editor</a> — some cautions and warnings (for diehard text editor users only)</li>
+        </ul> 
+      </li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a>
+        <ul>
+          <li><a href="/cms/information-for-transcribers/entering-data-from-registers#guidance">General guidance</a> — Type What You See (T.W.Y.S.) and the important exceptions to T.W.Y.S.; Register types and codes; how to enter the illegible; summary of how to enter dates (including missing dates); what can and cannot go in a Names field; the Notes field; guidance for text editor users</li>
+          <li><a href="/cms/information-for-transcribers/entering-data-from-registers#baptisms">Baptisms</a> — a list of the fields followed by details what goes in each, including common special (or tricky) cases</li>
+          <li><a href="/cms/information-for-transcribers/entering-data-from-registers#marriages">Marriages</a> — a list of the fields followed by details what goes in each, including common special (or tricky) cases</li>
+          <li><a href="/cms/information-for-transcribers/entering-data-from-registers#burials">Burials</a> — a list of the fields followed by details what goes in each, including common special (or tricky) cases</li>
+        </ul>
+      </li>
+      <li class="push-half--top"><span class="gamma"><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV format</a> </span> — how to use the extended and flexible format in a spreadsheet (or text editor), with an edited version of the general guidance and links to the details for each record type</li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/register-types">Register types &amp; codes</a> </li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/dealing-with-uncertainty">Dealing with uncertainty</a>
+        <ul>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty">Background information</a> — why some source images are not the best quality!</li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty#imageViewers">Image viewers</a> — free programs (for Windows, Mac and Linux) and some general tips for using them to enhance source images</li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty#ucf">Uncertain Character Format</a> — how to transcribe the parts of registers that are not clear or are illegible</li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty#read">Reading a register</a> — guidance on reading old styles of handwriting, with examples</li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty#read">Capital letters gallery</a> — examples of capital letter forms, collected by one of our experienced transcribers</li>
+        </ul>
+      </li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a> 
+        <ul>
+          <li><a href="/cms/information-for-transcribers/numbers-and-dates#standard">Dates in genealogy records</a> — the correct formats; the calendar change in 1752; the calendar change in Scotland in 1600</li>
+          <li><a href="/cms/information-for-transcribers/numbers-and-dates#months">Months</a> — The abbreviations we use; the pre- and post-1752 numbering schemes</li>
+          <li><a href="/cms/information-for-transcribers/numbers-and-dates#numbers">Numbers</a> — in English and Latin words; in digits and Latin (Roman) numerals</li>
+          <li><a href="/cms/information-for-transcribers/numbers-and-dates#regnal">Regnal years</a> — what they are and how to convert one to a calendar date; includes a table of Regnal years from Henry&#160;<span style="font-family: serif;">VIII</span> to George&#160;<span style="font-family: serif;">III</span>
+</li>
+        </ul>
+      </li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/chapman-codes">Chapman codes</a> — the three-letter codes that we use as abbreviations for the UK Counties in location fields</li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/file-and-batch-actions">File and batch actions</a>
+        <ul>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions#uploadNew">Uploading a new file</a> — how-to; notes about the confirmation email</li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions#replace">Replacing a file</a> — how-to; includes screenshot</li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions#troubleshooting">Troubleshooting upload and replace</a> — where you and your coordinator might need some extra help and how to get it</li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions#uniqueNames">View names</a> — how to view a list of all the names in a batch</li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions#correct">Correcting errors</a> — finding errors and making corrections online</li>          
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions#lock">Batch and file locks</a> — how each type works and how to unlock them</li>          
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions#edit">Editing entries</a> — how to edit an entry online, for any reason; why information <em>about</em> the batch is not updated immediately</li>          
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions#fileBatch">Files versus batches</a> — the differences and why it helps to know about them</li>
+          <li>a brief summary of the Gap system</li>
+        </ul>
+        </li>
+<li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/the-gap-system">The Gap system</a> — how the system works and how to create and edit Gaps in a PR (a Parish Register)</li>
+      
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/file-headers">File headers</a> (WinREG users can skip this) — how to complete your file, ready for upload to the database; optional and required fields; fields which may be left blank (and the consequences of doing so)
+        <ul>
+          <li><a href="/cms/information-for-transcribers/file-headers#spreadsheet">For spreadsheets</a> — adding the file header rows directly into a spreadsheet</li>
+          <li><a href="/cms/information-for-transcribers/file-headers#textEditor">For text editors</a> — adding the header rows to a file typed entirely in a text editor</li>
+        </ul>
+      </li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> — deciding whether or not you are allowed to transcribe a particular source</li>
+      <li class="push-half--top"><a class="gamma" href="/cms/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a> — general words together with specific terms used in early baptism, marriage and burial registers; recommended resources</li>
+    </ul>
+    <p>Most pages in ‘Transcriber Help’ will have their own ‘On this page’ menu together with a copy of the ‘Transcriber Help’ menu.</p>
+  </section>
+</div>

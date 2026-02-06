@@ -1,0 +1,551 @@
+<h1>Behind the scenes</h1>
+
+<style scoped="scoped">
+        .table-header-rotated {
+            border-collapse: collapse;
+            border: none;
+            table-layout: auto;
+            width: auto;
+        }
+        .table-header-rotated th {
+            padding: 0;
+        }
+        .table-header-rotated td, .table-header-rotated td:last-child {
+            width: 30px;
+            text-align: center;
+            color: green;
+            font-size: 1em;
+            padding: 10px 5px;
+            border: 1px solid #ccc;
+        }
+        .table-header-rotated td.nyi {
+            color: #999;
+        }
+        .table-header-rotated td.yes::before {
+            content: "\2713";
+        }
+        .table-header-rotated th.rotate {
+            height: 140px;
+            color: #895f49;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+        .table-header-rotated th.rotate > div {
+            -ms-transform: translate(10px, 51px) rotate(315deg);
+            -moz-transform: translate(10px, 51px) rotate(315deg);
+            -o-transform: translate(10px, 51px) rotate(315deg);
+            -webkit-transform: translate(10px, 51px) rotate(315deg);
+            transform: translate(10px, 51px) rotate(315deg);
+            width: 30px;
+        }
+        .table-header-rotated th:first-child {
+            padding: 0 10px;
+            border-bottom: 1px solid #ccc;
+            text-align: left;
+            font-weight: normal;
+        }
+        .table-header-rotated th.empty, .table-header-rotated th.first-sub {
+            border: none;
+            font-weight: bold;
+        }
+</style>
+
+<div class="grid">
+    <aside class="grid__item one-third palm-one-whole float--right">
+        <div class="islet islet--bordered">
+            <h2 class="title-block weight--semibold">On this page</h2>
+            <ul class="sub-nav">
+                <li><a href="#rolesActions">Roles and Actions</a> </li>
+                <li><a href="#communications">FreeREG Communications</a> </li>
+                <li><a href="#emails">Broadcast emails</a> </li>
+            </ul>
+        </div>
+        <div class="islet islet--bordered">
+            <h2 class="title-block">Coordinator Help</h2>
+            <ul class="sub-nav">
+                <li><a href="/cms/information-for-coordinators">Information for coordinators</a> </li>
+                <li><a href="/cms/information-for-coordinators/coordinator-actions">Coordinator actions</a> </li>
+                <li><a href="/cms/information-for-coordinators/the-image-server">The image server</a> </li>
+                <li><a href="/cms/information-for-coordinators/other-sources-for-transcribing">Other sources for transcribing</a> </li>
+                <li><a href="/cms/information-for-coordinators/obtaining-the-approval-of-the-church-of-england">Obtaining the approval of The Church of England</a> </li>
+                <li class="active"><a href="/cms/information-for-coordinators/behind-the-scenes" title="This page">Behind the scenes</a> </li>
+                <li><a href="/cms/information-for-coordinators/the-embargo-system">Embargo system</a> </li>
+            </ul>
+        </div>
+    </aside>
+    <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+        <p class="lead">On this page you will find information about the various FreeREG Roles, their associated Actions, and how communication works between researchers, transcribers, coordinators and other FreeREG members.</p>
+        <h2 id="rolesActions">Roles and Actions</h2>
+        <p>Every Member of FreeREG has a Role: for most, it is Transcriber, but there are a number of other Roles that are assigned to one or more people who all contribute to the project in their different ways.</p>
+        <p>A Trainee is a new volunteer who has not yet completed Transcriber training. The Roles of Pending and Researcher are not yet in use (NIU), but will be used as FreeREG grows.</p>
+        <p class="push-half--bottom">Most of the specialist Roles are filled by one or more volunteers. The paid Roles are:</p>
+        <ul>
+            <li><strong>Executive Director</strong> — Pat Reynolds — strategic planning, together with the Executive and Trustees, especially for access to data and sources of funding; a number of other management responsibilities</li>
+            <li><strong>Project Manager</strong> — Rich Pomfret — oversight of the technical side of things and support for programmers and other volunteers with technical roles</li>
+            <li><strong>Engagement Coordinator</strong> — Denise Colbert — involved mainly with communications, arranging meetings/conferences and volunteer recruitment</li>
+    </ul>
+</div>
+    <div class="grid__item one-whole">
+        <div style="overflow-x: auto; margin-bottom: 3rem;">
+            <table class="table-header-rotated">
+                <caption><span>Roles and their associated Actions</span> </caption>
+                <thead>
+                    <tr>
+                  	<th class="empty"></th>
+                	<th class="spanning" colspan="19" style="font-size: larger; padding-top: 20px;">Actions</th>
+                    </tr>
+                    <tr>
+                	<th class="first-sub" style="font-size: larger;">Roles</th>
+                	<th class="rotate"><div><span>Profile</span> </div> </th>
+                	<th class="rotate"><div><span>Batches</span> </div> </th>
+                	<th class="rotate"><div><span>Manage Syndicate(s)</span> </div> </th>
+                	<th class="rotate"><div><span>Manage Country</span> </div> </th>
+                	<th class="rotate"><div><span>Manage County(s)</span> </div> </th>
+                	<th class="rotate"><div><span>Access Profiles</span> </div> </th>
+                	<th class="rotate"><div><span>Manage UserID</span> </div> </th>
+                	<th class="rotate"><div><span>Syndicate Coordinators</span> </div> </th>
+                	<th class="rotate"><div><span>County Coordinators</span> </div> </th>
+                	<th class="rotate"><div><span>Country Coordinators</span> </div> </th>
+                	<th class="rotate"><div><span>Physical Files</span> </div> </th>
+                	<th class="rotate"><div><span>Refinery CMS</span> </div> </th>
+                	<th class="rotate"><div><span>Access Attic</span> </div> </th>
+                	<th class="rotate"><div><span>Site Statistics</span> </div> </th>
+                	<th class="rotate"><div><span>Search Performance</span> </div> </th>
+                	<th class="rotate"><div><span>Feedback</span> </div> </th>
+                	<th class="rotate"><div><span>Contacts</span> </div> </th>
+                	<th class="rotate"><div><span>System Documentation</span> </div> </th>
+                	<th class="rotate"><div><span>Roadmap</span> </div> </th>
+                </tr>
+          	</thead>
+          	<tbody>
+                <tr>
+                	<th>Pending</th>
+                	<td class="nyi">NIU</td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                 	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                 	<td></td>
+                 	<td></td>
+                 	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="nyi"></td>
+                </tr>
+                <tr>
+                	<th>Researcher</th>
+                	<td class="nyi">NIU</td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="nyi">NIU</td>
+                </tr>
+                <tr>
+                	<th>Trainee</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Transcriber</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Syndicate Coordinator</th>
+                 	<td class="yes"></td>
+                	<td class="yes"></td>
+                 	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                 	<td></td>
+                	<td></td>
+                 	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>County Coordinator</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Country Coordinator</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Volunteer Coordinator</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Data Manager</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Technical</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>System Administrator</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                 	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Contacts Coordinator</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Project Manager</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Executive Director</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Publicity Coordinator</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Genealogy Coordinator</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Documentation Coordinator</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                </tr>
+                <tr>
+                	<th>Engagement Coordinator</th>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                	<td class="yes"></td>
+                    </tr>
+          	</tbody>
+          </table>
+        </div>
+    </div>
+    <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+        <h2 id="communications">FreeREG Communications</h2>
+        <p>There are three types of communication for FreeREG users:</p>
+        <ol>
+            <li>a Data Problem — for any user to report a possible transcription error in a particular record to the relevant County Coordinator</li>
+            <li>a Contact — for any user to ask a question, send a thank-you message or report a problem</li>
+            <li>a Feedback — for (logged-in) Members to report a problem on any page</li>
+        </ol>
+        <h3>Data Problems</h3>
+        <p>Data Problem messages are sent when a researcher (i.e. any user, not necessarily a Member) clicks on the <q>Data Problem</q> link on the record details page of a Search result. A copy goes to the sender, and to the County Coordinator. The Data Managers also get copies, for information. For details of how to deal with these, see the <a href="/cms/information-for-coordinators/coordinator-actions#contacts">Responding to contacts</a> section of the Coordinator Actions page.</p>
+        <h3>Contacts</h3>
+        <p>Contact messages are sent when any user fills in the form on the <a href="/contacts/new">Contact us</a> page. The sender gets a copy of their message as do the Contacts Coordinator and the System Administrators. If the Contacts Coordinator can deal with the message, they do so, otherwise they pass it on to someone with the appropriate Role, as listed:</p>
+        <ul>
+            <li>General Comment — Contacts Coordinator</li>
+            <li>Data Question — Data Managers</li>
+            <li>Website Problem — as for a Feedback message</li>
+            <li>Volunteering Question — Volunteer and Engagement Coordinators</li>
+            <li>Genealogical Question — Genealogy and Contacts Coordinators</li>
+            <li>Enhancement Suggestion — Project Manager and Executive Director</li>
+            <li>Thank-you — Publicity Coordinator and Executive Director</li>
+        </ul>
+        <h3>Feedback</h3>
+        <p>Feedback messages are sent when Member clicks on the <strong>Report a Problem</strong> button, near the foot of a page. The sender gets a copy of their message, so do the Contacts Coordinator and the System Administrators. The Contacts Coordinator will either deal with the message or pass it on to someone who can: simple issues will be dealt with relatively quickly; other problems may need to be opened up to the Technical team and will take longer to put right.</p>
+        <hr class="rule" />
+    </div>
+    <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+        <h2 id="emails">Broadcast emails</h2>
+        <p>These are for managers to send important notices to one or more groups of (active) Members as appropriate: Transcribers, Syndicate Coordinators, County Coordinators, and so on.</p>
+        
+</div>
+</div>

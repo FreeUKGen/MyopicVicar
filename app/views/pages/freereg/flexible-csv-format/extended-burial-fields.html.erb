@@ -1,0 +1,472 @@
+<h1>Extended burial fields</h1>
+
+<style scoped="scoped">
+  h2.section { font-size: 2em; font-weight: normal; }
+  .field div { margin-left: 1em; margin-bottom: 2rem; }
+  .field .nav-link { margin-left: 0; margin-top: 1.5rem; margin-bottom: 1rem; }
+  .field h3, .field h4 { color: #a1185a; font-weight: normal; }
+  .field h3 { font-size: 1.8rem; padding-top: 1.5rem; border-top: 1px solid #dedede; }
+  .field p, .field ul { margin-bottom: 0.5rem; }
+  .field ul { margin-left: 1rem; }
+  .field h4 { margin-bottom: 0; }
+  .burial h3, .burial h4 { color: #825da8; } /* $lavender */
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section">The burial fields</h2>
+    <p>Use this link to<a href="/system/resources/W1siZiIsIjIwMTgvMDYvMjYvMnFrc29rNW9kX2V4dGVuZGVkX2J1cmlhbF9maWVsZHMuY3N2Il1d/extended%20burial%20fields.csv?sha=bbf730a63179dfb2"> download the extended burial fields </a>as a two-row CSV file — rows 5 and 6 of your spreadsheet.</p>
+    <p>Do not delete row 6, with the field names, before uploading your file: this is a change in practice.</p>
+    <p id="burialFieldList">The full list of burial fields now available follows: use as many or as few as you need, depending on the register.</p>
+  </div>
+
+  <aside aria-labelledby="relatedPages" class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block" id="relatedPages">Related pages</h2>
+      <ul class="sub-nav">
+        <li><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV</a>
+          <ul class="push-half--left push-half--bottom">
+            <li><a href="/cms/information-for-transcribers/flexible-csv-format/extended-baptism-fields">Extended baptism fields</a> </li>
+            <li><a href="/cms/information-for-transcribers/flexible-csv-format/extended-marriage-fields">Extended marriage fields</a> </li>
+            <li class="active"><a href="/cms/information-for-transcribers/flexible-csv-format/extended-burial-fields">Extended burial fields (this page)</a> </li>            
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <nav aria-label="Burial field names">
+    <div class="grid__item one-half palm-one-whole">
+      <ul>
+        <li><a href="#burA">County</a> </li>
+        <li><a href="#burB">Place</a> </li>
+        <li><a href="#burC">Church</a> </li>
+        <li><a href="#burD">Register type</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#burE">Register entry number</a> (or page &amp; position)</li>
+        <li><a href="#burF">Date of burial</a> </li>
+        <li><a href="#burG">Date of death</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#burH">Forename(s)</a> </li>
+        <li><a href="#burI">Surname</a> </li>
+        <li><a href="#burJ">Title</a> </li>
+        <li><a href="#burK">Age</a> </li>
+        <li><a href="#burL">Abode</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#burM">Cause of death</a> </li>
+        <li><a href="#burN">Burial location</a> </li>
+        <li><a href="#burO">Place of death</a> </li>
+        <li><a href="#burP">Memorial</a> </li>
+      </ul>
+    </div>
+    <div class="grid__item one-half palm-one-whole">
+      <ul>
+        <li><a href="#burQ">Relationship</a> </li>
+        <li><a href="#burR">Male relative forenames</a>  </li>
+        <li><a href="#burS">Male relative surname</a>  </li>
+        <li><a href="#burT">Male relative title</a>  </li>
+        <li><a href="#burU">Female relative forenames</a> </li>
+        <li><a href="#burV">Female relative surname</a>  </li>
+        <li><a href="#burW">Female relative title</a>  </li>
+      </ul>
+      <ul>
+        <li><a href="#burX">Notes</a> </li>
+        <li><a href="#burY">Transcriber’s notes</a> </li>
+        <li><a href="#burZ">Film</a> </li>
+        <li><a href="#burAA">Film number</a> </li>
+        <li><a href="#burAB">Image file name</a> </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+<hr class="rule rule--ornament" />
+
+<section id="burialsDetail" class="grid">
+  <div class="field burial grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section">Entering burial data</h2>
+    <p>Here are the details of what should go in each burial field (that is, each spreadsheet column).</p>
+
+    <h3 id="burA" class="push--top">County (chapman_code)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> and is the three-letter <a href="/cms/information-for-transcribers/chapman-codes">Chapman county code</a> </li>
+        <li>enter in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ABD, NTT, FLN, DUR <br />(Aberdeenshire, Nottinghamshire, Flintshire, and Durham, or County Durham)</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div> 
+
+    <h3 id="burB">Place (place_name)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter the name of the town or village</li>
+        <li>enter in lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betws-y-Coed, Nottingham, Prestonkirk, Chorlton cum Hardy</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burC">Church (church_name)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter in lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>St Ethelred, St Mary, Holy Trinity, Methodist, All Saints (North Street)</p>
+      <h4>Guidance:</h4>
+      <p>Enter the name of the church, parish or congregation  Take care with this as larger towns may have more than one parish or church.</p>
+      <p>If a place has two churches with the same name, then use parentheses for the identifier part, as in the example.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burD">Register type (register_type)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter in upper case</li>
+        <li>use one of the codes from the <a href="/cms/information-for-transcribers/flexible-csv-format#regCodes">list of Register Codes</a> </li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>AT, PR</p>
+      <h4>Guidance:</h4>
+      <p>This is a change in practice.</p> 
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burE">Register entry number (register_entry_number)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the register number (or page and position), if there is one</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>483, 25c</p>
+      <h4>Guidance:</h4>
+      <p>Usually found in burial registers after 1750. Enter the number without leading zeroes. </p>
+      <p>If only the page has a number, enter that number, plus a lower case letter to indicate position on page. If there are no numbers, leave blank.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burF">Date of burial (burial_date)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the burial date</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>If no burial date is shown in the register, or parts of the date are missing or illegible, see <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Dates</a> in General guidance. If only a death date is given, put the year of death in this field.</p>
+      <p>See <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Dates</a> in General guidance for further help.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burG">Date of death (death_date)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the date of death, or leave blank</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>If no death date is shown in the register, leave blank.</p>
+      <p>See <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Dates</a> in General guidance for further help. </p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burH">Forename(s) (burial_person_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename or names, as given</li>
+        <li>use lower case with leading capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Henry, Elizth, Raphe, Mary An</p>
+      <h4>Guidance:</h4>
+      <p>Transcribe the name as written, even if abbreviated or written in Latin or if it looks wrong. If a person has more than one forename, enter them all.</p>
+      <p>Be wary of apparent surnames that are really part of the forename. For example, the complete name Sarah Denman Neep would be entered as Sarah Denman in this field and NEEP in the surname field.</p>
+      <p>Any qualifier, such as Jr or Sr, should be entered in the appropriate <strong>Title field</strong>: this is a change in practice.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burI">Surname (burial_person_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the person’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Enter the spelling exactly as given, even if it looks wrong.</p>
+      <p>Enter any any qualifier, such as Jr or Sr, in the appropriate <strong>Title field</strong> and not as a note. This is a change in practice.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burJ">Title (burial_person_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any prefix or suffix to the name as written</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Mr, Mrs, Jr, Sr, Esq, Dr. Professor </p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+      
+    <h3 id="burK">Age (person_age)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the age as an integer (whole number)</li>
+        <li>you may use d (days), w (weeks), m (months), h (hours), “infant” or “child”</li>
+        <li>if required, use y (years)</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>17, 21, 51, 2y5m, 3m, 3w, 3d, 2h, infant, child</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <p>If the age is given as say, “less than an hour”, put 0 (zero) here and “less than an hour old” in the Notes field.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burL">Abode (burial_person_abode)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the abode or address of the deceased as given</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Ruardean <br /> High St <br /> 23, High St <br />Napoleon Sq., Cinderhill</p>
+      <h4>Guidance:</h4>
+      <p>This is usually given in burial registers from 1813. If not given, leave blank.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burM">Cause of death (cause_of_death)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the cause of death as written</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Plague, Dropsy, Cancer</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burN">Burial location (burial_location_information)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the location of the grave, including the plot number</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Church plot in north east corner<br /> Cemetery plot A9</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burO">Place of death (place_of_death)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any information given about where the person died</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Home<br /> Road to Coventry<br /> Midsomer Norton<br /> Worthy Inn<br /> Bishop Farm<br /> River Stour</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burP">Memorial (memorial_information)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>any memorial information that is available </li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Rest in peace</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burQ">Relationship (relationship)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter relationship of the deceased to the relative as given</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>son of, dau of, wife of, widow of, relict of</p>
+      <h4>Guidance:</h4>
+      <p>Abbreviate “daughter” to “dau”. Note that “relict” means “surviving widow of”, the same thing as “widow of”.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burR">Male relative’s forename(s) (male_relative_forename) </h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename(s) of the male relative as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Alexander, James Edward John, Jared, Robt</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#burH">forename(s)</a> for other details of how to enter forenames.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burS">Male relative’s surname (relative_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the surname of the male relative as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Be aware that the relative may not have the same surname as the person who was buried.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burT">Male relative’s title (male_relative_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any prefix or suffix to the name of the male as written</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Jr, Sr, Esq, Dr. Professor </p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burU">Female relative’s forename(s) (female_relative_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename(s) of the female relative as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betty, Frances Mary, Eline, Margret</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#burH">forename(s)</a> for other details of how to enter forenames.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burV">Female relative’s surname (female_relative_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the surname of the female relative as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Be aware that the relative may not have the same surname as the person who was buried.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burW">Female relative’s title (female_relative_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter as written</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Mrs, Widow, Lady</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burX">Notes (notes)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any other information as written in the register</li>
+      </ul>
+      <h4>Example:</h4>
+      <p>Age: yrs 18th</p>
+      <h4>Guidance:</h4>
+      <p>Use for any other information given in the register that does not belong in another field. </p>
+      <p>Do not include the details of the officiating minister unless there are compelling reasons to do so (that is, something about the minister looks like a clue for a researcher).</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burY">Transcriber’s notes (notes_from_transcriber)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>use this field to record any observations about the entry from your point of view</li> 
+      </ul>
+      <h4>Examples:</h4>
+      <p>A very faint document<br /> Part of record is missing<br /> An ink blob in the person's surname</p>
+      <h4>Guidance:</h4>
+      <p>Do <em>not</em> use to record <em>information</em> that is in the register.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+    <h3 id="burZ">Film (film)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the name of the film or fiche</li>
+        <li>for use only with an old allocation from the image server or from a source outside of FreeREG</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p>If you are transcribing from an old allocation from the image server of a film or fiche use the name of the film or fiche. </p>
+      <p>Do not use if transcribing from an image from the Image server using the new Assignment system.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+        
+    <h3 id="burAA">Film number (film_number)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the number of the image</li>
+        <li>for use only with an old allocation from the image server or from a source outside of FreeREG</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p>Do <em>not</em> use if transcribing from an image from the Image server using the new Assignment system. See the <a href="#burAB">Image file name field</a> for more details.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+      
+    <h3 id="burAB">Image file name (image_file_name)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the name of the image file in your Assignment</li>
+      </ul>
+      <h4>Guidance:</h4>
+        <p>Use this if transcribing from an image from the Image server using the new Assignment system.</p>
+      <div class="nav-link"><a href="#burialFieldList">Burial field list</a> </div>
+    </div>
+
+  </div>
+</section>

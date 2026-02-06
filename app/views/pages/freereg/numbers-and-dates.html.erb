@@ -1,0 +1,733 @@
+<h1>Numbers and dates</h1>
+
+<style scoped="scoped">
+  table { border-bottom: 1px solid #ccc; }
+  table thead { border-bottom: 1px solid #ccc; }
+  table td, table th { text-align: left; }
+  h2.title--medium {
+    font-size: 2.2rem;
+    font-weight: lighter;
+    line-height: 1.2;
+  }
+  table caption { color: #895f49; font-style: italic; }
+  .roman { font-family: "Times New Roman", serif; }
+  figcaption { color: #895f49; font-style: italic; }
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">For the FreeREG database to be searchable, it is essential that we all enter dates using a standard format, no matter how they were written in church registers. Here is a guide to interpreting  numbers and dates, whether written in English or in Latin.</p>
+  </div>
+
+  <div class="grid__item one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#standard">Dates in genealogy records</a>
+            <ul class="push--left">
+              <li><a href="#y1752">The 1752 calendar change</a> </li>
+              <li><a href="#splitYear">The split-year convention</a> </li>
+              <li><a href="#sct">Scotland</a> </li>
+            </ul>
+          </li>
+          <li><a href="#months">Months</a> </li>
+          <li><a href="#numbers">Numbers</a> 
+            <ul class="push--left">
+              <li><a href="#latinNumbers">Latin (Roman) numbers</a> </li>
+              <li><a href="#latinWords">Words</a> </li>
+            </ul>
+          </li>  
+          <li><a href="#regnal">Regnal years</a>
+            <ul class="push--left">
+              <li><a href="#regnalToCalendar">Translating to a calendar date</a> </li>
+              <li><a href="#context">Context is everything</a> </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <aside aria-labelledby="relatedPages">
+      <div class="islet islet--bordered" id="helpMenu">      
+        <h2 class="title-block" id="relatedPages">Transcriber Help</h2>
+        <ul class="sub-nav">
+          <li><a href="/cms/information-for-transcribers">Information for transcribers</a> </li>
+          <li><a href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file</a> </li>
+          <li><a href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a> </li>
+          <li><a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a> </li>
+          <li><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV format</a> </li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty">Dealing with uncertainty</a> </li>
+          <li class="active"><a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates (this page)</a> </li>
+          <li><a href="/cms/information-for-transcribers/chapman-codes">Chapman codes</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions">File and batch actions</a> </li>
+          <li><a href="/cms/information-for-transcribers/the-gap-system">The Gap system</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-headers">File headers</a> </li>
+          <li><a href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> </li>
+          <li><a href="/cms/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a> </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <div id="standard" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 class="title--medium">Dates in genealogy records</h2>
+    <p>Your idea of what constitutes a ‘standard’ way of writing a date will depend on where you live. If you are in Britain, you are likely to use 01/12/1850 (dd/mm/yyyy) as the shorthand for the first of December 1850. But if you live in the USA,  12/01/1850 (mm/dd/yyyy) will be more natural. To avoid any such ambiguity, some people prefer to use 1850/12/01 (yyyy/mm/dd).</p>
+
+    <h3 id="y1752">The 1752 calendar change</h3>
+    <p>Unfortunately not even this will work for England and Wales genealogy records because of the calendar change in 1752 which moved the first day of a year from 25 Mar (Lady Day) to 01 Jan. And to make life a little awkward for us, there was advanced warning of this change, and some clergymen jumped the gun and began using 01 Jan as new year some years earlier, whilst others stubbornly carried on using the year changeover as 25 Mar. Fortunately you can identify these easily enough in a register, by noting when the year number changes.</p>
+    <p>Now, some genealogists would record 5 January 1750 say, when found in a parish register, as 05 Jan 1750. Others would make an allowance and record 5 January 1750 as 05 Jan 1751 because 1751 is the ‘real’ year in our modern calendar. But the big problem with either, is that we do not know if a genealogist or transcriber has written a date literally or made allowance for the modern calendar.</p>
+  
+    <h3 id="splitYear">The split-year convention</h3>
+    <p>The best way to record 5 January 1750 is as 05 Jan 1750/1. It is then obvious that 1750 is what was written in the register, but that 1751 is the year in the new calendar.</p>
+    <p>To put it more generally, the correct format for entering dates into a genealogical record is <strong>dd&#160;Mon&#160;yyyy(/y(0))</strong>. This means a 2-digit day, followed by a 3-letter month, followed by a 4-digit year. The part at the end in parentheses, (/y(0)), is used for a date from 01 Jan to 24 Mar in any year before 1752. Some examples: 01 Dec 1850, 21 Jan 1723/4, 15 Feb 1729/30, but 30 Jun 1712.</p>
+    <p>There are two awkward split-years that require two zeroes, 1599/00 and 1699/00. And you need to be careful at the turn of a decade — for example, 1729/30 is correct, not 1729/0.</p>
+    <p>This way of writing dates is also known as double-dating or as old-style/new-style.</p>
+
+    <h3 id="sct">Scotland</h3>
+    <p>Scotland adopted January 1st as New Year’s Day in 1600: any date recorded in a Scottish register from 1600 onwards will be a ‘new style’ date. So, we need to insert the ‘old style’ year for dates from 01 Jan to 24 Mar (inclusive) in any year from 1600 to 1751 (inclusive). For example: a date recorded as 15th February 1658, should be entered as 15 Feb 1657/8; and 6th January 1700 as 06 Jan 1699/00.</p>
+    <hr class="rule rule--ornament" />
+  </div>
+
+  <div id="months" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 class="title--medium">Months</h2>
+    <p>The calendar change (described above) explains why the months of September to December are so named. In the old calendar, December was the tenth month rather than the twelfth, November the ninth rather than the eleventh, and so on.</p>
+    <p>Do take care in reading numerical months in old registers. Right up to December 1751, August was the 6th month, not the 8th, and 8ber was an abbreviation for October.</p>
+    <p>When entering data from registers for the database, use the three-letter abbreviation for the month as given in the table: do not add a full stop (period).</p>
+    <p><strong>The Quakers</strong> (the Religious Society of Friends) preferred not to use names derived from heathen gods and goddesses. This affected their use of some names for days of the week and for months. So, be prepared for dates in Quaker records to have numbers, either with or without words: for example, "… the first month so called March …". You may come across similar practices when transcribing other non-conformist registers.</p>
+  </div>
+
+  <div class="grid__item one-whole">
+    <style scoped="scoped">
+      .months thead th { text-align: left; }
+/*      .months tbody td:first-child { padding-left: 0; }*/
+      .months tbody td:nth-child(3), .months tbody td:nth-child(5) { text-align: right; }
+    </style>
+    <table style="width: auto;" class="months">
+      <caption class="gamma">Month order, before and from 1752</caption>
+      <thead>
+        <tr>
+          <th scope="col">Month</th>
+          <th scope="col">Abbr.</th>
+          <th scope="col">Old </th>
+          <th scope="col">…also</th>
+          <th scope="col">New </th> 
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>March</td>
+          <td>Mar</td>
+          <td>1</td>
+          <td></td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td>April</td>
+          <td>Apr</td>
+          <td>2</td>
+          <td></td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td>May</td>
+          <td>May</td>
+          <td>3</td>
+          <td></td>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td>June</td>
+          <td>Jun</td>
+          <td>4</td>
+          <td></td>
+          <td>6</td>
+        </tr>
+        <tr>
+          <td>July</td>
+          <td>Jul</td>
+          <td>5</td>
+          <td></td>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td>August</td>
+          <td>Aug</td>
+          <td>6</td>
+          <td></td>
+          <td>8</td>
+        </tr>
+        <tr>
+          <td>September</td>
+          <td>Sep</td>
+          <td>7</td>
+          <td>7ber</td>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td>October</td>
+          <td>Oct</td>
+          <td>8</td>
+          <td>8ber</td>
+          <td>10</td>
+        </tr>
+        <tr>
+          <td>November</td>
+          <td>Nov</td>
+          <td>9</td>
+          <td>9ber</td>
+          <td>11</td>
+        </tr>
+        <tr>
+          <td>December</td>
+          <td>Dec</td>
+          <td>10</td>
+          <td>10ber</td>
+          <td>12</td>
+        </tr>
+        <tr>
+          <td>January</td>
+          <td>Jan</td>
+          <td>11</td>
+          <td></td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>February</td>
+          <td>Feb</td>
+          <td>12</td>
+          <td></td>
+          <td>2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 class="title--medium" id="numbers">Numbers</h2>
+    <p>Numbers in old parish registers may be written using our familiar Hindu-Arabic digits or Latin (Roman) numerals. They may also be written as words, either in English or Latin.</p>
+    <p>Most of the Latin used in parish registers is from 1538 to about 1640, and many clergy stopped using Latin before 1600. From 1733, entries had to be made in English.</p>
+      
+    <h3 id="latinNumbers">Latin (Roman) numbers</h3>
+    <p>The Latin numerals are <span class="roman">I</span> (capital i, standing for one), <span class="roman">V</span> (5), <span class="roman">X</span> (10), <span class="roman">L</span> (50), <span class="roman">C</span> (100), <span class="roman">D</span> (500) and <span class="roman">M</span> (1,000). The numerals may also be written in lower case, where the last <span class="roman">i</span> in a group, or a single <span class="roman">i</span>, may be written as a <span class="roman">j</span>.</p>
+    <p>A long number in Latin, such as the year <span class="roman">MCMLXVI</span>, takes some working out. The <span class="roman">LXVI</span> part is easy enough: for numerals placed from left to right in order of value, starting with the largest, just add the values together, giving 50 + 10 + 5 + 1 = 66.</p>
+    <p>In the <span class="roman">MCM</span> part, a <span class="roman">C</span> followed by an <span class="roman">M</span>, a larger value, means 100 less than 1000, or 900. So <span class="roman">MCM</span> is 1000 + 900 = 1900. The complete date is thus 1900 + 66 = 1966.</p>
+    <p><span class="roman">CM</span> (900) is an example of subtractive notation. The other pairs are <span class="roman">IV</span> (5 - 1 = 4), <span class="roman">IX</span> (9), <span class="roman">XL</span> (40), <span class="roman">XC</span> (90), and <span class="roman">CD</span> (400).</p>
+
+    <h4>Mediaeval Roman numerals</h4>
+    <p>Numerals in documents and inscriptions from the Middle Ages sometimes include additional symbols, which today are called “mediaeval Roman numerals”. The first of these to be reported by our transcribers is the letter <span class="roman">F</span> being used to stand for forty in the number <span class="roman">FFIII</span> or 83.</p>
+    <p>Wikipedia has more information as part of its article on Roman numerals including a table of <a href="https://en.wikipedia.org/wiki/Roman_numerals#Use_in_the_Middle_Ages_and_Renaissance">Symbols used in the Middle Ages and Renaissance</a>.</p>
+      
+    <h3 id="latinWords">Words</h3>
+    <p>Some clerics wrote numbers in Latin words. Fortunately, most of the Latin words, even if you never learnt them, will seem familiar, because many of our English number words are based on Latin. Occasionally a mixture of Latin and English was used.</p>
+  </div>
+
+  <div class="grid__item one-whole">
+    <table class="numbers" style="width: auto;">
+      <caption class="gamma">Latin numbers as written in dates</caption>
+      <style scoped="scoped">
+        .numbers td:first-child { text-align: right; }
+        .numbers td:nth-child(2), .numbers td:nth-child(6) { font-family: serif; }
+      </style>
+      <thead>
+        <tr>
+          <th scope="colgroup" colspan="3">Cardinal (counting) numbers</th>
+          <th scope="colgroup" colspan="2">Ordinal (ordering) words</th>
+          <th scope="col">&#160;</th>
+        </tr>
+        <tr>
+          <th>Hindu-<br />Arabic</th>
+          <th>Latin<br />numeral</th>
+          <th>Latin word</th>
+          <th>English</th>
+          <th>Latin</th>
+          <th>You may<br /> also see</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>i (or), j</td>
+          <td>unus</td>
+          <td>(on the) first</td>
+          <td>primo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>ii, ij</td>
+          <td>duo</td>
+          <td>second</td>
+          <td>secundo</td>
+          <td>ii<sup>d</sup> </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>iii, iij</td>
+          <td>tres</td>
+          <td>third</td>
+          <td>tertio</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>iv, iiij</td>
+          <td>quattuor</td>
+          <td>fourth</td>
+          <td>quarto</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>v</td>
+          <td>quinque</td>
+          <td>fifth</td>
+          <td>quinto</td>
+          <td>v<sup>th</sup> </td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>vi, vj</td>
+          <td>sex</td>
+          <td>sixth</td>
+          <td>sexto</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>vii, vij</td>
+          <td>septem</td>
+          <td>seventh</td>
+          <td>septimo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>viii, viij</td>
+          <td>octo</td>
+          <td>eighth</td>
+          <td>octavo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>ix, viiii, viiij</td>
+          <td>novem</td>
+          <td>ninth</td>
+          <td>nono</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>x</td>
+          <td>decem</td>
+          <td>tenth</td>
+          <td>decimo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>xi, xj</td>
+          <td>undecim</td>
+          <td>eleventh</td>
+          <td>undecimo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td>xii, xij</td>
+          <td>duodecim</td>
+          <td>twelfth</td>
+          <td>duodecimo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td>xiii, xiij</td>
+          <td>tredecim</td>
+          <td>thirteenth</td>
+          <td>decimo tertio</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>14</td>
+          <td>xiv</td>
+          <td>quattuordecim</td>
+          <td>fourteenth</td>
+          <td>decimo quarto</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>15</td>
+          <td>xv</td>
+          <td>quindecim</td>
+          <td>fifteenth</td>
+          <td>decimo quinto</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>16</td>
+          <td>xvi, xvj</td>
+          <td>sedecim</td>
+          <td>sixteenth</td>
+          <td>decimo sexto</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>17</td>
+          <td>xvii, xvij</td>
+          <td>septendecim</td>
+          <td>seventeenth</td>
+          <td>decimo septimo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>18</td>
+          <td>xviii, xviij</td>
+          <td>octodecim (or)<br /> duodeviginti</td>
+          <td>eighteenth<br /> two from twentieth</td>
+          <td>decimo octo (or)<br /> duodevicesimo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>19</td>
+          <td>xix</td>
+          <td>undeviginti</td>
+          <td>nineteenth<br /> one from twentieth</td>
+          <td>decimo nono<br /> undevicesimo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>20</td>
+          <td>xx</td>
+          <td>viginti</td>
+          <td>twentieth</td>
+          <td>vicesimo</td>
+          <td>xx<sup>tie</sup> </td>
+        </tr>
+        <tr>
+          <td>21</td>
+          <td>xxi, xxj</td>
+          <td>viginti unus</td>
+          <td>twenty first</td>
+          <td>vicesimo primo</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>30</td>
+          <td>xxx</td>
+          <td>triginta</td>
+          <td>thirtieth</td>
+          <td>tricesimo</td>
+          <td>xxx<sup>tie</sup> </td>
+        </tr>
+        <tr>
+          <td>40</td>
+          <td>xl</td>
+          <td>quadraginta</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>50</td>
+          <td>l, L</td>
+          <td>quinquaginta</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>60</td>
+          <td>lx</td>
+          <td>sexaginta</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>70</td>
+          <td>lxx</td>
+          <td>septuaginta</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>80</td>
+          <td>lxxx</td>
+          <td>octoginta</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>90</td>
+          <td>xc</td>
+          <td>nonaginta</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>100</td>
+          <td>c, C</td>
+          <td>centum</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>200</td>
+          <td>cc</td>
+          <td>ducenti</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>500</td>
+          <td>d, D</td>
+          <td>quingenti</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>1000</td>
+          <td>m, M</td>
+          <td>mille</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="regnal" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 class="title--medium">Regnal years</h2>
+
+    <p>In some registers, especially before 1760, you may find that the clergyman has written the year as a regnal year, looking something like this: 30&#160;Hen&#160;<span class="roman">VIII</span>. It means the thirtieth year of the reign of Henry the eighth. Now, Henry’s reign began on 22 Apr 1509, the day after his father, Henry <span class="roman">VII</span>, died. So, the thirtieth year of Henry <span class="roman">VIII</span>’s reign began 29 years later, on 22 Apr 1538; it ended on 21 Apr 1539.</p>
+    <figure>
+       <img style="width:100%;height:auto;" data-rel="225x255" alt="30 Hen VIII" src="/system/images/W1siZiIsIjIwMTUvMDkvMjUvMTlfNTVfNTRfNzVfMzBfaGVucnlfdmlpaS5wbmciXV0/30-henry-viii.png?sha=49202b343ed4f3c9" width="720" height="200" />      
+      <figcaption>Fig. 1: the regnal year, 30 Hen VIII</figcaption>
+    </figure>
+
+    <p>Originally, a first regnal year started on the day of the coronation of a new monarch: there was no notion of year zero. When Edward I became King in 1239 (and from then onwards), the first (and subsequent) regnal year started on the day the reign was deemed to have begun (i.e. before the actual coronation ceremony). Often, but not always, this was the day the previous monarch died.</p>
+    <p>In the table below, you will find the start and end days for the first and last regnal years of every monarch from 1509 to 1820. These will help you to translate most regnal dates to a calendar date. If the monarch you are interested in has a footnote, please read it: the information there will help you with the few remaining awkward monarchs and years.</p>
+
+    <h3 id="regnalToCalendar">Translating to a calendar date</h3>
+    <p>Suppose you need to translate 15 Eliz. From the table, note that the year 1 Eliz ran from 17 Nov 1558 to 16 Nov 1559. So, her fifteenth year was 14 years later, from 17 Nov 1572 to 16 Nov 1573.</p>
+    <p>Sometimes it is easier to work backwards: the year 12 Gul <span class="roman">III</span> began two years before his final (fourteenth) year, on 28 Dec 1699. Unlike his final year, it ran a full twelve months, ending on 27 Dec 1700. (Gul is short for Gulielmus, the Latin for William.)</p>
+    
+    <p>This final example is only a little trickier: 4 Gul <span class="roman">III</span>. You will need to look at the table: if you are still puzzled, read the footnote. The answer is at the foot of the page: <a href="#translation">translation of 4 Gul <span class="roman">III</span>
+</a> <dfn>.</dfn>
+</p>
+
+    <h3 id="context">Context is everything</h3>
+    <p>It is quite possible that the regnal years you see in a particular register will not make sense if you follow the table exactly: clergy made mistakes about ends and starts of regnal years; and news didn't always travel fast, so weeks could go by before tales of a monarch’s demise reached a village. Be guided by the flow of register dates.</p>
+  </div>
+
+  <div class="grid__item one-whole">
+    
+    <table style="width: auto;">
+      <caption class="gamma">Regnal years from 1509 to 1820</caption>
+      <thead>
+        <tr>
+          <th scope="col">Monarch</th>
+          <th scope="col">Year spanning</th>
+          <th scope="col">Written as</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="rowgroup" rowspan="3">Henry VIII</th>
+          <td>22 Apr 1509 to 21 Apr 1510</td>
+          <td>1 Hen VIII</td>
+        </tr>
+        <tr>
+          <td>22 Apr 1538 to 21 Apr 1539</td>
+          <td>30 Hen VIII</td>
+        </tr>
+        <tr>
+          <td>22 Apr 1546 to 28 Jan 1546/7</td>
+          <td>38 Hen VIII</td>
+        </tr>
+        <tr>
+          <th rowspan="2">Edward VI</th>
+          <td>28 Jan 1546/7 to 27 Jan 1547/8</td>
+          <td>1 Edw VI</td>
+        </tr>
+        <tr>
+          <td>28 Jan 1552/3 to 06 Jul 1553</td>
+          <td>7 Edw VI</td>
+        </tr>
+        <tr>
+          <th scope="row">Lady Jane Grey <sup>[<a href="#fn1"><span class="accessibility">footnote </span>1</a>]</sup> </th>
+          <td>06 Jul 1553 to 19 Jul 1553</td>
+          <td> </td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">Mary I <sup>[<a href="#fn2"><span class="accessibility">footnote </span>2</a>]</sup> </th>
+          <td>06 Jul 1553 to 05 Jul 1554</td>
+          <td>1 Mar</td>
+        </tr>
+        <tr>
+          <td>06 Jul 1558 to 17 Nov 1558</td>
+          <td>6 Mar</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="3">Elizabeth I</th>
+          <td>17 Nov 1558 to 16 Nov 1559</td>
+          <td>1 Eliz</td>
+        </tr>
+        <tr>
+          <td>17 Nov 1599 to 16 Nov 1600</td>
+          <td>42 Eliz</td>
+        </tr>
+        <tr>
+          <td>17 Nov 1602 to 24 Mar 1602/3</td>
+          <td>45 Eliz</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">James I</th>
+          <td>24 Mar 1602/3 to 23 Mar 1603/4</td>
+          <td>1 Jac</td>
+        </tr>
+        <tr>
+          <td>24 Mar 1624/5 to 27 Mar 1625</td>
+          <td>23 Jac</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">Charles I</th>
+          <td>27 Mar 1625 to 26 Mar 1626</td>
+          <td>1 Chas</td>
+        </tr>
+        <tr>
+          <td>27 Mar 1648 to 30 Jan 1648/9</td>
+          <td>24 Chas</td>
+        </tr>
+        <tr>
+          <th scope="row">The Commonwealth</th>
+          <td>30 Jan 1648/9 to 29 May 1660</td>
+          <td>Calendar dates</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="3">Charles II <sup>[<a href="#fn3"><span class="accessibility">footnote </span>3</a>]</sup> </th>
+          <td>30 Jan 1648/9 to 29 Jan 1649/50 </td>
+          <td>1 Chas II</td>
+        </tr>
+        <tr>
+          <td>30 Jan 1659/60 to 29 Jan 1660/1 </td>
+          <td>12 Chas II</td>
+        </tr>
+        <tr>
+          <td>30 Jan 1684/5 to 06 Feb 1684/5</td>
+          <td>37 Chas II</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">James II <sup>[<a href="#fn4"><span class="accessibility">footnote </span>4</a>]</sup> </th>
+          <td>06 Feb 1684/5 to 05 Feb 1685/6</td>
+          <td>1 Jac II</td>
+        </tr>
+        <tr>
+          <td>06 Feb 1687/8 to 11 Dec 1688 </td>
+          <td>4 Jac II</td>
+        </tr>
+        <tr>
+          <th scope="row">Interregnum</th>
+          <td>12 Dec 1688 to 13 Feb 1688/9</td>
+          <td>No monarch</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">William III &amp; Mary II</th>
+          <td>13 Feb 1688/9 to 12 Feb 1689/90</td>
+          <td>1 Gul III</td>
+        </tr>
+        <tr>
+          <td>13 Feb 1693/4 to 27 Dec 1694</td>
+          <td>6 Gul III</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">William III <sup>[<a href="#fn5"><span class="accessibility">footnote </span>5</a>]</sup> </th>
+          <td>28 Dec 1694 to 27 Dec 1695</td>
+          <td>7 Gul III</td>
+        </tr>
+        <tr>
+          <td>28 Dec 1701 to 08 Mar 1701/2</td>
+          <td>14 Gul III</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">Anne</th>
+          <td>08 Mar 1701/2 to 07 Mar 1702/3</td>
+          <td>1 Ann</td>
+        </tr>
+        <tr>
+          <td>08 Mar 1713/4 to 01 Aug 1714</td>
+          <td>13 Ann</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">George I</th>
+          <td>01 Aug 1714 to 31 Jul 1715</td>
+          <td>1 Geo</td>
+        </tr>
+        <tr>
+          <td>01 Aug 1726 to 11 Jun 1727</td>
+          <td>13 Geo</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">George II</th>
+          <td>11 Jun 1727 to 10 Jun 1728</td>
+          <td>1 Geo II</td>
+        </tr>
+        <tr>
+          <td>11 Jun 1760 to 25 Oct 1760</td>
+          <td>34 Geo II</td>
+        </tr>
+        <tr>
+          <th scope="rowgroup" rowspan="2">George III</th>
+          <td>25 Oct 1760 to 24 Oct 1761</td>
+          <td>1 Geo III</td>
+        </tr>
+        <tr>
+          <td>25 Oct 1819 to 29 Jan 1820</td>
+          <td>60 Geo III</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+    
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p><strong>Source:</strong> <em>Sweet &amp; Maxwell’s Guide to Law Reports and Statutes</em>, 4th edition, 1962, pp 27–31.</p>
+
+    <h3>Footnotes</h3>
+    <ol>
+      <li id="fn1">Lady Jane Grey was proclaimed queen on 06 Jul 1553 but never crowned: Mary was proclaimed queen on 19 Jul 1553 and Jane was later beheaded for treason.</li>
+      <li id="fn2">Mary I reigned alone, with her regnal start date adjusted to 06 Jul 1553, until her marriage to Philip of Spain on 25th Jul 1554. Then they reigned together until Mary’s death in 1558. You may come across regnal years written in a style that includes both monarchs. They translate as follows:
+        <ul>
+          <li>1 Mary : 06 Jul 1553 to 05 Jul 1554</li>
+          <li>2 Mary : 06 Jul 1554 to 24 Jul 1554</li>
+          <li>1 &amp; 2 Philip and Mary: 25 Jul 1554 to 05 Jul 1555</li>
+          <li>1 &amp; 3 Philip and Mary: 06 Jul 1555 to 24 Jul 1555</li>
+          <li>2 &amp; 3 Philip and Mary; 25 Jul 1555 to 05 Jul 1556</li>
+          <li>2 &amp; 4 Philip and Mary: 06 Jul 1556 to 24 Jul 1556</li>
+          <li>3 &amp; 4 Philip and Mary; 25 Jul 1556 to 05 Jul 1557</li>
+          <li>3 &amp; 5 Philip and Mary: 06 Jul 1557 to 24 Jul 1557</li>
+          <li>4 &amp; 5 Philip and Mary; 25 Jul 1557 to 05 Jul 1558</li>
+          <li>4 &amp; 6 Philip and Mary: 06 Jul 1558 to 24 Jul 1558</li>
+          <li>5 &amp; 6 Philip and Mary: 25 Jul 1558 to 17 Nov 1558</li>
+        </ul>
+      </li>
+      <li id="fn3">Charles II — although he was not made king until 29 May 1660, his first regnal year was backdated to begin on 30 Jan 1648/9, the day his father was beheaded. Thus the ‘first’ actual year of his reign was his twelfth regnal year officially: the context of previous register entries should make it clear how a particular clergyman counted the years.</li>
+      <li id="fn4">James II officially ‘abdicated’ on 11 Dec 1688, the day he fled London.</li>
+      <li id="fn5">William and Mary reigned together until Mary’s death in 1694. William’s regnal start day was then reset so that his 7th year began prematurely on 28 Dec, the day after Mary’s death.</li>
+    </ol>
+    <hr class="rule" />
+    <p id="translation">Answer to regnal year puzzle: 4 Gul <span class="roman">III</span> is from 13 Feb 1691/2 to 12 Feb 1692/3</p>
+  </div>
+</div>

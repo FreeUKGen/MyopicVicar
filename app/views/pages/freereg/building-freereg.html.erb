@@ -1,0 +1,47 @@
+<h1>Building FreeReg</h1>
+
+<p><strong>There are 2 main build rake tasks.</strong>
+</p>
+<h3><strong>a.	rake build:freereg [:type,:search_records,:range1,:range2,:range3,:port]</strong>
+</h3>
+<p><br />           This builds a  freereg database by executing a number of rake tasks. Specifically it does the           following: <br />•	setup This deletes the log file and loads the emendations<br />•	save It saves the main collections except files/entries and search_records <br />•	drop This task drops the files/entries and search_records collections on a recreate. <br />•	create basic indexes This task creates the minimum set of indices needed to have the processor run efficiently.<br />•	parallelp This initiates and then waits for up to 3 separate rake task initiations of :process_freereg1_csv each with a different range of files. This could be generalized to n processors quite easily<br />•	process_freereg1_csv initiates a single copy of the freereg1_csv_processor<br />•	create_search_records initiates a single copy of the create search records if required<br />•	create_userid_docs initiates the creation/update of the Userid Documents from the uDetails files. It needs the csv processors to have completed.<br />•	create_freereg_csv_indexes As its name implies we now create all of the indices we have defined</p>
+<p><strong>The parameters.</strong>
+<br />•	<strong>:type </strong>This switch can be either <strong><em>recreate</em>
+</strong> or anything else (I usually use <em><strong>add</strong> </em>as the alternate). On a recreate all previous files/entries and search_records are wiped out. On add it only processes those files that are newer than those in the database. i.e. an update mode.<br />•	<strong>:search_records</strong> This 3 way switch controls the way search records are created.  A value of <strong><em>create_search_records_processor</em>
+</strong> tells the freereg1_csv_processor (Recommended) to create the search records as it processes the file.  <strong><em>create_search_records_parallel </em>
+</strong>tells the freereg1_csv_processor not to worry and the search records are created latter in the build by the parallel processors (Not recommended). <strong><em>no_search_records  or anything else</em>
+</strong> tells the build to ignore the creation of search records. </p>
+<p>•<strong>	range1, range2, range3</strong> tell both the processor what actual files to process. It can take a number of different forms.&#160; Eg */*.csv or */wry*.csv or userid/*.csv or userid/nfkaldba.csv or a-c  or e-h. The first several of these are likely clear. a-c says process all csv files for all userids that start with a, b and c or e, f, g and h. This allows the segmentation of blocks of userids to be run by different copies of the processor.</p>
+<p>•	:port This specifies the port that the mongodb is located on. either 27017 for production or 37017 for development.</p>
+<p><br /><strong>Full examples</strong>
+<br />•	 rake build:freereg[recreate,create_search_records_processor,*/WRY*.csv,*/NFK*.csv,*/dev*.csv,37017]<br />This creates a new database for the West Riding of Yorkshire, Norfolk and Devon.</p>
+<p>•	rake build:freereg[recreate,no_search_records,a-d,e-f,g-m,37017]<br />This creates a new development database with no search records ND all of the csv files for userids starting with a, b and c in the first process, e and f in the second and g h I j k l and m in the 3rd. Letters a-z and 0-9 are permitted.</p>
+<p>•	rake build:freereg[add,create_search_records_processor,userid/wryconba.csv,useridb/nfkabsma.csv,useridc/devancbu.csv,27017]<br />This processes and add the 3 specific files if they are more recent that those in the database and provided they have not been locked by the coordinator. Search records are created by the processor and we are working on the production database.</p>
+<p><em><strong>In addition it is possible to run the freereg1_ csv_processor on its own as in the following example </strong>
+</em>
+</p>
+<p>rake build:process_freereg1_csv[:type,:search_records,:range]</p>
+<p>All parameter have the same meaning and options except there is only 1 range also the database is the one specified in the mongoid.yml. So it is run from the appropriate production or development folder</p>
+<p><em><strong>Similarly it is possible to run the search_record creation process on its own</strong>
+</em>
+</p>
+<p>rake build:create_search_records[:type,:search_records,:range]</p>
+<h3><strong>b.	rake build:freereg_from_files,[:save, :drop, :reload_from_temp, :load_from_file, :index,:port]</strong>
+</h3>
+<p><br />This task allows one to rebuild the freereg database from files that the task creates OR from a previous set of files eg from a prior building or save. The parameters control the action of the individual tasks.<br />•	Save Which collections do we save<br />•	Drop Which collections do we drop<br />•	Reload from temp Which collections do we load from the tmp folder<br />•	Load from file Which collections do we load from our github repository or elsewhere<br />•	Index Which indexes do we recreate</p>
+<h3>Each task is controlled by using a numbers for each of the various collections.</h3>
+<p>$collections[0] = "master_place_names" (NO longer in active use)<br /> $collections[1] = "batch_errors"  <br /> $collections[2] = "places"<br /> $collections[3] = "churches"<br /> $collections[4] = "registers"<br /> $collections[5] = "freereg1_csv_files"<br /> $collections[6] = "freereg1_csv_entries"<br /> $collections[7] = "search_records"<br />$collections[8] =  "userid_details"<br /> $collections[9] = "syndicates"<br />$collections[10] =  "counties"<br /> $collections[11] = "countries"</p>
+<p>$collections[12] = "feedbacks"<br /> $collections[13] = "search_queries"</p>
+<p>$collections[14] = "contacts"</p>
+<p><strong>Examples</strong>
+<br />•	build:freereg_from_files[2/3/4/8/9/10/11,5/6/7, 2/3/4/,8/9/10/11, 1/2/3/4/8/9/10/11/12/13/14]<br />this save the , Userid and Syndicates and collections to tmp, drops the 3 collections, reloads 3 from the tmp, reloads places, churches, registers and files  from the github respository and then indexes all collections except files, entries and search record. The database will not have files, entries and search records.</p>
+<p><strong>How to use in practice.</strong>
+<br /><strong>Case 1</strong>
+<br />Let’s build from scratch and create a full database. </p>
+<p>First step is to save the main collections from the current database&#160;</p>
+<p>build:freereg_from_files[2/3/4/8/9/10/11/12/13/14,,,,27017] and then copy the files created by that from the production instance to the development instance</p>
+<p>Now load that into the new test database</p>
+<p>	build:freereg_from_files[,,2/3/4/8/9/10/11/12/13/14/,,2/3/4/8/9/10/11/12/13/14,37017]</p>
+<p>	Now we can build the database itself<br />rake build:freereg[recreate,create_search_records_processor,a-f,g-l,m-9,37017]</p>
+<p><br /><strong>Case 2</strong>
+<br />Lets update the production database with a new set of csv files. The following will update only those files  which have changed. Backups will be created first.<br />rake build:freereg[add,create_search_records_processor,a-f,g-l,m-9,27017]</p>

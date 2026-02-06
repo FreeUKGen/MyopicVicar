@@ -1,0 +1,190 @@
+<h1>DRAFT Making images and using them in Refinery</h1>
+
+<style scoped="scoped">
+  code, pre {
+    font-family: monospace, serif;
+    font-size: 90%;
+    padding: 2px 4px;
+    color: #000;
+    background-color: #e0f5f5; /* teal-focus-ish */
+    border-radius: 4px;
+  }
+  figcaption {
+    font-style: italic;
+    color: #737373; /* 4.74:1 */
+    margin-top: 0.3em;
+  }
+  figure.site img {
+    border: 2px solid #00a099;
+    padding: 0.3em;
+  }
+  figure.site--wide img {
+    width: 100%;
+    height: auto;
+  }
+</style>
+
+<p class="lead">These notes are for those who are grabbing or making images, especially informative ones, and for those who want to place images on any of our About, Help or Information pages.</p>
+<div class="grid">
+  <aside class="grid__item two-fifths lap-one-half palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block">On this page</h2>
+      <ul class="sub-nav">
+        <li><a href="#goodImageGuide">The good image guide</a> </li>
+        <li><a href="#uploadInsert">Uploading and inserting images</a> </li>
+        <li><a href="#examples">Some examples</a> </li>
+      </ul>
+    </div>
+  </aside>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>Creating and using Images effectively is as much an art as it is a science. Images come in many sizes and are made for different purposes. A common requirement is that any text on the image should be legible. </p>
+    <p>The science is based on a few key numbers. The maximum width available across a full-width page is about 1200px. The maximum width of a normal text column is about 700px (three-fifths) — some pages could have 790px (two-thirds) or, at a push, 950px (four-fifths) — however, the accompanying paragraph text becomes uncomfortable to read in a wide column.</p>
+    <p>The art is everything else that contributes to a pleasing image, including good image quality, relevance, framing and careful annotation.</p>
+
+    <h2 id="goodImageGuide">The good image guide</h2>
+
+    <p>This section is aimed at anyone who is snapping or creating images.</p>
+
+    <h3>Format</h3>
+    <p>The best format for images is PNG: Refinery handles PNG images in a useful way, often retaining the original size on upload; and any re-sizing introduces fewer artefacts than for a JPG image. Do not use a GIFF and do not attempt to re-save a GIFF (or a JPG!) as a PNG because the quality will suffer — please ask for advice.</p>
+
+    <h3>Annotations</h3>
+    <p>Annotations are useful to draw attention to buttons and other important areas of an image. Use a tool that allows you to create straight lines, neat boxes and so forth. Squiggles look unprofessional.</p>
+    <p>Please keep a copy of the unannotated image so that modifications can be made to the annotations if required.</p>
+
+    <h3>Size considerations</h3>
+    <p>Images should be no wider than 1200px, and if possible, no wider than 700 to 800 pixels.</p>
+    <p>An image will look its best if we can show it at, or near to, its original, natural size. Resizing (or cropping to fit) introduces artefacts that reduce the legibility of text as well as the clarity of other parts of the image. The artefacts are fairly subtle but they do reduce the overall quality.</p>
+    <p>Images that are approaching 1200px wide (e.g. a screenshot, taken in a full-width window, of a members’ page with a table of many columns), might not be legible unless displayed (and viewed) in a full-width column in a full-width window. We can do that, of course, but we cannot have the accompanying text as wide as the image because it would be uncomfortable (even difficult) to read. So, the markup has to become more complicated, more fragile and so more difficult to edit without breaking the layout.</p>
+    <p>An ideal screenshot is no wider than 800px because the markup will be straightforward and the text should be legible (in a full-width window). However, not all displays for members can be made to work at this width.</p>
+    <p>On <strong>public-facing pages</strong>, we need images to be legible on mobile devices. We say that “it is possible to use most smartphones for searches. However, given the nature of the subject matter, this website is best viewed on a device with a screen size of at least 1024 by 768 pixels.” This would give us about 570 to 630 pixels of space in the content column, with column classes of <code>three-fifths</code> or <code>two-thirds</code> respectively.</p>
+    <p>If the image will be placed in the sidebar, the space is restricted — typically a 340px-wide (one-third) image is the widest you can use.</p>
+
+    <h3>Composition</h3>
+    <p>A good image should have narrow margins, so that the important part fills nearly all the width and height. In general, the top-left corner of the featured content should be no more than 10 to 20 pixels from the top-left of the image; similarly, the bottom-right of the featured content should be no more than 10 to 20 pixels from the bottom-right of the image. There is a little padding inside the border, so you can place the content very close to the image edge if necessary.</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site site--wide">
+      <img src="/system/images/W1siZiIsIjIwMjEvMDUvMDYvNW5vMHdmMm03bF8xMTkwX3JlZGFjdGVkLnBuZyJdXQ/1190-redacted.png?sha=6c68aefc7fd7ced8" alt="1190 PNG" data-rel="225x255" width="1190" height="560" />
+      <figcaption>Fig. 4b: a wide image with good composition (narrow margins). At 1190px wide, it looks its best in this full-width column.</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>See the full set of <a href="#examples">example images</a> below.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="uploadInsert">Uploading &amp; inserting images</h2>
+    
+    <p><mark>Some of the details in this section are provisional and might be changed substantially by the final version.</mark> </p>
+    <p>This section is aimed at anyone who is working with images in Refinery.</p>
+
+    <h3>The alt and title attributes</h3>
+    <p>Refinery inserts <code>alt</code> and <code>title</code> attributes into every <code>img</code> element. You can set these at upload, but note that your alt text will be ignored unless you also specify the title text. Note also that the <code>title</code> attribute should be deleted from an inserted image and that the <code>alt</code> text should be brief: use the <code>figcaption</code> element, which is accessible to all users, to describe the image.</p>
+    <p>If you do not specify alt and title text, Refinery uses the image file name to construct them.</p>
+
+    <h3>Reducing confusion</h3>
+    <p>Screenshots of the site could be disorienting — a user may expect to interact with it and be confused that the links and buttons do not work. A border around such a screenshot helps to lessen any confusion. The styles used below supply such a border. (We currently set up these styles on a page-by-page basis. This is not ideal.)</p>
+
+    <h2>Fine-tuning images <mark>check!</mark> </h2>
+    <p>It is not easy to offer comprehensive guidance on how to fine-tune the display of an image: some images will be more awkward than others. If the image does not require a border, simply omit the steps that describe adding a <code>class</code> attribute to the <code>figure</code> element.</p>
+    <p class="island island--bordered"><strong>Please note</strong> that the following guidance is preliminary and that class names and their usage will probably change.</p>
+
+    <h3>Images narrower than 700 to 800 pixels</h3>
+    <p class="push-half--bottom">For an image that is less than 700 to 800 pixels wide:</p>
+    <ol>
+      <li>give the <code>figure</code> element the attribute <code>class="site"</code>
+</li>
+      <li>if the image works, i.e. is legible, at the required browser window widths, you are done</li>
+      <li>otherwise, you might need a more suitable image — seek advice first</li>
+    </ol>
+
+    <h3>Images wider than 700 to 800 pixels</h3>
+    <ol>
+      <li>give the <code>figure</code> element the attribute <code>class="site site--wide"</code>
+</li>
+      <li>if the text is legible in the browser at the required window widths, you are done</li>
+      <li>
+        <p>if the text is not legible, close the current <code>div.grid__item</code> just before the <code>figure</code> element and wrap the figure in a new <code>div</code> element with <code>class="grid__item one-whole"</code>. If the text is now legible at the required screen widths, close this new <code>div</code> and open a new <code>div</code> with the same classes in use just before the figure.</p>
+        <p>Your markup should look like this — and if the text is now legible, you are done!</p>
+        <pre>    &lt;/div&gt;
+    &lt;div class="grid__item one-whole"&gt;
+      &lt;figure class="site site--wide"&gt;
+        &lt;img … &gt;
+        &lt;figcaption&gt; … &lt;/figcaption&gt;
+      &lt;/figure&gt;
+    &lt;/div&gt;
+    &lt;div class="grid__item three-fifths …"&gt;          
+        </pre>
+        <p>But, if the image is no longer crisp because its too big, try giving the img element the attribute <code>style="max-width: [insert natural width]; height: auto;"</code> and reassess.</p>
+        <p>For part of a page that is mostly wide images, an alternative approach would be to close the div just above the figure element and immediately open a new <code>div class="grid__item one-whole"</code>. Leave this new div open and control the width of subsequent paragraph text with <code>class="read-length"</code>, on every paragraph element. This is not as satisfactory visually, but it is easier to set up and not so fragile.</p>
+</li>
+      <li>if the text is still not legible, you might need a more suitable image — ask for advice first</li>
+    </ol>
+
+    <h3>Sidebar images</h3>
+    <p>For images that will be placed in the sidebar, the maximum width available in a wide window will be about 380px.</p>
+
+    <h3>Finding the natural width of an image</h3>
+    <p>After you add an image to a page, the value of its <code>width</code> and <code>height</code> attributes should be the same as for the image on your device. If the image is in PNG format, you might find that this is true, even for a wide image.</p>
+    <p>However, for a wide JPG image, you will likely find that the width has been reset to 842.4px and that the height value has been reduced proportionately. (This is currently what happens on FreeREG. It is relatively new behaviour and has not been tested yet on our other sites.)</p>
+    <p>If you find that <strong>Refinery has resized your image</strong>, please edit the <code>width</code> and <code>height</code> attributes of the image (after adding it to the page) to match its natural width and height — this will help you to fine-tune the styling and also help anyone else who has to check or edit the page.</p>
+    <p>If you do not know the natural width of an image, but wish to find out, copy the image from the browser window to your device and read the file information in Explorer or Finder.</p>
+
+    <h2 id="examples">Some examples</h2>
+    <h3>A narrow image</h3>
+    <p>This image has natural dimensions of 260px by 580px. It is suitable for a sidebar. The border is achieved by using the class <code>site</code> for the <code>figure</code> element.</p>
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvODdsd3JjbnQ4Nl9uYXJyb3cucG5nIl1d/narrow.png?sha=9e11d850ddbeac5b" alt="Narrow" data-rel="225x255" width="260" height="580" />
+      <figcaption>Fig. 1: a naturally narrow image</figcaption>
+    </figure>
+
+    <h3>A medium-width image</h3>
+    <p>This image has natural dimensions of 500px by 310px, so it is too wide for the sidebar but would work nicely in the content column with the <code>site</code> class on the <code>figure</code> element.</p>
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvNnhvYnc0NXRxMl9tZWRpdW0ucG5nIl1d/medium.png?sha=a09d7cd78420443d" alt="Medium" data-rel="225x255" width="500" height="310" />
+      <figcaption>Fig. 2: a naturally 500px-wide image</figcaption>
+    </figure>
+
+    <h3>An 800px PNG — take one</h3>
+    <p>This image has natural dimensions of 800px by 230px. On a members’ page, it works in a standard content column as the text is still clear when the column is about 700px wide. The <code>figure</code> element has the class <code>site</code>.</p>
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvMWNmajRoYmQ4dV84MDAucG5nIl1d/800.png?sha=3659a1d6466dd028" alt="800" data-rel="225x255" width="800" height="230" />
+      <figcaption>Fig. 3a: an 800px-wide PNG</figcaption>
+    </figure>
+
+    <h3>An 800px PNG — take two</h3>
+    <p>This is the same image displayed as a researcher might see it, in a narrower content column. Is it acceptable or does it need a full-width column? Again, the <code>figure</code> element has the class <code>site</code>.</p>
+    <figure class="site">
+      <img style="max-width: 570px; height:auto;" src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvMWNmajRoYmQ4dV84MDAucG5nIl1d/800.png?sha=3659a1d6466dd028" alt="800" data-rel="225x255" width="800" height="230" />
+      <figcaption>Fig. 3b: an 800px-wide PNG as a researcher might see it</figcaption>
+    </figure>
+
+    <h3>A 1200px PNG — take one</h3>
+    <p>This image has natural dimensions of 1190px by 560px. A good quality image this size might work in a standard content column: it all depends on whether you (and the page reviewers and our other users) can read the text comfortably. The <code>figure</code> element has the attribute <code>class="site site--wide"</code>.</p>
+    <figure class="site site--wide">
+      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvMW55MWl0b3JsaV8xMTkwX3JlZGFjdGVkLnBuZyJdXQ/1190-redacted.png?sha=443cd813dabf92ab" alt="1190 Redacted" data-rel="225x255" width="1190" height="560" />
+      <figcaption>Fig. 4a: a 1200px PNG in a standard content column</figcaption>
+    </figure>
+    
+  </div>
+  <div class="grid__item one-whole">
+    <h3>A 1200px PNG — take two</h3>
+    <p>This is the same image displayed at its natural width in a full-width column.</p>
+    <figure class="site site--wide">
+      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvMW55MWl0b3JsaV8xMTkwX3JlZGFjdGVkLnBuZyJdXQ/1190-redacted.png?sha=443cd813dabf92ab" alt="1190 Redacted" data-rel="225x255" width="1190" height="560" />
+      <figcaption>Fig. 4b: a 1200px PNG in a full-width column</figcaption>
+    </figure>
+  </div>
+
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <h3>An image that is too wide</h3>
+    <p>This image has natural dimensions of 1350px by 590px. It is too wide to display at its natural size, even in a full-width column. Notice the unnecessarily wide side-margins. As shown above, the content could be better-framed using less than 1200px, which would also improve the readability.</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site site--wide">
+      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjQvMzBnY2VsMmpldF90b29fd2lkZV9yZWRhY3RlZC5wbmciXV0/too-wide-redacted.png?sha=20ce3d92994c05e9" alt="Too wide PNG" data-rel="225x255" width="1350" height="590" />
+      <figcaption>Fig. 5: a 1350px PNG in a full-width column</figcaption>
+    </figure>
+    
+  </div>
+</div>

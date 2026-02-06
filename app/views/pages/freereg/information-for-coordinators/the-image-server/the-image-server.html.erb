@@ -1,0 +1,443 @@
+<h1>The Image Server</h1>
+
+<style scoped="scoped">
+  .site img { border: 1px solid #895f49; width: 100%; height: auto; max-width: 1000px; }
+  .site figcaption { font-style: italic; color: #895f49; }
+  .site img.narrow { max-width: 291px; }
+</style>
+
+<div class="grid">
+  <aside class="grid__item one-third palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block">On this page</h2>
+      <ul class="sub-nav">
+         <li><a href="#overview">Overview</a> </li>
+         <li><a href="#ccTasks">County Coordinator tasks</a> </li>
+         <li><a href="#scTasks">Syndicate Coordinator tasks</a> </li>
+      </ul>
+    </div>
+    <div class="islet islet--bordered">
+      <h2 class="title-block">Coordinator Help</h2>
+      <ul class="sub-nav">
+        <li><a href="/cms/information-for-coordinators">Information for Coordinators</a> </li>
+        <li><a href="/cms/information-for-coordinators/coordinator-actions">Coordinator actions</a> </li>
+        <li class="active"><a href="/cms/information-for-coordinators/the-image-server" title="This page">The image server</a> </li>
+        <li><a href="/cms/information-for-coordinators/the-image-server/uploading-files-to-the-image-server">Uploading files to the Image Server</a> </li>
+        <li><a href="/cms/information-for-coordinators/behind-the-scenes">Behind the scenes</a> </li>
+        <li><a href="/cms/information-for-coordinators/the-embargo-system">Embargo system</a> </li>
+      </ul>
+    </div>
+  </aside>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p class="lead">Here is a guide to the Coordinator tasks and Actions for the Image Server.</p>
+    <p>See also <a href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a> for transcribers.</p>
+
+    <h2 id="overview">Overview</h2>
+    <h3>The terminology</h3>
+    <p>It is important that you understand the terms that we use with image management. You are already familiar with the basic terms and structure that we use to describe the data in FreeREG: we have multiple Counties; each county can have multiple Places; each place can have multiple Churches; and each Church can have multiple Registers. We then go down to Record Types, Files, Batches, Entries and Search Records.</p>
+    <p>With Source Images we have another, separate tree structure: each Register can have multiple Sources of Images (currently the only source is the FreeREG Image Server); each Source can have multiple Image Groups (a Group will often be Images of a specific register book); and each Group can have multiple Images.</p>
+    <p class="islet islet--navy">Please note that Groups created from the FreeREG 1 image set are logical structures inferred from the name of the Image file — such Groups are <em>not</em> physical structures on the image server.</p>
+    <h3>Who does what</h3>
+    <p>Just as with the management of the Data tree, different people have different roles in the management of the Image tree. The <em>County Coordinator</em> (CC) is responsible for entering the information that describes the Source and Group, including ownership and usage restrictions (if any). The CC may also assign a Degree of Difficulty for the Images in a Group by viewing the images. The CC is responsible for Allocating a Group (or Groups) to a Syndicate for transcription. Finally, the CC decides that an Allocation is Completed.</p>
+    <p>The <em>Syndicate Coordinator</em> (SC) is responsible for managing their Allocations. The SC may update and adjust the Degree of Difficulty for the Images in a Group by viewing the Images. The SC will Assign Images from a Group to a Transcriber for transcription. The SC can check the work and accept as Transcribed or Assign another transcriber to Review the transcription. When the Review is finished, the Assignment is marked as Reviewed. The SC can both Unassign and Reassign an Assignment. When all Images in an Allocation have been transcribed to the satisfaction of the SC, the SC clicks a button which automatically sends an email to inform the CC that the Allocation has been transcribed.</p>
+     <p>The <em>Transcriber</em> is responsible for accessing their list of Assignments, for Viewing and/or Downloading the Images and then protecting any downloads according to the instructions and any covering materials. They are expected to check their transcriptions and then indicate to the SC by clicking a button that the Assignment is complete: there is an option on their Assignment listing to do this.</p>
+    <p>Transcribers can view a list of the Allocations available to their syndicate: this will help both the transcriber and their SC to decide on the next Assignment. Transcribers can also view a list of available Groups in other counties, if they wish.</p>
+
+    <h3 id="workflow">The workflow</h3>
+    <p class="push-half--bottom">With Images uploaded to the server, here is the full workflow for managing the Allocation and Assignment of images (for full details of each step, follow the link given):</p>
+    <ul>
+      <li>The CC initialises the images by setting up the <a href="#source">Sources</a> and <a href="#group">Image Groups</a> and then setting the <a href="#status">transcription Status</a> </li>
+      <li>The CC <a href="#allocate">Allocates</a> the Image Group(s) to a syndicate</li>
+      <li>The SC <a href="#assign">Assigns</a> Images in a Group to a transcriber</li>
+      <li>The transcriber transcribes the Images and then notifies the SC when finished</li>
+      <li>The SC checks the transcription and if desired, <a href="#review">Assigns to a Reviewer</a> </li>
+      <li>The Reviewer reviews the transcription and notifies the SC when finished</li>
+      <li>The SC checks and, if satisfied, <a href="#submit">submits the Group back to the CC</a> as completed</li>
+      <li>The CC <a href="#complete">marks the Group as completed</a> </li>
+    </ul>
+    <hr class="rule" />
+
+    <h2 id="ccTasks">County Coordinator tasks</h2>
+    <p>When Images are first added to the server, the information about the Images, Group and Source is very limited. So, we need County Coordinators to complete the initial setup — mostly once-only tasks.</p>
+    <p>As a CC, you can access the image management actions by selecting <q>Manage County</q>, then <q>Manage Images</q>:</p>
+    <figure class="site">
+      <img class="narrow" src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvM3ppYWJ5eGV3Y19jY19tYW5hZ2VfaW1hZ2VzLnBuZyJdXQ/cc-manage-images.png?sha=a22a87a90fc890c3" title="Manage Images" alt="Manage Images" data-rel="225x255" width="338" height="267" />
+      <figcaption>Fig. 1 — Manage Images (CC)</figcaption>
+    </figure>
+    <h3 id="source">Set up  Sources</h3>
+    <p>Your first task is to add information about the Source. Since all the current images are on the FreeREG image servers, the name of the Source is simply <q>Image Server</q>. We need you to add additional information you know about: who provided the Images; who prepared them and how; and any restrictions on their use and dissemination, including whether or not they can be considered Open Data.</p> 
+    <p>After selecting <q>Manage Images</q> you will be presented with a list of all Sources for your county listed by place, church and register:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvOHN0NWV0MGMybl9jY19hbGxfc291cmNlcy5wbmciXV0/cc-all-sources.png?sha=f26e9d6c1d76ded5" title="All Sources" alt="All Sources" data-rel="225x255" width="1388" height="732" />
+      <figcaption>Fig. 2 — CC All Sources</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>Select a source by clicking on <q>Image Server</q> in the rightmost column for the chosen register and you will be presented with a number of actions for the image server Source:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site table-wrapper">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvMWJta2xkOXFxb19jY19pbWFnZV9zZXJ2ZXJfc291cmNlLnBuZyJdXQ/cc-image-server-source.png?sha=df755565a2273c5e" title="Image Server Source" alt="Image Server Source" data-rel="225x255" width="1346" height="714" />
+      <figcaption>Fig. 3 — Image Server Source</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>Select <q>Edit Image Source</q> and you will then be able to fill in the appropriate information in the relevant boxes:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNGtleWFkdGJzYl9jY19lZGl0X2ltYWdlX3NlcnZlci5wbmciXV0/cc-edit-image-server.png?sha=7e275b300aabbafe" title="Edit Image Server" alt="Edit Image Server" data-rel="225x255" width="1034" height="840" />
+      <figcaption>Fig. 4 — Edit Image Server</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>When you are done, click <q>Submit</q>, at the bottom of the page.</p>
+    <p>Since many (or all) Sources for a given county may have the same basic information, there is an action to <q>Propagate this Source information</q> (see Figure 3, above) to other register Sources:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNmFyZ3Bwc3RncV9jY19wcm9wYWdhdGVfaXNfaW5mb3JtYXRpb24ucG5nIl1d/cc-propagate-is-information.png?sha=516448c59a11b411" title="Propagate IS Info" alt="Propagate IS Info" data-rel="225x255" width="1373" height="625" />
+      <figcaption>Fig. 5 — Propagate Image Server Information</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>Select the register(s) you want to propagate the Source details to. You can select one, all or a range of registers by clicking the first register, then holding down the Shift key and clicking the last in the range. Then click <q>Submit</q>, at the bottom.</p>
+
+    <p>Specific register Sources can be edited individually if required, where the standard content needs refinement. This is done by selecting <q>Edit Image Source</q> — Figure 3.</p>
+    <p><a href="#workflow">Return to Workflow</a> </p>
+
+    <h4 id="status">Set the Status</h4>
+    <p>The default (opening) transcription Status of the Images and Groups for a Source is not defined (uninitialized). It is essential that the system knows the Status for it to work as designed. All other Image and Group actions depend on their Status being in a defined, specific state. So, it is important to set the Status correctly.</p>
+    <p>You may have many Images on the server that have been transcribed or completed already: you need to set the Status of these to Transcribed or Complete, as appropriate. You may also have a number of new Images that you would like to be able to Allocate: you need to set the Status of these to Unallocated. This may <em>sound</em> like a lot of effort, <em>but</em> you have two actions designed to reduce your workload.</p> 
+    <p>The first is the action to <q>List Uninitialized Sources</q>: it is available on the display of the list of all Sources (see Figure 2). You can use this list to identify those Sources where setup is incomplete.
+The second is the action to <q>Initialize Status</q> which is available on the display that shows details of a specific Source (see Figure 3). This action enables you to set the Status for <em>all</em> Images in the Source to Unallocated, Transcribed or Completed. However, it will <em>not</em> work if the status of <em>any</em> Image under that Source has already been set:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNnY0aGt1ejBmb19jY19pbml0aWFsaXplX3N0YXR1cy5wbmciXV0/cc-initialize-status.png?sha=e14135747809e3f2" title="Initialize Status" alt="Initialize Status" data-rel="225x255" width="1375" height="503" />
+      <figcaption>Fig. 6 — Initialize Status</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>Commonly, you will want to initialize the status of a Group to Unallocated, so that it becomes ready for Allocation. If some Groups under a Source have already been transcribed or completed, the most efficient way to set the status is to first initialize all Groups in the Source to Unallocated. Then for Groups that have been transcribed or completed, from the list (Figure 6) select <q>SH</q> to show details of the Group:
+    </p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNWc4YWdtNHFic19jY19zaG93X2ltYWdlX2dyb3VwLnBuZyJdXQ/cc-show-image-group.png?sha=c5739d43cd6706b8" title="Show Image Group" alt="Show Image Group" data-rel="225x255" width="1177" height="471" />
+      <figcaption>Fig. 7 — Show Image Group</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <div class="island island--bordered">
+      <p>Please note that you can’t change the name of an Image Group. If you wish to alter the name, or divide up a Group, then create a new Image Group and use the action available to move Images to this new group(s). You can then delete the unwanted Group.</p>
+      <p>See the page on <a href="/cms/information-for-coordinators/the-image-server/uploading-files-to-the-image-server">Uploading Files to the Image Server</a> for details of how to create new Image Groups and set them up. See below, <a href="#image">Set up Images</a>, if you need to move images between Image Groups for the same Source (and hence, Register).</p>
+      <p>If you need to move the images to a different Source, such as to a different Register Type, the process is a little more involved: you have to download the images and then upload them to the new Register Type and Source (taking care not to duplicate any image filenames); finally, arrange the deletion of the images from the old Image Source and Group, which can be done only by System Administrators.</p>
+    </div>
+    <p>Now select <q>Initialize Image Group</q>:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvOTFzcHgydm1ydV9jY19pbml0aWFsaXplX2ltYWdlX2dyb3VwLnBuZyJdXQ/cc-initialize-image-group.png?sha=2e4c73256e68d9a2" title="Initialize Image Group" alt="Initialize Image Group" data-rel="225x255" width="1245" height="503" />
+      <figcaption>Fig. 8 — Initialize Image Group</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>If you set the status of an Image Group to <q>Unallocated</q>, the Group will appear in the list available for transcribers to choose work.</p>
+    <p>Select the status you require and click <q>Submit</q>.</p>
+    <p><a href="#workflow">Return to Workflow</a> </p>
+
+    <h4 id="group">Set up Groups</h4>
+    <p>The date range of an Image Group has been inferred from the image file names. In some cases the start and/or end date for a Group may be outside of the date range of the Source. Such dates are coloured red. You may wish to correct these dates in the Group and/or the Source as appropriate.</p> 
+    <p>To edit dates and other details for a group, select <q>List Image Groups</q> from the Source actions (Figure 3) above to see the Groups in that source:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvOWE1M2xwY3Rxd19jY19saXN0X2ltYWdlX2dyb3Vwcy5wbmciXV0/cc-list-image-groups.png?sha=3237b1c3021b47ad" title="List Image Groups" alt="List Image Groups" data-rel="225x255" width="1352" height="786" />
+      <figcaption>Fig. 9 — List Image Groups</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>Now select <q>ED</q> in the actions in the rightmost column and you can edit the dates and Group name, and also add any notes:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvOGdhbTFxNTVtal9jY19lZGl0X2ltYWdlX2dyb3VwLnBuZyJdXQ/cc-edit-image-group.png?sha=eb18a51742d28781" title="Edit Image Group" alt="Edit Image Group" data-rel="225x255" width="1376" height="446" />
+      <figcaption>Fig. 10 — Edit Image Group</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <h4 id="image">Set up Images</h4>
+    <p>Certain information can be entered for images, such as Difficulty (skill level required) and any specific notes, if desired. Select <q>List Images Under This Group</q> from Figure 9 to show:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvOG13bzhmazFncV9jY19saXN0X2ltYWdlcy5wbmciXV0/cc-list-images.png?sha=8d17570f28393229" title="List Images" alt="List Images" data-rel="225x255" width="1387" height="640" />
+      <figcaption>Fig. 11 — List Images</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>Then select the <q>ED</q> action to edit an image:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNGZ6cnVzbmwxZ19jY19lZGl0X2ltYWdlLnBuZyJdXQ/cc-edit-image.png?sha=121e6b341f77cd54" title="Edit Image" alt="Edit Image" data-rel="225x255" width="1028" height="906" />
+      <figcaption>Fig. 12 — Edit Image</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>From here you can set the transcription Status, the difficulty and add any notes. You can also move (<q>Re-assign</q>) the Image to another Group in the Source, if required. Finally, click <q>Submit</q>.</p>
+    <p>Difficulty and Status can be propagated to other images in the Group from the list images display (Figure 11). For example, <q>Propagate Difficulty</q>:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvMWQxMDY3dTE2c19jY19wcm9wYWdhdGVfZGlmZmljdWx0eS5wbmciXV0/cc-propagate-difficulty.png?sha=b9939402434df36f" title="Propagate Difficulty" alt="Propagate Difficulty" data-rel="225x255" width="992" height="671" />
+      <figcaption>Fig. 13 — Propagate Difficulty</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>Choose the Difficulty and select the relevant images, then click <q>Submit</q> at the bottom.</p>
+    <p><a href="#workflow">Return to Workflow</a> </p>
+
+    <h3 id="allocate">Allocating image groups to a syndicate</h3>
+    <p>As CC, you access the image management actions by selecting ‘Manage County’ then ‘Manage Images’:
+    </p>
+    <figure class="site">
+      <img class="narrow" src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvM3ppYWJ5eGV3Y19jY19tYW5hZ2VfaW1hZ2VzLnBuZyJdXQ/cc-manage-images.png?sha=a22a87a90fc890c3" title="Manage Images" alt="Manage Images" data-rel="225x255" width="338" height="267" />
+      <figcaption>Fig. 14 — Manage Images (CC)</figcaption>
+    </figure>
+
+    <p>An image Group must have the status of Unallocated to be available for Allocation. To set the Status of a Source, click on <q>Image Server</q> in the right hand column of the desired place, church, register:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvOHN0NWV0MGMybl9jY19hbGxfc291cmNlcy5wbmciXV0/cc-all-sources.png?sha=f26e9d6c1d76ded5" title="All Sources" alt="All Sources" data-rel="225x255" width="1388" height="732" />
+      <figcaption>Fig. 15 — All Sources</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>Click <q>Initialize Status</q>,</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvM3VycHRtenBrX2NjX3NvdXJjZV9hY3Rpb25zLnBuZyJdXQ/cc-source-actions.png?sha=e2cc9610284cdd60" title="Source Actions" alt="Source Actions" data-rel="225x255" width="1244" height="442" />
+      <figcaption>Fig. 16 — Source Actions</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>then select <q>Unallocated</q> and click <q>Submit</q>:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvMmd1NG1wOXRqZF9jY19pbml0aWFsaXplX3NvdXJjZS5wbmciXV0/cc-initialize-source.png?sha=51b0641b7593c48f" title="Initialize Source" alt="Initialize Source" data-rel="225x255" width="1344" height="484" />
+      <figcaption>Fig. 17 — Initialize Source</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>From the top level of All Sources (Figure 15), select <q>List Unallocated Image Groups</q> to see the Groups:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvMXhjZmxwc3NodV9jY19saXN0X3VuYWxsb2NhdGVkX2dyb3Vwcy5wbmciXV0/cc-list-unallocated-groups.png?sha=1611907d7b67f995" title="List Unallocated Groups" alt="List Unallocated Groups" data-rel="225x255" width="1377" height="458" />
+      <figcaption>Fig. 18 — List Unallocated Groups</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>Select <q>Image Server</q> in the Sources column for the Group(s) to be allocated, followed by <q>List Image Groups</q> to see the list of groups:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvM2RjaHMwd21vMV9jY19saXN0X2ltYWdlX2dyb3Vwcy5wbmciXV0/cc-list-image-groups.png?sha=9c83cb0e0bf37186" title="List Image Groups" alt="List Image Groups" data-rel="225x255" width="1352" height="786" />
+      <figcaption>Fig. 19 — List Image Groups</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>Select <q>Allocate Image Groups</q>, then select the relevant syndicate and Group(s). Lastly, click <q>Allocate</q>:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvOWk0cWFxb3ljMF9jY19hbGxvY2F0ZV9pbWFnZV9ncm91cHMucG5nIl1d/cc-allocate-image-groups.png?sha=062f143f5af67e9d" title="Allocate Image Groups" alt="Allocate Image Groups" data-rel="225x255" width="1377" height="806" />
+      <figcaption>Fig. 20 — Allocate Image Groups</figcaption>
+    </figure>
+  </div>
+
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>The image Status is changed from Unallocated to Allocated by the allocation action and the Image Group is taken off the listing where transcribers can choose their next work.</p>
+    <p>If you inadvertently allocate the wrong Group, there is an action under the Image Group display to <q>Unallocate Image Group</q>. This is available only when <em>all</em> images under the Group are in the Allocated status:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNXlxdnA1M2YwMF9jY191bmFsbG9jYXRlX2ltYWdlX2dyb3Vwcy5wbmciXV0/cc-unallocate-image-groups.png?sha=be7389f7adeaee1b" title="Unallocate Image Groupss" alt="Unallocate Image Groupss" data-rel="225x255" width="1317" height="422" />
+      <figcaption>Fig. 21 — Unallocate Image Groups</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>The SC assigns the Allocated images for transcription.  When the SC is satisfied that the transcription is complete, they select an action which automatically sends an email to you and the Group Status becomes <q>Completion Submitted</q>.</p>
+    <p><a href="#workflow">Return to Workflow</a> </p>
+
+    <h3 id="complete">Marking image groups as complete</h3>
+    <p>You can also check for submitted completion allocations via the action <q>List Completion Submitted Allocations</q> from the All Sources display:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNHppbTg2ZDJwZF9jY19saXN0X2NvbXBsZXRpb25fc3VibWl0dGVkX2FsbG9jYXRpb25zLnBuZyJdXQ/cc-list-completion-submitted-allocations.png?sha=de394f6795bfbdf7" title="List Completion Submitted Allocations" alt="List Completion Submitted Allocations" data-rel="225x255" width="1385" height="530" />
+      <figcaption>Fig. 22 — List Completion Submitted Allocations</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>This shows the list:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNnVuNDg0NTRmaV9jY19zdWJtaXR0ZWRfY29tcGxldGVfYWxsb2NhdGlvbnMucG5nIl1d/cc-submitted-complete-allocations.png?sha=96589e8882df9675" title="Submitted Complete Allocations" alt="Submitted Complete Allocations" data-rel="225x255" width="1384" height="377" />
+      <figcaption>Fig. 23 — Submitted Complete Allocations</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>You can then select the Image Group and click the <q>Accept as Completed</q> action button:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvN3dsYmo2aDZucF9jY19hY2NlcHRfYXNfY29tcGxldGVkLnBuZyJdXQ/cc-accept-as-completed.png?sha=4de11b8638d80a74" title="Accept as Completed" alt="Accept as Completed" data-rel="225x255" width="1310" height="865" />
+      <figcaption>Fig. 24 — Accept as Completed</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>This changes the status to Complete and the Allocation is automatically removed from the syndicate.</p>
+    <p><a href="#workflow">Return to Workflow</a> </p>
+    <hr class="rule" />
+
+    <h2 id="scTasks">Syndicate Coordinator tasks</h2>
+    <h3 id="assign">Assigning images to a transcriber</h3>
+    <p>Image Groups are allocated to your syndicate by the County Coordinator (CC) of the relevant county.
+As SC, you access the image management actions by selecting <q>Manage Syndicate</q> then <q>Manage Images</q>:</p>
+
+    <figure class="site">
+      <img class="narrow" src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvMzR0NTV4bWlsdV9zY19tYW5hZ2VfaW1hZ2VzLnBuZyJdXQ/sc-manage-images.png?sha=43aed4676415c9df" title="Manage Images" alt="Manage Images" data-rel="225x255" width="380" height="259" />
+      <figcaption>Fig. 25 — Manage Images (SC)</figcaption>
+    </figure>
+
+    <p>This displays a list of your Allocations:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvY3kweDhmdnh0X3NjX2xpc3RfYWxsb2NhdGlvbnMucG5nIl1d/sc-list-allocations.png?sha=3cd1477bd71e694c" title="List Allocations" alt="List Allocations" data-rel="225x255" width="1382" height="602" />
+      <figcaption>Fig. 26 — SC List Allocations</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>You can assign images to a transcriber by clicking on the Image Group name in the Image Group column to show the Group details:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNmJldTR3Nnlhal9zY19zaG93X2dyb3VwLnBuZyJdXQ/sc-show-group.png?sha=d221cf79efbcfae7" title="Show Group" alt="Show Group" data-rel="225x255" width="1307" height="843" />
+      <figcaption>Fig. 27 — Show Group</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>Then click <q>List Images Under This Group</q> to see the images listed,</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvMnlld3BqYzF2bF9zY19saXN0X2ltYWdlcy5wbmciXV0/sc-list-images.png?sha=f8e0ebc7bef1372b" title="List Images" alt="List Images" data-rel="225x255" width="1384" height="651" />
+      <figcaption>Fig. 28 — List Images</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>followed by selecting <q>Create Assignment</q>:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvd29vdms3bzFsX3NjX2NyZWF0ZV9hc3NpZ25tZW50LnBuZyJdXQ/sc-create-assignment.png?sha=e1a38e5a69b467e9" title="Create Assignment" alt="Create Assignment" data-rel="225x255" width="1374" height="832" />
+      <figcaption>Fig. 29 — Create Assignment</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>Select the transcriber, add any required instructions and select the Images to Assign (you can select all or a range by clicking the first in the range then holding down the Shift key and clicking the last in the range) then click <q>Submit</q>. This changes the Image Status from Allocated to Being Transcribed.</p> 
+
+    <p>You can unassign (UN) images from the transcriber, if required. The Status of the images is changed from Being Transcribed to Allocated by this action and the Assignment is deleted.</p>
+    <p>Alternatively, you can re-assign (RA) images to another transcriber if required: the Status remains Being Transcribed. These actions are accessed from the List Images display (Figure 28) by selecting <q>List Assignments by userid</q> to see:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvOG81ZDVnanZ3X3NjX2xpc3RfYXNzaWdubWVudHNfYnlfdXNlcmlkLnBuZyJdXQ/sc-list-assignments-by-userid.png?sha=fceedef2e8cb30bc" title="List assignments by userid" alt="List assignments by userid" data-rel="225x255" width="1388" height="591" />
+      <figcaption>Fig. 30 — List Assignments by UserId</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>Select the required UserId(s) and then click <q>Submit</q> to see the actions:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvM3FlYmZ0MTBpNV9zY19saXN0X2Fzc2lnbm1lbnRzLnBuZyJdXQ/sc-list-assignments.png?sha=0bd47c75e6f4d6b6" title="List Assignments" alt="List Assignments" data-rel="225x255" width="1379" height="449" />
+      <figcaption>Fig. 31 — List of Assignments</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>When the transcriber is satisfied they have finished an Assignment and uploaded the file to FreeREG, they select an action which automatically sends an email to you and the Image Status changes to Transcription Submitted.</p>
+    <p><a href="#workflow">Return to Workflow</a> </p>
+
+    <h3>Checking the transcription</h3>
+    <p>You can check for submitted transcriptions by selecting <q>List Submitted Transcription Assignments</q> (see Figure 26) to show the submissions:
+    </p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvN2F4ZXk5ZzM5ZF9zY19zdWJtaXR0ZWRfdHJhbnNjcmlwdGlvbl9hc3NpZ25tZW50cy5wbmciXV0/sc-submitted-transcription-assignments.png?sha=0bcaf34bfd7c937d" title="Submitted Transcription Assignments" alt="Submitted Transcription Assignments" data-rel="225x255" width="1344" height="452" />
+      <figcaption>Fig. 32 — Submitted Transcription Assignments</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>If there is more than one assignment, the list shows them at Assignment (Group) level as shown in Figure 32, above. If there is only one, you will see a list of images in the Assignment: if there is more than one, you can see the images for a particular Assignment by selecting the <q>LS</q> (list) action for that Group:</p>
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvNDJnOXFycnJoM19zY19saXN0X2ltYWdlc19pbl9zdWJtaXR0ZWRfdHJhbnNjcmlwdGlvbl9hc3NpZ25tZW50LnBuZyJdXQ/sc-list-images-in-submitted-transcription-assignment.png?sha=81ca4ff046ce59ff" title="List Images in Submitted Transcription Assignment" alt="List Images in Submitted Transcription Assignment" data-rel="225x255" width="1346" height="693" />
+      <figcaption>Fig. 33 — List of images in a Submitted Transcription Assignment</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+
+    <p>You then check the submitted transcription and, if satisfied, complete the Assignment by selecting the action <q>AC</q>. This automatically changes the Status from Transcription Submitted to Transcribed and deletes the Assignment. If you are not satisfied, then work with the transcriber until it is completed.</p>
+
+    <h3 id="review">Review (optional)</h3>
+    <p>The following actions are an optional part of the process.</p>
+
+    <p>You may Assign images to another syndicate member as a Reviewer (Figure 29, by selecting the Reviewer button). The status changes from Transcribed to Being Reviewed.
+You can re-assign (RA) images to another Reviewer if required: the status remains <q>Being Reviewed</q>.
+You can unassign (UN) images from the Reviewer if required: the status of the images will change from <q>Being Reviewed</q> to <q>Transcribed</q> and the Assignment is deleted.</p>
+
+    <p>The Reviewer re-transcribes or does whatever review work you request, then selects the action which automatically sends an email to you: the status changes to <q>Review Submitted</q>.</p>
+
+    <p>You then check the Reviewer’s work and if satisfied, accept (AC in Figure 32) the Assignment. This automatically changes the status from Being Reviewed to Reviewed and deletes the Assignment.</p>
+    <p><a href="#workflow">Return to Workflow</a> </p>
+
+    <h3 id="submit">On completion</h3>
+    <p>When you have accepted that all images in an Allocated image Group  have been transcribed, click the <q>Send Complete Email to CC</q> button. This button is available only for groups that have the Status of either Transcribed or Reviewed:</p> 
+  </div>
+  <div class="grid__item one-whole">
+    <figure class="site">
+      <img src="/system/images/W1siZiIsIjIwMTkvMDQvMTQvOXNhMjA3d3hia19zY19hbGxvY2F0aW9uX2NvbXBsZXRlLnBuZyJdXQ/sc-allocation-complete.png?sha=cd1e8871b0491cd9" title="Allocation Complete" alt="Allocation Complete" data-rel="225x255" width="1324" height="591" />
+      <figcaption>Fig. 34 — Allocation Complete</figcaption>
+    </figure>
+  </div>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p>This sends the email to the CC and changes the Group Status to Completion Submitted.</p>
+    <p><a href="#workflow">Return to Workflow</a> </p>
+  </div>
+</div>

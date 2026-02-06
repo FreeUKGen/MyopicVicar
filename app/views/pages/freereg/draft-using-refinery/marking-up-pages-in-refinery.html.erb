@@ -1,0 +1,715 @@
+<h1>Marking up pages in Refinery</h1>
+
+<style scoped="scoped">
+  code, pre, kbd {
+    font-family: monospace, serif;
+    font-size: 80%;
+    padding: 2px 4px;
+    color: #000;
+    background-color: #e0eee0;
+    border-radius: 4px;
+  }
+  kbd {
+    background-color: #222;
+    color: white;
+  }
+  .do:after, .done:after {
+    content: "\2713";
+    color: green; /* i.e. our accessible green */
+    font-weight: bold;
+    padding-left: 1rem;
+  }
+  .dont:after {
+    content: "\2718";
+    color: #db0000; /* our accessible red */
+    font-weight: bold;
+    padding-left: 1rem;
+  }
+
+  figcaption {
+    font-style: italic;
+    color: #737373; /* 4.74:1 */
+    margin-top: 0.3em;
+  }
+  figure.site img {
+    border: 2px solid #00a099;
+    padding: 0.3em;
+  }
+  figure.image-wide img {
+    width: 100%;
+    height: auto;
+  }
+  figure img.narrow { max-width: 291px; } /* not tested here */
+</style>
+
+<p><mark><strong>NB: </strong>this <strong>is not</strong> the master version — any changes you make here <strong>will be overwritten</strong>. Please pass any proposed changes to Alison. Last updated on 27 Oct 2023. AO</mark> </p>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">This guide will introduce you to RefineryCMS and set out the standards and conventions that we use for our various About, Help and Information pages, including how we make our pages both responsive and accessible.</p>
+    <p><strong>Responsive</strong> pages look good on any device, of any width, from a large desktop computer down to a mobile phone. Our pages must also be <strong>accessible</strong> to all users, including those who use screen readers, those with motor issues who cannot use a pointing device, those with cognitive issues who need clear, concise content and a whole raft of other users who deserve special consideration.</p>
+    
+    <p>If you have some familiarity with HTML, you will find enough information here to mark up most, if not all, of a page. Do as much as you can and do not worry if you feel you have reached your limit before completing the page.</p>
+    <p>If you are <strong>new to using HTML</strong>, take things slowly and do the easy bits first — paragraphs and headings. Ask for help as often as you need to and leave the layout and menus to someone more experienced — unless you are feeling brave!</p>
+    <p>Do not be put off by the length of this Guide — it turns out that it is much easier to <em>do</em> some things than it is to <em>explain how</em> to do them. Nevertheless, please read (or skim!) the whole guide <em>before</em> you begin marking up — it could save you some work in the long run. In particular, if you are going to be marking up the layout, please read the section on <a href="#layout">Page layout and sub-menus</a> before adding the page text.</p>
+    <p id="copyMarkup" class="island island--bordered"><strong>Copy the lines of example markup</strong> on this page from the browser window, <em>not</em> the HTML source, which is mainly entities, i.e. references to characters, such as the left angle bracket, <code>&amp;lt;</code>. (You probably realised that, but it’s worth saying anyway!)</p>
+        <hr class="rule rule--ornament" />
+  </div>
+
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#sorry">Apologies</a> </li>
+          <li><a href="#intro">Getting oriented</a> </li>
+          <li><a href="#refineryIntro">Using RefineryCMS</a> </li>
+          <li><a href="#contentMarkup">Marking up the page contents</a> </li>
+          <li><a href="#images">Adding images</a> </li>
+          <li><a href="#layout">Page layout and sub-menus</a> </li>
+          <li><a href="#waiAria">A little WAI-ARIA</a> </li>
+          <li><a href="#avoidTrouble">Avoiding trouble</a> </li>
+          <li><a href="#tips">Miscellaneous tips</a> </li>
+          <li><a href="#resources">Resources</a> </li>
+          <li><a href="#nextStep">What happens next?</a> </li>
+        </ul>
+      </div>
+    </nav>
+
+    <aside aria-labelledby="relatedInfo">
+      <div class="islet islet--bordered">
+        <h2 id="relatedInfo" class="title-block">Related information</h2>
+        <p>In preparation … links to other documents related to page creation and editing.</p>
+      </div>
+    </aside>
+    
+  </div>
+  
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole clear--left">
+
+    <aside aria-labelledby="sorry">
+      <div class="islet islet--blue">
+        <h2 id="sorry" class="gamma" style="color:white;">Apologies</h2>
+        <p>Unfortunately, RefineryCMS has some severe limitations when it comes to accessibility: we can only apologise and  try our best to find an accessible
+ CMS (content management system) when we replace Refinery.</p>
+      </div>
+    </aside>
+
+    <h2 id="intro">Getting oriented</h2>
+    <p>A typical help or information page has the same basic parts, shown here so that we are all familiar with, and use, the same terms: communication is so much easier if we all use the same term for the same part of the page!</p>
+
+    <p class="push-half--bottom">The main parts of a page, from the top down, are the:</p>
+    <ol>
+      <li><strong>page header</strong>, which includes the:
+        <ol style="list-style-type: upper-alpha;">
+          <li>main navigation or site menu</li>
+          <li>site logo</li>
+        </ol>
+      </li>
+      <li>page <strong>main heading</strong> (<code>h1</code>)</li>
+      <li><strong>leading paragraph</strong> — a brief summary of the page contents</li>
+      <li>page <strong>contents</strong> </li>
+      <li><strong>page sub-menu</strong> — table of contents</li>
+      <li>other sub-menus (optional)</li>
+      <li><strong>page footer</strong> </li>
+    </ol>
+
+    <figure id="fig1" class="site image-wide">
+      <img src="/system/images/W1siZiIsIjIwMjMvMTAvMjUvNjV0YTZ0aXI1c19iYXNpY19yZWZpbmVyeV9wYWdlLnBuZyJdXQ/basic-refinery-page.png?sha=7b35034c6729c3d7" alt="basic refinery page" data-rel="225x255" width="1912" height="1790" />
+      <figcaption>Fig. 1: The main parts of a Refinery page as would be seen by a user who is not logged-in</figcaption>
+    </figure>
+
+    <p>Our pages use HTML5 (Hypertext Markup Language version 5) — see the <a href="https://www.w3schools.com/html/default.asp">HTML5 tutorial at w3c schools</a> or their <a href="https://www.w3schools.com/tags/default.asp">HTML reference</a>. The character set is UTF-8 (8-bit Unicode Transformation Format).</p>
+
+    <p>The house styling for our pages is built into our CSS (cascading style sheets). Fonts, colours, alignment, and spacing, for example, are all set up for you. Do not attempt to override our styles — if you believe that something different is needed, please seek advice.</p>
+    <p>We use CSS classes instead of some of the attributes common in earlier versions of HTML — especially those attributes that are deprecated (i.e. obsolete, superseded and to be avoided) in HTML5.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="refineryIntro">Using RefineryCMS</h2>
+    <p>RefineryCMS is a so-called content management system (CMS). Although that term sounds impressive, please bear in mind that as it stands, Refinery is a pretty simple affair. If you need to do a complex bit of editing, such as a widespread search-and-replace, you will want to temporarily copy the page (from the HTML pane) to a decent text-editor, make the changes and then paste it back into Refinery (into the HTML pane). To avoid someone else editing the Refinery page in the resulting interval, please leave a brief note at the top of the page — the <code>mark</code> element is useful for this as it places a yellow highlight under your words which is visible in the Refinery preview pane.</p>
+    <p>If you do not have a decent text-editor, there are some suggestions in <a href="#resources">Resources, below</a>. There are also links to a few online tools that will help you fix indentation, find unclosed elements and validate your HTML.</p>
+    <p>The content you create in Refinery will be placed immediately after the page <code>h1</code> heading (see <a href="#fig1">figure&#160;1, label&#160;2, above</a> and <a href="#headings">Headings, below</a>). It will end just before the footer (or just before the ‘Top of page’ and ‘Report a problem’ buttons if you are logged-in).</p>
+    <p>Place all content in the ‘Body’ tab, which is open by default. We do not use the tab labelled ‘Side body’. See fig. 2:</p>
+
+    
+    <figure id="fig2" class="site image-wide">
+      <img src="/system/images/W1siZiIsIjIwMjMvMTAvMjcvMmM1cXQza3d4a19ib2R5X3RhYi5wbmciXV0/body-tab.png?sha=1557aed65c0bf2ba" alt="body tab" data-rel="225x255" width="1097" height="348" />      
+      <figcaption>Fig. 2: Refinery editor, with the HTML pane open for the Body tab</figcaption>
+    </figure>    
+        
+    <hr class="rule" />
+
+    <h3 id="theRefineryPanes">The two Refinery panes</h3>
+    <p>When you open a page in Refinery, the preview pane (the text editing pane) is open. To see the HTML, select the ‘HTML’ button at the top of the preview pane. Select the button again to close the HTML pane.</p>
+    <p class="islet islet--navy">Notice that I used the word ‘select’ rather than ‘click’: some of our users will not be able to click, because they are on a mobile device or they move around a page using only a keyboard. Writing ‘select’ is a good way to show such users that we have at least some understanding of their reality.</p>
+    <p>The look of the content in the preview pane is very different from how the page will look in a browser: our CSS is not applied in Refinery. To see your page as it will appear to a user, select ‘Save’. Or, if you have used ‘Save and continue editing’, select ‘Pages’ (as in the menu shown top-left in <a href="#fig2">fig.&#160;2, above</a>). Find your page in the listing and select its right-most icon (which looks like an eye).</p>
+    <p>The button next to the Save buttons, marked ‘Preview’ is not useful as it opens a browser tab where our CSS is not used.</p>
+    <p>You can apply <em>some</em> markup from the preview pane — only a handful of elements and and none of our classes. For example, you can use the ‘I’ and ‘B’ buttons to apply the <code>em</code> and <code>strong</code> elements, respectively: select the text, then select the button.</p>
+    <p>Please do <em>not</em> use the ‘Style’ button as it inserts classes that do not exist in our CSS!</p>
+    <p>You’ll probably find it easier to add images from the preview pane, with the HTML pane closed — see <a href="#images">Images, below</a> for details.</p>
+    <p>You'll also find it more convenient to add a link to another Refinery page from the preview pane: close the HTML pane, select the text in the preview pane that will be the link-text, then select the ‘Add link’ button. Now choose the type of link you need and select the one you are looking for.</p>
+    <p>Please note that you will have to add in-page links and append id names to Refinery page addresses by hand, in the HTML pane.</p>
+    <hr class="rule rule--ornament" />
+  </div>
+</div>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+  
+    <h2 id="contentMarkup">Marking up the page contents</h2>
+    <p>The single most important thing is to use <strong>semantic markup</strong>. This means marking up each piece of text with an element that matches its meaning or purpose rather than what it looks like in a browser. Our CSS will alter the appearance to fit with our brand style. (We could use more CSS to further change the appearance, if required and if the change is in keeping with the overall look of our pages — ask your manager for advice.) </p>
+  </div>
+
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="contentMarkupMenu">
+      <div class="islet islet--bordered">
+        <h3 class="title-block" id="contentMarkupMenu">Content markup</h3>
+        <ul class="sub-nav">
+          <li><a href="#semantic">Semantic markup</a> </li>
+          <li><a href="#leadPara">The opening paragraph</a> </li>
+          <li><a href="#headings">Headings</a> </li>
+          <li><a href="#links">Links</a> </li>
+          <li><a href="#email">Email addresses</a> </li>
+          <li><a href="#tables">Tables</a> </li>
+          <li><a href="#abbrDfn">Abbreviations &amp; definitions</a> </li>
+          <li><a href="#lists">Lists</a> </li>
+          <li><a href="#emphasis">Adding emphasis</a> </li>
+          <li><a href="#quotes">Quotations &amp; apostrophes</a> </li>
+          <li><a href="#entitiesHyphensDashes">Entities, hyphens &amp; dashes</a> </li>
+          <li><a href="#specialWords">Words, abbreviations and phrases that need special treatment</a> </li>
+          <li><a href="#rules">Horizontal rules</a> </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h3 id="semantic">Semantic markup</h3>
+    <p>If you find you have styled a piece of text to look like a heading, ask yourself whether it <em>is</em> a heading. If the answer is yes, then mark it up as a heading. This will help screen reader users to understand the structure of the page because all headings are included in a list that they can hear and use to navigate the page.</p>
+    <p>Headings also help sighted users to find specific information and understand what is available on a page: in other words, headings help all users.</p>
+    <p class="push-half--bottom">Semantic markup enables screen reader software to interpret the page content correctly for a user: it’s one of the ways we make our pages accessible to all users, including volunteers, despite any limitations they might have. Other important considerations include:</p>
+    <ul>
+      <li>markup should be valid (in HTML5) — for more information and a link to a validator, see <a href="#resources">Resources, below</a> </li>
+      <li>we cannot bury information in <code>title</code> attributes — users who do not (or cannot) use a pointing device will never see the contents, so do not use them and delete any that Refinery inserts</li>
+    </ul>
+    <p>We use lower-case for element tags — <code>h2</code>, not H2 — and for <code>id</code> (identifier) names. For an <code>id</code> that is really more than one word, we use camelCase (sic). For example <code>id="nextSteps"</code>.</p>
+    <hr class="rule" />
+
+    <h3 id="leadPara">The opening paragraph</h3>
+    <p>Make sure the page has a suitable opening paragraph: it should describe what the page is about without going into the details. Give it the class <code>lead</code>.</p>
+    <hr class="rule rule--ornament" />
+
+    <h3 id="headings">Headings</h3>
+    <p>The main page heading, the <code>h1</code> element, is created by Refinery from the contents of the Refinery ‘Title’ field — the box immediately above the ‘Body’ tab (see <a href="#fig2">figure 2, above</a>). In other words, do <strong>not</strong> mark up an h1-heading yourself.</p>
+    <p>Please ensure that all headings use <em>sentence case</em>, that is use capital letters exactly as if the words are the beginning of a sentence in a paragraph: “Marking up pages in Refinery”, “The FreeBMD project”, “Frequently asked questions”.</p> 
+    <p>Refinery generates the HTML file-name by converting this page ‘Title’ to lower-case, removing the punctuation and replacing spaces with hyphens. (Which means that you can change the casing of a page ‘Title’ without breaking incoming links.)</p>
+    <p class="islet islet--navy">On FreeREG, the Refinery ‘Title’ is also part of the (proper!) <code>title</code> element in the page <code>head</code>. The set-up is being adopted gradually for FreeBMD and FreeCEN.</p>
+    <p><strong>Please note</strong> that only one of the fields in ‘Toggle advanced options’, at the foot of the Refinery screen, has any effect on your page: leave ‘Display this page in the site menu’ checked (to prevent the page becoming hidden). Leave the other fields empty or unchecked.</p>
+    <p>Use the <code>h2</code> element for headings for the main sections of the page: give each <code>h2</code> element an <code>id</code>, to be used for the page sub-menu and for other in-page links. Shorter names are easier to deal with, provided they are meaningful: for example,  <code>id="contentMarkup"</code> is simpler than <code>id="markingUpPageContent"</code>. (Please note that anchor elements with a name attribute are not valid in HTML5.)</p>
+    <p>If a section needs a sub-heading, then use <code>h3</code>. A sub-subheading would be <code>h4</code>, and so on. Ensure headings follow this proper hierarchy as this supplies important information about the structure of the page content, both visually and for screen reader users.</p>
+    <hr class="rule rule--ornament" />
+    
+    <h3 id="links">Links</h3>
+    <p>Please ensure that link-text is <strong>meaningful</strong>: never use ‘here’ or ‘described above’ or similar as link-text. A link should be easy to find and identify in a list of links.</p>
+    <p>Do not use the same link-text for links that have different destinations; similarly, links to exactly the same destination should have the same link-text.</p>
+    <p>If the page and/or section does not exist yet, or exists only as a draft, insert the link in Markdown-style for now: <code>[link-text](name of draft page)</code>, replacing ‘link-text’ with the appropriate, meaningful words (for screen reader users especially, the link-text should be easy to understand and the destination clear, without the context of the surrounding text.)</p>
+    <p>The easiest way to make a <strong>link to another Refinery page</strong> is to type the link-text and then work in the preview pane. Select your link-text and then select the ‘Add link’ button. From the list of categories, choose ‘Your page’ and then find the page that you want from the list that will appear on the right. Select that page and then select ‘Insert’. Finally, if you are linking to a particular part of a page, open the HTML pane and append a hash (#) and the id of that section. (Remember to remove the <code>title</code> attribute added to the link by Refinery.)</p>
+    <p>If you look in the HTML pane you’ll see that the link address begins with a forward slash (/). This stands for the root of a site (the current domain name) and is the way to ensure that a page on for example, <em>test3.freebmd.org.uk</em> can be transferred to plain <em>freebmd.org.uk</em> without breaking the link. A page created in Refinery will have an address that begins with ‘/cms/’.</p>
+    
+    <h4>Links that open in a new tab</h4>
+    <p>Links that open in a new browser tab (or window), using the attribute <code>target="_blank"</code>, should be used sparingly, and <em>only</em> as agreed in a Scrum. A user can always choose to open a link in a new tab or window, by way of the context menu, but they cannot override a target attribute in the markup.</p>
+    <p>The target attribute can be set automatically by working in the Preview pane and using ‘Insert link’, choosing ‘Website’ and then checking the ‘New window’ box. We must add ‘ (opens in new tab)’ to the link-text because opening in a new tab can be confusing if the user does not expect it. (The browser default is to open such a link in a new tab rather than a new window: Refinery is out of date.)</p>
+    
+    <h4>Links to documents</h4>
+    <p>We should also warn users, as part of the link-text, where a link is to anything other than an HTML page: for example, ‘how to herd cats (PDF, 1.8MB)’.</p>
+    <p>You might be tempted to include a <strong>title attribute</strong> in the opening <code>a</code> tag. However, be aware that not all users will be able to see the contents of a title attribute — sighted keyboard-only users will never know it’s there. We cannot bury new information in a <code>title</code> attribute, so do not use it.</p>
+    <p class="islet islet--bordered"><strong>NB:</strong> some of the advice in the following paragraph might have to change if I cannot convince a developer — and the SCRUM — that the automatic <code>id</code> described is needed, or at least desirable.</p>
+    <p>For a <strong>Top of page</strong> link, you can use <code>href="#top"</code> on CEN and REG. An element with <code>id="top"</code> is automatically part of all pages on CEN and REG but we are still awaiting one on BMD. Do not use <code>href="#"</code> as it is not a valid address and will cause problems for keyboard-only users (as will a link to a non-existent or repeated <code>id</code> (identifier) name). The issue is that the browser window will move to the top of the page, but the focus will <em>not</em> move: the next press of the tab key will take the user to the next link <em>after</em> where they started!</p>
+    
+    <h4>Better link-text</h4>
+    <p>The following examples would all send a user to this address: <code>href="/cms/advanced-user-guide#wildcards"</code>. (The example links are false, so do not try to follow them!)</p>
+    <p>An example of a less helpful link:<br /> 
+      “Our <a href="cms/advanced-user-guide#wildcards">advanced user guide</a> covers wildcard searches” <br /> This is less helpful because important information about the destination is placed after the link, where a screen reader user could miss it, having already followed the link.</p>
+    <p>An example of a better link:<br /> “We cover searching using wildcards in our <a href="cms/advanced-user-guide#wildcards">advanced user guide</a>” <br />This is better because the information about the destination comes before the link.</p>
+    <p>An example of an even better link:<br /> “We cover <a href="cms/advanced-user-guide#wildcards">searching using wildcards in our advanced user guide</a>”<br />This is even better because the information is part of the link-text itself, making it easy to distinguish this link from others that point to different sections of the advanced user guide. (“We cover” does not add anything, so it is not part of the link-text.)</p>
+    <hr class="rule rule--ornament" />
+
+    <h3 id="email">Email addresses</h3>
+    <p>In general, we do not publish email addresses. If an email address seems essential, please ask your manager for advice.</p>
+    <hr class="rule rule--ornament" />
+
+    <h3 id="tables">Tables</h3>
+    <p>For each table that you plan to use, ask yourself, does this information really belong in a table? Is it really a list in disguise? Is it really something else entirely? Please note that we do not use tables to achieve any sort of layout. A table would not be meaningful as a way of merely setting out some information neatly — it’s not semantic.</p>
+    <p>If the data really is tabular, use the <code>thead</code> and <code>tbody</code> elements, as appropriate. Mark up any column headings with <code>th scope="col"</code> and any row headings with <code>th scope="row"</code> rather than a plain <code>td</code>.</p>
+    <p>Remove attributes such as <code>border</code>, for example. Make sure you are happy with how it looks on a mobile-width screen. In addition, a table should have a brief <code>caption</code> element (as its first child) that explains the structure of the table. You can make the caption invisible to all but screen reader users, if that is appropriate, by using <code>class="accessibility"</code>.</p>
+    <p>If the default table styling does not work for your particular table, please ask for advice.</p>
+    <p class="push-half--bottom">This is the full markup for a basic table that has both column and row headings. It also has the numbers aligned to the right which makes it easier to appreciate their relative size:</p>
+    <pre>    
+  &lt;table style="width:auto"&gt;
+    &lt;caption&gt;Widget &amp;amp; gadget numbers by division&lt;/caption&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th scope="col"&gt;Division&lt;/th&gt;
+        &lt;th scope="col"&gt;Widgets&lt;/th&gt;
+        &lt;th scope="col"&gt;Gadgets&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;th scope="row"&gt;Upper&lt;/th&gt;
+        &lt;td class="text--right"&gt;597&lt;/td&gt;
+        &lt;td class="text--right"&gt;503&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;th scope="row"&gt;Middle&lt;/th&gt;
+        &lt;td class="text--right"&gt;472&lt;/td&gt;
+        &lt;td class="text--right"&gt;689&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;th scope="row"&gt;Lower&lt;/th&gt;
+        &lt;td class="text--right"&gt;481&lt;/td&gt;
+        &lt;td class="text--right"&gt;130&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+    &lt;tfoot&gt;
+      &lt;tr&gt;
+        &lt;th scope="row"&gt;Totals&lt;/th&gt;
+        &lt;td class="text--right"&gt;1,540&lt;/td&gt;
+        &lt;td class="text--right"&gt;1,322&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tfoot&gt;
+  &lt;/table&gt;
+  </pre>
+    
+  <p class="push-half--bottom">Here is what that table would look like in a browser:</p>
+  <table style="width:auto">
+    <caption>Widget &amp; gadget numbers by division</caption>
+    <thead>
+      <tr>
+        <th scope="col">Division</th>
+        <th scope="col">Widgets</th>
+        <th scope="col">Gadgets</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Upper</th>
+        <td class="text--right">597</td>
+        <td class="text--right">503</td>
+      </tr>
+      <tr>
+        <th scope="row">Middle</th>
+        <td class="text--right">472</td>
+        <td class="text--right">689</td>
+      </tr>
+      <tr>
+        <th scope="row">Lower</th>
+        <td class="text--right">481</td>
+        <td class="text--right">130</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">Totals</th>
+        <td class="text--right">1,540</td>
+        <td class="text--right">1,322</td>
+      </tr>
+    </tfoot>
+  </table>
+    <hr class="rule rule--ornament" />
+    
+    <h3 id="abbrDfn">Abbreviations and definitions</h3>
+    <p>The <code>abbr</code> element is not accessible to a sighted, keyboard-only user (because they cannot hover), so do not use it. Similarly, the <code>dfn</code> element relies on a user’s ability to hover, so do not use that.</p>
+    <p>Explain an abbreviation the first time it’s used on a page. For example, “the General Registration Office (the G.R.O.)”. In this case we put full stops after the letters to prevent a screen reader announcing, ‘the grow’. Similarly, use ‘T.W.Y.S’. because ‘TWYS’ is voiced as ‘twise’; use ‘I.C.O.’ because ‘ICO’ is voiced as ‘eye co’.</p>
+    <p>There may well be other abbreviations which need a similar treatment. They will be listed here as they come to light.</p>
+    <p>Use the word Microsoft rather than the abbreviation MS which is voiced as ‘mz’</p>
+    <p><strong>URL</strong> is voiced correctly; for the plural use URL’s.</p>
+    <p><strong>FAQ</strong> is voiced correctly (and helpfully) as ‘frequently asked questions’; FAQs is voiced as ‘F A queues’ which is less easy to understand for some users.</p>
+    <p>The term <strong>UserID</strong> is voiced correctly whereas all the other variations tested failed. Yes, this is one for Member’s pages, but not all volunteers need to be able to see! It is simply good policy (and good manners) to make members’ pages accessible where it is easy do so.</p>
+    <p>It seems that ‘ID’ by itself (and however cased) is voiced as the single syllable ‘id’. So, should you need the term, type ‘id (i.e. identifier)’. Do not type ‘I.D.’ or ‘i.d.’ which make no sense as abbreviations. (The identifier attribute is typed ‘<code>id</code>’ in this document.)</p>
+    <hr class="rule rule--ornament" />
+
+    <h3 id="lists">Lists</h3>
+    <p>There are three kinds of list in HTML5: the unordered list, <code>ul</code>, which uses bullets; the ordered list, <code>ol</code>, which is numbered (or otherwise ordered); and the description list, <code>dl</code> (formerly known as the definition list). A description list typically consists of pairs of terms, <code>dt</code>, with their descriptions, <code>dd</code>.</p>
+    <p>List-items (<code>li</code>s) must have a parent container, either a <code>ul</code> or an <code>ol</code>, whichever is more appropriate.</p>
+    <p class="push-half--bottom">In addition, every list item should begin with a lower-case letter (unless the word is a proper noun, such as England or Refinery) and not have any end-of-item (or end-of-list) punctuation:</p>    
+    <ul>
+      <li class="dont">Not like this;</li>
+      <li class="do">like this</li>
+    </ul>
+
+    <p>Give the paragraph that introduces the list the class <code>push-half--bottom</code>, which will bring it a little closer to the list. The significance of the punctuation in the class name is explained below in <a href="#cssClassNames">CSS class names</a>.</p>
+    <p>You can use either of the first two list types out-of-the-box, but a plain description list may need some tweaking! We have some useful styles available, but they currently need setting up on a page-by-page basis — please let our HTML and CSS person know what you have in mind and they will perform the magic. (We also have some styles for particular uses that are fully defined in our CSS, but their use is beyond the scope of this Guide.)</p>
+    <hr class="rule rule--ornament" />
+
+    <h3 id="emphasis">Adding emphasis</h3>
+
+    <p>Any text in upper-case should be replaced with sentence-case words. This is because WORDS IN CAPITAL LETTERS ARE MORE DIFFICULT TO READ and could be taken as shouting. Instead, use <code>em</code> elements or <code>strong</code> elements (tip: Refinery will convert <code>b</code> elements to <code>strong</code> on saving).</p>
+
+    <p>To call out an important block of text, use either an <code>islet</code> or an <code>island</code> class. The main difference is in the amount of space (padding) around the text: an island has more padding than an islet. You can set a border or a background-colour using one of our CSS modifier classes. These examples show just a few of the possible combinations:</p>
+    <div class="island">
+      I am a plain island: use <code>class="island"</code>
+    </div>
+    <div class="islet islet--light">
+      I am a light islet: use <code>class="islet islet--light"</code>
+    </div>
+    <div class="island island--bordered">
+      I am a bordered island: use <code>class="island island--bordered"</code>
+    </div>
+    <div class="islet islet--neutral">
+      I am a neutral islet: use <code>class="islet islet--neutral"</code>
+    </div>
+    <div class="islet islet--neutral">
+      <p>I am a neutral islet with text in a <code>p</code> element: this makes the text size smaller than our default</p>
+    </div>
+    <div class="island island--dark">
+      I am a dark island: use <code>class="island island--dark"</code>
+    </div>
+    <p>Our white-text-on-dark styles are: <code>--dark</code>, <code>--navy</code>, <code>--teal</code>, <code>--turquoise</code>, <code>--lavender</code>, and <code>--magenta</code>. In order not to confuse or annoy a user, please do <strong>not</strong> use your project’s link and button colour. (You can use each modifier class, for colour or border, with either an islet or island prefix, as appropriate.)</p>
+    <p>Note that link styling will be adjusted automatically, if necessary (to maintain good colour contrast), for all islets and islands.</p>
+
+    <p>You can read about what the double-hyphens and double-underscores signify, below in <a href="#cssClassNames">CSS class names</a>.</p>
+    <hr class="rule rule--ornament" />
+
+    <h3 id="quotes">Quotation marks and apostrophes</h3>
+
+    <p>Please do not use the keyboard quotation marks or the <code>&amp;quot;</code> entity — they are ugly.</p>
+
+    <p>We add a pair of curly (or typographers), single quotation marks using the left and right single quote entities: <code>&amp;lsquo;Body&amp;rsquo;</code> gives, ‘Body’.</p> 
+    <p>Similarly, to add a pair of curly (or typographers), double quotation marks, use the left and right double quote entities: <code>&amp;ldquo;Body&amp;rdquo;</code> gives, “Body”.</p>
+     
+    <p>The <code>q</code> and <code>blockquote</code> elements are only for quotations from another source and should not be used merely to get quotation marks.</p>
+
+    <p>For an <strong>apostrophe</strong>, use the right single-quote entity, <code>&amp;rsquo;</code>.  Please do not use the keyboard single quotation mark or the apostrophe entity – Internet Explorer does not understand it. Note that the W3C (the World Wide Web Consortium), the Unicode standard and <em>A List Apart</em> all favour using the right single quote for an apostrophe.</p>
+    <p class="push-half--bottom">A visual guide to quotation-marks:</p>
+    <ul>
+      <li class="dont">keyboard left (and right) single-quotes — ' '</li>
+      <li class="dont">keyboard left (and right) double-quotes — " "</li>
+      <li class="do">left and right single-quotes, entity names — <code>&amp;lsquo; &amp;rsquo;</code> — ‘  ’</li>
+      <li class="do">left and right single-quotes, entity numbers <code>&amp;#8216; &amp;#8217;</code> — ‘ ’</li>
+      <li class="do">left and right double-quotes, entity names — <code>&amp;ldquo; &amp;rdquo;</code> — “ ”</li>
+      <li class="do">left and right double-quotes, entity numbers — <code>&amp;#8220; &amp;#8221;</code> —  “ ”</li>
+    </ul>
+    <hr class="rule rule--ornament" />
+
+    <h3 id="entitiesHyphensDashes">Entities, hyphens &amp; dashes</h3>
+
+    <p>On saving, Refinery will replace some entities with their UTF-8 character. This can be helpful or not, depending on how you like to work.</p>
+    <p>Please use the <strong>non-breaking space</strong>, <code>&amp;nbsp;</code> or <code>&amp;#160;</code>, sparingly and appropriately. It is useful, for example, to stop a name or a date from breaking across two lines. It should never be used in an attempt to control spacing or indentation or even alignment: it simply will not work (at all window widths and on all browsers). Please be aware that if you paste text into the Refinery preview pane, you could have to remove a bunch of non-breaking spaces, especially if the typist is in the habit of placing two spaces after a full stop.</p>
+    <p>Please ensure that <strong>hyphens</strong> (-) are used only to hyphenate words: for example, link-text or search-and-replace. Some words work better for a screen reader where hyphenated. For example, wild card or wild-card rather than wildcard; off-line rather than offline. Refinery will not save a non-breaking hyphen (&amp;#8209;) — it will crash.</p>
+    <p>The longer <strong>em-dash</strong>, <code>&amp;mdash;</code> or <code>&amp;#8212;</code> (—), is the dash of running text. Put a space either side of the em-dash. Mac users can insert a UTF-8 em-dash with <kbd>shift</kbd> + <kbd>option</kbd> + <kbd>-</kbd> (a hyphen).</p>
+    <p>The shorter en-dash, <code>&amp;ndash;</code> or <code>&amp;#8211</code> is used to separate a range of numbers: 18–32. No space between a number and the en-dash. However, a screen reader user might not know that it is there, so instead of ‘18–32’, it is better to say ‘18 to 32’.</p>
+    <p>Please use a horizontal ellipsis, <code>&amp;hellip;</code> or <code>&amp;#8230;</code> (the … symbol), rather than three full stops (...): it is the correct (single) character and the spacing is consistently better. Mac users can use <kbd>option</kbd> + <kbd>;</kbd> (a semicolon) to insert a (UTF-8) horizontal ellipsis.</p>
+    <h4>Caution</h4>
+    <p>There are some entities that Refinery will not save — the more common ones are the vertical ellipsis, arrows, the minus sign, the non-breaking hyphen and letters of the Greek alphabet (as far as I know!).</p>
+    
+    <h3 id="specialWords">Words and abbreviations that need special treatment</h3>
+    
+    <p>Some words that are not considered to be good, every-day English need to written as they would be found in a dictionary. Otherwise they will be mis-pronounced by screen readers, sometimes to the point of being unrecognisable.</p>
+    <table>
+      <caption>Words that need special treatment</caption>
+      <thead>
+        <tr>
+          <th class="do" scope="col">Use</th>
+          <th class="dont" scope="col">Do not use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>wild card or wild-card</td>
+          <td>wildcard</td>
+        </tr>
+        <tr>
+          <td>off line or off-line</td>
+          <td>offline</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table>
+      <caption>Abbreviations that need special treatment</caption>
+      <thead>
+        <tr>
+          <th class="do" scope="col">Use</th>
+          <th class="dont" scope="col">Do not use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>T.W.Y.S.</td>
+          <td>TWYS</td>
+        </tr>
+        <tr>
+          <td>I.C.O.</td>
+          <td>ICO</td>
+        </tr>
+        <tr>
+          <td>G.R.O.</td>
+          <td>GRO</td>
+        </tr>
+        <tr>
+          <td>Microsoft</td>
+          <td>MS</td>
+        </tr>
+        <tr>
+          <td>URL’s &amp; PURL’s</td>
+          <td>URLs &amp; PURLs (plural)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Some abbreviations that are (probably) expanded by a screen reader include FAQ (frequently asked questions), e.g. (for example), i.e. (that is). However, please remember those sighted users who do not know what these abbreviations stand for.</p>
+    <hr class="rule rule--ornament" />
+
+    <h3 id="rules">Horizontal rules</h3>
+
+    <p>The horizontal rule, <code>hr</code>, is useful for marking a change in topic. The browser default is a bit clunky, so please give it the class, <code>rule</code>. You can mark a more emphatic break by adding a second class, <code>class="rule rule--ornament"</code>.</p>
+    <p class="island island--dark">Note that the class <code>rule--ornament</code> is currently missing from the CSS of FreeBMD</p>
+
+    <hr class="rule rule--ornament" />
+
+    <h2 id="images">Adding images</h2>
+
+    <p>Images used in Refinery pages should be relevant, focussed (with no extraneous clutter) and otherwise of good quality. A good image is worth the proverbial ‘thousand words’, but a poor one is horribly distracting.</p>
+    <p>Images come in many sizes and it is impossible to cover every situation here.</p>
+    <p>When creating an image intended for a Refinery page, consider the size it will be displayed at. On a wide screen, that will be about 700px, the maximum width of the wider, left column (minus the margins). A PNG (portable network graphic) image that is no wider than about 1100px will generally scale well on our pages. But do check that any text in the image that you want a user to be able to read, is still legible at a <em>window</em> width of 1024px.</p>
+    <p>In any case, every image should have an <code>alt</code> attribute with a <em>brief</em> description of the image, including any text in that image. A full description, including a transcription of any relevant writing should be given in the page text so that it is accessible to all users, whatever their eyesight, and not only to screen reader users.</p>
+    <p>As ever, if you run into problems, ask for advice.</p>
+    <p>You can assume that pages intended for members only will be viewed on larger screens. As above, reduce your <em>window</em> width to about 1100px before you take the screen-shot. Yes, we can allow an image to fill the full width of a Refinery page, but we wouldn’t want to do so routinely as that would complicate the page layout, making it much easier to break with future edits or updates.</p>
+    <p>If you want to <strong>annotate</strong> the screen-shot — to draw attention to a button, say —  please save a backup copy of the plain image first. Then annotate or highlight using suitable tools rather than freehand squiggles.</p>
+    <p>An image should have a <strong>caption</strong> (the <code>figcaption</code> element): we cannot rely on a <code>title</code> attribute being accessible to all — users on mobile devices and sighted, keyboard-only users will never see it. The caption should be informative yet as brief as is appropriate, with no redundant words such as ‘this shows’  — even a screen reader user will know that the caption is describing an image.</p>
+    <p>The markup for an image with a caption uses the <code>figure</code> element. The block below is indented four spaces (which is likely what you will need) for convenience:</p>
+    <pre>    &lt;figure&gt;
+      &lt;img url="…" alt="…" width="…" height="…"&gt;
+      &lt;figcaption&gt;…&lt;/figcaption&gt;
+    &lt;/figure&gt;
+    </pre>
+
+    <p>The <code>figure</code> element groups the image with its caption and allows screen reader software to know that the two belong together. It also makes it simple to apply a border to a screen-shot (to help a user distinguish the image from interactive page content). Currently, the style is applied on a page-by-page basis: in the future you will be able to simply use a class.</p>
+    <p>The <code>alt</code> attribute is displayed if the image becomes unavailable for any reason — it will also be read to a screen reader user. There should be no need for a <code>title</code> attribute for an image — contrary to popular belief, it does nothing to improve accessibility. Unfortunately, Refinery insists on inserting one: please delete the <code>title</code> attribute so that screen reader users are not irritated by hearing the contents of both a <code>title</code> attribute <em>and</em> an <code>alt</code> attribute.</p>
+    <hr class="rule" />
+    
+    <h3>Uploading images</h3>
+    <p>You cannot place an image in a Refinery page unless you or someone else uploads it to Refinery: the upload and placement <em>can</em> be done together, but you might lose the original width and height values. Be kind to other volunteers who check and edit pages by uploading the image first and inserting it later.</p>
+    <p>To upload an image, select the Images button from the left-hand menu, then select ‘Add new image’. You can choose to specify the <code>alt</code> text, but you must then also specify the <code>title</code> text, even though you will delete the latter after adding the image to the page. If you do not specify the <code>title</code> text, Refinery will not save your <code>alt</code> text. If you leave the options blank, Refinery will save an adapted version of the file name.</p>
+    <p>Accidents happen, so please keep a copy of any image that you upload to Refinery: if you have annotated the image, please keep a copy of that and a copy of the unannotated image. Please upload copies of your final images, including all significant versions of those images, to the appropriate folder on the Google Drive — please ask your manager for details.</p>
+    <hr class="rule" />
+
+    <h3>Inserting an image</h3>
+    <p>Close the HTML pane and place the cursor in the preview pane at the place you want the image to be. Select ‘Insert image’. Choose the image you need from the listing. Uncheck ‘Resize image’. Select ‘Insert’.</p>
+    <p>Now open the HTML pane. Check that the <code>img</code> element has landed in the right place and move it if not. Then check the <code>img</code> attributes and adjust as necessary (for example, delete the <code>title</code> attribute and ensure that the <code>alt</code> attribute is short and sweet — in particular, it should not be a straight repeat of the caption).</p>
+    <p class="island island--bordered">It is possible to insert an image with the HTML pane open, but you could find things easier with the pane closed. Do whatever suits your way of working.</p>
+   <p>If your image does not display as you intended and simple trouble-shooting does not fix it, please ask for advice.</p>
+    <hr class="rule rule--ornament" />
+
+ </div>
+</div>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 id="layout">Page layout and sub-menus</h2>
+     <p class="island island--navy">Please note: if you are working on a page that will become an app page — one that is going to include information from the database and will be implemented by a developer — the layout requirements are likely to be different from those described below. Please ask your manager for advice. (If in doubt, simply do not do the page layout.)</p>
+  </div>
+
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisSection">
+      <div class="islet islet--bordered">
+        <h3 class="title-block" id="thisSection">In the layout section</h3>
+        <ul class="sub-nav">
+          <li><a href="#structure">Adding structure</a> </li>
+          <li><a href="#subMenus">Adding sub-menus</a> </li>
+          <li><a href="#responsivePages">Responsive pages</a> </li>
+          <li><a href="#cssClassNames">CSS class names</a> </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h3 id="structure">Adding structure</h3>
+    <p class="push-half--bottom">Setting up the page layout and adding any sub-menus is only a little more involved than marking up the content:</p>
+    <ol>
+      <li>copy and paste the lines for the layout, given below</li>
+      <li>then add your content to the wider (three-fifths) column and polish</li>
+      <li>copy and paste the lines for a sub-menu, below, into the narrower (two-fifths) column, then edit the link-text and <code>id</code> names for your page</li>
+    </ol>
+    <p>A basic layout for a simple help or information page is given below. It can be adapted to fit unusual page contents, but please use the following as your starting point:</p>
+    <pre>&lt;div class="grid"&gt;
+  &lt;div class="grid__item three-fifths lap-two-thirds palm-one-whole"&gt;
+    &lt;p class="lead"&gt; … &lt;/p&gt;
+    &lt;p&gt; *other introductory material &lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="grid__item two-fifths lap-one-third palm-one-whole float--right"&gt;
+    *sub-menus go here*
+  &lt;/div&gt;
+  &lt;div class="grid__item three-fifths lap-two-thirds palm-one-whole"&gt;
+    *page main content goes here*
+  &lt;/div&gt;
+&lt;/div&gt;
+    </pre>
+    <p>More complex page layouts are possible (if required) but they are beyond the scope of this Guide. You will also come across pages that do not have this layout pattern, but that is either because the page is different in some way, or because it is older than average and has not been updated recently.</p>
+    <hr class="rule" />
+
+    <h3 id="subMenus">Adding sub-menus</h3>
+    <p>A page typically has two sub-menus: ‘On this page’, plus a listing of the other pages in the same set of Help, About or Information pages.</p>
+
+    <p>Please mark up an ‘On this page’ sub-menu like this, editing the list items (the <code>href</code> attributes and the link-text) for your page:</p>
+    <pre>    &lt;nav aria-labelledby="thisPage"&gt;
+      &lt;div class="islet islet--bordered"&gt;
+        &lt;h2 class="title-block" id="thisPage"&gt;On this page&lt;/h2&gt;
+        &lt;ul class="sub-nav"&gt;
+          &lt;li&gt;&lt;a href="#firstSection"&gt;First section&lt;/a&gt; &lt;/li&gt;
+          &lt;li&gt;&lt;a href="#nextSection"&gt;Next part&lt;/a&gt; &lt;/li&gt;
+          &lt;li&gt;&lt;a href="#thirdPart"&gt;And so on&lt;/a&gt; &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/nav&gt;
+    </pre>
+    <p>The sub-menu is an unordered list, with the class <code>sub-nav</code>. The heading is an <code>h2</code> element with the class <code>title-block</code>.</p>
+    <p>In a list available to screen reader users, the navigation block will be labelled “On this page” to distinguish it from other navigation blocks on the page.</p>
+    <div class="islet islet--navy">
+      <p>We believe we have now fixed the Refinery issue that removed the ARIA label. If you want to see and hear your label in action, try learning the basics of how to use a screen reader: Narrator is bundled on a PC, VoiceOver on a Mac.</p>
+      <p>There is more about ‘aria-labelledby’ in <a href="#waiAria">WAI-ARIA, below</a>.</p>
+    </div>
+    <p>The list items for the ‘On this page’ sub-menu are typically the second-level headings used in the page.</p>
+    
+    <p>For a list of related pages, or pages in the same grouping, the principle is the same. Replace the <code>nav</code> element with an <code>aside</code> element. Adjust the heading to suit. If you add a sub-menu of pages from the same group as the current page, then include the current page, giving its <code>li</code> the class <code>active</code>. Please add ‘ (this page)’ to the link-text.</p>
+    <p class="islet islet--bordered">Please note that if the ‘On this page’ menu is a long one, it could work better to place a list of related pages further down the page. Ask your manager for advice.</p>
+    
+    <p><strong>What if you need a nested sub-menu?</strong> Say that one of the sections (h2) has important sub-sections (h3) that should be easy to find. The following markup will give you a good-looking, nested menu:</p>
+    <pre>  &lt;div class="islet islet--bordered"&gt;
+    &lt;h2 class="title-block" id="thisPage"&gt;On this page&lt;/h2&gt;
+    &lt;ul class="sub-nav"&gt;
+      &lt;li&gt;&lt;a href="#firstSection"&gt;…&lt;/a&gt; &lt;/li&gt;
+      &lt;li&gt;&lt;a href="#nextSection"&gt;…&lt;/a&gt;
+        &lt;ul class="push-half--left push-half--bottom"&gt;
+          &lt;li&gt;&lt;a href="firstSub"&gt;First sub-section&lt;/a&gt; &lt;/li&gt;
+          &lt;li&gt;&lt;a href="secondSub"&gt;Second sub-section&lt;/a&gt; &lt;/li&gt;
+        &lt;/ul&gt;  
+      &lt;/li&gt;
+      &lt;li&gt;&lt;a href="#thirdPart"&gt;…&lt;/a&gt; &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+    </pre>
+    
+    <hr class="rule rule--ornament" />
+
+    <h3 id="responsivePages">Responsive pages</h3>
+    <p>We make our pages responsive (i.e. work nicely at all appropriate screen and window widths) by using floated blocks (or grid items) inside a containing block (or grid). We control the layout using a few fractions plus a couple of keywords.</p>
+    <p>We limit the width of text blocks because long lines are more difficult to read.</p>
+    <p class="push-half--bottom">If you are familiar with CSS floats, you will find the following straightforward. Even if you have never knowingly met a float before, there are only two rules to remember:</p>
+    <ol>
+      <li>once a <code>grid</code> is opened, all (direct) child elements of that grid must have the class <code>grid__item</code>
+</li>
+      <li>use the <code>grid__item</code> class only inside a grid</li>
+    </ol>
+    <hr class="rule rule--ornament" />
+
+    <h3 id="cssStyleNames">Our CSS class names</h3>
+    <p>Our CSS class names use an odd-looking mixture of punctuation! There is a logic to the punctuation, and you can get some useful information from it, once you understand how to decode it.</p>
+    <div class="islet islet--bordered"><p><strong>Tech note:</strong> yes, we know the punctuation looks a little like BEM, but it’s not really BEM — and it’s certainly not good BEM — but this is what we have, at least for now. If you have no knowledge of BEM, then simply ignore this note and read on!</p> </div>
+    <p>We have classes for parent elements, classes that modify that parent and classes for their child elements.</p>
+    <p>A silly example — if <code>run</code> is the name of a parent-class, then <code>run__around</code> could be one of its child-classes. It is a mistake to use <code>run__around</code> if it is not a child of a parent with the class <code>run</code>.</p>
+    <p>Further, <code>run</code> could have a different look with a modifier class, say <code>run--fast</code>, or <code>run--slowly</code>.</p>
+    <p>The modifier styles used for islands and islets are very useful — there are some examples above in <a href="#emphasis">Adding emphasis</a>.</p>
+
+    <p>Also above, you saw how to adjust the space after a paragraph with the modifier class <code>push-half--bottom</code>.</p>
+
+    <p>Why are there three classes with fractions for the elements with <code>class="grid__item"</code>?  A class like <code>three-fifths</code> works on the widest of screens and windows. Next, <code>lap-one-third</code> sets the width to a third in windows that are less than 1024px wide, overriding the width set by the class <code>three-fifths</code>. Finally, if the window is less than 571px wide, <code>palm-one-whole</code> trumps the fist two classes, making that element as wide as the page.</p>
+    
+    <div class="islet islet--bordered">
+      <p><strong>Tech note:</strong> Yes, it is better to set up CSS to be mobile-first. We know that but we do not have the CSS to do that now — one day …</p>
+    </div>
+
+    <hr class="rule rule--ornament" />
+    
+    <h2 id="waiAria">WAI-ARIA</h2>
+    <p>WAI-ARIA (that is, Web Accessibility Initiative — Accessible Rich Internet Applications) is a set of attributes that help screen reader users to understand the structure of a page and move around it. We use only a very small subset of these attributes on Refinery pages. Our pages are being updated to use WAI-ARIA as the opportunity presents.</p>
+    <p>We use <code>aria-labelledby="[id of visible label]"</code> to define a label for a <code>nav</code> element, the page contents menu. We also use it to label <code>aside</code> elements, such as a list of related pages.</p>
+    <p>If there is no suitable visible label, we could use <code>aria-label="[literal label]"</code> in its place.</p>
+    <p>That is all you need to know about ARIA. Except that <em>no</em> ARIA is better than <em>bad</em> ARIA. In other words, do <em>not</em> get creative: use only as described here.</p>
+    
+    <hr class="rule rule--ornament" />
+
+    <h2 id="avoidTrouble">Avoiding trouble</h2>
+    <p>Refinery is rather unforgiving when saving. Although it does try to fix malformed markup, it is not a good fixer. These are some common issues on saving:</p>
+    <dl>
+      <dt><strong>Closing tags appear in odd places</strong> </dt>
+      <dd>If you forget to close an element, Refinery will attempt to close it for you, but the closing tag could be dumped, unhelpfully, as far away as the end of the page.</dd>
+      <dd><em>Indenting your HTML (two spaces for each level) is an excellent habit and will help you spot unclosed elements. If you apply markup from the preview pane, the elements will be closed for you.</em> </dd>
+
+      <dt class="push-half--top"><strong>Markup replaced with entities</strong> </dt>
+      <dd>If you apply a class from our CSS and forget to close the (keyboard) quotation marks before saving, then chaos ensues! Angle brackets will be replaced with entities and you could have a lot to put right. The same happens if an angle bracket is missing.</dd>
+      <dd><em>Keep an eye on what is and is not showing in the preview pane — if text has disappeared, suspect unclosed quotation marks or a missing angle bracket.</em> </dd>
+
+      <dt class="push-half--top"><strong>Refinery will not save the page</strong> </dt>
+      <dd>Firstly, Refinery will not save some HTML entities including the vertical ellipsis, the minus sign, the non-breaking hyphen and the letters of the Greek alphabet.</dd>
+      <dd class="push-half--top">Secondly, Refinery will not accept a character on the page that is not UTF-8 encoded. If the text you are marking up has been prepared in Windows, for instance, then suspect a character that is outside of the standard alpha-numeric set. I was caught out by what looked like a Latin capital X, but turned out to be a Greek capital ‘chi’. What confused me was that the character looked OK in the preview pane — so beware.</dd>
+      <dd class="push-half--top">Thirdly, Refinery will not save raw SVG. If you do not know what SVG is, then that will not be your problem!</dd>
+    </dl>
+
+    <hr class="rule rule--ornament" />
+
+    <h2 id="tips">Miscellaneous tips</h2>
+    <p>Be wary of trying to convey meaning through anything that relies on sight — for instance, using punctuation to convey meaning. For example, “the places in brackets are the towns and villages covered by each sub-district …” will not be accessible to most screen reader users because the brackets will not be announced.</p>
+
+    <p>Put a space between two consecutive closing tags, such as  <code>&lt;/a&gt; &lt;/li&gt;</code> to stop Refinery from dropping the second tag down to the start of the next line (on saving).</p>
+
+    <p>Do not try to use the <code>br</code> element for anything other than a line break. Block elements have spacing as part of our CSS: if you need a bigger gap than usual after a block element, try <code>class="landmark"</code>.</p>
+
+    <p>Your <strong>browser’s Find command</strong> is your friend — use it in Refinery to find unwanted non-breaking spaces (<code>&amp;nbsp;</code> or <code>&amp;#160;</code>), and hyphens that should be em-dashes, for example. Unfortunately, you cannot find keyboard quotation marks in this way because Find does not distinguish keyboard quotes from curly (typographers’) quotes.</p>
+    <p>Your <strong>system or browser spell-checker</strong> is also your friend — make sure it is checking for British (or UK) English spellings and not US English.</p>
+    <p>Your browser should have a set of “Developer Tools” that could help you fix a problem. Look under the ‘View’ menu in Chrome or the ‘Tools’ menu in Firefox. You can also open the tools by right-clicking on the mischievous element, then selecting ‘Inspect’.</p>
+    <p>Proofreading in the HTML pane is not easy and the preview pane is not the most helpful because it does not use our CSS. Take time out to read the page in a browser — I often find typos that way that I’ve missed in Refinery.</p>
+    <p>You will need to check links and responsiveness in a browser. Testing links to other Refinery pages is not so straightforward as you should not make a link to a draft page — leave that task to the person who is responsible for signing off the HTML and CSS. (See <a href="#links">Links, above</a>, for how to signify a link-in-waiting.)</p>
+    <p>Refinery deletes HTML comments on saving. If you want to leave a temporary note on a draft page, then use the <code>mark</code> element. It will be hard to overlook when you come to final page checks!</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="resources">Resources</h2>
+    <p>The internet is a great resource, but please weigh up any advice or solutions that you find there in the light of the information in this guide. In particular, so-called advice about accessibility might be out-of-date, misguided or simply wrong. Even respected websites are apt to offer advice that solves an issue for some users (screen reader users, say) at the expense of creating an issue for others (those who cannot use a pointing device, for example).</p>
+    <p>If you believe this guide to be wrong on a particular point, please contact your manager or create an issue on ZenHub or GitHub. Thank you.</p>
+    <h3>Text editors</h3>
+    <p>A ‘basic text-editor’ is included with you computer’s operating system (Notepad on Windows and TextEdit on a Mac): we cannot recommend them for anything beyond search-and-replace of the text, <em>before</em> marking up. If you have a very old version of either, it <em>could</em> be more useful. The more recent versions are really mini word-processors, which limits their usefulness for writing plain text.</p>
+    <p>Nowadays we have ‘modern text editors’  and ‘source code editors’. These are great for HTML but as they are powerful pieces of software that can do much more than you will need, the initial learning curve is a bit steep. However, they are well-worth exploring.</p>
+    <p class="push-half--bottom">These editors are free to download:</p>
+    <ul>
+      <li>the easiest to get started with is probably <a href="http://brackets.io/">Brackets</a>. It is available for Windows, Mac and most Linux distributions</li>
+      <li>if you are on Windows, a well-established alternative is <a href="https://notepad-plus-plus.org/">Notepad++</a> </li>
+    </ul>
+
+     
+    
+    
+
+   <h3>Online tools</h3>
+    <p class="push-half--bottom">You could find these online tools useful, but be aware that they could leave you with work to do:</p>
+    <ul>
+      <li><a href="https://www.htmlwasher.com/">HTML Washer</a> claims that it “Reduces a HTML document (or fragment) to basic HTML tags and attributes – clean HTML”. It also claims to fix indentation, but it does not.</li>
+      <li><a href="https://www.htmlcorrector.com">HTML Corrector</a> advertises that it “Makes a HTML document (or fragment) a valid one”. It will also tidy indentation. But, it returns a complete, valid page, even though you submit a fragment, so be careful what you copy back to Refinery!</li>
+    </ul>
+    <p>The <a href="https://validator.w3.org/">W3C HTML5 validator</a> expects a full page, but you can paste just your Refinery markup — then ignore anything in the report that does not apply. The validator will find unclosed elements, deprecated markup and more. (You cannot simply give the validator the URL, or address, of your page because the test sites are behind a login.)</p>
+    <p>If you’d rather validate a complete page and you have access to a proper text editor, then you can create a minimal file like this:</p>
+    <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;Validation checking&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+paste Refinery HTML here
+
+&lt;/body&gt;
+&lt;/html&gt;
+    </pre>
+    <p>You can probably validate such a file from within the text editor. If not, open the W3C validator and upload your minimal file. If there is a scoped <code>style</code> block at the top of the page, you’ll get an error message about it: if the error message bothers you, temporarily comment-out the <code>style</code> block by wrapping it in <code>&lt;!--</code> and <code> --&gt;</code> tags.</p>
+    
+    <h4>Try using a screen reader</h4>
+    <p>Once you know the basics of using a screen reader, you can check your landmark labels and use it to proofread the text. It will help you find typos and some wrong words. You will also hear where a comma would help, or where there is a comma in the wrong place or where a sentence or paragraph is too long.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="nextStep">What happens next?</h2>
+    <p>When you are done (to the best of your current skills!), please tell the person responsible for signing off the HTML and CSS, currently Alison, by email or by leaving a comment, using their @username, on the relevant story card on ZenHub or GitHub. Thank you!</p>
+
+  </div>
+</div>

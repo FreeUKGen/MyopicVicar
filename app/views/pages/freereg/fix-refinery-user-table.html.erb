@@ -1,0 +1,6 @@
+<h1>Fix Refinery User Table</h1>
+
+<p>Occasionally the Refinery User Table gets out of step with the UseridDetails table.</p>
+<p>The following rake task reviews and reports on missing Refinery User entries. If the fix option is set then the entry will be created.</p>
+<p>f2rake foo:check_refinery_entries[0,fix] --trace</p>
+<p>If the second argument is set to no fix it will just check (The report will say its fixed BUT it isn't)&#160;</p>

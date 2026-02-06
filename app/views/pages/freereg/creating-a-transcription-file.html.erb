@@ -1,0 +1,187 @@
+<h1>Creating a transcription file</h1>
+
+<style scoped="scoped">
+  figcaption { font-style: italic; font-size: smaller; }
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">There are several ways to create a transcription file, but for Windows users our bespoke program WinREG is the best choice. For those on Mac or Linux, we recommend using a spreadsheet, as found in any office software.</p>
+    <div class="island island--bordered">
+      <p>A FreeREG file should be no larger than about 2,000 records. We strongly recommend that those records be all for the same Place, Church and Register type: that is, they should amount to a single Batch.</p>
+      <p>Before you begin to work, you must ensure that you have the necessary <a href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> for your source.</p>
+    </div>
+  </div>
+
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#winReg">WinREG</a> </li>
+          <li><a href="#spreadsheet">Spreadsheet</a> </li>
+          <li><a href="#database">Database</a> </li>
+          <li><a href="#textEditor">Text editor</a> </li>
+        </ul>
+      </div>
+    </nav>
+
+    <aside aria-labelledby="relatedPages">
+      <div class="islet islet--bordered" id="helpMenu">      
+        <h2 class="title-block" id="relatedPages">Transcriber Help</h2>
+        <ul class="sub-nav">
+          <li><a href="/cms/information-for-transcribers">Information for transcribers</a> </li>
+          <li class="active"><a href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file (this page)</a> </li>
+          <li><a href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a> </li>
+          <li><a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a> </li>
+          <li><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV format</a> </li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty">Dealing with uncertainty</a> </li>
+          <li><a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a> </li>
+          <li><a href="/cms/information-for-transcribers/chapman-codes">Chapman codes</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions">File and batch actions</a> </li>
+          <li><a href="/cms/information-for-transcribers/the-gap-system">The Gap system</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-headers">File headers</a> </li>
+          <li><a href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> </li>
+          <li><a href="/cms/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a> </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2>WinREG</h2>
+    <p>Use this link to <a href="https://drive.google.com/file/d/1VpLwBlV-emuPn_1rTr7siSy8BRR714s1/view?usp=sharing">download the WinREG installer as a zip file</a> (the most recent version of WinREG&#160;3), then unzip it and run the installer. WinREG is written by Mike Fry, an experienced transcriber.</p>
+    <div class="island island--bordered">
+      <h3>WinREG on Windows 10</h3>
+      <p>We are aware that some users of WinREG are experiencing problems after a Windows 10 update.  Please run your anti-virus check after the update: that should fix the issue, with no loss of data.</p>
+      <p>You may find that WinREG does not scale properly on Windows 10, making the text too small to read. Here is the fix:</p>
+      <p>Find the WinREG.exe file using Windows Explorer: navigate to your C drive — Program files (x86) — FreeREG — WinREG for Windows. Now right-click on WinREG.exe and select <em>Properties</em>, then <em>Compatibility</em>, then <em>Settings</em>.</p>
+      <p>Now select <em>Change high DPI settings</em>, then click the bottom option, <em>Override/disable high DPI settings</em>, to tick its box. Click on <em>OK</em>, then the next <em>OK</em>, to confirm and finish.</p>
+    </div>
+    <p class="push-half--bottom">There are many advantages to using WinREG:</p>
+    <ul>
+      <li>Your files will be ‘database ready’ without any of the extra work required by using other programs.</li>
+      <li>You will be asked for your details only once: these will be put automatically into every file you create.</li>
+      <li>It is also easy to edit the other details that vary from file to file. (These correspond to the remaining file Header fields, if you have previously used a spreadsheet.)</li>
+      <li>The field names (column names in a spreadsheet) will be created for you, according to whether you are transcribing baptisms, marriages or burials.</li>
+      <li>You can rearrange the fields so that they are in an order that follows the order of information in your source. When you save a file, WinREG will save the fields in the order that the database expects.</li>
+      <li>You can also hide any fields that your source does not have data for, just as you can with a spreadsheet.</li>
+    </ul>
+
+    <h2 id="spreadsheet">Spreadsheet</h2>
+    <p>If you are not able to use WinREG for any reason, then we recommend using a spreadsheet, especially one from the Open Source office suites: the first two are available for Windows, Mac OS X and Linux; they are also free of charge.</p>
+    <ul>
+      <li><a href="https://www.openoffice.org/">Apache OpenOffice</a> </li>
+      <li><a href="https://www.libreoffice.org/">LibreOffice</a> </li>
+      <li><a href="https://www.neooffice.org/neojava/en/index.php">NeoOffice</a> is for Mac OS X only and there is a small charge (starting at £8 or $10 at time of writing)</li>
+    </ul>
+    <p>A modern version of Microsoft Excel can be used, but we do not recommend older versions as they have a bug in the way they save CSV files — the kind of file that must be uploaded to the database. There is a way around this bug, but the fix involves extra work, and may itself introduce a different problem.</p>
+    <p>Other proprietary spreadsheets are available, but we have less collective experience with these.</p>
+    <p>You don't need to know how to do anything complicated with the spreadsheet, just how to: Save, Save as, and set the format of cells in a column (field) to Text. It would also be very useful to know how to freeze the headings, so that they are always visible. In addition, we ask that you <strong>turn off all the AutoCorrect options</strong> — the details of why and how are in the box below.</p>
+    <p>We strongly recommend that you save your working file in the spreadsheet's own format (file ending). This will make it simpler to re-open the file and will preserve such things as column widths and font size for when you next work on your transcription. We also strongly recommend that you set the cell format for the whole sheet to text — this will avoid issues with the header cells that contain a + (plus) sign and also with dates.</p>
+
+    <div class="island island--bordered">
+      <h3>AutoCorrect</h3>
+      <p>AutoCorrect or Substitution is now a common feature in many applications: even the so-called plain text editors like Notepad or TextEdit are not so plain any more. The default (or out of the box) setting is to have the feature turned <em>on</em>: this is not a problem for many kinds of writing, but for a database project like FreeREG, there are lurking dangers.</p>
+      <p>Many of the corrections applied by AutoCorrect are to do with the casing of letters and the common typing errors people make with words. AutoCorrect can ensure that all sentences start with a capital (upper case) letter; it can prevent you beginning a word with two capital letters; and it can change the word i to I. It can also correct typos like abotu to about, or acn to can. This is not a problem in itself, but for FreeREG work, you will want to be in full control of how words are spelt and cased. The main problem is that AutoCorrect changes some plain punctuation to their smart (fancy or typographers) versions.</p>
+      <p>A good example of AutoCorrect in action with punctuation happens like this: you type a plain double quotation mark on your keyboard: it starts out looking like ", but as soon as you type the next thing, it changes magically to “ — the plain quote has been converted to a fancy or smart quote. Again, this is not a problem for most kinds of writing (indeed, it is useful for a party invitations or a novel), but for FreeREG it <em>is</em> a problem.</p>
+      <p>As well as changing " to “ or ”, other common substitutions are the single quotation mark (and apostrophe), ' to ‘ or ’; ellipses, ... (three characters) to … (one character); and dashes, (space hyphen space <em>or</em> two hyphens to — (an em-dash).</p>
+      <p>The exact form of the smart punctuation will vary from font to font, but there is less difference when comparing the plain forms. For the quotation marks, the plain forms will be vertical, with left and right quotes looking the same. (If you are having trouble seeing the difference, try zooming in: see your browser's View menu.)</p>
+
+      <h4>The problems</h4>
+
+      <h5>Searching</h5>
+      <p>If smart punctuation is used instead of plain, then a search for a surname like O'Grady will not find all the possible matches: the O'Grady entries will be found, but <em>not</em> O’Grady. The visual difference between the two apostrophes is small, but the effect on a search could be huge.</p> 
+      <p>Similarly, most abbreviations of a forename will be found automatically in a search, but any that include a smart apostrophe will not be found. So Tho's will be found in a search for Thomas, for example, but <em>not</em> Tho’s.</p>
+
+      <h5>Garbled entries</h5>
+      <p>If your file has been saved using one character set, but the character set in the Headers is not the same, then any <em>smart</em> punctuation will not be understood by the database and you will see groups of characters like these in your uploaded batch: â€¦ â€œ â€? â€˜ â€™.</p>
+      <p>This is most likely to happen when files are passed on to someone else for editing or Uploading: the remedy is to turn off all the AutoCorrect options, then re-type the problem punctuation. Finally, make sure that you put the correct character set in cell 1F of the Headers (see the <a href="/cms/information-for-transcribers/file-headers">File Headers</a> page for details).</p>
+
+      <h4>How to turn AutoCorrect off</h4>
+      <p>Start with a blank spreadsheet open: this will prevent you seeing any options that do not apply to spreadsheets. From the menu, select Tools &gt; AutoCorrect&#160;Options. You will get a dialog box with four parts: Replace, Exceptions, Options, Custom Quotes or Localised Options. (Note that OpenOffice, for example, has a fifth part, Word Completion, which you will see if you do not have a blank spreadsheet open: you can ignore it.)</p> 
+      <p>The third and fourth parts are the important ones: the first and second contain the details of how some correction options are applied — we are going to turn those options off.</p>
+      <p>Part three (Options) has a list of possible corrections: simply de-select all of these.</p>
+      <figure>
+        <img style="width: 100%; height: auto;" data-rel="225x255" alt="Part 3 of AutoCorrect in OpenOffice" src="/system/images/W1siZiIsIjIwMTYvMDcvMDQvMjJfMTVfMDBfMTcyX0F1dG9Db3JyZWN0XzMucG5nIl1d/AutoCorrect-3.png?sha=0ff1f2db53a9d372" width="593" height="494" />
+        <figcaption>Part 3 of AutoCorrect in OpenOffice</figcaption>
+      </figure>
+      <p>Part four (Custom Quotes or Localised Options) deals with quotation marks: un-check both Replace boxes. Un-check anything else that is offered here for writing in English.</p>
+      <figure>
+        <img style="width: 100%; height: auto;" data-rel="225x255" alt="Part 4 of AutoCorrect in OpenOffice" src="/system/images/W1siZiIsIjIwMTYvMDcvMDQvMjJfMTVfMzFfNzkyX0F1dG9Db3JyZWN0XzQucG5nIl1d/AutoCorrect-4.png?sha=16b966fa51401c16" width="595" height="493" />
+        <figcaption>Part 4 of AutoCorrect in OpenOffice</figcaption>
+      </figure>
+    </div>
+
+    <h3>Naming your file</h3>
+    <p class="push-half--bottom">The CSV file, described below, that you will Upload or Replace on the server needs to be named according to the following pattern. The first 8 letters of the name are:</p>
+    <ul>
+      <li>the 3-letter County code (as listed on the <a href="/cms/information-for-transcribers/chapman-codes">Chapman codes</a> page)</li>
+      <li>the 3-letter Place code (please ask your Coordinator for this code)</li>
+      <li>a 2-letter code that describes the event type: BA (baptisms), BU (burials) or MA (marriages)</li>
+    </ul>
+    <p>For smaller registers of around two thousand records or fewer in total, these eight letters are all you need. However, if you are going to be transcribing a larger register of more than two thousand records, then you will need to append a number to each filename to distinguish each part of the transcription.</p>
+    <p>For example, a baptism register of about six thousand records for a (fictitious) Place with code ABC in the West Riding of Yorkshire will need three files: WRYABCBA1, WRYABCBA2, and WRYABCBA3.</p>
+    <p>If the register is large enough to need more than nine files to complete, then consider using two digits to number your files: this will result in a set of batches that sorts in a more natural order in batch listings. This is because batches are sorted in so-called dictionary order, so that WRYABCBA2, for instance, would be listed after WRYABCBA12, whereas WRYABCBA02 (which is numbered zero two) would be listed before it.</p>
+
+    <h3>Add the headers</h3>
+    <p>There is one more step which should be done in your spreadsheet application: adding the information that lets the database understand your transcription and know who created it. The instructions are on the <a href="/cms/information-for-transcribers/file-headers">File headers</a> page. If you have any problems with this step, your Syndicate Coordinator will be pleased to help you.</p>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h3>Save as … CSV</h3>
+    <p>When you have finished entering data, the next step is to save your file in CSV (or Comma-separated values) format. Just before doing so, delete the row of column labels, if you have not already deleted them as part of adding the file Headers.</p>
+    <p>With your spreadsheet open, use File, Save As to bring up a dialogue box. Choose Comma-separated values as the format, probably from a drop-down list. You may be asked to confirm (or choose) commas as the ‘field separators’ (or ‘field delimiters’), and double-quotes as the ‘text delimiters’: agree to both. It is not necessary to agree to <em>all</em> fields being quoted, but it will do no harm.</p>
+    <p class="island island--bordered">Please be aware that both the <strong>file name and the file extension are case-sensitive</strong> which means that, for example, the files <code>SSXFERBA.CSV</code> and <code>SSXFERBA.csv</code> are treated as two, separate, different files. To avoid any confusion in the future, please use exactly the same file extension for your files, either .CSV or .csv, but not a mixture of both.</p>
+    <p>A CSV file just a simple text file, with a .csv or .CSV extension (ending). Each data field (cell) is separated from the next by a comma, and each record is on its own line. For a baptism register, opened in a text editor such as Notepad or TextEdit (not a word processor), the beginning of the first two lines after the Headers might look something like this:</p>
+  </div>
+
+  <div class="grid__item one-whole">
+    <code>GLS,Ruardean,All Saints PR,,,06 Jun 1786,Elizabeth,F, … <br />
+          GLS,Ruardean,All Saints PR,,,20 Jun 1786,James,M, … </code>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole"> 
+    <p class="push--top">Notice that some of the fields are empty in this example, with literally nothing between the commas: there are no unnecessary spaces. </p>
+
+    <h3 id="first_time_check">First time check</h3>
+    <p>This test is not necessary for users of Apache OpenOffice, LibreOffice or NeoOffice — all three pass.</p>
+    <p>If this is your first transcription file with Microsoft Excel (pre-2011) or another program not listed above, then this simple check will tell you whether or not it is suitable for FreeREG: in particular, some of the older versions of Excel have a bug in the way they save CSV files that makes them unsuitable. </p>
+
+    <p class="push-half--bottom">The check is simply this:</p>
+    <ol>
+      <li>open the CSV file in a text editor (Notepad or TextEdit)</li>
+      <li>find the end of a line that you know does <em>not</em> have data in the final field (column):
+        <ul>
+          <li>if it ends with one or more commas, all is well!</li>
+          <li>if there are no commas at the end, then you will need to use one of the free Office programs</li>
+        </ul>
+      </li>
+    </ol>
+    <p>Not sure? Some examples may help. A baptism entry <strong>with</strong> data in the final field — in this case, the Notes field — will end something like this, with no final comma:</p>
+    <p><code>… ,WARD,FORBES,"23, High St",,Mr Saml Ward</code> </p>
+    <p>(Note also that one of the fields has double quotes around the contents: this is because the contents — 23, High St — has a comma in it. Fields without a comma are not quoted.)</p>
+    <p>Lines <strong>without</strong> data in the final field, should end something like these:</p>
+    <p><code>… ,BAIRD,,,, <br />
+    … ,REYNOLDES,JONES,,Blacksmith,</code> </p>
+    <p>A line <strong>without</strong> content in the final field should end with <em>at least one</em> comma. If you see one or more commas at the end of such lines, then your spreadsheet has been saved correctly. <strong>You will not need to do this check again.</strong> </p>
+    <p>However, if you’re seeing entries like these, with <em>empty</em> final fields but <em>no</em> final comma(s),  </p>
+    <p><code>… ,BAIRD <br />
+    … ,REYNOLDES,JONES,,Blacksmith</code> </p>
+    <p>then you will need to download one of the free Office suites for your FreeREG transcriptions. (Experienced volunteers who use old versions of Microsoft Excel and the "dummy column" method without any problems may continue to do so, but we urge you to consider using a different spreadsheet, if possible.)</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="database">Database</h2>
+    <p>If you are more comfortable with database software, then any that can save files in the required "Comma-separated values" (CSV) format will be suitable. You will need to add the headers to your completed CSV file, as described for spreadsheets. If your software has AutoCorrect or Substitution options, you need to turn off all that apply to punctuation.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="textEditor">Text editor</h2>
+    <p>This method for FreeREG transcription is really only for people who use a text editor for everything and would not dream of using anything else. You would have to set everything up yourself, be good at counting commas and remember to quote fields that themselves contain commas. (Full details can be found on <a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a>.)</p>
+    <p>You would also have to enter the file Headers yourself, as described on <a href="/cms/information-for-transcribers/file-headers">File headers</a>.</p>
+    <p>Plain text editors are no longer quite so plain. In particular, they may have an AutoCorrect or Substitution feature: you need to <em>turn off</em> all substitutions that apply to punctuation, especially for quotation marks, ellipses and hyphens/dashes. This applies even if you are just using a text editor to make a small edit of your file or someone else's file.</p>
+    <p>Please check that you know which character set your editor uses on saving: if offered a choice, then select utf-8 and put UTF-8 in line 1, field 6 (character set) of the file Headers.</p>
+  </div>
+</div>

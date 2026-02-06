@@ -1,0 +1,811 @@
+<h1>Extended marriage fields</h1>
+
+<style scoped="scoped">
+  h2.section { font-size: 2em; font-weight: normal; }
+  .field div { margin-left: 1em; margin-bottom: 2rem; }
+  .field .nav-link { margin-left: 0; margin-top: 1.5rem; margin-bottom: 1rem; }
+  .field h3, .field h4 { color: #a1185a; font-weight: normal; }
+  .field h3 { font-size: 1.8rem; padding-top: 1.5rem; border-top: 1px solid #dedede; }
+  .field p, .field ul { margin-bottom: 0.5rem; }
+  .field ul { margin-left: 1rem; }
+  .field h4 { margin-bottom: 0; }
+  .marriage h3, .marriage h4 { color: #008000; } /* our $green */
+</style>
+
+<div class="grid">
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section">The marriage fields</h2>
+    <p>Use this link to <a href="/system/resources/W1siZiIsIjIwMjAvMDUvMTIvNHRncmttZ3Jxdl9leHRlbmRlZF9tYXJyaWFnZV9maWVsZHMuY3N2Il1d/extended%20marriage%20fields.csv?sha=4b0b4df873c3c7c1">download the extended marriage fields</a> as a 2-row CSV file — rows 5 and 6 of your spreadsheet.</p>
+    <p>Do not delete row 6, the field (column) names, before uploading your file: this is a change in practice.</p>
+    <p id="marriageFieldList">The full list of marriage fields now available follows: use as few or as many as you need, depending on the register.</p>
+  </div>
+  
+  <aside aria-labelledby="relatedPages" class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block" id="relatedPages">Related pages</h2>
+      <ul class="sub-nav">
+        <li><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV</a>
+          <ul class="push-half--left push-half--bottom">
+            <li><a href="/cms/information-for-transcribers/flexible-csv-format/extended-baptism-fields">Extended baptism fields</a> </li>
+            <li class="active"><a href="/cms/information-for-transcribers/flexible-csv-format/extended-marriage-fields">Extended marriage fields (this page)</a> </li>
+            <li><a href="/cms/information-for-transcribers/flexible-csv-format/extended-burial-fields">Extended burial fields</a> </li>            
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <nav aria-label="Marriage field names">
+    <div class="grid__item one-half palm-one-whole">
+      <ul>
+        <li><a href="#marA">County</a> </li>
+        <li><a href="#marB">Place</a> </li>
+        <li><a href="#marC">Church</a> </li>
+        <li><a href="#marD">Register type</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#marE">Register entry number</a> (or page &amp; position)</li>
+        <li><a href="#marF">Date of marriage</a> </li>
+        <li><a href="#marG">Date of contract</a> </li>
+        <li><a href="#marH">Marriage by licence</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#marI">Groom’s forename(s)</a> </li>
+        <li><a href="#marJ">Groom’s surname</a> </li>
+        <li><a href="#marK">Groom’s title</a> </li>
+        <li><a href="#marL">Groom’s age</a> </li>
+        <li><a href="#marM">Groom’s parish or place</a> </li>
+        <li><a href="#marN">Groom’s condition</a> </li>
+        <li><a href="#marO">Groom’s occupation</a> </li>
+        <li><a href="#marP">Groom’s abode</a> </li>
+        <li><a href="#marQ">Groom marked</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#marR">Groom’s father’s forename(s)</a> </li>
+        <li><a href="#marS">Groom’s father’s surname</a> </li>
+        <li><a href="#marT">Groom’s father’s title</a> </li>
+        <li><a href="#marU">Groom’s father’s occupation</a> </li>
+        <li><a href="#marV">Groom’s mother’s forename(s)</a> </li>
+        <li><a href="#marW">Groom’s mother’s surname</a> </li>
+        <li><a href="#marX">Groom’s mother’s title</a> </li>
+        <li><a href="#marY">Groom’s mother’s occupation</a> </li>
+      </ul>
+    </div>
+    <div class="grid__item one-half palm-one-whole">
+      <ul>
+        <li><a href="#marZ">Bride’s forename(s)</a> </li>
+        <li><a href="#marAA">Bride’s surname</a> </li>
+        <li><a href="#marAB">Bride’s title</a> </li>
+        <li><a href="#marAC">Bride’s age</a> </li>
+        <li><a href="#marAD">Bride’s parish or place</a> </li>
+        <li><a href="#marAE">Bride’s condition</a> </li>
+        <li><a href="#marAF">Bride’s occupation</a> </li>
+        <li><a href="#marAG">Bride’s abode</a> </li>
+        <li><a href="#marAH">Bride marked</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#marAI">Bride’s father’s forename(s)</a> </li>
+        <li><a href="#marAJ">Bride’s father’s surname</a> </li>
+        <li><a href="#marAK">Bride’s father’s title</a> </li>
+        <li><a href="#marAL">Bride’s father’s occupation</a> </li>
+        <li><a href="#marAM">Bride’s mother’s forename(s)</a> </li>
+        <li><a href="#marAN">Bride’s mother’s surname</a> </li>
+        <li><a href="#marAO">Bride’s mother’s title</a> </li>
+        <li><a href="#marAP">Bride’s mother’s occupation</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#marAQ">Witness forename(s)</a> </li>
+        <li><a href="#marAR">Witness surname</a> (up to 8 witnesses)</li>
+        <li><a href="#marAS">Notes</a> </li>
+        <li><a href="#marAT">Transcriber’s notes</a> </li>
+        <li><a href="#marAU">Film</a> </li>
+        <li><a href="#marAV">Film number</a> </li>
+        <li><a href="#marAW">Image file name</a> </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+<hr class="rule rule--ornament" />
+  
+<section id="marriages2" class="grid">
+  <div id="marriagesDetail" class="field marriage grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section">Entering marriage data</h2>
+    <p>Here are the details of what should go in each marriage field (that is, each spreadsheet column).</p>
+
+    <h3 id="marA" class="push--top">County (chapman_code)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> and is the three-letter <a href="/cms/information-for-transcribers/chapman-codes">Chapman county code</a> </li>
+        <li>enter in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ABD, NTT, FLN, DUR <br />(Aberdeenshire, Nottinghamshire, Flintshire, and Durham, or County Durham)</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div> 
+    </div>
+
+    <h3 id="marB">Place (place_name)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter the name of the town or village</li>
+        <li>enter in lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betws-y-Coed, Nottingham, Prestonkirk, Chorlton cum Hardy</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marC">Church (church_name)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter in lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>St Ethelred, St Mary, Holy Trinity, Methodist, All Saints (North Street)</p>
+      <h4>Guidance:</h4>
+      <p>Enter the name of the church, parish or congregation  Take care with this as larger towns may have more than one parish or church.</p>
+      <p>If a place has two churches with the same name, then use parentheses for the identifier part, as in the example.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marD">Register type (register_type)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter in upper case</li>
+        <li>use one of the codes from the list of <a href="/cms/information-for-transcribers/flexible-csv-format#regCodes">Register types</a> </li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>AT, PR</p>
+      <h4>Guidance:</h4>
+      <p>This is a change in practice.</p> 
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marE">Register entry number (register_entry_number)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the register number (or page and position), if there is one</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>483, 25c</p>
+      <h4>Guidance:</h4>
+      <p>Usually found in marriage registers after 1750. Enter the number without leading zeroes. </p>
+      <p>If only the page has a number, enter that number, plus a lower case letter to indicate position on page. If there are no numbers, leave blank.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marF">Date of marriage (marriage_date)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the date of the marriage</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>If no marriage date is shown, or if all or part of the date is missing or illegible, see <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Dates</a> in General guidance.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marG">Date of contract (contract_date)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the date that the contract for marriage was agreed, or leave blank</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>If no contract date is shown in the register, leave blank.</p>
+      <p>Usually only found in registers for the Church of Scotland.</p>
+      <p>See <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Dates</a> in General guidance for further help.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marH">Marriage by licence (marriage_by_licence)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter one of y, yes, licence, by licence, by_licence, marriage_by_licence, or true (lower or upper case) if the register states that the marriage was by licence, or leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>yes, Y</p>
+      <h4>Guidance:</h4>
+      <p>Most marriages will be by banns.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marI">Groom’s forename (groom_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename or names, as given</li>
+        <li>use lower case with leading capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Joseph, Saml John, Henrey, Gulielmus</p>
+      <h4>Guidance:</h4>
+      <p>Transcribe the name as written, even if abbreviated or written in Latin or if it looks wrong. If a person has more than one forename, enter them all.</p>
+      <p>Be wary of apparent surnames that are really part of the forename. For example, the complete name Alexander Denman Neep would be entered as Alexander Denman in this field and NEEP in the surname field.</p>
+      <p>Enter any qualifier, such as Jr or Sr, in the person’s <strong>title</strong> field and not as a note: this is a change in practice.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marJ">Groom’s surname (groom_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Enter the spelling exactly as given, even if it looks wrong.</p>
+      <p>Enter any qualifier, such as Jr or Sr, in the person’s <strong>title</strong> field and not as a note: this is a change in practice.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marK">Groom’s title (groom_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter as written</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Jr, Sr, Esq, Dr. Professor </p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marL">Groom’s age (groom_age)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s age as given</li>
+        <li>enter an integer (whole number) or one the phrases below</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>17, 21, 51, Minor</p>
+      <h4>Guidance:</h4>
+      <p>In general, text is not allowed in this field. However, “minor” (under 21) is allowed, as is “of age”, “of full age” or “full age”.</p>
+      <p>If the register says “under 21” or “under age”, or “under”, record this as “minor”, and put what the register actually says in the Notes field.</p>
+      <p>If no age is stated, leave the field blank.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marM">Groom’s parish (groom_parish)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>the groom’s parish or place of residence, if it is different from the event parish</li>
+        <li>if the parish is stated as being in another county, append the three-letter <a href="/information-for-transcribers/chapman-codes">Chapman county code</a>, entered in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Newton <br />Ealing MDX <br /> Gillespie, Glenluce <br />Silloth CUL </p>
+      <h4>Guidance:</h4>
+      <p>If the register does state the parish, but it is the same as the parish in which the marriage took place, or if the entry states “of this parish”, then leave the field empty. If there are more local details, such as a farm or road, enter these in the abode field.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marN">Groom’s condition (groom_condition)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s marital status</li>
+        <li>enter in lower case with initial capitals</li>
+        <li>if missing, leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Bachelor, Widower, Single Man, Virgin, Divorced Man, Previous Marriage Annulled, Previous Marriage Dissolved</p>
+      <h4>Guidance:</h4>
+      <p>If any additional information is provided, for instance a name or a date, enter this in the <a href="#marAS">notes field</a>.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marO">Groom’s occupation (groom_occupation)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s occupation</li>
+        <li>enter in lower case with initial capitals</li>
+        <li>if missing, leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Railway Shunter, Baker, Labourer, Miner</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marP">Groom’s abode (groom_abode)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s residence at the time of marriage</li>
+        <li>enter in lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Ruardean <br /> High St <br /> 23, High St <br />Napoleon Sq., Cinderhill</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marQ">Groom marked (groom_marked)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter one of y, yes, marked or true (upper or lower case) if the groom made his mark rather than signing his name in the register</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Y, yes</p>
+      <h4>Guidance:</h4>
+      <p>Do not enter N or No: leave blank if the person signed.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marR">Groom’s father’s forename(s) (groom_father_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s father’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Robert, William, Richd, George Hy.</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marI">groom’s forename </a> for other details of how to enter forenames.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div>         
+
+    <h3 id="marS">Groom’s father’s surname (groom_father_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s father’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>For more details, see <a href="marJ"> groom’s surname</a>.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marT">Groom’s father’s title (groom_father_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter as written</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Jr, Sr, Esq, Dr. Professor </p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marU">Groom’s father’s occupation (groom_father_occupation)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter rank, trade or occupation of the groom’s father</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Baker, Butcher, Gentleman, Captain</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marV">Groom’s mother’s forename(s) (groom_mother_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s mother’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Sarah, Ann, Mary Ann</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marI">groom’s forename</a> for other details of how to enter forenames.</p>
+      <p>If not stated, leave blank.</p>
+      <p>Likely only found in non conformist registers</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div>         
+
+    <h3 id="marW">Groom’s mother’s surname (groom_mother_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s mother’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <p>Likely only found in non conformist registers.</p>
+      <p>See <a href="#marJ">groom’s surname</a> for other details of how to enter surnames.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marX">Groom’s mother’s title (groom_mother_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter as written</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Jr, Sr, Mrs</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <p>Likely only found in non conformist registers.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+
+    <h3 id="marY">Groom’s mother’s occupation (groom_mother_occupation)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter rank, trade or occupation of the groom’s mother</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Seamstress, Nurse, Lady</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <p>Likely only found in non conformist registers</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marZ">Bride’s forename (bride_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename or names, as given</li>
+        <li>use lower case with leading capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Elizabeth, Mary An, Phebe, Esther</p>
+      <h4>Guidance:</h4>
+      <p>Transcribe the name as written, even if abbreviated or written in Latin or if it looks wrong. If a person has more than one forename, enter them all.</p>
+      <p>Be wary of apparent surnames that are really part of the forename. For example, the complete name Sarah Denman Neep would be entered as Sarah Denman in this field and NEEP in the surname field.</p>
+      <p>Any qualifier, such as Jr or Sr, should be entered using the person’s <strong>title field</strong> and not as a note: this is a change in practice.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAA">Bride’s surname (bride_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Bride’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Enter the spelling exactly as given, even if it looks wrong.</p>
+      <p>Any qualifier, such as Jr or Sr, should be entered using the person’s <strong>title field</strong> and not as a note: this is a change in practice.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAB">Bride’s title (bride_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter as written</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Jr, Sr, Dr. Professor </p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAC">Bride’s age (bride_age)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Bride’s age as given</li>
+        <li>enter an integer (whole number) or one of the phrases in given below</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>17, 21, 51, Minor</p>
+      <h4>Guidance:</h4>
+      <p>In general, text is not allowed in this field. However, “minor” (under 21) is allowed, as is “of age”, “of full age” or “full age”.</p>
+      <p>If the register says “under 21” or “under age”, or “under”, record this as “minor”, and put what the register actually says in the Notes field.</p>
+      <p>If no age is stated, leave the field blank.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAD">Bride’s parish (bride_parish)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>the Bride’s parish or place of residence, if it is different from the event parish</li>
+        <li>if the parish is stated as being in another county, append the three-letter <a href="/information-for-transcribers/chapman-codes">Chapman county code</a>, entered in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Newton <br />Ealing MDX <br /> Gillespie, Glenluce <br />Silloth CUL </p>
+      <h4>Guidance:</h4>
+      <p>If the register does state the parish, but it is the same as the parish in which the marriage took place, or if the entry states “of this parish”, then leave the field empty. If there are more local details, such as a farm or road, enter these in the <a href="marAG">bride’s abode field</a>.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAE">Bride’s condition (bride_condition)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Bride’s marital status</li>
+        <li>enter in lower case with initial capitals</li>
+        <li>if missing, leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Spinster, Widow, Single Woman, Virgin, Divorced Woman, Previous Marriage Annulled, Previous Marriage Dissolved</p>
+      <h4>Guidance:</h4>
+      <p>If any additional information is provided, for instance a name or a date, enter this in the <a href="#marAS">notes field</a>.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div>
+
+    <h3 id="marAF">Bride’s occupation (bride_occupation)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Bride’s occupation</li>
+        <li>enter in lower case with initial capitals</li>
+        <li>if missing, leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Nurse, Seamstress</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAG">Bride’s abode (bride_abode)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Bride’s residence at the time of marriage</li>
+        <li>enter in lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Ruardean <br /> High St <br /> 23, High St <br />Napoleon Sq., Cinderhill</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAH">Bride marked (bride_marked)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter y, yes, marked or true (lower or upper case) if the Bride made her mark rather than signing her name in the register</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Y, yes</p>
+      <h4>Guidance:</h4>
+      <p>Do not enter N or No, but leave blank if the person signed.</p>
+      
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAI">Bride’s father’s forename(s) (bride_father_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Bride’s father’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Robert, William, Richd, George Hy.</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marZ">bride’s forename</a> for other details of how to enter forenames.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div>        
+
+    <h3 id="marAJ">Bride’s father’s surname (bride_father_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Bride’s father’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marAA">bride’s surname</a> for other details of how to enter surnames.</p>
+        
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAK">Bride’s father’s title (bride_father_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any prefix or suffix to the name of the father of the Bride</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Jr, Sr, Esq, Dr. Professor </p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAL">Bride’s father’s occupation (bride_father_occupation)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the rank, trade or occupation of the Bride’s father</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Baker, Butcher, Gentleman, Captain</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAM">Bride’s mother’s forename(s) (bride_mother_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Bride’s mother’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Sarah, Ann, Mary An</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marZ">bride’s forename </a> for other details of how to enter forenames.</p>
+      <p>If not stated, leave blank.</p>
+      <p>Likely only found in non conformist registers</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div>         
+
+    <h3 id="marAN">Bride’s mother’s surname (bride_mother_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Bride’s mother’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <p>Likely only found in non conformist registers.</p>
+      <p>See <a href="#marAA">bride’s surname</a> for other details of how to enter surnames.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAO">Bride’s mother’s title (bride_mother_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any prefix or suffix to the name of the mother of the Bride</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Jr, Sr, Mrs </p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <p>Likely only found in non conformist registers</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAP">Bride’s mother’s occupation (bride_mother_occupation)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter rank, trade or occupation of the Bride’s mother</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Seamstress, Nurse, Lady</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <p>Likely only found in non conformist registers.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAQ">Witness forename(s) (witness1_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter forename(s) of witness as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Phebe Martha, Charles, Esther, Thos.</p>
+      <h4>Guidance:</h4>
+      <p>You may enter up to 8 witnesses as numbered pairs of forename and surname. The field names (column headings) are:</p>
+      <ul>
+        <li>witness1_forename &amp; witness1_surname</li>
+        <li>witness2_forename &amp; witness2_surname</li>
+        <li>…</li>
+        <li>witness8_forename &amp; witness8_surname</li>
+      </ul>
+      <p>Use only as many pairs of fields as you need.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAR">Witness surname (witness1_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the surname of the first witness as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ADAMS, COLLIER, MITCHELL, SANDFORD</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marAQ">witness forename(s)</a> for details of how to enter more witnesses.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAS">Notes (notes)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any further information that does not belong in one of the other fields</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Witness 2 signed X<br />vide 4 June 1674<br />Bride’s father: deceased<br />by warrant of B. Edin. to Mr John M'Queen</p>
+      <h4>Guidance:</h4>
+      <p>Do not enter your observations: they belong in the <a href="#marAT">transcriber’s notes</a> field.</p>
+      <p>Do not include the details of the officiating minister unless there are compelling reasons to do so (that is, something about the minister looks like a clue for a researcher).</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+
+    <h3 id="marAT">Transcriber’s notes (notes_from_transcriber)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter your comment or observation about the record</li>  
+      </ul>
+      <h4>Examples:</h4>
+      <p>A very faint document<br />Part of record is missing<br />An ink blob in the person’s surname</p>
+      <h4>Guidance:</h4>
+      <p>Do not use to enter <em>information</em> that is in the register: put that in the Notes field.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+       
+    <h3 id="marAU">Film (film)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>Enter the name of the film or fiche</li>
+      </ul>            
+      <h4>Guidance:</h4>
+      <p>For use only with an old allocation from the image server or from a source outside of FreeREG.</p>
+      <p>Do not use if transcribing from an image from the Image server using the new Assignment system.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+        
+    <h3 id="marAV">Film number (film_number)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the number of the image</li>
+        <li>for use only with an old allocation from the image server or from a source outside of FreeREG</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p>Do <em>not</em> use if transcribing from an image from the Image Server using the new Assignment system. See the <a href="#marAW">Image file name field</a> for more details.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+      
+    <h3 id="marAW">Image file name (image_file_name)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>Enter the name of the image file in your Assignment</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p>Use only if you are transcribing from an image from the Image Server using the new Assignment process.</p>
+      <div class="nav-link"><a href="#marriageFieldList">Marriage field list</a> </div>
+    </div> 
+        
+  </div>
+</section>

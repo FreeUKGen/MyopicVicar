@@ -1,0 +1,37 @@
+<h1>The Production Server Setup</h1>
+
+<p><strong>FreeREG2</strong> (freereg2.freereg.org.uk) is deployed on 4 production servers. </p>
+<p>colobus as the Master (www13.freereg.org.uk) with drill (www14.freereg.org.uk), howler (www15.freereg.org.uk) and brazza (www16.freereg.org.uk) as slaves.</p>
+<p>Researchers are assigned round robin to one of the servers by haproxy. Members who log in are assigned to the master and an Administration cookie is set so they are always directed to the Master while working.</p>
+<p>The FreeREG2 application is run by <strong>Passenger under Apache on FreeBSD</strong>. Passenger can be restarted by sudo touch tmp/restart.txt and then loading the server in a browser. Apache can be restarted by sudo service apache24 restart. Use ONLY as a last resort as it affects ALL projects</p>
+<p><strong>The application is located</strong> on each server at&#160;&#160;&#160;&#160;&#160;&#160; /home/apache/hosts/freereg2/production/</p>
+<p><strong>The code base is kept on Github </strong>at&#160;&#160;&#160;&#160;&#160; FreeUKGen/MyopicVicar (Note there are local configurations for mongo_config, mongoid, application and errbit. As well as lib/devise/encryptors/md5.rb)</p>
+<p><strong>Each server must be updated individually</strong> by running&#160; sudo bash /root/bin/update-freereg2. This downloads changes; does a bundle and restarts the application. &#160;Should part of the updated software include <strong>assets</strong>&#160;then f2rake assets:precompile to add the updated asset followed by f2rake assets:clean to remove the old outdated version. And on production server must sudo service apache24 restart on all of them to use the new asset.&#160;IT IS ALWAYS WISE to check that the application is loaded and running by opening the restarted server in a browser.</p>
+<p><strong>Each server has its own logs</strong>
+</p>
+<p>Rails log is  /home/apache/hosts/freereg2/production/log/production.log</p>
+<p>Passenger log is at ~apache/logs/error.log</p>
+<p>Apache access logs are in ~apache/logs/freereg2</p>
+<p>Apache error logs are in ~apache/logs/freereg2</p>
+<p>colobus has the haproxy log in&#160;&#160; /var/log/haproxy/haproxy.log</p>
+<p>The <strong>Mongodb is located</strong> at&#160; /var/db/mongodb/replicated. The configuration is located at /usr/local/etc/mongodb-replicated.conf. </p>
+<p><strong>The services can be restarted/stopped/started</strong> by&#160;&#160; sudo service mongod-replicated restart and sudo service mongod-local restart <strong>Remember both need to be running for the application to function</strong>
+</p>
+<p><strong>Mongo's logs are kept</strong> in the same folder. The production log output is kept in replicated.log</p>
+<p>The<strong> mongo shell is started by the bash command &#160;&#160; mongo --ssl</strong> and then use the production database as identified by the show dbs command. If doing this on a slave then you will need to enter<strong> rs.slaveOk()</strong> in order to get access to the information on the slave. The status of the cluster replication is obtained by running (in mongo) <strong>rs.printSlaveReplicationInfo()</strong>
+</p>
+<p><strong>Each server has&#160; a replicated copy</strong> of the production database maintained by mongos. Each server also has it own unshared database writable_development for storing search_queries</p>
+<p>The <strong>datafiles used to create </strong>and backup the FreeREG2 mongo database are located at&#160;&#160; /raid/freereg2/users&#160;</p>
+<p>The <strong>database is updated automatically </strong>each night from freereg1 files by a freereg2 crontab task. It can be run manually. In a terminal session running tmux enter</p>
+<p>cd /home/apache/hosts/freereg2/production/lib/tasks &amp;&amp; ./update_freereg2_production.sh &gt;&gt; /home/kirkdawson/update.log 2&gt;&amp;1</p>
+<p><strong>This script is on gitgub.</strong>
+</p>
+<p> The script stops searches from running on the master server while it functions. </p>
+<p>It does a rsync from the freereg1 data files to /raid/freereg2/freereg1/user It creates a list of changed files in a file /raid/freereg2/tmp/freereg1.delta while at the same time copying the changed files to /raid/freereg2/freereg1/user.</p>
+<p>The rake task build:update_freereg2_production takes the delta change list from the rsync and updates the mongodb database with additions and changes it also copies backups of the original file to the attic and copies the changed file from freereg1/users to freereg2/users. At the termination it sends an email to RegManager (EricD) and Kirk.</p>
+<p>A second rake task check the status of the userids, making a note of missing entries (If any). It then does a check between what is in the database and what is in the freereg1/users folders. If any have been deleted from freereg1/users they are removed from freereg2/users and deleted from the database. If there are files present in freereg1/users that are not in the database a report is made. The task sends the report to RegManager (EricD) and Kirk</p>
+<p>As a last step the master is restarted for searches for all applications</p>
+<p>If for some reason the script does not complete (EG connection error and you forgot tmux) rerunning will NOT be effective if the rsync has completed. Running will create a nil delta set. If the freereg1.delta file is there with the correct date then you can use that directly by running the rake task&#160;&#160;&#160; sudo bundle exec rake RAILS_ENV=production build:freereg_update[a-9,search_records,delta] --trace . <strong>BUT before running that task stop the searches on the master</strong> with&#160; sudo /root/bin/searchctl.sh disable <strong>and restart them when it finishes</strong> sudo /root/bin/searchctl.sh enable. (You can see the status of the search status of the servers with sudo /root/bin/searchctl.sh status</p>
+<p><strong>Rebuilding indexes from scratch is a little complicated and slow. </strong>
+</p>
+<p>The following example is for a complete rebuild of the search_record indexes. a) Change the indexes in github. b) Stop the first mongod secondary server. sudo service mongod-replicated stop. Note users will still connect to the app on the server but will be directed to another slave for service. c) Start the mongod in a standalone status. sudo mongod --config /usr/local/etc/mongodb-replicated-standalone.conf. This starts the database on port 37017 but NOT as a deamon. d) In another connection to the server change the mongoid.yml to connect to port 37017 on the server you are working on and comment out the ssl = true statement in default. <strong>You will have to reset at the end.</strong> e) Start a mongo session with mongo&#160; --port "37017" f) Use the production database (show dbs gives a list) g) Drop the search records indexes. db.search_records.dropIndexes(). h)exit mongo. i) Run a rake task to create all the indexes. sudo bundle exec rake build:freereg_from_files[,,,,7,37017] --trace (Remember this has to be run in the production folder. /home/apache/hosts/freereg2/production This task will finish quickly BUT the indexes will take many hours to create. You can follow along at /var/db/mongodb/replicated]$ tail -n 250 replicated.log j) When finished change mongoid.yml back to the 27017 port and re-enable the ssl.&#160; k) Stop the mongod process (cntl C) and restart the normal mongodb ( sudo service mongod-replicated start) l)repeat for other secondary servers. m) to do the primary you have it step down and then do a-l n) force a reelection of the primary</p>

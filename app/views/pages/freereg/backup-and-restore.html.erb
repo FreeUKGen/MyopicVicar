@@ -1,0 +1,17 @@
+<h1>Backup and Restore</h1>
+
+<h2>Goals and Approach</h2>
+<p>If the goal of a backup is to make sure that user effort is not lost, we should consider the four locations that user-generated content is stored:</p>
+<ul><li>Transcript files are uploaded as CSV files.&#160; These are stored on the filesystem under the /raid directory.</li>
+<li>Metadata about Place and Churches is entered through the application.&#160; These are stored in MongoDB.</li>
+<li>Page contents are entered through Refinery CMS.&#160; These page contents are stored in two places:
+<ul><li>Images are stored on the filesystem.</li>
+<li>HTML is stored in MySQL</li>
+</ul>
+</li>
+</ul>
+<p>The transcript CSV files have already been backed up due to their location on the filesystem.&#160; Refinery now writes files to a directory which is symbolicaly linked to /raid/freereg2/refinery_assets, which should back up images and other uploaded assets.&#160; However, we need a more complex approach for the database.</p>
+<h2>Backup</h2>
+<p>Vervet runs a cron job nightly to back up the F2 databases:<br />/raid/freereg2/backups/bin/backup_f2.sh&gt;&gt; /tmp/cron_backup_f2.log<br /><br />This script changes into the production directory and executes the <strong>freereg:backup</strong> rake task.<br /><br />freereg:backup does a mysqldump of the refinery tables to individual dump files, then does a mongoexport of non-search collections to individual .bson files.&#160; The specific tables/collections to be dumped are <a target="_blank" title="https://github.com/FreeUKGen/MyopicVicar/blob/master/lib/tasks/backup.rake#L3-L30" href="https://github.com/FreeUKGen/MyopicVicar/blob/master/lib/tasks/backup.rake#L3-L30">listed in that task</a>, and will need to be updated.<br /><br />The resulting files are zipped and copied to /raid/freereg2/backup/files in a .taz file with the date of the backup.</p>
+<h2>Restore</h2>
+<p>Restoring is meant to be done on an internally-consistent sub-set of the tables/collections which were backed up.<br /><br /><strong>rake freereg:restore[<em>backup file</em>,<em>dataset</em>]</strong> takes two parameters: the .taz file to restore from and the "dataset", which is a name of a subset of data.&#160; (Leaving the dataset parameter blank will print a list of the valid parameters.&#160; The dataset-to-file mapping can be seen <a title="https://github.com/FreeUKGen/MyopicVicar/blob/master/lib/tasks/backup.rake#L92-L126" href="https://github.com/FreeUKGen/MyopicVicar/blob/master/lib/tasks/backup.rake#L92-L126">in the source code</a>.)<br /><br />If the backup file parameter is a directory instead of a .taz file, the initial unzipping stage will be skipped.&#160; (This may be necessary for windows machines, in which the rake task may be unable to unzip files.&#160; Contact Ben with questions.)</p>

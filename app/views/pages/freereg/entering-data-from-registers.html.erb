@@ -1,0 +1,1027 @@
+<h1>Entering data from registers</h1>
+
+<style scoped="scoped">
+  h2.section { font-size: 2em; font-weight: normal; }
+  .field div { margin-left: 1em; margin-bottom: 2rem; }
+  .field h3, .field h4 { color: #a1185a; font-weight: normal; } /* $magenta */
+  .field h3 { font-size: 1.8rem; padding-top: 1.5rem; border-top: 1px solid #dedede; }
+  .field p, .field ul { margin-bottom: 0.5rem; }
+  .field ul { margin-left: 1rem; }
+  .field h4 { margin-bottom: 0; }
+  .marriage h3, .marriage h4 { color: #008000; } /* our $green */
+  .burial h3, .burial h4 { color: #825da8; } /* $lavender */
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">For the FreeREG database to be searchable, everyone must enter records in the same way and with a common set of fields. These fields and the details of how to complete them are described below.</p>
+    <p>The amount of information available for you to transcribe for each record will depend not only on the year the event took place, but also on the source (Register type). For instance, a Bishop’s Transcript (BT) may not have all the information available in the original register.</p>
+<p>If you do not receive a “File Processed” message or any other automatic emails from FreeREG, you should contact your coordinator who will investigate.</p>
+  </div>
+    
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#guidance">General guidance</a> </li>
+          <li><a href="#baptisms">Baptisms</a> </li>
+          <li><a href="#marriages">Marriages</a> </li>
+          <li><a href="#burials">Burials</a> </li>
+        </ul>
+      </div>
+    </nav>
+
+    <aside aria-labelledby="relatedPages">
+      <div class="islet islet--bordered" id="helpMenu">      
+        <h2 class="title-block" id="relatedPages">Transcriber Help</h2>
+        <ul class="sub-nav">
+          <li><a href="/cms/information-for-transcribers">Information for transcribers</a> </li>
+          <li><a href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file</a> </li>
+          <li><a href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a> </li>
+          <li class="active"><a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers (this page)</a> </li>
+          <li><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV format</a> </li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty">Dealing with uncertainty</a> </li>
+          <li><a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a> </li>
+          <li><a href="/cms/information-for-transcribers/chapman-codes">Chapman codes</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions">File and batch actions</a> </li>
+          <li><a href="/cms/information-for-transcribers/the-gap-system">The Gap system</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-headers">File headers</a> </li>
+          <li><a href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> </li>
+          <li><a href="/cms/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a> </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <section id="guidance" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section">General guidance</h2>
+
+    <h3>Type what you see</h3>
+    <p class="push-half--bottom">The first rule of transcribing is to type what you see (T.W.Y.S.), even if it looks wrong or seems like an abbreviation. The only exceptions are for various practical reasons:</p>
+    <ul>
+      <li>dates must be entered in a standard way for searching to work (see <a href="#dates">Dates</a>, below, and the article on <a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a>) </li>
+      <li>a few fields (for instance, county) require an abbreviation </li>
+      <li>the <strong>name fields</strong> must not have anything else other than names — see <a href="#names">Names</a>, below, and the guidance for baptisms, marriages or burials</li>
+      <li>some characters cannot be entered in the database — W<sup>m</sup> and W<sup><span style="text-decoration: underline;">m</span> </sup> are both entered as Wm</li>
+      <li>pairs of letters, written as if joined together, <em>could</em> be entered, but they would not be found: type Phoebe for Phœbe, Aedie for Ædie, and so on</li>
+    </ul>
+
+    <h3>Fields A–C</h3>
+    <p>The county, place and church fields must have entries that are recognised by the database. Contact your Coordinator if you are not sure what to enter here or if your entries are rejected.</p>
+
+    <p><strong>The Register type</strong> is a two-letter code that is appended to the Church name in field C. It indicates the source of your transcription. See the Info Box for a <a href="#regCodes">list of the codes</a>; for a description of each Type, see the <a href="/cms/information-for-transcribers/register-types">Register types</a> article.</p>
+  </section>
+
+  <aside aria-labelledby="regTypes" id="regCodes" class="grid__item two-fifths lap-one-third palm-one-whole float--right clear--right">
+    <div class="islet islet--navy">
+      <h3 class="banner__title push-half--bottom" id="regTypes">Register Types &amp; codes</h3>
+      <ul class="nav nav--stacked">
+        <li>Parish Register — PR</li>
+        <li>Other Register — OR</li>
+      </ul>
+      <ul class="nav nav--stacked">
+        <li>Archdeacon’s Transcript — AT</li>
+        <li>Bishop’s Transcript — BT</li>
+        <li>Phillimore’s Transcript — PT (PH)</li>
+        <li>Dwelly’s Transcript — DT (DW)</li>
+        <li>Other Transcript — OT (TR)</li>
+      </ul>
+      <ul class="nav nav--stacked">
+        <li>Extract of a Register — EX</li>
+        <li>Memorial Inscription — MI</li>
+        <li>Unknown — UK</li>
+        <li>Unspecified — (blank)</li>
+      </ul>
+      <p>Unspecified should not be used for new transcriptions.<br /> Please do not change the older codes (TR, DW, PH) for existing batches, but do use the updated codes (OT, DT, PT) for new transcriptions.</p>
+    </div>
+  </aside>
+
+  <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h3>Illegible or not clear?</h3>
+    <p>If there’s something you cannot read, or that could be one thing or another, use our <a href="/cms/information-for-transcribers/dealing-with-uncertainty#ucf">Uncertain Character Format</a> (UCF). Even the transcription of uncertainty needs to be done the same way by everybody, so that we can all search the database effectively.</p>
+    <h3>Banns</h3>
+    <p>The transcriber should not transcribe Banns, and should inform their Coordinator.<br />The Coordinator will put a note in the Image file, so that the records can be transcribed, once we have enhanced entry for Banns.</p>
+
+    <h3 id="dates">Dates</h3>
+    <p>The next few paragraphs are a summary of our article on <a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a>.</p>
+    <p>The way that we enter most dates is simply <strong>dd Mon yyyy</strong>: a two-digit day, then a three-letter month, then a four-digit year. For example 01&#160;Aug&#160;1804, 29&#160;Oct&#160;1778, 23&#160;Apr&#160;1642.</p>
+    <p>If the year is before 1000, and so naturally has three digits, then use a leading zero: enter the year 894 as 0894 (spreadsheet users will need to set the cell format to text, or the zero will disappear).</p>
+    <p>In England and Wales, for a date from 01 Jan up to 24 Mar in any year before 1752, we use the <strong>split-year convention</strong> (also known as double-dating or old-style/new-style) as described on <a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a>. In 1752, England and Wales adopted the Gregorian calendar and we can be certain of the actual year.</p>
+    <p>When using the split-year convention, and where there is a decade or century change, please make sure you indicate this clearly. For example, 1729/30 or 1699/00.</p>
+    <p><strong>Scotland</strong> adopted 01 Jan as New Year’s Day in 1600: any date recorded in a Scottish register from 1600 onwards will be a ‘new style’ date. So, we need to insert the ‘old style’ year for dates from 01 Jan to 24 Mar (incl.) in any year from 1600 to 1751 (incl.). For example: a date recorded as 15th February 1658, should be entered as 15 Feb 1657/8; and 6th January 1700 as 06 Jan 1699/00.</p>
+    <p class="push-half--bottom"><strong>If part or all of the date is missing or illegible</strong>, we make use of parts of our Uncertain Character Format (UCF) as follows:</p>
+    <ul>
+      <li>if the day is missing, just enter a month and year — Jun 1783<br />Note that the database will treat this date as 01 Jun 1783 </li>
+      <li>if the day is unclear, use a * (asterisk) for an unreadable day — * Jul 1746</li>
+      <li>if the month is missing or illegible, enter dd * yyyy — 09 * 1708 </li>
+      <li>if the day and month are missing, just enter the year — 1761 </li>
+      <li>if only the year is legible, put * * yyyy — * * 1761 </li>
+      <li>if the year is missing, then enter the most likely year from the position in the register, in the form yyyy or yyyy/(0)y, as appropriate, together with a note on the estimation in the Notes field, but <strong>do not</strong> append a ? to an estimated year</li>
+      <li>you may use the * (asterisk) in the 3rd or 4th digit of the year or the _ (underscore) in the 4th digit and the underscore in both the 3rd and 4th digits. Do <strong>not</strong> use any other UCF (<a href="/cms/information-for-transcribers/dealing-with-uncertainty#ucf">Uncertain Character Format</a>) in the year. All these examples are valid for dates:
+        <ul>
+          <li>09 Feb 185*</li>
+          <li>20 Jun 178_</li>
+          <li>* * 18*</li>
+          <li>15 * 19__</li>
+        </ul>
+      </li>
+    </ul>
+   <p class="islet islet--bordered">If you are transcribing a register where it is not possible to estimate a missing date — such as MIs (Memorial Inscriptions) — then you should be using a spreadsheet with flexible CSV. See <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Flexible CSV, General Guidance, Dates</a> for how to enter such missing dates.</p>
+    <p><strong>If using a spreadsheet</strong>, we strongly recommend that you set the cell format for the whole sheet to text. This will avoid any issues with dates and with header fields that contain a + (plus sign).</p>
+
+    <h3 id="names">Names</h3>
+    <p>Enter only the actual name: anything else, such as Revd or Snr or Laird, belongs in the Notes field.</p>
+    <p>If no name is given, enter a * (asterisk), and put any remarks such as  ‘A Woman Unknown’ in the Notes field.</p>
+    <p>Please do not use square brackets, [ ], in any of the Forename or Surname fields, <em>unless</em> you need to use the brackets as part of our UCF (<a href="/cms/information-for-transcribers/dealing-with-uncertainty#ucf">Uncertain Character Format</a>).</p>
+    <p>For example, you may be tempted to enter something like ‘Willam [sic]’ or even ‘[Willam]’, just as you you would in a transcription made for your personal use. For the FreeREG database to be easily searchable by a researcher, you need to put ‘Willam’ in the Forename field and then something like ‘Forename: Willam [sic]’ in the Notes field. (Ideally, the comment would go in a Transcriber Notes field, but this is possible only if you are using Flexible CSV with a spreadsheet.)</p>
+
+    <h3>Witnesses</h3>
+    <p>We record the names of everyone described as a witness. If you are transcribing Baptisms that include witnesses, then please use a spreadsheet with Flexible CSV which has fields for the names of up to eight witnesses to a baptism. Similarly, Flexible CSV has fields for up to eight witnesses to a marriage rather than the standard two.</p>
+    <p>If you have more than two witnesses to a marriage (and are not using Flexible CSV), then enter the remainder using the method described in <a href="#marrAB">marriages, witness2-firstname</a>.</p>
+
+    <h3>Notes (vs Transcriber notes)</h3>
+    <p>The Notes field is for any additional information contained in the register that does not belong in another field.</p>
+    <p>Transcriber notes is new field, available <em>only if you are using Flexible CSV with a spreadsheet</em>. This field is for your comments rather than actual data. (For example, ‘Date unreadable so year entered by assumption from position in the register’.)</p>
+
+    <h3 id="textEditors">Text editors</h3>
+    <p>If entering data using a text editor be especially careful to surround a field that includes commas or speech marks with quotation (speech) marks. For example: 23, High St. would be entered as "23, High St." And a surname of Smith that could be Smithe, would be "SMITHE{0,1}".</p>
+    <p>In addition, literal quotation marks should be doubled, so that Mr Wm. “Billy” Bonds would be entered as "Mr Wm. ""Billy"" BONDS" in the Notes field.</p>
+    <p>WinREG, and modern versions of MS Excel and OpenOffice Calc will deal with these situations for you.</p>
+    <hr class="rule rule--ornament" />
+  </section>
+</div>
+
+<div id="baptisms" class="grid">
+  <nav aria-labelledby="bapFields" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section" id="bapFields">The baptism fields</h2>
+    <p class="push-half--bottom">The baptism records in the database have the following fields:</p>
+    <ul>
+      <li><a href="#bapA">County</a> </li>
+      <li><a href="#bapB">Place</a> </li>
+      <li><a href="#bapC">Church</a> and Register type </li>
+      <li><a href="#bapD">Register entry number</a> (if applicable) </li>
+      <li><a href="#bapE">Date of birth</a> (in some registers after about 1860) </li>
+      <li><a href="#bapF">Date of baptism</a> </li>
+      <li><a href="#bapG">Firstname</a> </li>
+      <li><a href="#bapH">Sex</a> </li>
+      <li><a href="#bapI">Father’s forename(s)</a> </li>
+      <li><a href="#bapJ">Mother’s forename(s)</a> </li>
+      <li><a href="#bapK">Father’s surname</a> </li>
+      <li><a href="#bapL">Mother’s surname</a>  (her Maiden surname, if recorded) </li>
+      <li><a href="#bapM">Abode</a> (from 1813 onwards) </li>
+      <li><a href="#bapN">Occupation of father</a> (from 1813 onwards) </li>
+      <li><a href="#bapO">Notes</a> (any additional information written in the register) </li>
+    </ul>
+  </nav>
+
+  <section id="baptisms2" class="field grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section">Entering baptism data</h2>
+    <p>Here are the details of what should go in each baptism field (or column, if you are using a spreadsheet).</p>
+
+    <h3 id="bapA" class="push--top">Field A: county</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> and is the three-letter <a href="/cms/information-for-transcribers/chapman-codes">Chapman county code</a> </li>
+        <li>enter in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ABD, NTT, FLN, DUR <br />(Aberdeenshire, Nottinghamshire, Flintshire, and Durham, or County Durham) </p>
+    </div>
+
+    <h3 id="bapB">Field B: place</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter the name of the town or village</li>
+        <li>enter in lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betws-y-Coed, Nottingham, Prestonkirk, Chorlton cum Hardy</p>
+    </div>
+
+    <h3 id="bapC">Field C: church</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter in lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>St Ethelred PR, St Mary AT, Holy Trinity EX, Methodist OT, All Saints (North Street) PR</p>
+      <h4>Guidance:</h4>
+      <p>Enter the name of the church, parish or congregation plus a <a href="#regCodes">two-letter Register code</a>. Take care with this as larger towns may have more than one parish or church, and a church may have more than one register type.</p>
+      <p>If a place has two churches with the same name, then use parentheses for the identifier part, as in the example.</p>
+    </div>
+
+    <h3 id="bapD">Field D: no</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the register number (or page and position), if there is one</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>483, 25c</p>
+      <h4>Guidance:</h4>
+      <p>Usually found in baptism registers after 1813. Enter the number without leading zeroes.</p>
+      <p>If only the page has a number, enter that number, plus a lower case letter to indicate position on page. If there are no numbers, leave blank.</p>
+    </div>
+
+    <h3 id="bapE">Field E: birthdate</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the birth date, or leave blank</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>If no birth date is shown in the register, leave blank.</p>
+      <p>See <a href="#dates">Dates</a> in General guidance for further help.</p>
+    </div>
+
+    <h3 id="bapF">Field F: baptdate</h3>
+    <div>
+      <h4>Requirements:</h4>
+        <ul>
+          <li>enter the baptism date. If missing, see <a href="#dates">Dates</a> in General guidance for further help.</li>
+          <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>As for field E, birthdate.</p>
+      <p>Please note that the Quakers (or Religious Society of Friends) recorded Births, not Baptisms, so these dates should be entered in <a href="#bapE">Field E: birthdate</a> and not here.</p>
+    </div>
+
+    <h3 id="bapG">Field G: firstname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename or names, as given</li>
+        <li>use lower case with leading capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Henry, Elizth, Raphe, Mary An</p>
+      <h4>Guidance:</h4>
+      <p>Transcribe the name as written, even if abbreviated or written in Latin or if it looks wrong. If a person has more than one forename, enter them all.</p>
+      <p>Be wary of apparent surnames that are really part of the forename. For example, the complete name Sarah Denman Neep, would be entered as Sarah Denman in this field, and NEEP in the surname field.</p>
+      <p>Any qualifier, such as Jr or Sr, should be entered using the <a href="#bap0">notes field</a>.</p>
+    </div>
+
+    <h3 id="bapH">Field H: sex</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>a single character from f, F, m, or M</li>
+        <li>leave blank where the sex is not stated</li>
+        <li>if the entry is illegible, put ?</li>
+        <li>if you find just a ‘-’ (a hyphen) or a ‘?’ in a <em>transcript</em>, put ?</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p>Enter based on the sex implied by “son of” or “dau of”. Do not guess based on the name: Julian, for example, was also a female name. Similarly, do not assume that Frances is female or Francis male.</p>
+    </div>
+
+    <h3 id="bapI">Field I: father</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the father’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Joseph, Saml John, Henrey, Gulielmus</p>
+      <h4>Guidance:</h4>
+      <p>If the father’s name is not stated, for example in the case of an illegitimate birth, then leave blank.</p>
+      <p>See <a href="#bapG">field G, firstname</a> for other details of how to enter forenames.</p>
+    </div>
+
+    <h3 id="bapJ">Field J: mother</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the mother’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Agnes, Charlotte Elizabeth, Jane, Onoria</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#bapG">field G, firstname</a> for other details of how to enter forenames.</p>
+    </div>
+
+    <h3 id="bapK">Field K: fath-surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the father’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Enter the spelling exactly as given, even if it looks wrong.</p>
+      <p>A widow’s surname would be entered in this field.</p>
+      <p>Any qualifier, such as Jr, Sr or Esq, should be entered using the <a href="#bapO">notes field</a>.</p>
+    </div>
+
+    <h3 id="bapL">Field L: moth-surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the mother’s maiden surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>This is the mother’s surname before marriage, sometimes signified by a “late NAME”. Please do not enter her married surname. If the mother was unmarried, enter her surname.</p>
+      <p>Most registers do not have a married mother’s maiden name. Leave the field blank if this is so.</p>
+      <p>As with the father’s surname, enter the surname exactly as spelt in the registers and put any qualifiers in the notes field.</p>
+    </div>
+
+    <h3 id="bapM">Field M: abode</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the abode or address as given</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Ruardean <br /> High St <br /> 23, High St <br />Napoleon Sq., Cinderhill</p>
+      <h4>Guidance:</h4>
+      <p>This is usually given in baptism registers from 1813. If it not given, leave blank.</p>
+    </div>
+
+    <h3 id="bapN">Field N: fath-occupation</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the rank, trade or occupation of the father</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Blacksmith, Miller, Carpenter, Gentleman</p>
+      <h4>Guidance:</h4>
+      <p>This is usually given in baptism registers from 1813, but may be found earlier. If not stated, leave blank.</p>
+    </div>
+
+    <h3 id="bapO">Field O: notes</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>use as described below</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Illegitimate, Spurious, Single woman, Private baptism, Twin</p>
+      <h4>Guidance:</h4>
+      <p>Use for any other information given in the register. For example, “Mr. John SMITH” or “John SMITH Jnr” or “John SMITH the elder”.</p>
+      <p>Do not include the details of the officiating minister unless there are compelling reasons to do so (that is, something about the minister looks like a clue for a researcher).</p>
+    </div>
+    <hr class="rule rule--ornament" />
+  </section>
+</div>
+
+<div id="marriages" class="grid">
+  <nav aria-labelledby="marFields" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section" id="marFields">The marriage fields</h2>
+    <p class="push-half--bottom">The marriage records in the database have the following fields:</p>
+    <ul>
+      <li><a href="#marrA">County</a> </li>
+      <li><a href="#marrB">Place</a> </li>
+      <li><a href="#marrC">Church</a> and Register type </li>
+      <li><a href="#marrD">Register entry number</a> (if applicable)</li>
+      <li><a href="#marrE">Date of marriage</a> </li>
+      <li><a href="#marrF">Groom’s forename</a> </li>
+      <li><a href="#marrG">Groom’s surname</a> </li>
+      <li><a href="#marrH">Groom’s age</a> (if shown)</li>
+      <li><a href="#marrI">Groom’s parish/place</a> (usually only stated if the parish of residence of the groom was different from the parish where the marriage took place — not necessarily his place of birth)</li>
+      <li><a href="#marrJ">Groom’s condition</a> (his marital status)</li>
+      <li><a href="#marrK">Groom’s occupation</a> (if stated)</li>
+      <li><a href="#marrL">Groom’s abode</a> (1837 onwards) </li>
+      <li><a href="#marrM">Bride’s forename</a> </li>
+      <li><a href="#marrN">Bride’s surname</a> </li>
+      <li><a href="#marrO">Bride’s age</a> (if stated)</li>
+      <li><a href="#marrP">Bride’s parish/place</a> (usually only stated if the parish of residence of the bride is different from the parish where the marriage took place — not necessarily her place of birth)</li>
+      <li><a href="#marrQ">Bride’s condition</a> (her marital status)</li>
+      <li><a href="#marrR">Bride’s occupation</a> (if stated)</li>
+      <li><a href="#marrS">Bride’s abode</a> (1837 onwards) </li>
+      <li><a href="#marrT">Groom’s father’s first name</a> (after 1837, but occasionally earlier) </li>
+      <li><a href="#marrU">Groom’s father’s surname</a> (after 1837, but occasionally earlier)</li>
+      <li><a href="#marrV">Groom’s father’s occupation</a> (after 1837) </li>
+      <li><a href="#marrW">Bride’s father’s first name</a> </li>
+      <li><a href="#marrX">Bride’s father’s surname</a> </li>
+      <li><a href="#marrY">Bride’s father’s occupation</a> </li>
+      <li><a href="#marrZ">Names of witnesses</a> (usually from 1754; 2 per entry)</li>
+      <li><a href="#marrAD">Notes</a> (any additional information given)</li>
+    </ul>
+  </nav>
+
+  <section id="marriages2" class="field marriage grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 class="section">Entering marriage data</h2>
+    <p>Here are the details of what should go in each marriage field (or column, if you are using a spreadsheet).</p>
+
+    <h3 id="marrA" class="push--top">Field A: county</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> and is the 3-letter <a href="/cms/information-for-transcribers/chapman-codes">Chapman county code</a> </li>
+        <li>enter in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ABD, NTT, FLN, DUR <br />(Aberdeenshire, Nottinghamshire, Flintshire, and Durham, or County Durham)</p>
+    </div>
+
+    <h3 id="marrB">Field B: place</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter the name of the town or village</li>
+        <li>enter in lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betws-y-Coed, Nottingham, Prestonkirk, Chorlton cum Hardy</p>
+    </div>
+
+    <h3 id="marrC">Field C: church</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter in lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>St Ethelred PR, St Mary AT, Holy Trinity EX, Methodist OT, All Saints (North Street) PR</p>
+      <h4>Guidance:</h4>
+      <p>Enter the name of the church, parish or congregation plus a <a href="#regCodes">two-letter Register code</a>. Take care with this as larger towns may have more than one parish or church, and a church may have more than one register type.</p>
+      <p>If a place has two churches with the same name, then use parentheses for the identifier part, as in the example.</p>
+    </div>
+
+    <h3 id="marrD">Field D: no</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the register number (or page and position), if there is one</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>483, 25c</p>
+      <h4>Guidance:</h4>
+      <p>Usually found in marriage registers after 1754. Enter the number without leading zeroes. </p>
+      <p>If only the page has a number, enter that number, plus a lower case letter to indicate position on page. If there are no numbers, leave blank.</p>
+    </div>
+
+    <h3 id="marrE">Field E: marrdate</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the date of the marriage</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>If no marriage date is shown in the register, see <a href="#dates">Dates</a> in General guidance for further help.</p>
+    </div>
+
+    <h3 id="marrF">Field F: groom-firstname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename or names, as given</li>
+        <li>use lower case with leading capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Joseph, Saml John, Henrey, Gulielmus</p>
+      <h4>Guidance:</h4>
+      <p>Transcribe the name as written, even if abbreviated or written in Latin or if it looks wrong. If a person has more than one forename, enter them all.</p>
+      <p>Be wary of apparent surnames that are really part of the forename. For example, the complete name Alexander Denman Neep would be entered as Alexander Denman in this field and NEEP in the surname field.</p>
+      <p>Any qualifier, such as Jr or Sr, should be entered using the <a href="#marrAD">notes field</a>.</p>
+    </div>
+
+    <h3 id="marrG">Field G: groom-surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Enter the spelling exactly as given, even if it looks wrong.</p>
+      <p>Any qualifier, such as Jr, Sr or Esq, should be entered in the notes field.</p>
+    </div>
+
+    <h3 id="marrH">Field H: groom-age</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s age as given</li>
+        <li>enter an integer (whole number)</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>17, 21, 51, minor</p>
+      <h4>Guidance:</h4>
+      <p>In general, text is not allowed in this field. However, “minor” (under 21) is allowed, as is “of age”, “of full age” or “full age”.</p>
+      <p>If the register says “under 21” or “under age”, or “under”, record this as “minor”, and put what the register actually says in the Notes field.</p>
+      <p>If no age is stated, leave the field blank.</p>
+    </div>
+
+    <h3 id="marrI">Field I: groom-parish</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>the groom’s parish or place of residence, if it is different from the event parish</li>
+        <li>if the parish is stated as being in another county, append the three-letter <a href="/cms/information-for-transcribers/chapman-codes">Chapman county code</a>, entered in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Newton <br />Ealing MDX <br /> Gillespie, Glenluce <br />Silloth CUL </p>
+      <h4>Guidance:</h4>
+      <p>If the register does state the parish, but it is the same as the parish in which the marriage took place, or if the entry states “of this parish”, then leave the field empty. If there are more local details, such as a farm or road, enter these in the abode field.</p>
+    </div>
+
+    <h3 id="marrJ">Field J: groom-condition</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s marital status</li>
+        <li>enter in lower case with initial capitals</li>
+        <li>if missing, leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Bachelor, Widower, Single Man, Virgin, Divorced Man, Previous Marriage Annulled, Previous Marriage Dissolved, Minor</p>
+      <h4>Guidance:</h4>
+      <p>If any additional information is provided, for instance a name or a date, enter this in the way described for <a href="#marrQ">bride-condition</a>.</p>
+    </div>
+
+    <h3 id="marrK">Field K: groom-occupation</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s occupation</li>
+        <li>enter in lower case with initial capitals</li>
+        <li>if missing, leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Railway Shunter, Baker, Labourer, Miner</p>
+    </div>
+
+    <h3 id="marrL">Field L: groom-abode</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s residence at the time of marriage</li>
+        <li>enter in lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Ruardean <br /> High St <br /> 23, High St <br />Napoleon Sq., Cinderhill</p>
+    </div>
+
+    <h3 id="marrM">Field M: bride-firstname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the bride’s forename or names, as given</li>
+        <li>use lower case with leading capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Joan, Mary Jane, Elizabeth, Emilie</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrF">field F, groom-forename</a>.</p>
+    </div>
+
+    <h3 id="marrN">Field N: bride-surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the bride’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrG">field G, groom-surname</a>.</p>
+    </div>
+
+    <h3 id="marrO">Field O: bride-age</h3>
+    <div>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrH">groom-age</a> for details.</p>
+    </div>
+
+    <h3 id="marrP">Field P: bride-parish</h3>
+    <div>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrI">groom-parish</a> for details.</p>
+    </div>
+
+    <h3 id="marrQ">Field Q: bride-condition</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the bride’s marital status</li>
+        <li>enter in lower case with initial capitals</li>
+        <li>if missing, leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Spinster, Widow, Single Woman, Virgin, Divorced Woman, Previous Marriage Annulled, Previous Marriage Dissolved, Minor</p>
+      <h4>Guidance:</h4>
+      <p>Scottish registers in particular may have additional information: for example,  ‘widow of Thomas Aird, stabler’. Enter  ‘Widow’ in this field,  ‘Thomas’ and  ‘AIRD’ in the witness fields, and the whole phrase in the <a href="#marrAD">notes field</a>. This will make the previous husband’s name searchable when the Family Search option becomes available for marriages.</p>
+    </div>
+
+    <h3 id="marrR">Field R: bride-occupation</h3>
+    <div>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrK">groom-occupation</a> for details.</p>
+    </div>
+
+    <h3 id="marrS">Field S: bride-abode</h3>
+    <div>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrL">groom-abode</a> for details.</p>
+    </div>
+
+    <h3 id="marrT">Field T: groom-fath-firstname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s father’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Robert, William, Richd, George Hy.</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrF">field F, groom-firstname</a> for other details of how to enter forenames.</p>
+    </div>
+
+    <h3 id="marrU">Field U: groom-fath-surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the groom’s father’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrG">field G, groom-surname</a> for other details of how to enter surnames.</p>
+    </div>
+
+    <h3 id="marrV">Field V: groom-fath-occupation</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter rank, trade or occupation of the groom’s father</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Baker, Butcher, Gentleman, Captain</p>
+    </div>
+
+    <h3 id="marrW">Field W: bride-fath-firstname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the bride’s father’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Robert, William, Richd, George Hy.</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrF">field F, groom-firstname</a> for other details of how to enter forenames.</p>
+    </div>
+
+    <h3 id="marrX">Field X: bride-fath-surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the bride’s father’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrG">field G, groom-surname</a> for other details of how to enter surnames.</p>
+    </div>
+
+    <h3 id="marrY">Field Y: bride-fath-occupation</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the bride’s father’s occupation as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Farmer, Tailor, Ostler, Fisher</p>
+    </div>
+
+    <h3 id="marrZ">Field Z: witness1-firstname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter forename(s) of first witness as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Phebe Martha, Charles, Esther, Thos.</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrF">field F, groom-firstname</a>.</p>
+    </div>
+
+    <h3 id="marrAA">Field AA: witness1-surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the surname of the first witness as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ADAMS, COLLIER, MITCHELL, SANDFORD</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrG">field G, groom-surname</a>.</p>
+    </div>
+
+    <h3 id="marrAB">Field AB: witness2-firstname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter forename(s) of second witness as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Hannah, Stephen, Sibilla, Richd John</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrF">field F, groom-firstname</a>.</p>
+      <p>If there are more than two witnesses, duplicate the whole entry and replace the witness details with those of the additional witnesses.</p>
+    </div>
+
+    <h3 id="marrAC">Field AC: witness2-surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the surname of the second witness as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARKER, TALBOTT, BRYAN, WILKINSON</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#marrG">field G, groom-surname</a>.</p>
+    </div>
+
+    <h3 id="marrAD">Field AD: notes</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>use as described below</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Lic., Son of Mr John Smith, she signs X, Rector of this Parish, widow of James Murray</p>
+      <h4>Guidance:</h4>
+      <p>Use for any other information given in the register. As most marriages were by Banns, this is not usually transcribed. Other forms, such as by licence, are transcribed.</p>
+      <p>If the groom or bride signs with an X, make a note.</p>
+      <p>Do not include the details of the officiating minister unless there are compelling reasons to do so (that is, something about the minister looks like a clue for a researcher).</p>
+      <p>Overflow of extended information from other fields can also go here.</p>
+    </div>
+
+    <hr class="rule rule--ornament" />
+  </section>
+</div>
+
+<div id="burials" class="grid">
+  <nav aria-labelledby="burFields" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section" id="burFields">The burial fields</h2>    
+    <p class="push-half--bottom">The burial records in the database have the following fields:</p>
+    <ul>
+      <li><a href="#burA">County</a> </li>
+      <li><a href="#burB">Place</a> </li>
+      <li><a href="#burC">Church</a> and Register type </li>
+      <li><a href="#burD">Register entry number</a> (if applicable)</li>
+      <li><a href="#burE">Date of burial</a> </li>
+      <li><a href="#burF">Forenames</a> </li>
+      <li><a href="#burG">Relationship</a> (e.g. wife of, son of, daughter of, widow of)</li>
+      <li><a href="#burH">Male relative forenames</a>  </li>
+      <li><a href="#burI">Female relative forenames</a> </li>
+      <li><a href="#burJ">Surname of relative</a> </li>
+      <li><a href="#burK">Surname</a> </li>
+      <li><a href="#burL">Age at death</a> (if stated)</li>
+      <li><a href="#burM">Abode</a> (if stated)</li>
+      <li><a href="#burN">Notes</a> (for additional information such as occupation, if stated)</li>
+    </ul>
+  </nav>
+
+  <section id="burials2" class="field burial grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section">Entering burials data</h2>
+    <p>Here are the details of what should go in each burial field (or column, if you are using a spreadsheet).</p>
+
+    <h3 id="burA" class="push--top">Field A: county</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> and is the three-letter <a href="/cms/information-for-transcribers/chapman-codes">Chapman county code</a> </li>
+        <li>enter in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ABD, NTT, FLN, DUR <br />(Aberdeenshire, Nottinghamshire, Flintshire, and Durham, or County Durham) </p>
+    </div>
+
+    <h3 id="burB">Field B: place</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter the name of the town or village</li>
+        <li>enter in lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betws-y-Coed, Nottingham, Prestonkirk, Chorlton cum Hardy</p>
+    </div>
+
+    <h3 id="burC">Field C: church</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter in lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>St Ethelred PR, St Mary AT, Holy Trinity EX, Methodist OT, All Saints (North Street) PR</p>
+      <h4>Guidance:</h4>
+      <p>Enter the name of the church, parish or congregation plus a <a href="#regCodes">two-letter Register code</a>. Take care with this as larger towns may have more than one parish or church, and a church may have more than one register type.</p>
+      <p>If a place has two churches with the same name, then use parentheses for the identifier part, as in the example.</p>
+    </div>
+
+    <h3 id="burD">Field D: no</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the register number (or page and position), if there is one</li>
+      </ul>
+      <h4>Example:</h4>
+      <p>483, 25c</p>
+      <h4>Guidance:</h4>
+      <p>Usually found in burial registers after 1813. Enter the number without leading zeroes. </p>
+      <p>If only the page has a number, enter that number, plus a lower case letter to indicate position on page. If there are no numbers, leave blank.</p>
+    </div>
+
+    <h3 id="burE">Field E: burdate</h3>
+    <div>
+        <h4>Requirements:</h4>
+        <ul>
+            <li>enter the burial date</li>
+            <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+        </ul>
+        <h4>Examples:</h4>
+        <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+        <h4>Guidance:</h4>
+        <p>If date is missing, see <a href="#dates">Dates</a> in General guidance for further help. </p>
+    </div>
+
+    <h3 id="burF">Field F: firstname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename or names, as given</li>
+        <li>use lower case with leading capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Henry, Elizth, Raphe, Mary An</p>
+      <h4>Guidance:</h4>
+      <p>Transcribe the name as written, even if abbreviated or written in Latin or if it looks wrong. If a person has more than one forename, enter them all.</p>
+      <p>Be wary of apparent surnames that are really part of the forename. For example, the complete name Sarah Denman Neep would be entered as Sarah Denman in this field and NEEP in the surname field.</p>
+      <p>Any qualifier, such as Jr or Sr, should be entered in the <a href="#burN">notes field</a>.</p>
+    </div>
+
+    <h3 id="burG">Field G: relationship</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter relationship, of deceased to relative, if given, or leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>son of, dau of, wife of, widow of, relict of, servant of</p>
+      <h4>Guidance:</h4>
+      <p>Abbreviate “daughter” to “dau”. Note that “relict” means “surviving widow of”, the same thing as “widow of”.</p>
+    </div>
+
+    <h3 id="burH">Field H: rel1-male-first</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the male relative’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Alexander, James Edward John, Jared, Robt</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#burF">field F, firstname</a> for other details of how to enter forenames.</p>
+    </div>
+
+    <h3 id="burI">Field I: rel2-female-first</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the female relative’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betty, Frances Mary, Eline, Margret</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#burF">field F, firstname</a> for other details of how to enter forenames.</p>
+    </div>
+
+    <h3 id="burJ">Field J: rel1-surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the surname of the relative as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Be aware that the relative may not have the same surname as the person who was buried.</p>
+    </div>
+
+    <aside aria-labelledby="relSurnames" class="island island--light">
+      <h4 class="push--bottom beta" id="relSurnames" style="color: #444; font-weight: bold;">More than one relative surname?</h4>
+      <p class="flush--bottom">Some entries have two different relative surnames:</p>
+      <p class="islet"><em>Joseph Brown son of William and Elizabeth (late Green)</em> </p>
+      <p>To make Elizabeth’s previous surname searchable, you will need two records. The three Relative fields and the Notes field respectively would be:</p>
+      <ul>
+        <li>First:
+          <ul>
+            <li>William, Elizabeth, BROWN</li>
+            <li>Elizabeth Brown (late Green)</li>
+          </ul>
+        </li>
+        <li>Second:
+          <ul>
+            <li> , Elizabeth, GREEN</li> 
+            <li>Elizabeth Brown (late Green). Son of William Brown</li>
+          </ul>
+        </li>
+      </ul>
+      <p>For the second record, the rel1-male-first field is left empty because William was not called Green. (We are planning to add a second relative surname field when this becomes feasible.)</p>
+    </aside>
+
+    <h3 id="burK">Field K: surname</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter surname of the person buried as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>Be aware that the person who was buried may not have the same surname as the relative.</p>
+    </div>
+
+    <h3 id="burL">Field L: age</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the age as an integer (whole number)</li>
+        <li>you may use d (days), w (weeks), m (months), h (hours), “infant” or “child”</li>
+        <li>if required, use y (years)</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>17, 21, 51, 2y5m, 3m, 3w, 3d, 2h, infant, child</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <p>If the age is given as say, “less than an hour”, put 0 (zero) here and “less than an hour old” in the Notes field.</p>
+    </div>
+
+    <h3 id="burM">Field M: abode</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the abode or address of the deceased as given</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Ruardean <br /> High St <br /> 23, High St <br />Napoleon Sq., Cinderhill</p>
+      <h4>Guidance:</h4>
+      <p>This is usually given in burial registers from 1813. If it not given, leave blank.</p>
+    </div>
+
+    <h3 id="burN">Field N: notes</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>use as described below</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>cholera, plague, Rector of this Parish</p>
+      <h4>Guidance:</h4>
+      <p>Use for any other information given in the register. For example, “Mr. John SMITH” or “John SMITH Jnr” or “John SMITH the elder”.</p>
+      <p>Use for overflow of extended information from other fields.</p>
+      <p>Do not include the details of the officiating minister unless there are compelling reasons to do so (that is, something about the minister looks like a clue for a researcher).</p>
+    </div>
+
+  </section>
+</div>

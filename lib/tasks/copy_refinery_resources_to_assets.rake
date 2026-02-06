@@ -1,4 +1,4 @@
-frozen_string_literal: true
+# frozen_string_literal: true
 
 require 'set'
 
@@ -10,15 +10,13 @@ namespace :refinery do
   desc "  copy_meta: true to copy .meta.yml files (default: true)"
   task :copy_resources_to_assets, [:site, :overwrite, :copy_meta] => :environment do |_t, args|
     # Try to access Refinery::Resource directly
+    # This will trigger autoloading if the class exists
     begin
-      resource_class = if defined?(Refinery::Resources::Resource)
-                         Refinery::Resources::Resource
-                       elsif defined?(Refinery::Resource)
-                         Refinery::Resource
-                       else
-                         raise NameError, "Refinery::Resource not found"
-                       end
-      resource_class
+      resource_class = begin
+        Refinery::Resources::Resource
+      rescue NameError
+        Refinery::Resource
+      end
     rescue NameError => e
       puts "=" * 80
       puts "ERROR: Refinery::Resource is not available"
@@ -295,14 +293,7 @@ namespace :refinery do
 
     # Get all Refinery resources from the current database
     begin
-      resource_class = if defined?(Refinery::Resources::Resource)
-                         Refinery::Resources::Resource
-                       elsif defined?(Refinery::Resource)
-                         Refinery::Resource
-                       else
-                         raise NameError, "Refinery::Resource not found"
-                       end
-      
+      # Use the resource_class we determined earlier
       all_resources = resource_class.all
       puts "Found #{all_resources.count} total Refinery resources in current database"
     rescue NoMethodError => e

@@ -1,0 +1,748 @@
+<h1>Extended baptism fields</h1>
+
+<style scoped="scoped">
+  h2.section { font-size: 2em; font-weight: normal; }
+  .field .nav-link { margin-left: 0; margin-top: 1.5rem; margin-bottom: 1rem; }
+  .field div { margin-left: 1em; margin-bottom: 2rem; }
+  .field h3, .field h4 { color: #a1185a; font-weight: normal; }
+  .field h3 { font-size: 1.8rem; padding-top: 1.5rem; border-top: 1px solid #dedede; }
+  .field p, .field ul { margin-bottom: 0.5rem; }
+  .field ul { margin-left: 1rem; }
+  .field h4 { margin-bottom: 0; }
+</style>
+
+<div class="grid">
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section">The baptism fields</h2>
+    <p>Use this link to <a href="/system/resources/W1siZiIsIjIwMTgvMDYvMjYvM2R5bWczbDVreF9leHRlbmRlZF9iYXB0aXNtX2ZpZWxkcy5jc3YiXV0/extended%20baptism%20fields.csv?sha=af2f9b1611c1e293">download the extended baptism fields</a> as a two-row CSV file — rows 5 and 6 of your spreadsheet.</p>
+    <p>Do not delete row 6, with the field names, before uploading your file: this is a change in practice.</p>
+    <p>The full list of baptism fields now available follows: use as few or as many you need, depending on the register.</p>
+  </div>
+
+  <aside aria-labelledby="relatedPages" class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block" id="relatedPages">Related pages</h2>
+      <ul class="sub-nav">
+        <li><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV</a>
+          <ul class="push-half--left push-half--bottom">
+            <li class="active"><a href="/cms/information-for-transcribers/flexible-csv-format/extended-baptism-fields">Extended baptism fields (this page)</a> </li>
+            <li><a href="/cms/information-for-transcribers/flexible-csv-format/extended-marriage-fields">Extended marriage fields</a> </li>
+            <li><a href="/cms/information-for-transcribers/flexible-csv-format/extended-burial-fields">Extended burial fields</a> </li>            
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <nav aria-label="Baptism field names" id="baptismFields">
+    <div class="grid__item one-half palm-one-whole">
+      <ul>
+        <li><a href="#bapA">County</a> </li>
+        <li><a href="#bapB">Place</a> </li>
+        <li><a href="#bapC">Church</a> </li>
+        <li><a href="#bapD">Register type</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#bapE">Register entry number</a> (or page &amp; position) </li>
+        <li><a href="#bapF">Birth date</a> </li>
+        <li><a href="#bapG">Baptism date</a> </li>
+        <li><a href="#bapH">Confirmation date</a> </li>
+        <li><a href="#bapI">Received into church date</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#bapJ">Forename(s)</a> </li>
+        <li><a href="#bapK">Surname</a> </li>
+        <li><a href="#bapL">Title</a> </li>
+        <li><a href="#bapM">Age</a> </li>
+        <li><a href="#bapN">Relationship</a> </li>
+        <li><a href="#bapO">Sex</a> </li>
+        <li><a href="#bapP">Abode</a> </li>
+        <li><a href="#bapQ">Condition</a> </li>
+        <li><a href="#bapR"> Status</a> </li>
+        <li><a href="#bapS">Occupation</a> </li>
+        <li><a href="#bapT">Place of birth</a> </li>
+        <li><a href="#bapU">County of birth</a> </li>
+      </ul>
+    </div>
+    <div class="grid__item one-half palm-one-whole">
+      <ul>
+        <li><a href="#bapV">Father’s forename(s)</a> </li>
+        <li><a href="#bapW">Father’s surname</a> </li>
+        <li><a href="#bapX">Father’s title</a> </li>
+        <li><a href="#bapY">Father’s abode</a> </li>
+        <li><a href="#bapZ">Father’s occupation</a> </li>
+        <li><a href="#bapAA">Father’s prior place</a> </li>
+        <li><a href="#bapAB">Father’s prior county</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#bapAC">Mother’s forename(s)</a> </li>
+        <li><a href="#bapAD">Mother’s surname</a> </li>
+        <li><a href="#bapAE">Mother’s title</a> </li>
+        <li><a href="#bapAF">Mother’s abode</a> </li>
+        <li><a href="#bapAG">Mother’s occupation</a> </li>
+        <li><a href="#bapAH">Mother’s condition</a> </li>
+        <li><a href="#bapAI">Mother’s prior place</a> </li>
+        <li><a href="#bapAJ">Mother’s prior county</a> </li>
+      </ul>
+      <ul>
+        <li><a href="#bapAK">Private baptism</a> </li>
+        <li><a href="#bapAL">Witness forename(s)</a> </li>
+        <li><a href="#bapAM">Witness surname</a> (up to 8 witnesses)</li>
+        <li><a href="#bapAN">Notes</a> </li>
+        <li><a href="#bapAO">Transcriber’s notes</a> </li>
+        <li><a href="#bapAP">Film</a> </li>
+        <li><a href="#bapAQ">Film number</a> </li>
+        <li><a href="#bapAR">Image file name</a> </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+<hr class="rule rule--ornament" />
+
+<section id="baptismsDetail" class="grid">
+  <div class="field grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 class="section">Entering baptism data</h2>
+    <p>Here are the details of what should go in each baptism field (that is, spreadsheet column).</p>
+
+    <h3 id="bapA" class="push--top">County (chapman_code)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> and is the three-letter<a href="/cms/information-for-transcribers/chapman-codes"> Chapman county code</a> </li>
+        <li>enter in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ABD, NTT, FLN, DUR <br />(Aberdeenshire, Nottinghamshire, Flintshire, and Durham, or County Durham)</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapB">Place (place_name)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter the name of the town or village</li>
+        <li>enter in lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betws-y-Coed, Nottingham, Prestonkirk, Chorlton cum Hardy</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapC">Church (church_name)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter in lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>St Ethelred, St Mary, Holy Trinity, Methodist, All Saints (North Street)</p>
+      <h4>Guidance:</h4>
+      <p>Enter the name of the church, parish or congregation  Take care with this as larger towns may have more than one parish or church.</p>
+      <p>If a place has two churches with the same name, then use parentheses for the identifier part, as in the example.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapD">Register type (register_type)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is <strong>mandatory</strong> </li>
+        <li>enter in upper case</li>
+        <li>use one of the codes from the <a href="/cms/information-for-transcribers/flexible-csv-format#regCodes">list of Register Codes</a> in General guidance</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>AT, PR</p>
+      <h4>Guidance:</h4>
+      <p>This is a change in practice.</p> 
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapE">Register entry number (register_entry_number)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the register number (or page and position), if there is one</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>483, 25c</p>
+      <h4>Guidance:</h4>
+      <p>Usually found in baptism registers after 1813. Enter the number without leading zeroes. </p>
+      <p>If only the page has a number, enter that number, plus a lower case letter to indicate position on page. If there are no numbers, leave blank.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapF">Date of birth (birth_date)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the birth date</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>For a register that has <em>no</em> baptism dates, we need at least a year (given or estimated) in the birth_date field: if part or all of the birth_date is missing or illegible, see <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Dates</a> in General guidance for how to enter.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapG">Date of Baptism (baptism_date)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the baptism date</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>For a register that has no birth dates, we need at least a year (given or estimated) in the baptism_date field.</p>
+      <p>Where parts of the date are missing or illegible, see <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Dates</a> in General guidance.</p>
+      <p class="flush--bottom">Where there is no date for a baptism, then …</p>
+      <ul class="push--bottom">
+        <li>if there is a date of birth, put that in the birth_date field</li>
+        <li>if there is also no birth date, then estimate a year (baptism or birth, whichever one is more appropriate for your register) and put that year in the relevant field</li>
+        <li>if you need more help, then contact your SC with the details</li>
+      </ul>
+      <div class="island island--magenta flush--left">
+        <p class="flush--bottom">In short …</p>
+        <p>For searching to work, we need a <em>minimum</em> of a year (given or estimated) in <em>either</em> the baptism_date field <em>or</em> the birth_date field, depending on the information in the register.</p>
+      </div>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapH">Date of confirmation (confirmation_date)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the confirmation date, or leave blank</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>Confirmation dates are usually found only in Catholic Church records: if no confirmation date is shown in the register, leave blank.</p>
+      <p>See <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Dates</a> in General guidance for further help.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapI">Date received into the church (received_into_church_date)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the date the person was received into the church, or leave blank</li>
+        <li>use the format <strong>dd Mon yyyy</strong> or dd Mon yyyy/y(0) if appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>30 Sep 1853, 25 Jan 1742/3, 19 Feb 1689/90, 02 Jun 1545</p>
+      <h4>Guidance:</h4>
+      <p>Such a date is often recorded some time after a private baptism: if no such date is shown in the register, leave blank.</p>
+      <p>See <a href="/cms/information-for-transcribers/flexible-csv-format#dates">Dates</a> in General guidance for further help.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapJ">Forename(s) (person_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename or names, as given</li>
+        <li>use lower case with leading capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Henry, Elizth, Raphe, Mary An</p>
+      <h4>Guidance:</h4>
+      <p>Transcribe the name as written, even if abbreviated or written in Latin or if it looks wrong. If a person has more than one forename, enter them all.</p>
+      <p>Be wary of apparent surnames that are really part of the forename. For example, the complete name Sarah Denman Neep, would be entered as Sarah Denman in this field, and NEEP in the surname field.</p>
+      <p>Any qualifier, such as Jr or Sr, should be entered using the <a href="#bapL">Title field</a> and <em>not</em> as a note: this is a change in practice.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapK">Surname (person_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the person’s surname</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Enter the spelling exactly as given, even if it looks wrong.</p>
+      <p>Any qualifier, such as Jr, Sr or Esq, must <em>not</em> be entered here: enter in the <a href="#bapL">Title field</a>.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapL">Title (person_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any recorded prefix or suffix to the name</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Jr, Sr, Esq, Dr. Professor</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapM">Age (person_age)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the age as an integer (whole number)</li>
+        <li>you may use d (days), w (weeks), m (months), h (hours) “infant” or “child”</li>
+        <li>if required, use y (years)</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>17, 21, 51, 2y5m, 3m, 3w, 3d, 2h, infant, child</p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <p>If the age is given as say, “less than an hour”, put 0 (zero) here and “less than an hour old” in the Notes field.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapN">Relationship (person_relationship)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter relationship, of the person baptised to a relative, usually the father, or leave blank</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>son of, dau of, child of </p>
+
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapO">Sex (person_sex)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>a single character from f, F, m, or M</li>
+        <li>leave blank where the sex is not stated</li>
+        <li>if the entry is illegible, put ?</li>
+        <li>if you find just a ‘-’ (a hyphen) or a ‘?’ in a <em>transcript</em>, put ?</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p> Do not guess based on the name: Julian, for example, was also a female name. Similarly, do not assume that Frances is female or Francis male.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapP">Abode (person_abode)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the abode or address as given of the person</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Ruardean <br /> High St <br /> 23, High St <br />Napoleon Sq., Cinderhill</p>
+      <h4>Guidance:</h4>
+      <p>This should not be confused with the abode of the father or mother.</p>
+      <p>If there is only one abode in the record, enter it only once, usually in the the Father’s Abode field.</p>
+      <p>This information will usually appear only for adult baptisms and primarily in nonconformist registers.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div> 
+
+    <h3 id="bapQ">Condition (person_condition)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the person’s condition (marital status)</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Single, Married</p>
+      <h4>Guidance:</h4>
+      <p>This information will usually appear only for adult baptisms and primarily in nonconformist registers.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapR">Status (person_status)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the person’s status or position in their family</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Illegitimate, Spurious, Twin, Eldest</p>
+      <h4>Guidance:</h4>
+      <p>This is for information that is additional to ‘son of’ or ‘dau of’, for example, which go in the <a href="#bapN">Relationship field</a>.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapS">Occupation (person_occupation)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the person’s job or occupation</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Carpentier, Shoemaker</p>
+      <h4>Guidance:</h4>
+      <p>This information will usually appear only in adult baptisms and primarily in nonconformist registers.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapT">Place of birth (person_place_birth)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the name of the town or village</li>
+        <li>enter in lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betws-y-Coed, Nottingham, Prestonkirk, Chorlton cum Hardy</p>
+      <h4>Guidance:</h4>
+      <p>This information will usually appear only for adult baptisms and primarily in nonconformist registers.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div> 
+
+    <h3 id="bapU">County of birth (person_county_birth)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is the three-letter <a href="/information-for-transcribers/chapman-codes">Chapman county code</a> </li>
+        <li>enter in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ABD, NTT, FLN, DUR <br />(Aberdeenshire, Nottinghamshire, Flintshire, and Durham, or County Durham) </p>
+      <h4>Guidance:</h4>
+      <p>This information will usually appear only for adult baptisms and primarily in nonconformist registers.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div> 
+
+    <h3 id="bapV">Father’s forenames (father_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the father’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Joseph, Saml John, Henrey, Gulielmus</p>
+      <h4>Guidance:</h4>
+      <p>If the father’s name is not stated, for example in the case of an illegitimate birth, then leave blank.</p>
+      <p>See <a href="#bapJ">Forename(s)</a> for other details of how to enter forenames.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapW">Father’s surname (father_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the father’s surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>OWEN, WARD, BAIRD, SMYTH</p>
+      <h4>Guidance:</h4>
+      <p>Enter the spelling exactly as given, even if it looks wrong.</p>
+      <p>A widow’s surname would be entered in this field.</p>
+      <p>Any qualifier, such as Jr, Sr or Esq, should be entered using the <a href="#bapX">Father’s Title field</a>.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapX">Father’s title (father_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the Father’s title as written</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Jr, Sr, Esq, Dr. Professor </p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapY">Father’s abode (father_abode)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the abode or address as given of the person’s father</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Ruardean <br /> High St <br /> 23, High St <br />Napoleon Sq., Cinderhill</p>
+      <h4>Guidance:</h4>
+      <p>This should not be confused with the abode of the person or mother.</p>
+      <p>If there is only one abode in the record enter it only once — usually in this field, Father’s Abode.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div> 
+
+    <h3 id="bapZ">Father’s occupation (father_occupation)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the father’s job or occupation</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Carpentier, Shoemaker</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapAA">Father’s place of birth (father_place)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the name of the town or village</li>
+        <li>enter in lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betws-y-Coed, Nottingham, Prestonkirk, Chorlton cum Hardy</p>
+      <h4>Guidance:</h4>
+      <p>This information is given primarily in nonconformist registers.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div> 
+
+    <h3 id="bapAB">Father’s county of birth (father_county)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is the three-letter <a href="/information-for-transcribers/chapman-codes">Chapman county code</a> </li>
+        <li>enter in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ABD, NTT, FLN, DUR <br />(Aberdeenshire, Nottinghamshire, Flintshire, and Durham, or County Durham) </p>
+      <h4>Guidance:</h4>
+      <p>This information will usually appear only in adult baptisms and primarily in nonconformist registers.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div> 
+
+    <h3 id="bapAC"> Mother’s forename(s) (mother_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the mother’s forename(s) as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Agnes, Charlotte Elizabeth, Jane, Onoria</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#bapJ">Forename(s)</a> for other details of how to enter forenames.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapAD">Mother’s surname (mother_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the mother’s maiden surname as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>PARRY, FORBES, READ, WALKER</p>
+      <h4>Guidance:</h4>
+      <p>This is the mother’s surname before marriage, sometimes signified by something like “late Parry”. </p>
+      <p>Please do not enter her married surname. If the mother was unmarried, enter her surname.</p>
+      <p>Most registers do not have a married mother’s maiden name. Leave the field blank if this is so.</p>
+      <p>Any qualifier, such as Jr or Sr, should be entered using the <a href="#bapAE">Mother’s Title field</a>.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapAE">Mother’s title (mother_title)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any prefix or suffix to the mother’s name as written</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Mrs, Jr, Sr, Widow </p>
+      <h4>Guidance:</h4>
+      <p>If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapAF">Mother’s abode (mother_abode)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the abode or address as given</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Ruardean <br /> High St <br /> 23, High St <br />Napoleon Sq., Cinderhill</p>
+      <h4>Guidance:</h4>
+      <p>This is usually only given in baptism registers from 1813 onwards.</p>
+      <p>If one address or abode is given, enter it once only, in the most appropriate of the abode fields.</p>
+      <p>If it is not given, leave blank.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapAG">Mother’s occupation (mother_occupation)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the job or occupation of the mother</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Seamstress, Nurse</p>
+      <h4>Guidance:</h4>
+      <p>This is usually given in baptism registers from 1813, but may be found earlier. If not stated, leave blank.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapAH">Mother’s condition (mother_condition_prior_to_marriage)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the mother’s condition (marital status) before marriage</li>
+        <li>use lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Single, Widow, Spinister</p>
+      <h4>Guidance:</h4>
+      <p>We are looking primarily for her condition prior to marriage, if it is given, or if she is unmarried.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapAI">Mother’s place of birth (mother_place_prior_to_marriage)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the name of the town or village</li>
+        <li>enter in lower case with initial capitals as appropriate</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Betws-y-Coed, Nottingham, Prestonkirk, Chorlton cum Hardy</p>
+      <h4>Guidance:</h4>
+      <p>This information will be found primarily in nonconformist registers.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div> 
+
+    <h3 id="bapAJ">Mother’s county of birth (mother_county_prior_to_marriage)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>an entry in this field is the three-letter <a href="/information-for-transcribers/chapman-codes">Chapman county code</a> </li>
+        <li>enter in upper case</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ABD, NTT, FLN, DUR <br />(Aberdeenshire, Nottinghamshire, Flintshire, and Durham, or County Durham)</p>
+      <h4>Guidance:</h4>
+      <p>This information will usually appear only for adult baptisms and primarily in nonconformist registers.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div> 
+
+    <h3 id="bapAK">Private baptism (private_baptism)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>if the baptism was a private one, enter one of y, yes, private, private baptism, private_baptism or true (lower or upper case) </li>
+        <li>any other entry will be treated as a ‘no’ (false)</li>
+        <li>otherwise leave blank</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p>Enter only if a private baptism is noted in the entry.</p>
+      <p>Usually, baptisms take place at the place of religion, however if it seemed that the child might not live, a baptism could take place in the home, for example. If so, the official entry in the register would note that it was a private baptism. </p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapAL">Witness forename(s) (witness1_forename)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the forename(s) of the first witness as given</li>
+        <li>use lower case with initial capitals</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>Phebe Martha, Charles, Esther, Thos.</p>
+      <h4>Guidance</h4>
+      <p>You can enter up to 8 witnesses as numbered pairs of forename(s) and surnames. Use these field names (column headers):</p>
+      <ul>
+        <li>witness1_forename &amp; witness1_surname</li>
+        <li>witness2_forename &amp; witness2_surname</li>
+        <li>… </li>
+        <li>witness8_forename &amp; witness8_surname</li>
+      </ul>
+      <p>Use only the number of fields that you need.</p>
+      <p>See <a href="#bapJ">Forename(s)</a> for other details of how to enter forenames.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+    <h3 id="bapAM">Witness surname (witness1_surname)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the surname of the first witness as given</li>
+        <li>use upper case for the whole surname</li>
+      </ul>
+      <h4>Examples:</h4>
+      <p>ADAMS, COLLIER, MITCHELL, SANDFORD</p>
+      <h4>Guidance:</h4>
+      <p>See <a href="#bapAL">Witness forename</a> for details of how to enter more than one witness.</p>
+      <p>See <a href="#bapK">Surname</a> for other details of how to enter surnames.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div>   
+    </div>
+
+    <h3 id="bapAN">Notes (notes)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter any other information as written in the register</li>
+      </ul>
+      <h4>Example:</h4>
+      <p>This child was baptized according to the form for Hypothetical Baptism</p>
+      <h4>Guidance:</h4>
+      <p>Use for any other information given in the register that does <em>not</em> belong in any of the other fields.</p>
+      <p>Do not include the details of the officiating minister unless there are compelling reasons to do so (that is, something about the minister looks like a clue for a researcher).</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div>   
+    </div>
+
+    <h3 id="bapAO">Transcriber notes (notes_from_transcriber)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>use this field to record any observations about the entry from your point of view</li>  
+      </ul>
+      <h4>Examples:</h4>
+      <p>A very faint document<br />Part of record is missing<br />An ink blob in the person’s surname<br />Date unreadable so year entered by assumption from position in the register</p>
+      <h4>Guidance:</h4>
+      <p>Do <em>not</em> use to record additional <em>information</em> that is in the register: that belongs in the <a href="#bapAN">Notes field</a>.</p>
+     <div class="nav-link"><a href="#baptisms">Return to list of baptism fields</a> </div> 
+    </div>
+
+    <h3 id="bapAP">Film (film)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the name of the film or fiche</li>
+        <li>for use only with an old allocation from the image server or from a source outside of FreeREG</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p>Do <em>not</em> use if you are transcribing from an image from the Image Server using the new Assignment system. See the <a href="#bapAR">Image file name</a> field for more details.</p>
+      <div class="nav-link"><a href="#baptisms">Return to list of baptism fields</a> </div>
+    </div>
+
+    <h3 id="bapAQ">Film number (film_number)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the number of the image</li>
+        <li>for use only with an old allocation from the image server or from a source outside of FreeREG</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p>Do <em>not</em> use if you are transcribing from an image from the Image Server using the new Assignment system. See the <a href="#bapAR">Image file name</a> field for more details.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div>  
+    </div>
+
+    <h3 id="bapAR">Image file name (image_file_name)</h3>
+    <div>
+      <h4>Requirements:</h4>
+      <ul>
+        <li>enter the name of the image file in your Assignment</li>
+      </ul>
+      <h4>Guidance:</h4>
+      <p>Use only if transcribing from an image from the Image Server using the new Assignment system.</p>
+      <div class="nav-link"><a href="#baptismFields">Baptism field list</a> </div> 
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,255 @@
+<h1>File headers</h1>
+
+<style scoped="scoped">
+  code { display: block; margin-bottom: 1.56rem; }
+  .ph { color: #a1185a; }
+  figcaption {
+    font-style: italic;
+    color: #737373; /* 4.74:1 */
+    margin-top: 0.3em;
+    line-height: 1.2;
+  }
+  figure.site img {
+    border: 2px solid #00a099;
+    padding: 0.3em;
+  }
+  figure.image-wide img {
+    width: 100%;
+    height: auto;
+  }
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">The File Headers contain information so that the FreeREG database can understand your file contents and know who created it. If you are using WINReg, the Headers are added for you: these instructions are only for users of spreadsheets, databases or text editors.</p>
+    <p>The File Headers were originally set up before we started to use the current FreeREG. It is inevitable that their exact use will change as we continue to develop. Even if you are an experienced transcriber, please read on.</p>
+    <p>The most obvious change is that <em>most</em> spreadsheet users should now enter the Headers directly into the spreadsheet: using a text editor is an unnecessary complication and may introduce problems. (If you are using an old version of MS Excel that requires a temporary dummy column, then we recommend using one of the free Open Source office suites for your FreeREG work — see <a href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file</a> for further details.)</p>
+    <p>Please note that it is not possible to update these Headers via the file Replace action: once you have Uploaded a file, make any changes necessary to the Headers online.</p>
+  </div>
+
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#spreadsheet">Using a spreadsheet</a> </li>
+          <li><a href="#textEditor">Using a text editor</a> </li>
+        </ul>
+      </div>
+    </nav>
+
+    <aside aria-labelledby="relatedPages">
+      <div class="islet islet--bordered" id="helpMenu">      
+        <h2 class="title-block" id="relatedPages">Transcriber Help</h2>
+        <ul class="sub-nav">
+          <li><a href="/cms/information-for-transcribers">Information for transcribers</a> </li>
+          <li><a href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file</a> </li>
+          <li><a href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a> </li>
+          <li><a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a> </li>
+          <li><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV format</a> </li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty">Dealing with uncertainty</a> </li>
+          <li><a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a> </li>
+          <li><a href="/cms/information-for-transcribers/chapman-codes">Chapman codes</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions">File and batch actions</a> </li>
+          <li><a href="/cms/information-for-transcribers/the-gap-system">The Gap system</a> </li>
+          <li class="active"><a href="/cms/information-for-transcribers/file-headers">File headers (this page)</a> </li>
+          <li><a href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> </li>
+          <li><a href="/cms/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a> </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h2 id="spreadsheet">Using a spreadsheet</h2>
+    <p>The <strong>Headers</strong> are a group of 4 or 5 lines that are added at the start of a file before the first actual data record. The first 4 lines are mandatory: they must be in every file. The fifth line is necessary if you have entered Film and Image numbers: otherwise, you may leave it out.</p>
+    <p>Many of the fields may now be left blank: you may find it easier to complete them anyway, so that the right information is in the correct cell.</p>
+    <p>Here is an example of a completed Header, as it might look in a spreadsheet:</p>
+    <figure class="image-wide">
+      <img data-rel="225x255" alt="File headers in OpenOffice" src="/system/images/W1siZiIsIjIwMTYvMDYvMjAvMTdfMzlfMzZfMTRfZmlsZV9oZWFkZXJzX29kcy5wbmciXV0/file-headers-ods.png?sha=81b1e61a1e6e4caf" width="1058" height="186" />
+      <figcaption>An example of a completed set of header rows in a spreadsheet</figcaption>
+    </figure>
+        
+    <p>Obviously, you need to adapt the Header so that it holds both your details and those of your transcription file. In the next image, the content to edit is <em style="color: darkRed;">shown in dark red</em>.</p>
+    <figure class="image-wide">
+      <img data-rel="225x255" alt="Key to the file headers" src="/system/images/W1siZiIsIjIwMTYvMDYvMjAvMTdfMzlfNTlfMTA4X2ZpbGVfaGVhZGVyc19nZW5lcmljX29kcy5wbmciXV0/file-headers-generic-ods.png?sha=f2fd35cc37447ede" width="1059" height="186" />
+      <figcaption>The header rows showing which cells need editing by the transcriber</figcaption>
+    </figure>
+    
+    <p>Note that each line (or row) begins with either a + or a #. If these, or a Header date, get changed as you move to the next cell, select all the Header rows and set the cell format to Text (Format, Cells, select the Number tab, then select Text from the list). Now re-type any Header entry that does not look right.</p>
+    <p>This image is a summary of the information given below: please read the two together for the full details.</p>
+    <figure class="image-wide landmark">
+      <img src="/system/images/W1siZiIsIjIwMTkvMTEvMjYvOTdvc2w3bmozZF9maWxlX2hlYWRlcnNfZ2VuZXJpY19vZHNfYW5ub3RhdGVkLnBuZyJdXQ/file-headers-generic-ods-annotated.png?sha=ca306ebd1690af8c" alt="Annotated file headers" data-rel="225x255" width="1050" height="321" />
+      <figcaption>Header rows annotated to show which cells are required and the consequences of leaving other cells blank — details are next</figcaption>
+    </figure>
+
+    <h3>Line 1 (mandatory)</h3>
+    <p class="push-half--bottom"><strong>The first line</strong> will have 5 or 6 entries, as follows:</p>
+    <ol style="list-style-type: upper-alpha;">
+      <li>Cell 1A should be +INFO, but we do accept #NAME? if you forget to set the cell format in a spreadsheet to Text</li>
+      <li>Cell 1B is the email address of the transcriber: it is not made public and is accessible only to coordinators, for information. You may leave it empty, in which case the database field is filled from the Profile (please note that this will not be updated if you change the email address in your Profile)</li>
+      <li>Cell 1C is PASSWORD: or you may leave it empty</li>
+      <li>Cell 1D is SEQUENCED: or you may leave it empty</li>
+      <li>Cell 1E must be the type of register information in your file: one of BAPTISMS, MARRIAGES, or BURIALS</li>
+      <li>Cell 1F identifies the character set used in the file: 
+        <ul>
+          <li>If you used a Windows application such as MS Excel to create the file then you may leave this cell blank. If your spreadsheet can save as ‘utf-8’, then select this on saving and enter UTF-8 in cell 1F</li>
+          <li>Mac OS X (Snow Leopard or newer) — if your spreadsheet can save as ‘utf-8’, then select this option on saving as a CSV file and put UTF-8 in cell 1F; otherwise, put macRoman (or macintosh)</li>
+          <li>Mac Classic (Tiger or older) users should enter macRoman (or macintosh)</li>
+          <li>Linux users who can save as ‘utf-8’ should do so, then enter UTF-8</li>
+          <li>If you need a different character set option, contact your Coordinator</li>
+        </ul>
+      </li>
+    </ol>
+    <hr class="rule" />
+
+    <h3>Line 2 (mandatory)</h3>
+    <p class="push-half--bottom"><strong>The second line</strong> has 6 entries:</p> 
+
+    <ol style="list-style-type: upper-alpha;">
+      <li>Cell 2A must be # — this is not on a Mac keyboard: hold down opt/alt and press 3</li>
+      <li>Cell 2B should be CCC — anything from three to six Cs are accepted</li>
+      <li>Cell 2C is the transcriber's name: it is displayed at the Register level of a Transcriptions search; the field may be left blank (it will remain blank in the database)</li>
+      <li>Cell 2D is the transcriber's syndicate
+        <ul>
+          <li>This is the same as in the transcriber's Profile</li>
+          <li>If you put in anything else, or leave blank, the Syndicate will be completed from your Profile</li>
+        </ul>
+      </li>
+      <li>Cell 2E is the name of the transcribed CSV file which should be as described in <a href="/cms/information-for-transcribers/creating-a-transcription-file#spreadsheet">Naming your file</a>: you may leave this field blank as the actual file name is used in the database</li>
+      <li>Cell 2F is the date of transcription (dd-Mon-yyyy): if you leave it blank, the date of Upload will still be saved in the database</li>
+    </ol>
+    <hr class="rule" />
+
+    <h3>Line 3 (mandatory)</h3>
+    <p class="push-half--bottom"><strong>The third line</strong> is up to 4 entries long and is used to provide credit information for others involved in the transcription of the file. The only field displayed is the third (cell 3C), at the Register level in a Transcriptions search result.</p> 
+
+    <ol style="list-style-type: upper-alpha;">
+      <li>Cell 3A must be #</li>
+      <li>Cell 3B should be CREDIT, but Credit or credit will be accepted</li>
+      <li>Cell 3C is the name of the person being credited (if any)</li>
+      <li>Cell 3D is the email address of the person being credited (if any)</li>
+    </ol>
+    <hr class="rule" />
+
+    <h3>Line 4 (mandatory)</h3>
+    <p class="push-half--bottom"><strong>The fourth line</strong> is primarily for comments on the file:</p>
+
+    <ol style="list-style-type: upper-alpha;">
+      <li>Cell 4A must be #</li>
+      <li>Cell 4B should be the date the file was modified: it may be left blank</li>
+      <li>Cells 4C and 4D are optional and are for any comments the transcriber wishes to make about the file</li> 
+    </ol>
+
+    <p class="islet islet--bordered"><strong>Note to coordinators</strong>: Information about the Register itself, including details of the data source, may be entered online, using the Edit Register action. See Editing Place and Register information, on the Coordinator actions page, for details.</p>
+    <hr class="rule" />
+
+    <h3>Line 5</h3>
+    <p class="flush--bottom">Add this line if you have entered Film and Image numbers: simply enter +LDS in cell 5A:</p>
+    <ul>
+      <li>#NAME? will be accepted if you forget to set the cell format to Text</li>
+      <li>This line will be ignored if there are no Film and Image numbers in your file</li>
+    </ul>
+    <p>You are now ready to <a href="/cms/information-for-transcribers/file-and-batch-actions">upload your new file</a> to the FreeREG server.</p>
+
+    <hr class="rule rule--ornament" />
+            
+    <h2 id="textEditor">Using a text editor</h2>
+    <p class="lead">Please do not use this method unless you have used a text editor for your <em>whole transcription</em> or you have used an old version of MS Excel that requires a temporary dummy column: we no longer recommend either of these approaches.</p>
+    <p>Many of the fields may now be left blank: make sure you have at least the minimum number of fields in each line, as detailed below.</p>
+        
+    <h2>By example</h2>
+    <p>Here is an example of a completed Header, as it might look in a text editor:</p>
+    <code>+INFO,kirk.dawson@shaw.ca,<wbr />PASSWORD,<wbr />SEQUENCED,<wbr />BAPTISMS<br />
+    #,CCC,Kirk Dawson,Technical,<wbr />NFKHHABA.CSV,<wbr />05-Feb-2015<br />
+    #,CREDIT,Bonnie Ostler,<wbr />me@home.ca<br />
+    #,05-Feb-2015,computer records converted using Excel<br />
+    +LDS</code>
+
+    <p>Note that each line begins with either a + or a #. (Any other apparent ‘line breaks’, which you may see in a narrow window, should not be interpreted as actual line breaks when you type the Headers.)</p>
+    <p>Each piece of information, or data field, is separated from the next by a comma. The lack of extra spaces is intentional and necessary — Headers are not pretty.</p>
+    
+    <h3>Line 1 (mandatory)</h3>
+    <p><strong>The first line</strong> has up to 10 data fields, 5 of which are mandatory.</p>
+
+    <p>+INFO,<span class="ph">transcriber email</span>,PASSWORD,SEQUENCED,<span class="ph">record type</span>,<span class="ph">character set</span> </p>
+
+    <ol>
+      <li>The first data field should be +INFO</li>
+      <li>The second data field is the email address of the transcriber: it is not made public and is accessible only to coordinators, for information. You may leave it empty, in which case the field is filled from the Profile.</li>
+      <li>The third data field is PASSWORD: or you may leave it empty</li>
+      <li>The fourth data field is SEQUENCED: or you may leave it empty</li>
+      <li>The fifth data field must be the type of register information in your file: one of BAPTISMS, MARRIAGES, or BURIALS</li>
+      <li>The sixth data field identifies the character set used in the file: 
+        <ul>
+          <li>If you used a Windows application to create your file, then you may leave this field blank. If your text editor can save as ‘utf-8’, then select this on saving and enter UTF-8 in the character set field</li>
+          <li>Mac OS X (Snow Leopard or newer) — if your text editor can save as ‘utf-8’, then select this on saving and put UTF-8 in the character set field; otherwise, put macRoman (or macintosh) in the character set field</li>
+          <li>Mac Classic (Tiger or older) users should enter macRoman (or macintosh)</li>
+          <li>If you need a different character set option, contact your Coordinator</li>
+        </ul>
+      </li>
+    </ol>
+    <p class="push-half--bottom"><strong>This is the completed line from the example:</strong> </p>
+    <code>+INFO,kirk.dawson@shaw.ca,<wbr />PASSWORD,<wbr />SEQUENCED,<wbr />BAPTISMS</code>
+    <hr class="rule" />
+
+    <h3>Line 2 (mandatory)</h3>
+    <p><strong>The second line</strong> must be at least 6 data fields long, but no more than 10 data fields long.</p> 
+
+    <p class="format">#,CCC,<span class="ph">transcriber name</span>,<span class="ph">transcriber syndicate</span>,<span class="ph">transcribed filename</span>,<span class="ph">transcribed date</span> </p>
+
+    <ol>
+      <li>The first data field must be # — this is not on a Mac keyboard: hold down opt/alt and press 3</li>
+      <li>The second data field should be CCC — anything from three to six Cs are accepted</li>
+      <li>The third data field is the transcriber's name: it is displayed at the Register level of a Transcriptions search; the field may be left blank (it will remain blank in the database)</li>
+      <li>The fourth data field is the transcriber's syndicate
+        <ul>
+          <li>This is the same as in the transcriber's Profile</li>
+          <li>If you put in anything else, or leave blank, the Syndicate will be completed from your Profile</li>
+        </ul>
+      </li>
+      <li>The fifth data field is the name of the transcribed CSV file and should be as described in <a href="/cms/information-for-transcribers/creating-a-transcription-file#spreadsheet">Naming your file</a>: you may leave this field blank as the actual file name is used in the database</li>
+      <li>The sixth data field is the date of transcription (dd-Mon-yyyy): if you leave it blank, the date of Upload will still be saved in the database</li>
+    </ol>
+    <p class="push-half--bottom"><strong>This is the completed line:</strong> </p>
+    <code>#,CCC,Kirk Dawson,Technical,<wbr />NFKHHABA.CSV,<wbr />05-Feb-2015</code>
+    <hr class="rule" />
+
+    <h3>Line 3 (mandatory)</h3>
+    <p><strong>The third line</strong> is up to 4 data fields long and is used to provide credit information for others involved in the transcription of the file. The only field displayed is the third, at the Register level in a Transcriptions search result.</p> 
+
+    <p class="format">#,CREDIT,<span class="ph">credit name</span>,<span class="ph">credit email</span> </p>
+    <ol>
+      <li>The first data field must be #</li>
+      <li>The second data field should be CREDIT, but Credit or credit will be accepted</li>
+      <li>The third data field is the name of the person being credited (if any)</li>
+      <li>The fourth data field is the email address of the person being credited (if any)</li>
+    </ol>
+    <p class="push-half--bottom"><strong>This is the completed line:</strong> </p>
+    <code>#,CREDIT,Bonnie Ostler,<wbr />me@home.ca</code>
+    <hr class="rule" />
+
+    <h3>Line 4 (mandatory)</h3>
+    <p><strong>The fourth line</strong> must be from 1 to 4 data fields long. It is primarily for comments on the file.</p>
+
+    <p class="format">#,<span class="ph">modification date</span>,<span class="ph">comment 1</span>,<span class="ph">comment 2</span> </p>
+
+    <ol>
+      <li>The first data field must be #</li>
+      <li>The second data field should be the date the file was modified: it may be left blank</li>
+      <li>The third and fourth fields are optional and are for any comments the transcriber wishes to make about the file</li> 
+    </ol>
+
+    <p class="push-half--bottom"><strong>This is the completed line:</strong> </p>
+    <code>#,05-Feb-2015,computer records converted using Excel</code>
+    <hr class="rule" />
+
+    <h3>Line 5 (optional)</h3>
+    <p><strong>The fifth, optional, line</strong> is used if two extra fields for Film and Image number have been added to every data record. The records will be verified accordingly (checked for the extra fields). The line will be ignored if there are no Film and Image numbers in the file.</p> 
+
+    <code>+LDS</code>
+    <p>The first (and only) data field should be +LDS</p>
+
+  </div>
+</div>

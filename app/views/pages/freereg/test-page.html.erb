@@ -1,0 +1,377 @@
+<h1>test page</h1>
+
+<style scoped="scoped">
+  dd { margin-bottom: 1rem; }
+  .examples dt { color: #a1185a; } /* magenta */
+  .formal dt { color: #895f49; } /* brown-brighter */
+  .fullWidth img { width: 100%; height: auto; }
+</style>
+
+<p><mark>To-do: add new text (issues!); complete cross-references; complete layout; update "On this page". AO</mark> </p>
+
+<div class="grid">
+  <aside class="grid__item one-third palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block">On this page</h2>
+      <ul class="sub-nav">
+        <li><a href="#imageViewers">Image viewers</a> </li>
+        <li><a href="#ucf">Uncertain character format</a> </li>
+        <li><a href="#read">Reading a register</a>
+          <ul class="open push--left">
+            <li><a href="#oldLetterForms">The alphabet</a> </li>
+            <li><a href="#abbrevMarks">Abbreviation marks</a> </li>
+          </ul>
+        </li>
+        <li><a href="#capitalsGallery">Capital letters gallery</a> </li>
+      </ul>
+    </div>
+
+    <div class="islet islet--bordered">
+      <h2 class="title-block">Transcriber Help</h2>
+      <ul class="sub-nav">
+        <li><a href="/cms/information-for-transcribers" title="Basic information to get you started and a contents listing for the other Help pages">Information for transcribers</a> </li>
+        <li><a href="/cms/information-for-transcribers/creating-a-transcription-file" title="Choosing a program and setting it up: WinREG, spreadsheet, database, or text editor">Creating a transcription file</a> </li>
+        <li><a href="/cms/information-for-transcribers/using-the-image-server" title="See your Assignments, view and download Images, mark your progress">Using the Image Server</a> </li>
+        <li><a href="/cms/information-for-transcribers/entering-data-from-registers" title="General guidance; what to put where for baptisms, marriages and burials">Entering data from registers</a> </li>
+        <li><a href="/cms/information-for-transcribers/flexible-csv-format" title="Details of the extended and flexible fields for spreadsheet users">Flexible CSV format</a> </li>
+        <li class="active"><a href="/cms/information-for-transcribers/dealing-with-uncertainty" title="This page">Dealing with uncertainty</a> </li>
+        <li><a href="/cms/information-for-transcribers/numbers-and-dates" title="English and Latin, numerals and words; old-style and new-style dates, Regnal years">Numbers and dates</a> </li>
+        <li><a href="/cms/information-for-transcribers/chapman-codes" title="All the 3-letter county codes">Chapman codes</a> </li>
+        <li><a href="/cms/information-for-transcribers/file-and-batch-actions" title="Uploading/Replacing files, editing/managing batches online">File and Batch actions</a> </li>
+        <li><a href="/cms/information-for-transcribers/file-headers" title="How to complete your file - spreadsheet, text editor">File headers</a> </li>
+        <li><a href="/cms/information-for-transcribers/permission-to-transcribe" title="Ensure your source can be used for FreeREG">Permission to transcribe?</a> </li>
+        <li><a href="/cms/information-for-transcribers/latin-words-to-recognise" title="Latin words used in older registers">Latin words to recognise</a> </li>
+      </ul>
+    </div>
+  </aside>
+
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <p class="lead">Sooner of later you will be faced with unfamiliar letter forms. Or a few letters and numbers may be so hard to decipher that you are not at all sure what you are looking at. This page offers some help on viewing the images, on understanding the hand-writing found in old registers and on how to enter information that you can't be sure about. </p>
+
+    <p>Register entries may be hard to read for a number of reasons.</p>
+    <ul>   
+      <li>Firstly, the registers are old, perhaps several hundred years old, and they have not been kept in the best of environments: they are often faded and may be speckled with water marks.  You may see further signs of damage.</li>
+      <li>Secondly, they will have been photographed: few of us get to actually handle the original documents today. The process of photography may have introduced issues of focus and alignment that will make reading more difficult. (The registers are usually small bound documents that do not want to lie flat for their pictures to be taken!)</li>
+      <li>Thirdly, the original records were written with unfamiliar instruments, usually a quill pen of some form, that give distinct characteristics to the letters and words.</li>
+      <li>Fourthly, the education and writing skill of the clergyman or person writing the record was highly variable. Sometimes you will see good spelling and penmanship: at other times you will wonder.</li>
+      <li>Lastly, some of the letter and number forms that we use today are not the same as used in the past. (See <a href="#oldLetterForms">handwriting examples</a>, on this page.)</li>
+    </ul>
+
+    <p>As you gain experience as a transcriber, you will find it easier to recognise letters, digits and even words. You will also find a dedicated image viewer useful. For those parts of a register entry where you remain unsure, use our Uncertain Character Format: this enables you to enter as much information as possible, in a way that is compatible with a database search.</p>
+
+    <hr class="rule rule--ornament" />
+
+    <h2 id="imageViewers">Image viewers</h2>
+
+    <p>Your computer no doubt came with a basic image viewer installed: this will be fine for working with good quality images. However, there are some more sophisticated (free) viewers out there that can be of practical help with reading images of poorer quality.</p>
+
+    <p class="flush--bottom">Viewers used by our volunteers include:</p>
+
+    <ul>
+      <li><a href="http://www.xnview.com/en/xnviewmp/">XnViewMP</a>
+        <ul>
+          <li>available for Windows, Mac and Linux</li>
+          <li>current version (0.79) requires Mac OS newer than Snow Leopard</li>
+          <li>not obvious whether or not older versions are still available</li>
+        </ul>
+      </li>
+      <li><a href="http://www.xnview.com/en/xnview/">XnView</a>
+        <ul>
+          <li>Windows and Linux</li>
+        </ul>
+      </li>
+      <li><a href="https://www.gimp.org/downloads/">GIMP 2</a>
+        <ul>
+          <li>for Windows, Mac, Linux and many others</li>
+          <li>versions older than the current one are available, if needed</li>
+        </ul>
+      </li>
+      <li><a href="http://www.irfanview.com/">IrfanView</a>
+        <ul>
+          <li>Windows only</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Improving readability</h3>
+    <p>Don't expect miracles: a poor image can only be enhanced so much. And do be prepared to spend some time experimenting with the settings: there are many image variables to consider, as well as your particular screen and eyesight. The menu names given below are from GIMP 2: the other programs will use similar names. The most generally useful options are:</p>
+    <ul>
+      <li>Zoom — bigger is not always better</li>
+      <li>Colors menu &gt; Brightness-Contrast
+        <ul>
+          <li>if the image is dark, try increasing the brightness, in small steps</li>
+          <li>if the writing is faint, try increasing the contrast, again in small steps</li>
+        </ul>
+      </li>
+      <li>Filter menu &gt; Enhance &gt; Sharpen — keep an eye on the preview as you adjust the setting</li>
+    </ul>
+
+    <p>Although many images will be enhanced usefully by using the basic adjustments listed above, you might find some of the other options on the Colors menu helpful.</p>
+
+    <hr class="rule rule--ornament" />
+
+    <h2 id="ucf">Uncertain Character Format (UCF)</h2>
+
+    <p>Some common types of uncertainty that you are likely to encounter in your first few batches of transcription, and the technique to use for each of them, are given below. This is followed by more details of the format that we use.</p> 
+    <p class="island island--bordered">Please note that there are some restrictions on your use of <strong>UCF in dates</strong>. See <a href="/cms/information-for-transcribers/entering-data-from-registers#dates">General guidance, Dates</a> for details. These restrictions ensure that searching using a date range works effectively.</p>
+    <h3>Some examples</h3>
+    <dl class="examples">
+      <dt>I can see one letter which could be an <q>l</q> or a <q>t</q>.</dt>
+      <dd>[lt]</dd>
+
+      <dt>I can see one character which could be anything.</dt>
+      <dd>_ <br />(one underscore)</dd>
+
+      <dt>I can see two characters which could be anything.</dt>
+      <dd>__ <br />(two underscores)</dd>
+
+      <dt>I <em>think</em> the letter is a <q>b</q>.</dt>
+      <dd>[b_]</dd>
+
+      <dt>I see a group of characters that I can't read — I don't know how many — or a missing name.</dt>
+      <dd>*</dd>
+
+      <dt>I can see two or three letters that I can't read.</dt>
+      <dd>_{2,3}</dd>
+
+      <dt>I can see something which could be a letter or just an ink blot.</dt>
+      <dd>_{0,1}</dd>
+
+      <dt>I think I see the word <q>John</q>.</dt>
+      <dd>John?</dd>
+
+    </dl>
+
+    <h3>The format in detail</h3>
+
+    <dl class="formal">
+      <dt> _ (underscore)</dt>
+      <dd>A single uncertain character. It could be anything but is definitely one character. It can be repeated for each uncertain character.</dd>
+
+      <dt>* (asterisk)</dt>
+      <dd>Several adjacent uncertain characters or a missing name. A single * is used when there are 1 or more adjacent uncertain characters. It is not used immediately before or after a _ or another *.<br /> Note: If it is clear there is a space, then * * is used to represent 2 words, neither of which can be read.</dd>
+
+      <dt>[abc]</dt>
+      <dd>A single character that could be any one of the contained characters and only those characters. There must be at least two characters between the brackets.
+  <br />For example, [79] would mean either a 7 or a 9, whereas [C_] would mean a C or some other character.</dd>
+
+      <dt>{min,max}  </dt>
+      <dd>Repeat count of preceding character occurs somewhere between min and max times. max may be omitted, meaning there is no upper limit. So _{1,} would be equivalent to *, and _{0,1} means that it is unclear if there is any character.</dd>
+
+      <dt>?</dt>
+      <dd>Sometimes you will be able to read all of the characters but remain uncertain of the word. In this case append a ? at the end of the word, e.g. RACHARD? However, the most frequent use of the ? is with transcripts that have been donated to us and then converted for entry into FreeREG.</dd>
+    </dl>
+
+    <p>Note: Using a single * is preferable to spending a long time trying to decide the min and max values to use in the more precise _{min,max} format.</p>
+
+    <p class="islet islet--orange">Technical note: Although this UCF format has many similarities to regular expressions (as used in some office software, programming languages, Unix, etc.), it is not identical and in particular there is no escape mechanism.</p>
+
+    <hr class="rule rule--ornament" />
+
+    <h2 id="read">Reading a register</h2>
+
+    <p>Your first reaction on looking at a register, especially the older ones, may well be to ask yourself how am I ever going to make sense of this. Your second reaction may be to ask yourself why am I doing this. Your third reaction might be to throw up your hands and walk away. Please don't. You are engaged in one of the most important activities designed to help all of us research our forebears. So please bear with it.</p>
+    <p>The following guidance will help you make sense of what you see. After a while you will come to recognise that old writing and surprise yourself at how good you have become. Also don't forget you can use the Uncertain Character Format (UCF) to deal with the problem entries and move on.</p>
+
+    <h3 id="oldLetterForms">The alphabet and its graphical representation</h3>
+
+    <p>One of the biggest issues is how to read 16th century writing. We highlight many of the common issues below. Then if you want to, go and have a look at one or more of the resources available on the internet. We suggest the following are good sources of information and examples:</p>
+    <ul>
+      <li><a href="http://www.nationalarchives.gov.uk/palaeography/"> National Archives Tutorial</a> </li>
+      <li><a href="http://www.scottishhandwriting.com/"> Scottish Handwriting</a> </li>
+      <li><a href="http://www.amberskyline.com/treasuremaps/oldhand.html"> Genealogy Handwriting</a> </li>
+      <li><a href="http://paleo.anglo-norman.org/empfram.html"> Old Handwriting</a> </li>
+    </ul>
+
+    <p>The following image gives an excellent rendition of some early alphabets and how people of different backgrounds wrote their text.</p>
+
+    <figure class="fullWidth">
+      <img data-rel="225x255" alt="Alphabet" title="Alphabet" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDRfMDZfNTQ0X2FscGhhYmV0LmpwZyJdXQ/alphabet.jpg?sha=6159ae4b03fb674e" width="1240" height="1742" />
+    </figure>
+
+    <h4>u and v</h4>
+
+    <p>The first important thing to notice is that there were no separate characters for u and v. From the 1630s onwards, printers started to use the u letter-form (or 'graph') to denote the vowel, and the v graph to denote the consonant. Before this time there was only one recognised letter of the alphabet, which could be written or printed in two ways. This is why the letter w is called 'double-u' and not 'double-v'.</p>
+
+    <p>Printers before the 1630s used v initially (at the start of a word) and u medially. Practice in manuscript was never this consistent, with u and v graphs being used for both consonant and vowel, both initially and medially. Ambiguities caused by this system can make life difficult.</p>
+
+    <p>It is important that you don't lose information by deciding too soon whether a u or v graph encountered is the vowel or consonant. Your job in transcribing is to report exactly what is there in the register, so u and v forms must be distinguished from each other where possible and not silently or unconsciously brought into line with modern practice.</p>
+
+    <h4>i and j</h4>
+
+    <p>As late as the nineteenth century, some still insisted that j was just a variant form of the letter i, which could represent both a vowel and a consonant. But many tried to use the j form for a consonant and the i for a vowel. You may even find j suffixed to a name, such as 'Walterj'. Again, your job is to record what you see, which will in most cases be a letter i or j.</p>
+  </div>
+</div>
+
+<h4>s and double s</h4>
+<section class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <p>The 's' is especially problematic. It has both long 's' and short 's' forms. The long 's' is usually clear at the start of a word (fig. 1), but don't get the long 's' and 'f' mixed up inside a word (fig. 2, fig. 3). Normally the 'f' will have a cross stroke, even if it's hardly noticeable, and the context will make it clear whether it is a long 's' or an 'f'.</p>
+      <p>The terminal 's' tends to fall between the two forms. See fig. 4–6</p>
+      <p>Also look at the capital 'H' in fig. 6</p>
+      <p>Within a word the double s is written with a long 's' followed by a short 's'; looking like an fs.</p>
+  </div>
+  <div class="grid__item two-fifths lap-one-third palm-one-whole">
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Samuel" title="Samuel" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfOTU2X3NhbXVlbC5qcGciXV0/samuel.jpg?sha=1bd71b82b9b1fae8" width="134" height="56" />
+      <figcaption>fig. 1 Samuel</figcaption>
+    </figure>
+<figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Bush" title="Bush" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfMTc3X2J1c2guanBnIl1d/bush.jpg?sha=464e76e8526b6a2b" width="104" height="56" />
+      <figcaption>fig. 2 Bush</figcaption>
+    </figure>
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Harrison" title="Harrison" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfNDM2X2hhcnJpc29uLmpwZyJdXQ/harrison.jpg?sha=63235cd7b2874f6a" width="142" height="60" />
+      <figcaption>fig. 3 Harrison</figcaption>
+    </figure>
+
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="James" title="James" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfNjQyX2phbWVzLmpwZyJdXQ/james.jpg?sha=f7f9dc34ab40ad6e" width="112" height="60" />
+      <figcaption>fig. 4 James</figcaption>
+    </figure>
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="James1" title="James1" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfNjg5X2phbWVzMS5qcGciXV0/james1.jpg?sha=cb1ca8241484a3bf" width="108" height="60" />
+      <figcaption>fig. 5 James</figcaption>
+    </figure>
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Howes" title="Howes" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfNDk5X2hvd2VzLmpwZyJdXQ/howes.jpg?sha=f4fb6ec9641a97ac" width="157" height="60" />
+      <figcaption>fig. 6 Howes</figcaption>
+    </figure>
+  </div>
+</section>
+
+<h4 id="otherLetters">Other letters</h4>
+
+<section class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <p>In secretary hand the lowercase 'c' looks exactly like a modern day 'r' (fig. 12).</p>
+
+    <p>The lower case 'e' tends to not have a central stroke, so can look more like a 'c', or an 'o' if it is biting with the next letter (fig. 7). </p>
+
+    <p>Also note the use of the double 'f' which stands for a capital 'F' (fig. 8–9). It would be easy to mistake these as a modern 'H'.</p>
+
+    <p>There are two forms of lower case 'r', the '2' shaped one which occurs after 'o', and the long 'r' which descends below the line. The long 'r' can consist of no more than a single down stroke, with no horizontal stroke at all. This can make it quite hard to distinguish, particularly when combined with a preceding 'e'.</p>
+
+    <p>You may come across the use of 'es' for genitive (possessive), rather than apostrophe and 's'. For example, kinges. It may look like there is an apostrophe after the 'e', but what you can see is actually part of the letter 'e', called a 'horn' (fig. 10). Note also the nature of the capital 'R' in fig. 10.</p>
+
+    <p>The abbreviation sign that means characters have been omitted is a dash over the preceding vowel(s). See fig. 11–12.</p>
+
+    <p>Note also the nature of the capital 'R' in both these examples.</p>
+  </div>
+
+  <div class="grid__item two-fifths lap-one-third palm-one-whole">
+
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Sponer" title="Sponer" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDdfMTU0X3Nwb25lci5qcGciXV0/sponer.jpg?sha=3bc8c30ca01151ad" width="149" height="56" />
+      <figcaption>fig. 7 Sponer</figcaption>
+    </figure>
+
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Francis" title="Francis" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfMzgzX2ZyYW5jaXMuanBnIl1d/francis.jpg?sha=5cd4c339bb87c62f" width="130" height="56" />
+      <figcaption>fig. 8 Francis</figcaption>
+    </figure>
+
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Faith" title="Faith" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfMjU3X2ZhaXRoLmpwZyJdXQ/faith.jpg?sha=b271fbc4059c5330" width="117" height="56" />
+      <figcaption>fig. 9 Fayth</figcaption>
+    </figure>
+
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Reynoldes" title="Reynoldes" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfNzg4X3JleW5vbGRlcy5qcGciXV0/reynoldes.jpg?sha=7ada9f1578d2d909" width="123" height="56" />
+      <figcaption style="padding-bottom: 5px;">fig. 10 Reynoldes</figcaption>
+    </figure>
+
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Robert" title="Robert" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfOTA1X3JvYmVydC5qcGciXV0/robert.jpg?sha=bf14e660cc33c886" width="116" height="60" />
+      <figcaption>fig. 11 Robt</figcaption>
+    </figure>
+    <figure class="grid__item one-half lap-one-whole">
+      <img data-rel="225x255" alt="Richard" title="Richard" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDVfMDZfODQ1X3JpY2hhcmQuanBnIl1d/richard.jpg?sha=5894eeeb946bdfc6" width="120" height="60" />
+      <figcaption>fig. 12 Richd</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <h3 id="abbrevMarks">Abbreviation marks and contractions</h3>
+    <p>If you are transcribing documents created before the 19<sup>th</sup> century, you could find a lot of unfamiliar abbreviation marks and contractions, many of which have their roots in Latin and Greek texts.</p>
+    <p>The TWYS (type what you see) rule still applies. However, to type some of these would require the use of special characters. This would be laborious and they would not be recognised properly when searching the database. So in these cases, transcribe the word in full, using UCF (Uncertain Character Format) together with a note if there is any degree of uncertainty as to what the abbreviation or contraction signifies.</p>
+
+    <h4>P with an elaborate stem</h4>
+    <figure class="float--left">
+      <img src="_images/paerking.png" alt="Paerking" width="108" height="64" />
+      <figcaption>Fig. 13</figcaption>
+    </figure>
+    <p>The stem of the ‘P’ in figure 13 curls backwards over itself. This is a common abbreviation for Par- or Per-. Transcribe as P[ae]rking with a note to explain the UCF, for example — Start of surname abbreviated, probably Par- or Per-.</p>
+    <p>This abbreviation is also very commonly used for parish. Where the abbreviation is for a common word and there is no ambiguity as to its meaning, transcribe it in full with no note. For example, parish.</p>
+    <p>For further examples of abbreviations using a modified ‘P’ see the <a href="#uz">gallery of capital letters, U to Z (below)</a>.</p>
+ 
+    <h4>Lines over letters</h4>
+    <figure class="float--left">
+      <img src="_images/clemmow.png" alt="Clemmow" width="117" height="39" />
+      <figcaption>Fig. 14</figcaption>
+    </figure>
+    <p>A curly line or straight line over a word is a more general form of abbreviation. In figure 14, where it lies above the single letter ‘m’, it almost certainly indicates a double ‘m’— Clemmow. As there is some room for doubt, though, transcribe as Clem[m_]ow with a note, such as — Middle of surname abbreviated, probably –m-. Even for a common surname, do not guess, but rather suggest using UCF, together with a note to explain the abbreviation.</p>
+    <p>This type of superscript line is often used for the first name Ane (Anne), where the ‘n’ has a line over it to indicate a double ‘n’. Even with a common first name abbreviation however, there is still some ambiguity, so it should be transcribed using UCF for the second ‘n’ — An[n_]e — together with a note.</p>
+    <p>For a different example of lines over letters, see <a href="#otherLetters">the alphabet, other letters (above)</a>.</p>
+
+    <hr class="rule" />
+
+    <h2 id="capitalsGallery">A gallery of capital letters</h2>
+    <p>These capital letters have been collected by transcriber Cathy Jury. She writes —</p>
+    <p>Here are some of the more tricky capitals as used in the 16th, 17th and 18th centuries. There are various styles including Italic, Secretary, Cursive, Legal and Chancery. The styles were often used in combination, so they are listed together. Note that towards the start of this period, <q>I</q> and <q>J</q> were interchangeable, as were <q>U</q> and <q>V</q>. At any time, <q>X</q> was a common abbreviation for <q>Christ</q>, e.g. Xian (Christian).</p>
+    <figure>
+       <img style="width:100%;height:auto;" data-rel="225x255" alt="Capitals A-H" title="Capitals A-H" src="/system/images/W1siZiIsIjIwMTYvMDYvMTQvMTRfMDdfMzJfOTU1X2NhcGl0YWxzX2FoLnBuZyJdXQ/capitals-ah.png?sha=2eba9cb18bc10c00" width="1200" height="1010" />   
+    </figure>
+    <p class="flush--bottom">Although they are listed separately, remember that towards the start of this period, <q>I</q> and <q>J</q> were interchangeable:</p>
+    <figure>
+      <img style="width:100%;height:auto;" data-rel="225x255" alt="Capitals I-T" title="Capitals I-T" src="/system/images/W1siZiIsIjIwMTYvMDYvMTMvMjFfMDhfNDRfMzI1X2NhcGl0YWxzX2l0LnBuZyJdXQ/capitals-it.png?sha=ee30866920edde6e" width="1200" height="1553" />
+    </figure>
+    <p class="flush--bottom">Remember that towards the start of this period, <q>U</q> and <q>V</q> were interchangeable:</p>
+    <figure id="uz">
+      <img style="width:100%;height:auto;" data-rel="225x255" alt="Capitals U-Z" title="Capitals U-Z" src="/system/images/W1siZiIsIjIwMTYvMDYvMTQvMjNfNTNfNDRfODA3X2NhcGl0YWxzX3V6LnBuZyJdXQ/capitals-uz.png?sha=d839fa66f69c3b3e" width="1200" height="878" />
+    </figure>
+    <p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+
+  </div>  
+</div>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+<p>These examples are not exhaustive: we plan to add others of interest, collected by other transcribers, in due course.</p>
+
+

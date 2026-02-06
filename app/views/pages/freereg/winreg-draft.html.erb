@@ -1,0 +1,667 @@
+<h1>WinREG DRAFT</h1>
+
+<p><span class="loz islet--orange">FR1 content — not edited for FR2 </span> </p>
+
+
+<div class="grid">
+    <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+        <p>Welcome to WinREG, the latest Windows-based utility for entering Baptism, Marriage and Burial information for FreeReg.</p>
+
+        <p>There are now two versions of WinReg:</p>
+        <ul>
+            <li>WinReg3 looks like a Spreadsheet. If you are used to transcribing with Excel, you will find WinReg3 very familiar
+            </li>
+<li>WinReg2 is older and has a database look to it</li> 
+        </ul>
+        <p>Neither version of WinREG will run on Mac or Linux computers unless you have a Windows partition installed.</p>
+        <p>WinReg1 is no longer supported.</p>
+<p>We are aware that some users of WinREG are experiencing problems after a Windows 10 update.  Please try running you anti-virus check after the update, as this has been found to resolve the issue, with no loss of data.</p>
+    </div>
+    <aside class="grid__item one-third palm-one-whole float--right">
+        <div class="islet islet--bordered">
+            <h3 class="title-block">On this page</h3>
+            <ul class="nav sub-nav">
+              <li><a href="#WinReg3">About WinREG 3</a>
+</li>
+              <li><a href="#W3install">Downloading and installing WinREG 3</a> </li>
+              <li><a href="#NET">Updating your .NET Framework</a> </li>
+              <li><a href="#w3run">Starting WinREG 3 for the first time</a> </li>
+              <li><a href="#usingwinreg3">Using WinREG 3</a> </li>
+              <li><a href="#w3uninstall">Uninstalling WinREG 3</a> </li>
+              <li><a href="../howto/taq.htm">WinREG FAQ</a> </li>
+              <li><a href="#about">About WinREG 2</a> </li>
+              <li><a href="#install">Downloading and installing WinREG 2</a> </li>
+              <li><a href="#NET">Updating your .NET Framework</a> </li>
+              <li><a href="#run">Starting WinREG 2 for the first time</a> </li>
+              <li><a href="#usingwinreg2">Using WinREG 2</a> </li>
+              <li><a href="#uninstall">Uninstalling WinREG 2</a> </li>
+              <li><a href="../howto/taq.htm">WinREG FAQ</a> </li>
+            </ul>
+    </div>
+</aside>
+<div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <hr />
+
+    <h3><a id="WinReg3" name="WinReg3"></a>General Information about WinREG
+    3</h3>
+
+    <div>
+        WinREG/3 is a redevelopment of WinREG/2, that aims to make life easier
+        for transcribers and perhaps encourage some of those Excel adherents to
+        adopt WinREG as their preferred method for capturing transcribed data
+        for FreeREG.
+
+        <p>The WinREG 3 software was written by Mike Fry, an active
+        transcriber. If you encounter what appears to be a bug there is a bug
+        reporting email address under the Help Taskbar. If you run into
+        problems using the software get in touch with either your <a href="../parishes/index.shtml">Country Coordinator</a> or <a href="mailto:reg-winreg@freereg.org.uk?subject=WinReg3%20Bug%20Report">file
+        a bug report</a>.</p>
+
+        <p>The major change that is very evident in WinREG/3, is in its'
+        look-and-feel. The program now presents and captures data in a form and
+        manner that is very like that found in an Excel spreadsheet. Coupled
+        with this are a number of features that should make the transcribers
+        life a lot easier.</p>
+    </div>
+
+    <figure>
+        <img style="width:100%;height:auto;" data-rel="225x255" alt="Winreg3" title="Winreg3" src="/system/images/W1siZiIsIjIwMTQvMDkvMDcvMTZfMDdfMDFfNDUyX3dpbnJlZzMuanBnIl1d/winreg3.jpg?sha=760dc99c10e4354c" height="996" width="1279" />
+        <figcaption>WinREG 3</figcaption>
+    </figure>
+
+    <h3><strong>Useful facilities</strong>
+</h3>
+
+    <div>
+        a) Columns can be hidden. In older registers, very few of the fields
+        used by FreeREG, actually appear in each record. In WinREG/2 this meant
+        having to tab over the unused fields. Now, a right-click on the grid
+        area will bring up a list of all the fields that appear in the current
+        file, with check marks indicating whether those columns are being shown
+        or not. Click on a check mark to toggle its setting and cause the
+        corresponding column to be hidden or shown.
+
+        <p>b) Columns can be re-ordered. Until fairly recently, registers were
+        not standardised and were thus subject to the whims of the incumbent in
+        charge at a particular time, and events were not always written down in
+        the same order as that of the fields used in FreeREG. This causes an
+        obvious slowing down of the transcription process. The columns in
+        WinREG/3 can be reordered to match the order in which data is recorded
+        in a register. To move a column, simply press the left mouse button on
+        a column heading and, keeping it down, drag the header to the left or
+        right. A visual indication will appear when the mouse is over a place
+        where the column header can be dropped. This takes the form of a
+        thickened blue line between two column headers. Release the mouse
+        button to cause the column to be moved to the new position.</p>
+
+        <p>c) Column order and visibility is retained. When closing or saving a
+        file, the program will save the current column configuration, so that
+        it can be used when re-opening the same file or opening another file of
+        the same type. All three types of file will retain a separate,
+        last-used configuration of order and visibility.</p>
+
+        <p>d) Excel spreadsheets can be imported. To make it easier for people
+        to move away from Excel as a transcription tool, it is now possible to
+        import an Excel spreadsheet directly into the program and create a
+        properly formatted CSV file for uploading to FreeREG. Simply use the
+        appropriate menu item and then open a file that has an XLS extension.
+        The program tries to make sure that the file being opened is suitable
+        for the purpose, but can not identify all situations where FreeREG is
+        likely to reject the data.</p>
+
+        <p>e) Sorting of columns. Sorting of data is now a lot more robust and
+        can be performed on just about every column, except those where it
+        doesn't make sense: such as the Sex of a child and the status of people
+        when they are being married. Also, the Notes field is exempt since
+        sorting by the contents of this column doesn't actually mean anything.
+        To sort, simply double-click on a column heading. If that column can
+        not be sorted, then a message to that effect is shown. The File menu
+        also contains an Unsort option that will restore the order of records
+        in the grid to what it was when the file was first loaded.</p>
+
+        <p>f) UCF and Date Helper dialogs. These are still available in their
+        old form, using the same hot keys as in WinREG/2. Having the dialogs
+        pop up automatically is no longer an option. Flags on the status line
+        under the data grid will indicate when the cursor is in a field where
+        these dialogs are available and specify which function key will bring
+        that dialog up.</p>
+
+        <p>g) Field Editing. This works somewhat differently to how it worked
+        in WinREG/2. The presence of the cursor in a cell does not necessarily
+        mean that the cell contents can be edited. To edit a cell requires the
+        pressing of either the F2 function key or some other key. This places
+        the cell into edit mode and can be recognised from the green background
+        as opposed to the normal gold background. All the while that you do not
+        move out of the cell, the data that has been typed has not been
+        committed to that cell, and you can press the Escape key to have the
+        contents revert back to what they were. When you move to the next cell,
+        the data gets accepted. This can be done with the tab or Enter keys.
+        When the contents of field are changed and accepted by the program, the
+        background of that cell changes to a light-pink colour to provide a
+        visual cue. If the cell is not valid, it will also contain a red
+        exclamation sign, which, if you hover the mouse pointer over, will give
+        you an error message. Note that the field has already been changed, so
+        has the light-pink background. It is recommended that you correct your
+        errors as you go, since at present, it is perfectly possible (and
+        reasonable) to save the changed file containing errors to disk, and
+        have the file rejected when you try to upload it to FreeREG. Note: A
+        record is validated in its' entirety once the cursor is moved to
+        another row. Errors will not be shown until the cursor is moved to
+        another row, which can be done by using any of the normal navigation
+        type keys (up and arrow keys) or clicking the mouse in another row.</p>
+
+        <p>h) Copy Paste. This also works somewhat differently to how it
+        did in WinREG/2. You can use either keyboard or the mouse. Whichever
+        method you elect to use, the first step is to click on a cell. The
+        background changes to a dark gold colour to visually show where the
+        cursor is. You can now use the conventional, Windows shortcut keys of
+        Ctrl-C, Ctrl-V and Ctrl-X to, respectively, cut, copy and paste using
+        the clipboard. Ctrl-C copies the text from the current cell onto the
+        clipboard. Ctrl-X does much the same, except that it also clears the
+        cell of any data Ctrl-V pastes text from the clipboard into the current
+        cell, replacing any data that was originally there.</p>
+
+        <p>i) Use of Colour. To make things easier for people, the program uses
+        different coloured backgrounds for the data cells. The normal,
+        unchanged cells have either a background or a background. Usage here is
+        to distinguish alternate lines. When a cell is selected, the background
+        changes to a background. When the contents of a cell are being edited,
+        the background changes to a background. A cell that has been changed
+        has a background.</p>
+
+        <p>j) Navigation. There is a full set of shortcut keys.</p>
+
+        <p>k) Adding New Records. Records are always added to the end of the
+        grid. Use the '+' button on the Navigation bar to cause a new,
+        partially-filled record to be added to the grid. The program will fill
+        in default values for the County, Place and Church fields. All others
+        will be set as empty. Initially all fields in the new record will be
+        set as having had their field contents changed (a light-pink
+        background).</p>
+    </div>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3><a id="W3install" name="W3install"></a>Installing WinREG 3 on your
+    PC</h3>
+
+    <div>
+        <p>If you have a version of WinReg3 already installed on your computer,
+        it is not necessary to uninstall that version before installing a new
+        version. WinReg will ask if you want to install the new version as well
+        as the old.</p>
+
+        <p>To download WinREG just click on the "download WinREG" link below.
+        The file is quite large, approximately 3 Mbytes, so it may take a while
+        to download if you have a slow speed connection. Be patient the program
+        is worth the time investment.</p>
+    </div>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a> <a href="http://sites.google.com/site/winregsoftware/home"></a>
+</p>
+
+    <h2><a href="http://sites.google.com/site/winregsoftware/home">Download
+    WinREG 3</a>
+</h2>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3><a id="NET" name="NET"></a>Updating your .NET Framework</h3>
+
+    <div style="margin-left: 2em">
+        If you received the message "WinREG for Windows cannot be installed on
+        systems with .NET Framework earlier than 2.0" you will need to update
+        the .NET Framework software. The .NET Framework is a standard suite of
+        software from Microsoft that is used by applications such as WinREG for
+        Windows; unfortunately the normal updating process from Microsoft does
+        not keep this the .NET Framework up to date.
+
+        <p>To update the .NET Framework go to the Microsoft download site, link
+        to be provided in a few lines, Click the button Download it now under
+        the note ".NET Framework 3.5 SP1". This will take you to another
+        Microsoft page. Click the Download button and follow the instructions
+        from Microsoft. Please be aware this download and installation process
+        may take up to 30 minutes. When it is complete go back and re-execute
+        the WinREG for Windows Installer. Now go to the<a href="http://www.microsoft.com/en-us/download/details.aspx?id=22"> Microsoft
+        .NET Framework Download Site</a>
+</p>
+    </div>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3><a id="w3run" name="w3run"></a>Starting WinREG 3 for the first
+    time</h3>
+
+    <div style="margin-left: 2em">
+        Double click the shortcut on your desktop, (it looks a bit like a
+        register and has the name WinREG for Windows at the bottom). If you
+        have deleted the shortcut from the desktop then click the Windows START
+        button, go to All Programs, highlight the FreeREG group, the the WinREG
+        for Windows Group and you will see the WinREG program. Click the WinREG
+        for Windows Icon and away you go.<br />
+
+        <p>The first time the program asks you to identify your, name, e-mail
+        address and the county you are working with. (If you have already
+        installed an earlier version of WinREG the program will use those
+        settings.) <strong>Please make sure this is the same information that
+        you have used when you registered as a transcriber with
+        FreeREG.</strong> You may change this information at any point in the
+        future by selecting the Settings/Options menu in WinREG.</p>
+
+        <p>If you are an existing transcriber then it is essential that you
+        follow the next step. Copy all of your previous transcription from the
+        old transcripts folder to the new transcripts folder. This will ensure
+        that the files are named correctly by WinREG 3 and thereby avoid
+        problems with duplicate file names when you go to upload.</p>
+
+        <p>To do this go to the existing transcripts folder. It is usually
+        stored at C:\Program Files\WinREG\Transcripts Go to the Edit menu at
+        the at the top on the Task Bar and select the Select All option. This
+        will highlight all your files. Then go back to the Edit menu at the top
+        on the Task Bar and select Copy. Now go to the new transcripts folder.
+        It is at Documents\FreeREG\WinREG for Windows\Transcripts Again go to
+        the Edit menu at the top on the Task Bar and select the Paste option.
+        All your files should now appear in the new Transcripts folder.</p>
+    </div>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3><a id="usingwinreg3" name="usingwinreg3"></a>Using WinREG 3</h3>
+
+    <div style="margin-left: 2em">
+        WinREG3 does not contain a very extensive Help option, but there is a
+        separate Help file which you can download. Alternatively, F1 at almost
+        any time will give further information and just hovering over a field
+        will also provide information
+    </div>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3><a id="w3uninstall" name="w3uninstall"></a>Uninstalling WinREG 3</h3>
+
+    <div style="margin-left: 2em">
+        There is no need to uninstall WinReg3 when you upgrade to a new
+        version. In fact WinReg3 will check for new versions.
+
+        <p>But if you do want to remove WinReg3, then click the Windows Start
+        button, go to Control Panel, in Windows XP select the Add/Remove
+        Programs Option, in Windows Vista select the Programs and Features
+        Option. Navigate down the list of installed programs to the WinREG for
+        Windows program. Either highlight the program and select the Uninstall
+        option at the top or simply double click on the name. Windows may ask
+        if you wish to remove the program, if so say yes. The WinREG for
+        Windows un-installer then proceeds to remove the program. It WILL NOT
+        remove the transcripts or the folder in which they are located.<br />
+        You may also wish to delete the downloaded copy of the installation
+        package before <a href="#install">downloading and installing WinREG
+        3</a>
+</p>
+    </div>. <a href="#top"><strong>WinREG Index</strong>
+</a>
+    <hr />
+
+    <h3><a id="about" name="about"></a>General Information about WinREG 2</h3>
+
+    <div style="margin-left: 2em">
+        WinREG 2 looks a bit like a database data entry module. So transcribers
+        who like using a database may find this version to their liking.
+        However this version is not being maintained and does not have as many
+        facilities as WinReg3.
+
+        <p>The WinREG 2 software was written by Mike Fry, an active
+        transcriber. If you encounter what appears to be a bug there is a bug
+        reporting email address under the Help Taskbar. If you run into
+        problems using the software get in touch with either your <a href="../parishes/index.shtml">Country Coordinator</a> or <a href="mailto:reg-winreg@freereg.org.uk?subject=WinReg2%20Bug%20Report">file
+        a bug report</a>.</p>
+
+        <p>WinReg2 replaces WinREG 1 and SpeedREG which have been in use for a
+        number of years.</p>
+    </div>
+
+    <h4>WinREG 2 offers:-</h4>
+
+    <ul>
+        <li>Once only input of heading details such as your name, email
+        address, County, Parish and Church.</li>
+
+        <li>Automatic creation of a comma delimited file ready for uploading to
+        FreeREG.</li>
+
+        <li>Duplication of an entry.</li>
+
+        <li>Automatic capitalization using a modified paragraph structure for
+        the Abode, Parish, Occupation and Notes fields where the first letter
+        is capitalized and the rest are controlled by the transcriber.
+        Automatic capitalization is used in the forename and surname
+        fields</li>
+
+        <li>Gives a Pick List, possible options are provided as typing
+        progresses in such fields as sex, relationship and marriage
+        conditions.</li>
+
+        <li>Extensive data checking especially for the date field</li>
+
+        <li>A variety of date entry formats including for example 16.2.1672/3
+        or 16 2 1672/3 or 16/2/1672/3 as well as 16 feb 1672/3. All will create
+        16 Feb 1672/3 in the file.</li>
+
+        <li>Sorting of the entries into ascending/or descending alphabetic
+        order which provides a powerful tool for quality control; there is an
+        associated UNSORT command to restore the original order</li>
+
+        <li>Designed for data entry with only the keyboard</li>
+
+        <li>Full implementation of the Uncertain Character Format; UCF</li>
+
+        <li>Special helpers for problem dates (F4) and coding an uncertain
+        entry using the UCF (F5)</li>
+
+        <li>Compatibility with standard windows keyboard shortcuts</li>
+
+        <li>An integrated image viewer for displaying images of registers</li>
+
+        <li>Ability to change the Place name, Church name, Source and Comments
+        fields for the file at any time</li>
+
+        <li>A Backup/Restore capability and with the ability to define a backup
+        location</li>
+
+        <li>Support for the additional marriage conditions</li>
+
+        <li>Ability to over ride the standard file name</li>
+
+        <li>Ability to rename a file</li>
+
+        <li>Ability to add additional relationship in the Burial Relationship
+        field</li>
+
+        <li>Ability to add additional conditions for the Marriage Condition
+        fields</li>
+
+        <li>Ability to include a comma in all fields except a date</li>
+
+        <li>Use the standard Microsoft copy, cut and paste keystoke commands,
+        Ctrl-C, Ctrl-X, and Ctrl-V as well as the right click menu</li>
+
+        <li>Validation of files</li>
+
+        <li>Change location of both Transcript and Backup folder</li>
+
+        <li>Auto-fill option for Abode, Parish, Occupations fields</li>
+
+        <li>Uploading files directly to the FreeREG Server</li>
+
+        <li>A Bishop's or Archdeacon's Transcripts option; permits multiple
+        Places and Churches to be in one file</li>
+
+        <li>Automatic correction of 3 problems introduced by opening and then
+        saving a WinREG CSV file with Excel; the only problem NOT corrected is
+        the post 1900 Microsoft date conversion. Please note this will NOT
+        convert an Excel xls (or xlsx) file to the correct CSV format.</li>
+
+        <li>WinREG 2 does NOT automatically save the file each time a record is
+        added to the file. You, the transcriber, MUST save the file. To save a
+        file there is the standard Save File option in the File Menu. There is
+        the standard Save Button on the Taskbar. Alternatively and most useful
+        is to key Alt S simultaneously and the file will be saved.<br />
+        You will be asked if you wish to save the file on Exit if there are new
+        records pending for the file; say Yes if you want to keep them.</li>
+
+        <li>Select the Add Record (+ sign) to start adding records to the file
+        once the program has been started</li>
+
+        <li>There is far more data checking. If you get a red ! on a field, you
+        MUST correct the entry before saving the record in order to proceed
+        with saving.</li>
+
+        <li>The date must be correctly entered especially if it is a split year
+        entry.</li>
+
+        <li>Single click on a record to DUPLICATE it; Double Click on a record
+        to EDIT it.</li>
+
+        <li>There is capitalization using a modified paragraph structure for
+        the Abode, Parish, Occupation and Notes fields where the first letter
+        is capitalized and the rest are controlled by the transcriber.
+        Automatic capitalization is used in the forename and surname
+        fields</li>
+
+        <li>WinREG 2 supports a number of keyboard short cuts. Including Ctrl S
+        to save a record, Alt S to save a file. Review the WinREG 2 Help file
+        for details on them all.</li>
+
+        <li>When in a date field, keying the F4 function key will start the
+        Date Helper to assist you in properly formatting a date will missing or
+        uncertain parts.</li>
+
+        <li>When in a text field, keying the F5 function key will start the UCF
+        Helper to assist you in properly formatting a text field with uncertain
+        characters.</li>
+
+        <li>The Drop Down menu or Pick Lists CAN be used with just the
+        keyboard. Use of the mouse is NOT mandatory. There are several ways of
+        using. Tab to such a field. 1)Type the first character and if the
+        correct entry appears in the field tab to the next field. 2) Type the
+        first character and you are offered a choice of entries, use the down
+        arrow to select the option you wish and tab to the next field. 3) Type
+        2 or 3 characters to reduce the options to 1 and then tab to the next
+        field. eg in the burial relationship drop down box type either wif or
+        wid to get the correct entry displayed.</li>
+
+        <li>After editing a record you MUST key Ctrl A or select the Add a
+        record (+) icon to recommence adding records</li>
+
+        <li>and lots more to come!</li>
+    </ul>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3><a id="install" name="install"></a>Installing WinREG 2 on your PC</h3>
+
+    <div style="margin-left: 2em">
+        <p>If you have a version of WinREG 2 already installed on your
+        computer, it is necessary to uninstall that version before installing a
+        new version. Follow the instructions below to <a href="#uninstall">uninstall the current version.</a> You should also delete
+        the version of the WinREG 2 installer that you downloaded previously.
+        Doing this will NOT delete your settings for WinREG 2and/or
+        transcriptions.</p>
+
+        <p>To download WinREG just click on the "download WinREG" link below.
+        The file is quite large, approximately 4 Mbytes, so it may take a while
+        to download if you have a slow speed connection. Be patient the program
+        is worth the time investment.</p>
+
+        <p>Windows will ask you to specify a folder (directory) on your hard
+        disk in which to save the file.(You may use any folder such as
+        c:\received files\ or alternatively you may want to save it to a
+        c:\FreeREG\WinREG\ folder). Remember to make a note of the location.
+        You will need to go to it later in the installation process.</p>
+
+        <p>The downloaded file will have a name like WinREGSetup.msi</p>
+
+        <p>The installation process itself is similar to any other installation
+        process under Windows and is quite self explanatory. Select the
+        Complete installation option when asked. (The other options Typical and
+        Custom are for advanced users) However, you may want to briefly review
+        the steps in the process that are explained below before starting the
+        download.</p>
+    </div>
+
+    <p><a href="http://sites.google.com/site/winregsoftware/home"></a>
+</p>
+
+    <h2><a href="http://sites.google.com/site/winregsoftware/home">Download
+    WinREG 2</a>
+</h2>
+
+    <div style="margin-left: 2em">
+        As noted above the installation process itself is similar to any other
+        installation process under Windows and is quite self explanatory.
+        Assuming you saved the file on your computer use Windows Explorer to go
+        to the folder (directory) where you saved the install file
+        WinREGSetup.msi. Double click on the file name and that will start the
+        installation process and lead you through the installation process. It
+        is self explanatory and really very fast! Then, or if you told Windows
+        to execute the file without saving it, the installation process then
+        asks you to identify where the program is to be installed. The default
+        folder (directory) for the location of the program files is provided.
+        Just tap the Next button if you wish to use this location and we do
+        recommend it; but you can define any directory on any drive that is
+        accessible to your computer. (Use the Browse button to locate the
+        location you wish to use)
+
+        <p>Select Next and on the subsequent page, select Install. The program
+        is them installed on your computer.</p>
+
+        <p>At this point you may receive a message "WinREG for Windows cannot
+        be installed on systems with .NET Framework earlier than 2.0". If you
+        do follow the steps outlined in <strong><a href="#NET">Updating your
+        .NET Framework</a>
+</strong> and then restart the WinREG 2 installation
+        process.</p>
+
+        <p>When this is complete you are asked to finish the installation.
+        During this phase the installer will ask if you wish to create a
+        Program Group under WinREG for Windows (You will see that under the
+        Windows START button in the list of installed programs), if you wish to
+        place a shortcut on your desktop and if you wish to add the program to
+        the Quick Launch menu to make it easier for you to start the program
+        itself. The default of these options is yes. Lastly you will be asked
+        if you wish to have WinREG 2 always open your CSV files, it will then
+        create a transcripts folder under your Documents folder to make it
+        easier for you to access your transcripts. The actual folder is located
+        at Documents\FreeREG\WinREG for Windows\Transcripts\</p>
+    </div>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3>Updating your .NET Framework</h3>
+
+    <div style="margin-left: 2em">
+        If you received the message "WinREG for Windows cannot be installed on
+        systems with .NET Framework earlier than 2.0" you will need to update
+        the .NET Framework software. The .NET Framework is a standard suite of
+        software from Microsoft that is used by applications such as WinREG for
+        Windows; unfortunately the normal updating process from Microsoft does
+        not keep this the .NET Framework up to date.
+
+        <p>To update the .NET Framework go to the Microsoft download site, link
+        to be provided in a few lines, Click the button Download it now under
+        the note ".NET Framework 3.5 SP1". This will take you to another
+        Microsoft page. Click the Download button and follow the instructions
+        from Microsoft. Please be aware this download and installation process
+        may take up to 30 minutes. When it is complete go back and re-execute
+        the WinREG for Windows Installer. Now go to the <a href="http://www.microsoft.com/NET/Download.aspx"><strong>Microsoft .NET
+        Framework Download Site</strong>
+</a>
+</p>
+    </div>
+<a href="http://www.microsoft.com/NET/Download.aspx"></a>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3><a id="run" name="run"></a>Starting WinREG 2 for the first time</h3>
+
+    <div style="margin-left: 2em">
+        Double click the shortcut on your desktop, (it looks a bit like a
+        register and has the name WinREG for Windows at the bottom). If you
+        have deleted the shortcut from the desktop then click the Windows START
+        button, go to All Programs, highlight the FreeREG group, the the WinREG
+        for Windows Group and you will see the WinREG program. Click the WinREG
+        for Windows Icon and away you go.<br />
+
+        <p>The first time the program asks you to identify your, name, e-mail
+        address and the county you are working with. (If you have already
+        installed an earlier version of WinREG the program will use those
+        settings.) <strong>Please make sure this is the same information that
+        you have used when you registered as a transcriber with
+        FreeREG.</strong> You may change this information at any point in the
+        future by selecting the Settings/Options menu in WinREG.</p>
+
+        <p>If you are an existing transcriber then it is essential that you
+        follow the next step. Copy all of your previous transcription from the
+        old transcripts folder to the new transcripts folder. This will ensure
+        that the files are named correctly by WinREG 2 and thereby avoid
+        problems with duplicate file names when you go to upload.</p>
+
+        <p>To do this go to the existing transcripts folder. It is usually
+        stored at C:\Program Files\WinREG\Transcripts Go to the Edit menu at
+        the at the top on the Task Bar and select the Select All option. This
+        will highlight all your files. Then go back to the Edit menu at the top
+        on the Task Bar and select Copy. Now go to the new transcripts folder.
+        It is at Documents\FreeREG\WinREG for Windows\Transcripts Again go to
+        the Edit menu at the top on the Task Bar and select the Paste option.
+        All your files should now appear in the new Transcripts folder.</p>
+    </div>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3><a id="usingwinreg2" name="usingwinreg2"></a>Using WinREG 2</h3>
+
+    <div style="margin-left: 2em">
+        WinREG2 contains a very extensive Help documentation including an index
+        and search capabilities. Please review this material. It can be
+        accessed under the Help Menu on the right of the tool bar which is
+        located near the very top of the WinREG2 display. It can be accessed
+        from any WinREG2 display page. First time transcribers should as a
+        minimum consult the following topics.
+    </div>
+
+    <ul>
+        <li>Start New Project</li>
+
+        <li>Add New Record</li>
+
+        <li>Change Record</li>
+
+        <li>Save Record</li>
+
+        <li>Saving Files</li>
+
+        <li>Open an Existing Project</li>
+    </ul>
+
+    <p><a href="#top"><strong>WinREG Index</strong>
+</a>
+</p>
+
+    <h3><a id="uninstall" name="uninstall"></a>Uninstalling WinREG 2</h3>
+
+    <div style="margin-left: 2em">
+        Click the Windows Start button, go to Control Panel, in Windows XP
+        select the Add/Remove Programs Option, in Windows Vista select the
+        Programs and Features Option. Navigate down the list of installed
+        programs to the WinREG for Windows program. Either highlight the
+        program and select the Uninstall option at the top or simply double
+        click on the name. Windows may ask if you wish to remove the program,
+        if so say yes. The WinREG for Windows un-installer then proceeds to
+        remove the program. It WILL NOT remove the transcripts or the folder in
+        which they are located.<br />
+        You may also wish to delete the downloaded copy of the installation
+        package before <a href="#install">downloading and installing WinREG
+        2</a>.
+
+        <p><a href="#top"><strong>WinREG Index</strong> </a> </p>
+    </div>
+</div>
+</div>
+

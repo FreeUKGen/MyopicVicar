@@ -1,0 +1,403 @@
+<h1>Additional Information on Error Messages produced when Uploading Files</h1>
+
+
+<p><span class="loz islet--orange">FR1 content — not edited for FR2 </span> </p>
+
+<hr />
+<table cellpadding="5">
+  <tbody><tr><td> <img src="graphics/logfreg1.jpg" alt="FreeREG logo" height="50" width="227" /></td>
+	<td style="color:#008000; font-size: 2em"> <strong>Additional Information on Error Messages produced when Uploading Files</strong> </td> </tr>
+</tbody>
+</table> 
+ 
+
+<hr />
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadAge"><strong><h3>Bad Age. </h3>
+</strong>
+</a>
+</td>
+    <td>The age field for the record at the stated line contains invalid information. The age field is usually an integer number representing the age in years. Alternative formulations involve an integer followed by d (for days),w (for weeks) or m (for months). <strong>The only valid text permitted is "infant".</strong>
+<br />The message may be more explicit in identifying the problem e.g."Age in days may not exceed [XX] days."; or "Age in weeks may not exceed [XX] weeks."; or "Age in months may not exceed [XX] months."; or "Age is years is preposterous". <br />Alternatively you may have the generic message; "Invalid age format: Not [number][d|w|m], [number]y[number][d|w|m] or infant.". The required action is to locate the specific record that has the error an replace with a correctly formatted date field.
+
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadCharacters"><strong><h3>Bad Characters <br /> in a text field<br /> at line X. </h3>
+</strong>
+</a>
+</td>
+    <td>A text field is limited in the characters that may appear within it. Only A-Z, a-z, 0-9, space and the following special characters ?!:;.+=* are allowed. The most likely problem is that you have entered one of the forbidden characters in the text field e.g. ",(,),&amp;. <br />To resolve open your file with Notepad or a similar simple text editor and move down to the line X containing the error. Either delete the special character or substitute one of those that is permitted. 
+
+
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadCounty"><strong><h3>The county information is incorrect. </h3>
+</strong>
+</a>
+</td>
+    <td>Information on counties is normally entered using the <a href="howto/chapmancode.htm"> Chapman county codes</a>; e.g. NTT, GLS, HEF etc.<br /> To resolve open your file with Notepad or a similar simple text editor and move down to the line X containing the error. Enter a valid Chapman county code.
+
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadCredit"><strong><h3>Incorrect Header Information - Line 3. </h3>
+</strong>
+</a>
+    </td>
+    <td>This error message reports that there is a problem with the third line of the 
+Header Information for the file that you are uploading.<br /> The third line must be at least 4 data fields long, but no more than 12 data fields long and is used to provide credit information for others involved in the transcription of the file.<br /><br /> 
+
+#,Credit,Credit Name,Credit Email,Credit Text<br /><br />
+
+The first data field must be #. The second data field should be CREDIT. The third data field is the submitters name.The fourth data field is the submitters e-mail address. 
+The other fields can provide additional credit comments if desirable.<br />
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+<br />
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td>
+<a name="BadDate"><strong><h3>Incorrect date field. </h3>
+</strong>
+</a>
+</td>
+    <td>An incorrect date is the most common error in FreeREG files.A date field MUST be entered as text and not date format. Date format cannot handle old years prior to 1900 and certainly not something like 1742/3 which is what we use to describe a date before March 25 in any year before 1752 when the calendars changed. The format of a date entry is one of several forms. In the following dd is the day of the month and can only be 0 through 31, mon is the THREE letter abreviation for the month e.g.Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, and Dec; yyyy is the year eg 1799 or 1723/4. The normal date field is dd mmm yyyy when all information is available; mmm yyyy is permitted when the day is unknown; yyyy is also possible for dates in which only the year is known. The * is permitted for missing data as well. eg * * 1888.
+
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td>
+<a name="BadEmail"><strong><h3>Invalid email address. </h3>
+</strong>
+</a>
+</td>
+<td>An incorrect email address has been provided in line 1 of the header. The first line has up to six fields, 5 of which are manitory.<br /><br />
+
++INFO,email@address,password,filetype,recordtype<br /><br />
+
+The second data field is the email address of the submittor. e.g. another@shaw.ca 
+    <h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td>
+<a name="BadFileType"><strong><h3>The type of file is incorrect. </h3>
+</strong>
+</a>
+</td>
+<td>An incorrect parameter has been provided in line 1 of the header for the type of files. The first line of the header has up to six fields, 5 of which are manitory.<br /><br />
+
++INFO,email@address,password,filetype,recordtype<br /><br />For FreeREG the file type must be SEQUENCED.
+    
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td>
+<a name="BadFileName"><strong><h3>The name of the file is incorrect. </h3>
+</strong>
+</a>
+</td>
+<td>An incorrect file name has been provided in line 2 of the header. The second line must be at least 6 data fields long, but no more than 12 data fields long and is used to identify the submittor.<br /><br /> 
+
+#,CCC,submitters name,submitters county,transcribed filename,transcribed date<br /><br />
+The transcribed filename must consist of: [three letter Chapman code][three letter placename code][BA|BU|MA][part number, if any].CSV. The filename should be all upper case. The part number, if included, must be numeric. Finally the file extension must be CSV.
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadFormat"><strong><h3>The line is incorrectly formatted. </h3>
+</strong>
+</a>
+</td>
+<td>The specified line does not follow the format for the specified record type. Check that you are following the <a href="howto/enterdata.htm">correct data entry layout</a>.
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadInfo"><strong><h3>The format of the first header line is incorrect. </h3>
+</strong>
+</a>
+</td>
+<td>The first line of the header is expected to contain between 5 and 12 parts. The submitted line either has too few or too many parts.<p>The first line of the header normally has up to six fields, 5 of which are manitory.<br /><br />
+
++INFO,email@address,password,filetype,recordtype<br />
+
+The first data field MUST be +INFO. The second data field is the e-mail address of the submittor. The third data field is
+a password that may be required in the future; at the present time simply use password for this field.
+The fourth data field is the nature of the data records. For FreeREG this must be SEQUENCED. The Fifth data field
+ is the type of register information being submitted.   
+It can be one of BAPTISMS, MARRIAGES, BURIALS.The sixth data field is optional and identifies the character
+ set used in the file (If you do not wish to identify a character set leave this field blank by 
+adding the comma to show that the field is indeed null).<br />
+</p>
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadName"><strong><h3>The name of the person is incorrect. </h3>
+</strong>
+</a>
+</td>
+<td>The name of the transcriber in the third line of the header is not correct. The third line must be at least 4 data fields long, but no more than 12 data fields long and is used to provide credit information for others involved in the transcription of the file.<br /><br /> 
+
+#,Credit,Credit Name,Credit Email,Credit Text<br /><br />
+
+The third data field should be the original transcibers name. In this case that name is incorrectly formatted.
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadPassword"><strong><h3>The password is incorrect. </h3>
+</strong>
+</a>
+</td>
+<td>This error message reports that there is a problem with the password contained in the first line of the 
+Header Information for the file that you are uploading.<p> The first line has up to six fields, 5 of which are manitory.<br /><br />
+
++INFO,email@address,password,filetype,recordtype<br /><br />
+
+The third data field is a password that may be required in the future; at the present time simply use the word password for this field.
+
+</p>
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadRecordType"><strong><h3>The Record Type is incorrect. </h3>
+</strong>
+</a>
+</td>
+<td>This error message reports that there is a problem with the record type contained in the first line of the 
+Header Information for the file that you are uploading.<p> The first line has up to six fields, 5 of which are manitory.<br /><br />
+
++INFO,email@address,password,filetype,recordtype<br /><br />
+
+The Fifth data field  is the type of register information being submitted. It can be one of BAPTISMS, MARRIAGES, BURIALS.
+
+</p>
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadRegisterNumber"><strong><h3>The Register Number is incorrect. </h3>
+</strong>
+</a>
+</td>
+<td>An incorrect entry has been made in the reister number at the given line. Most likely a non-numeric character has been entered.
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadSex"><strong><h3>The Sex is incorrect. </h3>
+</strong>
+</a>
+</td>
+<td>The data entered for the sex of the person is not one of the three valid options for this field. These are M, F or -.
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="BadText"><strong><h3>Incorrect Character in a Text Field. </h3>
+</strong>
+</a>
+    </td>
+    <td>This error message reports that there is a problem with an incorrect character appearing in a text field at the specified line. This is most likely a problem with the Notes field of a record; but it can also occur with an incorrect character appearing in the comment text of the 3rd and 4th lines of the Header.<br /> A text field is limited in the characters that may appear within it. Only A-Z, a-z, 0-9, space and the following special characters ?!:;.+=* are allowed. The most likely problem is that you have entered one of the forbidden characters in the text field e.g. ",(,),&amp;. <br />To resolve, open your file with Notepad or a similar simple text editor and move down to the line X containing the error. Either delete the special character or substitute one of those that is permitted. 
+
+<h3> To continue, please close this information window and reopen the window where the error occured.
+</h3>
+<br />
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2"> 
+<tbody><tr valign="top">
+    <td><a name="BadTranscriberData"><strong><h3>Incorrect Header Information - Line 2. </h3>
+</strong>
+</a>
+    </td>
+    <td>This error message reports that there is a problem with the second line of the 
+Header Information for the file that you are uploading.<br /> The second line must be at least 6 data fields long,
+ but no more than 12 data fields long and is used to identify the submittor.<br /><br /> 
+
+#,CCC,submitters name,submitters county,transcribed filename,transcribed date<br /><br />
+
+The first data field must be #. The second data field should be CCC. The third data field is the submitters name. The forth data field is the group with which the sumitter is working. 
+The fifth data field is the file name of the transcribed file. The file name must consist of: [three letter Chapman code for the county][a three letter placename code assigned by the person uploading the file][BA|BU|MA][part number, if any].CSV.
+The file name should also be all upper case. The sixth data field contains the date of transcription (dd-mon-yyyy)<br />
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="EmptyFile"><strong><h3>The file contains no information. </h3>
+</strong>
+</a>
+</td>
+<td>The file being uploaded contains no data. Usually caused by giving an incorrect file name in the Browse window.
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="NoInfo"><strong><h3>Incorrect Header Information - Line 1. </h3>
+</strong>
+</a>
+    </td>
+    <td>This error message reports that there is a problem with the first line of the 
+Header Information for the file that you are uploading.<p> The first line has up to six fields, 5 of which are manitory.<br /><br />
+
++INFO,email@address,password,filetype,recordtype<br /><br />
+
+The first data field MUST be +INFO. The second data field is the e-mail address of the submittor. The third data field is
+a password that may be required in the future; at the present time simply use password for this field.
+The fourth data field is the nature of the data records. For FreeREG this must be SEQUENCED. The Fifth data field
+ is the type of register information being submitted.   
+It can be one of BAPTISMS, MARRIAGES, BURIALS.The sixth data field is optional and identifies the character
+ set used in the file (If you do not wish to identify a character set leave this field blank by 
+adding the comma to show that the field is indeed null).<br />
+
+</p>
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="PartsCount"><strong><h3>The record contains an incorrect number of parts. </h3>
+</strong>
+</a>
+</td>
+<td>A line contains an incorrect number of parts for the record type. The most likely cause of this error was the creation of the file using Excel with a record that has a number of blank fields at the end of the record specifically a blank notes entry. Excel has a documented problem with creating the correct number of blank fields in a CSV file.<p> To correct in this specific case simply add an extra , to the incorrect line.</p>
+<p> To avoid this problem in the future we have documented a work around in the web page<a href="howto/makecsvexcel.htm"> using Excel to make a CSV file.</a>
+</p>
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="UnhandledField"><strong><h3>The record contains a field with a serious error. </h3>
+</strong>
+</a>
+</td>
+<td>The FreeREG data ingestor was unable to process the field for some unknown reason.
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<table cellpadding="2">
+  <tbody><tr valign="top">
+    <td><a name="UnknownLine"><strong><h3>The record contains an unknown line. </h3>
+</strong>
+</a>
+</td>
+<td>Look at the line in detail to access what caused this specific problem. It is most likely caused by including a line that does not follow the specification for any of the record types.
+<h3> To continue, please close this information window and reopen the window where the error occured.</h3>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />

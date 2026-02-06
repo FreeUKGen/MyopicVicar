@@ -9,13 +9,12 @@ namespace :refinery do
   desc "  overwrite: true to overwrite existing files (default: false)"
   task :copy_images_to_assets, [:site, :overwrite] => :environment do |_t, args|
     begin
-      # Check if Refinery is available
-      unless defined?(Refinery::Image)
-        puts "ERROR: Refinery::Image is not available. Is Refinery CMS installed?"
-        exit 1
-      end
+      # Check if Refinery is available by trying to access the class
+      # This will trigger autoloading if the class exists
+      Refinery::Image
     rescue NameError => e
-      puts "ERROR: Refinery models not available: #{e.message}"
+      puts "ERROR: Refinery::Image is not available. Is Refinery CMS installed?"
+      puts "Error: #{e.message}"
       puts "This task requires Refinery CMS to be installed and configured."
       exit 1
     end
@@ -46,7 +45,7 @@ namespace :refinery do
 
     # Base paths for assets
     assets_base = Rails.root.join('app')
-    refinery_images_base = Rails.root.join('public', 'system', 'images')
+    refinery_images_base = Rails.root.join('public', 'system', 'refinery', 'images')
 
     unless Dir.exist?(refinery_images_base)
       puts "WARNING: Refinery images directory not found: #{refinery_images_base}"
@@ -74,7 +73,7 @@ namespace :refinery do
 
       pages.each do |page|
         # Get all page parts for this page
-        page_parts = page.page_parts || []
+        page_parts = page.parts || []
         
         page_parts.each do |part|
           body = part.body
@@ -87,7 +86,7 @@ namespace :refinery do
             uid = match[0]
             # Validate: Refinery image_uids are typically base64-like strings
             # They usually start with specific patterns and are 20+ characters
-            if uid.length >= 20 && uid.match?(/\A[A-Za-z0-9+/]+\z/)
+            if uid.length >= 20 && uid.match?(/\A[A-Za-z0-9+\/]+\z/)
               image_uids.add(uid)
             end
           end
@@ -114,18 +113,36 @@ namespace :refinery do
     def find_image_file(base_dir, image_uid, image_name)
       return nil unless Dir.exist?(base_dir)
 
-      # Try direct path: base_dir/image_uid/image_name
-      if image_name.present?
-        direct_path = base_dir.join(image_uid, image_name)
+      # Check if image_uid is a date-based path (contains slashes)
+      if image_uid.include?('/')
+        # image_uid is a path like "2014/09/07/16_04_06_544_alphabet.jpg"
+        # Try direct path: base_dir/image_uid
+        direct_path = base_dir.join(image_uid)
         return direct_path if File.exist?(direct_path)
-      end
 
-      # Search for files in the image_uid directory
-      uid_dir = base_dir.join(image_uid)
-      if Dir.exist?(uid_dir)
-        files = Dir.glob(uid_dir.join('*'))
-        # Return the first file found (Refinery typically stores one file per image_uid)
-        return files.first if files.any?
+        # If image_name is provided and different from the filename in image_uid,
+        # try replacing the filename
+        if image_name.present?
+          path_parts = image_uid.split('/')
+          path_parts[-1] = image_name
+          alternative_path = base_dir.join(path_parts.join('/'))
+          return alternative_path if File.exist?(alternative_path)
+        end
+      else
+        # image_uid is a base64-like string (old format)
+        # Try direct path: base_dir/image_uid/image_name
+        if image_name.present?
+          direct_path = base_dir.join(image_uid, image_name)
+          return direct_path if File.exist?(direct_path)
+        end
+
+        # Search for files in the image_uid directory
+        uid_dir = base_dir.join(image_uid)
+        if Dir.exist?(uid_dir)
+          files = Dir.glob(uid_dir.join('*'))
+          # Return the first file found (Refinery typically stores one file per image_uid)
+          return files.first if files.any?
+        end
       end
 
       # Only search recursively if we have an image_name and no direct match
@@ -135,9 +152,11 @@ namespace :refinery do
         found = Dir.glob(base_dir.join('**', image_name)).first
         # Verify it's actually in an image_uid directory structure
         if found && File.exist?(found)
-          # Check if path contains an image_uid-like directory
+          # Check if path contains an image_uid-like directory or date-based path
           path_parts = found.to_s.split(File::SEPARATOR)
-          if path_parts.any? { |part| part.length >= 20 && part.match?(/\A[A-Za-z0-9+/]+\z/) }
+          # Accept if it's in a date-based directory structure (YYYY/MM/DD) or has long UID-like parts
+          if path_parts.any? { |part| part.length >= 20 && part.match?(/\A[A-Za-z0-9+\/]+\z/) } ||
+             found.to_s.match?(%r{/\d{4}/\d{2}/\d{2}/})
             return found
           end
         end
