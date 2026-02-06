@@ -68,8 +68,9 @@ namespace :refinery do
       pages
     end
 
-    def find_referenced_images(pages, all_images)
+    def find_referenced_image_uids(pages)
       image_uids = Set.new
+      image_names = Set.new
 
       pages.each do |page|
         # Get all page parts for this page
@@ -79,41 +80,35 @@ namespace :refinery do
           body = part.body
           next if body.blank?
 
-          # Search for image references in various formats:
-          # 1. /system/images/W1siZiIs.../filename.png?sha=...
-          # 2. image_uid patterns
-          # 3. Direct image references
-          
-          # Pattern 1: /system/images/.../filename
+          # Pattern 1: Extract image_uid from /system/images/{image_uid}/filename URLs
+          # Matches: /system/images/W1siZiIs.../filename.png?sha=...
+          # This is the most reliable pattern - only matches actual image URLs
           body.scan(%r{/system/images/([^/]+)/}) do |match|
-            image_uids.add(match[0])
-          end
-
-          # Pattern 2: Look for image_uid in URLs
-          all_images.each do |image|
-            next if image.image_uid.blank?
-            
-            # Check if image_uid appears in the content
-            if body.include?(image.image_uid) || 
-               body.include?("/system/images/#{image.image_uid}") ||
-               (image.image_name && body.include?(image.image_name))
-              image_uids.add(image.image_uid)
+            uid = match[0]
+            # Validate: Refinery image_uids are typically base64-like strings
+            # They usually start with specific patterns and are 20+ characters
+            if uid.length >= 20 && uid.match?(/\A[A-Za-z0-9+/]+\z/)
+              image_uids.add(uid)
             end
           end
 
-          # Pattern 3: Look for image names in content
-          all_images.each do |image|
-            next if image.image_name.blank?
-            
-            # Check for image name in img src attributes
-            if body =~ /<img[^>]+src=["'][^"']*#{Regexp.escape(image.image_name)}/i
-              image_uids.add(image.image_uid) if image.image_uid.present?
+          # Pattern 2: Extract image names from img src attributes
+          # Matches: <img src="/system/images/.../filename.png" ...>
+          body.scan(/<img[^>]+src=["']([^"']+)["']/i) do |url_match|
+            url = url_match[0]
+            # Extract filename from URL
+            if url =~ %r{/system/images/[^/]+/([^/?]+)}
+              filename = $1
+              # Only add if it looks like an image filename
+              if filename.match?(/\.(jpg|jpeg|png|gif|svg|webp|bmp|ico)$/i)
+                image_names.add(filename)
+              end
             end
           end
         end
       end
 
-      image_uids.to_a
+      [image_uids.to_a, image_names.to_a]
     end
 
     def find_image_file(base_dir, image_uid, image_name)
@@ -133,11 +128,19 @@ namespace :refinery do
         return files.first if files.any?
       end
 
-      # If image_name is provided, search more broadly
+      # Only search recursively if we have an image_name and no direct match
+      # This is safer than searching all files
       if image_name.present?
-        # Search recursively for the filename
+        # Search recursively for the filename, but prefer exact matches
         found = Dir.glob(base_dir.join('**', image_name)).first
-        return found if found && File.exist?(found)
+        # Verify it's actually in an image_uid directory structure
+        if found && File.exist?(found)
+          # Check if path contains an image_uid-like directory
+          path_parts = found.to_s.split(File::SEPARATOR)
+          if path_parts.any? { |part| part.length >= 20 && part.match?(/\A[A-Za-z0-9+/]+\z/) }
+            return found
+          end
+        end
       end
 
       nil
@@ -146,13 +149,7 @@ namespace :refinery do
     def copy_image(image, source_base, target_dir, overwrite, site)
       return false if image.image_uid.blank?
 
-      # Refinery stores images in a structure like: public/system/images/W1siZiIs.../filename.ext
-      # The image_uid is typically a base64-encoded string that becomes part of the path
       image_uid = image.image_uid
-      
-      # Try to find the image file
-      # Refinery typically stores files as: public/system/images/{image_uid}/{filename}
-      # We need to search for the actual file
       image_file = find_image_file(source_base, image_uid, image.image_name)
       
       unless image_file && File.exist?(image_file)
@@ -160,8 +157,10 @@ namespace :refinery do
         return false
       end
 
-      # Determine target filename
+      # Determine target filename - sanitize to prevent path traversal
       target_filename = image.image_name || File.basename(image_file)
+      # Remove any path components to prevent directory traversal
+      target_filename = File.basename(target_filename)
       target_path = target_dir.join(target_filename)
 
       # Check if file already exists
@@ -197,35 +196,78 @@ namespace :refinery do
         next
       end
 
-      # Get all Refinery images
-      all_images = Refinery::Image.all
-      puts "Found #{all_images.count} total Refinery images in database"
-
       # Get pages for this site
-      # Since both sites share the same DB, we'll search page content for image references
-      # and determine site association based on page context
       site_pages = get_site_pages(site)
       puts "Found #{site_pages.count} pages for #{site}"
 
-      # Find images referenced by pages for this site
-      referenced_image_uids = find_referenced_images(site_pages, all_images)
-      puts "Found #{referenced_image_uids.count} unique images referenced in #{site} pages"
+      # STEP 1: Scan pages to find referenced image_uids (without loading all images)
+      puts "Scanning page content for image references..."
+      referenced_image_uids, referenced_image_names = find_referenced_image_uids(site_pages)
+      puts "Found #{referenced_image_uids.count} unique image UIDs and #{referenced_image_names.count} image names in page content"
 
-      # Copy each referenced image
-      referenced_image_uids.each do |image_uid|
-        image = all_images.find { |img| img.image_uid == image_uid }
-        next unless image
+      # STEP 2: Query database only for referenced images
+      if referenced_image_uids.empty? && referenced_image_names.empty?
+        puts "No image references found in pages. Skipping image copy."
+        puts
+        next
+      end
 
+      puts "Querying database for referenced images..."
+      
+      # Check if Refinery uses ActiveRecord or Mongoid
+      # Try ActiveRecord syntax first (most common for Refinery)
+      begin
+        # ActiveRecord syntax
+        images_by_uid = if referenced_image_uids.any?
+          Refinery::Image.where(image_uid: referenced_image_uids).to_a
+        else
+          []
+        end
+
+        images_by_name = if referenced_image_names.any?
+          Refinery::Image.where(image_name: referenced_image_names).to_a
+        else
+          []
+        end
+      rescue => e
+        # Fallback: try Mongoid syntax if ActiveRecord fails
+        puts "  Trying alternative query syntax..."
+        images_by_uid = if referenced_image_uids.any?
+          Refinery::Image.where(:image_uid.in => referenced_image_uids).to_a
+        else
+          []
+        end
+
+        images_by_name = if referenced_image_names.any?
+          Refinery::Image.where(:image_name.in => referenced_image_names).to_a
+        else
+          []
+        end
+      end
+
+      # Combine and deduplicate
+      all_referenced_images = (images_by_uid + images_by_name).uniq { |img| img.id }
+      puts "Found #{all_referenced_images.count} matching images in database"
+
+      # STEP 3: Copy only the referenced images
+      if all_referenced_images.empty?
+        puts "No matching images found in database. Skipping copy."
+        puts
+        next
+      end
+
+      puts "Copying #{all_referenced_images.count} images..."
+      all_referenced_images.each do |image|
         begin
           copied = copy_image(image, refinery_images_base, target_dir, overwrite, site)
           if copied
             stats[site.to_sym][:copied] += 1
-            stats[site.to_sym][:images] << (image.image_name || image_uid)
+            stats[site.to_sym][:images] << (image.image_name || image.image_uid)
           else
             stats[site.to_sym][:skipped] += 1
           end
         rescue => e
-          puts "  ERROR copying image #{image_uid}: #{e.message}"
+          puts "  ERROR copying image #{image.image_uid}: #{e.message}"
           stats[site.to_sym][:errors] += 1
         end
       end
@@ -253,6 +295,3 @@ namespace :refinery do
     puts "=" * 80
   end
 end
-
-
-
