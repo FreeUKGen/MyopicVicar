@@ -123,6 +123,7 @@ class Freereg1CsvEntry
   field :place_of_death, type: String
   field :memorial_information, type: String
   field :burial_parish, type: String
+  field :relative_occupation, type: String
 
 
   #original marriage fields
@@ -169,6 +170,7 @@ class Freereg1CsvEntry
   field :groom_mother_title, type: String
   field :groom_mother_occupation, type: String
   field :marriage_by_licence
+  field :marriage_by, type: String
   field :witness3_forename, type: String
   field :witness3_surname, type: String
   field :witness4_forename, type: String
@@ -919,6 +921,10 @@ class Freereg1CsvEntry
       errors.add(:consecrated_ground, 'Invalid characters')
 
     end
+    unless FreeregValidations.cleantext(relative_occupation)
+      errors.add(:relative_occupation, 'Invalid characters')
+
+    end
 
     unless FreeregValidations.cleantext(suffix)
       errors.add(:suffix, 'Invalid characters')
@@ -1125,6 +1131,10 @@ class Freereg1CsvEntry
       end
       unless FreeregValidations.cleantext(groom_mother_title)
         errors.add(:groom_mother_title, 'Invalid characters')
+
+      end
+      unless FreeregValidations.cleantext(marriage_by)
+        errors.add(:marriage_by, 'Invalid characters')
 
       end
       unless FreeregValidations.cleandate(marriage_date)

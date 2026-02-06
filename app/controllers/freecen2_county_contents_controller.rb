@@ -269,12 +269,12 @@ class Freecen2CountyContentsController < ApplicationController
   end
 
   def show
-    redirect_to(freecen2_county_contents_path, notice: 'No such record') && return
+    redirect_to(freecen2_county_contents_path) && return
   end
 
   private
 
-  def freecen2_content_params
-    params.require(:freecen2_content).permit!
+  def freecen2_county_content_params
+    params.require(:freecen2_county_content).permit!
   end
 end

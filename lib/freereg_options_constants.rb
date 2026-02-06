@@ -9,11 +9,11 @@ module FreeregOptionsConstants
                                'witness6_surname', 'witness7_forename', 'witness7_surname', 'witness8_forename', 'witness8_surname'];
 
   ADDITIONAL_BURIAL_FIELDS = ['death_date', 'burial_person_title', 'male_relative_title', 'female_relative_surname', 'female_relative_title',
-                              'cause_of_death', 'burial_location_information', 'place_of_death', 'memorial_information'];
+                              'cause_of_death', 'burial_location_information', 'place_of_death', 'memorial_information', 'relative_occupation'];
 
   ADDITIONAL_MARRIAGE_FIELDS = ['contract_date', 'bride_title', 'bride_marked', 'bride_father_title', 'bride_mother_forename',
                                 'bride_mother_surname', 'bride_mother_title', 'bride_mother_occupation', 'groom_title', 'groom_marked', 'groom_father_title',
-                                'groom_mother_forename', 'groom_mother_surname', 'groom_mother_title', 'groom_mother_occupation', 'marriage_by_licence',
+                                'groom_mother_forename', 'groom_mother_surname', 'groom_mother_title', 'groom_mother_occupation', 'marriage_by_licence', 'marriage_by',
                                 'witness3_forename', 'witness3_surname', 'witness4_forename', 'witness4_surname', 'witness5_forename', 'witness5_surname',
                                 'witness6_forename', 'witness6_surname', 'witness7_forename', 'witness7_surname', 'witness8_forename', 'witness8_surname'];
 

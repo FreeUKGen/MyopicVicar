@@ -1583,6 +1583,12 @@ class CsvRecord < CsvRecords
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
+
+    FreeregValidations.validate_record_date!(@data_record, :baptism_date)
+    FreeregValidations.validate_record_date!(@data_record, :birth_date)
+    FreeregValidations.validate_record_date!(@data_record, :confirmation_date)
+    FreeregValidations.validate_record_date!(@data_record, :received_into_church_date)
+
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if @data_record[:year].blank?
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:confirmation_date]) if @data_record[:year].blank?
@@ -1619,6 +1625,10 @@ class CsvRecord < CsvRecords
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
+
+    FreeregValidations.validate_record_date!(@data_record, :burial_date)
+    FreeregValidations.validate_record_date!(@data_record, :death_date)
+
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:burial_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:death_date]) if @data_record[:year].blank?
     @data_record[:relative_surname] = Unicode::upcase(@data_record[:relative_surname]) unless @data_record[:relative_surname].nil?
@@ -1635,7 +1645,7 @@ class CsvRecord < CsvRecords
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
-    if csvfile.header[:def]
+    if csvfile.header[:def] 
       FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS.each do |field|
         field_symbol = field.to_sym
         @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
@@ -1653,6 +1663,10 @@ class CsvRecord < CsvRecords
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
+ 
+    FreeregValidations.validate_record_date!(@data_record, :marriage_date)
+    FreeregValidations.validate_record_date!(@data_record, :contract_date)
+    
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if @data_record[:year].blank?
     #(@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false

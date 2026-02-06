@@ -33,7 +33,7 @@
     <% end %>
   <% else%>
     <%= f.input :number ,  label: 'Civil Parish Number: e.g. 10', required: true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
-    <%= f.input :suffix ,  label: 'Civil Parish Suffix: e.g. a or b', required: true, input_html: {class: ' simple_form_bgcolour', size:40 }%>
+    <%= f.input :suffix ,  label: 'Civil Parish Suffix: e.g. a or b', input_html: {class: ' simple_form_bgcolour', size:40 }%>
   <% end %>
   <div  style="text-align: center">
     <%= f.action :submit,  :as => :button,  :label =>  'Submit', :button_html => {name: 'commit', value: 'Submit', :class => 'ladda-button' , 'data-style' => 'contract' ,'data-color' => appname_downcase , 'data-size' => 's', 'data-spinner-color' => '#ffffff'  } %>

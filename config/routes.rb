@@ -29,6 +29,13 @@ MyopicVicar::Application.routes.draw do
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
 
+  # In config/routes.rb, add:
+  # Favorite Actions Management
+  get 'favorite_actions/manage', to: 'favorite_actions#manage', as: :manage_favorites
+  post 'favorite_actions/update', to: 'favorite_actions#update_favorites', as: :update_favorites
+  post 'favorite_actions/add', to: 'favorite_actions#add', as: :add_favorite
+  delete 'favorite_actions/remove', to: 'favorite_actions#remove', as: :remove_favorite
+
   get 'open', :to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
   get 'open/:county/:place/surnames', :to => 'open#surnames_for_place', :as => :open_surnames_for_place

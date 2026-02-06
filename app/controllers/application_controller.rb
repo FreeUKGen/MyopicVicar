@@ -168,6 +168,7 @@ class ApplicationController < ActionController::Base
       @first_name = @user.person_forename
       @manager = manager?(@user)
       @roles = UseridRole::OPTIONS.fetch(session[:role])
+      @favorite_actions = @user.favorite_actions_sorted
     end
   end
 

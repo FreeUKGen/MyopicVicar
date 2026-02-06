@@ -75,7 +75,6 @@ module ApplicationHelper
       link_to('Records', main_app.new_freereg_content_path)
     when 'freecen'
       link_to('Records', main_app.freecen2_county_contents_path)
-      # link_to('Records', main_app.freecen2_contents_path)  # AEV
     when 'freebmd'
       link_to('Records', 'https://www.freebmd.org.uk/progress.shtml', target: :_blank)
     end
@@ -505,7 +504,7 @@ module ApplicationHelper
   def place_name_for_entry
     place_name = @place.present? ? @place.place_name : 'Unknown place'
   end
-   def entry_place_name(entry)
+  def entry_place_name(entry)
     place_name = entry.place.present? ? entry.place : "Unknown Place"
   end
   def church_name_for_entry
@@ -776,7 +775,7 @@ module ApplicationHelper
       freeregStat: 'https://www.freereg.org.uk/freereg_contents/new?locale=en',
       #freecenStat: 'https://www.freecen.org.uk/freecen_coverage?locale=en',
       freecenStat: 'https://www.freecen.org.uk/freecen2_county_contents?locale=en',
-      #freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en', #AEV
+      #freecenStat: 'https://www.freecen.org.uk/freecen2_contents?locale=en',
       freebmdStat: 'https://www.freebmd.org.uk/progress.shtml'
     }
   end
