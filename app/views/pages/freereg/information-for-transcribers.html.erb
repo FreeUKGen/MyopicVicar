@@ -1,5 +1,3 @@
-<h1>Information for Transcribers</h1>
-
 <style scoped="scoped">
   .btnPress { font-weight: bold; color: #895f49; }
   figcaption {
@@ -152,7 +150,7 @@
     <p>FreeREG has a single database which is organised by <strong>County</strong>, <strong>Place</strong>, and <strong>Church</strong>: these names are set up by the County Coordinator.</p>
     <p>Within a Church are <strong>Register Types</strong>, the kind of source from which the transcription was made. These provide useful information to a researcher, especially if a particular register entry is not the same from one source to another.</p>
     <p>Within the Register Type are <strong>Batches</strong> (or groups of register entries), which can be uploaded by different transcribers.  A Batch is not the same as a file that you have created on your computer, because within your file you may have created entries for multiple Places and Churches, so your file would then be split into more than one Batch. Note that we recommend having only one batch per file.</p>
-    <p>Within the Batch are the <strong>Records</strong> or Register Entries. The <strong>Fields</strong> within each Record are described on <a href="/information-for-transcribers/entering-data-from-registers">Entering data from registers</a>. New fields are available for spreadsheet users only — see <a href="/information-for-transcribers/flexible-csv-format">Flexible CSV</a> for full details. One such new field is ‘Transcriber Notes’, for entering your comments, such as where you have assumed something, or to link Records for twins or aliases.</p>
+    <p>Within the Batch are the <strong>Records</strong> or Register Entries. The <strong>Fields</strong> within each Record are described on <a href="/information-for-transcribers/entering-data-from-registers">Entering data from registers</a>. New fields are available for spreadsheet users only — see <a href="/information-for-transcribers/flexible-csv-format">Flexible CSV</a> for full details. One such new field is 'Transcriber Notes', for entering your comments, such as where you have assumed something, or to link Records for twins or aliases.</p>
     <p>You have full control to edit all the variable information in any of your Batches, but when you do, the Batch will be locked so that your changes cannot be accidentally overwritten. You can read about Batch locking and unlocking on <a href="/information-for-transcribers/file-and-batch-actions">File and batch actions</a>.</p>
     <hr class="rule rule--ornament" />
   </section>
@@ -161,7 +159,7 @@
 <div class="grid">
   <div class="grid__item one-third palm-one-whole float--right">
     <figure class="site">
-      <img src="/system/images/W1siZiIsIjIwMTkvMDgvMTQvMTdrNjJoY2Ewb190cmFuc2NyaWJlcl9hY3Rpb25zLnBuZyJdXQ/transcriber-actions.png?sha=ac1af1dd754313c7" alt="Transcriber Actions" data-rel="225x255" width="314" height="378" />
+      <%= image_tag 'images/transcriber-actions.png', alt: 'Transcriber Actions', data: { rel: '225x255' }, width: 314, height: 378 %>
       <figcaption>Transcriber actions</figcaption>
     </figure>
   </div>
@@ -177,7 +175,7 @@
       <li><span class="btnPress">Profile</span> is <strong>your details</strong>.  Please make sure that these are kept up-to-date by selecting <span class="btnPress">Edit</span>. The coloured fields are those that you can edit. Your telephone number is not essential but it is useful if we find that we cannot contact you by email: it is not made public. We decided to use this rather than your postal address.</li>
       <li><span class="btnPress">Roadmap</span> takes you to a page detailing how FreeREG is set to develop over time, with new features and enhancements for Transcribers, Coordinators and Researchers.</li>
     </ol>
-    <p>Once you have selected an action, you will notice that there is a row of ‘breadcrumbs’ (or links) just under the main menu that guides you back to previously-visited pages. It is a good idea to use the breadcrumb links, rather than your browser’s Back button — especially if you have made any edits to your Batches. If you do use the Back button, then please reload the page (Ctrl+R on Windows, Cmd+R on a Mac) before you click on any further links.</p>
+    <p>Once you have selected an action, you will notice that there is a row of 'breadcrumbs' (or links) just under the main menu that guides you back to previously-visited pages. It is a good idea to use the breadcrumb links, rather than your browser's Back button — especially if you have made any edits to your Batches. If you do use the Back button, then please reload the page (Ctrl+R on Windows, Cmd+R on a Mac) before you click on any further links.</p>
     <hr class="rule rule--ornament" />
   </section>
 
@@ -217,7 +215,7 @@
       <li>make any corrections online</li>
     </ul>
     <p>This way of working will avoid the issues around dealing with potentially <strong>two different</strong> versions of a file/batch — one on your computer, the other online. The guidelines below expand on this way of working and include some other aspects of best practice, where the simplest way is not quite enough.</p>
-    <p class="push-half--bottom">The do’s:</p>
+    <p class="push-half--bottom">The do's:</p>
     <ul class="do">
       <li>please use separate files for each location (county, place, church) and register type: mixing more than one location or register type into a single file will cause difficulties in the future</li>
       <li>when your working file reaches 2,000 entries, give or take a few, start a new one</li>
@@ -232,7 +230,7 @@
     <p class="push-half--bottom">Some do nots:</p>
     <ul class="dont">
       <li>please do not delete a file and its records unless you have no choice: for example, the file is a duplicate.</li>
-      <li>please do not split an existing large file into smaller parts. There is no need: it has been processed and it’s fine to make corrections to the file as it is</li>
+      <li>please do not split an existing large file into smaller parts. There is no need: it has been processed and it's fine to make corrections to the file as it is</li>
       <li>please do not combine files from different transcribers into one large file</li>
       <li>the System Administrator can move a file between users although we strongly encourage you to keep files with the original transcriber</li>
     </ul>
@@ -247,19 +245,19 @@
     <h3>The workings of the FreeREG system</h3>
 
     <p>FreeREG is not a file-based system but an entry/record-based system. This results in many benefits when treated in the appropriate way.</p>
-    <p>At the bottom level of FreeREG are the entries that you and all of the other volunteers are creating. These are the individual event records that you have transcribed from a register or other source. After checking, these entries are transformed into a search record that is used by the search engine to respond to a researcher’s queries.</p>
+    <p>At the bottom level of FreeREG are the entries that you and all of the other volunteers are creating. These are the individual event records that you have transcribed from a register or other source. After checking, these entries are transformed into a search record that is used by the search engine to respond to a researcher's queries.</p>
 
     <h4>What does this mean in practice?</h4>
 
-    <p>Each entry and its associated search record are linked (indexed) to the register, church and place to which they belong as well as to the file that conveyed them into the system. These entries and their search records can be changed online. New records can be added. They can also have their “location” indexing updated online.</p>
-    <p>When a file is first uploaded we store a “digest” of the non-location fields of the entry with it (i.e. we exclude the county, place and church fields from the digest). This allows us to easily detect when an entry changes. </p>
-    <p>When a file is replaced, we only reprocess those entries for which the “digest” has changed. This way, only new and changed entries are processed, whilst unchanged entries are not processed.</p>
+    <p>Each entry and its associated search record are linked (indexed) to the register, church and place to which they belong as well as to the file that conveyed them into the system. These entries and their search records can be changed online. New records can be added. They can also have their "location" indexing updated online.</p>
+    <p>When a file is first uploaded we store a "digest" of the non-location fields of the entry with it (i.e. we exclude the county, place and church fields from the digest). This allows us to easily detect when an entry changes. </p>
+    <p>When a file is replaced, we only reprocess those entries for which the "digest" has changed. This way, only new and changed entries are processed, whilst unchanged entries are not processed.</p>
     <p>If only the location information associated with the entry is changed, i.e. the place, church or register type is different, we simply update the indexes for the entry/search record. These processes are extremely efficient.</p>
     <p>If a file is deleted, we must destroy all its entries/search records and their indexes.</p>
     <hr class="rule rule--ornament" />
 
     <h2 id="tipsForBy">Tips for transcribers</h2>
-    <p>These tips are recommendations by yourselves, our transcribers. Some tips are given here in full. Where your tips go with a topic covered in the help pages, we have published them on that page so that all the related information is in one place. If you have anything to add, please leave a comment on the transcribers’ forum.</p>
+    <p>These tips are recommendations by yourselves, our transcribers. Some tips are given here in full. Where your tips go with a topic covered in the help pages, we have published them on that page so that all the related information is in one place. If you have anything to add, please leave a comment on the transcribers' forum.</p>
     
     <h3>Latin words and abbreviations</h3>
     <p>For Latin dictionaries and guides to abbreviations and usage, see our page, <a href="/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a>, where there are many suggestions.</p>
@@ -269,24 +267,24 @@
 
     <h3>Maps</h3>
     <figure class="bq">
-      <blockquote>I have used the  <a href="https://maps.nls.uk/">National Library of Scotland</a>’s old maps to help with place names</blockquote>
+      <blockquote>I have used the  <a href="https://maps.nls.uk/">National Library of Scotland</a>'s old maps to help with place names</blockquote>
       <figcaption>Susan</figcaption>
     </figure>
     <figure class="bq">
-      <blockquote>Susan’s suggestion of the excellent NLS maps site has reminded me of this one: <a href="https://www.familysearch.org/mapp/">FamilySearch historical maps</a> — a layer of parishes and counties (as at 1851) for England and Wales layered over Google Maps with deanery, poor law, registration district, etc. info for each parish too. It’s really helpful!</blockquote>
+      <blockquote>Susan's suggestion of the excellent NLS maps site has reminded me of this one: <a href="https://www.familysearch.org/mapp/">FamilySearch historical maps</a> — a layer of parishes and counties (as at 1851) for England and Wales layered over Google Maps with deanery, poor law, registration district, etc. info for each parish too. It's really helpful!</blockquote>
     </figure>
 
     <h3>Occupations</h3>
     <figure class="bq">
-      <blockquote>… and I’ve found this one useful for <a href="https://rmhh.co.uk/occup/index.html">old occupations</a> — the same website also has a link to old medical complaints — names and descriptions of symptoms — not for the queasy!</blockquote>
+      <blockquote>… and I've found this one useful for <a href="https://rmhh.co.uk/occup/index.html">old occupations</a> — the same website also has a link to old medical complaints — names and descriptions of symptoms — not for the queasy!</blockquote>
     </figure>
 
     <h3>Hyphenated forenames</h3>
-    <p>Please be aware that WinREG will change each forename to an upper case letter (a capital letter) followed by lower case letters and that a hyphenated forename is treated as a single forename. So, ‘Mary-Ann’ will become ‘Mary-ann’. The only way to restore the letter casing (if needed for TWYS) is by editing it online.</p>
+    <p>Please be aware that WinREG will change each forename to an upper case letter (a capital letter) followed by lower case letters and that a hyphenated forename is treated as a single forename. So, 'Mary-Ann' will become 'Mary-ann'. The only way to restore the letter casing (if needed for TWYS) is by editing it online.</p>
 
     <h3>Miscellaneous</h3>
     <figure class="bq">
-      <blockquote><a href="https://efotinis.neocities.org/deskpins/">DeskPins</a> [for Windows only] is a little app I wouldn’t be without and use every time I am transcribing. It lets you pin a window on top so it doesn’t keep disappearing when you click elsewhere.</blockquote>
+      <blockquote><a href="https://efotinis.neocities.org/deskpins/">DeskPins</a> [for Windows only] is a little app I wouldn't be without and use every time I am transcribing. It lets you pin a window on top so it doesn't keep disappearing when you click elsewhere.</blockquote>
     </figure>
     <p>If something does not seem right, such as a file missing from your list of transcription files, please contact your SC for help.</p>
     <p>Although the <a href="https://theclergydatabase.org.uk/">Clergy Database site</a> will not help with transcribing, you might find it interesting — you can search by parish or name.</p>
@@ -316,17 +314,17 @@
 
       </p>
 <ol>
-        <li>select ‘Communicate’ from the listing on the ‘Your Actions’ page
+        <li>select 'Communicate' from the listing on the 'Your Actions' page
         </li>
-<li>select ‘Create Communication’</li>
+<li>select 'Create Communication'</li>
         <li>type your message</li>
-        <li>select ‘Save Communication’</li>
-        <li>select ‘Show’ against the message</li>
-        <li>to choose the recipient, select ‘Send Communication’  (and then ‘OK’ in the pop-up box)</li>
+        <li>select 'Save Communication'</li>
+        <li>select 'Show' against the message</li>
+        <li>to choose the recipient, select 'Send Communication'  (and then 'OK' in the pop-up box)</li>
         <li>use the drop-down menu to select the role of the person you are sending to</li>
-        <li>select ‘Select Role’</li>
+        <li>select 'Select Role'</li>
         <li>use the drop-down menu to select the actual person you are sending to</li>
-        <li>select ‘Send Communication’</li>
+        <li>select 'Send Communication'</li>
       </ol>
 
     
@@ -417,6 +415,6 @@
       <li class="push-half--top"><a class="gamma" href="/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> — deciding whether or not you are allowed to transcribe a particular source</li>
       <li class="push-half--top"><a class="gamma" href="/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a> — general words together with specific terms used in early baptism, marriage and burial registers; recommended resources</li>
     </ul>
-    <p>Most pages in ‘Transcriber Help’ will have their own ‘On this page’ menu together with a copy of the ‘Transcriber Help’ menu.</p>
+    <p>Most pages in 'Transcriber Help' will have their own 'On this page' menu together with a copy of the 'Transcriber Help' menu.</p>
   </section>
 </div>

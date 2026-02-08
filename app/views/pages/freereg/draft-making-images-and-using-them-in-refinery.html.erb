@@ -55,9 +55,9 @@
     <h3>Size considerations</h3>
     <p>Images should be no wider than 1200px, and if possible, no wider than 700 to 800 pixels.</p>
     <p>An image will look its best if we can show it at, or near to, its original, natural size. Resizing (or cropping to fit) introduces artefacts that reduce the legibility of text as well as the clarity of other parts of the image. The artefacts are fairly subtle but they do reduce the overall quality.</p>
-    <p>Images that are approaching 1200px wide (e.g. a screenshot, taken in a full-width window, of a members’ page with a table of many columns), might not be legible unless displayed (and viewed) in a full-width column in a full-width window. We can do that, of course, but we cannot have the accompanying text as wide as the image because it would be uncomfortable (even difficult) to read. So, the markup has to become more complicated, more fragile and so more difficult to edit without breaking the layout.</p>
+    <p>Images that are approaching 1200px wide (e.g. a screenshot, taken in a full-width window, of a members' page with a table of many columns), might not be legible unless displayed (and viewed) in a full-width column in a full-width window. We can do that, of course, but we cannot have the accompanying text as wide as the image because it would be uncomfortable (even difficult) to read. So, the markup has to become more complicated, more fragile and so more difficult to edit without breaking the layout.</p>
     <p>An ideal screenshot is no wider than 800px because the markup will be straightforward and the text should be legible (in a full-width window). However, not all displays for members can be made to work at this width.</p>
-    <p>On <strong>public-facing pages</strong>, we need images to be legible on mobile devices. We say that “it is possible to use most smartphones for searches. However, given the nature of the subject matter, this website is best viewed on a device with a screen size of at least 1024 by 768 pixels.” This would give us about 570 to 630 pixels of space in the content column, with column classes of <code>three-fifths</code> or <code>two-thirds</code> respectively.</p>
+    <p>On <strong>public-facing pages</strong>, we need images to be legible on mobile devices. We say that "it is possible to use most smartphones for searches. However, given the nature of the subject matter, this website is best viewed on a device with a screen size of at least 1024 by 768 pixels." This would give us about 570 to 630 pixels of space in the content column, with column classes of <code>three-fifths</code> or <code>two-thirds</code> respectively.</p>
     <p>If the image will be placed in the sidebar, the space is restricted — typically a 340px-wide (one-third) image is the widest you can use.</p>
 
     <h3>Composition</h3>
@@ -65,7 +65,7 @@
   </div>
   <div class="grid__item one-whole">
     <figure class="site site--wide">
-      <img src="/system/images/W1siZiIsIjIwMjEvMDUvMDYvNW5vMHdmMm03bF8xMTkwX3JlZGFjdGVkLnBuZyJdXQ/1190-redacted.png?sha=6c68aefc7fd7ced8" alt="1190 PNG" data-rel="225x255" width="1190" height="560" />
+      <%= image_tag 'images/1190-redacted.png', alt: '1190 PNG', data: { rel: '225x255' }, width: 1190, height: 560 %>
       <figcaption>Fig. 4b: a wide image with good composition (narrow margins). At 1190px wide, it looks its best in this full-width column.</figcaption>
     </figure>
   </div>
@@ -134,35 +134,35 @@
     <h3>A narrow image</h3>
     <p>This image has natural dimensions of 260px by 580px. It is suitable for a sidebar. The border is achieved by using the class <code>site</code> for the <code>figure</code> element.</p>
     <figure class="site">
-      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvODdsd3JjbnQ4Nl9uYXJyb3cucG5nIl1d/narrow.png?sha=9e11d850ddbeac5b" alt="Narrow" data-rel="225x255" width="260" height="580" />
+      <%= image_tag 'images/narrow.png', alt: 'Narrow', data: { rel: '225x255' }, width: 260, height: 580 %>
       <figcaption>Fig. 1: a naturally narrow image</figcaption>
     </figure>
 
     <h3>A medium-width image</h3>
     <p>This image has natural dimensions of 500px by 310px, so it is too wide for the sidebar but would work nicely in the content column with the <code>site</code> class on the <code>figure</code> element.</p>
     <figure class="site">
-      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvNnhvYnc0NXRxMl9tZWRpdW0ucG5nIl1d/medium.png?sha=a09d7cd78420443d" alt="Medium" data-rel="225x255" width="500" height="310" />
+      <%= image_tag 'images/medium.png', alt: 'Medium', data: { rel: '225x255' }, width: 500, height: 310 %>
       <figcaption>Fig. 2: a naturally 500px-wide image</figcaption>
     </figure>
 
     <h3>An 800px PNG — take one</h3>
-    <p>This image has natural dimensions of 800px by 230px. On a members’ page, it works in a standard content column as the text is still clear when the column is about 700px wide. The <code>figure</code> element has the class <code>site</code>.</p>
+    <p>This image has natural dimensions of 800px by 230px. On a members' page, it works in a standard content column as the text is still clear when the column is about 700px wide. The <code>figure</code> element has the class <code>site</code>.</p>
     <figure class="site">
-      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvMWNmajRoYmQ4dV84MDAucG5nIl1d/800.png?sha=3659a1d6466dd028" alt="800" data-rel="225x255" width="800" height="230" />
+      <%= image_tag 'images/800.png', alt: '800', data: { rel: '225x255' }, width: 800, height: 230 %>
       <figcaption>Fig. 3a: an 800px-wide PNG</figcaption>
     </figure>
 
     <h3>An 800px PNG — take two</h3>
     <p>This is the same image displayed as a researcher might see it, in a narrower content column. Is it acceptable or does it need a full-width column? Again, the <code>figure</code> element has the class <code>site</code>.</p>
     <figure class="site">
-      <img style="max-width: 570px; height:auto;" src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvMWNmajRoYmQ4dV84MDAucG5nIl1d/800.png?sha=3659a1d6466dd028" alt="800" data-rel="225x255" width="800" height="230" />
+      <%= image_tag 'images/800.png', style: 'max-width: 570px; height:auto;', alt: '800', data: { rel: '225x255' }, width: 800, height: 230 %>
       <figcaption>Fig. 3b: an 800px-wide PNG as a researcher might see it</figcaption>
     </figure>
 
     <h3>A 1200px PNG — take one</h3>
     <p>This image has natural dimensions of 1190px by 560px. A good quality image this size might work in a standard content column: it all depends on whether you (and the page reviewers and our other users) can read the text comfortably. The <code>figure</code> element has the attribute <code>class="site site--wide"</code>.</p>
     <figure class="site site--wide">
-      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvMW55MWl0b3JsaV8xMTkwX3JlZGFjdGVkLnBuZyJdXQ/1190-redacted.png?sha=443cd813dabf92ab" alt="1190 Redacted" data-rel="225x255" width="1190" height="560" />
+      <%= image_tag 'images/1190-redacted.png', alt: '1190 Redacted', data: { rel: '225x255' }, width: 1190, height: 560 %>
       <figcaption>Fig. 4a: a 1200px PNG in a standard content column</figcaption>
     </figure>
     
@@ -171,7 +171,7 @@
     <h3>A 1200px PNG — take two</h3>
     <p>This is the same image displayed at its natural width in a full-width column.</p>
     <figure class="site site--wide">
-      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjEvMW55MWl0b3JsaV8xMTkwX3JlZGFjdGVkLnBuZyJdXQ/1190-redacted.png?sha=443cd813dabf92ab" alt="1190 Redacted" data-rel="225x255" width="1190" height="560" />
+      <%= image_tag 'images/1190-redacted.png', alt: '1190 Redacted', data: { rel: '225x255' }, width: 1190, height: 560 %>
       <figcaption>Fig. 4b: a 1200px PNG in a full-width column</figcaption>
     </figure>
   </div>
@@ -182,7 +182,7 @@
   </div>
   <div class="grid__item one-whole">
     <figure class="site site--wide">
-      <img src="/system/images/W1siZiIsIjIwMjEvMDQvMjQvMzBnY2VsMmpldF90b29fd2lkZV9yZWRhY3RlZC5wbmciXV0/too-wide-redacted.png?sha=20ce3d92994c05e9" alt="Too wide PNG" data-rel="225x255" width="1350" height="590" />
+      <%= image_tag 'images/too-wide-redacted.png', alt: 'Too wide PNG', data: { rel: '225x255' }, width: 1350, height: 590 %>
       <figcaption>Fig. 5: a 1350px PNG in a full-width column</figcaption>
     </figure>
     

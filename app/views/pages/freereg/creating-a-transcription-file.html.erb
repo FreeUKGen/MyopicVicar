@@ -61,7 +61,7 @@
     </div>
     <p class="push-half--bottom">There are many advantages to using WinREG:</p>
     <ul>
-      <li>Your files will be ‘database ready’ without any of the extra work required by using other programs.</li>
+      <li>Your files will be 'database ready' without any of the extra work required by using other programs.</li>
       <li>You will be asked for your details only once: these will be put automatically into every file you create.</li>
       <li>It is also easy to edit the other details that vary from file to file. (These correspond to the remaining file Header fields, if you have previously used a spreadsheet.)</li>
       <li>The field names (column names in a spreadsheet) will be created for you, according to whether you are transcribing baptisms, marriages or burials.</li>
@@ -85,15 +85,15 @@
       <h3>AutoCorrect</h3>
       <p>AutoCorrect or Substitution is now a common feature in many applications: even the so-called plain text editors like Notepad or TextEdit are not so plain any more. The default (or out of the box) setting is to have the feature turned <em>on</em>: this is not a problem for many kinds of writing, but for a database project like FreeREG, there are lurking dangers.</p>
       <p>Many of the corrections applied by AutoCorrect are to do with the casing of letters and the common typing errors people make with words. AutoCorrect can ensure that all sentences start with a capital (upper case) letter; it can prevent you beginning a word with two capital letters; and it can change the word i to I. It can also correct typos like abotu to about, or acn to can. This is not a problem in itself, but for FreeREG work, you will want to be in full control of how words are spelt and cased. The main problem is that AutoCorrect changes some plain punctuation to their smart (fancy or typographers) versions.</p>
-      <p>A good example of AutoCorrect in action with punctuation happens like this: you type a plain double quotation mark on your keyboard: it starts out looking like ", but as soon as you type the next thing, it changes magically to “ — the plain quote has been converted to a fancy or smart quote. Again, this is not a problem for most kinds of writing (indeed, it is useful for a party invitations or a novel), but for FreeREG it <em>is</em> a problem.</p>
-      <p>As well as changing " to “ or ”, other common substitutions are the single quotation mark (and apostrophe), ' to ‘ or ’; ellipses, ... (three characters) to … (one character); and dashes, (space hyphen space <em>or</em> two hyphens to — (an em-dash).</p>
+      <p>A good example of AutoCorrect in action with punctuation happens like this: you type a plain double quotation mark on your keyboard: it starts out looking like ", but as soon as you type the next thing, it changes magically to " — the plain quote has been converted to a fancy or smart quote. Again, this is not a problem for most kinds of writing (indeed, it is useful for a party invitations or a novel), but for FreeREG it <em>is</em> a problem.</p>
+      <p>As well as changing " to " or ", other common substitutions are the single quotation mark (and apostrophe), ' to ' or '; ellipses, ... (three characters) to … (one character); and dashes, (space hyphen space <em>or</em> two hyphens to — (an em-dash).</p>
       <p>The exact form of the smart punctuation will vary from font to font, but there is less difference when comparing the plain forms. For the quotation marks, the plain forms will be vertical, with left and right quotes looking the same. (If you are having trouble seeing the difference, try zooming in: see your browser's View menu.)</p>
 
       <h4>The problems</h4>
 
       <h5>Searching</h5>
-      <p>If smart punctuation is used instead of plain, then a search for a surname like O'Grady will not find all the possible matches: the O'Grady entries will be found, but <em>not</em> O’Grady. The visual difference between the two apostrophes is small, but the effect on a search could be huge.</p> 
-      <p>Similarly, most abbreviations of a forename will be found automatically in a search, but any that include a smart apostrophe will not be found. So Tho's will be found in a search for Thomas, for example, but <em>not</em> Tho’s.</p>
+      <p>If smart punctuation is used instead of plain, then a search for a surname like O'Grady will not find all the possible matches: the O'Grady entries will be found, but <em>not</em> O'Grady. The visual difference between the two apostrophes is small, but the effect on a search could be huge.</p> 
+      <p>Similarly, most abbreviations of a forename will be found automatically in a search, but any that include a smart apostrophe will not be found. So Tho's will be found in a search for Thomas, for example, but <em>not</em> Tho's.</p>
 
       <h5>Garbled entries</h5>
       <p>If your file has been saved using one character set, but the character set in the Headers is not the same, then any <em>smart</em> punctuation will not be understood by the database and you will see groups of characters like these in your uploaded batch: â€¦ â€œ â€? â€˜ â€™.</p>
@@ -104,12 +104,12 @@
       <p>The third and fourth parts are the important ones: the first and second contain the details of how some correction options are applied — we are going to turn those options off.</p>
       <p>Part three (Options) has a list of possible corrections: simply de-select all of these.</p>
       <figure>
-        <img style="width: 100%; height: auto;" data-rel="225x255" alt="Part 3 of AutoCorrect in OpenOffice" src="/system/images/W1siZiIsIjIwMTYvMDcvMDQvMjJfMTVfMDBfMTcyX0F1dG9Db3JyZWN0XzMucG5nIl1d/AutoCorrect-3.png?sha=0ff1f2db53a9d372" width="593" height="494" />
+        <%= image_tag 'images/AutoCorrect-3.png', alt: 'Part 3 of AutoCorrect in OpenOffice', data: { rel: '225x255' }, style: 'width: 100%; height: auto;', width: 593, height: 494 %>
         <figcaption>Part 3 of AutoCorrect in OpenOffice</figcaption>
       </figure>
       <p>Part four (Custom Quotes or Localised Options) deals with quotation marks: un-check both Replace boxes. Un-check anything else that is offered here for writing in English.</p>
       <figure>
-        <img style="width: 100%; height: auto;" data-rel="225x255" alt="Part 4 of AutoCorrect in OpenOffice" src="/system/images/W1siZiIsIjIwMTYvMDcvMDQvMjJfMTVfMzFfNzkyX0F1dG9Db3JyZWN0XzQucG5nIl1d/AutoCorrect-4.png?sha=16b966fa51401c16" width="595" height="493" />
+        <%= image_tag 'images/AutoCorrect-4.png', alt: 'Part 4 of AutoCorrect in OpenOffice', data: { rel: '225x255' }, style: 'width: 100%; height: auto;', width: 595, height: 493 %>
         <figcaption>Part 4 of AutoCorrect in OpenOffice</figcaption>
       </figure>
     </div>
@@ -134,7 +134,7 @@
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
     <h3>Save as … CSV</h3>
     <p>When you have finished entering data, the next step is to save your file in CSV (or Comma-separated values) format. Just before doing so, delete the row of column labels, if you have not already deleted them as part of adding the file Headers.</p>
-    <p>With your spreadsheet open, use File, Save As to bring up a dialogue box. Choose Comma-separated values as the format, probably from a drop-down list. You may be asked to confirm (or choose) commas as the ‘field separators’ (or ‘field delimiters’), and double-quotes as the ‘text delimiters’: agree to both. It is not necessary to agree to <em>all</em> fields being quoted, but it will do no harm.</p>
+    <p>With your spreadsheet open, use File, Save As to bring up a dialogue box. Choose Comma-separated values as the format, probably from a drop-down list. You may be asked to confirm (or choose) commas as the 'field separators' (or 'field delimiters'), and double-quotes as the 'text delimiters': agree to both. It is not necessary to agree to <em>all</em> fields being quoted, but it will do no harm.</p>
     <p class="island island--bordered">Please be aware that both the <strong>file name and the file extension are case-sensitive</strong> which means that, for example, the files <code>SSXFERBA.CSV</code> and <code>SSXFERBA.csv</code> are treated as two, separate, different files. To avoid any confusion in the future, please use exactly the same file extension for your files, either .CSV or .csv, but not a mixture of both.</p>
     <p>A CSV file just a simple text file, with a .csv or .CSV extension (ending). Each data field (cell) is separated from the next by a comma, and each record is on its own line. For a baptism register, opened in a text editor such as Notepad or TextEdit (not a word processor), the beginning of the first two lines after the Headers might look something like this:</p>
   </div>
@@ -168,7 +168,7 @@
     <p><code>… ,BAIRD,,,, <br />
     … ,REYNOLDES,JONES,,Blacksmith,</code> </p>
     <p>A line <strong>without</strong> content in the final field should end with <em>at least one</em> comma. If you see one or more commas at the end of such lines, then your spreadsheet has been saved correctly. <strong>You will not need to do this check again.</strong> </p>
-    <p>However, if you’re seeing entries like these, with <em>empty</em> final fields but <em>no</em> final comma(s),  </p>
+    <p>However, if you're seeing entries like these, with <em>empty</em> final fields but <em>no</em> final comma(s),  </p>
     <p><code>… ,BAIRD <br />
     … ,REYNOLDES,JONES,,Blacksmith</code> </p>
     <p>then you will need to download one of the free Office suites for your FreeREG transcriptions. (Experienced volunteers who use old versions of Microsoft Excel and the "dummy column" method without any problems may continue to do so, but we urge you to consider using a different spreadsheet, if possible.)</p>

@@ -67,20 +67,20 @@
     <p>Many of the fields may now be left blank: you may find it easier to complete them anyway, so that the right information is in the correct cell.</p>
     <p>Here is an example of a completed Header, as it might look in a spreadsheet:</p>
     <figure class="image-wide">
-      <img data-rel="225x255" alt="File headers in OpenOffice" src="/system/images/W1siZiIsIjIwMTYvMDYvMjAvMTdfMzlfMzZfMTRfZmlsZV9oZWFkZXJzX29kcy5wbmciXV0/file-headers-ods.png?sha=81b1e61a1e6e4caf" width="1058" height="186" />
+      <%= image_tag 'images/file-headers-ods.png', alt: 'File headers in OpenOffice', data: { rel: '225x255' }, width: 1058, height: 186 %>
       <figcaption>An example of a completed set of header rows in a spreadsheet</figcaption>
     </figure>
         
     <p>Obviously, you need to adapt the Header so that it holds both your details and those of your transcription file. In the next image, the content to edit is <em style="color: darkRed;">shown in dark red</em>.</p>
     <figure class="image-wide">
-      <img data-rel="225x255" alt="Key to the file headers" src="/system/images/W1siZiIsIjIwMTYvMDYvMjAvMTdfMzlfNTlfMTA4X2ZpbGVfaGVhZGVyc19nZW5lcmljX29kcy5wbmciXV0/file-headers-generic-ods.png?sha=f2fd35cc37447ede" width="1059" height="186" />
+      <%= image_tag 'images/file-headers-generic-ods.png', alt: 'Key to the file headers', data: { rel: '225x255' }, width: 1059, height: 186 %>
       <figcaption>The header rows showing which cells need editing by the transcriber</figcaption>
     </figure>
     
     <p>Note that each line (or row) begins with either a + or a #. If these, or a Header date, get changed as you move to the next cell, select all the Header rows and set the cell format to Text (Format, Cells, select the Number tab, then select Text from the list). Now re-type any Header entry that does not look right.</p>
     <p>This image is a summary of the information given below: please read the two together for the full details.</p>
     <figure class="image-wide landmark">
-      <img src="/system/images/W1siZiIsIjIwMTkvMTEvMjYvOTdvc2w3bmozZF9maWxlX2hlYWRlcnNfZ2VuZXJpY19vZHNfYW5ub3RhdGVkLnBuZyJdXQ/file-headers-generic-ods-annotated.png?sha=ca306ebd1690af8c" alt="Annotated file headers" data-rel="225x255" width="1050" height="321" />
+      <%= image_tag 'images/file-headers-generic-ods-annotated.png', alt: 'Annotated file headers', data: { rel: '225x255' }, width: 1050, height: 321 %>
       <figcaption>Header rows annotated to show which cells are required and the consequences of leaving other cells blank — details are next</figcaption>
     </figure>
 
@@ -94,10 +94,10 @@
       <li>Cell 1E must be the type of register information in your file: one of BAPTISMS, MARRIAGES, or BURIALS</li>
       <li>Cell 1F identifies the character set used in the file: 
         <ul>
-          <li>If you used a Windows application such as MS Excel to create the file then you may leave this cell blank. If your spreadsheet can save as ‘utf-8’, then select this on saving and enter UTF-8 in cell 1F</li>
-          <li>Mac OS X (Snow Leopard or newer) — if your spreadsheet can save as ‘utf-8’, then select this option on saving as a CSV file and put UTF-8 in cell 1F; otherwise, put macRoman (or macintosh)</li>
+          <li>If you used a Windows application such as MS Excel to create the file then you may leave this cell blank. If your spreadsheet can save as 'utf-8', then select this on saving and enter UTF-8 in cell 1F</li>
+          <li>Mac OS X (Snow Leopard or newer) — if your spreadsheet can save as 'utf-8', then select this option on saving as a CSV file and put UTF-8 in cell 1F; otherwise, put macRoman (or macintosh)</li>
           <li>Mac Classic (Tiger or older) users should enter macRoman (or macintosh)</li>
-          <li>Linux users who can save as ‘utf-8’ should do so, then enter UTF-8</li>
+          <li>Linux users who can save as 'utf-8' should do so, then enter UTF-8</li>
           <li>If you need a different character set option, contact your Coordinator</li>
         </ul>
       </li>
@@ -167,7 +167,7 @@
     #,05-Feb-2015,computer records converted using Excel<br />
     +LDS</code>
 
-    <p>Note that each line begins with either a + or a #. (Any other apparent ‘line breaks’, which you may see in a narrow window, should not be interpreted as actual line breaks when you type the Headers.)</p>
+    <p>Note that each line begins with either a + or a #. (Any other apparent 'line breaks', which you may see in a narrow window, should not be interpreted as actual line breaks when you type the Headers.)</p>
     <p>Each piece of information, or data field, is separated from the next by a comma. The lack of extra spaces is intentional and necessary — Headers are not pretty.</p>
     
     <h3>Line 1 (mandatory)</h3>
@@ -183,8 +183,8 @@
       <li>The fifth data field must be the type of register information in your file: one of BAPTISMS, MARRIAGES, or BURIALS</li>
       <li>The sixth data field identifies the character set used in the file: 
         <ul>
-          <li>If you used a Windows application to create your file, then you may leave this field blank. If your text editor can save as ‘utf-8’, then select this on saving and enter UTF-8 in the character set field</li>
-          <li>Mac OS X (Snow Leopard or newer) — if your text editor can save as ‘utf-8’, then select this on saving and put UTF-8 in the character set field; otherwise, put macRoman (or macintosh) in the character set field</li>
+          <li>If you used a Windows application to create your file, then you may leave this field blank. If your text editor can save as 'utf-8', then select this on saving and enter UTF-8 in the character set field</li>
+          <li>Mac OS X (Snow Leopard or newer) — if your text editor can save as 'utf-8', then select this on saving and put UTF-8 in the character set field; otherwise, put macRoman (or macintosh) in the character set field</li>
           <li>Mac Classic (Tiger or older) users should enter macRoman (or macintosh)</li>
           <li>If you need a different character set option, contact your Coordinator</li>
         </ul>
