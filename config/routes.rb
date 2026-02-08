@@ -24,7 +24,6 @@ MyopicVicar::Application.routes.draw do
   # This must come after specific page routes (donate, volunteer)
   # Matches paths like /about, /help/getting-started, etc.
   # The controller will check if the view file exists and handle 404 if not
-  get '*path', to: 'pages#show', as: :page, format: false
 
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
