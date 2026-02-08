@@ -291,11 +291,13 @@ namespace :refinery do
       end
     end
 
-    # Get all Refinery resources from the current database
+    # Get ALL Refinery resources from the current database
+    puts "Querying database for all Refinery resources..."
     begin
       # Use the resource_class we determined earlier
-      all_resources = resource_class.all
-      puts "Found #{all_resources.count} total Refinery resources in current database"
+      all_resources = resource_class.all.to_a
+      total_resources = all_resources.count
+      puts "Found #{total_resources} total Refinery resources in current database"
     rescue NoMethodError => e
       puts "ERROR: Cannot access Refinery::Resource.all: #{e.message}"
       puts "Current Rails environment: #{Rails.env}"
@@ -304,6 +306,11 @@ namespace :refinery do
       puts "ERROR: Cannot access Refinery::Resource: #{e.message}"
       puts "Current Rails environment: #{Rails.env}"
       exit 1
+    end
+
+    if total_resources == 0
+      puts "No resources found in database. Exiting."
+      exit 0
     end
 
     sites_to_process.each do |site|
@@ -322,7 +329,7 @@ namespace :refinery do
         next
       end
 
-      puts "Copying all #{all_resources.count} resources to #{target_dir}"
+      puts "Copying all #{total_resources} resources to #{target_dir}"
       puts
 
       # Track filenames to detect duplicates
@@ -330,7 +337,7 @@ namespace :refinery do
       filename_tracker = {}
 
       # Copy all resources from the current database to the specified site's directory
-      all_resources.each do |resource|
+      all_resources.each_with_index do |resource, index|
         resource_uid = if resource.respond_to?(:file_uid)
                          resource.file_uid
                        elsif resource.respond_to?(:resource_uid)
@@ -363,6 +370,11 @@ namespace :refinery do
             end
           else
             stats[site.to_sym][:skipped] += 1
+          end
+          
+          # Progress indicator for large batches
+          if (index + 1) % 100 == 0
+            puts "  Progress: #{index + 1}/#{total_resources} resources processed..."
           end
         rescue => e
           puts "  ERROR copying resource #{resource_uid}: #{e.message}"

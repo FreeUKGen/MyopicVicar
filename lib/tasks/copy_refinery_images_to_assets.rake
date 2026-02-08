@@ -60,56 +60,6 @@ namespace :refinery do
     }
 
     # Helper methods defined as local methods
-    def get_site_pages(site)
-      pages = Refinery::Page.all
-      # Since both sites share the DB, we get all pages
-      # Images will be associated based on which pages reference them
-      pages
-    end
-
-    def find_referenced_image_uids(pages)
-      image_uids = Set.new
-      image_names = Set.new
-
-      pages.each do |page|
-        # Get all page parts for this page
-        page_parts = page.parts || []
-        
-        page_parts.each do |part|
-          body = part.body
-          next if body.blank?
-
-          # Pattern 1: Extract image_uid from /system/images/{image_uid}/filename URLs
-          # Matches: /system/images/W1siZiIs.../filename.png?sha=...
-          # This is the most reliable pattern - only matches actual image URLs
-          body.scan(%r{/system/images/([^/]+)/}) do |match|
-            uid = match[0]
-            # Validate: Refinery image_uids are typically base64-like strings
-            # They usually start with specific patterns and are 20+ characters
-            if uid.length >= 20 && uid.match?(/\A[A-Za-z0-9+\/]+\z/)
-              image_uids.add(uid)
-            end
-          end
-
-          # Pattern 2: Extract image names from img src attributes
-          # Matches: <img src="/system/images/.../filename.png" ...>
-          body.scan(/<img[^>]+src=["']([^"']+)["']/i) do |url_match|
-            url = url_match[0]
-            # Extract filename from URL
-            if url =~ %r{/system/images/[^/]+/([^/?]+)}
-              filename = $1
-              # Only add if it looks like an image filename
-              if filename.match?(/\.(jpg|jpeg|png|gif|svg|webp|bmp|ico)$/i)
-                image_names.add(filename)
-              end
-            end
-          end
-        end
-      end
-
-      [image_uids.to_a, image_names.to_a]
-    end
-
     def find_image_file(base_dir, image_uid, image_name)
       return nil unless Dir.exist?(base_dir)
 
@@ -215,68 +165,37 @@ namespace :refinery do
         next
       end
 
-      # Get pages for this site
-      site_pages = get_site_pages(site)
-      puts "Found #{site_pages.count} pages for #{site}"
-
-      # STEP 1: Scan pages to find referenced image_uids (without loading all images)
-      puts "Scanning page content for image references..."
-      referenced_image_uids, referenced_image_names = find_referenced_image_uids(site_pages)
-      puts "Found #{referenced_image_uids.count} unique image UIDs and #{referenced_image_names.count} image names in page content"
-
-      # STEP 2: Query database only for referenced images
-      if referenced_image_uids.empty? && referenced_image_names.empty?
-        puts "No image references found in pages. Skipping image copy."
-        puts
-        next
-      end
-
-      puts "Querying database for referenced images..."
+      # Get ALL images from Refinery database
+      puts "Querying database for all Refinery images..."
       
       # Check if Refinery uses ActiveRecord or Mongoid
-      # Try ActiveRecord syntax first (most common for Refinery)
       begin
-        # ActiveRecord syntax
-        images_by_uid = if referenced_image_uids.any?
-          Refinery::Image.where(image_uid: referenced_image_uids).to_a
-        else
-          []
-        end
-
-        images_by_name = if referenced_image_names.any?
-          Refinery::Image.where(image_name: referenced_image_names).to_a
-        else
-          []
-        end
+        # Try ActiveRecord syntax first (most common for Refinery)
+        all_images = Refinery::Image.all.to_a
       rescue => e
         # Fallback: try Mongoid syntax if ActiveRecord fails
         puts "  Trying alternative query syntax..."
-        images_by_uid = if referenced_image_uids.any?
-          Refinery::Image.where(:image_uid.in => referenced_image_uids).to_a
-        else
-          []
-        end
-
-        images_by_name = if referenced_image_names.any?
-          Refinery::Image.where(:image_name.in => referenced_image_names).to_a
-        else
-          []
+        begin
+          all_images = Refinery::Image.all.to_a
+        rescue => e2
+          puts "ERROR: Could not query Refinery::Image: #{e2.message}"
+          stats[site.to_sym][:errors] += 1
+          next
         end
       end
 
-      # Combine and deduplicate
-      all_referenced_images = (images_by_uid + images_by_name).uniq { |img| img.id }
-      puts "Found #{all_referenced_images.count} matching images in database"
+      total_images = all_images.count
+      puts "Found #{total_images} total images in Refinery database"
 
-      # STEP 3: Copy only the referenced images
-      if all_referenced_images.empty?
-        puts "No matching images found in database. Skipping copy."
+      if total_images == 0
+        puts "No images found in database. Skipping copy."
         puts
         next
       end
 
-      puts "Copying #{all_referenced_images.count} images..."
-      all_referenced_images.each do |image|
+      # Copy all images
+      puts "Copying #{total_images} images..."
+      all_images.each_with_index do |image, index|
         begin
           copied = copy_image(image, refinery_images_base, target_dir, overwrite, site)
           if copied
@@ -284,6 +203,11 @@ namespace :refinery do
             stats[site.to_sym][:images] << (image.image_name || image.image_uid)
           else
             stats[site.to_sym][:skipped] += 1
+          end
+          
+          # Progress indicator for large batches
+          if (index + 1) % 100 == 0
+            puts "  Progress: #{index + 1}/#{total_images} images processed..."
           end
         rescue => e
           puts "  ERROR copying image #{image.image_uid}: #{e.message}"
