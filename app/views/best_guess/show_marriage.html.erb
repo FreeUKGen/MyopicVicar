@@ -22,7 +22,7 @@
               <%= render partial: 'entry_queries', locals: { record: @current_record } %>
               <%= render partial: 'display_scans', locals: { record: @current_record } %>
               <%= render partial: 'display_postems', locals: { record: @current_record } %>
-          </div>
+            </div>
           <% else %>
             <%#= render partial: 'partial_entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, search: false, type: "marriages", original_record: @current_record, more_info: true} %>
             <%= render partial: 'entry_information_table', locals: {record: @current_record, entry_type: record_type.downcase, query: @search_query, search_id: @search_id, original_record: @current_record, type: "marriages"} %>
@@ -63,9 +63,19 @@
   <div class="grid">
     <div class="grid__item one-whole lap-one-whole palm-one-whole ">
       <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
-      <%= render partial: 'mobile_view_marriage', locals: {record: @current_record, spouse: @spouse_record, search: @search, search_id: @search_id, entry_type: record_type.downcase, query: @search_query, original_record: @current_record, type: "marriages"} %>
+      <%= render partial: 'mobile_view_marriage', locals: {record: @current_record, spouse: @spouse_record, search: @search, search_id: @search_id, entry_type: 'marriage', query: @search_query, original_record: @current_record, type: "marriages"} %>
+      <div class="islet islet--bordered">
+        <p>More on this entry:</p>
+        <%= render partial: 'entry_queries', locals: { record: @current_record } %>
+        <%= render partial: 'display_scans', locals: { record: @current_record } %>
+        <%= render partial: 'display_postems', locals: { record: @current_record } %>
+      </div>
+      <div class="islet islet--bordered">
+        <p>More on spouse:</p>
+      <%= render partial: 'entry_queries', locals: { record: @spouse_record } %>
+      <%= render partial: 'display_scans', locals: { record: @spouse_record } %>
+      <%= render partial: 'display_postems', locals: { record: @spouse_record } %>
     </div>
   </div>
+</div>
 <% end %>
-<!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
-<%= horz_advert('freebmd_hrec_1') %>

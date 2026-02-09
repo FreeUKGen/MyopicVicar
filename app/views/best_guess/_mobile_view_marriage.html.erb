@@ -179,15 +179,16 @@
             </td>
           </tr>
         <% end %>
-    <% end %> 
+    <% end %>
+    
     <% if entry_type == "marriage" %>
-      <tr>
-        <th scope="row">
-          Entry number
-        </th>
-        <% if record.post_1994_marriage? %>
-          <% sub = record.get_submission %>
-          <% spouse_sub = spouse.get_submission %>
+      <% if record.post_1994_marriage? %>
+        <% sub = record.get_submission %>
+        <% spouse_sub = spouse.get_submission %>
+        <tr>
+          <th scope="row">
+            Entry number
+          </th>
           <% if sub.present? %>
             <td>
               <%= record.get_submission.EntryNumber %>
@@ -198,30 +199,30 @@
               <%= spouse.get_submission.EntryNumber %>
             </td>
           <% end %>
-        <% end %>
-      </tr>
-      <tr>
-        <th scope="row">
-          SourceCode
-        </th>
-        <td>
-          <%= record.get_submission.SourceCode %>
-        </td>
-        <td>
-          <%= spouse.get_submission.SourceCode %>
-        </td>
-      </tr>
-      <tr>
-        <th scope="row">
-          Registered
-        </th>
-        <td>
-          <%= "#{ QuarterDetails.month_hash_abbreviated[record.get_submission.Registered] } #{ format_quarter_year(record.QuarterNumber)}" %>
-        </td>
-        <td>
-          <%= "#{ QuarterDetails.month_hash_abbreviated[spouse.get_submission.Registered] } #{ format_quarter_year(spouse.QuarterNumber)}" %>
-        </td>
-      </tr>
+        </tr>    
+        <tr>
+          <th scope="row">
+            SourceCode
+          </th>
+          <td>
+            <%= sub.SourceCode %>
+          </td>
+          <td>
+            <%= spouse_sub.SourceCode %>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">
+            Registered
+          </th>
+          <td>
+            <%= "#{ QuarterDetails.month_hash_abbreviated[sub.Registered] } #{ format_quarter_year(record.QuarterNumber)}" %>
+          </td>
+          <td>
+            <%= "#{ QuarterDetails.month_hash_abbreviated[spouse_sub.Registered] } #{ format_quarter_year(spouse.QuarterNumber)}" %>
+          </td>
+        </tr>
+      <% end %>
     <% end %>    
     <tr>
       <th scope="row">
@@ -242,24 +243,27 @@
         <% end %>
       </td>
     </tr>
-    <tr>
-      <th scope="row">
-        Comment
-      </th>
-      <% if record.get_comments.present? %>    
-        <%  record.get_comments.each do |cl| %>
+    <% record_comments = record.get_comments %>
+    <% spouse_comments = spouse.get_comments %>
+    <% if record_comments.present? or spouse_comments.present? %>
+      <tr>
+        <th scope="row">
+          Comment
+        </th>
+        <% if record.get_comments.present? %>    
+          <%  record.get_comments.each do |cl| %>
+            <td>
+              <%= cl.comment.CommentText %>
+            </td>
+          <% end %>
+        <% end %>
+        <% if spouse.get_comments.present? %>    
           <td>
-            <%= cl.comment.CommentText %>
+            <%= spouse.get_comments.join(', ') if spouse.get_comments.present? %>
           </td>
         <% end %>
-      <% end %>
-      <% if spouse.get_comments.present? %>    
-        <td>
-          <%= spouse.get_comments.join(', ') if spouse.get_comments.present? %>
-        </td>
-      <% end %>
-    </tr>
+      </tr>
+    <% end %>
   </tbody>
 </table>
-<%= render partial: 'entry_queries', locals: { record: record, district: district } %>
-<%= render partial: 'entry_queries', locals: { record: spouse, district: spouse_district } %>
+
