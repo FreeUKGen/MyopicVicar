@@ -281,6 +281,11 @@
                                         <% end %>
                                     </div>
                                 </div>
+                                <% england_codes = codes['England'].except('All England').to_a.sort_by(&:first) %>
+                                <% wales_codes = codes['Wales'].except('All Wales').to_a.sort_by(&:first) %>
+                                <% all_england_codes = codes['England']['All England'] %>
+                                <% all_wales_codes = codes['Wales']['All Wales'] %>
+                                <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
 
                                 <select name="search_query[chapman_codes][]" multiple="multiple" class="form-control" id="search_query_chapman_codes" tabindex="0">
                                     <option value="">Search all counties</option>
