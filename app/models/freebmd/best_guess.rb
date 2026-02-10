@@ -411,8 +411,9 @@ class BestGuess < FreebmdDbBase
   end
 
   def postems_list
-    if get_rec_hash.present?
-      get_hash = get_rec_hash.Hash
+    hash = self.get_rec_hash
+    if hash.present?
+      get_hash = hash.Hash
       Postem.where(Hash: get_hash).all
     end
   end
