@@ -2332,54 +2332,86 @@
     # Security: Validate input parameters
     return records if DOB_START_QUARTER.nil?
     
+    # Check if the query has JOINs (e.g., includes(:CountyCombos))
+    has_joins = records.to_sql.include?('JOIN')
+    
+    # If there are JOINs, we need to map ActiveRecord aliases to column names
+    # ActiveRecord uses t0_r0, t0_r1, etc. for BestGuess columns when JOINs are present
+    best_guess_column_aliases = if has_joins
+      # Map of alias index to column name (t0_r0 = RecordNumber, t0_r1 = ChunkNumber, etc.)
+      column_names = SearchQuery.get_search_table.column_names
+      column_names.map.with_index { |col, idx| "t0_r#{idx} AS #{col}" }.join(', ')
+    else
+      # No JOINs, use column names directly
+      SearchQuery.get_search_table.column_names.join(', ')
+    end
+    
     # Collect subquery SQLs for UNION
     subqueries = []
+    
+    # Helper to get SQL, handling JOINs if present
+    get_sql = lambda do |query|
+      return nil unless query.is_a?(ActiveRecord::Relation) && query.respond_to?(:to_sql)
+      sql = query.to_sql
+      
+      # Skip if SQL is empty or invalid
+      return nil if sql.blank? || sql.strip.empty?
+      
+      # If there are JOINs, we need to extract only BestGuess columns using aliases
+      if has_joins
+        # Wrap to select only BestGuess table columns using aliases
+        "SELECT #{best_guess_column_aliases} FROM (#{sql}) AS temp"
+      else
+        # No JOINs, use SQL as-is
+        sql
+      end
+    end
     
     # 1. Old records (QuarterNumber < 530): Calculate DOB from age
     non_dob_results = records.where('QuarterNumber < ?', DOB_START_QUARTER)
     old_records_query = date_of_birth_search_range_a(non_dob_results)
-    # Security: Only add if it's a proper ActiveRecord::Relation
-    subqueries << old_records_query.to_sql if old_records_query.is_a?(ActiveRecord::Relation) && old_records_query.respond_to?(:to_sql)
+    sql = get_sql.call(old_records_query)
+    subqueries << sql if sql.present?
     
     # 2. Modern records (QuarterNumber >= 530): Multiple search strategies
     dob_results = records.where('QuarterNumber >= ?', DOB_START_QUARTER)
     
     # 2a. Exact DOB match
     exact_dob_query = dob_exact_search(dob_results)
-    subqueries << exact_dob_query.to_sql if exact_dob_query.is_a?(ActiveRecord::Relation) && exact_dob_query.respond_to?(:to_sql)
+    sql = get_sql.call(exact_dob_query)
+    subqueries << sql if sql.present?
     
     # 2b. Invalid age records (no month indicators)
     invalid_age_records = invalid_age_records_sql(dob_results)
     
     # Range search on invalid age records
     invalid_range_query = date_of_birth_search_range_a(invalid_age_records)
-    subqueries << invalid_range_query.to_sql if invalid_range_query.is_a?(ActiveRecord::Relation) && invalid_range_query.respond_to?(:to_sql)
+    sql = get_sql.call(invalid_range_query)
+    subqueries << sql if sql.present?
     
     # Uncertain date indicators
     uncertain_query = date_of_birth_uncertain_aad(invalid_age_records)
-    subqueries << uncertain_query.to_sql if uncertain_query.is_a?(ActiveRecord::Relation) && uncertain_query.respond_to?(:to_sql)
+    sql = get_sql.call(uncertain_query)
+    subqueries << sql if sql.present?
     
     # 2c. Records with DOB (has month indicators)
     date_of_birth_records = records_with_dob_sql(dob_results)
     year_query = age_at_death_with_year(date_of_birth_records)
-    subqueries << year_query.to_sql if year_query.is_a?(ActiveRecord::Relation) && year_query.respond_to?(:to_sql)
+    sql = get_sql.call(year_query)
+    subqueries << sql if sql.present?
     
     # 3. Records with no age/DOB data
     no_age_query = no_aad_or_dob(records)
-    subqueries << no_age_query.to_sql if no_age_query.is_a?(ActiveRecord::Relation) && no_age_query.respond_to?(:to_sql)
+    sql = get_sql.call(no_age_query)
+    subqueries << sql if sql.present?
     
     # Combine with UNION (automatically removes duplicates)
-   # return records.none if subqueries.empty?
-    
-    #combined_sql = subqueries.compact.map { |sql| "(#{sql})" }.join(' UNION ')
-     valid_subqueries = subqueries.compact.reject { |sql| sql.to_s.strip.empty? }
+    valid_subqueries = subqueries.compact.reject { |sql| sql.to_s.strip.empty? }
     return records.none if valid_subqueries.empty?
     
-    combined_sql = valid_subqueries.map { |sql| "(#{sql})" }.join(' UNION ')
+    combined_sql = valid_subqueries.join(' UNION ')
     
-
     # Execute as single query - MySQL handles deduplication
-    #SearchQuery.get_search_table.from("(#{combined_sql}) AS combined_results")
     table = SearchQuery.get_search_table
     table.from("(#{combined_sql}) AS combined_results").select("*")
   rescue ActiveRecord::StatementInvalid => e

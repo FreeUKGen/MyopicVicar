@@ -71,9 +71,6 @@ class SearchQueriesController < ApplicationController
   def create
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
-
-    search_params['chapman_codes'] = county_codes.flatten
-
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
     if @search_query.save
