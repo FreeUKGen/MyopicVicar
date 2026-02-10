@@ -521,6 +521,11 @@
 </script>
 
 <script>
+    <% codes = ChapmanCode::FREEBMD_CODES %>
+    <% england_codes = codes['England'].except('All England').to_a.sort_by(&:first) %>
+    <% wales_codes = codes['Wales'].except('All Wales').to_a.sort_by(&:first) %>
+    <% all_england_codes = codes['England']['All England'] %>
+    <% all_wales_codes = codes['Wales']['All Wales'] %>
     // Store county codes for "All England" and "All Wales" selections
     var allEnglandCodes = <%= raw all_england_codes.to_json %>;
     var allWalesCodes = <%= raw all_wales_codes.to_json %>;
