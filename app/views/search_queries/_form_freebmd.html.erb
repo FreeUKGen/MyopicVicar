@@ -281,6 +281,7 @@
                                         <% end %>
                                     </div>
                                 </div>
+                                <% codes =  ChapmanCode::FREEBMD_CODES%>
                                 <% england_codes = codes['England'].except('All England').to_a.sort_by(&:first) %>
                                 <% wales_codes = codes['Wales'].except('All Wales').to_a.sort_by(&:first) %>
                                 <% all_england_codes = codes['England']['All England'] %>
