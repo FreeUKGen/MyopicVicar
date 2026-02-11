@@ -652,6 +652,16 @@ MyopicVicar::Application.routes.draw do
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
   resources :gap_reasons
 
+  # Serve assets_freereg resources directly (bypassing asset pipeline)
+  get '/assets_freereg/resources/:filename', to: redirect { |params, request|
+  file_path = Rails.root.join('app', 'assets_freereg', 'resources', params[:filename])
+  if File.exist?(file_path)
+    "/assets/resources/#{params[:filename]}"
+  else
+    "/404"
+  end
+  }, constraints: { filename: /[^\/]+/ }
+
 
 
   # This line mounts Refinery's routes at the root of your application.
