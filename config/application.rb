@@ -110,6 +110,7 @@ module MyopicVicar
       config.assets.paths << Rails.root.join('app', 'assets_freecen', 'styles')
       config.assets.paths << Rails.root.join('app', 'assets_freecen', 'javascripts')
       config.assets.paths << Rails.root.join('app', 'assets_freecen', 'resources')
+      config.assets.paths << Rails.root.join('app', 'assets_freecen', 'images')
     when TemplateSet::FREEREG
       config.freexxx_display_name = 'FreeREG'
       config.assets.paths << Rails.root.join('app', 'assets_freereg')
