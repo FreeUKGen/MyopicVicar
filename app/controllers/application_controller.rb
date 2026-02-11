@@ -245,6 +245,9 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
+    # Skip authentication for asset requests (should be served by web server, but fallback for Rails)
+    return if request.path.start_with?('/assets/')
+    
     if session[:userid_detail_id].nil?
       flash[:notice] = "You must be logged in to access that action"
       redirect_to(new_search_query_path) && return  # halts request cycle

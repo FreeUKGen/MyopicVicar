@@ -25,6 +25,12 @@ class PagesController < ApplicationController
   
   # Catch-all action to render pages dynamically based on path
   def show
+    # Skip asset requests - they should be served by web server
+    if request.path.start_with?('/assets/')
+      head :not_found
+      return
+    end
+    
     # Get the page path from params (everything after the route)
     page_path = params[:path] || params[:id]
     

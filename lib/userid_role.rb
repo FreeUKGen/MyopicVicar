@@ -131,7 +131,7 @@ module UseridRole
     'Manage Pieces' => '/freecen_pieces',
     'FreeCen Errors' => '/freecen_errors',
     'Manage FreeCen Coverage' => '/freecen2_county_contents',
-    'FreeUKGenealogy  Policies' => '/cms/freeukgenealogy-policies',
+    'FreeUKGenealogy  Policies' => '/freeukgenealogy-policies',
     'Gazetteer' => '/freecen2_places/search_names',
     'Gazetteer CSV Download' => '/freecen2_places/download_csv',
     'TNA Change Logs' => '/tna_change_logs',
