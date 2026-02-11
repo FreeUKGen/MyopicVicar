@@ -1,0 +1,107 @@
+<h1>DRAFT Testing raw SVG</h1>
+
+<style scoped="scoped">
+  .centred {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+  }
+  a#donate:focus,
+  a#donate:hover {
+    text-decoration: none;
+    background-color: #fff;
+  }
+  .freeCEN #A {
+    fill:#a7e3e1;
+  }
+  .freeCEN #B {
+   fill:#2eb2a4;
+  }
+  .freeCEN #C,
+  .freeCEN #donateBtn svg {
+   fill:#00857e;
+   stroke:#00857e;
+  }
+  #donate.freeCEN:hover #donateBtn,
+  #donate.freeCEN:focus #donateBtn {
+   color:#00857e;
+  }  
+  </style>
+
+<h2>New colours as per #151 system-wide</h2>
+<ul>
+  <li>Button, background-color: #00857e</li>
+  <li>Box, left face, background-color: #00857e</li>
+  <li>Box, right face, background-color: #2eb2a4</li>
+  <li>Box, top face, background-color: #a7e3e1</li>
+</ul>
+ 
+<p>TO-DO: find or create new named varieties of teal; investigate CSS file in Master</p>
+<p>DONE: remove background colour from focus state; remove underlining on focus and hover</p>
+
+<h2>Issues with markup</h2>
+<ul>
+  <li>center element is deprecated but has browser support (for now!) and is messy to replace</li>
+  <li>duplicate ids — how to avoid them? Will classes create problems?
+    <ul>
+      <li>A: used twice</li>
+      <li>B: used thrice</li>
+      <li>C: used thrice</li>
+    </ul>
+  </li>
+  <li>br at line 69 — necessary? why not a class? Replaced with soft--top</li>
+  <li>raw SVG vs classes
+    <ul>
+      <li>will raw SVG work in Refinery?</li>
+      <li>can we even re-write as a class?</li>
+    </ul>
+  </li>
+</ul>
+
+<hr class="rule rule--ornament" />
+  
+<div class="read-length push--bottom soft-half--top" style="margin-left: auto; margin-right: auto; border: 2px solid">
+  <br />
+      
+      
+        <a href="https://www.freeukgenealogy.org.uk/help-us-keep-history-free/" class="freeCEN" id="donate"><span class="btn-donate" id="donateOverlay">
+
+  
+    
+  
+  
+    
+    
+    
+    
+  
+</span>
+            <span class="btn-donate" id="donateCoin">
+
+  
+  
+  
+  
+  
+</span>
+            <span class="btn-donate" id="donateBox">
+
+  
+  
+  
+  
+  
+    
+  
+  
+    
+    
+    
+  
+</span>
+            <span class="btn-donate" id="donateBtn">Donate</span>
+</a>
+    <p class="push-half--bottom">While most other genealogy sites charge you to find and read records, <strong>FreeCEN</strong> is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way. </p>
+</div>

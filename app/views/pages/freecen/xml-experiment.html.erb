@@ -1,0 +1,119 @@
+<h1>XML experiment</h1>
+
+<div id="top">
+	<style scoped="scoped">
+	code, pre, kbd {
+    font-family: monospace, serif;
+    font-size: 80%;
+    padding: 2px 4px;
+    color: #000;
+    background-color: #e0eee0;
+    border-radius: 4px;
+  }
+  kbd {
+    background-color: #222;
+    color: white;
+  }
+  figcaption {
+    font-style: italic;
+    color: #737373; /* 4.74:1 */
+    margin-top: 0.3em;
+  }
+  figure.site img {
+    border: 2px solid #00a099;
+    padding: 0.3em;
+  }
+  figure.image-wide img {
+    width: 100%;
+    height: auto;
+  }
+  figure img.narrow { max-width: 291px; } /* not tested here */
+	</style>
+
+<strong><mark class="beta">Issues:</mark> </strong>
+<ul>
+  <li>doubling up of id=top</li>
+  <li>indent </li>
+</ul>
+<hr class="rule" />
+	
+	<div class="island island--bordered">
+		<p class="push-half--bottom">
+			<strong>Here are some elements that need attention … or perhaps we simply need to warn users?</strong>
+		</p>
+		<ul>
+			<li>I don’t get how subsection relates to section: putting a subsection as a child of a section generates an error</li>
+			<li>Xmplify wants the HTML to work like with Refinery, with all empty elements properly closed. If I don’t fix them it generates a bunch of error messages, which if not corrected stops the format action from working (I cannot abide un-formatted HTML)</li>
+			<li>the style attribute for the image (that set a maximum width) does not appear to be implemented yet so I cannot test it</li>
+		</ul>
+		<figure class="site image-wide">
+			<img src="example.png" width="100px" height="auto" alt="example" />
+			<figcaption>Fig. 1: an example of what we have just been discussing</figcaption>
+		</figure>
+	</div>
+	<div class="grid">
+		<div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+			<p class="lead">
+				This page is a collection of elements and objects designed to work on a Refinery page. How many are required? How much is created automatically?
+			</p>
+			<p>Something to follow the lead paragraph — but not necessarily related to it.</p>
+		</div>
+		<div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+			<nav aria-labelledby="thisPage">
+				<div class="islet islet--bordered">
+					<h2 class="title-block" id="thisPage">On this page</h2>
+					<ul class="sub-nav">
+						<li>
+							<a href="#exploringSections">Exploring &lt;section&gt;s</a>
+						</li>
+						<li>
+							<a href="#quotes">Quotes and so forth</a>
+						</li>
+						<li>
+							<a href="#next">What's next?</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+  </div>
+  <div class="grid">
+		<div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+			<nav aria-labelledby="thisSection">
+				<div class="islet islet--bordered">
+					<h2 class="title-block">In this section</h2>
+					<ul class="sub-nav">
+						<li>
+							<a href="#subheads">Subheads</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		<div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="exploringSections">
+			<h2>Exploring &lt;section&gt;s</h2>
+			<p>These &lt;sections&gt;s have level 2 headings which contribute to the “On this page” submenu, as expected. </p>
+			<h3 id="subheads">Subheads</h3>
+			<p>It turns out that a &lt;subhead&gt; is a level 3 heading. Logical. Do we need sub-subheads? Yes! But probably not in a menu.</p>
+			<p class="push-half--bottom">The submenus for level 3 headings need a bit more work:</p>
+			<ul>
+				<li>the menus cannot all have the same heading (‘In this section’)</li>
+				<li>we need an id on the menu heading, to be referenced by <strong><span style="font-family: Courier, sans-serif;">aria-labelledby</span>
+</strong> so that there is a unique label for each menu for screen readers to list and link to</li>
+				<li>the heading should probably be level 3</li>
+				<li>source order needs consideration (for mobile users principally)</li>
+				<li>is a menu length of one OK? two? or what?</li>
+			</ul>
+			<p>Perhaps the level 3 headings that do not make it into a section menu can be put into the “On this page” submenu, in child lists, much as we do now?</p>
+		</div>
+		<div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="quotes">
+			<h2>Quotes and so forth</h2>
+			<p>This is “double-quoted” whereas this is ‘single-quoted’.</p>
+			<p>Some apostrophes: the cat‘s mother; the cats’ mother; James’ mother.</p>
+			<p>Today is Friday — or perhaps it’s Saturday.</p>
+		</div>
+		<div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="next">
+			<h2>What’s next?</h2>
+		</div>
+	</div>
+</div>

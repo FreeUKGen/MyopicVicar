@@ -1,0 +1,74 @@
+<h1>DRAFT Your reviews</h1>
+
+<style scoped="scoped">
+  figure.bq {
+    border-left: 5px solid #825DA8;
+    margin: 0;
+    margin-left: 1.556rem;
+    margin-bottom: 1.556rem;
+    padding: 1em;
+    padding-left: 50px;
+  }
+  figure.bq:nth-of-type(2n) {
+    border-color: #919191;
+  }
+  figure.bq blockquote {
+    position: relative;
+    text-indent: 0;
+    margin: 0;
+    padding: 0;
+  }
+  figure.bq blockquote::before {
+    content: "\201C";
+    color: #825DA8;
+    font-size: 3.6em;
+    font-family: 'Helvetica', Arial, sans-serif;
+    position: absolute;  
+    left: -30px;
+    top: -23px;
+  }
+  figure.bq:nth-of-type(2n) blockquote::before {
+    color: #919191;
+  }
+  figure.bq blockquote p { margin: 0; margin-bottom: 14px; }
+  figure.bq blockquote p:last-of-type { margin-bottom: 0; }
+  figure.bq blockquote p::before, figure.bq blockquote p::after {
+    content: ' ';
+  }
+  figure.bq figcaption {
+    margin-top: 1em;
+    margin-top: 0.3em;
+    font-style: italic;
+    color: #737373; /* value in use for image captions */
+  }
+  figure.bq figcaption:before {
+    content: '— ';
+  }  
+</style>
+
+<p><mark>DONE: #1326 — create two dummy CEN reviews as examples; set up with useful pointers.  AO 28 Apr 2023</mark> </p>
+<p><mark>TO DO: #1326 — populate with CEN reviews; create form &amp; link to it, with warning re accessibility. AO 28 Apr 2023</mark> </p>
+<p><mark>DONE: #1326 — Create reviews page; edit colours for CEN; </mark> </p>
+
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-four-fifths palm-one-whole">
+    <p class="lead">A selection of messages sent by researchers, pleased to have found their ancestors in our database.</p>
+    <p>Have something to add? Please use our <a href="#leaveReview">Leave a Review for FreeCEN</a> form, at the foot of the page. Thank you.</p>
+    <hr class="rule" />
+
+    <figure class="bq">
+      <blockquote>
+        <p>Example 1. Put the text of the Review here. We do not correct grammar and spelling. The markup is valid and is important for the styling to work. Do not delete these examples until there are <em>real</em> reviews in place that look correct.</p>
+      </blockquote>
+      <figcaption>Name of reviewer goes here</figcaption>
+    </figure>
+    <figure class="bq">
+      <blockquote>
+        <p>Example 2. The colour of the decoration is adjusted automatically. Do not attempt to edit any part of the styling unless you really know what you are doing and you have the authorisation to do so. Thank you.</p>
+      </blockquote>
+      <figcaption>Name of reviewer</figcaption>
+    </figure>
+
+  </div>
+</div>
