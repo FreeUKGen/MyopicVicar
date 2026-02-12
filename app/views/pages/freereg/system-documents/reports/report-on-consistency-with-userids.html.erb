@@ -1,0 +1,6 @@
+<h1>Report on consistency with Userids</h1>
+
+<p>There is a rake task that reviews all files to make sure there is a corresponding userid and reviews all userids to make sure there is a corresponding file.</p>
+<p>Rake foo:review_userid_files[100000,*/.uDetails]</p>
+<p>The first argument is the number of files to process. The second is a list of all files to process. */ tells the task to process all folder names in the Freereg2 datafiles. These are presently stored in /raid-test/freereg2/users so the task expects the 4th field to hold the folder name. If the base location is changed so that the folder is in a different position then line 50 filenames &lt;&lt; userid[4] unless userid[4].nil? will need to be changed.</p>
+<p>The task puts out a&#160; summary message at the end and writes details to log/review_userid_detail_file_message.log</p>

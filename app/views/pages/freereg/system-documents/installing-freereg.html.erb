@@ -1,0 +1,61 @@
+<h1>Installing FreeREG</h1>
+
+<h3>Installing FreeREG on your development facility</h3>
+<h3><span style="font-weight: normal;">In addition to these instructions you need to have received a number of files from your mentor who will assist you through this installation.</span>
+</h3>
+<p><span style="font-weight: normal;">1) </span>Establish a Github identity (if you do not have one) and have that added to FreeUKGen members by your mentor.</p>
+<p>2) Make sure you have a good text editor that formats ruby text appropriately. Sublime Text version 3 with appropriate add ons is recommended</p>
+<h3><span style="font-weight: normal;">3) From the FreeUKGen repositoty on Github https://github.com/freeukgen</span>
+</h3>
+<h3><span style="font-weight: normal;">a) clone MyopicVicar, osgb, &#160;Core-Frontend, Free-Reg-Frontend repositories.</span>
+</h3>
+<p><span style="font-weight: normal;">3) Install MyopicVicar by following the instruction in its Readme&#160;</span>&#160;</p>
+<h3><span style="font-weight: normal;">4)	Register as a technical user with FR (if you have not done so) and ask your mentor to assign&#160;that userid a technical&#160;role</span>&#160;</h3>
+<h3><span style="font-weight: normal;">5)	Install Mysql unless you have it. We are using version 5.6</span>&#160;</h3>
+<h3><span style="font-weight: normal;">6)	Set up mysql. In a mysql command line interpreter&#160;</span>
+</h3>
+<h3><span style="font-weight: normal;">a)</span>&#160;<span style="font-weight: normal;">CREATE USER 'freereg2'@'localhost' IDENTIFIED BY 'freereg2';</span>
+</h3>
+<p>b) CREATE DATABASE freereg2_development;</p>
+<h3><span style="font-weight: normal;">c) GRANT ALL ON freereg2_development.* TO 'freereg2'@'localhost';</span>
+</h3><h3><span style="font-weight: normal;">d) Now we will do a check to see that all is OK<br />SHOW GRANTS FOR 'freereg2'@'localhost';<br />Should be something like<br />| GRANT USAGE ON *.* TO 'freereg2'@'localhost' IDENTIFIED BY PASSWORD '*3F9F5959<br />8D44BD1F73D08DA22D333AB631D83FB5' |<br />| GRANT ALL PRIVILEGES ON `freereg2_development`.* TO 'freereg2'@'localhost'</span>
+</h3>
+<p>7)	Set up the freereg2_development database in mysql by starting&#160;a command window in the myopicvicar folder and execute the following commands in succession<br />rake db:migrate<br />rake db:seed<br />rake load_refinery_counties</p>
+<p>8)	Install mongodb from https://www.mongodb.com/download-center?jmp=nav#community&#160;</p>
+<p>(We are using version 3.2.7 on the servers; so you may want to download those binaries)</p>
+<p>9)	Set up Mongodb<br />a) Establish a folder  location where you want the database to be located&#160;</p>
+<p>b) Start Mongodb (example follows but must be tailored)<br />D:\mongodb\bin\mongod.exe --dbpath e:\data<br />Where you change the first part to where you have located Mongodb binaries<br />Second part (the dbpath) is the folder that you just established for the database</p>
+<p>10)	Set up the superuser for refinery (this is the one user who can control the refinery CMS). <strong>You only get one shot at this.&#160;</strong>
+</p>
+<p>a)&#160;With both Mongodb and mysql running </p>
+<p>b)Start a command window in myopicvicar</p>
+<p>c) Start the rails server with the command rails s</p>
+<p>d)&#160;When the server is running; open the browser in <br />localhost:3000/cms/refinery/login/new</p>
+<p>You will be asked to enter the credentials for the superuser.</p>
+<p>It is recommended that you keep these credentials different from your normal one and different from the one in step 4</p>
+<p>11)	In the next steps we tailor the myopicvicar code base to your configuration. &#160;</p>
+<p>a) Copy the mongo_config.yml file that was sent to the myopicvicar/config folder&#160;</p>
+<p>b) edit that file as follows</p>
+<p>c) Change the location in mongodb_bin_location = "d:/mongodb/bin/" from "d:/mongodb/bin/" to where your binaries are located.<br />c) Change the location in datafiles = 'c:/freereg 12/' from 'c:/freereg 12/' to where you are going to store the actual datafiles from which the database is built. (The location is separate and distinct from the database folder you set up earlier. ) It is the location you used to store the user files you received.</p>
+<p>d) Change the location in delete_list: 'm:/delete_list.txt' from m:/delete_list.txt' to wherever you want to keep a working file.</p>
+<p>e) Note this file is never committed to the Github repository as it contains passwords</p>
+<p>13)	Copy the mongoid.yml file sent to you to&#160;the myopicvicar/config folder. It does not need editing UNLESS you wish to change the name of the database. This file is never committed to the Github &#160;repository.</p>
+<p>14) Copy the database.yml&#160;sent to you to the myopicvicar/config folder. It does not need editing UNLESS you used different names and passwords in step 6 when setting up the mysql database. This file is never committed to the Github  repository.</p>
+<p><br />15)	Edit create_userid_docs.rb that is a file in myopicvicar/lib/ and insert after line 195 a line header[:person_role] = "system_administrator" if header[:userid] == "xxxxxxxxx"             where xxxxxxxxx is the userid you created on FR</p>
+<p><br />16)	You need to preload the Mongodb of collections into Mongo. These were the collection sent you. They should be copied into &#160;that were to be extracted into the myopicvicar/tmp folder.<br /><br />a)	In a myopicvicar command window execute <br />rake build:freereg_from_files[,,2/3/4/8/9/10/11,,2/3/4/8/9/10/11]  --trace</p>
+<p>This will load and index the Places, Churches, Registers, Userids, Syndicates, Counties and Countries collections in Mongo.</p>
+<p><br />17)	We need to add your userid to the Userids&#160;collection. This must be run AFTER the preceding &#160;step 16.&#160;</p>
+<p>a) In a myopicvicar command window execute&#160;<br /> rake foo:create_userid_docs[add,userid/.uDetails]  --trace <br />where userid is the one you registered with FR This will recreate you as a system_administrator</p>
+<p><br />18)	 We need to load the data files and their entries into your FR database.&#160;</p>
+<p>a) Copy the datafiles sent to you into the folder you specified in step 11c above.</p>
+<p>b)&#160;In a myopicvicar command window execute</p>
+<p>&#160;rake build:freereg_new_update[create_search_records,range,force_rebuild,a-9] --trace</p>
+<p>c)	In a myopicvvicar command window execute &#160;<br />rake foo:refresh_places_cache&#160;</p>
+<p>19)	 After this completes you should have a a development version of FreeREG running  on your system.&#160;</p>
+<p>a) With both Mongodb and mysql running</p>
+<p>b) Start a command window in myopicvicar</p>
+<p>c) Start the rails server with the command rails s</p>
+<p>d) When the server is running; open the browser in <br />localhost:3000/</p>
+<p>e) You should be able to run a search</p>
+<p>f) You should be able to login with your userid through the Members link.</p>
+<p>To the mentor, you must send a)a copy of your mongo_config.yml b) a copy of your mongoid.yml c) a copy of database.yml d) copies of the places, churches, registers, counties, countries, syndicates, userids json files. These can be created in myopicvicar/tmp by running&#160;rake build:freereg_from_files[2/3/4/8/9/10/11,,,,] --trace and e) a selection of the user folders and their datafiles and include the folder for the new person after he/she has registered.</p>

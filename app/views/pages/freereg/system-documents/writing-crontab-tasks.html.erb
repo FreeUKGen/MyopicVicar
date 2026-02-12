@@ -1,0 +1,16 @@
+<h1>Writing Crontab Tasks</h1>
+
+<p>We use colobus (Master) for the cron tasks.</p>
+<p>We put our tasks in the freereg2 cron</p>
+<p>sudo crontab -u freereg2 -l  (to list) -e (to edit/add)</p>
+<p>We have a mailto= to each of the developers (Kirk,Ben,Julian) that is used by the cron deamon to send us error messages on the initiation of the task. (Mine ended up in spam so watch it!)</p>
+<p>It is best to put the scripts into Github. Specifically     lib/tasks/scripts as the update of FR2 is set up to provide scripts in that folder with the correct permissions</p>
+<p>The entry in crontab is straight forward.</p>
+<p>* * * * * cd /home/apache/hosts/freereg2/production/lib/tasks/scripts/ &amp;&amp; ./script_to_be_run.sh &gt;&gt; /raid/freereg2/log/script_to_be_run.log 2&gt;&amp;1</p>
+<p><br />The cd is to point to the folder for the script which in this example is called script_to_be_run.sh</p>
+<p>The output is redirected to a log file in the log folder. Because of issues over permission we have established a log folder in /raid/freereg2/ with freereg2 as the group user. This enables cron tasks in freereg2 to write there. webserv has also been made a member of the freereg2 group. So there should be no issues over cron, us or webserv writing to this folder. Those log files must have group write permission</p>
+<p>Don't know what you are going to do but the update script has 3 basic actions that each involved having a sudo so freereg crontab was set to permit sudo&#160; -u&#160; for </p>
+<p>* freereg2 can run 'searchctl.sh (enable|disable)' as root<br />* freereg2 can run 'bundle exec rake ...' as webserv<br />* freereg2 can run 'rsync ... as webserv</p>
+<p>If you have other needs it needs to be set it up by the system administrator (Currently lemon).</p>
+<p>You can review update_freereg2_production. for a typical script.</p>
+<p>It should be noted that the update process turns searching off and then on for the master server so that it runs in a reasonable time</p>

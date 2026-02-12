@@ -1,0 +1,43 @@
+<h1>Setup on Vervet</h1>
+
+<p>As of January 21 we restructured Vervet to run 2 instances of mongod. One for production and one for development. This document outlines where things are keep.</p>
+<h3>Production</h3>
+<p>1) The<strong> configuration file</strong> for the production instance is </p>
+<p>mongodb-production.conf it is located at /usr/local/etc/ with a copy in my space. Its content is</p>
+<p>#start the  MongoDB production server as a daemon on port 27017<br /> port = 27017<br /> fork = true # daemonize it!<br /> logpath = /var/db/mongodb/production/production.log<br /> logappend = true<br /> bind_ip = 127.0.0.1<br /> dbpath = /var/db/mongodb/production&#160;</p>
+<p>NOTE the location of both the log (/var/db/mongodb/production/production.log) and the database (/var/db/mongodb/production)</p>
+<p>2) <strong>Start as a service </strong>
+</p>
+<p>sudo service mongod-production start&#160; (stop restart)</p>
+<p>or as a private instance with <br /> mongod --config /usr/local/etc/mongodb-production.conf </p>
+<p>3) The <strong>code base </strong>for production is located at /home/apache/hosts/freereg2/production/</p>
+<p>The code base is <strong>updated</strong> by running <strong>bash /home/apache/hosts/freereg2/update-freereg2</strong>
+</p>
+<p>This script ensures consistent permissions/ownership of the folders/files. It pulls from github master, performs a bundle install and restarts the production server. </p>
+<p>4 ) The<strong> MySQL</strong> database.yml is </p>
+<p>production:<br />  adapter: mysql2<br />  encoding: utf8<br />  database: freereg2_production<br />  pool: 5<br />  username: freereg2<br />  password: freereg2<br />#  socket: /var/run/mysqld/mysqld.sock<br />  host: localhost</p>
+<p>5) The <strong>mongobd database</strong> is defined in mongoid.yml</p>
+<p>development: &amp;mongoid<br />  # Configure available database sessions. (required)<br />  sessions:<br />    # Defines the default session. (required)<br />    default:<br />      # Defines the name of the default database that Mongoid can connect to.<br />      # (required).<br />      <strong>database: myopic_vicar_development_20141112</strong>&#160;
+(Or a later version)<br />      # Provides the hosts the default session can connect to. Must be an array<br />      # of host:port pairs. (required)<br />      hosts:<br />        - <strong>localhost:27017</strong>
+<br />production: *mongoid</p>
+<h3>Development</h3>
+<p>1) The <strong>configuration file</strong> for the devlopment instance is</p>
+<p>mongodb-development.conf it is located at /usr/local/etc/ with a copy in my space. Its content is</p>
+<p> #start the  MongoDB development server as a daemon on <strong>port 37017</strong>
+<br /> port = 37017<br /> fork = true # daemonize it!<br /> logpath = /var/db/mongodb/development/development.log<br /> logappend = true<br /> bind_ip = 127.0.0.1<br /> dbpath = /var/db/mongodb/development</p>
+
+<p> #start this as mongod --config /usr/local/etc/mongodb-development.conf</p>
+<p>NOTE the location of both the log (/var/db/mongodb/development/development.log) and the database (/var/db/mongodb/development)</p>
+<p>2) <strong>Start as a service</strong>
+</p>
+<p>sudo service mongod-development start  (stop restart)</p>
+<p>or as a private instance with<br />mongod --config /usr/local/etc/mongodb-development.conf</p>
+<p>3) The code base for development is located at /home/apache/hosts/freereg2/MyopicVicar/</p>
+<p>The code base is updated by normal git commands from within that space</p>
+<p>4 ) The <strong>MySQL</strong> database.yml is</p>
+<p>development:<br />adapter: mysql2<br />encoding: utf8<br />database: freereg2_development<br />pool: 5<br />username: freereg2<br />password: freereg2<br /># socket: /var/run/mysqld/mysqld.sock<br />host: localhost</p>
+<p>5) The<strong> mongobd database</strong> is defined in mongoid.yml</p>
+<p>development:<br />  # Configure available database sessions. (required)<br />  sessions:<br />    # Defines the default session. (required)<br />    default:<br />      # Defines the name of the default database that Mongoid can connect to.<br />      # (required).<br />      <strong>database: development-20150122</strong>
+<br />      # Provides the hosts the default session can connect to. Must be an array<br />      # of host:port pairs. (required)<br />      hosts:<br />        -<strong> localhost:37017</strong>
+</p>
+<p>6) <strong>To use the mongo console or the mongostat/mongotop tools YOU MUST add --port 37017 to the command so as to connect to the development instance</strong>!!!</p>

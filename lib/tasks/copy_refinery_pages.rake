@@ -30,23 +30,14 @@ namespace :refinery do
         current_parent = page.parent
         
         # Build parent directory path by traversing up the hierarchy
+        # Include ALL parent pages in the hierarchy to maintain proper directory structure
         while current_parent
           parent_slug = (current_parent.slug || current_parent.title&.parameterize).to_s.downcase
           break if parent_slug.blank?
           
-          # Check if this parent has children (if so, it should be a directory)
-          parent_has_children = if current_parent.respond_to?(:children_count)
-                                   current_parent.children_count.to_i > 0
-                                 elsif current_parent.respond_to?(:children)
-                                   current_parent.children.any?
-                                 else
-                                   false
-                                 end
-          
-          if parent_has_children
-            # Parent has children, so it should be a directory
-            parent_dirs.unshift(parent_slug)
-          end
+          # Always include parent in directory structure to maintain hierarchy
+          # This ensures the full path is preserved even if intermediate parents have no other children
+          parent_dirs.unshift(parent_slug)
           
           current_parent = current_parent.parent
         end
