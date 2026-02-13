@@ -1,0 +1,222 @@
+<h1>Flexible CSV format</h1>
+
+<style scoped="scoped">
+    h2.section { font-size: 2em; font-weight: normal; line-height: 1; }
+    .newField span { color: #008000; }
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">We have recently <em>extended</em> the number of fields in the database and made the order of the fields <em>flexible</em>. This lets us include information from (for example) Nonconformist and Catholic registers as well as additional information found in more typical parish registers.</p>
+    <p>Please note that you need to be a spreadsheet user in order to take advantage of this flexibility — the new fields and format are <em>not</em> available currently for WinREG (or WinFreeREG).</p>
+    <p>The <a href="#generalGuidance">General guidance</a> has been updated for the new fields — please read and note the changes.</p>
+  </div>
+
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#guidance">Using the flexible CSV record format</a> </li>
+          <li><a href="#generalGuidance">General guidance — updated</a> </li>
+        </ul>
+      </div>
+    </nav>
+
+    <nav aria-labelledby="fieldDetails" class="islet islet--bordered">
+      <h2 class="title-block" id="fieldDetails">The fields in detail</h2>
+      <ul class="sub-nav">
+        <li><a href="/cms/information-for-transcribers/flexible-csv-format/extended-baptism-fields">Extended baptism fields</a> </li>
+        <li><a href="/cms/information-for-transcribers/flexible-csv-format/extended-marriage-fields">Extended marriage fields</a> </li>
+        <li><a href="/cms/information-for-transcribers/flexible-csv-format/extended-burial-fields">Extended burial fields</a> </li>
+      </ul>
+    </nav>
+
+    <aside aria-labelledby="relatedPages">
+      <div class="islet islet--bordered" id="helpMenu">      
+        <h2 class="title-block" id="relatedPages">Transcriber Help</h2>
+        <ul class="sub-nav">
+          <li><a href="/cms/information-for-transcribers">Information for transcribers</a> </li>
+          <li><a href="/cms/information-for-transcribers/creating-a-transcription-file">Creating a transcription file</a> </li>
+          <li><a href="/cms/information-for-transcribers/using-the-image-server">Using the Image Server</a> </li>
+          <li><a href="/cms/information-for-transcribers/entering-data-from-registers">Entering data from registers</a> </li>
+          <li class="active"><a href="/cms/information-for-transcribers/flexible-csv-format">Flexible CSV format (this page)</a> </li>
+          <li><a href="/cms/information-for-transcribers/dealing-with-uncertainty">Dealing with uncertainty</a> </li>
+          <li><a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a> </li>
+          <li><a href="/cms/information-for-transcribers/chapman-codes">Chapman codes</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-and-batch-actions">File and batch actions</a> </li>
+          <li><a href="/cms/information-for-transcribers/the-gap-system">The Gap system</a> </li>
+          <li><a href="/cms/information-for-transcribers/file-headers">File headers</a> </li>
+          <li><a href="/cms/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> </li>
+          <li><a href="/cms/information-for-transcribers/latin-words-to-recognise">Latin words to recognise</a> </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <section id="guidance" class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 class="section">Using the flexible CSV record format</h2>
+
+    <h3>Summary of main features</h3>
+    <ul>
+      <li>many more fields are now available — information that you had to put in the Notes field previously is likely to have its own field</li>
+      <li>you can use as many (or as few) of the fields as you need</li>
+      <li>you can have the fields in whatever order works best for your register</li>
+      <li>you put the formal names of the fields you use in row 6 of your spreadsheet —  do <em>not</em> delete this row before uploading your CSV file</li>
+      <li>downloads of the three sets of fields as CSV files are available from the relevant Extended fields page — see the <a href="#fieldDetails">Fields in detail</a> menu</li>
+    </ul>
+    
+    <h3>The record layout</h3>
+    <p class="island island--bordered">This description assumes that you are creating your whole file, including the Header rows, in your spreadsheet app. If you are using  a text editor at any stage, see <a href="#textEditors">Text editors</a> in General guidance.</p>
+    <p>FreeREG will know that you are going to use the new flexible and extended format if you put the new header as the fifth row of your spreadsheet (replacing the +LDS header): put # (the hash or pound symbol) in cell 5A and DEF in cell 5B.</p>
+    <p>This tells the system that the next record (row) is the names of the fields that you have used, <em>in the order</em> in which they appear. These are your column headers. There is really just one rule: you <em>must</em> use the column or field names that the system uses. Variations are currently not allowed. The <strong>flexibility</strong> comes from being able to include <em>only</em> the fields for which your register has data and also that you can put them in <em>any order</em>.</p>
+    <p class="push-half--bottom newField">For example, this is the complete set of fields now available for a burial record — new fields are marked with a <span> *</span>:</p>      
+    <ul aria-label="location">          
+      <li>chapman_code</li>
+      <li>place_name</li>
+      <li>church_name</li>
+      <li class="newField">register_type <span> *</span> </li>
+      <li>register_entry_number</li>
+    </ul>
+    <ul aria-label="dates">
+      <li>burial_date</li>
+      <li class="newField">death_date <span> *</span> </li>
+    </ul>
+    <ul aria-label="details of deceased">
+      <li>burial_person_forename</li>
+      <li class="newField">burial_person_surname <span> *</span> </li>
+      <li class="newField">burial_person_title <span> *</span> </li>
+      <li>person_age</li>
+      <li>burial_person_abode</li>
+    </ul>
+    <ul aria-label="details of death and burial">
+      <li class="newField">cause_of_death <span> *</span> </li>
+      <li class="newField">burial_location_information <span> *</span> </li>
+      <li class="newField">place_of_death <span> *</span> </li>
+      <li class="newField">memorial_information <span> *</span> </li>
+    </ul>
+    <ul aria-label="details of relatives">
+      <li>relationship</li>
+      <li>male_relative_forename</li>
+      <li>relative_surname</li>
+      <li class="newField">male_relative_title <span> *</span> </li>
+      <li>female_relative_forename</li>
+      <li class="newField">female_relative_surname <span> *</span> </li>
+      <li class="newField">female_relative_title <span> *</span> </li>
+    </ul>
+    <ul aria-label="notes and image details">
+      <li>notes</li>
+      <li class="newField">notes_from_transcriber <span> *</span> </li>
+      <li>film</li>
+      <li>film_number</li>
+      <li class="newField">image_file_name <span> *</span> </li>
+    </ul>
+    <p>Do not be put off by the number of fields now available — you will never need to use all of them together, only those fields that are in your register.</p>
+    <p>See the <a href="#fieldDetails">Fields in detail</a> menu for links to full descriptions of all the flexible baptism, marriage and burial fields.</p>
+    <hr class="rule" />
+
+    <h2 id="generalGuidance" class="section">General guidance<br /><em class="delta">for the flexible CSV format</em> </h2>
+
+    <h3>Type what you see</h3>
+    <p class="push-half--bottom">The first rule of transcribing is to type what you see (T.W.Y.S.). Even if it looks wrong or seems like an abbreviation. The only exceptions are for various practical reasons:</p>
+    <ul>
+      <li>dates must be entered in a standard way for searching to work (see <a href="#dates">Dates</a>, below, and the article on <a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a>) </li>
+      <li>a few fields (for instance, county) require an abbreviation </li>
+      <li>The name fields must not have anything else other than names — see <a href="#names">Names</a>, below, and the guidance for baptisms, marriages or burials </li>
+      <li>some characters cannot be entered in the database — W<sup>m</sup> and W<sup><span style="text-decoration: underline;">m</span> </sup> are both entered as Wm</li>
+      <li>pairs of letters, written as if joined together, <em>could</em> be entered, but they would not be found: type Phoebe for Phœbe, Aedie for Ædie, and so on</li>
+    </ul>
+  </section>
+</div>
+
+<div class="grid">  
+  <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h3>The mandatory fields</h3>
+    <p>The County, Place, Church and Register Type fields must have entries that are recognised by the database. Using a separate field for the Register Type is a change in practice. Contact your Coordinator if you are not sure what to enter here or if your entries are rejected.</p>
+    <p><strong>The Register Type</strong> is a two-letter code that now has its own field, register_type. It indicates the source of your transcription. See the Info Box for a <a href="#regCodes">list of the codes</a>; for a description of each Type, see the <a href="/cms/information-for-transcribers/register-types">Register types</a> article.</p>
+  </section>
+
+  <aside aria-labelledby="regTypes" id="regCodes" class="grid__item one-third palm-one-whole float--right">
+    <div class="islet islet--navy">
+      <h3 class="banner__title push-half--bottom" id="regTypes">Register Types &amp; codes</h3>
+      <ul class="nav nav--stacked">
+        <li>Parish Register — PR</li>
+        <li>Other Register — OR</li>
+      </ul>
+      <ul class="nav nav--stacked">
+        <li>Archdeacon’s Transcript — AT</li>
+        <li>Bishop’s Transcript — BT</li>
+        <li>Phillimore’s Transcript — PT (PH)</li>
+        <li>Dwelly’s Transcript — DT (DW)</li>
+        <li>Other Transcript — OT (TR)</li>
+      </ul>
+      <ul class="nav nav--stacked">
+        <li>Extract of a Register — EX</li>
+        <li>Memorial Inscription — MI</li>
+        <li>Unknown — UK</li>
+        <li>Unspecified — (blank)</li>
+      </ul>
+      <p>Unspecified should not be used for new transcriptions.<br /> Please do not change the older codes (TR, DW, PH) for existing batches, but do use the updated codes (OT, DT, PT) for new transcriptions.</p>
+    </div>
+  </aside>
+
+  <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h3>Illegible or not clear?</h3>
+    <p>If there’s something you cannot read, or that could be one thing or another, use our <a href="/cms/information-for-transcribers/dealing-with-uncertainty#ucf">Uncertain Character Format</a> (UCF). Even the transcription of uncertainty needs to be done the same way by everybody, so that we can all search the database effectively.</p>
+
+    <h3 id="dates">Dates</h3>
+    <p>The next few paragraphs are a summary of our article on <a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a>.</p>
+    <p>The way that we enter most dates is simply <strong>dd Mon yyyy</strong>: a two-digit day, then a three-letter month, then a four-digit year. For example 01&#160;Aug&#160;1804, 29&#160;Oct&#160;1778, 23&#160;Apr&#160;1642.</p>
+    <p>If the year is before 1000, and so naturally has three digits, then use a leading zero: enter the year 894 as 0894 (spreadsheet users will need to set the cell format to text, or the zero will disappear).</p>
+    <p>In England and Wales, for a date from 01 Jan up to 24 Mar in any year before 1752, we use the <strong>split-year convention</strong> (also known as double-dating or old-style/new-style) as described on <a href="/cms/information-for-transcribers/numbers-and-dates">Numbers and dates</a>. In 1752, England and Wales adopted the Gregorian calendar and we can be certain of the actual year.</p>
+    <p>When using the split-year convention, where there is a decade or century change, please make sure you indicate this clearly. For example, 1729/30 or 1699/00.</p>
+    <p><strong>Scotland</strong> adopted January 1st as New Year’s Day in 1600: any date recorded in a Scottish register from 1600 onwards will be a ‘new style’ date. So, we need to insert the ‘old style’ year for dates from 01 Jan to 24 Mar (incl.) in any year from 1600 to 1751 (incl.). For example: a date recorded as 15th February 1658, should be entered as 15 Feb 1657/8; and 6th January 1700 as 06 Jan 1699/00.</p>
+
+    <p class="push-half--bottom"><strong>If part or all of the date is missing or illegible</strong>, we make use of parts of our Uncertain Character Format (UCF) as follows:</p>
+    <ul>
+      <li>if the day is missing, just enter a month and year — Jun 1783<br />Note that the database will treat this date as 01 Jun 1783</li>
+      <li>if the day is unclear, use a * (asterisk) for an unreadable day — * Jul 1746</li>
+      <li>if the month is missing or illegible, enter dd * yyyy — 09 * 1708 </li>
+      <li>if the day and month are missing, just enter the year — 1761 </li>
+      <li>if only the year is legible, put * * yyyy — * * 1761 </li>
+      <li>if the year is missing, then enter the most likely year from the position in the register, in the form yyyy or yyyy/(0)y, as appropriate, together with a note on the estimation in the Notes field, but <strong>do not</strong> append a ? to an estimated year</li>
+      <li>you may use the * (asterisk) in the 3rd or 4th digit of the year or the _ (underscore) in the 4th digit and the underscore in both the 3rd and 4th digits. Do <strong>not</strong> use any other UCF (<a href="/cms/information-for-transcribers/dealing-with-uncertainty#ucf">Uncertain Character Format</a>) in the year. All these examples are valid for dates:
+        <ul>
+          <li>09 Feb 185*</li>
+          <li>20 Jun 178_</li>
+          <li>* * 18*</li>
+          <li>15 * 19__</li>
+        </ul>
+      </li>
+    </ul>
+    <p class="push-half--bottom"><strong>Where dates are missing in MIs (Memorial Inscriptions)</strong>, then we record them as follows:</p>
+    <ul>
+      <li>if the date of death is missing, enter a * for the death date</li>
+      <li>if the date of burial is missing, leave it blank</li>
+    </ul>
+    <p><strong>As you are using a spreadsheet</strong>, be sure to set the cell format for any date fields (columns) to text rather than date: computers are not good with dates before 1900, and certainly do not understand the split-year convention.</p>
+
+    <h3 id="names">Names</h3>
+    <p>Enter only the actual name: any prefix or suffix, such as Revd or Snr or Laird, belongs in one of the new Title fields — these are available for all the main players in an event.</p>
+    <p>If no name is given, enter a * (an asterisk), and put any remarks recorded in the register, such as ‘A Woman Unknown’, in the Notes field.</p>
+    <p>Please do not use square brackets, [ ], in any of the Forename or Surname fields, <em>unless</em> you need to use the brackets as part of our UCF (<a href="/cms/information-for-transcribers/dealing-with-uncertainty#ucf">Uncertain Character Format</a>).</p>
+    <p>For example, you may be tempted to enter something like ‘Willam [sic]’ or even ‘[Willam]’, just as you you would in a transcription made for your personal use. For the FreeREG database to be easily searchable by a researcher, you need to put ‘Willam’ in the Forename field and then something like ‘Forename: Willam [sic]’ in the Transcriber notes field.</p>
+
+    <h3>Witnesses</h3>
+    <p>We record the names of everyone described as a witness. You may record up to eight witnesses for each Baptism and for each Marriage.</p>
+
+    <h3>Notes vs Transcriber notes</h3>
+    <p>The Notes field is for any additional information contained in the register that does not belong in another field.</p>
+    <p>Transcriber notes is a new field which will be for your comments rather than actual data. For example, ‘Date unreadable so year entered by assumption from position in the register’.</p>
+
+    <h3 id="textEditors">Text editors</h3>
+    <p class="push-half--bottom">Using the flexible format, line 5 of your file will be: <code>#,DEF</code> <br />Line 6 could be something like this, depending on which fields you need and what order works for you (the line will scroll horizontally):  </p> 
+    <p class="table-wrapper"> <code>register_entry_number,<wbr />burial_date,<wbr />death_date,<wbr />burial_person_forename,<wbr />burial_person_surname,<wbr />burial_person_title,<wbr />person_age,<wbr />burial_person_abode,<wbr />relationship,<wbr />male_relative_forename,<wbr />relative_surname,<wbr />male_relative_title,<wbr />female_relative_forename,<wbr />female_relative_surname,<wbr />female_relative_title,<wbr />notes,<wbr />notes_from_transcriber,<wbr />chapman_code,<wbr />place_name,<wbr />church_name,<wbr />register_type,<wbr />image_file_name</code> </p>
+    <p>(The first four lines of the Header are unchanged.)</p>
+
+    <p>If entering data using a text editor be especially careful to surround a field that includes commas or speech marks with quotation (speech) marks. For example: 23, High St. would be entered as "23, High St." And a surname of Smith that could be Smithe, would be "SMITHE{0,1}".</p>
+    <p>In addition, literal quotation marks should be doubled, so that 5, “Home Farm” cottages would be entered as "5, ""Home Farm"" cottages" in the appropriate abode field.</p>
+    <p>Modern versions of MS Excel and OpenOffice Calc will deal with these situations for you (as will WinREG).</p>
+  </section>
+
+</div>

@@ -43,24 +43,16 @@ namespace :refinery do
         end
         
         # Build the file path: parent directories + current page
-        # If current page has children, it also needs its own subdirectory
+        # Parent pages are always placed in the parent directory (like about.html.erb)
+        # Children will be placed in the subdirectory (like about/cookie-policy.html.erb)
         if parent_dirs.any?
           # Create nested directory structure
           dir_path = parent_dirs.join(File::SEPARATOR)
-          if has_children
-            # This page has children, so create a subdirectory for it
-            file_name = "#{dir_path}#{File::SEPARATOR}#{page_slug}#{File::SEPARATOR}#{page_slug}.html.erb"
-          else
-            # No children, just put it in the parent directory
-            file_name = "#{dir_path}#{File::SEPARATOR}#{page_slug}.html.erb"
-          end
+          # Always put the page file in the parent directory, even if it has children
+          file_name = "#{dir_path}#{File::SEPARATOR}#{page_slug}.html.erb"
         else
-          # No parent directories, but check if this page has children
-          if has_children
-            file_name = "#{page_slug}#{File::SEPARATOR}#{page_slug}.html.erb"
-          else
-            file_name = "#{page_slug}.html.erb"
-          end
+          # No parent directories - put at root level
+          file_name = "#{page_slug}.html.erb"
         end
       else
         # This is a top-level page

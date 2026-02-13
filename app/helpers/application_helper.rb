@@ -764,7 +764,7 @@ module ApplicationHelper
       privacyNotice: 'https://drive.google.com/file/d/10r_c-5d9DDces-OUX7D4UJJKGNIhu8sV/view?usp=sharing',
       termAndConditions: '/terms-and-conditions',
       contactUs: contact_us_path,
-      accessibility: 'https://www.freereg.org.uk/about/accessibility-statement',
+      accessibility: '/about/accessibility-statement',
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
