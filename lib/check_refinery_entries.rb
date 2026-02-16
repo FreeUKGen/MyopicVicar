@@ -14,7 +14,7 @@ class CheckRefineryEntries
     UseridDetail.no_timeout.each do |userid|
       record_number = record_number + 1
       break if record_number == limit
-      u = Refinery::Authentication::Devise::User.where(:username => userid.userid).first
+      u = User.where(:username => userid.userid).first
       if u.nil?
         missing_records = missing_records + 1
         message_file.puts " #{userid.userid},missing"
