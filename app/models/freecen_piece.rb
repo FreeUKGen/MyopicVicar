@@ -194,7 +194,7 @@ class FreecenPiece
         year = piece.to_i <= 1465 ? '1841' : '1851'
 
       when 'HS'
-        if third_and_fourth == '51'
+        if third_character == '5'
           piece = last_three
           year = '1851'
         else
