@@ -19,6 +19,11 @@ class BestGuess < FreebmdDbBase
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
   ENTRY_REFERENCE = 512
+  ENTRY_CONFIRMED = 1
+  ENTRY_COMMENT = 2
+  ENTRY_POSTEM = 4
+  ENTRY_SCAN_AVAILABLE = 32
+  ENTRY_NEW = 128
   DISTRICT_ALIAS = 1
   DISTRICT_MISSPELT = 2
   DISTRICT_UNKNOWN = 4
@@ -436,6 +441,20 @@ class BestGuess < FreebmdDbBase
     # }
   end
 
+  def record_flag
+    flag = 0
+    entry_flags = self.Confirmed
+    flag |= Constant::DOUBLE if (entry_flags & ENTRY_CONFIRMED) != 0
+    flag |= Constant::COMMENT if (entry_flags & ENTRY_COMMENT) != 0
+    flag |= Constant::POSTEM if (entry_flags & ENTRY_POSTEM) != 0
+    flag |= Constant::SCAN if (entry_flags & ENTRY_SCAN_AVAILABLE) != 0
+    flag |= Constant::ADDITION if (entry_flags & ENTRY_NEW) != 0
+    flag |= Constant::SYSTEMENTRY if (entry_flags & ENTRY_SYSTEM) != 0
+    flag |= Constant::SYSTEMLINK if (entry_flags & ENTRY_LINK) != 0
+    flag |= Constant::NOIDSPOUSE if spouse_not_found
+    flag
+  end
+
   def record_hash
     surname = self.Surname.encode('ISO-8859-1').upcase
     given_name = self.GivenName.encode('ISO-8859-1').upcase
@@ -447,6 +466,10 @@ class BestGuess < FreebmdDbBase
     record_type = self.RecordTypeID
     record_hash = Digest::MD5.base64digest("#{surname}/#{given_name}/#{district_name}/#{volume}/#{page}/#{year}/#{quarter}/#{record_type}")
     record_hash.strip.chomp('==')
+  end
+
+  def record_flag_hex
+    record_flag.to_s(16)
   end
 
   def record_sequence_number
