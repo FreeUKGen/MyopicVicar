@@ -25,6 +25,10 @@
           <td >The explanation was:</td>
           <td class="weight--semibold"><%= @contact.body %></td>
         </tr>
+        <tr >
+          <td >URL:</td>
+          <td class="weight--semibold"><%= @contact.problem_page_url %></td>
+        </tr>
         <% if @contact.github_issue_url %>
           <tr>
             <td>Github Issue:</td>
