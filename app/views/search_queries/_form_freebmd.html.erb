@@ -571,9 +571,7 @@
         $select.find('option[value="all_england"]').prop('selected', false);
         $select.find('option[value="all_wales"]').prop('selected', false);
     });
-</script>
 
-<script>
     $('#search_query_districts').empty();
     $(document).ready(function() {
         $("#search_query_chapman_codess").change(function () {
@@ -594,19 +592,56 @@
                 }
             });
         });
-        $("#search_query_chapman_codes").change(function (event) {
-            var counties = $(this).val();
-            //$.each($("#search_query_chapman_codes option:selected"), function() {
-            //  counties.push($(this).val())
-            //});
-            $.ajax({
-                url: "/search_queries/districts_of_selected_counties",
-                type: "GET",
-                data: {
-                    selected_counties: counties
+        
+        $("#search_query_chapman_codes").change(function() {
+            var counties = [];
+            var hasAllEngland = false;
+            var hasAllWales = false;
+            
+            // Check if "All England" or "All Wales" is selected
+            $.each($("#search_query_chapman_codes option:selected"), function() {
+                var val = $(this).val();
+                if (val === 'all_england') {
+                    hasAllEngland = true;
+                } else if (val === 'all_wales') {
+                    hasAllWales = true;
+                } else if (val !== '') {
+                    counties.push(val);
                 }
             });
+            
+            // If "All England" is selected, add all English county codes
+            if (hasAllEngland) {
+                counties = counties.concat(englandCountyCodes);
+            }
+            
+            // If "All Wales" is selected, add all Welsh county codes
+            if (hasAllWales) {
+                counties = counties.concat(walesCountyCodes);
+            }
+            
+            // Remove duplicates
+            counties = $.unique(counties);
+            
+            // Only make AJAX call if there are counties selected
+            if (counties.length > 0) {
+                // Build query string with array notation to ensure Rails receives all values
+                var queryParams = counties.map(function(code) {
+                    return 'selected_counties[]=' + encodeURIComponent(code);
+                }).join('&');
+                queryParams += '&county_code=true';
+                
+                $.ajax({
+                    url: "/search_queries/districts_of_selected_counties?" + queryParams,
+                    type: "GET"
+                });
+            } else {
+                // "Search all counties" selected -> clear districts
+                $('#search_query_districts').empty();
+            }
         });
+
+
 
         var chapman_codes = <%= raw @search_query.chapman_codes %>;
         if (chapman_codes && chapman_codes.length > 0) {
