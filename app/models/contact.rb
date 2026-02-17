@@ -18,6 +18,8 @@ class Contact
   field :screenshot, type: String
   field :record_id, type: String
   field :entry_id, type: String
+  field :hash_id, type: String
+  field :record_url, type: String
   field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
