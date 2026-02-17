@@ -444,6 +444,12 @@ class BestGuess < FreebmdDbBase
   def record_flag
     flag = 0
     entry_flags = self.Confirmed
+    record_type = self.RecordTypeID
+    marriage_record = record_type == 3
+    spouse_surname_blank = marriage_record && self.AssociateName.blank?
+    spouse_record_not_found = get_spouse_record.blank? && !spouse_surname_blank
+    spouse_not_found = spouse_record_not_found || spouse_surname_blank
+    spouse_flag = spouse_not_found ? 1 : 0
     flag |= Constant::DOUBLE if (entry_flags & ENTRY_CONFIRMED) != 0
     flag |= Constant::COMMENT if (entry_flags & ENTRY_COMMENT) != 0
     flag |= Constant::POSTEM if (entry_flags & ENTRY_POSTEM) != 0
@@ -451,7 +457,7 @@ class BestGuess < FreebmdDbBase
     flag |= Constant::ADDITION if (entry_flags & ENTRY_NEW) != 0
     flag |= Constant::SYSTEMENTRY if (entry_flags & ENTRY_SYSTEM) != 0
     flag |= Constant::SYSTEMLINK if (entry_flags & ENTRY_LINK) != 0
-    flag |= Constant::NOIDSPOUSE if spouse_not_found
+    flag |= Constant::NOIDSPOUSE if spouse_flag
     flag
   end
 
