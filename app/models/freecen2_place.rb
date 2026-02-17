@@ -365,6 +365,10 @@ class Freecen2Place
       SearchRecord.where(birth_chapman_code: place.chapman_code, freecen2_place_of_birth_id: place.id).no_timeout.exists?
     end
 
+    def search_records_use_alternate_birth_place?(chapman_code, place_id, alternate_name)
+      SearchRecord.where(birth_chapman_code: chapman_code, freecen2_place_of_birth_id: place_id, birth_place: alternate_name).no_timeout.exists?
+    end
+
     def create_csv_file(chapman_code)
       gaz_places = Freecen2Place.where(chapman_code: chapman_code).all.order_by(standard_place_name: 1)
       max_alternate_names = 1
@@ -506,12 +510,16 @@ class Freecen2Place
     end
     if err_msg == 'None'
       if alternate_freecen2_place_names_attributes.present?
-        alternate_freecen2_place_names_attributes.each do |_key, value|  # check for use of alternate name in search_records POB  if trying to destroy
+        alternate_freecen2_place_names_attributes.each do |_key, value|
           next unless value[:_destroy] == '1'
 
           if value[:alternate_name].blank?
             err_msg = 'Other Name for Place cannot be empty with Destroy box checked'
+          else
+            alternate_birth_place_used = SearchRecord.where(birth_chapman_code: chapman_code, freecen2_place_of_birth_id: this_place_id, birth_place: value[:alternate_name]).no_timeout.exists?
+            err_msg = "Other Names for Place (#{value[:alternate_name]}) cannot be destroyed because there are search records with it recorded as birth place" if alternate_birth_place_used
           end
+
         end
       end
     end
