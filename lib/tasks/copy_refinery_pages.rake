@@ -43,12 +43,15 @@ namespace :refinery do
         end
         
         # Build the file path: parent directories + current page
-        # Parent pages are always placed in the parent directory (like about.html.erb)
-        # Children will be placed in the subdirectory (like about/cookie-policy.html.erb)
         if parent_dirs.any?
           # Create nested directory structure
           dir_path = parent_dirs.join(File::SEPARATOR)
-          # Always put the page file in the parent directory, even if it has children
+          
+          # Place the page file at the parent directory level (outside its own directory)
+          # This matches the pattern used for top-level pages like "about.html.erb"
+          # - Parent page: information-for-transcribers/flexible-csv-format.html.erb
+          # - Child pages: information-for-transcribers/flexible-csv-format/child.html.erb
+          # This ensures the parent page URL works directly: /information-for-transcribers/flexible-csv-format
           file_name = "#{dir_path}#{File::SEPARATOR}#{page_slug}.html.erb"
         else
           # No parent directories - put at root level
