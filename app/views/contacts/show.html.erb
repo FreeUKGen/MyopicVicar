@@ -1,6 +1,9 @@
 <% breadcrumb :show_contact, @contact %>
 <div style="clear:both;"> </div>
 <%= render "flash_notice" %>
+<div class="text--center push--bottom">
+  <%= link_to 'Edit Contact', edit_contact_path(@contact), class: "btn btn--small" unless @contact.github_issue_url.present? %>
+</div>
 <h4 class=" text--center push--bottom" ><%= show_contact_title(@contact) %></h4>
 <h4 class=" text--center push--bottom" ><%= show_contact_title_line_two(@contact) %></h4>
 <% if !Contact.github_enabled %>
@@ -26,8 +29,18 @@
           <td class="weight--semibold"><%= @contact.body %></td>
         </tr>
         <tr >
-          <td >URL:</td>
+          <td >Recorded problem page URL:</td>
           <td class="weight--semibold"><%= @contact.problem_page_url %></td>
+        </tr>
+        <tr >
+          <td >Record URL:</td>
+          <td class="weight--semibold">
+            <% if @contact.record_url.present? %>
+              <%= link_to @contact.record_url, @contact.record_url, target: '_blank', rel: 'noopener noreferrer' %>
+            <% else %>
+              &ndash;
+            <% end %>
+          </td>
         </tr>
         <% if @contact.github_issue_url %>
           <tr>
