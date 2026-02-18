@@ -515,9 +515,6 @@ class Freecen2Place
 
           if value[:alternate_name].blank?
             err_msg = 'Other Name for Place cannot be empty with Destroy box checked'
-          else
-            alternate_birth_place_used = SearchRecord.where(birth_chapman_code: chapman_code, freecen2_place_of_birth_id: this_place_id, birth_place: value[:alternate_name]).no_timeout.exists?
-            err_msg = "Other Names for Place (#{value[:alternate_name]}) cannot be destroyed because there are search records with it recorded as birth place" if alternate_birth_place_used
           end
 
         end
