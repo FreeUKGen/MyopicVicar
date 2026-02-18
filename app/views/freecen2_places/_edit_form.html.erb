@@ -7,7 +7,11 @@
     <% end%>
     <%= f.simple_fields_for :alternate_freecen2_place_names do |alternate| %>
       <% if session[:role] == 'validator' %>
-        <%= alternate.input :alternate_name,:label => 'Other Name for Place',:hint => 'Alternative name by which place may be known',:input_html => {:class => 'simple_form_bgcolour', :size => 40, :readonly => true}%>
+        <% if alternate.object.alternate_name.nil? %>
+          <%= alternate.input :alternate_name,:label => 'Other Name for Place',:hint => 'Alternative name by which place may be known',:input_html => {:class => 'simple_form_bgcolour', :size => 40, :readonly => false}%>
+        <% else %>
+          <%= alternate.input :alternate_name,:label => 'Other Name for Place',:hint => 'Alternative name by which place may be known. You are not permitted to change an existing alternative name',:input_html => {:class => 'simple_form_bgcolour', :size => 40, :readonly => true}%>
+        <% end %>
       <% else %>
         <%= alternate.input :alternate_name,:label => 'Other Name for Place',:hint => 'Alternative name by which place may be known. Use the destroy box below to delete this entry',:input_html => {:class => 'simple_form_bgcolour', :size => 40}%>
         <%= alternate.input :_destroy, :as => :boolean %>
