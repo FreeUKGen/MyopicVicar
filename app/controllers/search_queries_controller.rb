@@ -71,33 +71,6 @@ class SearchQueriesController < ApplicationController
   def create
     condition = true if params[:search_query].present? && params[:search_query][:region].blank?
     redirect_back(fallback_location: new_search_query_path, notice: 'Invalid Search') && return unless condition
-    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
-    selected_counties = search_params['chapman_codes'].split(',').compact
-    selected_counties = selected_counties.collect(&:strip).reject{|c| c.empty? }
-    county_codes = []
-    county_hash.each {|country, counties|
-      selected_counties.each{|c|
-        county_codes << county_hash.dig(country).fetch(c) if county_hash.dig(country).keys.include?c
-      }
-    }
-    search_params['chapman_codes'] = county_codes.flatten
-#    raise search_params.inspect
-    selected_districts = search_params['districts'].split(',').compact
-    selected_districts = selected_districts.collect(&:strip).reject{|c| c.empty? }
-    #raise selected_districts.inspect
-    district_ids = []
-    if selected_districts.present?
-      all_districts = District.all
-      selected_districts.each{ |sd|
-        all_districts.each{|d|
-          district = District.new
-          formatted_dn = district.formatted_name_for_search(d).strip
-          next if formatted_dn != sd
-          district_ids << d.DistrictNumber if formatted_dn == sd
-        }
-      }
-    end
-    search_params['districts'] = district_ids
     @search_query = SearchQuery.new(search_params.delete_if { |_k, v| v.blank? })
     adjust_search_query_parameters
     if @search_query.save
@@ -381,6 +354,57 @@ class SearchQueriesController < ApplicationController
   end
 
   def districts_of_selected_counties
+    @selected_districts = params[:selected_districts]
+    districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
+    #county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
+    county_hash = ChapmanCode::FREEBMD_CODES
+
+    # Handle multiple selected_counties parameters
+    # Rails collects multiple params with same name into an array, but we need to handle both cases
+    selected_counties = params[:selected_counties]
+
+    # If it's already an array (from array notation or multiple params), use it directly
+    if selected_counties.kind_of?(Array)
+      selected_counties = selected_counties.compact.reject{|c| c.to_s.strip.empty? }
+    # If it's a string, try to split it (comma-separated or handle as single value)
+    elsif selected_counties.present?
+      # Check if it contains commas (comma-separated string)
+      if selected_counties.include?(',')
+        selected_counties = selected_counties.split(',').compact.collect(&:strip).reject{|c| c.empty? }
+      else
+        # Single value, wrap in array
+        selected_counties = [selected_counties.strip].reject{|c| c.empty? }
+      end
+    else
+      selected_counties = []
+    end
+
+    return if selected_counties.blank?
+    @counties = selected_counties
+    whole_england = ChapmanCode::ALL_ENGLAND.values.flatten
+    whole_wales = ChapmanCode::ALL_WALES.values.flatten
+    check_whole_england = whole_england - selected_counties
+    check_whole_wales = whole_wales - selected_counties
+    codes = params[:county_code]
+    county_codes = selected_counties
+    unless selected_counties.include?('all')
+        county_codes = selected_counties
+      logger.warn("county codesss: #{county_codes.inspect}, count: #{county_codes.length}")
+    else
+      england_codes = county_hash.dig('England').fetch('All England')
+      wales_codes = county_hash.dig('Wales').fetch('All Wales')
+      county_codes = england_codes + wales_codes
+    end
+    @districts = Hash.new
+    county_codes.flatten.uniq.reject { |c| c.to_s.empty? }.each { |c|
+      @districts[c] = districts_names.where(County: [c]).pluck(:DistrictName, :DistrictNumber)
+    }
+    @districts
+    # rbl 22.1.2025: removed this line to allow 'All England' and 'All Wales' to generate results in the District selection list:
+    # @districts = {} if selected_counties.include?("All England") || selected_counties.include?("All Wales") || check_whole_england.empty? || check_whole_wales.empty?
+  end
+
+  def districts_of_selected_counties_autocomplete
     term = params[:term].split(',').pop.strip.downcase if params[:term].present?
     selected_counties = params[:selected_counties]
     selected_districts = params[:selected_districts]
