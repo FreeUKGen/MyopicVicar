@@ -364,6 +364,68 @@ class Freecen2PlacesController < ApplicationController
     get_sources
   end
 
+  def notify_county_coord_of_place_update(place_before_edit, place_after_edit, coord_user_id, user)
+
+    alternates_before_edit = '(' + place_before_edit.previous_alternate_place_names.join(', ') + ')'
+    alternate_place_names_after_edit = []
+    place_after_edit.alternate_freecen2_place_names.each do |alternate|
+      alternate_place_names_after_edit << alternate.alternate_name
+    end
+    alternates_after_edit = '(' + alternate_place_names_after_edit.join(', ') + ')'
+
+
+    changes = [
+      { field: 'Grid_reference', old_value: place_before_edit.previous_grid_reference, new_value: place_after_edit.grid_reference },
+      { field: 'Latitude', old_value: place_before_edit.previous_latitude, new_value: place_after_edit.latitude },
+      { field: 'Longitude', old_value: place_before_edit.previous_longitude, new_value: place_after_edit.longitude },
+      { field: 'Source', old_value: place_before_edit.previous_source, new_value: place_after_edit.source },
+      { field: 'Website', old_value: place_before_edit.previous_website, new_value: place_after_edit.genuki_url },
+      { field: 'Notes', old_value: place_before_edit.previous_notes, new_value: place_after_edit.place_notes },
+      { field: 'Alternates', old_value: alternates_before_edit, new_value: alternates_after_edit }
+    ]
+
+    p "AEV05 changes = #{changes}"
+
+    # Determine max width for each column
+    field_width = changes.map { |r| r[:field].length }.max
+    old_width  = changes.map { |r| r[:old_value].to_s.length }.max
+    new_width  = changes.map { |r| r[:new_value].to_s.length }.max
+
+    #lines for the email body
+    lines = []
+
+    # Intro
+    lines << "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code})"
+    lines << "Modified by user: #{user.userid} (#{user.person_forename} #{user.person_surname})"
+    lines << ""
+    lines << "Modified fields are marked with a *"
+    lines << ""
+
+    # Headers
+    lines << sprintf("%-#{field_width}s  %-#{old_width}s  %-#{new_width}s",
+                     "Field", "Old Value", "New Value")
+    lines << "-" * (field_width + old_width + new_width + 4)
+
+
+    # Data rows
+    changes.each do |row|
+      mark = row[:old_value].to_s != row[:new_value].to_s ? "  *" : ""
+
+      lines << sprintf("%-#{field_width}s  %-#{old_width}s  %-#{new_width}s%s",
+                       row[:field],
+                       row[:old_value],
+                       row[:new_value],
+                       mark)
+    end
+
+    email_body = lines.join("\n")
+    email_subject = "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code}) has been modified"
+
+    p "AEV06a #{email_subject}"
+    p "AEV06b #{email_body}"
+
+  end
+
   def places_counties_and_countries
     @countries = []
     Country.all.order_by(country_code: 1).each do |country|
@@ -552,6 +614,29 @@ class Freecen2PlacesController < ApplicationController
 
       if proceed
         flash[:notice] = 'The update the Place was successful'
+
+        # email_coordinator_about_place_update
+
+        @record_before_edit = @place.freecen2_place_edits.order_by(_id: -1).first
+
+
+        # get county from  @record_before_edit and look up coord email, format email and send
+
+        p "AEV01 #{@record_before_edit._id}"
+        p "AEV02 #{@record_before_edit.previous_notes}"
+        p "AEV03 #{@place.place_notes}"
+        p "AEV03a place =#{@place}"
+        p "AEV03b @record_before_edit = #{@record_before_edit}"
+
+        county_name = ChapmanCode.name_from_code(@place.chapman_code)
+        syndicate_code = county_name + ' Syndicate'
+        coord_user_id = Syndicate.find_by(syndicate_code: syndicate_code).syndicate_coordinator
+
+        p "AEV04a coord_user_id = #{coord_user_id}"
+        p "AEV04b user id = #{@user.userid}"
+
+        notify_county_coord_of_place_update(@record_before_edit, @place, coord_user_id, @user) if coord_user_id.present? # AEV bring this back in && @user.userid != coord_user_id
+
         redirect_to freecen2_place_path(@place)
       else
         flash[:notice] = 'The update of the Place was unsuccessful'
