@@ -1200,20 +1200,19 @@ module ApplicationHelper
   #publift
   def horz_advert_whole(fuse)
     content_tag :div, class:'grid__item one-whole hard--left whole_advert no_print', style: 'text-align: center; padding: 5px 0;' do
-      content_tag :div, style: 'height: 25px; line-height: 25px;' do
-        concat(content_tag(:p,"Advertisement", align:'center'))
-      end
-        concat(content_tag(:div,'',"data-fuse"=>fuse), style: 'height: 150px;')
-      end
+      concat(content_tag(:div, style: 'height: 25px; line-height: 25px;') do
+        content_tag(:p, "Advertisement", style: 'text-align: center;')
+      end)
+      concat(content_tag(:div, '', data: { fuse: fuse }, style: 'height: 150px;'))
     end
   end
 
   def horz_advert(fuse)
     content_tag :div, class:'grid__item one-whole hard--left no_print', style: 'text-align: center; padding: 5px 0;' do
-      content_tag :div, style: 'height: 25px; line-height: 25px;' do
-        concat(content_tag(:p,"Advertisement", align:'center'))
-      end
-      concat(content_tag(:div,'',"data-fuse"=>fuse), style: 'height: 150px;')
+      concat(content_tag(:div, style: 'height: 25px; line-height: 25px;') do
+        content_tag(:p, "Advertisement", style: 'text-align: center;')
+      end)
+      concat(content_tag(:div, '', data: { fuse: fuse }, style: 'height: 150px;'))
     end
   end
 end
