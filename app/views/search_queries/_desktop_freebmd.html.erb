@@ -86,7 +86,7 @@
                   <% rec = BestGuess.find(search_record[:RecordNumber]) %>
                   <% record_flag = rec.record_flag %>
                   <% has_postem = (record_flag & Constant::POSTEM).nonzero? %>
-                  <% has_scan = (record_flag & Constant::SCAN).nonzero? %>
+                  <% has_scan = false #(record_flag & Constant::SCAN).nonzero? %>
                   <center>
                     <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
                     <br>
