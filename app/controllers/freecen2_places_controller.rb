@@ -609,7 +609,7 @@ class Freecen2PlacesController < ApplicationController
         coord = UseridDetail.find_by(userid: coord_user_id)
         email_to = coord.email_address if coord.present?
 
-        notify_county_coord_of_place_update(@record_before_edit, @place, email_to, @user) if email_to.present? # AEV bring this back in && @user.userid != coord_user_id
+        notify_county_coord_of_place_update(@record_before_edit, @place, email_to, @user) if email_to.present? && @user.userid != coord_user_id
 
         redirect_to freecen2_place_path(@place)
       else
