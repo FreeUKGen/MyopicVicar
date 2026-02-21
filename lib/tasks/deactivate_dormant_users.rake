@@ -29,7 +29,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     email_body += "\n"
     email_body += "\n"
     report_name = "Deactivate_dormant_users_#{@syndicate}_#{@file_date}.csv"
-    # UserMailer.report_for_syndicate_coord(email_subject, email_body, @report_csv, report_name, email_to, cc_email_to).deliver_now
+    UserMailer.report_for_syndicate_coord(email_subject, email_body, @report_csv, report_name, email_to, cc_email_to).deliver_now if email_to == 'anne.vandervord@live.co.uk'   # TESTING
   end
 
   def self.write_csv_line(syndicate, userid, username, joined, lastupload, users_to_deacivate)
@@ -78,7 +78,9 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     @mode = args.mode
 
     @cutoff_date = start_time - @months.months
-    p "@cutoff_date = #{@cutoff_date }"
+    log_message = "Cutoff date = #{@cutoff_date}"
+    output_to_log(file_for_log, log_message)
+    p log_message
 
     @roles_to_review = %w[transcriber validator checker]
     @the_roles = @roles_to_review.to_s.gsub('"', '')
