@@ -57,11 +57,13 @@ class ContactsController < ApplicationController
       if @contact.selected_county == 'nil'
         @contact.selected_county = nil # string 'nil' to nil
       end
+      if @contact.contact_type == 'Data Problem'
+        assign_record_url_and_save
+      end
       @contact.save
       if @contact.errors.any?
         flash[:notice] = 'There was a problem with your submission please review'
         if @contact.contact_type == 'Data Problem'
-          assign_record_url_and_save
           redirect_to(@contact.previous_page_url) && return
         else
           @options = FreeregOptionsConstants::ISSUES
