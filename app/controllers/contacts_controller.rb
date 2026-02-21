@@ -61,6 +61,7 @@ class ContactsController < ApplicationController
       if @contact.errors.any?
         flash[:notice] = 'There was a problem with your submission please review'
         if @contact.contact_type == 'Data Problem'
+          assign_record_url_and_save
           redirect_to(@contact.previous_page_url) && return
         else
           @options = FreeregOptionsConstants::ISSUES
@@ -352,6 +353,18 @@ class ContactsController < ApplicationController
   end
 
   private
+
+  def assign_record_url_and_save
+    return unless @contact.record_id.present?
+
+    record = BestGuess.find_by(RecordNumber: @contact.record_id)
+    @contact.record_url = build_record_url(record) if record.present?
+    @contact.save
+  end
+
+  def build_record_url(record)
+    helpers.full_entry_information_url_for(record)
+  end
 
   def contact_params
     params.require(:contact).permit!

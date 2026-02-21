@@ -266,13 +266,7 @@ class BestGuessController < ApplicationController
   end
 
   def generate_url
-    protocol = URI.parse(request.original_url).scheme 
-    domain = URI.parse(request.original_url).host 
-    port = URI.parse(request.original_url).port 
-    domain = domain + ':' + port.to_s if port.present?
-    record_hash = @current_record.record_hash
-    cleaned_hash = URI.encode_www_form_component(record_hash)
-    url = hash_url_path(id: cleaned_hash)
+    helpers.entry_information_path_for(@current_record)
   end
 
   def prepare_for_show_search_entry

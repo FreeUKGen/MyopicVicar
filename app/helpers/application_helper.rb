@@ -13,6 +13,24 @@
 # limitations under the License.
 #
 module ApplicationHelper
+  # Entry-information path/URL for a BestGuess record (FreeBMD). Shared by BestGuessController and ContactsController.
+  def entry_information_path_for(record)
+    return nil if record.blank?
+
+    cleaned_hash = URI.encode_www_form_component(record.record_hash)
+    hash_url_path(id: cleaned_hash)
+  end
+
+  def full_entry_information_url_for(record)
+    path = entry_information_path_for(record)
+    return nil if path.blank?
+
+    uri = URI.parse(request.original_url)
+    base = "#{uri.scheme}://#{uri.host}"
+    base += ":#{uri.port}" if uri.port.present? && uri.port != uri.default_port
+    "#{base}#{path}"
+  end
+
   DONATE_ID = {
       #field: id
       "freebmd" => '5007',
@@ -976,70 +994,70 @@ module ApplicationHelper
       banner.html_safe
   end
 
-          def banner_header_freereg
-            banner = <<-HTML
-            <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <script type="text/javascript">
-            (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
-            window.update_page_level_adverts_consent = function (preference) {
-              if(preference == 'accept') {
-                  (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
-                } else if(preference == 'deny') {
-                  (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
-                }
-                };
-                (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
-                </script>
-                <script type="text/javascript">
-                //Google Adsense
-                (adsbygoogle = window.adsbygoogle || []).push({
-                                                                google_ad_client: "#{data_ad_client}",
-                                                                enable_page_level_ads: true
-                });
-                </script>
-                HTML
-                banner.html_safe
-              end
+  def banner_header_freereg
+    banner = <<-HTML
+    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script type="text/javascript">
+    (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;
+    window.update_page_level_adverts_consent = function (preference) {
+      if(preference == 'accept') {
+          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=0;
+        } else if(preference == 'deny') {
+          (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds=1;
+        }
+        };
+        (adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=0;
+        </script>
+        <script type="text/javascript">
+        //Google Adsense
+        (adsbygoogle = window.adsbygoogle || []).push({
+                                                        google_ad_client: "#{data_ad_client}",
+                                                        enable_page_level_ads: true
+        });
+        </script>
+        HTML
+        banner.html_safe
+      end
 
-              def side_banners_large
-                banner = <<-HTML
-                <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                <ins class="adsbygoogle adSenseBanner"
-                style="display:inline-block;width:300px;height:600px"
-                data-ad-client = "#{data_ad_client}"
-                data-ad-slot = "#{app_advert['side_banners_large_slot']}">
-                </ins>
-                <script type="text/javascript">
-                (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
-                HTML
-                if Rails.env.development?
-                  banner = <<-HTML
-                  <img src="https://dummyimage.com/300x600/000/fff">
-                  HTML
-                end
-                banner.html_safe
-              end
+      def side_banners_large
+        banner = <<-HTML
+        <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <ins class="adsbygoogle adSenseBanner"
+        style="display:inline-block;width:300px;height:600px"
+        data-ad-client = "#{data_ad_client}"
+        data-ad-slot = "#{app_advert['side_banners_large_slot']}">
+        </ins>
+        <script type="text/javascript">
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        HTML
+        if Rails.env.development?
+          banner = <<-HTML
+          <img src="https://dummyimage.com/300x600/000/fff">
+          HTML
+        end
+        banner.html_safe
+      end
 
-              def side_banners_square
-                banner = <<-HTML
-                <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                <ins class="adsbygoogle adSenseBanner"
-                style="display:inline-block;width:336px;height:280px"
-                data-ad-client = "#{data_ad_client}"
-                data-ad-slot = "#{app_advert['side_banners_square_slot']}">
-                </ins>
-                <script type="text/javascript">
-                (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
-                HTML
-                if Rails.env.development?
-                  banner = <<-HTML
-                  <img src="http://dummyimage.com/300x250/000/fff?text=banner+ad">
-                  HTML
-                end
-                banner.html_safe
-              end
+      def side_banners_square
+        banner = <<-HTML
+        <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <ins class="adsbygoogle adSenseBanner"
+        style="display:inline-block;width:336px;height:280px"
+        data-ad-client = "#{data_ad_client}"
+        data-ad-slot = "#{app_advert['side_banners_square_slot']}">
+        </ins>
+        <script type="text/javascript">
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        HTML
+        if Rails.env.development?
+          banner = <<-HTML
+          <img src="http://dummyimage.com/300x250/000/fff?text=banner+ad">
+          HTML
+        end
+        banner.html_safe
+      end
 
   def my_heritage_720_90_first
     banner = <<-HTML
