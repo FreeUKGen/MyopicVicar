@@ -81,7 +81,7 @@
   </div>
   <% unless print_friendly %>
     <% if device_type == :desktop %>
-      <div class="grid__item three-tenths text--right"  id='results_table_ad' style="display:flex;position:sticky;top:0;align-self:start;">
+      <div class="grid__item three-tenths text--right"  id='results_table_ad' style="position:sticky;top:0;align-self:start;">
         <div>
           <h2 class="text--center" style="font-size:12pt;">Advertisement</h2>
           <!-- GAM 71161633/FRBMD_freebmd2orguk/Vrec_Sticky -->
@@ -90,9 +90,9 @@
       </div>
     <% end %>
   <% end %>
-  <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
-  <%= horz_advert('freebmd_hrec_1') %>
 </div>
+<!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
+<%= horz_advert('freebmd_hrec_1') %>
 
 <script type="text/javascript">
   function more_options(){
