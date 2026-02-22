@@ -156,12 +156,25 @@
             </th>
             <td>
               <% type ||= "general" %>
-              <% if @search && type != "marriages" %>
-                <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
-              <% elsif type == "marriages" %>
-                <%= "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}" %><br>
+              <% spouse = record.get_spouse_record %>
+              <% spouse_display = if spouse.present?
+                given = spouse.GivenName.to_s
+                surname = spouse.Surname.present? ? spouse.Surname.upcase : ''
+                name = [given, surname].reject(&:blank?).join(' ')
+                name.present? ? name : record.AssociateName.to_s
+              else
+                record.AssociateName.to_s
+              end %>
+              <% if spouse.present? && spouse_display.present? %>
+                <% if @search && type != "marriages" %>
+                  <%= link_to spouse_display, show_marriage_details_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+                <% elsif type == "marriages" %>
+                  <%= spouse_display %><br>
+                <% else %>
+                  <%= link_to spouse_display, show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+                <% end %>
               <% else %>
-                <%= link_to "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}", show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+                <%= spouse_display %><br>
               <% end %>
               <% if type != "marriages" %>
                 <span class="weight--normal"><%= "(#{ApplicationText::VIEW_MARRIAGE_TEXT})" %></span>
