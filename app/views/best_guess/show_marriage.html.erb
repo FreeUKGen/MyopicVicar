@@ -62,6 +62,8 @@
   <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
   <%= horz_advert('freebmd_hrec_1') %>  
 <% else %>
+  <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
+  <%= horz_advert('freebmd_hrec_1') %>  
   <div class="grid">
     <div class="grid__item one-whole lap-one-whole palm-one-whole ">
       <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
@@ -79,5 +81,6 @@
       <%= render partial: 'display_postems', locals: { record: @spouse_record } %>
     </div>
   </div>
-</div>
+  <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_2 -->
+  <%= horz_advert('freebmd_hrec_2') %>  
 <% end %>
