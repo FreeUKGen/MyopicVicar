@@ -19,7 +19,11 @@
 <section>
   <%= render 'nav_header_freebmd' %>
 </section>
-<div class="grid" style="display:flex; overflow:unset; padding-right: 28px;">
+<% if device_type == :desktop %>
+  <div class="grid" style="display:flex; overflow:unset; padding-right: 28px;">
+<% else %>
+  <div class="grid">
+<% end %>
   <% unless device_type == :desktop %>
     <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
     <%= horz_advert('freebmd_hrec_1') %>
