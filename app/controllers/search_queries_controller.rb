@@ -141,8 +141,15 @@ class SearchQueriesController < ApplicationController
     @page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
 
     @search_query = SearchQuery.new
-    session.delete(:query)
     old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?
+    # Restore form from last search when user navigates back from results (browser back button)
+    if old_query.blank? && session[:query].present? && back_from_search_results?
+      last_query = SearchQuery.find_by(id: session[:query])
+      old_query = last_query if last_query.present?
+    end
+
+    session.delete(:query) if old_query.blank?
+
     @result_count = params[:result_count] if params[:result_count].present?
     old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
     @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
@@ -618,6 +625,13 @@ class SearchQueriesController < ApplicationController
   end
 
   private
+
+  # True when the request likely came from the browser back button from a search results page
+  def back_from_search_results?
+    referer = request.referer.to_s
+    return false if referer.blank?
+    referer.include?('/search_queries/') && !referer.match?(%r{/search_queries/new(\?|$)})
+  end
 
   def search_params
     params.require(:search_query).permit!
