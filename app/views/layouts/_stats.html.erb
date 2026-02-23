@@ -59,9 +59,8 @@
     <%= link_to helpful_anchors[:statistics].html_safe, helpful_links[:freebmdStat] %>
   </nav>
   <dl class="c-subfooter-1__stats-list">
-    <dt class="c-subfooter-1__stats-term">Yesterday</dt>
-    <dd class="c-subfooter-1__stats-value"><%= number_with_delimiter(@search_count_yesterday.to_i) %> searches were performed</dd>
-    <dt class="c-subfooter-1__stats-term"><%= number_to_human(@search_count) %> searches in the last 30 days</dt>
+    <dt class="c-subfooter-1__stats-term"><%= number_to_human(@search_count_yesterday.to_i) %> searches were performed yesterday.</dd>
+    <dt class="c-subfooter-1__stats-term"><%= number_to_human(@search_count) %> searches were performed in the last 30 days</dt>
     <dt class="c-subfooter-1__stats-term">Record Count</dt>
     <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 1)) %> Birth records</dd>
     <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 3)) %> Marriage records</dd>
