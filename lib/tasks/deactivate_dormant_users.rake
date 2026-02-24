@@ -28,8 +28,9 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     dline << "#{username},"
     dline << "#{joined},"
     dline << "#{lastupload}"
-    p "AEV06 #{dline}"
     output_to_csv(@file_for_listing, dline)
+    @report_csv += "\n"
+    @report_csv += dline
   end
 
   def self.send_email(file_for_log)
@@ -60,6 +61,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
   start_time = Time.current
   @file_date = Time.current.strftime('%Y%m%d%H%M')
   total_users_to_deactive = 0
+  @report_csv = ''
 
   file_for_log = "log/Deactivate_dormant_users_#{@file_date}.log"
   FileUtils.mkdir_p(File.dirname(file_for_log)) unless File.exist?(file_for_log)
@@ -81,7 +83,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
   @cc_email = @user_for_cc_email.email_address
 
   @cutoff_date = @months.months.ago.to_date
-  log_message = "Cutoff date = #{@cutoff_date.strftime('%Y%m%d%H%M')}"
+  log_message = "Cutoff date = #{@cutoff_date.strftime('%d%m%Y')}"
   output_to_log(file_for_log, log_message)
   p log_message
 
@@ -92,6 +94,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
 
   initial_message = "Started deactivation of dormant users : Mode = #{args.mode}, Months = #{args.months}, Email = #{args.email_user} at #{start_time}"
   output_to_log(file_for_log, initial_message)
+  p initial_message
 
   Syndicate.all.asc(:syndicate_code).each do |synd|
     next if synd.syndicate_code == 'Technical' || synd.syndicate_code == 'Any Questions Ask Us'
@@ -118,16 +121,15 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     # results = []
 
     active_users.each do |user|
-      p "AEV01 #{user.userid} #{user.person_role} #{user.sign_up_date}"
       next unless @roles_to_review.include? user.person_role
 
       last_file = FreecenCsvFile.where(userid: user.userid).desc(:uploaded_date).limit(1).first
 
-      next if last_file.present? && last_file.date_uploaded.to_date >= cutoff_date
+      next if last_file.present? && last_file.uploaded_date.to_date >= @cutoff_date
 
       user_full_name = "#{user.person_forename} #{user.person_surname}"
       joined = user.sign_up_date.strftime('%d/%m/%Y')
-      last_upload = last_file.nil? ? 'None' : last_file.date_uploaded.strftime('%d/%m/%Y')
+      last_upload = last_file.nil? ? 'None' : last_file.uploaded_date.strftime('%d/%m/%Y')
 
       write_csv_line(@syndicate, user.userid, user_full_name, joined, last_upload, users_to_deacivate)
       users_to_deacivate += 1
