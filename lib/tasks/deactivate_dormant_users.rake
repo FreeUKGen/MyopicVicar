@@ -11,6 +11,27 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     csv_file.puts line.to_s
   end
 
+  def self.write_csv_line(syndicate, userid, username, joined, lastupload, users_to_deacivate)
+
+    if users_to_deacivate.zero?
+      synd_text = syndicate.gsub(/[\s,]/, '_').gsub('__', '_')
+      @file_for_listing = "log/Deactivate_dormant_users_#{synd_text}_#{@file_date}.csv"
+      FileUtils.mkdir_p(File.dirname(@file_for_listing)) unless File.exist?(@file_for_listing)
+      @file_for_listing = File.new(@file_for_listing, 'w')
+      hline = 'UserId,Username,Joined,LastUpload'
+      output_to_csv(@file_for_listing, hline)
+      @report_csv = hline
+    end
+
+    dline = ''
+    dline << "#{userid},"
+    dline << "#{username},"
+    dline << "#{joined},"
+    dline << "#{lastupload}"
+    p "AEV06 #{dline}"
+    output_to_csv(@file_for_listing, dline)
+  end
+
   def self.send_email(file_for_log)
     cc_email_to = @cc_email
     email_to = @mode == 'PREVIEW' || @synd_coord_email.blank? ? @cc_email : @synd_coord_email
@@ -29,33 +50,13 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     email_body += "\n"
     email_body += "\n"
     report_name = "Deactivate_dormant_users_#{@syndicate}_#{@file_date}.csv"
-    UserMailer.report_for_syndicate_coord(email_subject, email_body, @report_csv, report_name, email_to, cc_email_to).deliver_now if email_to == 'anne.vandervord@live.co.uk'   # TESTING
+    UserMailer.report_for_syndicate_coord(email_subject, email_body, @report_csv, report_name, email_to, cc_email_to).deliver_now if email_to == 'anne.vandervord@live.co.uk'   # AEV TESTING
   end
-
-  def self.write_csv_line(syndicate, userid, username, joined, lastupload, users_to_deacivate)
-
-    if users_to_deacivate.zero?
-      synd_text = syndicate.gsub(/[\s,]/, '_').gsub('__', '_')
-      @file_for_listing = "log/Deactivate_dormant_users_#{synd_text}_#{@file_date}.csv"
-      FileUtils.mkdir_p(File.dirname(@file_for_listing)) unless File.exist?(@file_for_listing)
-      @file_for_listing = File.new(@file_for_listing, 'w')
-      hline = 'UserId,Username,Joined,LastUpload'
-      output_to_csv(@file_for_listing, hline)
-      @report_csv = hline
-    end
-
-    dline = ''
-    dline << "#{userid},"
-    dline << "#{username},"
-    dline << "#{joined},"
-    dline << "#{lastupload}"
-    output_to_csv(@file_for_listing, dline)
-  end
-
 
   # START
 
-  args.with_defaults(:months => 48, :mode => 'PREVIEW')
+  args.with_defaults(months: 48, mode: 'PREVIEW')
+
   start_time = Time.current
   @file_date = Time.current.strftime('%Y%m%d%H%M')
   total_users_to_deactive = 0
@@ -66,117 +67,102 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
 
   # check arguments
 
-  args_valid = args.mode.present? && %w[PREVIEW REVIEW UPDATE].include?(args.mode) ? true : false
-  args_valid = false unless args.months.present? && /[0-9]/.match(args.months)
-  args_valid = false if args.email_user.blank?
+  @mode = args.mode.upcase
+  valid_modes = %w[PREVIEW REVIEW UPDATE]
 
-  if args_valid == true
+  unless valid_modes.include?(@mode)
+    abort 'Invalid mode argument. Must be PREVIEW, REVIEW or UPDATE'
+  end
+  @months = args.months.to_i
+  abort 'Invalid months argumant. Must be a positive integer' if @months <= 0
+  bcc_userid = args.email_user
+  @user_for_cc_email = UseridDetail.where(userid: bcc_userid).first
+  abort 'Invalid email argumant. Email user not found' unless @user_for_cc_email
+  @cc_email = @user_for_cc_email.email_address
 
-    user_for_cc_email = UseridDetail.find_by(userid: args.email_user)
-    @cc_email = user_for_cc_email.present? ? user_for_cc_email.email_address : 'NOT FOUND'
-    @months = args.months.to_i
-    @mode = args.mode
+  @cutoff_date = @months.months.ago.to_date
+  log_message = "Cutoff date = #{@cutoff_date.strftime('%Y%m%d%H%M')}"
+  output_to_log(file_for_log, log_message)
+  p log_message
 
-    @cutoff_date = start_time - @months.months
-    log_message = "Cutoff date = #{@cutoff_date}"
+  @roles_to_review = %w[transcriber validator checker]
+  @the_roles = @roles_to_review.to_s.gsub('"', '')
+
+  deactivated_users = 0
+
+  initial_message = "Started deactivation of dormant users : Mode = #{args.mode}, Months = #{args.months}, Email = #{args.email_user} at #{start_time}"
+  output_to_log(file_for_log, initial_message)
+
+  Syndicate.all.asc(:syndicate_code).each do |synd|
+    next if synd.syndicate_code == 'Technical' || synd.syndicate_code == 'Any Questions Ask Us'
+
+    next unless synd.syndicate_code == 'Essex Syndicate'      # AEV TESTING
+
+    @syndicate = synd.syndicate_code
+
+    log_message = "Processing syndicate:  #{@syndicate}"
     output_to_log(file_for_log, log_message)
     p log_message
 
-    @roles_to_review = %w[transcriber validator checker]
-    @the_roles = @roles_to_review.to_s.gsub('"', '')
+    synd_coord = UseridDetail.where(userid: synd.syndicate_coordinator).first
+    unless synd_coord
+      logger.warn 'Coordinator not found — skipping syndicate'
+      next
+    end
 
-    deactivated_users = 0
+    @synd_coord_email = synd_coord.email_address
 
-    initial_message = "Started deactivation of dormant users : Mode = #{args.mode}, Months = #{args.months}, Email = #{args.email_user} at #{start_time}"
-    output_to_log(file_for_log, initial_message)
+    active_users = UseridDetail.where(:syndicate => synd.syndicate_code, :active => true, :sign_up_date.lt => @cutoff_date)
 
-    syndicates_to_review = Syndicate.all.order_by(syndicate_code: 1)
+    users_to_deacivate = 0
+    # results = []
 
-    syndicates_to_review.each  do |synd|
-      next if synd.syndicate_code == 'Technical' || synd.syndicate_code == 'Any Questions Ask Us'
+    active_users.each do |user|
+      p "AEV01 #{user.userid} #{user.person_role} #{user.sign_up_date}"
+      next unless @roles_to_review.include? user.person_role
 
-      @syndicate = synd.syndicate_code
+      last_file = FreecenCsvFile.where(userid: user.userid).desc(:uploaded_date).limit(1).first
 
-      log_message = "Working on #{@syndicate}"
+      next if last_file.present? && last_file.date_uploaded.to_date >= cutoff_date
+
+      user_full_name = "#{user.person_forename} #{user.person_surname}"
+      joined = user.sign_up_date.strftime('%d/%m/%Y')
+      last_upload = last_file.nil? ? 'None' : last_file.date_uploaded.strftime('%d/%m/%Y')
+
+      write_csv_line(@syndicate, user.userid, user_full_name, joined, last_upload, users_to_deacivate)
+      users_to_deacivate += 1
+
+      if @mode == 'UPDATE'
+        user.update_attributes(active: false)
+        deactivated_users += 1
+      end
+    end
+
+
+    if users_to_deacivate.positive?
+
+      send_email(file_for_log)
+      log_message = @mode == 'UPDATE' ? log_message = "#{users_to_deacivate} users were deactivated" : log_message = "#{users_to_deacivate} users would be deactivated"
+      output_to_log(file_for_log, log_message)
+      total_users_to_deactive += users_to_deacivate
+
+    else
+
+      log_message = 'Syndicate has no users that meet deactivation criteria'
       output_to_log(file_for_log, log_message)
       p log_message
 
-      synd_coord = synd.syndicate_coordinator
-      @synd_coord_rec = UseridDetail.find_by(userid: synd_coord)
-      @synd_coord_email = @synd_coord_rec.email_address
-
-      active_users = UseridDetail.where(:syndicate => @syndicate, :person_role => { '$in' => @roles_to_review }, :active => true)
-
-      if active_users.blank?
-        log_message = "Syndicate has no active users in roles #{@the_roles}"
-        output_to_log(file_for_log, log_message)
-        p log_message
-
-      else
-
-        users_to_deacivate = 0
-
-        active_users.each do |user|
-           next if user.sign_up_date > @cutoff_date
-
-          most_recent_upload = ''
-          most_recent_upload_file = FreecenCsvFile.where(:userid => user.userid).order_by(uploaded_date: :desc).first
-          most_recent_upload = most_recent_upload_file.uploaded_date if most_recent_upload_file.present?
-
-          if most_recent_upload.blank? || most_recent_upload < @cutoff_date
-
-            user_name = user.person_forename + ' ' + user.person_surname
-            joined = user.sign_up_date.strftime('%d/%m/%Y')
-            last_upload = most_recent_upload.blank? ? 'None' : most_recent_upload.strftime('%d/%m/%Y')
-
-            write_csv_line(@syndicate, user.userid, user_name, joined, last_upload, users_to_deacivate)
-            users_to_deacivate += 1
-
-            if @mode == 'UPDATE'
-              user.update_attributes(active: false)
-              deactivated_users += 1
-            end
-
-          end
-
-        end
-
-        if users_to_deacivate.positive?
-          send_email(file_for_log)
-          if @mode == 'UPDATE'
-            log_message = "#{users_to_deacivate} users were deactivated"
-          else
-            log_message = "#{users_to_deacivate} users would be deactivated "
-          end
-          output_to_log(file_for_log, log_message)
-          total_users_to_deactive += users_to_deacivate
-        end
-
-      end
-
     end
-
-    if @mode == 'UPDATE'
-      log_message = "Total users deactivated = #{deactivated_users}"
-    else
-      log_message = "Total users that would be deactivated = #{total_users_to_deactive}"
-    end
-    output_to_log(file_for_log, log_message)
-    p log_message
-
-    end_time = Time.current
-    run_time = end_time - start_time
-
-    log_message = "Runtime #{run_time}"
-    output_to_log(file_for_log, log_message)
-    p log_message
-
-  else
-
-    p 'INVALID ARGUMENTS'
-    message = "**** Invalid arguments: mode = #{args.mode}, months = #{args.months}, email_user = #{args.email_user} ****"
-    output_to_log(file_for_log, message)
-
   end
 
+  log_message = @mode == 'UPDATE' ? "Total users deactivated = #{deactivated_users}" : "Total users that would be deactivated = #{total_users_to_deactive}"
+  output_to_log(file_for_log, log_message)
+  p log_message
+
+  end_time = Time.current
+  run_time = end_time - start_time
+
+  log_message = "Runtime #{run_time}"
+  output_to_log(file_for_log, log_message)
+  p log_message
 end
