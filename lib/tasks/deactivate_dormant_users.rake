@@ -51,7 +51,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     email_body += "\n"
     email_body += "\n"
     report_name = "Deactivate_dormant_users_#{@syndicate}_#{@file_date}.csv"
-    UserMailer.report_for_syndicate_coord(email_subject, email_body, @report_csv, report_name, email_to, cc_email_to).deliver_now if email_to == 'anne.vandervord@live.co.uk'   # AEV TESTING
+    UserMailer.report_for_syndicate_coord(email_subject, email_body, @report_csv, report_name, email_to, cc_email_to).deliver_now
   end
 
   # START
