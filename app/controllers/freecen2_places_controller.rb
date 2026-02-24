@@ -364,53 +364,6 @@ class Freecen2PlacesController < ApplicationController
     get_sources
   end
 
-  def notify_county_coord_of_place_update(place_before_edit, place_after_edit, coord_email_address, user)
-
-    alternates_before_edit = '(' + place_before_edit.previous_alternate_place_names.join(', ') + ')'
-    alternate_place_names_after_edit = []
-    place_after_edit.alternate_freecen2_place_names.each do |alternate|
-      alternate_place_names_after_edit << alternate.alternate_name
-    end
-    alternates_after_edit = '(' + alternate_place_names_after_edit.join(', ') + ')'
-
-
-    changes = [
-      { field: 'Grid_reference', old_value: place_before_edit.previous_grid_reference, new_value: place_after_edit.grid_reference },
-      { field: 'Latitude', old_value: place_before_edit.previous_latitude, new_value: place_after_edit.latitude },
-      { field: 'Longitude', old_value: place_before_edit.previous_longitude, new_value: place_after_edit.longitude },
-      { field: 'Source', old_value: place_before_edit.previous_source, new_value: place_after_edit.source },
-      { field: 'Website', old_value: place_before_edit.previous_website, new_value: place_after_edit.genuki_url },
-      { field: 'Notes', old_value: place_before_edit.previous_notes, new_value: place_after_edit.place_notes },
-      { field: 'Alternates', old_value: alternates_before_edit, new_value: alternates_after_edit }
-    ]
-
-    #lines for the email body
-
-    lines = []
-    reason = place_before_edit.reason[2...-2]
-
-    # Intro
-    lines << "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code})"
-    lines << "Modified by user: #{user.userid} (#{user.person_forename} #{user.person_surname}) Reason: #{reason}"
-    lines << ''
-    lines << 'Modified fields are marked with a *'
-    lines << ''
-
-    # Changes
-
-    changes.each do |row|
-      mark = row[:old_value].to_s != row[:new_value].to_s ? '*' : ' '
-
-      lines << "#{row[:field]}#{mark} : Previous value = #{row[:old_value]} : New value = #{row[:new_value]}"
-    end
-
-    email_body = lines.join("\n")
-    email_subject = "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code}) has been modified"
-    email_to = coord_email_address
-    UserMailer.freecen_gaz_modified_report(email_subject, email_body, email_to).deliver_now
-
-  end
-
   def places_counties_and_countries
     @countries = []
     Country.all.order_by(country_code: 1).each do |country|
@@ -599,18 +552,6 @@ class Freecen2PlacesController < ApplicationController
 
       if proceed
         flash[:notice] = 'The update the Place was successful'
-
-        # email_coordinator_about_place_update
-
-        @record_before_edit = @place.freecen2_place_edits.order_by(_id: -1).first
-        county_name = ChapmanCode.name_from_code(@place.chapman_code)
-        syndicate_code = county_name + ' Syndicate'
-        coord_user_id = Syndicate.find_by(syndicate_code: syndicate_code).syndicate_coordinator
-        coord = UseridDetail.find_by(userid: coord_user_id)
-        email_to = coord.email_address if coord.present?
-
-        notify_county_coord_of_place_update(@record_before_edit, @place, email_to, @user) if email_to.present? && @user.userid != coord_user_id
-
         redirect_to freecen2_place_path(@place)
       else
         flash[:notice] = 'The update of the Place was unsuccessful'
