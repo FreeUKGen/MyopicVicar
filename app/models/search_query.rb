@@ -147,8 +147,8 @@
   field :runtime_additional, type: Integer
   field :runtime_ucf, type: Integer
   field :results_per_page, type: Integer, default: SearchQuery::DEFAULT_RESULTS_PER_PAGE
-  field :order_field, type: String, default: SearchOrder::BMD_DATE
-  validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS
+  field :order_field, type: String, default: nil
+  validates_inclusion_of :order_field, :in => SearchOrder::ALL_ORDERS, allow_nil: true
   field :order_asc, type: Boolean, default: true
   field :region, type: String # bot honeypot
   field :search_index, type: String
@@ -1147,6 +1147,7 @@
   def sort_results(results)
     # next reorder in memory
    # raise SearchOrder::SURNAME.inspect
+    return results if order_field.blank?
     if results.present?
       case order_field
         when *selected_sort_fields
