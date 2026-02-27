@@ -6,8 +6,16 @@
       <%= f.input :place_name, :value=>@place.place_name, :label => 'Enter the New Place Name',:hint => 'Please take extreme care with the Place Name including its case!',:input_html => {:class => 'simple_form_bgcolour', :size => 40 }%>
     <% end%>
     <%= f.simple_fields_for :alternate_freecen2_place_names do |alternate| %>
-      <%= alternate.input :alternate_name,:label => 'Other Name for Place',:hint => 'Alternative name by which place may be known. Use the destroy box below to delete this entry',:input_html => {:class => 'simple_form_bgcolour', :size => 40 }%>
-      <%= alternate.input :_destroy, :as => :boolean %>
+      <% if session[:role] == 'validator' %>
+        <% if alternate.object.alternate_name.nil? %>
+          <%= alternate.input :alternate_name,:label => 'Other Name for Place',:hint => 'Alternative name by which place may be known',:input_html => {:class => 'simple_form_bgcolour', :size => 40, :readonly => false}%>
+        <% else %>
+          <%= alternate.input :alternate_name,:label => 'Other Name for Place',:hint => 'Alternative name by which place may be known. You are not permitted to change an existing alternative name',:input_html => {:class => 'simple_form_bgcolour', :size => 40, :readonly => true}%>
+        <% end %>
+      <% else %>
+        <%= alternate.input :alternate_name,:label => 'Other Name for Place',:hint => 'Alternative name by which place may be known. Use the destroy box below to delete this entry',:input_html => {:class => 'simple_form_bgcolour', :size => 40}%>
+        <%= alternate.input :_destroy, :as => :boolean %>
+      <% end %>
     <% end %>
     <%= f.input :grid_reference , label: ' Either a Grid Reference OR the latitude and longitude. If entering lat/long blank this field out', :hint => 'Must be 2 capital characters followed by  4, 6 or 8 numerics eg NX123456',:input_html => {:class => 'simple_form_bgcolour', :size => 40} %>
     <%= f.input :latitude ,:hint => 'Required if no Grid Reference entered.', :label => 'Latitude in degrees eg 50.234. If Grid entered blank this field out.',:input_html => {:class => 'simple_form_bgcolour', :size => 40 }%>

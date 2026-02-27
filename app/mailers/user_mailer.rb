@@ -269,6 +269,12 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def freecen_gaz_modified_report(email_subject, email_body, email_to)
+    email_addresses = []
+    email_addresses << email_to
+    mail(:to => email_addresses, :subject => email_subject, :body => email_body)
+  end
+
   def freecen_move_fc2_place_linkages_report(email_subject, email_body, report, report_name, email_to)
     email_addresses = []
     email_addresses << email_to
