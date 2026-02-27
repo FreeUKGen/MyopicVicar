@@ -64,7 +64,6 @@ class Freecen2Place
   validate :grid_reference_or_lat_lon_present_and_valid
 
   before_save :add_location_if_not_present, :add_country, :add_standard_names, :add_place_name_soundex
-  after_update  :notify_county_coord_of_place_update
 
   # after_save :update_places_cache
 
@@ -319,6 +318,57 @@ class Freecen2Place
       place_id = place_alternate.first if place_alternate.present?
       place_id = place_id.present? ? place_id['_id'].to_s : nil
       [place_alternate_valid, place_id]
+    end
+
+    def notify_county_coord_of_place_update(place_after_edit)
+      county_name = ChapmanCode.name_from_code(place_after_edit.chapman_code)
+      syndicate_code = county_name + ' Syndicate'
+      coord_user_id = Syndicate.find_by(syndicate_code: syndicate_code).syndicate_coordinator
+      coord = UseridDetail.find_by(userid: coord_user_id)
+      email_to = coord.email_address if coord.present?
+      place_before_edit = place_after_edit[:freecen2_place_edits].last
+      editor_user = UseridDetail.find_by(userid: place_before_edit['editor'])
+
+      alternates_before_edit = '(' + place_before_edit['previous_alternate_place_names'].join(', ') + ')'
+      alternate_place_names_after_edit = []
+      place_after_edit.alternate_freecen2_place_names.each do |alternate|
+        alternate_place_names_after_edit << alternate.alternate_name
+      end
+      alternates_after_edit = '(' + alternate_place_names_after_edit.join(', ') + ')'
+
+      changes = [
+        { field: 'Grid_reference', old_value: place_before_edit['previous_grid_reference'], new_value: place_after_edit.grid_reference },
+        { field: 'Latitude', old_value: place_before_edit['previous_latitude'], new_value: place_after_edit.latitude },
+        { field: 'Longitude', old_value: place_before_edit['previous_longitude'], new_value: place_after_edit.longitude },
+        { field: 'Source', old_value: place_before_edit['previous_source'], new_value: place_after_edit.source },
+        { field: 'Website', old_value: place_before_edit['previous_website'], new_value: place_after_edit.genuki_url },
+        { field: 'Notes', old_value: place_before_edit['previous_notes'], new_value: place_after_edit.place_notes },
+        { field: 'Alternates', old_value: alternates_before_edit, new_value: alternates_after_edit }
+      ]
+
+      # lines for the email body
+
+      lines = []
+      reason = place_before_edit['reason'][2...-2]
+
+      # Intro
+      lines << "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code})"
+      lines << "Modified by user: #{editor_user.userid} (#{editor_user.person_forename} #{editor_user.person_surname}) Reason: #{reason}"
+      lines << ''
+      lines << 'Modified fields are marked with a *'
+      lines << ''
+
+      # Changes
+
+      changes.each do |row|
+        mark = row[:old_value].to_s != row[:new_value].to_s ? '*' : ' '
+
+        lines << "#{row[:field]}#{mark} : Previous value = #{row[:old_value]} : New value = #{row[:new_value]}"
+      end
+
+      email_body = lines.join("\n")
+      email_subject = "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code}) has been modified"
+      UserMailer.freecen_gaz_modified_report(email_subject, email_body, email_to).deliver_now
     end
 
     def original_place(county, place) # no longer used when validating a place #1564
@@ -624,57 +674,6 @@ class Freecen2Place
     value = false
     value = true if (self.alternate_place_name.present? || self.place_notes.present? )
     value
-  end
-
-  def notify_county_coord_of_place_update
-    county_name = ChapmanCode.name_from_code(self[:chapman_code])
-    syndicate_code = county_name + ' Syndicate'
-    coord_user_id = Syndicate.find_by(syndicate_code: syndicate_code).syndicate_coordinator
-    coord = UseridDetail.find_by(userid: coord_user_id)
-    email_to = coord.email_address if coord.present?
-    place_before_edit = self[:freecen2_place_edits].last
-    editor_user = UseridDetail.find_by(userid: place_before_edit['editor'])
-
-    alternates_before_edit = '(' + place_before_edit['previous_alternate_place_names'].join(', ') + ')'
-    alternate_place_names_after_edit = []
-    self.alternate_freecen2_place_names.each do |alternate|
-      alternate_place_names_after_edit << alternate.alternate_name
-    end
-    alternates_after_edit = '(' + alternate_place_names_after_edit.join(', ') + ')'
-
-    changes = [
-      { field: 'Grid_reference', old_value: place_before_edit['previous_grid_reference'], new_value: self[:grid_reference] },
-      { field: 'Latitude', old_value: place_before_edit['previous_latitude'], new_value: self[:latitude] },
-      { field: 'Longitude', old_value: place_before_edit['previous_longitude'], new_value: self[:longitude] },
-      { field: 'Source', old_value: place_before_edit['previous_source'], new_value: self[:source] },
-      { field: 'Website', old_value: place_before_edit['previous_website'], new_value: self[:genuki_url] },
-      { field: 'Notes', old_value: place_before_edit['previous_notes'], new_value: self[:place_notes] },
-      { field: 'Alternates', old_value: alternates_before_edit, new_value: alternates_after_edit }
-    ]
-
-    # lines for the email body
-
-    lines = []
-    reason = place_before_edit['reason'][2...-2]
-
-    # Intro
-    lines << "Gazetteer Place: #{self[:place_name]} (#{self[:chapman_code]})"
-    lines << "Modified by user: #{editor_user.userid} (#{editor_user.person_forename} #{editor_user.person_surname}) Reason: #{reason}"
-    lines << ''
-    lines << 'Modified fields are marked with a *'
-    lines << ''
-
-    # Changes
-
-    changes.each do |row|
-      mark = row[:old_value].to_s != row[:new_value].to_s ? '*' : ' '
-
-      lines << "#{row[:field]}#{mark} : Previous value = #{row[:old_value]} : New value = #{row[:new_value]}"
-    end
-
-    email_body = lines.join("\n")
-    email_subject = "Gazetteer Place: #{self[:place_name]} (#{self[:chapman_code]}) has been modified"
-    UserMailer.freecen_gaz_modified_report(email_subject, email_body, email_to).deliver_now
   end
 
   def places_near(radius_factor, system)
