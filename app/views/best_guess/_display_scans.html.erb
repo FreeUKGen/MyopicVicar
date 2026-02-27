@@ -14,3 +14,29 @@
     <% end %>
   <% end %>
 </div>
+<div id="transcription_errors" data-record-id="<%= record.try(:RecordNumber) || record.try(:[], :RecordNumber) %>">
+  <h4 class="push-half--bottom">Transcription Errors</h4>
+  <p id="transcription_error_before_scan" class="transcription-error-message">You must view the scan (see above) before you can report a possible error in our transcription of the GRO index.</p>
+  <p id="transcription_error_after_scan" class="transcription-error-message" style="display: none;">If you think the transcription does not match the scan, you can submit a report and we will investigate. If we agree that there has been a mistranscription of the GRO index, we will endeavour to correct it in our database (usually within two months).</p>
+</div>
+<script>
+(function() {
+  var recordId = document.getElementById('transcription_errors').getAttribute('data-record-id') || 'default';
+  var storageKey = 'best_guess_scan_downloaded_' + recordId;
+  var beforeEl = document.getElementById('transcription_error_before_scan');
+  var afterEl = document.getElementById('transcription_error_after_scan');
+  function showAfterScan() {
+    if (beforeEl) beforeEl.style.display = 'none';
+    if (afterEl) afterEl.style.display = 'block';
+  }
+  if (sessionStorage.getItem(storageKey)) {
+    showAfterScan();
+  }
+  document.getElementById('display_scans').addEventListener('click', function(e) {
+    if (e.target.closest && e.target.closest('a.scan-link')) {
+      sessionStorage.setItem(storageKey, '1');
+      showAfterScan();
+    }
+  });
+})();
+</script>
