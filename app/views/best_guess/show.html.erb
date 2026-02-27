@@ -42,7 +42,6 @@
       </div>
     </section>
     <%= render partial: 'display_scans', locals: { record: @current_record } %>
-    <p class="push-half--bottom"><%= raw ERB.new(ApplicationText::SCAN_HELP_TEXT).result(binding) %></p>
     <% if @option == '2' %>
       <div id="postems">
         <div>

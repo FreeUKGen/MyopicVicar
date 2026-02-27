@@ -13,6 +13,7 @@
       </ul>
     <% end %>
   <% end %>
+  <p class="push-half--bottom"><%= raw ERB.new(ApplicationText::SCAN_HELP_TEXT).result(binding) %></p>
 </div>
 <div id="transcription_errors" data-record-id="<%= record.try(:RecordNumber) || record.try(:[], :RecordNumber) %>">
   <h4 class="push-half--bottom">Transcription Errors</h4>
