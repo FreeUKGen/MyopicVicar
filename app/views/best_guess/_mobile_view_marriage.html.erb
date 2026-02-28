@@ -66,10 +66,28 @@
             Spouse Name
         </th>
         <td>
-            <%= "#{record.get_spouse_record.GivenName} #{record.get_spouse_record.Surname.upcase}" %><br>
+          <% spouse_record = record.get_spouse_record %>
+          <% spouse_display = if spouse_record.present?
+            given = spouse_record.GivenName.to_s
+            surname = spouse_record.Surname.present? ? spouse_record.Surname.upcase : ''
+            name = [given, surname].reject(&:blank?).join(' ')
+            name.present? ? name : record.AssociateName.to_s
+          else
+            record.AssociateName.to_s
+          end %>
+          <%= spouse_display %><br>
         </td>
         <td>
-            <%= "#{spouse.get_spouse_record.GivenName} #{spouse.get_spouse_record.Surname.upcase}" %><br>
+          <% spouse_spouse_record = spouse.get_spouse_record %>
+          <% spouse_spouse_display = if spouse_spouse_record.present?
+            given = spouse_spouse_record.GivenName.to_s
+            surname = spouse_spouse_record.Surname.present? ? spouse_spouse_record.Surname.upcase : ''
+            name = [given, surname].reject(&:blank?).join(' ')
+            name.present? ? name : spouse.AssociateName.to_s
+          else
+            spouse.AssociateName.to_s
+          end %>
+        <%= spouse_spouse_display %><br>
         </td>
     </tr>
         
