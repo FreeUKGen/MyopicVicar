@@ -3,285 +3,286 @@
   .table--left-aligned th {width: 200px; text-align: left !important; padding-left: 20px !important;}
   .table--left-aligned td {text-align: left !important; padding-left: 20px !important;}
 </style>
-<table class="table--bordered table--data table--left-aligned">
-  <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
-  <thead>
-    <tr>
-      <th scope="col">Field</th>
-      <th scope="col">Record</th>
-      <th scope="col">Spouse</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% record_type = RecordType::display_name(record.RecordTypeID)%>
-    <% spouse_record_type = RecordType::display_name(spouse.RecordTypeID) %>
-    <tr>
-      <th scope="row">
-        Surname
-      </th>
-      <td>
-        <%= record.Surname %>
-      </td>
-      <td>
-        <%= spouse.Surname %>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        Given Name
-      </th>
-      <td>
-        <%= record.GivenName %>
-      </td>
-      <td>
-        <%= spouse.GivenName %>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        Record Type
-      </th>
-      <td>
-        <%= "#{record_type}".capitalize %>
-      </td>
-      <td>
-        <%= "#{spouse_record_type}".capitalize %>
-      </td>
-    </tr>
-    <%# unless record.post_1994_marriage? %>
-    <tr>
+<div class="table-container">
+  <table class="table--bordered table--data table--left-aligned">
+    <caption class="accessibility">Entry Information about <%= "#{record.GivenName} #{record.Surname}"%>  </caption>
+    <thead>
+      <tr>
+        <th scope="col">Field</th>
+        <th scope="col">Record</th>
+        <th scope="col">Spouse</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% record_type = RecordType::display_name(record.RecordTypeID)%>
+      <% spouse_record_type = RecordType::display_name(spouse.RecordTypeID) %>
+      <tr>
         <th scope="row">
-            Registration Date
+          Surname
         </th>
         <td>
-            <%= format_quarter_year(record.QuarterNumber) %>
+          <%= record.Surname %>
         </td>
         <td>
-            <%= format_quarter_year(spouse.QuarterNumber) %>
+          <%= spouse.Surname %>
         </td>
-    </tr>
-    <%# end %>
-    <tr>
+      </tr>
+      <tr>
         <th scope="row">
-            Spouse Name
+          Given Name
         </th>
         <td>
-          <% spouse_record = record.get_spouse_record %>
-          <% spouse_display = if spouse_record.present?
-            given = spouse_record.GivenName.to_s
-            surname = spouse_record.Surname.present? ? spouse_record.Surname.upcase : ''
-            name = [given, surname].reject(&:blank?).join(' ')
-            name.present? ? name : record.AssociateName.to_s
-          else
-            record.AssociateName.to_s
-          end %>
-          <%= spouse_display %><br>
+          <%= record.GivenName %>
         </td>
         <td>
-          <% spouse_spouse_record = spouse.get_spouse_record %>
-          <% spouse_spouse_display = if spouse_spouse_record.present?
-            given = spouse_spouse_record.GivenName.to_s
-            surname = spouse_spouse_record.Surname.present? ? spouse_spouse_record.Surname.upcase : ''
-            name = [given, surname].reject(&:blank?).join(' ')
-            name.present? ? name : spouse.AssociateName.to_s
-          else
-            spouse.AssociateName.to_s
-          end %>
-        <%= spouse_spouse_display %><br>
+          <%= spouse.GivenName %>
         </td>
-    </tr>
-        
-    <tr>
-      <th scope="row">
-        District
-      </th>
-      <td>
-        <% district = District.where(DistrictNumber: record[:DistrictNumber]).first %>
-        <% if district.present? %>
+      </tr>
+      <tr>
+        <th scope="row">
+          Record Type
+        </th>
+        <td>
+          <%= "#{record_type}".capitalize %>
+        </td>
+        <td>
+          <%= "#{spouse_record_type}".capitalize %>
+        </td>
+      </tr>
+      <%# unless record.post_1994_marriage? %>
+      <tr>
+          <th scope="row">
+              Registration Date
+          </th>
+          <td>
+              <%= format_quarter_year(record.QuarterNumber) %>
+          </td>
+          <td>
+              <%= format_quarter_year(spouse.QuarterNumber) %>
+          </td>
+      </tr>
+      <%# end %>
+      <tr>
+          <th scope="row">
+              Spouse Name
+          </th>
+          <td>
+            <% spouse_record = record.get_spouse_record %>
+            <% spouse_display = if spouse_record.present?
+              given = spouse_record.GivenName.to_s
+              surname = spouse_record.Surname.present? ? spouse_record.Surname.upcase : ''
+              name = [given, surname].reject(&:blank?).join(' ')
+              name.present? ? name : record.AssociateName.to_s
+            else
+              record.AssociateName.to_s
+            end %>
+            <%= spouse_display %><br>
+          </td>
+          <td>
+            <% spouse_spouse_record = spouse.get_spouse_record %>
+            <% spouse_spouse_display = if spouse_spouse_record.present?
+              given = spouse_spouse_record.GivenName.to_s
+              surname = spouse_spouse_record.Surname.present? ? spouse_spouse_record.Surname.upcase : ''
+              name = [given, surname].reject(&:blank?).join(' ')
+              name.present? ? name : spouse.AssociateName.to_s
+            else
+              spouse.AssociateName.to_s
+            end %>
+            <%= spouse_spouse_display %><br>
+          </td>
+      </tr>
+          
+      <tr>
+        <th scope="row">
+          District
+        </th>
+        <td>
+          <% district = District.where(DistrictNumber: record[:DistrictNumber]).first %>
+          <% if district.present? %>
+            <% if @search %>
+              <%= district_link_or_name_id(district, record, search_id) %>
+            <% else%>
+              <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber)%>
+            <% end %>
+          <% else %>
+            <%= record.display_district_name %>
+          <% end %>
+          <% if record.District.blank? %>
+            <%= 'No data' %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+          <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+            <a class="footnote-link" id="link-to-district-query" href="#district-query">
+              [district query] <span class="accessibility">potential issue with this District name</span>
+            </a>
+          <% end %>
+        </td>
+        <td>
+        <% spouse_district = District.where(DistrictNumber: spouse[:DistrictNumber]).first %>
+        <% if spouse_district.present? %>
           <% if @search %>
-            <%= district_link_or_name_id(district, record, search_id) %>
+            <%= district_link_or_name_id(spouse_district, spouse, search_id) %>
           <% else%>
-            <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber)%>
+            <%= link_to "#{spouse[:District]}", district_friendly_url_path(spouse_district.district_friendly_url, id: spouse_district.DistrictNumber)%>
           <% end %>
         <% else %>
-          <%= record.display_district_name %>
+          <%= spouse.display_district_name %>
         <% end %>
-        <% if record.District.blank? %>
+        <% if spouse.District.blank? %>
           <%= 'No data' %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
-        <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+        <% if spouse.district_misspelt or spouse.district_invented or spouse.bad_date_for_district or spouse[:District].strip.downcase != district.DistrictName.strip.downcase %>
           <a class="footnote-link" id="link-to-district-query" href="#district-query">
             [district query] <span class="accessibility">potential issue with this District name</span>
           </a>
         <% end %>
       </td>
-      <td>
-      <% spouse_district = District.where(DistrictNumber: spouse[:DistrictNumber]).first %>
-      <% if spouse_district.present? %>
-        <% if @search %>
-          <%= district_link_or_name_id(spouse_district, spouse, search_id) %>
-        <% else%>
-          <%= link_to "#{spouse[:District]}", district_friendly_url_path(spouse_district.district_friendly_url, id: spouse_district.DistrictNumber)%>
-        <% end %>
-      <% else %>
-        <%= spouse.display_district_name %>
-      <% end %>
-      <% if spouse.District.blank? %>
-        <%= 'No data' %>
-        <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-      <% end %>
-      <% if spouse.district_misspelt or spouse.district_invented or spouse.bad_date_for_district or spouse[:District].strip.downcase != district.DistrictName.strip.downcase %>
-        <a class="footnote-link" id="link-to-district-query" href="#district-query">
-          [district query] <span class="accessibility">potential issue with this District name</span>
-        </a>
-      <% end %>
-    </td>
-    </tr>
-    <tr>
-      <th scope="row">
-        Volume
-      </th>
-      <td>
-        <%= "#{ record.Volume }" %>
-        <% if record.bad_volume_for_district %>
-          <a class="footnote-link" id="link-to-volume-query" href="#volume-query">
-            [volume query] <span class="accessibility">potential issue with this volume number</span>
-          </a>
-        <% end %>
-      </td>
-      <td>
-        <%= "#{ spouse.Volume }" %>
-        <% if spouse.bad_volume_for_district %>
-          <a class="footnote-link" id="link-to-volume-query" href="#volume-query">
-            [volume query] <span class="accessibility">potential issue with this volume number</span>
-          </a>
-        <% end %>
-      </td>
-    </tr>
-    <% unless record.register_entry_number_format %>
+      </tr>
       <tr>
         <th scope="row">
-          Page
+          Volume
         </th>
         <td>
-         <%= record.Page %>
-          <% if record.bad_page_range_for_district or record.page_range_not_checked %>
-            <a class="footnote-link" id="link-to-page-query" href="#page-query">
-              [page query] <span class="accessibility">potential issue with this page number</span>
+          <%= "#{ record.Volume }" %>
+          <% if record.bad_volume_for_district %>
+            <a class="footnote-link" id="link-to-volume-query" href="#volume-query">
+              [volume query] <span class="accessibility">potential issue with this volume number</span>
             </a>
           <% end %>
         </td>
         <td>
-          <%= spouse.Page %>  
-          <% if spouse.bad_page_range_for_district or spouse.page_range_not_checked %>
-            <a class="footnote-link" id="link-to-page-query" href="#page-query">
-              [page query] <span class="accessibility">potential issue with this page number</span>
+          <%= "#{ spouse.Volume }" %>
+          <% if spouse.bad_volume_for_district %>
+            <a class="footnote-link" id="link-to-volume-query" href="#volume-query">
+              [volume query] <span class="accessibility">potential issue with this volume number</span>
             </a>
           <% end %>
         </td>
       </tr>
-    <% end %> 
-    <% unless record.post_1994_marriage? %>
-        <% event_registered = record.event_registration %>
-        <% if event_registered.present?%>
+      <% unless record.register_entry_number_format %>
+        <tr>
+          <th scope="row">
+            Page
+          </th>
+          <td>
+          <%= record.Page %>
+            <% if record.bad_page_range_for_district or record.page_range_not_checked %>
+              <a class="footnote-link" id="link-to-page-query" href="#page-query">
+                [page query] <span class="accessibility">potential issue with this page number</span>
+              </a>
+            <% end %>
+          </td>
+          <td>
+            <%= spouse.Page %>  
+            <% if spouse.bad_page_range_for_district or spouse.page_range_not_checked %>
+              <a class="footnote-link" id="link-to-page-query" href="#page-query">
+                [page query] <span class="accessibility">potential issue with this page number</span>
+              </a>
+            <% end %>
+          </td>
+        </tr>
+      <% end %> 
+      <% unless record.post_1994_marriage? %>
+          <% event_registered = record.event_registration %>
+          <% if event_registered.present?%>
+            <tr>
+              <th scope="row">
+                Registered
+              </th>
+              <td >
+                <%= format_registered(event_registered, record.QuarterNumber) %>
+              </td>
+              <td >
+                <%= format_registered(event_registered, spouse.QuarterNumber) %>
+              </td>
+            </tr>
+          <% end %>
+      <% end %>
+      
+      <% if entry_type == "marriage" %>
+        <% if record.post_1994_marriage? %>
+          <% sub = record.get_submission %>
+          <% spouse_sub = spouse.get_submission %>
+          <tr>
+            <th scope="row">
+              Entry number
+            </th>
+            <% if sub.present? %>
+              <td>
+                <%= record.get_submission.EntryNumber %>
+              </td>
+            <% end %>
+            <% if spouse_sub.present? %>
+              <td>
+                <%= spouse.get_submission.EntryNumber %>
+              </td>
+            <% end %>
+          </tr>    
+          <tr>
+            <th scope="row">
+              SourceCode
+            </th>
+            <td>
+              <%= sub.SourceCode %>
+            </td>
+            <td>
+              <%= spouse_sub.SourceCode %>
+            </td>
+          </tr>
           <tr>
             <th scope="row">
               Registered
             </th>
-            <td >
-              <%= format_registered(event_registered, record.QuarterNumber) %>
+            <td>
+              <%= "#{ QuarterDetails.month_hash_abbreviated[sub.Registered] } #{ format_quarter_year(record.QuarterNumber)}" %>
             </td>
-            <td >
-              <%= format_registered(event_registered, spouse.QuarterNumber) %>
+            <td>
+              <%= "#{ QuarterDetails.month_hash_abbreviated[spouse_sub.Registered] } #{ format_quarter_year(spouse.QuarterNumber)}" %>
             </td>
           </tr>
         <% end %>
-    <% end %>
-    
-    <% if entry_type == "marriage" %>
-      <% if record.post_1994_marriage? %>
-        <% sub = record.get_submission %>
-        <% spouse_sub = spouse.get_submission %>
-        <tr>
-          <th scope="row">
-            Entry number
-          </th>
-          <% if sub.present? %>
-            <td>
-              <%= record.get_submission.EntryNumber %>
-            </td>
-          <% end %>
-          <% if spouse_sub.present? %>
-            <td>
-              <%= spouse.get_submission.EntryNumber %>
-            </td>
-          <% end %>
-        </tr>    
-        <tr>
-          <th scope="row">
-            SourceCode
-          </th>
-          <td>
-            <%= sub.SourceCode %>
-          </td>
-          <td>
-            <%= spouse_sub.SourceCode %>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">
-            Registered
-          </th>
-          <td>
-            <%= "#{ QuarterDetails.month_hash_abbreviated[sub.Registered] } #{ format_quarter_year(record.QuarterNumber)}" %>
-          </td>
-          <td>
-            <%= "#{ QuarterDetails.month_hash_abbreviated[spouse_sub.Registered] } #{ format_quarter_year(spouse.QuarterNumber)}" %>
-          </td>
-        </tr>
-      <% end %>
-    <% end %>    
-    <tr>
-      <th scope="row">
-        Transcriber
-      </th>
-      <td>
-        <%= record.transcribers.join(', ') if record.transcribers.present? %>
-        <% if record.transcribers.blank? %>
-          <%= 'No data' %>
-          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-        <% end %>
-      </td>
-      <td>
-        <%= spouse.transcribers.join(', ') if spouse.transcribers.present? %>
-        <% if spouse.transcribers.blank? %>
-          <%= 'No data' %>
-          <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
-        <% end %>
-      </td>
-    </tr>
-    <% record_comments = record.get_comments %>
-    <% spouse_comments = spouse.get_comments %>
-    <% if record_comments.present? or spouse_comments.present? %>
+      <% end %>    
       <tr>
         <th scope="row">
-          Comment
+          Transcriber
         </th>
-        <% if record.get_comments.present? %>    
-          <%  record.get_comments.each do |cl| %>
+        <td>
+          <%= record.transcribers.join(', ') if record.transcribers.present? %>
+          <% if record.transcribers.blank? %>
+            <%= 'No data' %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        </td>
+        <td>
+          <%= spouse.transcribers.join(', ') if spouse.transcribers.present? %>
+          <% if spouse.transcribers.blank? %>
+            <%= 'No data' %>
+            <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
+          <% end %>
+        </td>
+      </tr>
+      <% record_comments = record.get_comments %>
+      <% spouse_comments = spouse.get_comments %>
+      <% if record_comments.present? or spouse_comments.present? %>
+        <tr>
+          <th scope="row">
+            Comment
+          </th>
+          <% if record.get_comments.present? %>    
+            <%  record.get_comments.each do |cl| %>
+              <td>
+                <%= cl.comment.CommentText %>
+              </td>
+            <% end %>
+          <% end %>
+          <% if spouse.get_comments.present? %>    
             <td>
-              <%= cl.comment.CommentText %>
+              <%= spouse.get_comments.join(', ') if spouse.get_comments.present? %>
             </td>
           <% end %>
-        <% end %>
-        <% if spouse.get_comments.present? %>    
-          <td>
-            <%= spouse.get_comments.join(', ') if spouse.get_comments.present? %>
-          </td>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
