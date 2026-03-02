@@ -1,4 +1,4 @@
-<div class="table-wrapper">
+<div class="table-container">
   <% @search_results.each_with_index do |search_record, index| %>
     <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
     <% included_record_types = @search_query.bmd_record_type %>
