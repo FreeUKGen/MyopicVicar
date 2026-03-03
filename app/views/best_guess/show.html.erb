@@ -48,7 +48,7 @@
           <h4 class="push-half--bottom">Additional Information (Postems)</h4>
           <p class="push-half--bottom">
             Do you know more about the people or event in this record that you are willing to share with other researchers?<br /> 
-            We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
+            We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on <%= link_to 'FreeREG', 'https://www.freereg.org.uk/', rel: 'noopener noreferrer' %>, or more about the family from a search on <%= link_to 'FreeCEN', 'https://www.freecen.org.uk/', rel: 'noopener noreferrer' %>, or have found other records about them in another country's registration system. Contribute what you know.
           </p>
           <%= render partial: 'display_postems', locals: { record: @current_record } %>
           <p class="push-half--bottom">Submit a postem:</p>

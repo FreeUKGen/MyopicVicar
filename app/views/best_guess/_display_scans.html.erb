@@ -17,7 +17,7 @@
 </div>
 <div id="transcription_errors" data-record-id="<%= record.try(:RecordNumber) || record.try(:[], :RecordNumber) %>">
   <h4 class="push-half--bottom">Transcription Errors</h4>
-  <p id="transcription_error_before_scan" class="transcription-error-message">You must view the scan (see above) before you can report a possible error in our transcription of the GRO index.</p>
+  <p id="transcription_error_before_scan" class="transcription-error-message">You must view the scan (see above) before you can report a possible error in our transcription of the GRO index. Once you have reviewed the scan, a link will appear here</p>
   <p id="transcription_error_after_scan" class="transcription-error-message" style="display: none;">
   If you think the transcription does not match the scan, you can <%= link_to "submit a report", report_error_contact_path(record.RecordNumber, :query => @search_query), target: "_blank" %> and we will investigate. 
   If we agree that there has been a mistranscription of the GRO index, we will endeavour to correct it in our database (usually within two months).</p>
