@@ -261,7 +261,7 @@ class Freecen2PlacesController < ApplicationController
   def get_reasons
     @reasons = []
     PlaceEditReason.all.order_by(reason: 1).each do |reason|
-      @reasons << reason.reason
+      @reasons << reason.reason unless session[:role] == 'validator' && reason.reason == 'Edit Alternative Place Name'
     end
   end
 
