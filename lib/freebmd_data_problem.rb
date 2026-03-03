@@ -1,9 +1,9 @@
 module FreebmdDataProblem
 
 	QUESTIONS = [
-		"I think that some data is missing",
-		"I have a query about the data that is presented",
-		"I have a query about the scan from which the data was transcribed"
+		"An error",
+		"Data is missing",
+		"Anything else/miscellaneous"
 	]
 
 	ANSWERS = [

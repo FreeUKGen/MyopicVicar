@@ -33,7 +33,7 @@
     <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s #{record_type.downcase} record" %></h1>
     <hr>
     <section>
-      <div class="table-wrapper">
+      <div class="table-container">
         <% if params[:search_id].present? %>
           <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
         <% else %>
@@ -45,7 +45,7 @@
     <% if @option == '2' %>
       <div id="postems">
         <div>
-          <h4 class="push-half--bottom">Postems</h4>
+          <h4 class="push-half--bottom">Additional Information (Postems)</h4>
           <p class="push-half--bottom">
             Do you know more about the people or event in this record that you are willing to share with other researchers?<br /> 
             We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
