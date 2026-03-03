@@ -325,7 +325,12 @@ class Freecen2Place
       syndicate_code = county_name + ' Syndicate'
       coord_user_id = Syndicate.find_by(syndicate_code: syndicate_code).syndicate_coordinator
       coord = UseridDetail.find_by(userid: coord_user_id)
-      email_to = coord.email_address if coord.present?
+      if coord.present?
+        email_to = coord.email_address if coord.present?
+      else
+        dm = UseridDetail.role('data_manager').email_address_valid.first
+        email_to = dm.email_address if dm.present?
+      end
       place_before_edit = place_after_edit[:freecen2_place_edits].last
       editor_user = UseridDetail.find_by(userid: place_before_edit['editor'])
 
