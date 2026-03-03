@@ -360,15 +360,22 @@ class Freecen2Place
 
       # Changes
 
+      any_changes = false
+
       changes.each do |row|
-        mark = row[:old_value].to_s != row[:new_value].to_s ? '*' : ' '
+        if row[:old_value].to_s != row[:new_value].to_s
+          mark = '*'
+          any_changes = true
+        end
 
         lines << "#{row[:field]}#{mark} : Previous value = #{row[:old_value]} : New value = #{row[:new_value]}"
       end
 
-      email_body = lines.join("\n")
-      email_subject = "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code}) has been modified"
-      UserMailer.freecen_gaz_modified_report(email_subject, email_body, email_to).deliver_now
+      if any_changes == true
+        email_body = lines.join("\n")
+        email_subject = "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code}) has been modified"
+        UserMailer.freecen_gaz_modified_report(email_subject, email_body, email_to).deliver_now
+      end
     end
 
     def original_place(county, place) # no longer used when validating a place #1564
