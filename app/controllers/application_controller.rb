@@ -17,6 +17,7 @@
 class ApplicationController < ActionController::Base
   rescue_from ActionController::UnknownFormat, with: :missing_template
   protect_from_forgery :with => :reset_session, prepend: true
+  before_action :strip_string_params, prepend: true
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :require_login
   before_action :load_last_stat
@@ -86,6 +87,27 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def strip_string_params
+    strip_hash_values(params)
+  end
+
+  def strip_hash_values(hash)
+    return unless hash.respond_to?(:each)
+    hash.each do |key, value|
+      case value
+      when String
+        hash[key] = value.strip
+      when Hash, ActionController::Parameters
+        strip_hash_values(value)
+      when Array
+        value.each_with_index do |item, i|
+          value[i] = item.strip if item.is_a?(String)
+          strip_hash_values(item) if item.is_a?(Hash) || item.is_a?(ActionController::Parameters)
+        end
+      end
+    end
+  end
 
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
