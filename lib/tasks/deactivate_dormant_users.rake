@@ -39,15 +39,15 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     email_message = "Sending csv file via email to #{email_to}"
     output_to_log(file_for_log, email_message)
 
-    email_subject = "FREECEN:: Deactivation of dormant users in #{@syndicate}  (run mode; #{@mode})."
+    email_subject = "FREECEN:: Deactivation of dormant users in #{@syndicate}  (run mode: #{@mode})."
     list_status = @mode == 'UPDATE' ? 'These users have been deactivated' : 'These users will be deactivated when this process is next run in UPDATE mode.'
     email_body = "We have performed an exercise to mark all volunteers with roles #{@the_roles} in your #{@syndicate} who have not uploaded a file"
     email_body += " in the last #{@months / 12} years as 'inactive' in the FreeCEN system. "
     email_body += "\n"
     email_body += "#{list_status}"
     email_body += "\n"
-    email_body += "We have listed the relevant members of your syndicate in the attached file. Please review this list and mark anyone you think is actually active as such. "
-    email_body += "We are looking to reduce the time without uploading a file to one year in the next few months, so please monitor this regularly." unless @months < 13
+    email_body += "We have listed the relevant members of your syndicate in the attached file. Please review this list and update their profile in the FreeCEN system to active if they are actually active volunteers. "
+    email_body += "We are looking to reduce the time without uploading a file to one year in the next few months." unless @months < 13
     email_body += "\n"
     email_body += "\n"
     report_name = "Deactivate_dormant_users_#{@syndicate}_#{@file_date}.csv"
@@ -99,7 +99,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
   Syndicate.all.asc(:syndicate_code).each do |synd|
     next if synd.syndicate_code == 'Technical' || synd.syndicate_code == 'Any Questions Ask Us'
 
-    # next unless synd.syndicate_code == 'Essex Syndicate'      # AEV TESTING
+    next unless synd.syndicate_code == 'Essex Syndicate'      # AEV TESTING
 
     @syndicate = synd.syndicate_code
 
