@@ -99,7 +99,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
   Syndicate.all.asc(:syndicate_code).each do |synd|
     next if synd.syndicate_code == 'Technical' || synd.syndicate_code == 'Any Questions Ask Us'
 
-    next unless synd.syndicate_code == 'Essex Syndicate'      # AEV TESTING
+    # next unless synd.syndicate_code == 'Essex Syndicate'      # AEV TESTING
 
     @syndicate = synd.syndicate_code
 
