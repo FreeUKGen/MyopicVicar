@@ -43,8 +43,13 @@ class Freereg1CsvEntriesController < ApplicationController
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
     end
 
+    # Retrieve the full name of the currently logged-in user to use as the transcriber.
+    user_detail = current_refinery_user.userid_detail
+    transcriber = [user_detail.person_forename, user_detail.person_surname].compact.join(' ')
+
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     @freereg1_csv_entry = Freereg1CsvEntry.new(freereg1_csv_entry_params)
+
     place, church, register = @freereg1_csv_entry.add_additional_location_fields(@freereg1_csv_file)
 
     @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
@@ -55,11 +60,17 @@ class Freereg1CsvEntriesController < ApplicationController
     else
       file_line_number, line_id = @freereg1_csv_file.determine_line_information(session[:error_id])
     end
+
+    # Update the new CSV entry with all essential fields, including setting
+    # both `transcribed_by` and `credit` to the current user's full name.
+    # This ensures that the entry correctly records who created it and who should be credited. 
     proceed = @freereg1_csv_entry.update_attributes(freereg1_csv_file_id: session[:freereg1_csv_file_id],
                                                     register_type: @freereg1_csv_file.register_type, year: year,
                                                     line_id: line_id, record_type: @freereg1_csv_file.record_type,
                                                     file_line_number: file_line_number, county: place.chapman_code,
-                                                    place: place.place_name, church_name: church.church_name)
+                                                    place: place.place_name, church_name: church.church_name, 
+                                                    transcribed_by: transcriber, credit: transcriber)
+                                                    
     unless proceed
       message = "The entry update failed #{@freereg1_csv_entry.errors.full_messages}"
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
@@ -67,7 +78,9 @@ class Freereg1CsvEntriesController < ApplicationController
 
     # need to deal with change in place
     @freereg1_csv_file.freereg1_csv_entries << @freereg1_csv_entry
+
     @freereg1_csv_entry.save
+
     if @freereg1_csv_file.errors.any?
       message = "The entry creation failed #{@freereg1_csv_entry.errors.full_messages}"
       redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
@@ -265,7 +278,13 @@ class Freereg1CsvEntriesController < ApplicationController
     @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
 
     params[:freereg1_csv_entry] = @freereg1_csv_entry.adjust_parameters(params[:freereg1_csv_entry])
-    proceed = @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
+    
+    original_transcriber = @freereg1_csv_entry.transcribed_by
+    @freereg1_csv_entry.assign_attributes(freereg1_csv_entry_params)
+    @freereg1_csv_entry.transcribed_by ||= original_transcriber
+    #proceed = @freereg1_csv_entry.update_attributes(freereg1_csv_entry_params)
+    proceed = @freereg1_csv_entry.save
+
     message = @freereg1_csv_entry.errors.full_messages
     message = message + @freereg1_csv_entry.embargo_records.last.errors.full_messages unless @freereg1_csv_entry.embargo_records.blank?
     redirect_back(fallback_location: edit_freereg1_csv_entry_path(@freereg1_csv_entry), notice: "The update of the entry failed #{message}.") && return unless proceed

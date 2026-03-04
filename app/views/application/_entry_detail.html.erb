@@ -115,7 +115,11 @@
             </tr>
           <% end%>
           <% when 'credit' %>
-          <% creditable =  @file.credit_name %>
+          <%#   Display the Credit for this entry. 
+                If the entry has a credit (new entries), use it. 
+                Otherwise, fall back to the file’s credit_name (older entries without a credit field). 
+          %>
+          <% creditable =  @entry.credit || @file.credit_name %>
           <% if creditable.present? %>
             <tr>
               <td ><%= field.gsub('_',' ').capitalize %></td>
