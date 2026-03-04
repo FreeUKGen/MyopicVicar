@@ -90,7 +90,102 @@ namespace :refinery do
     end
 
     # Helper method to find resource file
-    def find_resource_file(base_dir, resource, resource_name)
+def find_resource_file(base_dir, resource, resource_name)
+  return nil unless Dir.exist?(base_dir)
+
+  # Get resource UID (Refinery uses file_uid)
+  resource_uid = if resource.respond_to?(:file_uid)
+                   resource.file_uid
+                 elsif resource.respond_to?(:resource_uid)
+                   resource.resource_uid
+                 elsif resource.respond_to?(:uid)
+                   resource.uid
+                 else
+                   nil
+                 end
+
+  # Strategy 0: If file_uid contains a path (has slashes), use it directly
+  if resource_uid.present? && resource_uid.include?('/')
+    # file_uid already contains the full path like "2019/11/21/filename.ext"
+    direct_path = base_dir.join(resource_uid)
+    return direct_path if File.exist?(direct_path)
+
+    # Also try with the basename in case the path structure changed
+    filename = File.basename(resource_uid)
+    date_path = resource_uid.split('/')[0..2].join('/') # Extract YYYY/MM/DD
+    date_dir = base_dir.join(date_path)
+    if Dir.exist?(date_dir)
+      direct_path = date_dir.join(filename)
+      return direct_path if File.exist?(direct_path)
+    end
+  end
+
+  # Strategy 1: Use created_at date to build path (most efficient and accurate)
+  if resource.respond_to?(:created_at) && resource.created_at.present?
+    date_path = resource.created_at.strftime('%Y/%m/%d')
+    date_dir = base_dir.join(date_path)
+
+    if Dir.exist?(date_dir)
+      # Look for exact filename match first
+      if resource_name.present?
+        sanitized_name = sanitize_filename(resource_name)
+        exact_path = date_dir.join(sanitized_name)
+        return exact_path if File.exist?(exact_path)
+      end
+
+      # Look for files matching the pattern (uid_filename.ext)
+      # Files are named like: {uid}_{original_filename}.ext
+      if resource_uid.present?
+        # Extract just the UID part if file_uid contains a path
+        uid_only = resource_uid.include?('/') ? File.basename(resource_uid).split('_').first : resource_uid
+        uid_pattern = "#{uid_only}_*"
+        found = Dir.glob(date_dir.join(uid_pattern)).first
+        return found if found && File.exist?(found) && !File.directory?(found)
+      end
+
+      # Fallback: case-insensitive partial match
+      if resource_name.present?
+        sanitized_name = sanitize_filename(resource_name)
+        found = Dir.glob(date_dir.join('*')).find do |file|
+          next if file.end_with?('.meta.yml') || file.end_with?('.meta') || File.directory?(file)
+          basename = File.basename(file).downcase
+          basename == sanitized_name.downcase || basename.include?(sanitized_name.downcase)
+        end
+        return found if found && File.exist?(found)
+      end
+    end
+  end
+
+  # Strategy 2: Search by UID in filename (more targeted than full recursive)
+  if resource_uid.present?
+    # Extract just the UID part if file_uid contains a path
+    uid_only = resource_uid.include?('/') ? File.basename(resource_uid).split('_').first : resource_uid
+
+    # Search only in date-based subdirectories (YYYY/MM/DD)
+    date_dirs = Dir.glob(base_dir.join('*', '*', '*')).select { |d| File.directory?(d) }
+    date_dirs.each do |date_dir|
+      uid_pattern = "#{uid_only}_*"
+      found = Dir.glob(File.join(date_dir, uid_pattern)).first
+      return found if found && File.exist?(found) && !File.directory?(found)
+    end
+  end
+
+  # Strategy 3: Last resort - recursive search (slow, but only if other methods fail)
+  if resource_name.present?
+    sanitized_name = sanitize_filename(resource_name)
+    # Limit search depth to prevent excessive scanning
+    found = Dir.glob(base_dir.join('**', '*')).find do |file|
+      next if file.end_with?('.meta.yml') || file.end_with?('.meta') || File.directory?(file)
+      File.basename(file).downcase == sanitized_name.downcase
+    end
+    return found if found && File.exist?(found)
+  end
+
+  nil
+end
+
+    # Helper method to find resource file
+    def find_resource_file_o(base_dir, resource, resource_name)
       return nil unless Dir.exist?(base_dir)
 
       # Get resource UID (Refinery uses file_uid)
