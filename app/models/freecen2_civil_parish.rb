@@ -192,6 +192,7 @@ class Freecen2CivilParish
   # :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Instance methods :::::::::::::::::::::::::::::::::::::::
 
   def add_standard_names
+    return if frozen? 
     self.standard_name = Freecen2Place.standard_place(name)
   end
 
