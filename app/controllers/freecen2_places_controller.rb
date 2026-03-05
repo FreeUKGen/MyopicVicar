@@ -553,7 +553,8 @@ class Freecen2PlacesController < ApplicationController
       if proceed
         flash[:notice] = 'The update of the Place was successful'
         @place_after_edit = Freecen2Place.find_by("_id": params[:id])
-        Freecen2Place.notify_county_coord_of_place_update(@place_after_edit)
+        @user = get_user
+        Freecen2Place.notify_county_coord_of_place_update(@place_after_edit, @user)
         redirect_to freecen2_place_path(@place)
       else
         flash[:notice] = 'The update of the Place was unsuccessful'

@@ -320,20 +320,18 @@ class Freecen2Place
       [place_alternate_valid, place_id]
     end
 
-    def notify_county_coord_of_place_update(place_after_edit)
+    def notify_county_coord_of_place_update(place_after_edit, user)
       county_name = ChapmanCode.name_from_code(place_after_edit.chapman_code)
-      syndicate_code = county_name + ' Syndicate'
-      coord_user_id = Syndicate.find_by(syndicate_code: syndicate_code).syndicate_coordinator
-      coord = UseridDetail.find_by(userid: coord_user_id)
-      if coord.present?
+      county_coord_id = County.find_by(chapman_code: place_after_edit.chapman_code)
+      if county_coord_id.present?
+        coord = UseridDetail.find_by(userid: county_coord_id)
         email_to = coord.email_address if coord.present?
-      else
+      end
+      unless county_coord_id.present? && coord.present?
         dm = UseridDetail.role('data_manager').email_address_valid.first
         email_to = dm.email_address if dm.present?
       end
       place_before_edit = place_after_edit[:freecen2_place_edits].last
-      editor_user = UseridDetail.find_by(userid: place_before_edit['editor'])
-
       alternates_before_edit = '(' + place_before_edit['previous_alternate_place_names'].join(', ') + ')'
       alternate_place_names_after_edit = []
       place_after_edit.alternate_freecen2_place_names.each do |alternate|
@@ -358,7 +356,7 @@ class Freecen2Place
 
       # Intro
       lines << "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code})"
-      lines << "Modified by user: #{editor_user.userid} (#{editor_user.person_forename} #{editor_user.person_surname}) Reason: #{reason}"
+      lines << "Modified by user: #{user.userid} (#{user.person_forename} #{user.person_surname}) Reason: #{reason}"
       lines << ''
       lines << 'Modified fields are marked with a *'
       lines << ''
