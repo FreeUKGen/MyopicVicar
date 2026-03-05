@@ -1,5 +1,9 @@
 development:
   template_set: 'freecen'
+  # Set master: '1' on the master server; leave blank on replicas
+  master:
+  # URL of the FreeBMD master server (e.g. https://www.freebmd.org.uk); leave blank for single-server
+  freebmd_master_url:
   advert_key:
     data_ad_client:
     data_ad_slot_header:
@@ -9,6 +13,8 @@ development:
 
 test:
   template_set: 'freecen'
+  master:
+  freebmd_master_url:
   advert_key:
     data_ad_client:
     data_ad_slot_header:
@@ -18,6 +24,8 @@ test:
 
 production:
   template_set: 'freecen'
+  master:
+  freebmd_master_url:
   advert_key:
     data_ad_client:
     data_ad_slot_header:

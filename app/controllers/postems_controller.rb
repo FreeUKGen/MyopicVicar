@@ -1,38 +1,56 @@
 class PostemsController < ApplicationController
+  include MasterOnlyRedirect
+
   skip_before_action :require_login
+  before_action :redirect_to_master_unless_master, only: [:create]
   require 'rails_autolink'
 
   def create
-    unless spam_alert(postem_params[:honeypot])
-    	@postem = Postem.new(postem_params.delete_if { |_k, v| v.blank? })
-    	@record = BestGuessHash.where(Hash: postem_params[:Hash]).first.best_guess
-      @search_query = SearchQuery.where(id: params[:search_query]).first
-    	@postem.QuarterNumberEvent = (@record.QuarterNumber * 3) + @record.RecordTypeID
-    	@postem.RecordInfo = "#{@record.Surname}|#{@record.GivenName}|#{@record.AgeAtDeath}#{@record.AssociateName}|#{@record.District}|#{@record.Volume}|#{@record.Page}"
-    	@postem.SourceInfo = request.remote_ip
-      @postem.Created = Time.now.strftime('%s')
-    	if @postem.save
-    		flash[:notice] = "Added Postem successfully"
-    	else
-    		flash[:notice] = "Unsuccessful. Please Retry"
-    		redirect_to :back
-    	end
-      if @search_query.present?
-        redirect_to friendly_bmd_record_details_path(@search_query.id,@record.RecordNumber, @record.friendly_url)
-      else
-        redirect_to friendly_bmd_record_details_non_search_path(@record.RecordNumber, @record.friendly_url)
-      end
-    end
-  end
+    return if spam_detected?(postem_params[:honeypot])
 
-  def spam_alert honeypot
-    honeypot.present?
+    best_guess_hash = BestGuessHash.find_by(Hash: postem_params[:Hash])
+    unless best_guess_hash
+      flash[:notice] = "Record not found."
+      redirect_back(fallback_location: root_path) && return
+    end
+
+    @record = best_guess_hash.best_guess
+    @postem = build_postem(@record)
+    @search_query = SearchQuery.find_by(id: params[:search_query])
+
+    if @postem.save
+      flash[:notice] = "Added Postem successfully"
+      redirect_to postem_success_redirect_path
+    else
+      flash[:notice] = "Unsuccessful. Please Retry"
+      redirect_back(fallback_location: root_path)
+    end
   end
 
   private
 
+  def spam_detected?(honeypot)
+    honeypot.present?
+  end
+
+  def build_postem(record)
+    postem = Postem.new(postem_params.except(:honeypot).delete_if { |_k, v| v.blank? })
+    postem.QuarterNumberEvent = (record.QuarterNumber * 3) + record.RecordTypeID
+    postem.RecordInfo = [record.Surname, record.GivenName, "#{record.AgeAtDeath}#{record.AssociateName}", record.District, record.Volume, record.Page].join('|')
+    postem.SourceInfo = request.remote_ip
+    postem.Created = Time.current.to_i.to_s
+    postem
+  end
+
+  def postem_success_redirect_path
+    if @search_query.present?
+      friendly_bmd_record_details_path(@search_query.id, @record.RecordNumber, @record.friendly_url)
+    else
+      friendly_bmd_record_details_non_search_path(@record.RecordNumber, @record.friendly_url)
+    end
+  end
+
   def postem_params
     params.require(:postem).permit!
   end
-
 end

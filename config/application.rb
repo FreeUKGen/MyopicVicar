@@ -59,6 +59,8 @@ module MyopicVicar
     config.search_table = app['search_table']
     config.advert_key = app['advert_key']
     config.gtm_key = app['gtm_key']
+    config.master = app['master'].presence || ENV['MASTER'].presence
+    config.freebmd_master_url = app['freebmd_master_url'].presence || ENV['FREEBMD_MASTER_URL'].presence
     config.district_data_csv = app['district_data_csv']
     # Custom directories with classes and modules you want to be autoloadable.
      config.autoload_paths += %W(#{config.root}/app/models/freebmd/)
