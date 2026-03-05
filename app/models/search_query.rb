@@ -558,24 +558,78 @@ class SearchQuery
     filtered_records
   end
 
-  def get_and_sort_results_for_display
-    if self.search_result.records.respond_to?(:values)
-      search_results = self.search_result.records.values
-      search_results = self.filter_name_types(search_results)
-      search_results = self.filter_embargoed(search_results)
-      search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
-      result_count = search_results.length.present? ? search_results.length : 0
-      search_results = self.sort_results(search_results) unless search_results.nil?
+  # def get_and_sort_results_for_display
+  #   if self.search_result.records.respond_to?(:values)
+  #     search_results = self.search_result.records.values
+  #     search_results = self.filter_name_types(search_results)
+  #     search_results = self.filter_embargoed(search_results)
+  #     search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
+  #     result_count = search_results.length.present? ? search_results.length : 0
+  #     search_results = self.sort_results(search_results) unless search_results.nil?
 
-      ucf_results = self.ucf_results if self.ucf_results.present?
-      ucf_results = [] if ucf_results.blank?
-      response = true
-      return response, search_results.map{ |h| SearchRecord.new(h) }, ucf_results, result_count
-    else
-      response = false
-      return response
+  #     ucf_results = self.ucf_results if self.ucf_results.present?
+  #     ucf_results = [] if ucf_results.blank?
+  #     response = true
+  #     return response, search_results.map{ |h| SearchRecord.new(h) }, ucf_results, result_count
+  #   else
+  #     response = false
+  #     return response
+  #   end
+  # end
+
+  def get_and_sort_results_for_display
+    unless self.search_result&.records.respond_to?(:values)
+      Rails.logger.warn { "SearchQuery#get_and_sort_results_for_display: No records found or records not hash-like" }
+      return false
     end
+
+    # Step 1: Extract values
+    search_results = self.search_result.records.values.compact
+    # Rails.logger.info { "[GetSortDisplay] ---Step 1: Extracted raw results (search records) (#{search_results.size})\n#{search_results}" }
+
+    # Step 2: Filter name types
+    search_results = filter_name_types(search_results)
+    # Rails.logger.info { "[GetSortDisplay] ---Step 2: After filter_name_types (search records) (#{search_results.size})\n#{search_results}" }
+
+    # Step 3: Filter embargoed
+    search_results = filter_embargoed(search_results)
+    # Rails.logger.info { "[GetSortDisplay] ---Step 3: After filter_embargoed (search records) (#{search_results.size})\n#{search_results}" }
+
+    # Step 4: Census additional fields (only for FreeCEN)
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      search_results = filter_census_addional_fields(search_results)
+      Rails.logger.info { "[GetSortDisplay] ---Step 4: After filter_census_additional_fields (#{search_results.size})\n#{search_results}" }
+    end
+
+    # Step 5: Count results safely
+    result_count = search_results.present? ? search_results.length : 0
+    # Rails.logger.info { "[GetSortDisplay] ---Step 5: Result count = #{result_count}" }
+
+    # Step 6: Sort results safely
+    search_results = sort_results(search_results) if search_results.present?
+    # Rails.logger.info { "[GetSortDisplay] ---Step 6: After sort_results (#{search_results.size})\n#{search_results}" }
+
+    # Step 7: Handle UCF results safely
+    ucf_results = self.ucf_results.presence || []
+    # Rails.logger.info { "[GetSortDisplay] ---Step 7: UCF results (#{ucf_results.size})\n#{ucf_results}" }
+
+    # Step 8: Wrap results in SearchRecord objects
+    wrapped_results = search_results.map { |h| SearchRecord.new(h) }
+    # Rails.logger.info { "[GetSortDisplay] ---Step 8: Wrapped results into SearchRecord objects\n#{wrapped_results}" }
+
+    # Step 8.5: Deduplicate — remove UCF results that are already in normal results
+    search_result_ids = wrapped_results.map(&:id).to_set
+    ucf_results = ucf_results.reject { |record| search_result_ids.include?(record.id) }
+    # Rails.logger.info { "[GetSortDisplay] ---Step 8.5: After deduplication (#{ucf_results.size})\n#{ucf_results}" }
+
+    # Final return
+    response = true
+    return response, wrapped_results, ucf_results, result_count
+  rescue => e
+    Rails.logger.error { "[GetSortDisplay] ---Error in get_and_sort_results_for_display: #{e.message}\n#{e.backtrace.take(5).ai(plain: true)}" }
+    return false
   end
+
 
   def include_record_for_fuzzy_search(search_name)
     include_record = false
