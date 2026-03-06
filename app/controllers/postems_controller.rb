@@ -8,6 +8,11 @@ class PostemsController < ApplicationController
   def create
     return if spam_detected?(postem_params[:honeypot])
 
+    if postem_hash_blocked?(postem_params[:Hash])
+      flash[:notice] = "Postems cannot be added for this record."
+      redirect_back(fallback_location: root_path) && return
+    end
+
     best_guess_hash = BestGuessHash.find_by(Hash: postem_params[:Hash])
     unless best_guess_hash
       flash[:notice] = "Record not found."
@@ -19,10 +24,11 @@ class PostemsController < ApplicationController
     @search_query = SearchQuery.find_by(id: params[:search_query])
 
     if @postem.save
-      flash[:notice] = "Added Postem successfully"
+      set_postem_flag_on_record(@record)
+      flash[:notice] = "Added Postem successfully. Please note that it may take up to 24 hours for this entry to be marked as having a postem in search results."
       redirect_to postem_success_redirect_path
     else
-      flash[:notice] = "Unsuccessful. Please Retry"
+      flash[:notice] = @postem.errors.full_messages.join('; ')
       redirect_back(fallback_location: root_path)
     end
   end
@@ -31,6 +37,21 @@ class PostemsController < ApplicationController
 
   def spam_detected?(honeypot)
     honeypot.present?
+  end
+
+  def postem_hash_blocked?(hash_value)
+    return false if hash_value.blank?
+    blocked = Rails.application.config.respond_to?(:postem_blocked_hashes) ? Rails.application.config.postem_blocked_hashes : []
+    blocked.is_a?(Array) && blocked.include?(hash_value.to_s)
+  end
+
+  # Set the ENTRY_POSTEM bit on BestGuess (and BestGuessMarriage if present) so the record
+  # is immediately marked as having postems (search icon, redirect-to-master logic).
+  def set_postem_flag_on_record(best_guess_record)
+    new_confirmed = (best_guess_record.Confirmed.to_i | BestGuess::ENTRY_POSTEM)
+    best_guess_record.update_column(:Confirmed, new_confirmed)
+    marriage = BestGuessMarriage.find_by(RecordNumber: best_guess_record.RecordNumber)
+    marriage&.update_column(:Confirmed, (marriage.Confirmed.to_i | BestGuess::ENTRY_POSTEM))
   end
 
   def build_postem(record)
