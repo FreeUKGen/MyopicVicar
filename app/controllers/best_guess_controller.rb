@@ -26,8 +26,8 @@ class BestGuessController < ApplicationController
       redirect_back(fallback_location: root_path) && return
     end
 
-    # Only master has Postem rows; if this record has the postem flag, serve from master
-    if record_has_postem_flag?(@current_record)
+    # Only master has Postem rows; if this record has postems, serve from master
+    if record_has_postems?(@current_record)
       redirect_to_master_for_postem_display_if_not_master and return
     end
 
@@ -73,7 +73,7 @@ class BestGuessController < ApplicationController
     record_number = params[:entry_id]
     @search_id = params[:search_id] if @search
     @current_record = BestGuess.where(RecordNumber: record_number).first
-    if @current_record && record_has_postem_flag?(@current_record)
+    if @current_record && record_has_postems?(@current_record)
       redirect_to_master_for_postem_display_if_not_master and return
     end
     @spouse_record =  @current_record.get_spouse_record
@@ -303,11 +303,6 @@ class BestGuessController < ApplicationController
 
   def clean_session_for_saved_entry
     session.delete(:search_entry_number)
-  end
-
-  def record_has_postem_flag?(record)
-    return false unless record
-    (record.Confirmed.to_i & BestGuess::ENTRY_POSTEM) != 0
   end
 
 end
