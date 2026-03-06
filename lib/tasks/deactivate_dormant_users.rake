@@ -11,14 +11,14 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     csv_file.puts line.to_s
   end
 
-  def self.write_csv_line(syndicate, userid, username, joined, lastupload, users_to_deacivate)
+  def self.write_csv_line(syndicate, userid, username, joined, confirmed_email, lastupload, users_to_deacivate)
 
     if users_to_deacivate.zero?
       synd_text = syndicate.gsub(/[\s,]/, '_').gsub('__', '_')
       @file_for_listing = "log/Deactivate_dormant_users_#{synd_text}_#{@file_date}.csv"
       FileUtils.mkdir_p(File.dirname(@file_for_listing)) unless File.exist?(@file_for_listing)
       @file_for_listing = File.new(@file_for_listing, 'w')
-      hline = 'UserId,Username,Joined,LastUpload'
+      hline = 'UserId,Username,Joined,ConfirmedEmail,LastUpload'
       output_to_csv(@file_for_listing, hline)
       @report_csv = hline
     end
@@ -27,6 +27,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
     dline << "#{userid},"
     dline << "#{username},"
     dline << "#{joined},"
+    dline << "#{confirmed_email},"
     dline << "#{lastupload}"
     output_to_csv(@file_for_listing, dline)
     @report_csv += "\n"
@@ -115,7 +116,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
 
     @synd_coord_email = synd_coord.email_address
 
-    active_users = UseridDetail.where(:syndicate => synd.syndicate_code, :active => true, :sign_up_date.lt => @cutoff_date)
+    active_users = UseridDetail.where(:syndicate => synd.syndicate_code, :active => true, :sign_up_date.lt => @cutoff_date, :email_address_last_confirmned.lt => @cutoff_date)
 
     users_to_deacivate = 0
     # results = []
@@ -129,9 +130,10 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
 
       user_full_name = "#{user.person_forename} #{user.person_surname}"
       joined = user.sign_up_date.strftime('%d/%m/%Y')
+      confirmed_email = user.email_address_last_confirmned.strftime('%d/%m/%Y')
       last_upload = last_file.nil? ? 'None' : last_file.uploaded_date.strftime('%d/%m/%Y')
 
-      write_csv_line(@syndicate, user.userid, user_full_name, joined, last_upload, users_to_deacivate)
+      write_csv_line(@syndicate, user.userid, user_full_name, joined, confirmed_email, last_upload, users_to_deacivate)
       users_to_deacivate += 1
 
       if @mode == 'UPDATE'
