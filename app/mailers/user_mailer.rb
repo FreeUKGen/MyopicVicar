@@ -476,6 +476,11 @@ class UserMailer < ActionMailer::Base
 
   end
 
+  def report_for_syndicate_coord(email_subject, email_body, report, report_name, email_to, cc_email)
+    attachments[report_name] = { :mime_type => 'text/csv', :content => report }
+    mail(:to => email_to, :bcc => cc_email, :subject => email_subject, :body => email_body)
+  end
+
   def request_cc_image_server_group(sc, cc_email, group)
     @appname = appname
     subject = 'SC request image group'
