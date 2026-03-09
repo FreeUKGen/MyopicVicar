@@ -1,5 +1,5 @@
 desc "Deactivate active users who have not uploaded a CSV file since the specified  months"
-task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do |_t, args|
+task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicates] => :environment do |_t, args|
 
   require 'user_mailer'
 
@@ -73,9 +73,24 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
   @mode = args.mode.upcase
   valid_modes = %w[PREVIEW REVIEW UPDATE]
 
-  unless valid_modes.include?(@mode)
-    abort 'Invalid mode argument. Must be PREVIEW, REVIEW or UPDATE'
+  abort 'Invalid mode argument. Must be PREVIEW, REVIEW or UPDATE' unless valid_modes.include?(@mode)
+
+  @ignore_syndicates = []
+  if args.exclude_syndicates.present?
+    abort 'Invalid exclude_syndicates argument. Only relevant if mode = UPDATE' unless @mode == 'UPDATE'
+    abort 'Invalid exclude_syndicates argument. Syndicate names (with the word Syndicate omitted) must be enclosed in round brackets' unless args.exclude_syndicates.first == '(' && args.exclude_syndicates.last == ')'
+    syndicates = args.exclude_syndicates[1..-2].split(',')
+    syndicates.each do |synd|
+      synd_code = "#{synd} Syndicate"
+      syndicate = Syndicate.find_by(syndicate_code: synd_code)
+      abort "Invalid exclude_syndicate value #{synd} (#{synd_code})" if syndicate.blank?
+      @ignore_syndicates << "#{synd} Syndicate"
+    end
+    log_message = "Ignoring:  #{@ignore_syndicates}"
+    output_to_log(file_for_log, log_message)
+    p log_message
   end
+
   @months = args.months.to_i
   abort 'Invalid months argumant. Must be a positive integer' if @months <= 0
   bcc_userid = args.email_user
@@ -100,7 +115,9 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
   Syndicate.all.asc(:syndicate_code).each do |synd|
     next if synd.syndicate_code == 'Technical' || synd.syndicate_code == 'Any Questions Ask Us'
 
-    # next unless synd.syndicate_code == 'Essex Syndicate'      # AEV TESTING
+    next if @ignore_syndicates.include?(synd.syndicate_code)
+
+    next unless synd.syndicate_code == 'Essex Syndicate' || synd.syndicate_code == 'London Syndicate'        # AEV TESTING
 
     @syndicate = synd.syndicate_code
 
@@ -116,7 +133,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
 
     @synd_coord_email = synd_coord.email_address
 
-    active_users = UseridDetail.where(:syndicate => synd.syndicate_code, :active => true, :sign_up_date.lt => @cutoff_date, :email_address_last_confirmned.lt => @cutoff_date)
+    active_users = UseridDetail.where(:syndicate => synd.syndicate_code, :active => true, :sign_up_date.lt => @cutoff_date, :email_address_last_confirmned.lt => @cutoff_date).order_by(userid_lower_case: 1)
 
     users_to_deacivate = 0
     # results = []
@@ -137,11 +154,11 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
       users_to_deacivate += 1
 
       if @mode == 'UPDATE'
-        user.update_attributes(active: false)
+        # user.update_attributes(active: false)end
+        user.update_attributes(active: false) unless deactivated_users.positive?       # AEV TEST
         deactivated_users += 1
       end
     end
-
 
     if users_to_deacivate.positive?
 
@@ -157,6 +174,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user] => :environment do
       p log_message
 
     end
+
   end
 
   log_message = @mode == 'UPDATE' ? "Total users deactivated = #{deactivated_users}" : "Total users that would be deactivated = #{total_users_to_deactive}"
