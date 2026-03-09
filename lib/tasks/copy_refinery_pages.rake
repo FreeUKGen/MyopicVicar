@@ -43,15 +43,12 @@ namespace :refinery do
         end
         
         # Build the file path: parent directories + current page
+        # Parent pages are always placed in the parent directory (like about.html.erb)
+        # Children will be placed in the subdirectory (like about/cookie-policy.html.erb)
         if parent_dirs.any?
           # Create nested directory structure
           dir_path = parent_dirs.join(File::SEPARATOR)
-          
-          # Place the page file at the parent directory level (outside its own directory)
-          # This matches the pattern used for top-level pages like "about.html.erb"
-          # - Parent page: information-for-transcribers/flexible-csv-format.html.erb
-          # - Child pages: information-for-transcribers/flexible-csv-format/child.html.erb
-          # This ensures the parent page URL works directly: /information-for-transcribers/flexible-csv-format
+          # Always put the page file in the parent directory, even if it has children
           file_name = "#{dir_path}#{File::SEPARATOR}#{page_slug}.html.erb"
         else
           # No parent directories - put at root level
@@ -72,55 +69,6 @@ namespace :refinery do
       
       # Return full path
       target_base.join(file_name)
-    end
-    
-    def process_resource_links(content)
-      # Convert relative resource links (e.g., href="filename.pdf") to asset_path
-      # Pattern: href="filename.ext" where filename doesn't start with http://, https://, or /
-      # This matches Refinery resource filenames like "5t0ax7z182_The_Embargo_System.pdf"
-      # File extensions: pdf, docx, csv, rtf, jpg, jpeg, png, gif (case insensitive)
-      content = content.gsub(/href=["']([^"'\s]+\.(pdf|docx|csv|rtf|jpg|jpeg|png|gif))["']/i) do |match|
-        filename = $1
-        # Skip if it's already an ERB tag or an absolute URL
-        if match.include?('<%=') || filename.start_with?('http://', 'https://', '/', '<%=')
-          match
-        else
-          "href=\"<%= asset_path('#{filename}') %>\""
-        end
-      end
-      
-      # Convert /system/resources/... links to asset_path
-      content = content.gsub(/href=["']\/system\/resources\/([^"']+)["']/) do |match|
-        filename = $1
-        # Extract just the filename if there's a path
-        filename = File.basename(filename)
-        "href=\"<%= asset_path('#{filename}') %>\""
-      end
-      
-      # Convert /system/images/... links to image_tag
-      content = content.gsub(/<img([^>]*)\ssrc=["']\/system\/images\/([^"']+)["']([^>]*)>/i) do |match|
-        attrs_before = $1
-        image_path = $2
-        attrs_after = $3
-        # Extract just the filename
-        filename = File.basename(image_path)
-        # Parse existing attributes to preserve them
-        alt_match = match.match(/alt=["']([^"']*)["']/i)
-        title_match = match.match(/title=["']([^"']*)["']/i)
-        width_match = match.match(/width=["']?(\d+)["']?/i)
-        height_match = match.match(/height=["']?(\d+)["']?/i)
-        
-        # Build image_tag with preserved attributes
-        tag_parts = ["'#{filename}'"]
-        tag_parts << "alt: '#{alt_match[1]}'" if alt_match
-        tag_parts << "title: '#{title_match[1]}'" if title_match
-        tag_parts << "width: #{width_match[1]}" if width_match
-        tag_parts << "height: #{height_match[1]}" if height_match
-        
-        "<%= image_tag #{tag_parts.join(', ')} %>"
-      end
-      
-      content
     end
     
     def extract_page_content(page)
@@ -174,18 +122,15 @@ namespace :refinery do
           content_parts << "<h2>#{escaped_part_title}</h2>"
         end
         
-        # Process resource links to convert them to asset_path/image_tag helpers
-        processed_body = process_resource_links(part_body)
-        
         # Add part body - preserve ALL HTML including style tags, scripts, etc.
-        # The body content is preserved exactly as stored in Refinery, except for resource links
+        # The body content is preserved exactly as stored in Refinery
         # This includes: 
         #   - <style scoped="scoped"> tags with CSS
         #   - Inline styles (style="...")
         #   - All HTML structure (divs, forms, images, links, etc.)
         #   - Scripts and any other HTML content
-        # Resource links are converted to use asset_path/image_tag helpers
-        content_parts << processed_body
+        # No escaping or modification is performed - content is written as-is
+        content_parts << part_body
       end
       
       # Join all parts with line breaks
@@ -347,5 +292,3 @@ namespace :refinery do
     puts "Done!"
   end
 end
-
-
