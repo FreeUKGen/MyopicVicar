@@ -114,10 +114,10 @@ class UserMailer < ActionMailer::Base
         subject = "#{@userid.userid}/#{batch} processed with #{errors} errors over period #{datemin}-#{datemax}"
       else
         # Scenario 2: Does NOT match county_groups (Cross-County Upload)
-        subject = "* * * ALERT! Data was uploaded to your county from: #{@userid.userid}/#{batch} processed at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')} * * *"
+        subject = "* * * ALERT! Data was uploaded to your county from: #{@userid.userid}/#{batch} * * *"
         
         # Prepend the alert text to the body message
-        alert_text = "ALERT! This file was uploaded to your county by a UserID from a county group not associated with your county\n\n"
+        alert_text = "<p>ALERT! This file was uploaded to your county by a UserID from a county group not associated with your county.<\p>"
         @message = alert_text + @message
       end
     when 'freecen'
