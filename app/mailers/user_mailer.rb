@@ -73,21 +73,59 @@ class UserMailer < ActionMailer::Base
     adjust_email_recipients(subject)
   end
 
+  # def batch_processing_success(message, user, batch)
+  #   @appname = appname
+  #   @message = File.read(message)
+  #   @userid, @userid_email = user_email_lookup(user)
+  #   @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
+  #   @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
+  #   @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
+  #   case appname.downcase
+  #   when 'freereg'
+  #     subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+  #   when 'freecen'
+  #     subject = "#{@userid.userid} processed #{batch} at #{Time.now} "
+  #   end
+  #   adjust_email_recipients(subject)
+  # end
+
   def batch_processing_success(message, user, batch)
     @appname = appname
     @message = File.read(message)
     @userid, @userid_email = user_email_lookup(user)
     @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
+    
     @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
+    
     case appname.downcase
     when 'freereg'
-      subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+      # Determine the county of the uploaded file
+      file_county = @batch.present? ? @batch.county : extract_chapman_code_from_file_name(batch)[0]
+      
+      # Check if the file's county is within the transcriber's county_groups
+      user_county_groups = @userid.county_groups || []
+      
+      if user_county_groups.include?(file_county)
+        # Scenario 1: Matches county_groups
+        errors = @batch.present? ? @batch.error : 0
+        datemin = @batch.present? ? @batch.datemin : ''
+        datemax = @batch.present? ? @batch.datemax : ''
+        subject = "#{@userid.userid}/#{batch} processed with #{errors} errors over period #{datemin}-#{datemax}"
+      else
+        # Scenario 2: Does NOT match county_groups (Cross-County Upload)
+        subject = "* * * ALERT! Data was uploaded to your county from: #{@userid.userid}/#{batch} processed at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')} * * *"
+        
+        # Prepend the alert text to the body message
+        alert_text = "ALERT! This file was uploaded to your county by a UserID from a county group not associated with your county\n\n"
+        @message = alert_text + @message
+      end
     when 'freecen'
       subject = "#{@userid.userid} processed #{batch} at #{Time.now} "
     end
+    
     adjust_email_recipients(subject)
-  end
+  end  
 
   def communicate_github_issue_creation(feedback)
     @feedback = feedback
