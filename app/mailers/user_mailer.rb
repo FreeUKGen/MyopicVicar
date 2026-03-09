@@ -63,15 +63,31 @@ class UserMailer < ActionMailer::Base
     ccs_emails
   end
 
+  # def batch_processing_failure(message, user, batch)
+  #   @appname = appname
+  #   @message = File.read(message)
+  #   @userid, @userid_email = user_email_lookup(user)
+  #   @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
+  #   @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
+  #   subject = "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}"
+  #   adjust_email_recipients(subject)
+  # end
+
   def batch_processing_failure(message, user, batch)
     @appname = appname
     @message = File.read(message)
     @userid, @userid_email = user_email_lookup(user)
+
     @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
-    subject = "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}"
+    
+    # Use the safe navigation operator and fallback to the 'user' string
+    uid = @userid&.userid || user
+    subject = "#{uid}/#{batch} processing encountered serious problem at #{Time.now}"
+    
     adjust_email_recipients(subject)
   end
+
 
   # def batch_processing_success(message, user, batch)
   #   @appname = appname
@@ -621,18 +637,40 @@ class UserMailer < ActionMailer::Base
 
   private
 
+  # def adjust_email_recipients(message)
+  #   if @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
+  #     if @county_coordinator == @syndicate_coordinator
+  #       mail(:to => @userid_email, :cc => @syndicate_coordinator_email, :subject => message)
+  #     else
+  #       mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => message)
+  #     end
+  #   else
+  #     if @county_coordinator == @syndicate_coordinator
+  #       mail(:to => @syndicate_coordinator_email, :subject => message)
+  #     else
+  #       mail(:to => @syndicate_coordinator_email, :cc => @county_coordinator_email, :subject => message)
+  #     end
+  #   end
+  # end
+
   def adjust_email_recipients(message)
-    if @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
-      if @county_coordinator == @syndicate_coordinator
-        mail(:to => @userid_email, :cc => @syndicate_coordinator_email, :subject => message)
-      else
-        mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => message)
-      end
+    user = @userid
+    # nil-safe check for eligibility
+    eligible = user.present? && user.active && user.email_address_valid &&
+    user.registration_completed(user) && !user.no_processing_messages
+    
+    # Check if user exists FIRST, before assigning attributes on it
+    if eligible
+      cc_list = [@syndicate_coordinator_email, @county_coordinator_email].uniq
+      mail(to: @userid_email, cc: cc_list, subject: message)
     else
+
+      # Scenario: Invalid User - Sends to Syndicate (Exec Lead) and CCs County
       if @county_coordinator == @syndicate_coordinator
-        mail(:to => @syndicate_coordinator_email, :subject => message)
+        mail(to: @syndicate_coordinator_email, subject: message)
       else
-        mail(:to => @syndicate_coordinator_email, :cc => @county_coordinator_email, :subject => message)
+        mail(to: @syndicate_coordinator_email, cc: @county_coordinator_email, 
+            subject: message)
       end
     end
   end
@@ -706,94 +744,195 @@ class UserMailer < ActionMailer::Base
     [syndicate_coordinator, friendly_email]
   end
 
+  # def county_coordinator_email_lookup(file_name, userid)
+  #   if file_name.blank? || userid.blank?
+  #     case appname.downcase
+  #     when 'freereg'
+  #       county_coordinator, friendly_email = regmanager_email_lookup
+  #     when 'freecen'
+  #       county_coordinator, friendly_email = cenmanager_email_lookup
+  #     end
+  #   else
+  #     case appname.downcase
+  #     when 'freereg'
+  #       batch_id = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
+  #     when 'freecen'
+  #       batch_id = FreecenCsvFile.where(file_name: file_name, userid: userid).first
+  #     end
+  #     if batch_id.blank?
+  #       county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
+  #     else
+  #       county = County.where(chapman_code: batch_id.county).first
+  #       if county.present?
+  #         county_coordinator_id = county.county_coordinator
+  #         county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
+  #         if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
+  #           friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
+  #         else
+  #           county_coordinator, friendly_email = sndmanager_email_lookup
+  #         end
+  #       else
+  #         county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
+  #       end
+  #     end
+  #   end
+  #   [county_coordinator, friendly_email]
+  # end
+
   def county_coordinator_email_lookup(file_name, userid)
-    if file_name.blank? || userid.blank?
-      case appname.downcase
-      when 'freereg'
-        county_coordinator, friendly_email = regmanager_email_lookup
-      when 'freecen'
-        county_coordinator, friendly_email = cenmanager_email_lookup
+    # Check if we can identify the county from the file name first
+    if file_name.present?
+      # We try to find the batch in the DB if the userid is present
+      batch_id = find_batch_record(file_name, userid) if userid.present?
+
+      if batch_id.present?
+        # Found batch, look up its specific county
+        county_coordinator, friendly_email = lookup_by_county_code(batch_id.county)
+      else
+        # No batch or no userid? Extract code from filename
+        county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
       end
     else
-      case appname.downcase
-      when 'freereg'
-        batch_id = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
-      when 'freecen'
-        batch_id = FreecenCsvFile.where(file_name: file_name, userid: userid).first
-      end
-      if batch_id.blank?
-        county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
-      else
-        county = County.where(chapman_code: batch_id.county).first
-        if county.present?
-          county_coordinator_id = county.county_coordinator
-          county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
-          if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
-            friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
-          else
-            county_coordinator, friendly_email = sndmanager_email_lookup
-          end
-        else
-          county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
-        end
-      end
+      # No filename? Fallback to managers
+      county_coordinator, friendly_email = manager_fallback
     end
     [county_coordinator, friendly_email]
-  end
+  end  
+
+  # def regmanager_email_lookup
+  #   regmanager = UseridDetail.userid('REGManager').first
+  #   friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
+  #   friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
+  #   [regmanager, friendly_email]
+  # end
+
+  # def sbmanager_email_lookup
+  #   sbmanager = UseridDetail.userid('SBManager').first
+  #   friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sbmanager.blank?
+  #   friendly_email = "#{sbmanager.person_forename} #{sbmanager.person_surname} <#{sbmanager.email_address}>" if sbmanager.present?
+  #   [sbmanager, friendly_email]
+  # end
+
+  # def cenmanager_email_lookup
+  #   regmanager = UseridDetail.userid('CENManager').first
+  #   friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
+  #   friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
+  #   [regmanager, friendly_email]
+  # end
 
   def regmanager_email_lookup
-    regmanager = UseridDetail.userid('REGManager').first
-    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
-    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
-    [regmanager, friendly_email]
+    manager_lookup('REGManager')
   end
 
   def sbmanager_email_lookup
-    sbmanager = UseridDetail.userid('SBManager').first
-    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sbmanager.blank?
-    friendly_email = "#{sbmanager.person_forename} #{sbmanager.person_surname} <#{sbmanager.email_address}>" if sbmanager.present?
-    [sbmanager, friendly_email]
+    manager_lookup('SBManager')
   end
 
   def cenmanager_email_lookup
-    regmanager = UseridDetail.userid('CENManager').first
-    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
-    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
-    [regmanager, friendly_email]
+    manager_lookup('CENManager')
   end
+
+  def manager_lookup(role_id)
+    manager = UseridDetail.userid(role_id).first
+    if manager.present?
+      name = "#{manager.person_forename} #{manager.person_surname}"
+      friendly_email = "#{name} <#{manager.email_address}>"
+    else
+      # Global fallback if the specific role record is missing
+      friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>'
+    end
+    [manager, friendly_email]
+  end
+
+  # def sndmanager_email_lookup
+  #   sndmanager = UseridDetail.userid('FR Exec Lead').first
+  #   friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sndmanager.blank?
+  #   friendly_email = "#{sndmanager.person_forename} #{sndmanager.person_surname} <#{sndmanager.email_address}>" if sndmanager.present?
+  #   [sndmanager, friendly_email]
+  # end
 
   def sndmanager_email_lookup
     sndmanager = UseridDetail.userid('FR Exec Lead').first
-    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sndmanager.blank?
-    friendly_email = "#{sndmanager.person_forename} #{sndmanager.person_surname} <#{sndmanager.email_address}>" if sndmanager.present?
+
+    if sndmanager.present?
+      full_name = "#{sndmanager.person_forename} #{sndmanager.person_surname}"
+      friendly_email = "#{full_name} <#{sndmanager.email_address}>"
+    else
+      # Hardcoded fallback only if DB record is missing
+      friendly_email = "Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>"
+    end
+
     [sndmanager, friendly_email]
-  end
+  end  
+
+  # def extract_chapman_code_from_file_name(file_name)
+  #   case appname.downcase
+  #   when 'freereg'
+  #     parts = file_name.split('.')
+  #     chapman_code = parts[0].slice(0..2)
+  #   when 'freecen'
+  #     year, piece, _fields = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
+  #     actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
+  #     chapman_code = actual_piece.chapman_code if actual_piece.present?
+  #   end
+  #   if ChapmanCode.value?(chapman_code)
+  #     county = County.where(chapman_code: chapman_code).first
+  #     if county.present?
+  #       county_coordinator_id = county.county_coordinator
+  #       county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
+  #       if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
+  #         friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
+  #       else
+  #         county_coordinator, friendly_email = sndmanager_email_lookup
+  #       end
+  #     else
+  #       county_coordinator, friendly_email = sndmanager_email_lookup
+  #     end
+  #   end
+  #   [county_coordinator, friendly_email]
+  # end
 
   def extract_chapman_code_from_file_name(file_name)
+    chapman_code = nil
     case appname.downcase
     when 'freereg'
-      parts = file_name.split('.')
-      chapman_code = parts[0].slice(0..2)
+      chapman_code = file_name.split('.')[0].slice(0..2).upcase
     when 'freecen'
-      year, piece, _fields = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
-      actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
+      # Ensure @chapman_code is handled or passed if available
+      year, piece, _f = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
+      actual_piece = Freecen2Piece.where(year: year, number: piece&.upcase).first
       chapman_code = actual_piece.chapman_code if actual_piece.present?
     end
+
     if ChapmanCode.value?(chapman_code)
-      county = County.where(chapman_code: chapman_code).first
-      if county.present?
-        county_coordinator_id = county.county_coordinator
-        county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
-        if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
-          friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
-        else
-          county_coordinator, friendly_email = sndmanager_email_lookup
-        end
-      else
-        county_coordinator, friendly_email = sndmanager_email_lookup
-      end
+      lookup_by_county_code(chapman_code)
+    else
+      sndmanager_email_lookup
     end
-    [county_coordinator, friendly_email]
+  end
+
+  def lookup_by_county_code(code)
+    county = County.where(chapman_code: code).first
+    coordinator = UseridDetail.where(userid: county&.county_coordinator).first
+    
+    if coordinator&.active && coordinator&.email_address_valid
+      email = "#{coordinator.person_forename} #{coordinator.person_surname} " \
+              "<#{coordinator.email_address}>"
+      [coordinator, email]
+    else
+      sndmanager_email_lookup
+    end
+  end
+
+  def find_batch_record(file, uid)
+    case appname.downcase
+    when 'freereg' then Freereg1CsvFile.where(file_name: file, userid: uid).first
+    when 'freecen' then FreecenCsvFile.where(file_name: file, userid: uid).first
+    end
+  end
+
+  def manager_fallback
+    appname.downcase == 'freereg' ? regmanager_email_lookup : cenmanager_email_lookup
   end
 
 end
