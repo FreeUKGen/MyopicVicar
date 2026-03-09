@@ -820,6 +820,13 @@ class UserMailer < ActionMailer::Base
   #   [regmanager, friendly_email]
   # end
 
+  # def sndmanager_email_lookup
+  #   sndmanager = UseridDetail.userid('FR Exec Lead').first
+  #   friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sndmanager.blank?
+  #   friendly_email = "#{sndmanager.person_forename} #{sndmanager.person_surname} <#{sndmanager.email_address}>" if sndmanager.present?
+  #   [sndmanager, friendly_email]
+  # end
+
   def regmanager_email_lookup
     manager_lookup('REGManager')
   end
@@ -832,8 +839,13 @@ class UserMailer < ActionMailer::Base
     manager_lookup('CENManager')
   end
 
+  def sndmanager_email_lookup
+    manager_lookup('FR Exec Lead')
+  end
+
   def manager_lookup(role_id)
     manager = UseridDetail.userid(role_id).first
+
     if manager.present?
       name = "#{manager.person_forename} #{manager.person_surname}"
       friendly_email = "#{name} <#{manager.email_address}>"
@@ -843,27 +855,6 @@ class UserMailer < ActionMailer::Base
     end
     [manager, friendly_email]
   end
-
-  # def sndmanager_email_lookup
-  #   sndmanager = UseridDetail.userid('FR Exec Lead').first
-  #   friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sndmanager.blank?
-  #   friendly_email = "#{sndmanager.person_forename} #{sndmanager.person_surname} <#{sndmanager.email_address}>" if sndmanager.present?
-  #   [sndmanager, friendly_email]
-  # end
-
-  def sndmanager_email_lookup
-    sndmanager = UseridDetail.userid('FR Exec Lead').first
-
-    if sndmanager.present?
-      full_name = "#{sndmanager.person_forename} #{sndmanager.person_surname}"
-      friendly_email = "#{full_name} <#{sndmanager.email_address}>"
-    else
-      # Hardcoded fallback only if DB record is missing
-      friendly_email = "Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>"
-    end
-
-    [sndmanager, friendly_email]
-  end  
 
   # def extract_chapman_code_from_file_name(file_name)
   #   case appname.downcase
