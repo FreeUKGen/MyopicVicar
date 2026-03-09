@@ -1,4 +1,4 @@
-<p><%= @userid.person_forename %>:</p>
+<p><%= @userid.present? ? @userid.person_forename : "Hello" %>:</p>
 <p>We are sorry but the file and its records were not processed. The processing log follows and should contain a reason.</p>
 <%= @message.html_safe%>
 <% if @appname.downcase == 'freereg' %>
