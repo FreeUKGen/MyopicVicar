@@ -633,6 +633,8 @@ namespace :foo do
     message_file.puts "starting with a skip of #{args.skip.to_i}"
     time_start = Time.now
 
+    # Iterate through all places with data_present field == true, 
+    # ordered by county (chapman_code) and place name
     Place.data_present.order(:chapman_code => :asc, :place_name => :asc).no_timeout.each_with_index do |place, i|
       time_place_start = Time.now
       unless args.skip && i < args.skip.to_i

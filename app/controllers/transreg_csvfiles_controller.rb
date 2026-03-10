@@ -41,6 +41,8 @@ class TransregCsvfilesController < ApplicationController
         case
         when session[:role] == "trainee"
           @result = "success"
+
+          Rails.logger.info "[transreg_csvfiles_controller] trainee: spawn rake build:freereg_new_update"
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
           @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
         when processing_time < 600
@@ -133,6 +135,8 @@ class TransregCsvfilesController < ApplicationController
         case
         when session[:role] == "trainee"
           @result = "success"
+
+          Rails.logger.info "[transreg_csvfiles_controller] trainee: spawn rake build:freereg_new_update"
           pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
           @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
         when processing_time < 600
