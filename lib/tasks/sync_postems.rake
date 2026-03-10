@@ -34,7 +34,7 @@ namespace :postems do
 
     File.open(file, 'w') do |out|
       out.puts CSV.generate_line(EXPORT_COLUMNS)
-      Postem.unscoped.find_each(batch_size: 2000) do |p|
+      Postem.unscoped.each do |p|
         row = EXPORT_COLUMNS.map { |col| p[col] }
         out.puts CSV.generate_line(row)
         count += 1
@@ -54,7 +54,7 @@ namespace :postems do
 
     puts "Loading existing (Hash, Information) from DB..."
     existing = Set.new
-    Postem.unscoped.select(:Hash, :Information).find_each(batch_size: 5000) do |p|
+    Postem.unscoped.select(:Hash, :Information).each do |p|
       existing.add([p['Hash'].to_s, p['Information'].to_s.strip].freeze)
     end
     puts "  #{existing.size} existing postems in target DB."
@@ -74,7 +74,9 @@ namespace :postems do
     io = file.end_with?('.gz') ? Zlib::GzipReader.open(file) : File.open(file, 'r')
 
     # Do not append synced postems to postemlog (they are bulk copies, not new user submissions).
-    Postem.skip_postemlog_for_sync = true
+    # Only set if Postem model has been updated (deploy rake + app/models/freebmd/postem.rb together for prod).
+    postemlog_skip_was_set = Postem.respond_to?(:skip_postemlog_for_sync=)
+    Postem.skip_postemlog_for_sync = true if postemlog_skip_was_set
 
     begin
       csv = CSV.new(io, headers: true)
@@ -121,7 +123,7 @@ namespace :postems do
       end
     ensure
       io.close
-      Postem.skip_postemlog_for_sync = false
+      Postem.skip_postemlog_for_sync = false if postemlog_skip_was_set
     end
 
     puts "\nSync complete: #{inserted} inserted, #{skipped} skipped (already present)."
