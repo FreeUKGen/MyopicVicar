@@ -102,18 +102,18 @@ module Freereg1Translator
 
   def self.translate_names_marriage(entry)
     names = []
+      # - role: g
+    # type: primary
+    # fields:
+    # first_name: groom_forename
+    # last_name:  groom_surname
+    names << { :role => 'g', :type => 'primary', :first_name => entry.groom_forename, :last_name => entry.groom_surname }
     # - role: b
     # type: primary
     # fields:
     # first_name: bride_forename
     # last_name:  bride_surname
     names << { :role => 'b', :type => 'primary', :first_name => entry.bride_forename, :last_name => entry.bride_surname }
-    # - role: g
-    # type: primary
-    # fields:
-    # first_name: groom_forename
-    # last_name:  groom_surname
-    names << { :role => 'g', :type => 'primary', :first_name => entry.groom_forename, :last_name => entry.groom_surname }
     #
     # - role: gf
     # type: other
