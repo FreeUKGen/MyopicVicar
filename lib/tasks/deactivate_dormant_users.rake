@@ -117,7 +117,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicate
 
     next if @ignore_syndicates.include?(synd.syndicate_code)
 
-    next unless synd.syndicate_code == 'Essex Syndicate' || synd.syndicate_code == 'London Syndicate'        # AEV TESTING
+    # next unless synd.syndicate_code == 'Essex Syndicate' || synd.syndicate_code == 'London Syndicate'        # AEV TESTING
 
     @syndicate = synd.syndicate_code
 
@@ -136,7 +136,6 @@ task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicate
     active_users = UseridDetail.where(:syndicate => synd.syndicate_code, :active => true, :sign_up_date.lt => @cutoff_date, :email_address_last_confirmned.lt => @cutoff_date).order_by(userid_lower_case: 1)
 
     users_to_deacivate = 0
-    # results = []
 
     active_users.each do |user|
       next unless @roles_to_review.include? user.person_role
@@ -154,8 +153,10 @@ task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicate
       users_to_deacivate += 1
 
       if @mode == 'UPDATE'
-        # user.update_attributes(active: false)end
-        user.update_attributes(active: false) unless deactivated_users.positive?       # AEV TEST
+        user.update_attributes(active: false)
+
+        # user.update_attributes(active: false) unless deactivated_users.positive?       # AEV TESTING
+
         deactivated_users += 1
       end
     end
