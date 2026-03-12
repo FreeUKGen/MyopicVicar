@@ -1,10 +1,11 @@
 namespace :freeuk do
-    desc 'Add fields to support statistics'
+    desc 'Add users to Refinery'
     task :add_user => [:environment] do
       # Print the time before start the process
       start_time = Time.now
       p "Starting at #{start_time}"
       number = 0
+      count_of_users_to_be_added = UseridDetail.count
       UseridDetail.no_timeout.each do |user|
         next if User.find_by(username: user.userid).present?
         number  += 1
@@ -12,6 +13,7 @@ namespace :freeuk do
         u.save!
       end
       running_time = Time.now - start_time
-      p "Added #{number} users"
+      p "Running time #{running_time} "
+      p "Added #{number} of #{count_of_users_to_be_added} users"
     end
-  end
+end
