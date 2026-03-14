@@ -28,6 +28,10 @@
         <div class='field session_password push--bottom'>
           <%= f.label :password %>
           <%= f.password_field :password, :autocomplete => 'off' %>
+          <p>
+            <%= link_to "Forgot Password", new_user_password_path  %>
+          </p>
+
         </div>
         <% if devise_mapping.rememberable? %>
           <div class='field remember_me push--bottom'>
