@@ -20,19 +20,18 @@ The script expects the key to be exported as `FREEBMD_API_KEY`
 ## Usage
 
 ```bash
+export FREEBMD_POSTEM_API_URL='https://freebmd1-test.freebmd.org.uk/api/create-postem.pl' # or
 export FREEBMD_POSTEM_API_URL='https://www.freebmd.org.uk/api/create-postem.pl'
-export FREEBMD_API_KEY='...' # if using production key
+export FREEBMD_API_KEY='...' # or see above
+
 bundle exec rails runner script/test_postem_api.rb
 ```
-
-
-### with debug output
 
 ```bash
 DEBUG=1 bundle exec rails runner script/test_postem_api.rb
 ```
 
-## what it tests
+## What it tests
 
 1. **configuration check**
    - verifies environment variables are set
@@ -62,7 +61,7 @@ DEBUG=1 bundle exec rails runner script/test_postem_api.rb
    - verifies postem in database
    - suggests log files to check
 
-## expected output
+## Expected output
 
 ```
 ================================================================================
@@ -168,29 +167,19 @@ if running locally, use localhost:
 export FREEBMD_POSTEM_API_URL='http://localhost/api/create-postem.pl'
 ```
 
-### colorize gem missing
-
-if you see errors about `colorize`, install it:
-```bash
-bundle add colorize
-```
-
-or remove color formatting from script (replace `.colorize(:color)` with empty string).
-
-## dependencies
+## Dependencies
 
 - rails environment loaded
 - `FreebmdPostemService` class available
 - `BestGuess`, `BestGuessHash`, `Postem` models available
-- `colorize` gem (optional, for colored output)
 
-## files
+## Files
 
 - `script/test_postem_api.rb` - main test script
 - `app/services/freebmd_postem_service.rb` - service being tested
 - `app/controllers/postems_controller_new.rb` - controller using service
 
-## see also
+## See also
 
 - `../FreeBMD/api/test-dry-run.sh` - bash script for testing perl endpoint directly
 - `../FreeBMD/docs/claude/postem-api-dry-run.md` - dry-run feature documentation

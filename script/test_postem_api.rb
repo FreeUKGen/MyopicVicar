@@ -4,28 +4,26 @@
 # test script for postem api integration
 # run with: bundle exec rails runner script/test_postem_api.rb
 
-require 'colorize'
-
 def log_section(title)
-  puts "\n#{'=' * 80}".colorize(:cyan)
-  puts "  #{title}".colorize(:cyan).bold
-  puts "#{'=' * 80}\n".colorize(:cyan)
+  puts "\n#{'=' * 80}"
+  puts "  #{title}"
+  puts "#{'=' * 80}\n"
 end
 
 def log_info(message)
-  puts "ℹ #{message}".colorize(:blue)
+  puts "ℹ #{message}"
 end
 
 def log_success(message)
-  puts "✓ #{message}".colorize(:green)
+  puts "✓ #{message}"
 end
 
 def log_error(message)
-  puts "✗ #{message}".colorize(:red)
+  puts "✗ #{message}"
 end
 
 def log_warning(message)
-  puts "⚠ #{message}".colorize(:yellow)
+  puts "⚠ #{message}"
 end
 
 def format_response(response)
@@ -56,7 +54,8 @@ puts
 # find a test record
 log_section "finding test record"
 
-record = BestGuess.joins(:best_guess_hash).first
+# record = BestGuess.joins(:best_guess_hash).first
+record = BestGuessHash.first&.best_guess
 unless record
   log_error "no bestguess records found in database"
   exit 1
@@ -90,7 +89,7 @@ begin
   if response[:dry_run]
     log_success "dry-run validation passed"
     log_info "response:"
-    puts format_response(response).colorize(:light_black)
+    puts format_response(response)
   else
     log_error "expected dry_run: true in response"
   end
@@ -161,7 +160,7 @@ if response_input == 'y'
     if response[:success]
       log_success "postem created successfully!"
       log_info "response:"
-      puts format_response(response).colorize(:light_black)
+      puts format_response(response)
 
       # verify postem was created
       new_count = Postem.where(Hash: record.best_guess_hash.Hash).count
@@ -175,9 +174,9 @@ if response_input == 'y'
 
       # check logs
       log_info "\nto verify postem was logged, check:"
-      puts "  tail ../FreeBMD/log/postemlog".colorize(:light_black)
-      puts "  tail ../FreeBMD/log/postemTrans.*".colorize(:light_black)
-      puts "  tail /var/log/apache2/error.log | grep postem".colorize(:light_black)
+      puts "  tail ../FreeBMD/log/postemlog"
+      puts "  tail ../FreeBMD/log/postemTrans.*"
+      puts "  tail /var/log/apache2/error.log | grep postem"
 
     elsif response[:dry_run]
       log_warning "got dry-run response even though dry_run=false"
@@ -189,7 +188,7 @@ if response_input == 'y'
     log_error "validation failed: #{e.message}"
   rescue => e
     log_error "error creating postem: #{e.class.name}: #{e.message}"
-    puts e.backtrace.first(5).join("\n").colorize(:light_black) if ENV['DEBUG']
+    puts e.backtrace.first(5).join("\n") if ENV['DEBUG']
   end
 else
   log_info "skipping real postem creation"
@@ -202,12 +201,12 @@ log_section "test summary"
 
 log_success "all dry-run tests completed"
 log_info "check apache error log for [DRY-RUN] entries:"
-puts "  tail /var/log/apache2/error.log | grep DRY-RUN".colorize(:light_black)
+puts "  tail /var/log/apache2/error.log | grep DRY-RUN"
 puts
 
 log_info "to test from command line:"
-puts <<~BASH.colorize(:light_black)
-  cd /path/to/FreeBMD/api
-  ./test-dry-run.sh
+puts <<~BASH
+  cd /path/to/FreeBMD/test/api
+  ./test-postem-api
 BASH
 puts
