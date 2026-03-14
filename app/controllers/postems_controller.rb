@@ -1,9 +1,12 @@
+# updated postems controller that delegates to freebmd1 perl api
+# this ensures postems are created through the perl codebase's single source of truth
+# preserving all logging, validation, and database update mechanisms
+
 class PostemsController < ApplicationController
   include MasterOnlyRedirect
 
   skip_before_action :require_login
   before_action :redirect_to_master_unless_master, only: [:create]
-  require 'rails_autolink'
 
   def create
     return if spam_detected?(postem_params[:honeypot])
@@ -20,15 +23,48 @@ class PostemsController < ApplicationController
     end
 
     @record = best_guess_hash.best_guess
-    @postem = build_postem(@record)
     @search_query = SearchQuery.find_by(id: params[:search_query])
 
-    if @postem.save
-      set_postem_flag_on_record(@record)
-      flash[:notice] = "Added Postem successfully. Please note that it may take up to 24 hours for this entry to be marked as having a postem in search results."
-      redirect_to postem_success_redirect_path
-    else
-      flash[:notice] = @postem.errors.full_messages.join('; ')
+    # delegate to freebmd1 perl api
+    service = FreebmdPostemService.new
+    source_info = "MyopicVicar submission from: #{request.remote_ip}"
+
+    # check for dry-run mode (for testing/preview)
+    dry_run = params[:dry_run].present? || postem_params[:dry_run].present?
+
+    begin
+      response = service.create_postem(
+        record: @record,
+        information: postem_params[:Information],
+        source_info: source_info,
+        dry_run: dry_run
+      )
+
+      if response[:dry_run]
+        flash[:notice] = "Preview: #{response[:message]} No data was saved."
+        redirect_back(fallback_location: root_path)
+      else
+        flash[:notice] = "Added Postem successfully. #{response[:note]}"
+        redirect_to postem_success_redirect_path
+      end
+
+    rescue FreebmdPostemService::ValidationError => e
+      flash[:notice] = "Validation error: #{e.message}"
+      redirect_back(fallback_location: root_path)
+
+    rescue FreebmdPostemService::AuthenticationError => e
+      Rails.logger.error("FreeBMD API authentication failed: #{e.message}")
+      flash[:notice] = "System error: unable to create postem. Please try again later."
+      redirect_back(fallback_location: root_path)
+
+    rescue FreebmdPostemService::PostemCreationError => e
+      Rails.logger.error("FreeBMD API error: #{e.message}")
+      flash[:notice] = "Error creating postem: #{e.message}"
+      redirect_back(fallback_location: root_path)
+
+    rescue StandardError => e
+      Rails.logger.error("Unexpected error creating postem: #{e.message}\n#{e.backtrace.join("\n")}")
+      flash[:notice] = "System error: unable to create postem. Please try again later."
       redirect_back(fallback_location: root_path)
     end
   end
@@ -41,26 +77,9 @@ class PostemsController < ApplicationController
 
   def postem_hash_blocked?(hash_value)
     return false if hash_value.blank?
-    blocked = Rails.application.config.respond_to?(:postem_blocked_hashes) ? Rails.application.config.postem_blocked_hashes : []
+    blocked = Rails.application.config.respond_to?(:postem_blocked_hashes) ?
+              Rails.application.config.postem_blocked_hashes : []
     blocked.is_a?(Array) && blocked.include?(hash_value.to_s)
-  end
-
-  # Set the ENTRY_POSTEM bit on BestGuess (and BestGuessMarriage if present) so the record
-  # is immediately marked as having postems (search icon, redirect-to-master logic).
-  def set_postem_flag_on_record(best_guess_record)
-    new_confirmed = (best_guess_record.Confirmed.to_i | BestGuess::ENTRY_POSTEM)
-    best_guess_record.update_column(:Confirmed, new_confirmed)
-    marriage = BestGuessMarriage.find_by(RecordNumber: best_guess_record.RecordNumber)
-    marriage&.update_column(:Confirmed, (marriage.Confirmed.to_i | BestGuess::ENTRY_POSTEM))
-  end
-
-  def build_postem(record)
-    postem = Postem.new(postem_params.except(:honeypot).delete_if { |_k, v| v.blank? })
-    postem.QuarterNumberEvent = (record.QuarterNumber * 3) + record.RecordTypeID
-    postem.RecordInfo = [record.Surname, record.GivenName, "#{record.AgeAtDeath}#{record.AssociateName}", record.District, record.Volume, record.Page].join('|')
-    postem.SourceInfo = request.remote_ip
-    postem.Created = Time.current.to_i.to_s
-    postem
   end
 
   def postem_success_redirect_path
