@@ -641,7 +641,7 @@ class UseridDetail
     u.password = 'Password' # no-op
     u.password_confirmation = 'Password' # no-op
     u.encrypted_password = self.password # actual encrypted password
-    u.reset_password_token = u.generate_reset_password_token!
+    u.reset_password_token = u.hashed
     u.reset_password_sent_at =  Time.now
     u.userid_detail_id = self.id.to_s
     #u.add_role('Refinery')

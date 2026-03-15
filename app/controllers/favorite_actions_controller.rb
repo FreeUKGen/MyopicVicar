@@ -56,6 +56,6 @@ class FavoriteActionsController < ApplicationController
   private
 
   def authenticate_user!
-    redirect_to(new_search_query_path) unless current_refinery_user.present?
+    redirect_to(new_search_query_path) unless current_user.present?
   end
 end

@@ -32,7 +32,7 @@ class FreecenCoverageController < ApplicationController
     end
 
     @roles=[]
-    get_user_info_from_userid unless current_refinery_user.nil? || current_refinery_user.instance_of?(Refinery::Authentication::Devise::NilUser)
+    get_user_info_from_userid unless current_user.nil?
     @manage_pieces = (@manager || (@roles.present? &&@roles.include?('Manage Pieces'))) ? true : false
     @editing = (@manage_pieces && session[:edit_freecen_pieces]=='edit')
   end
