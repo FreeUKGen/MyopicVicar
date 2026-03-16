@@ -2,27 +2,28 @@
 
 ## Overview
 
-Test script for the freebmd postem api integration. validates that myopicvicar can successfully create postems via the perl api endpoint.
+Test script for the freebmd postem api integration. validates that myopicvicar
+can successfully create postems via the perl api endpoint.
 
 ## API keys
 
-The API key for `freebmd1-test` (`vervet`) can be found at
+The API key for a FreeBMD1 server can be found at
 `/usr/local/etc/apache24/envvars.d/freebmd-api.env`. 
 
 ```
 source /usr/local/etc/apache24/envvars.d/freebmd-api.env
 ```
 
-To test against the production servers look for the equaivalent file there.
- 
 The script expects the key to be exported as `FREEBMD_API_KEY`
 
 ## Usage
 
+Set `FREEBMD_POSTEM_API_URL` as below.
+
 ```bash
-export FREEBMD_POSTEM_API_URL='https://freebmd1-test.freebmd.org.uk/api/create-postem.pl' # or
-export FREEBMD_POSTEM_API_URL='https://www.freebmd.org.uk/api/create-postem.pl'
-export FREEBMD_API_KEY='...' # or see above
+export FREEBMD_POSTEM_API_URL='http://freebmd1-dev:8000.freebmd.org.uk/api/create-postem.pl'  # rails1
+export FREEBMD_POSTEM_API_URL='http://freebmd1-beta:8000.freebmd.org.uk/api/create-postem.pl' # rails2
+export FREEBMD_POSTEM_API_URL='https://www.freebmd.org.uk/api/create-postem.pl'               # live
 
 bundle exec rails runner script/test_postem_api.rb
 ```
@@ -124,16 +125,7 @@ create a real postem for testing? this will write to the database. (y/N): n
 
 ### "FREEBMD_POSTEM_API_URL not set"
 
-set the environment variable:
-```bash
-export FREEBMD_POSTEM_API_URL='https://www.freebmd.org.uk/api/create-postem.pl'
-```
-
-or add to `.env` file:
-```
-FREEBMD_POSTEM_API_URL=https://www.freebmd.org.uk/api/create-postem.pl
-FREEBMD_API_KEY=your-secret-key
-```
+See above
 
 ### "no bestguess records found in database"
 
@@ -148,23 +140,15 @@ or connect to a database with existing records.
 
 verify the api key matches between rails and perl:
 ```bash
-# check rails side
 echo $FREEBMD_API_KEY
-
-# check perl side (on freebmd server)
-grep FREEBMD_API_KEY /etc/apache2/envvars
+grep FREEBMD_API_KEY /usr/local/etc/apache24/envvars.d/freebmd-api.env
 ```
 
 ### "connection refused" or timeout
 
 verify the perl api endpoint is accessible:
 ```bash
-curl -I https://www.freebmd.org.uk/api/create-postem.pl
-```
-
-if running locally, use localhost:
-```bash
-export FREEBMD_POSTEM_API_URL='http://localhost/api/create-postem.pl'
+curl -I ${FREEBMD_POSTEM_API_URL}
 ```
 
 ## Dependencies
