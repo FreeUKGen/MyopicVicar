@@ -174,9 +174,12 @@ if response_input == 'y'
 
       # check logs
       log_info "\nto verify postem was logged, check:"
-      puts "  tail ../FreeBMD/log/postemlog"
-      puts "  tail ../FreeBMD/log/postemTrans.*"
-      puts "  tail /var/log/apache2/error.log | grep postem"
+      puts "  tail ~apache/hosts/freebmd/log/postemlog"
+      puts "  tail ~apache/hosts/freebmd/log/postemTrans.*"
+      puts "  tail ~apache/logs/freebmd/error_log.* | grep postem"
+
+      log_info "\nto verify postem log processed by cron, check:"
+      puts "  tail /var/log/updatepostem.log"
 
     elsif response[:dry_run]
       log_warning "got dry-run response even though dry_run=false"
@@ -201,7 +204,7 @@ log_section "test summary"
 
 log_success "all dry-run tests completed"
 log_info "check apache error log for [DRY-RUN] entries:"
-puts "  tail /var/log/apache2/error.log | grep DRY-RUN"
+puts "  tail ~apache/logs/freebmd/error_log.* | grep DRY-RUN"
 puts
 
 log_info "to test from command line:"
