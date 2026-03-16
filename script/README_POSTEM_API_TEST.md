@@ -21,8 +21,8 @@ The script expects the key to be exported as `FREEBMD_API_KEY`
 Set `FREEBMD_POSTEM_API_URL` as below.
 
 ```bash
-export FREEBMD_POSTEM_API_URL='http://freebmd1-dev:8000.freebmd.org.uk/api/create-postem.pl'  # rails1
-export FREEBMD_POSTEM_API_URL='http://freebmd1-beta:8000.freebmd.org.uk/api/create-postem.pl' # rails2
+export FREEBMD_POSTEM_API_URL='http://freebmd1-dev.freebmd.org.uk:8000/api/create-postem.pl'  # rails1
+export FREEBMD_POSTEM_API_URL='http://freebmd1-beta.freebmd.org.uk:8000/api/create-postem.pl' # rails2
 export FREEBMD_POSTEM_API_URL='https://www.freebmd.org.uk/api/create-postem.pl'               # live
 
 bundle exec rails runner script/test_postem_api.rb
