@@ -54,10 +54,15 @@ module ContactsHelper
   # - Plain text and formatted HTML: sanitized and output (use when answer contains <p>, <ul>, <a>, etc.).
   def render_report_error_answer(answer)
     return '' if answer.blank?
-    if answer.to_s.include?('<')
-      sanitize(answer.to_s, tags: %w[p br ul ol li a strong em], attributes: { 'a' => ['href', 'target'] })
+    rendered = answer.to_s
+    if rendered.include?('{{PRIVACY_POLICY_LINK}}') && defined?(Constant::PRIVACY_POLICY_LINK)
+      rendered = rendered.gsub('{{PRIVACY_POLICY_LINK}}', Constant::PRIVACY_POLICY_LINK.to_s)
+    end
+
+    if rendered.include?('<')
+      sanitize(rendered, tags: %w[p br ul ol li a strong em], attributes: { 'a' => ['href', 'target'] })
     else
-      simple_format(answer)
+      simple_format(rendered)
     end
   end
 end
