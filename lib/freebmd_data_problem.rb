@@ -84,4 +84,36 @@ It is also possible that this is a transcription error - if this is the case, pl
 
 	SECOND_QUESTION_VALUE = QUESTIONS2.map{|v| %W(#{v} #{QUESTIONS2.index(v)})}
 
+	# Report error page: 3 main sections, each with subsections (accordion). Id is stored as contact.query.
+	REPORT_ERROR_SECTIONS = [
+		{
+			title: "An error",
+			subsections: [
+				{ id: 0, label: "The transcription information does not match the scan [mistranscription]", answer: ANSWERS[0] },
+				{ id: 1, label: "The transcription information does match the GRO index scan [GRO error]", answer: ANSWERS[1] }
+			]
+		},
+		{
+			title: "Data is missing",
+			subsections: [
+				{ id: 2, label: "A record appears on the GRO index scan but is missing from our database / we have only transcribed part of the page", answer: ANSWERS[2] },
+				{ id: 3, label: "A record is missing from the GRO index scan", answer: ANSWERS2[9] }
+			]
+		},
+		{
+			title: "Anything else/miscellaneous",
+			subsections: [
+				{ id: 4, label: "E.g. Scan image not clear (but transcribed correctly and not a GRO error)", answer: ANSWERS2[11] },
+				{ id: 5, label: "A particular year/Qtr/event has a page missing (GRO issue, not us – very rare)", answer: "This is a GRO index issue rather than a FreeBMD transcription issue. You may contact the GRO about missing pages. We are unable to add entries that do not appear in the index." }
+			]
+		}
+	].freeze
+
+	def self.subsection_by_id(id)
+		REPORT_ERROR_SECTIONS.each do |section|
+			found = section[:subsections].find { |s| s[:id].to_s == id.to_s }
+			return found if found
+		end
+		nil
+	end
 end

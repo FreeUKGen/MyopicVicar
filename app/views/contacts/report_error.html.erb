@@ -20,18 +20,35 @@
 </div>
   <div class="push palm-flush--bottom">
   <ol class="grid">
-    <li class="grid__item one-half lap-one-whole palm-one-whole" id="quesons">
-      <label class="ttip" for="questins" tabindex="0">Select your query
-      </label>
-      <%= select_tag "questins", options_for_select(FreebmdDataProblem::QUESTION_VALUE), prompt: "Please choose an option that closely relates to your query" %>
+    <li class="grid__item one-half lap-one-whole palm-one-whole" id="section_select_li">
+      <label class="ttip" for="report_error_section" tabindex="0">Select section</label>
+      <select id="report_error_section" class="text-input" aria-describedby="section_help">
+        <option value="">Please choose a section</option>
+        <% FreebmdDataProblem::REPORT_ERROR_SECTIONS.each_with_index do |section, idx| %>
+          <option value="<%= idx %>"><%= section[:title] %></option>
+        <% end %>
+      </select>
+      <span id="section_help" class="help-text">Then open a subsection below to read the explanation.</span>
     </li>
-    <li class="grid__item one-half lap-one-whole palm-one-whole clear--left" id="explanation">
-      <label class="ttip"  tabindex="0">Explanation
-      </label>
-      <div id="answer" class="answer_explanations">Please find the explanation for your query here</div>
+    <li class="grid__item one-whole lap-one-whole palm-one-whole clear--left" id="subsections_li" style="display: none;">
+      <label class="ttip" tabindex="0">Subsections</label>
+      <div id="subsections_accordion" class="report-error-accordion" role="region" aria-label="Subsections and explanations">
+        <% FreebmdDataProblem::REPORT_ERROR_SECTIONS.each_with_index do |section, section_idx| %>
+          <div class="accordion-section" data-section-index="<%= section_idx %>" style="display: none;">
+            <% section[:subsections].each do |sub| %>
+              <details class="accordion-item" data-subsection-id="<%= sub[:id] %>">
+                <summary class="accordion-item__summary"><%= sub[:label] %></summary>
+                <div class="accordion-item__body answer_explanations">
+                  <%= simple_format(sub[:answer]) %>
+                </div>
+              </details>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
     </li>
     <li class="grid__item one-half lap-one-whole palm-one-whole clear--left">
-      <div class="read_answer">
+      <div class="read_answer" style="display: none;">
         <label class="ttip" for="read_explanation" tabindex="0">
           <%= check_box_tag "read_explanation", 1, false, required: true %>
           <span>Yes, I have read the above explanation and wish to submit a report</span>
@@ -95,42 +112,51 @@
     </ol>
   <% end %>
 </div>
+<style>
+  .report-error-accordion .accordion-section { margin-top: 1rem; }
+  .report-error-accordion .accordion-item { border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; }
+  .report-error-accordion .accordion-item__summary { padding: 0.75rem 1rem; cursor: pointer; font-weight: 500; list-style: none; }
+  .report-error-accordion .accordion-item__summary::-webkit-details-marker { display: none; }
+  .report-error-accordion .accordion-item__summary::before { content: "\25b6\00a0"; }
+  .report-error-accordion .accordion-item[open] .accordion-item__summary::before { content: "\25bc\00a0"; }
+  .report-error-accordion .accordion-item__body { padding: 0 1rem 1rem; border-top: 1px solid #eee; }
+  .report-error-accordion .answer_explanations { margin-top: 0.5rem; }
+</style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
 <script type="text/javascript">
-  $('#read_explanation').change(function() {
-      $('.report_form').toggle();
-    
-});
-  console.log('hey');
   $(document).ready(function() {
+    var $sectionSelect = $('#report_error_section');
+    var $subsectionsLi = $('#subsections_li');
+    var $accordionSections = $('.accordion-section');
+    var $readAnswer = $('.read_answer');
+    var $queryInput = $('input[name="contact[query]"]');
 
-    $('#questins').change(function(){
-      var question_id = ""
-      $.each($("#questins option:selected"), function() {
-        value = $(this).val()
-        console.log(value)
-      });
-      if(value) {
-        question_id = value;
-        $.ajax({
-          url: "/contacts/question_answer_finder",
-          type: "GET",
-          data : {
-            question_id: question_id
-          },
-        })
-        $('.read_answer').show();
-      } else {
-        $('.read_answer').hide();
-        $('#answer').html('Please find the explanation for your query here');
-
-      };
-     
-        console.log(question_id)
-        // alert(template_id);
-        // ajax request
-    ;
+    $sectionSelect.on('change', function() {
+      var sectionIdx = $(this).val();
+      $accordionSections.hide();
+      $readAnswer.hide();
+      $('#read_explanation').prop('checked', false);
+      if ($queryInput.length) $queryInput.val('');
+      if (sectionIdx === '') {
+        $subsectionsLi.hide();
+        $('details.accordion-item').attr('open', false);
+        return;
+      }
+      $subsectionsLi.show();
+      $accordionSections.filter('[data-section-index="' + sectionIdx + '"]').show();
     });
-  })
+
+    $(document).on('toggle', 'details.accordion-item', function() {
+      var details = this;
+      if (details.open && $queryInput.length) {
+        $queryInput.val($(details).data('subsection-id'));
+        $readAnswer.show();
+      }
+    });
+
+    $('#read_explanation').change(function() {
+      $('.report_form').toggle();
+    });
+  });
 </script>
