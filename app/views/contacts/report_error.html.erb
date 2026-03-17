@@ -72,7 +72,6 @@
     <%= f.hidden_field :county %>
     <%= f.hidden_field :problem_page_url %>
     <div id="freebmd_corrections_table_block" style="display: none;" class="push--bottom">
-      <h3 class="push-half--bottom">Corrections</h3>
       <p class="push-half--bottom">Please enter corrections only for fields that are wrong.</p>
       <% if defined?(@freebmd_record) && @freebmd_record.present? %>
         <%= render partial: 'contacts/freebmd_entry_information_corrections_table', locals: { record: @freebmd_record } %>
@@ -95,16 +94,6 @@
           <input id="email_address" name="contact[email_address]" type="text" class="text-input" placeholder="Required" required="required">
         <% else%>
           <input id="email_address" name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
-        <% end%>
-      </li>
-      
-      
-      <li class="grid__item one-half lap-one-whole palm-one-whole push--bottom clear--left">
-        <label class="ttip" for="description" tabindex="0">Description</label>
-        <% if @contact.body.nil? %>
-          <textarea id="description" name="contact[body]" style="width: 100%; max-width: 32rem;" rows="6"></textarea>
-        <% else%>
-          <textarea id="description" name="contact[body]" style="width: 100%; max-width: 32rem;" rows="6"><%=@contact.body%></textarea>
         <% end%>
       </li>
       <li class="grid__item one-third lap-three-fifths lap-clear--left palm-one-whole push--bottom">
