@@ -57,7 +57,7 @@
     </li>
   </ol>
 </div>
-<div class="push palm-flush--bottom report_form">
+<div class="push palm-flush--bottom report_form" style="display: none;">
   <div class="read-length">
     <p class="push-half--bottom">Thank you for reporting a possible error in our transcription. <b>We will change our record if we agree with your interpretation of the source document we transcribed.</b> If you have access to a different document which has different evidence, please provide details so that we can attach a note to our transcription. We would be grateful if you could send us an image of the different document so that we may transcribe it.</p>
     <p style="font-size: 0.9rem;">Please note: some Record Offices and some websites allow you to make copies for personal use only &mdash; if your document is such a copy, we cannot use it.</p>
@@ -141,6 +141,7 @@
     var $readAnswer = $('.read_answer');
     var $queryInput = $('input[name="contact[query]"]');
     var $correctionsBlock = $('#freebmd_corrections_table_block');
+    var $reportFormBlock = $('.report_form');
 
     $sectionSelect.on('change', function() {
       var sectionIdx = $(this).val();
@@ -149,6 +150,7 @@
       $('#read_explanation').prop('checked', false);
       if ($queryInput.length) $queryInput.val('');
       if ($correctionsBlock.length) $correctionsBlock.hide();
+      if ($reportFormBlock.length) $reportFormBlock.hide();
       if (sectionIdx === '') {
         $subsectionsLi.hide();
         $('details.accordion-item').attr('open', false);
@@ -169,21 +171,30 @@
 
       if (details.open) {
         if ($queryInput.length) $queryInput.val(subsectionId);
-        $readAnswer.show();
+        // Only show the submit UI + form when this subsection opts in.
+        var showForm = String($details.data('show-form')) === '1';
+        if (showForm) {
+          $readAnswer.show();
+          if ($reportFormBlock.length) $reportFormBlock.show();
+        } else {
+          $readAnswer.hide();
+          $('#read_explanation').prop('checked', false);
+          if ($reportFormBlock.length) $reportFormBlock.hide();
+        }
       } else {
         // If the user closes the currently-selected subsection, clear selection UI.
         if ($queryInput.length && String($queryInput.val()) === String(subsectionId)) {
           $queryInput.val('');
           $readAnswer.hide();
           $('#read_explanation').prop('checked', false);
-          $('.report_form').hide();
+          if ($reportFormBlock.length) $reportFormBlock.hide();
         }
       }
 
       // Show/hide the corrections table based on per-subsection flag.
       if ($correctionsBlock.length) {
-        var showForm = String($details.data('show-form')) === '1';
-        if (details.open && showForm) {
+        var showFormForCorrections = String($details.data('show-form')) === '1';
+        if (details.open && showFormForCorrections) {
           $correctionsBlock.show();
         } else {
           $correctionsBlock.hide();
@@ -196,8 +207,9 @@
       this.addEventListener('toggle', function() { handleAccordionToggle(this); });
     });
 
+    // Keep existing behaviour: checkbox can collapse/expand the form if shown.
     $('#read_explanation').change(function() {
-      $('.report_form').toggle();
+      if ($reportFormBlock.length) $reportFormBlock.toggle();
     });
   });
 </script>
