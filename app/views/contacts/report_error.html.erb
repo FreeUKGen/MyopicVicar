@@ -36,7 +36,7 @@
         <% FreebmdDataProblem::REPORT_ERROR_SECTIONS.each_with_index do |section, section_idx| %>
           <div class="accordion-section" data-section-index="<%= section_idx %>" style="display: none;">
             <% section[:subsections].each do |sub| %>
-              <details class="accordion-item" data-subsection-id="<%= sub[:id] %>">
+              <details class="accordion-item" data-subsection-id="<%= sub[:id] %>" data-show-form="<%= sub[:show_form] ? '1' : '0' %>">
                 <summary class="accordion-item__summary"><%= sub[:label] %></summary>
                 <div class="accordion-item__body answer_explanations">
                   <%= render_report_error_answer(sub[:answer]) %>
@@ -160,17 +160,34 @@
 
     $(document).on('toggle', 'details.accordion-item', function() {
       var details = this;
-      if (details.open && $queryInput.length) {
-        var subsectionId = $(details).data('subsection-id');
-        $queryInput.val(subsectionId);
+      var $details = $(details);
+      var subsectionId = $details.data('subsection-id');
+
+      // Enforce a single-open accordion within the visible section.
+      if (details.open) {
+        $details.closest('.accordion-section').find('details.accordion-item').not(details).prop('open', false);
+      }
+
+      if (details.open) {
+        if ($queryInput.length) $queryInput.val(subsectionId);
         $readAnswer.show();
-        // Only show the inline corrections table for the "mistranscription" subsection (id 0).
-        if ($correctionsBlock.length) {
-          if (String(subsectionId) === '0') {
-            $correctionsBlock.show();
-          } else {
-            $correctionsBlock.hide();
-          }
+      } else {
+        // If the user closes the currently-selected subsection, clear selection UI.
+        if ($queryInput.length && String($queryInput.val()) === String(subsectionId)) {
+          $queryInput.val('');
+          $readAnswer.hide();
+          $('#read_explanation').prop('checked', false);
+          $('.report_form').hide();
+        }
+      }
+
+      // Only show the inline corrections table for the "mistranscription" subsection (id 0).
+      if ($correctionsBlock.length) {
+        var showForm = String($details.data('show-form')) === '1';
+        if (details.open && showForm) {
+          $correctionsBlock.show();
+        } else {
+          $correctionsBlock.hide();
         }
       }
     });

@@ -108,22 +108,24 @@ It is also possible that this is a transcription error - if this is the case, pl
 						<p>If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
 						<p>Enter the correct information in the relevant field(s) on the form below.</p>
 					HTML
+					,
+					show_form: true
 				},
-				{ id: 1, label: "The transcription information does match the GRO index scan [GRO error]", answer: ANSWERS[1] }
+				{ id: 1, label: "The transcription information does match the GRO index scan [GRO error]", answer: ANSWERS[1], show_form: false }
 			]
 		},
 		{
 			title: "Data is missing",
 			subsections: [
-				{ id: 2, label: "A record appears on the GRO index scan but is missing from our database / we have only transcribed part of the page", answer: ANSWERS[2] },
-				{ id: 3, label: "A record is missing from the GRO index scan", answer: ANSWERS2[9] }
+				{ id: 2, label: "A record appears on the GRO index scan but is missing from our database / we have only transcribed part of the page", answer: ANSWERS[2], show_form: false },
+				{ id: 3, label: "A record is missing from the GRO index scan", answer: ANSWERS2[9], show_form: false }
 			]
 		},
 		{
 			title: "Anything else/miscellaneous",
 			subsections: [
-				{ id: 4, label: "E.g. Scan image not clear (but transcribed correctly and not a GRO error)", answer: ANSWERS2[11] },
-				{ id: 5, label: "A particular year/Qtr/event has a page missing (GRO issue, not us – very rare)", answer: "This is a GRO index issue rather than a FreeBMD transcription issue. You may contact the GRO about missing pages. We are unable to add entries that do not appear in the index." }
+				{ id: 4, label: "E.g. Scan image not clear (but transcribed correctly and not a GRO error)", answer: ANSWERS2[11], show_form: false },
+				{ id: 5, label: "A particular year/Qtr/event has a page missing (GRO issue, not us – very rare)", answer: "This is a GRO index issue rather than a FreeBMD transcription issue. You may contact the GRO about missing pages. We are unable to add entries that do not appear in the index.", show_form: false }
 			]
 		}
 	].freeze
