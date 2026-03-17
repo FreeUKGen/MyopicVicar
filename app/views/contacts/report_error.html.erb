@@ -158,8 +158,7 @@
       $accordionSections.filter('[data-section-index="' + sectionIdx + '"]').show();
     });
 
-    $(document).on('toggle', 'details.accordion-item', function() {
-      var details = this;
+    function handleAccordionToggle(details) {
       var $details = $(details);
       var subsectionId = $details.data('subsection-id');
 
@@ -181,7 +180,7 @@
         }
       }
 
-      // Only show the inline corrections table for the "mistranscription" subsection (id 0).
+      // Show/hide the corrections table based on per-subsection flag.
       if ($correctionsBlock.length) {
         var showForm = String($details.data('show-form')) === '1';
         if (details.open && showForm) {
@@ -190,6 +189,11 @@
           $correctionsBlock.hide();
         }
       }
+    }
+
+    // 'toggle' on <details> does not reliably bubble; bind directly.
+    $('details.accordion-item').each(function() {
+      this.addEventListener('toggle', function() { handleAccordionToggle(this); });
     });
 
     $('#read_explanation').change(function() {
