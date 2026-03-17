@@ -39,7 +39,7 @@
               <details class="accordion-item" data-subsection-id="<%= sub[:id] %>">
                 <summary class="accordion-item__summary"><%= sub[:label] %></summary>
                 <div class="accordion-item__body answer_explanations">
-                  <%= simple_format(sub[:answer]) %>
+                  <%= render_report_error_answer(sub[:answer]) %>
                 </div>
               </details>
             <% end %>
@@ -73,6 +73,15 @@
     <%= f.hidden_field :previous_page_url %>
     <%= f.hidden_field :county %>
     <%= f.hidden_field :problem_page_url %>
+    <div id="freebmd_corrections_table_block" style="display: none;" class="push--bottom">
+      <h3 class="push-half--bottom">Corrections</h3>
+      <p class="push-half--bottom">Please enter corrections only for fields that are wrong.</p>
+      <% if defined?(@freebmd_record) && @freebmd_record.present? %>
+        <%= render partial: 'contacts/freebmd_entry_information_corrections_table', locals: { record: @freebmd_record } %>
+      <% else %>
+        <p>Current details are not available for this entry.</p>
+      <% end %>
+    </div>
     <ol class="grid">
       <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left" id="name_input">
         <label class="label ttip" for="name" tabindex="0">Your name</label>
@@ -131,6 +140,7 @@
     var $accordionSections = $('.accordion-section');
     var $readAnswer = $('.read_answer');
     var $queryInput = $('input[name="contact[query]"]');
+    var $correctionsBlock = $('#freebmd_corrections_table_block');
 
     $sectionSelect.on('change', function() {
       var sectionIdx = $(this).val();
@@ -138,6 +148,7 @@
       $readAnswer.hide();
       $('#read_explanation').prop('checked', false);
       if ($queryInput.length) $queryInput.val('');
+      if ($correctionsBlock.length) $correctionsBlock.hide();
       if (sectionIdx === '') {
         $subsectionsLi.hide();
         $('details.accordion-item').attr('open', false);
@@ -150,8 +161,17 @@
     $(document).on('toggle', 'details.accordion-item', function() {
       var details = this;
       if (details.open && $queryInput.length) {
-        $queryInput.val($(details).data('subsection-id'));
+        var subsectionId = $(details).data('subsection-id');
+        $queryInput.val(subsectionId);
         $readAnswer.show();
+        // Only show the inline corrections table for the "mistranscription" subsection (id 0).
+        if ($correctionsBlock.length) {
+          if (String(subsectionId) === '0') {
+            $correctionsBlock.show();
+          } else {
+            $correctionsBlock.hide();
+          }
+        }
       }
     });
 

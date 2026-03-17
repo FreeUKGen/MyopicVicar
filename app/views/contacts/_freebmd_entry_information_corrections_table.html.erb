@@ -1,0 +1,96 @@
+<%# Mirrors key fields from best_guess/_entry_information_table, adding a corrections input column. %>
+<% record_type_name = RecordType::display_name(record.RecordTypeID).to_s.downcase %>
+<% entry_type ||= record_type_name %>
+
+<table class="table--bordered table--data table--left-aligned" style="width: 100%; max-width: 48rem;">
+  <thead>
+    <tr>
+      <th>Field header</th>
+      <th>Current details</th>
+      <th>Corrections</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Surname</th>
+      <td><%= record.Surname %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][surname]', nil, class: 'text-input' %></td>
+    </tr>
+    <tr>
+      <th scope="row">Given Name</th>
+      <td><%= record.GivenName %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][given_name]', nil, class: 'text-input' %></td>
+    </tr>
+    <tr>
+      <th scope="row">Record Type</th>
+      <td><%= record_type_name.capitalize %></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th scope="row">Registration Date</th>
+      <td><%= format_quarter_year(record.QuarterNumber) %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][registration_date]', nil, class: 'text-input', placeholder: 'e.g. Mar 1937' %></td>
+    </tr>
+
+    <% if entry_type == "birth" %>
+      <tr>
+        <th scope="row">Mother's Maiden Name</th>
+        <td><%= record.AssociateName.presence || 'No data' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][mothers_maiden_name]', nil, class: 'text-input' %></td>
+      </tr>
+    <% end %>
+
+    <% if entry_type == "death" %>
+      <tr>
+        <th scope="row">
+          <% if record.AgeAtDeath.present? && record.AgeAtDeath.to_i.to_s == record.AgeAtDeath %>
+            Age at Death
+          <% else %>
+            Date of Birth
+          <% end %>
+        </th>
+        <td><%= record.AgeAtDeath.presence || 'No data' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][age_or_dob]', nil, class: 'text-input' %></td>
+      </tr>
+    <% end %>
+
+    <% if entry_type == "marriage" %>
+      <tr>
+        <th scope="row">Spouse Name</th>
+        <td><%= record.AssociateName.presence || 'No data' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][spouse_name]', nil, class: 'text-input' %></td>
+      </tr>
+    <% end %>
+
+    <tr>
+      <th scope="row">District</th>
+      <td><%= record.display_district_name %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][district]', nil, class: 'text-input' %></td>
+    </tr>
+    <tr>
+      <th scope="row">Volume</th>
+      <td><%= record.Volume %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][volume]', nil, class: 'text-input' %></td>
+    </tr>
+
+    <% if record.respond_to?(:register_entry_number_format) && record.register_entry_number_format %>
+      <tr>
+        <th scope="row">Register number</th>
+        <td><%= record.event_registration_number.presence || 'No data' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][register_number]', nil, class: 'text-input' %></td>
+      </tr>
+      <tr>
+        <th scope="row">Entry number</th>
+        <td><%= record.event_entry_number.presence || record.Page %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][entry_number]', nil, class: 'text-input' %></td>
+      </tr>
+    <% else %>
+      <tr>
+        <th scope="row">Page</th>
+        <td><%= record.Page %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][page]', nil, class: 'text-input' %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+

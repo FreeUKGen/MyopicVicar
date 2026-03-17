@@ -214,7 +214,9 @@ class ContactsController < ApplicationController
           end # @contact.entry_id.present?
         end # fc_ind.present
       end # unless rec.nil?
-    end # case
+    when 'freebmd'
+      @freebmd_record = BestGuess.find_by(RecordNumber: @contact.record_id) if @contact.record_id.present?
+    end
   end
 
   def restore

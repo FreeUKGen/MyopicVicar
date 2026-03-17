@@ -55,6 +55,16 @@ It is also possible that this is a transcription error - if this is the case, pl
 	"--",
 	]
 
+	ANSWERS3 = [
+		"If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.",
+		"--",
+		"--",
+		"--",
+		"--",
+		"--",
+		"--",
+	]
+
 	QUESTION_ANSWER = {
 		QUESTIONS[0] => ANSWERS[0],
 		QUESTIONS[1] => ANSWERS[1],
@@ -85,11 +95,20 @@ It is also possible that this is a transcription error - if this is the case, pl
 	SECOND_QUESTION_VALUE = QUESTIONS2.map{|v| %W(#{v} #{QUESTIONS2.index(v)})}
 
 	# Report error page: 3 main sections, each with subsections (accordion). Id is stored as contact.query.
+	# Each subsection :answer may be plain text (wrapped in <p> by the view) or HTML (e.g. multiple <p>, <ul>, <a>).
+	# Use HTML when you need paragraphs, lists or links; content is sanitized before output.
 	REPORT_ERROR_SECTIONS = [
 		{
 			title: "An error",
 			subsections: [
-				{ id: 0, label: "The transcription information does not match the scan [mistranscription]", answer: ANSWERS[0] },
+				{
+					id: 0,
+					label: "The transcription information does not match the scan [mistranscription]",
+					answer: <<~HTML.strip
+						<p>If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
+						<p>Enter the correct information in the relevant field(s) on the form below.</p>
+					HTML
+				},
 				{ id: 1, label: "The transcription information does match the GRO index scan [GRO error]", answer: ANSWERS[1] }
 			]
 		},

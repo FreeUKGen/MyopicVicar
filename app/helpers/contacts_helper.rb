@@ -49,4 +49,15 @@ module ContactsHelper
   def communicate_link
     link_to('Communicate Action','/messages/new?source=original', target: '_blank')
   end
+
+  # Renders a report-error subsection answer. Supports:
+  # - Plain text and formatted HTML: sanitized and output (use when answer contains <p>, <ul>, <a>, etc.).
+  def render_report_error_answer(answer)
+    return '' if answer.blank?
+    if answer.to_s.include?('<')
+      sanitize(answer.to_s, tags: %w[p br ul ol li a strong em], attributes: { 'a' => ['href', 'target'] })
+    else
+      simple_format(answer)
+    end
+  end
 end
