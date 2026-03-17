@@ -61,9 +61,6 @@
   </ol>
 </div>
 <div id="report_form_block" class="push palm-flush--bottom report_form" style="display: none;">
-  <div class="">
-    <p>Please read our <%= link_to "Privacy Notice", Constant::PRIVACY_POLICY_LINK %> for information on how we will protect and use your data, and then complete the form below.</p>
-  </div>
   <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
     <%= f.hidden_field :query %>
     <%= f.hidden_field :contact_type %>
