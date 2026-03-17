@@ -104,11 +104,10 @@ It is also possible that this is a transcription error - if this is the case, pl
 				{
 					id: 0,
 					label: "The transcription information does not match the scan [mistranscription]",
-					answer: <<~HTML.strip
+					answer: <<~HTML.strip,
 						<p>If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
 						<p>Enter the correct information in the relevant field(s) on the form below.</p>
 					HTML
-					,
 					show_form: true
 				},
 				{ id: 1, label: "The transcription information does match the GRO index scan [GRO error]", answer: ANSWERS[1], show_form: false }
