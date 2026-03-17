@@ -26,6 +26,7 @@
 (function() {
   var recordId = document.getElementById('transcription_errors').getAttribute('data-record-id') || 'default';
   var storageKey = 'best_guess_scan_downloaded_' + recordId;
+  var lastScanUrlKey = 'best_guess_last_scan_url_' + recordId;
   var beforeEl = document.getElementById('transcription_error_before_scan');
   var afterEl = document.getElementById('transcription_error_after_scan');
   function showAfterScan() {
@@ -37,7 +38,11 @@
   }
   document.getElementById('display_scans').addEventListener('click', function(e) {
     if (e.target.closest && e.target.closest('a.scan-link')) {
+      var link = e.target.closest('a.scan-link');
       sessionStorage.setItem(storageKey, '1');
+      if (link && link.href) {
+        sessionStorage.setItem(lastScanUrlKey, link.href);
+      }
       showAfterScan();
     }
   });

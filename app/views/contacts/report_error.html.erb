@@ -63,6 +63,7 @@
     <%= f.hidden_field :previous_page_url %>
     <%= f.hidden_field :county %>
     <%= f.hidden_field :problem_page_url %>
+    <%= hidden_field_tag 'contact[session_data][scan_url]', nil, id: 'contact_scan_url' %>
     <div id="freebmd_corrections_table_block" style="display: none;" class="push--bottom">
       <p class="push-half--bottom">Please enter corrections only for fields that are wrong.</p>
       <% if defined?(@freebmd_record) && @freebmd_record.present? %>
@@ -121,6 +122,7 @@
     var $queryInput = $('input[name="contact[query]"]');
     var $correctionsBlock = $('#freebmd_corrections_table_block');
     var $reportFormBlock = $('#report_form_block');
+    var $scanUrlInput = $('#contact_scan_url');
 
     $sectionSelect.on('change', function() {
       var sectionIdx = $(this).val();
@@ -161,6 +163,14 @@
             } else {
               $reportFormBlock.hide();
             }
+          }
+          // Attach last clicked scan URL (if we have it) to the form submission.
+          if ($scanUrlInput.length) {
+            var recordId = $('input[name="contact[record_id]"]').val() || 'default';
+            var lastScanUrlKey = 'best_guess_last_scan_url_' + recordId;
+            var lastScanUrl = null;
+            try { lastScanUrl = sessionStorage.getItem(lastScanUrlKey); } catch (e) { lastScanUrl = null; }
+            if (lastScanUrl) $scanUrlInput.val(lastScanUrl);
           }
         } else {
           $readAnswer.hide();
