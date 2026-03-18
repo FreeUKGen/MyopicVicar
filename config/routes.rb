@@ -512,6 +512,7 @@ MyopicVicar::Application.routes.draw do
   get '/freecen2_places/search_names', :to => 'freecen2_places#search_names', :as => :search_names_freecen2_place
   get 'freecen2_places/:id/rename', :to => 'freecen2_places#rename', :as => :rename_freecen2_place
   get 'freecen2_places/:id/move', :to => 'freecen2_places#move', :as => :move_freecen2_place
+  get 'freecen2_places/:id/contact_county_coordinator', to: 'freecen2_places#contact_county_coordinator', as: :contact_county_coordinator_freecen2_place
   get 'freecen2_places/move_place_names', to: 'freecen2_places#move_place_names', as: :freecen2_places_move_place_names
   get 'freecen2_places/:id//review_move', to: 'freecen2_places#review_move', as: :review_move_freecen2_place
   get 'freecen2_places/full_index', to: 'freecen2_places#full_index', as: :full_index_freecen2_places

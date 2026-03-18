@@ -23,6 +23,8 @@ module MessagesHelper
       f.action :submit, as: :input,  label: 'Communication Comment', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when message.nature == 'communication'
       f.action :submit, as: :input,  label: 'Save Communication', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
+    when params[:source] == 'gazetteer' && !params[:id].present?
+      f.action :submit, as: :input, label: 'Send to County Coordinator', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when (message.nature == 'syndicate' || message.nature == 'general') && !params[:id].present?
       f.action :submit, as: :input,  label: 'Save Message', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item  one-whole text--center' }
     when (message.nature == 'syndicate' || message.nature == 'general' || message.nature == 'feedback' || message.nature == 'contact') && params[:id].present? && !(params[:source] == 'comment')

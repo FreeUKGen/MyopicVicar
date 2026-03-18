@@ -504,6 +504,22 @@ class Freecen2PlacesController < ApplicationController
     session.delete(:from)
   end
 
+  # Start a message to this place's County Coordinator (for Gazetteer questions).
+  def contact_county_coordinator
+    load(params[:id])
+    redirect_back(fallback_location: freecen2_place_path(@place), notice: 'That place does not exist') && return if @place.blank?
+
+    county_record = County.find_by(chapman_code: @place.chapman_code)
+    if county_record.blank? || county_record.county_coordinator.blank?
+      redirect_back(fallback_location: freecen2_place_path(@place), notice: 'No County Coordinator is set for this county. Please use Feedback instead.') && return
+    end
+
+    session[:gazetteer_recipient] = county_record.county_coordinator
+    session[:gazetteer_place_name] = @place.place_name
+    session[:message_base] = 'general'
+    redirect_to new_message_path(source: 'gazetteer')
+  end
+
   def show_place_edits
     load(params[:id])
     redirect_back(fallback_location: select_action_manage_counties_path(@county), notice: 'That place does not exist') && return if @place.blank?

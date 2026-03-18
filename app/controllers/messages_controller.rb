@@ -60,6 +60,8 @@ class MessagesController < ApplicationController
       create_for_message_comment
     when 'Save Communication'
       create_for_communication
+    when 'Send to County Coordinator'
+      create_for_gazetteer_county_coord
     when 'Reply Communication'
       create_for_communication_reply
     when 'Communication Comment'
@@ -203,6 +205,42 @@ class MessagesController < ApplicationController
       flash.keep
       redirect_to action: :new
     end
+  end
+
+  def create_for_gazetteer_county_coord
+    get_user_info_from_userid
+    recipient_userid = session[:gazetteer_recipient]
+    if recipient_userid.blank?
+      flash[:notice] = 'Session expired. Please use "Contact County Coord" from the Gazetteer place page again.'
+      redirect_to new_manage_resource_path
+      return
+    end
+    @message.nature = 'general'
+    @message.syndicate = nil
+    if @message.subject.blank?
+      @message.subject = '...'
+      flash[:notice] = 'There was no subject for your message.'
+      render :new
+      return
+    end
+    unless @message.save
+      flash[:notice] = 'There was a problem with your message.'
+      flash.keep
+      redirect_to action: :new
+      return
+    end
+    @sent_message = SentMessage.new(message_id: @message.id, sender: @user.userid, recipients: [recipient_userid])
+    @message.sent_messages << [@sent_message]
+    @sent_message.save
+    host = session[:host].presence || request.base_url
+    UserMailer.send_message(@message, [recipient_userid], @user.userid, host).deliver_now
+    @sent_message.update_attributes(sent_time: Time.now)
+    @message.add_message_to_userid_messages(UseridDetail.look_up_id(@user.userid)) unless @user.userid.blank?
+    @message.add_message_to_userid_messages(UseridDetail.look_up_id(recipient_userid))
+    session.delete(:gazetteer_recipient)
+    session.delete(:gazetteer_place_name)
+    flash[:notice] = 'Message sent to the County Coordinator.'
+    redirect_to userid_messages_path
   end
 
   def create_for_submit_and_send
@@ -381,6 +419,9 @@ class MessagesController < ApplicationController
       session[:message_base] == 'syndicate' ? syndicate = session[:syndicate] : syndicate = nil
       @message = Message.new(nature: session[:message_base], syndicate: syndicate,
                              userid: @user.userid, message_time: Time.now)
+      if session[:gazetteer_recipient].present? && session[:gazetteer_place_name].present?
+        @message.subject = "Gazetteer: #{session[:gazetteer_place_name]}"
+      end
     end
   end
 

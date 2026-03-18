@@ -6,5 +6,8 @@
   <%= render 'reply'%>
 <% else %>
   <%= message_synicate_coordinator_first_reminder %>
+  <% if params[:source] == 'gazetteer' && session[:gazetteer_recipient].present? %>
+    <p style="text-align: center"><strong>This message will be sent to the County Coordinator for the Gazetteer entry.</strong></p>
+  <% end %>
   <%= render 'form' %>
 <% end %>
