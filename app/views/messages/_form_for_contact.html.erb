@@ -22,7 +22,8 @@
         <% if params.has_key?(:source_contact_id) || params.has_key?(:source_feedback_id)  %>
          <li class="grid__item  one-half  palm-one-whole push--bottom push--top">
             <label>Copies to Userids<span  class="weight--normal"> (optional)</span><a href="#" class="right_tooltip"> <%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span style="width: 900%" >Please the userids to send copies to</span></a></label>
-            <%= select_tag 'message[copies_to_userids]',options_for_select(@userids), multiple: true, prompt: 'None', class: 'select', size: 5 %>
+            <% userids_for_select = @userids.is_a?(Array) ? @userids : [] %>
+            <%= select_tag 'message[copies_to_userids]', options_for_select(userids_for_select), multiple: true, prompt: 'None', class: 'select', size: 5 %>
           </li>
         <% end %>
         <li class="grid__item  one-whole  palm-one-whole push--bottom">
