@@ -15,7 +15,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
   file_for_output = Rails.root.join('log', "#{input_file_name}_finalise.log")
   FileUtils.mkdir_p(File.dirname(file_for_output))
   output_file = File.new(file_for_output, 'w')
-  file_for_messages = Rails.root.join('log', "#{input_file_name}_finslise_messages.csv")
+  file_for_messages = Rails.root.join('log', "#{input_file_name}_finalise_messages.csv")
   FileUtils.mkdir_p(File.dirname(file_for_messages))
   message_file = File.new(file_for_messages, 'w')
   file_for_missing_place_names = Rails.root.join('log', "#{input_file_name}_missing_place_names.txt")
