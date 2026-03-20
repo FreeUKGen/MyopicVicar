@@ -1,0 +1,175 @@
+<h1>DRAFT A History of FreeCEN, Jun 24</h1>
+
+<p><mark>@Pat Reynolds: please fix the missing text as a first priority. All missing text locations are marked with a yellow background. TY</mark> </p>
+<p><mark>DONE: mark up and check for the usual things; add CSS for block quotes and images caption</mark> </p>
+<p><mark>TO DO: decide on and create incoming link(s); check for a version of push top that collapses it.</mark> </p>
+<p><mark>General issues: overuse of the word project; we could do with some more images to break up the text; passive voice (now largely eliminated); unfriendly words — replacements suggested; missing words (text does not make sense as is)</mark> </p>
+<p><mark>There will probably need to be a second round of tidying up once this first round is done and we can see things more clearly.</mark> </p>
+
+<style scoped="scoped">
+  .note { color: #DB0000; } /* our accessible red */
+  
+/* the complete blockquote styling is included in case it is needed: please do not try to prune it */
+  figure.bq { 
+    border-left: 5px solid #825DA8;
+    margin: 0;
+    margin-left: 1.556rem;
+    margin-bottom: 1.556rem;
+    padding: 1em;
+    padding-left: 50px;
+  }
+  figure.bq:nth-of-type(2n) {
+    border-color: #919191;
+  }
+  figure.bq blockquote {
+    position: relative;
+    text-indent: 0;
+    margin: 0;
+    padding: 0;
+  }
+  figure.bq blockquote::before {
+    content: "\201C";
+    color: #825DA8;
+    font-size: 3.6em;
+    font-family: 'Helvetica', Arial, sans-serif;
+    position: absolute;  
+    left: -30px;
+    top: -23px;
+  }
+  figure.bq:nth-of-type(2n) blockquote::before {
+    color: #919191;
+  }
+  figure.bq blockquote p { margin: 0; margin-bottom: 14px; }
+  figure.bq blockquote p:last-of-type { margin-bottom: 0; }
+  figure.bq blockquote p::before, figure.bq blockquote p::after {
+    content: ' ';
+  }
+  figure.bq figcaption {
+    margin-top: 1em;
+    margin-top: 0.3em;
+    font-style: italic;
+    color: #737373; /* value in use for image captions */
+  }
+  figure.bq figcaption:before {
+    content: '— ';
+  }
+  
+/* image styling: please do not edit */
+  img.fullWidth { width: 100%; height: auto; }
+  img.site { padding:10px 10px 15px; border: 1px solid #a3897a; }
+  figcaption { font-style: italic; color: #737373; }
+  img.pair { width: 50%; max-width: 200px; height: auto; }
+  figcaption span {
+    background: #f4f4f4 none repeat scroll 0 0;
+    color: #888888;
+    padding: 6px;
+}
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <p class="lead">This is a history of FreeCEN as told to and remembered by Brenda&#160;Bowers and Pat&#160;Reynolds.</p>
+  </div>
+  
+  <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#beginning">In the beginning …</a> </li>
+          <li><a href="#expansion">Expansion …</a> </li>
+          <li><a href="#movingOn">Moving on …</a> </li>
+          <li><a href="#earlyDays">Early days of transcribing</a> </li>
+          <li><a href="#quality">Ensuring quality</a> </li>
+          <li><a href="#goingLive">Going live!</a> </li>
+          <li><a href="#findingMore">Finding more to transcribe</a> </li>
+          <li><a href="#transforming">Transforming the website</a> </li>
+          <li><a href="#recent">Recent history</a> </li>
+          <li><a href="#acknowledgements">Acknowledgements</a> </li>
+          <li><a href="#canYouHelp">Can you help?</a> </li>
+        </ul>
+      </div>
+    </nav>
+    
+  </div>
+  
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2 id="beginning">In the beginning … </h2>
+    <p>FreeCEN started as <em>The Devon 1891 Census project</em>. This was initiated [?begun] and planned largely by John&#160;Lerwill (for more information, see this <a href="https://www.genuki.org.uk/big/eng/DEV/Census.1891">GenUKI page</a>). One of the other main instigators [?founders — to replace 'main instigators'] was Brian&#160;Randell (GenUKI, Devon; and Newcastle&#160;University), with considerable support from the late Bob&#160;Muchamore in Australia. The late Roy&#160;Conibear (d. 2001) in Canada also gave considerable aid to the Devon Project. The 1891 Devon transcription was instigated [?set up] as a pilot project.</p>
+    
+    <h2 id="expansion">Expansion …</h2>
+    <p>Devon was followed in mid-2000 by the 1891 Cornwall transcription which was undertaken as the <a href="https://sites.rootsweb.com/~kayhin/ukocp.html">Cornwall Online Transcription Project</a> in partnership with the <a href="https://www.opc-cornwall.org/">Cornwall Online Parish Clerks</a>. Kay&#160;Hinnrichsen of Australia and Michael&#160;McCormick in Cornwall led the project. Their team completed the project [?task] in 2008, having transcribed all the Cornish 19th century census returns.</p>
+    <p>By the end of 2000, we had set up four other counties, and more followed. Bob took over General Coordination of the project in August, 2001. Brenda&#160;Bowers joined the project as Coordinator for Nottinghamshire about one month after.</p>
+    <p>Brenda then took on the role of helping anyone with queries, working alongside Bob&#160;Muchamore. With the introduction of Microsoft&#160;XP® and Bob only having Windows&#160;32® he had difficulty helping some volunteers so they shared the issues.</p>
+    
+    <h2 id="movingOn">Moving on …</h2>
+    <p>After the death of Bob&#160;Muchamore in 2004, Dave&#160;Newbury took over as chair, and Brenda became the Assistant Chair. When Dave became seriously ill, in 2008, Brenda took over as Chair. This was envisioned [?first seen] as a temporary appointment, but sadly Dave passed away two years later, and Brenda continued as chair for over a decade.</p>
+      <p>Early in the development of the organisation, we appointed separate Heads for Scotland and Wales, reflecting the differences in censuses in those countries.</p>
+      <p>Although started as an independent project, FreeCEN always worked closely with FreeBMD, and it was a natural move to become a project [?part] of FreeBMD the charity. FreeBMD the charity was then renamed to be <em>Free UK Genealogy</em>, reflecting that it did far more than FreeBMD the project. FreeBMD Trustee David&#160;Mayall was responsible for liaison with the trustees, and for technical aspects of the development of FreeCEN.</p>
+        <p>The Trustees of FreeBMD (as it then was) worked with the Church of Latter Day Saints (the LDS or Mormons). We remember Geoffrey&#160;D.&#160;Mawlam, Area Manager (Europe North) for The Genealogical Society of Utah with gratitude for his help with this. The LDS sent the FreeCEN management the 1891 census on microfiche, which were [??was] passed on to the Coordinators (known as Coords).</p> 
+   
+    <h2 id="earlyDays">The early days of transcribing for FreeCEN</h2>
+    <p>To be a transcriber at the start of the project, you needed access to a microfiche reader. Some transcribers already had one or they bought one themselves. For Nottinghamshire, one of Brenda’s  helpers took on the role of going round to lots of business and libraries to collect redundant fiche readers. Other coordinators were able to do the same.</p>
+      <p>Second-hand car dealers proved to be a great source of second-hand microfiche readers. In those days, the dealerships were sent information about available vehicles on fiche — when this was computerised, the fiche and their readers were no longer needed, and many dealerships passed their readers on to FreeCEN. Volunteers then had to deliver them to the transcribers. Those who did <em>not</em> have access to a microfiche reader had to use the one at the local library or Archives, often going once or twice a week. They took a blank sheet with them and wrote out the census by hand. On returning home they then typed it up. They kept repeating that until they finished the piece. This could be a Herculean task as a census piece can have from about 150 images to over 500 images. Each image has 30 people on a page. Transcribers also had to have a computer with a floppy disc drive (or an external drive).</p> 
+    <p>Once the transcriber had access to a microfiche reader, the coordinator then had to post the microfiche to them. The transcriptions were copied onto a floppy disk, which was returned, also by post, to the coordinator together with returning the microfiche. A few had an internet account, and would email the transcriptions.</p>
+    <p>The Coordinator then posted the CD and the fiche on to a Checker (who again had to have a PC with a floppy disc drive). To see what needed to be checked, and to proofread the spreadsheet, the checkers used a tool called <em>CSVCHECK</em> written by Peter&#160;Cox. Peter was unable to update it when Windows<sup>®</sup> came in, so sent the programme to Brenda, and Brenda’s son updated it to the version that was in use until the early <mark>something missing</mark> </p>
+    <p>Some microfiche got lost in the post. To stop this happening, and so that people did not have to use microfiche, volunteer Kevin&#160;Howell (of FreeBMD) was appointed the charity’s first digitiser. Brenda recalled all the images from the Coords (from all over the world). Some were sent directly to Kevin, others to her, together with a list of the fiche which had gone missing. He copied the images from microfiche to CD or DVD.  Kevin then posted the CDs to the Coords and a copy to Brenda. This exercise took more than a year, and after his death was taken over long-term on a self-employed basis by Kevin’s daughter Stacey. The work is continued today by FreeUKGenealogy employee Helen&#160;Bainbridge, who also sources new images for transcription.</p> 
+
+    <h2 id="quality">Ensuring the quality of transcriptions</h2>
+    <p>The final stage of quality control for the FreeCEN data is validation. These are the instructions from 2004 [?add ', as they appeared']:</p>
+    <div class="island island--light">
+      <p>“The County Co-ordinator (or his appointed delegate) will clear queries passed back by checkers. The output file from this process will be passed to the Database Maintainer, and will be scanned for acceptability before formatting an upload file for the on-line database loading. The upload file will be in Comma-Separated-Values ascii file format.</p>
+      <p class="note">“PLEASE NOTE: If you have started validation using VALCENS you must complete the validation using VALCENS. If you need a replacement for the VALCENS routine as you are part way through a piece, please request through the helpers mailing list.</p>
+      <p>[should this paragraph also be in red?] “NOTE that because of the manner in which the program operates, it is of considerable advantage to use a PC with a minimum 400MHZ processor and recent hard-drive.” </p>
+    </div>
+
+    <p><mark>word missing — ?Contact</mark> was renewed with the LDS, and they sent us CDs for 1841, 1851, 1861, and 1871 so that transcription could begin [should that be continue?] [?add 'for those years'].</p>
+
+    <h2 id="goingLive">Going live!</h2>
+    <p>In July 2003, the FreeCEN website went live. The online database facilities [?functions] were developed by Dave&#160;Mayall of the core FreeCEN technical team and Trustee of Free UK Genealogy, and Stuart&#160;Morgan. The website notes that the initial year’s 150 volunteers had doubled in 12 months, and in four years had reached 500 transcribers.</p>
+    <p>By April of 2006 the website had been revamped, including a new logo. We then had 2,000 transcribers.</p>
+
+    <figure class="float--left">
+       <%= image_tag 'freecen-logo-2005.jpg', alt: 'FreeCEN logo 2005', data: { rel: '225x255' }, width: 200 %> 
+    <figcaption>The original FreeCEN logo … </figcaption>
+      </figure>
+      
+      <figure class="float--left push--top">
+        <%= image_tag 'freecen-logo-2007.jpg', alt: 'FreeCEN logo 2007', data: { rel: '225x255' }, width: 200 %>
+        <figcaption class="push--top">&#160;and its replacement</figcaption>
+      </figure>
+      
+    <h2 id="findingMore" class="clear--left">Finding more censuses to transcribe</h2>
+    <p>Because of problems we were having with getting access to the 1891 Census, Trustee Dave&#160;Mayall and FreeCEN Manager Dave&#160;Newbury were in contact with  Archive CD books (ACDB) to provide us with images on CD instead. They started with the 1861 Census. Archive CD Books [link?] was the brainchild of Rod&#160;Neep.</p> 
+
+    <figure class="bq">
+      <blockquote>The Archive CD Books Project exists to make reproductions of old books, documents and maps available on CD to genealogists and historians, and to co-operate with libraries, museums and record offices in providing money to renovate old books in their collection, and to donate books to their collections, where they will be preserved for future generations.</blockquote> 
+      <figcaption>ACDB website, 2019</figcaption>
+    </figure>
+
+    <p><mark>something missing or wrong</mark> Contact  ordered by and sent to a Coord who was also a member of the church, which continued for some time until the LDS decided for economics reason to stop supplying any more CDs or DVDs to any organisation around the world.</p>
+    <p>Some local record offices worked with us to transcribe their county, for example the Devon and Cornwall Archives services. This enabled FreeCEN to begin transcribing their county.</p> 
+    <p>In 2019, the LDS very kindly gave us the microfiche from the Nottingham Family History Centre which was closing down. This gave us the fiche for counties from 1891 which were never with us in the first place, and for missing Pieces from otherwise completed counties.</p>  
+
+    <h2 id="transforming">Transforming the FreeCEN website (and more)</h2>
+    <p>In the early 2010s the Trustees of Free UK Genealogy decided to update their three websites (FreeBMD, FreeCEN and FreeREG), and commissioned a suite of designs for them. Implementation started with FreeREG, which needed the work most urgently, and had a willing and able computer programmer in Kirk&#160;Dawson of Canada. He was able to guide and to a large extent implement the developments. The new FreeREG website went live in 2017.</p>
+    <p>The transformation of FreeREG was far larger than a simple re-design of the website — it included moving the database to a new structure and an examination of the behind-the-scenes processes of transcription and validation. Kirk’s changes lead to improvements in the quality of the transcriptions, the experience of the volunteers and the services for users.</p> 
+    <p>Kirk and Ben&#160;Brumfield (a contracted developer) then switched their skills to the service of FreeCEN. The FreeCEN Committee and the development team planned a series of developments [?improvements] (in seven phases) that saw the database moving to the new system, the new website going live, and the original transcription tools being replaced with ones that would produce files that could be loaded into the new database. [split sentence?]</p>
+      <p>Much of the systems development and associated data management tasks was — and continues to be — undertaken by volunteers: Geoff&#160;Jarvis in Australia, Anne&#160;(Ruby Developer), and other coordinators and new volunteers with a special interest in data. Their work underpins a radical change to how we validate records, and how we organise place information. In FreeCEN1, places were simply in counties, but in FreeCEN2, we now have places in a full location hierarchy, including latitude and longitude.</p>
+      <p> We are now working through the records created on the original FreeCEN transcription validation software. This is taking a long time as the process slows the search considerably, so we can do this for only a short time each night (UK time) when there are fewer users who do not see any difference to their search times.</p>  
+    <p>The outcome of the work of Geoff and his team is that we will be able to allow you to search by place of birth!</p> 
+
+    <h2 id="recent">Recent history</h2>
+    <p>In 2022 Brenda stood down as Chair. For many years the Chairs had been supported by a committee which included the Scotland and Wales Coordinators, and others with skills needed to run the project, but this had struggled to meet, and the Covid-19 restrictions prevented it from continuing. A new FreeCEN committee was formed, with a different structure: Helen&#160;Bainbridge is Chair and Secretary for the monthly meetings, and committee members have responsibility for specific areas.  These areas include Scotland, Wales, geographical data, and technical forward planning and execution. We plan that a Free UK Genealogy Trustee will lead the committee in future.</p>
+    <p>On the completion of the development of the new FreeCEN (excluding place of birth) Kirk stood down as a volunteer, and new (or new-to-FreeCEN) technical volunteers have taken over the work of continuing to improve your access to free, high quality transcriptions of the UK’s census data.</p>
+
+    <h2 id="acknowledgements">Acknowledgements</h2>
+    <p>Some of this history was told to Brenda&#160;Bowers by Bob&#160;Muchamore, who was General Coordinator of the project from 2001. Some is the personal recollection of Pat&#160;Reynolds, former Director of Free UK Genealogy. Part of this history has been gleaned from the historic snapshots of the FreeCEN website which are preserved by the <em>Internet Archive</em> on its ‘Wayback’ machine.</p>
+
+    <aside aria-labelledby="canYouHelp">
+      <h2 id="canYouHelp">Can you help FreeCEN to thrive?</h2>
+      <p>FreeCEN would not exist without the technical volunteers, transcribers, proofreaders, validators, coordinators, managers and other volunteers who have created and sustained the project for over two decades. If you are interested in joining them, please use the ‘volunteer’ link in the main menu to find out more about how you can help.</p> 
+      <p>If you would like to support us in another way, we always welcome donations to pay for our necessary costs: there is a link in the footer of every page, including this one.</p>
+    </aside>
+  </div>
+</div>

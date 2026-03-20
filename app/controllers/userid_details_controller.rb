@@ -259,7 +259,7 @@ class UseridDetailsController < ApplicationController
       if MyopicVicar::Application.config.template_set != 'freecen'
         redirect_to(transcriber_registration_userid_detail_path) && return
       else
-        redirect_to "/cms/opportunities-to-volunteer-with-freecen/welcome-to-freecen" and return
+        redirect_to "/opportunities-to-volunteer-with-freecen/welcome-to-freecen" and return
       end
     elsif params[:commit] == 'Submit' && session[:userid_detail_id].present?
       redirect_to(userid_detail_path(@userid)) && return

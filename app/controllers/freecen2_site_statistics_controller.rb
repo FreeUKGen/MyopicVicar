@@ -116,8 +116,8 @@ class Freecen2SiteStatisticsController < ApplicationController
 
   def grand_totals
     @freecen2_site_statistics = Freecen2SiteStatistic.order_by(interval_end: -1).first
-    @freecen2_contents = Freecen2Content.order(interval_end: :desc).first
-    @interval_end = @freecen2_contents.interval_end
+    @freecen2_county_contents = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
+    @interval_end = @freecen2_county_contents.interval_end
   end
 
   def index

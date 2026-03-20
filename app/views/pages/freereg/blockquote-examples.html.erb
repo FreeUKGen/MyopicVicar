@@ -1,0 +1,138 @@
+<h1>Blockquote examples</h1>
+
+<style scoped="scoped">
+  figure.bq {
+    font-family: 'Source Sans Pro';
+    border-left: 5px solid #007fad;
+    margin: 0;
+    margin-left: 1.556rem;
+    margin-bottom: 1.556rem;
+    padding: 1em;
+    padding-left: 50px;
+  }
+  figure.bq blockquote {
+    position: relative;
+    text-indent: 0;
+    margin: 0;
+    padding: 0;
+    quotes: "“" "”";
+  }
+  figure.bq blockquote::before {
+    content: "\201C";
+    color: #007fad;
+    font-size: 3.6em;
+    font-family: Helvetica, Arial, sans-serif;
+    position: absolute;
+    left: -30px;
+    top: -23px;
+  }
+  figure.bq blockquote p { margin: 0; margin-bottom: 14px; }
+  figure.bq blockquote p:last-of-type { margin-bottom: 0; }
+
+  figure.bq figcaption {
+    margin-top: 1em;
+    font-style: italic;
+    color: #737373; /* value in use for image captions */
+    color: #707070; /* named colour? */
+  }
+  figure.bq figcaption:before {
+    content: '— ';
+  }
+  
+  figure.bq:nth-of-type(2n) blockquote::before {
+    content: "\201C";
+    color: #919191;
+  }
+  figure.bq:nth-of-type(2n) {
+    border-color: #8f8f8f;
+    border-color: #919191; /* 3.15:1 (UI component) */
+  }
+  
+  figure.cen {
+    border-color: #825da8;  /* project_colour */
+  }
+  figure.cen blockquote::before {
+    color: #825da8;
+  }
+  figure.bmd {
+    border-color: #c84182;  /* project_colour */
+  }
+  figure.bmd blockquote::before {
+    color: #c84182;
+  }
+
+  figure.bq blockquote p::before, figure.bq blockquote p::after {
+    content: ' ' !important;
+  }
+</style>
+
+    <h2>Using style classes that we have already</h2>
+    <h3>A plain blockquote element</h3>
+    <p>Note that our current styling has no side margins — the browser defaults have been over-written. As a result, the first line of this plain blockquote is pulled left, outside of the page boundary. This is presumably because the assumption is that quotation marks will be applied — see below — it seems a little odd.</p>
+    <blockquote>Preventing conflicts is the work of politics; establishing peace is the work of education.</blockquote>
+    <p>When used with a paragraph, only the opening quotation mark is outside of the page boundary. This is a feature of the original design.</p>
+    <blockquote><p>Preventing conflicts is the work of politics; establishing peace is the work of education.</p> </blockquote>
+
+    <h3>A blockquote with margins and paragraphs</h3>
+    <p>Where there is no attribution, the blockquote element itself can be given left and right margins. In this example, the paragraphs have been pulled closer together than our standard style.</p>
+    <blockquote class="push--sides">
+      <p class="push-half--bottom">The first paragraph.</p>
+      <p class="push-half--bottom">A middle paragraph.</p>
+      <p>The last paragraph. Note the proper application of quotation marks when there is more than one paragraph.</p>      
+    </blockquote>
+
+    <h3>A blockquote in a div element with margins</h3>
+    <p>Where there is an attribution, the blockquote element and the attribution need to be placed in a block-level element with side margins.</p>
+    <div class="push--sides">
+      <blockquote class="push-half--bottom" cite="http://www.w3.org/wai/">
+        <p>The power of the Web is in its universality. Access by everyone regardless of disability is an essential aspect.</p>
+      </blockquote>
+      <div class="push--bottom"><em> — Tim Berners-Lee, W3C Director and inventor of the World Wide Web</em> </div>
+    </div>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="new">Using new styles</h2>
+    <p>The text of the examples below is taken from BMD. The styling is for REG (first 2), then CEN (next 2) and BMD (last 3). The contrast of the grey against the white background is 3.15:1; the AA standard (actually WCAG 2.1) for UI interface items is at least 3.1:1</p>
+
+    <figure class="bq">
+      <blockquote>
+        <p>This site has really helped me and gave me hope …</p>
+      </blockquote>
+      <figcaption>Katherine</figcaption>
+    </figure>
+
+    <figure class="bq">
+      <blockquote>
+        <p>I appreciate your site and all the work that goes into it, it’s helped me a lot in tracking relatives.</p>
+      </blockquote>
+      <figcaption>Bonita</figcaption>
+    </figure>
+
+    <figure class="bq cen">
+      <blockquote>Thank you very much for addressing my concerns … I am pleased to hear that you are taking into consideration the feedback from researchers in your future plans.
+      </blockquote>
+    </figure>
+
+    <figure class="bq">
+      <blockquote>Brilliant band of people who have constantly worked so hard to achieve this.
+      </blockquote>
+    </figure>
+
+    <figure class="bq bmd">
+      <blockquote>
+        <p>I live in California now, but was born in the UK, my family is still there and I am 98% British and European … About 66% British. I use FreeBMD all of the time to trace my family members who have passed … It’s a great resource!</p>
+        <p>Thank you to all the people who take the time to translate all of the files and to those who are willing to help with look-ups.</p>
+      </blockquote>
+    </figure>
+
+    <figure class="bq">
+      <blockquote>
+        <p>I live in Suffolk UK and I’ve been researching my family mainly in North East England for past 20 years. I couldn’t do it without FreeBMD and all the other genealogy websites.</p>
+      </blockquote>
+    </figure>
+
+    <figure class="bq bmd">
+      <blockquote>
+        <p>I have been using FreeBMD for about 10 years and am very grateful for all the hard work done by the transcribers.</p>
+      </blockquote>
+    </figure>

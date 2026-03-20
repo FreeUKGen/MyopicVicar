@@ -20,8 +20,20 @@ MyopicVicar::Application.routes.draw do
   resources :reminder_to_donate
   resources :donate_cta_feedback
 
+  # Catch-all route for dynamic pages copied from Refinery
+  # This must come after specific page routes (donate, volunteer)
+  # Matches paths like /about, /help/getting-started, etc.
+  # The controller will check if the view file exists and handle 404 if not
+
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
+
+  # In config/routes.rb, add:
+  # Favorite Actions Management
+  get 'favorite_actions/manage', to: 'favorite_actions#manage', as: :manage_favorites
+  post 'favorite_actions/update', to: 'favorite_actions#update_favorites', as: :update_favorites
+  post 'favorite_actions/add', to: 'favorite_actions#add', as: :add_favorite
+  delete 'favorite_actions/remove', to: 'favorite_actions#remove', as: :remove_favorite
 
   get 'open', :to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
@@ -92,6 +104,17 @@ MyopicVicar::Application.routes.draw do
   get 'freecen2_contents/for_place_names', to: 'freecen2_contents#for_place_names', as: :freecen2_contents_for_place_names
   get 'freecen2_contents/piece_index', to: 'freecen2_contents#piece_index', as: :freecen2_contents_piece_index # not active
   resources :freecen2_contents
+
+  get 'freecen2_county_contents/county_index', to: 'freecen2_county_contents#county_index', as: :index_by_county_freecen2_county_contents
+  get 'freecen2_county_contents/place_index', to: 'freecen2_county_contents#place_index', as: :freecen2_county_contents_place_index
+  get 'freecen2_county_contents/place_names', to: 'freecen2_county_contents#place_names', as: :freecen2_county_contents_place_names
+  get 'freecen2_county_contents/display_pieces_by_status', to: 'freecen2_county_contents#display_pieces_by_status', as: :display_pieces_by_status_freecen2_county_contents
+  get 'freecen2_county_contents/display_pieces_by_name', to: 'freecen2_county_contents#display_pieces_by_name', as: :display_pieces_by_name_freecen2_county_contents
+  get 'freecen2_county_contents/display_pieces_by_number', to: 'freecen2_county_contents#display_pieces_by_number', as: :display_pieces_by_number_freecen2_county_contents
+  get 'freecen2_county_contents/new_records_index', to: 'freecen2_county_contents#new_records_index', as: :freecen2_county_contents_new_records_index
+  get 'freecen2_county_contents/for_place_names', to: 'freecen2_county_contents#for_place_names', as: :freecen2_county_contents_for_place_names
+  get 'freecen2_county_contents/piece_index', to: 'freecen2_county_contents#piece_index', as: :freecen2_county_contents_piece_index # not active
+  resources :freecen2_county_contents
 
   get 'freecen2_search_statistics/graphic', to: 'freecen2_search_statistics#graphic', as: :graphic_freecen2_search_statistics
   get 'freecen2_search_statistics/export_csv', to: 'freecen2_search_statistics#export_csv', as: :export_csv_freecen2_search_statistics
@@ -629,6 +652,7 @@ MyopicVicar::Application.routes.draw do
   get 'gap_reasons/:id/index(.:format)', :to => 'gap_reasons#index', :as => :index_gap_reason
   resources :gap_reasons
 
+  # Serve assets_freereg resources directly (bypassing asset pipeline)
 
 
   # This line mounts Refinery's routes at the root of your application.
@@ -638,6 +662,8 @@ MyopicVicar::Application.routes.draw do
   # We ask that you don't use the :as option here, as Refinery relies on it being the default of "refinery"
 
   mount Refinery::Core::Engine, :at => '/cms'
+
+  get '*path', to: 'pages#show', as: :page, format: false
 
   #ActiveAdmin.routes(self)
 

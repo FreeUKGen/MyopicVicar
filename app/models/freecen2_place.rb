@@ -320,6 +320,67 @@ class Freecen2Place
       [place_alternate_valid, place_id]
     end
 
+    def notify_county_coord_of_place_update(place_after_edit, user)
+      county_name = ChapmanCode.name_from_code(place_after_edit.chapman_code)
+      county_coord_id = County.find_by(chapman_code: place_after_edit.chapman_code)
+      if county_coord_id.present?
+        coord = UseridDetail.find_by(userid: county_coord_id)
+        email_to = coord.email_address if coord.present?
+      end
+      unless county_coord_id.present? && coord.present?
+        dm = UseridDetail.role('data_manager').email_address_valid.first
+        email_to = dm.email_address if dm.present?
+      end
+      place_before_edit = place_after_edit[:freecen2_place_edits].last
+      alternates_before_edit = '(' + place_before_edit['previous_alternate_place_names'].join(', ') + ')'
+      alternate_place_names_after_edit = []
+      place_after_edit.alternate_freecen2_place_names.each do |alternate|
+        alternate_place_names_after_edit << alternate.alternate_name
+      end
+      alternates_after_edit = '(' + alternate_place_names_after_edit.join(', ') + ')'
+
+      changes = [
+        { field: 'Grid_reference', old_value: place_before_edit['previous_grid_reference'], new_value: place_after_edit.grid_reference },
+        { field: 'Latitude', old_value: place_before_edit['previous_latitude'], new_value: place_after_edit.latitude },
+        { field: 'Longitude', old_value: place_before_edit['previous_longitude'], new_value: place_after_edit.longitude },
+        { field: 'Source', old_value: place_before_edit['previous_source'], new_value: place_after_edit.source },
+        { field: 'Website', old_value: place_before_edit['previous_website'], new_value: place_after_edit.genuki_url },
+        { field: 'Notes', old_value: place_before_edit['previous_notes'], new_value: place_after_edit.place_notes },
+        { field: 'Alternates', old_value: alternates_before_edit, new_value: alternates_after_edit }
+      ]
+
+      # lines for the email body
+
+      lines = []
+      reason = place_before_edit['reason'][2...-2]
+
+      # Intro
+      lines << "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code})"
+      lines << "Modified by user: #{user.userid} (#{user.person_forename} #{user.person_surname}) Reason: #{reason}"
+      lines << ''
+      lines << 'Modified fields are marked with a *'
+      lines << ''
+
+      # Changes
+
+      any_changes = false
+
+      changes.each do |row|
+        if row[:old_value].to_s != row[:new_value].to_s
+          mark = '*'
+          any_changes = true
+        end
+
+        lines << "#{row[:field]}#{mark} : Previous value = #{row[:old_value]} : New value = #{row[:new_value]}"
+      end
+
+      if any_changes == true
+        email_body = lines.join("\n")
+        email_subject = "Gazetteer Place: #{place_after_edit.place_name} (#{place_after_edit.chapman_code}) has been modified"
+        UserMailer.freecen_gaz_modified_report(email_subject, email_body, email_to).deliver_now
+      end
+    end
+
     def original_place(county, place) # no longer used when validating a place #1564
       place_original = Freecen2Place.where(original_chapman_code: county, original_standard_name: place)
       place_alternate_valid = (place_original.present? && place_original.count > 0) ? true : false
@@ -363,6 +424,10 @@ class Freecen2Place
 
     def search_records_birth_places?(place)
       SearchRecord.where(birth_chapman_code: place.chapman_code, freecen2_place_of_birth_id: place.id).no_timeout.exists?
+    end
+
+    def search_records_use_alternate_birth_place?(chapman_code, place_id, alternate_name)
+      SearchRecord.where(birth_chapman_code: chapman_code, freecen2_place_of_birth_id: place_id, birth_place: alternate_name).no_timeout.exists?
     end
 
     def create_csv_file(chapman_code)
@@ -506,12 +571,13 @@ class Freecen2Place
     end
     if err_msg == 'None'
       if alternate_freecen2_place_names_attributes.present?
-        alternate_freecen2_place_names_attributes.each do |_key, value|  # check for use of alternate name in search_records POB  if trying to destroy
+        alternate_freecen2_place_names_attributes.each do |_key, value|
           next unless value[:_destroy] == '1'
 
           if value[:alternate_name].blank?
             err_msg = 'Other Name for Place cannot be empty with Destroy box checked'
           end
+
         end
       end
     end

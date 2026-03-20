@@ -1,0 +1,84 @@
+<% if @place_description == 'all' %>
+  <h2 style="text-align: center">Database Pieces for All Places in <%= @county_description %> in <%= @census_text %>
+    as of  <%= @interval_end.strftime('%d %b %Y')%><br>
+    ordered by <%= @order_text %>
+    <span class="accessibility">Database Pieces for all Places in a specific County</span></h2>
+<% else %>
+  <h2 style="text-align: center">Database Pieces for <%= @place_description %> in <%= @county_description %> in <%= @census_text %>
+    as of  <%= @interval_end.strftime('%d %b %Y')%><br>
+    ordered by <%= @order_text %>
+    <span class="accessibility">Database Pieces for a specific Place in a specific County</span></h2>
+<% end %>
+<div  style="text-align: center">
+  <%= link_to 'Back to Totals for All Counties' , freecen2_county_contents_path, method: :get , :class => "btn btn--small" %>
+  <% if params[:new_records] == 'All' %>
+    <%= link_to 'Back to Recent Additions' ,  :back, method: :get , :class => "btn btn--small" %>
+  <% else %>
+    <%= county_county_index_link(@county_description,@place_description) %>
+    <% if @place_description != 'all' %>
+      <%= link_to 'Back to Records for ' + @place_description, freecen2_county_contents_place_index_path(:county_description => @county_description, :place_description => @place_description), class: "btn btn--small", method: :get %>
+      <%= county_locate_place_link(@place_id,'small') %>
+    <% end %>
+  <% end %>
+  <p></p>
+  <p><% if @order == 'status' %>
+      List is ordered by Piece Name within Online status/date so that the most recent Pieces Online are listed first<br>
+    <% end %>
+    <b>Select a link below to change the order of display</b><br>
+    <% unless @order == 'status' %>
+      <%= link_to 'Most Recent Online', display_pieces_by_status_freecen2_county_contents_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @census, :order => @order), class: "btn btn--small", method: :get %>
+    <% end %>
+    <% unless @order == 'name' %>
+      <%= link_to 'Piece Name', display_pieces_by_name_freecen2_county_contents_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @census, :order => @order), class: "btn btn--small", method: :get %>
+    <% end %>
+    <% unless @order == 'number' %>
+      <%= link_to 'Piece Number', display_pieces_by_number_freecen2_county_contents_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => @census, :order => @order), class: "btn btn--small", method: :get %>
+    <% end %>
+    <br>
+  </p>
+  <p><i>Notes:<br>
+      1) An Online status of P indicates that only part of the Piece is currently online.<br>
+      2) Pieces ending with an alphabetic character that are online have the number of records included in the first of that number.</i></p>
+</div>
+<p></p>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width " >
+    <thead >
+      <tr>
+        <th class='sticky-header'>Piece Name</th>
+        <th class='sticky-header'>Piece Number</th>
+        <% if @census_text == 'All Years' %>
+          <th class='sticky-header'>Year</th>
+        <% end %>
+        <th class='sticky-header'>Online (Date)</th>
+        <th class='sticky-header'>Records Online</th>
+        <th class='sticky-header'>Civil Parishes<br>
+          <small>The part in () is the name of any Hamlet, Township, Ward or Place included in the Civil Parish</small></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%  @place_pieces.each do |piece|%>
+        <tr>
+          <td><%= piece.name %></td>
+          <td><%= piece.number %></td>
+          <% if @census_text == 'All Years' %>
+            <td><%= piece.year %></td>
+          <% end %>
+          <% if piece.status == 'Online' %>
+            <td><%= 'Y' + " (" + piece.status_date.to_datetime.strftime('%d %b %Y') + ")"%></td>
+          <% elsif piece.status == 'Part' %>
+            <td><%= 'P' + " (" + piece.status_date.to_datetime.strftime('%d %b %Y') + ")"%></td>
+          <% else%>
+            <td><%= 'N' %></td>
+          <% end%>
+          <td><%= county_records_for_piece(piece.id, piece.status) %></td>
+          <% if piece.civil_parish_names == nil %>
+            <td><i> n/a </i></td>
+          <% else%>
+            <td><%= piece.civil_parish_names %></td>
+          <% end%>
+        </tr>
+      <% end%>
+    </tbody>
+  </table>
+</div>

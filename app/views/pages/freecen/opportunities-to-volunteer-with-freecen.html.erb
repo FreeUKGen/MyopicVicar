@@ -1,0 +1,45 @@
+<h1>Opportunities to volunteer with FreeCEN</h1>
+
+<style scoped="scoped">
+/* Do NOT copy or re-use: temporary fix for donate icon */
+  .image-link:focus, .image-link:hover { 
+    outline: 2px dashed #825da8;
+    text-decoration: none;
+    background: none;
+    display: inline-block; /* Safari fix */
+ }
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p class="lead">The aim of FreeCEN is to provide a free-to-use, online, searchable database of the census returns for the whole country. Without the invaluable support of our volunteers, this project would not exist.</p>
+
+    <h2 class="gamma">Transcribers</h2>
+    <p>We will send you census images to transcribe, a spreadsheet set up for those images and guidance on how to transcribe them. We will give you feedback on your first attempts so that you can make any changes needed to meet our high quality standards. Your Coordinator will support you with any issues you encounter, and you can join a friendly support group where other volunteers can help you learn, and in turn you will be able to advise others. Your time commitment is completely up to you: you work at your own pace.</p>
+
+    <div class="landmark text--center">
+      <p class="push-half--bottom"><strong>To register as a transcriber, please select this button:</strong> </p>
+      <form action="/userid_details/transcriber_registration">
+        <input type="submit" value="Continue to Registration" class="btn" />
+      </form>
+    </div>
+
+    <h2 class="gamma">Website Developers and Designers</h2>
+    <p>FreeCEN2 uses MongoDB, Ruby on Rails and RefineryCMS — if you have experience with any of these, or would like to learn, please visit the <a href="http://www.freeukgenealogy.org.uk/about/volunteer/">FreeUK Genealogy volunteer page</a> — this page also has details of opportunities on our sister projects, FreeBMD and FreeREG.</p>
+  </div>
+
+  <aside aria-label="Other ways to help" class="grid__item two-fifths lap-one-half palm-one-whole float--right text--center">
+    <div class="islet islet--bordered">
+      <p class="push-half--bottom">No time to volunteer? Please consider a donation:</p>
+      <a class="image-link" href="http://www.freeukgenealogy.org.uk/about/help-us-keep-history-free">
+        <%= image_tag 'images/donate.png', title: 'Donate', alt: 'Donate', data: { rel: '225x255' }, width: 185, height: 162 %>
+      </a>
+      <p>While most other genealogy sites charge you to find and read records, FreeCEN is dedicated to keeping our searches free. A small donation towards our costs would really help us keep it that way.</p>
+    </div>
+    <div class="islet" style="border: 2px solid #825da8;"><span class="accessibility">Give as you shop with Easy Fundraising</span>
+      <a class="image-link" href="https://www.easyfundraising.org.uk/causes/freeukgenealogy/">
+        <%= image_tag 'images/easy-fundraising-01.png', alt: 'Easy Fundraising — give as you shop', data: { rel: '225x255' }, width: 632, height: 316, style: 'width: 100%; height: auto;' %>
+      </a>
+    </div>
+  </aside>
+</div>

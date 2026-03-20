@@ -269,6 +269,12 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def freecen_gaz_modified_report(email_subject, email_body, email_to)
+    email_addresses = []
+    email_addresses << email_to
+    mail(:to => email_addresses, :subject => email_subject, :body => email_body)
+  end
+
   def freecen_move_fc2_place_linkages_report(email_subject, email_body, report, report_name, email_to)
     email_addresses = []
     email_addresses << email_to
@@ -474,6 +480,11 @@ class UserMailer < ActionMailer::Base
     end
     mail(:to => dm_emails, :subject => email_subject, :body => email_body)
 
+  end
+
+  def report_for_syndicate_coord(email_subject, email_body, report, report_name, email_to, cc_email)
+    attachments[report_name] = { :mime_type => 'text/csv', :content => report }
+    mail(:to => email_to, :bcc => cc_email, :subject => email_subject, :body => email_body)
   end
 
   def request_cc_image_server_group(sc, cc_email, group)

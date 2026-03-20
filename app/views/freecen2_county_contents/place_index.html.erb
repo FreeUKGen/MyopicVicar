@@ -1,0 +1,72 @@
+<h2 style="text-align: center">Database Records for <%= @place_description %> in <%= @county_description %> as of  <%= @interval_end.strftime('%d %b %Y') %>
+  <span class="accessibility">Database Record totals for a place with options to view pieces and names</span></h2>
+<div  style="text-align: center">
+  <%= link_to 'Back to Totals for All Counties' , freecen2_county_contents_path, method: :get , :class => "btn btn--small" %>
+  <%= county_county_index_link(@county_description, @place_description) %>
+  <%= county_locate_place_link(@place_id, 'small') %>
+  <p></p>
+  <p><i>Where applicable you can use the Action buttons to view a list of Pieces (including Civil Parish names) and/or a list of Names (surnames/forenames)<br>
+      Note: A * next to the number of Pieces Online indicates that only part of one or more pieces is currently online - use View Pieces to see details</i></p>
+</div>
+<div class='scrollable'>
+  <table  class="table--bordered table--data table--striped my-width " >
+    <thead >
+      <tr>
+        <th class='sticky-header'>Year</th>
+        <th class='sticky-header'>Records Online</th>
+        <th class='sticky-header'>Pieces Online</th>
+        <th class='sticky-header'>Total Pieces</th>
+        <th class='sticky-header'>% Online</th>
+        <th class='sticky-header'>New Pieces<br>
+          Online</th>
+        <% if @freecen2_county_contents.records[@key_place][:total][:pieces_online] > 0 %>
+          <th colspan = "2" class='sticky-header t15'>Actions</th>
+        <% else %>
+          <th class='sticky-header '>Actions</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% Freecen::CENSUS_YEARS_ARRAY.each do |census| %>
+        <tr>
+          <td><%= census %></td>
+          <td><%= @freecen2_county_contents.records[@key_place][census][:records_online] %></td>
+          <%= county_contents_check_for_partials(@freecen2_county_contents.records[@key_place][census][:piece_ids], @freecen2_county_contents.records[@key_place][census][:pieces_online]) %>
+          <td><%= @freecen2_county_contents.records[@key_place][census][:pieces] %></td>
+          <%= county_contents_show_percentage(@freecen2_county_contents.records[@key_place][census][:pieces_online], @freecen2_county_contents.records[@key_place][census][:pieces]) %>
+          <td><%= @freecen2_county_contents.records[@key_place][census][:added_pieces_online] %></td>
+          <% if @freecen2_county_contents.records[@key_place][census][:pieces_online] > 0 || @has_names[census] == true %>
+            <td><%= link_to 'View Pieces', display_pieces_by_status_freecen2_county_contents_path(:county_description => @county_description,  :place_description => @place_description, :place_id => @place_id, :census_year => census, :order => 'status'), class: "btn btn--exsmall", method: :get %></td>
+            <% if @freecen2_county_contents.records[@key_place][census][:records_online] > 0 %>
+              <td><%= link_to 'View Names', freecen2_county_contents_place_names_path(:county_description => @county_description, :place_description => @place_description, :place_id => @place_id, :census_year => census), class: "btn btn--exsmall", method: :get %></td>
+            <% end %>
+          <% else %>
+            <% if @freecen2_county_contents.records[@key_place][census][:pieces] > 0 %>
+              <td><%= link_to 'View Pieces', display_pieces_by_status_freecen2_county_contents_path(:county_description => @county_description,:place_description => @place_description, :place_id => @place_id, :census_year => census, :order => 'status'), class: "btn btn--exsmall", method: :get %></td>
+              <% if @freecen2_county_contents.records[@key_place][:total][:pieces_online] > 0 || @has_some_names == true %>
+                <td> N/A </td>
+              <% end %>
+            <% else %>
+              <td> N/A </td>
+              <% if @freecen2_county_contents.records[@key_place][:total][:pieces_online] > 0 || @has_some_names == true %>
+                <td> N/A </td>
+              <% end %>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
+      <tr>
+        <td>Total</td>
+        <td><%= @freecen2_county_contents.records[@key_place][:total][:records_online] %></td>
+        <%= county_contents_check_for_partials(@freecen2_county_contents.records[@key_place][:total][:piece_ids], @freecen2_county_contents.records[@key_place][:total][:pieces_online]) %>
+        <td><%= @freecen2_county_contents.records[@key_place][:total][:pieces] %></td>
+        <%= county_contents_show_percentage(@freecen2_county_contents.records[@key_place][:total][:pieces_online], @freecen2_county_contents.records[@key_place][:total][:pieces]) %>
+        <td><%= @freecen2_county_contents.records[@key_place][:total][:added_pieces_online] %></td>
+        <td><%= link_to 'View Pieces', display_pieces_by_status_freecen2_county_contents_path(:county_description => @county_description,:place_description => @place_description, :place_id => @place_id, :census_year => "all", :order => 'status'), class: "btn btn--exsmall", method: :get %></td>
+        <% if @freecen2_county_contents.records[@key_place][:total][:pieces_online] > 0 || @has_some_names == true %>
+          <td> N/A </td>
+        <% end %>
+      </tr>
+    </tbody>
+  </table>
+</div>

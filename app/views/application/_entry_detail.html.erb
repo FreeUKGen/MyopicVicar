@@ -23,6 +23,19 @@
         </tr>
       </thead>
       <tbody>
+        <% cc = @entry.county.present? ? @entry.county : @entry.chapman_code %>
+        <tr>
+          <td>County</td>
+          <td><%= cc %></td>
+        </tr>
+        <tr>
+          <td>Place</td>
+          <% if @place_id.present? %>
+            <td ><%= link_to(entry_place_name(@entry), place_freereg_content_path(@place_id)) %></td>
+          <% else %>
+            <td ><%= @entry.place %></td>
+          <% end %>
+        </tr>
         <% @order.each do |field| %>
           <% look_up_entry_chain(@entry) %>
           <% case field %>

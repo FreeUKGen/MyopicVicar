@@ -121,6 +121,7 @@ class ManageResourcesController < ApplicationController
     @first_name = @user.person_forename if @user.present?
     @manager = manager?(@user)
     @roles = UseridRole::OPTIONS.fetch(@current_role).sort
+    @favorite_actions = @user.favorite_actions_sorted
     session[:userid] = @userid
     session[:user_id] = @user_id
     session[:first_name] = @first_name

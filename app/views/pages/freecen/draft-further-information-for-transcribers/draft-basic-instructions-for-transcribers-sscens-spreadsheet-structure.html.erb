@@ -1,0 +1,208 @@
+<h1>DRAFT Basic instructions for Transcribers - SSCens Spreadsheet Structure</h1>
+
+<p class="loz islet--magenta">Pre-draft! Awaiting reformatted, edited content. AO 03May19</p>
+
+<table>
+<tbody><tr>
+<td>
+
+<h3>The SSCENS Spreadsheet Structure.</h3>
+
+</td>
+</tr>
+<tr>
+<td>
+
+&#160;<br /><strong>Last revised  07 Feb 2002 (links updated 18 Feb 2018)</strong>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+<table border="2">
+<tbody><tr><td colspan="2"><strong>Looking at the sample <a href="<%= asset_path('wnhx1143q_CENSDEMO.CSV') %>" title="Example of FreeCEN1 Spreadsheet">CENSDEMO</a> file</strong>, opened in your Spreadsheet routine:-<br />
+It will be seen that the Standard requires 25 Columns (A to Y), and some Census Pieces may contain over 5000 Rows.
+</td>
+</tr>
+<tr><td>
+First Row:
+</td>
+<td>
+Only TWO cells are used:<br />
+<strong>A1</strong>&#160;&#160;&#160;In this example contains "RG121798"<br />
+This identifies the Census Piece being worked and is empty on the "BLANK" Set-Up file. <p>
+You will need to enter here (without any spaces) the Code for the Census Year (RG12 = 1891) and the Number of the Piece being Transcribed. This essential information is determined from the fiche supplied. Do not include any extra characters, as in RG12/1798!.<br />
+<strong>The resulting entry will be the name you must use for your transcription work;</strong> for example, this sample file would be "RG121798.CSV"</p>
+<p>
+When the Piece is fully transcribed you will be required to forward a copy of this file, saved <strong>specifically as "Comma Separated" </strong>format (.CSV) to be converted.
+</p>
+<hr />
+<strong>B1</strong>&#160;&#160;&#160;Should record the Registration District Number if this is known, but may be left blank if you have doubts.<br />
+
+After entering the required data into A1 and B1, <strong>Save the file, under its new name, in the natural format of your Spreadsheet routine.</strong>
+This will avoid the need to re-structure the file each time you re-start work.
+</td>
+</tr>
+<tr><td>
+Second Row:
+</td>
+<td>
+Within the limitations of "cell width" imposed by FreeCEN each cell names the type of information to be entered in each column.<br />
+The Standards necessary for each field are described in detail in "<strong>Field Descriptions</strong>" .
+</td>
+</tr>
+<tr><td>
+Third Row:
+</td>
+<td>	Each cell is filled with spacing characters to establish the Maximum capacity of each field. <br />Any extra characters entered beyond these limits will be truncated at the conversion stage, possibly resulting in loss of important information.<br />
+As a rough guide, the # sign denotes that a numeric input is expected, although letters do not necessarily <em>exclude</em> the use of numerals in certain fields. (See "Field Descriptions")
+</td>
+</tr>
+<tr><td>
+Subsequent Rows:
+</td>
+<td>	NOTE that the FOURTH Row represents the first row of data that you will enter and <br />IT IS IMPORTANT that this row is correctly established before proceeding to other rows.<p>
+Here is a <a href="#cendem">detailed explanation</a> of the example file "CENSDEMO.CSV"</p>
+<p>
+<strong>Colums A-D </strong>will (at conversion) be copied as a Header to subsequent records from this initial setting, changing only when any cell in these columns is changed. <br />
+Thus whatever is entered in A4 and B4 will be repeated down the list until a new Enumerator or District is started; similarly C4 will be repeated until a new Folio Number is Entered, and D4 repeats until a new Page...</p>
+<p>
+
+	<strong>It will be considered a good habit</strong> (although not essential) if cells A to D are typed in full for the start of each New Census Page - thus proving that you have checked that this data has not changed from the previous page.
+</p>
+<hr />
+<strong>COLUMN E</strong>
+<br />
+A value must be entered at the start (but <strong>only at the start</strong>) of each New Household. (See Row 90)<br />
+This will normally be from the "Schedule" column of the census page. If there is no Schedule Number on the census then we enter zero, as in Row 87, or Row 90<p>
+The 1841 Census did not use Schedule Numbers; therefore a zero must be entered at the start of each New Household.
+</p>
+<hr />
+<strong>COLUMNS F to H</strong> comprise the Street Address information and will be copied downward (at conversion) for the relevant Household.<br />
+	A change in Schedule No (column E) determines whether a new address should be entered or that these cells should be left empty (according the the Census film).<br />
+<hr />
+<strong>Columns I to Y</strong> must be completed individually where appropriate, for every member of the household. There will be many empty cells.<p>
+	If you decide to "Cut &amp; Paste" or "Fill Down" for repeated entries within a Household (such as Surname or Birthplace) - <em>do this with care!</em>
+
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>
+
+Now please open <a href="/information-for-transcribers/fields-in-the-freecen1-spreadsheet" title="Fields in the FreeCEN1 spreadsheet">Fields in the FreeCEN1 spreadsheet</a> and examine it with CENSDEMO still on the background....</p>
+<p>
+
+<a name="cendem">
+</a>
+</p>
+<table border="2">
+<tbody><tr><td colspan="3"><strong>Comments regarding the example file CENSDEMO.CSV</strong>
+</td>
+</tr>
+<tr><td>Column</td>
+<td>Row No</td>
+<td>Comment/</td>
+</tr>
+<tr><td><strong>A</strong>
+</td>
+<td><strong>1</strong>
+</td>
+<td>Contains the <em>Year Code</em> and <em>Piece Number</em>. This will be the <em>filename</em> under which you save and forward your work</td>
+</tr>
+
+<tr><td><strong>B</strong>
+</td>
+<td><strong>1</strong>
+</td>
+<td> Contains, for identification purposes, the <em>Registration District</em> Number or Name (can be found on the microfiche typewritten heading, or on the first page of an Enumerator's book.</td>
+</tr>
+<tr><td><strong>A - D</strong>
+</td>
+<td><strong>4</strong>
+</td>
+<td> <strong>These columns MUST</strong> be entered on Row 4 and, ideally, at the start of each new Census Page </td>
+</tr>
+<tr><td><strong>E</strong>
+</td>
+<td><strong>87,91,23</strong>
+</td>
+<td>Must contain an entry for each <em>New Household or Premises</em>.<br />
+Note the use of 0 (zero) in rows 87 and 91 where the enumerator did not allocate a Schedule Number.<br />
+Note also row 92: Schedule No 23 has not been used by the enumerator, but must be accounted for</td>
+</tr>
+<tr><td><strong>E - F</strong>
+</td>
+<td><strong>68,74</strong>
+</td>
+<td>House numbers are often omitted. Note rows 68 &amp; 74 for ways of dealing with non-standard house identification.</td>
+</tr>
+<tr><td><strong>G</strong>
+</td>
+<td><strong>76</strong>
+</td>
+<td>The<em> Address</em> may be a "normal" street name, or the name of a farm or building, or even of a whole hamlet or village. At the start of each Household: enter the  Address provided (ditto marks to be written out in full), or leave blank (row 76)</td>
+</tr>
+<tr><td><strong>H</strong>
+</td>
+<td><strong>87,92</strong>
+</td>
+<td> The use of column H is discussed at length under "<strong>Field Descriptions</strong>" <br />
+If column H contains u,b,v,or n then all other columns I - X should be left empty!</td>
+</tr>
+<tr><td><strong>I</strong>
+</td>
+<td>.</td>
+<td><strong>Option:</strong>You may type everything in <em>lower case</em> letters; the conversion routine will provide Capitals where needed.
+</td>
+</tr>
+<tr><td><strong>K, P, S, V</strong>
+</td>
+<td>.</td>
+<td>Use to indicate any doubts about what has been entered. Enter only an 'x' or leave empty.</td>
+</tr>
+<tr><td><strong>L, M, N</strong>
+</td>
+<td>.</td>
+<td>Note the use of "<em>standard abbreviations</em>".
+</td>
+</tr>
+<tr><td><strong>O</strong>
+</td>
+<td><strong>65 - 75</strong>
+</td>
+<td> See "Field Descriptions" for details of age unit requirements.<br />
+You do not need to enter 'y' for age in years</td>
+</tr>
+<tr><td><strong>U</strong>
+</td>
+<td><strong>52,78</strong>
+</td>
+<td> Birthplace: A - (hyphen/dash) is required if there is no information present.<br />
+Row 52 The enumerator had written only "London"; we do not know whether he meant "London City" or the "London County".<br />
+ Row 78 The only information available is born "Cornwall". </td>
+</tr>
+<tr><td><strong>Y</strong>
+</td>
+<td><strong>4,23</strong>
+</td>
+<td> Use this limited space for <em><strong>short notes</strong>
+</em> to explain why you have set any "Query Flags"<br />
+Any message longer that 44 characters and spaces will be clipped at conversion - valuable comments could become not understandable!<p>
+If <em><strong>larger notes </strong>
+</em>need to be passed to the Checker: Open (e.g. in 'NotePad') a text file to which you can progressively add comments about the work. <strong>SAVE this file regularly in text format as "MYNOTES.TXT"</strong>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<a name="cendem"> 
+</a>
+<div id="hc_extension_bkgnd" style="position: fixed; left: 0px; top: 0px; right: 0px; bottom: 0px; z-index: -1999999999; display: block; background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);"></div>
+<span id="hc_extension_svg_filters"></span>

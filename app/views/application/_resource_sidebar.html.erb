@@ -1,13 +1,36 @@
+<!-- In app/views/application/_resource_sidebar.html.erb -->
 <% content_for :sidebar do %>
-  <h5 class="beta  text--teal">Actions</h5>
+  <h5 class="beta text--teal">Actions</h5>
+  
+  <!-- Manage Favorites Link -->
+  <%= link_to "Manage Favorites", manage_favorites_path, class: "btn btn--small btn--secondary", title: "Manage your favorite actions" %>
+  <br><br>
+  
+  <!-- Favorite Actions Section -->
+  <% if @favorite_actions.present? %>
+    <h6 class="gamma text--blue">Favorites</h6>
+    <%@favorite_actions.each do |role| %>
+      <% if action_manage_image_server(role) %>
+        <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn btn--small btn--primary", method: :get, target: :_blank, title: UseridRole::OPTIONS_TITLES[role] %>
+      <% elsif role == 'Search Place Names' %>
+        <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn btn--small btn--primary", method: :get, title: UseridRole::OPTIONS_TITLES[role], target: :_blank %>
+      <% else %>
+        <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn btn--small btn--primary", method: :get, title: UseridRole::OPTIONS_TITLES[role] %>
+      <% end %>
+      <br>
+    <% end %>
+    <hr>
+  <% end %>
+  
+  <!-- All Actions Section -->
   <%@roles.each do |role| %>
     <% if action_manage_image_server(role) %>
-      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn  btn--small" , method: :get, target: :_blank, title: UseridRole::OPTIONS_TITLES[role]  %>
-    <% elsif role ==  'Search Place Names' %>
-      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn  btn--small" , method: :get, title: UseridRole::OPTIONS_TITLES[role], target: :_blank %>
-    <% else%>
-      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn  btn--small" , method: :get, title: UseridRole::OPTIONS_TITLES[role] %>
-    <% end%>
+      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn btn--small", method: :get, target: :_blank, title: UseridRole::OPTIONS_TITLES[role] %>
+    <% elsif role == 'Search Place Names' %>
+      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn btn--small", method: :get, title: UseridRole::OPTIONS_TITLES[role], target: :_blank %>
+    <% else %>
+      <%= link_to role, UseridRole::OPTIONS_TRANSLATION[role], class: "btn btn--small", method: :get, title: UseridRole::OPTIONS_TITLES[role] %>
+    <% end %>
     <br>
-  <% end%>
+  <% end %>
 <% end %>

@@ -1,0 +1,14 @@
+<h1>Removal of Chapman Codes</h1>
+
+<p>We have a complete list of all Chapman Codes in the ChapmanCodes</p>
+<p>In some cases we do not want to display some of those in a display or a selection.</p>
+<p>I have created a module FreeregOptionsConstants in lib where there is defined a constant</p>
+<p>CHAPMAN_CODE_ELIMINATIONS</p>
+<p>This contains an array of Chapman codes to be removed.</p>
+<p>In ChapmanCodes module I have added 2 methods </p>
+<p>self.remove_codes(hash)</p>
+<p>self.add_parenthetical_codes(hash)</p>
+<p>These have been created as 2 separate methods as there may be occasions when one wants one or both.</p>
+<p>Typical usage</p>
+<p> @options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES))</p>
+<p>This creates a reduced set of code and name to be used in a selection </p>

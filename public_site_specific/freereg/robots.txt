@@ -1,6 +1,7 @@
 # robots.txt for https://www.freereg.org.uk/
 sitemap: https://www.freereg.org.uk/sitemap_location.txt
 User-agent: Mediapartners-Google
+User-agent: AmazonAdBot
 Allow: /
 Allow: /cms/about
 Allow: /cms/donate

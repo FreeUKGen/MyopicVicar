@@ -27,7 +27,9 @@ class Freecen1VldEntry
   field :pob_valid, type: Boolean
   field :pob_warning, type: String
   field :relationship, type: String
+  field :rooms_with_windows, type: Integer
   field :schedule_number, type: String
+  field :school_children, type: Integer
   field :sequence_in_household, type: Integer
   field :sex, type: String
   field :surname, type: String
@@ -35,6 +37,7 @@ class Freecen1VldEntry
   field :unoccupied_notes, type: String
   field :verbatim_birth_county, type: String
   field :verbatim_birth_place, type: String
+
 
   embeds_many :freecen1_vld_entry_edits, cascade_callbacks: true
   belongs_to :freecen1_vld_file, index: true

@@ -1,0 +1,146 @@
+<h1>DRAFT Dealing with Uncertainty</h1>
+
+<style scoped="scoped">
+  dd { margin-bottom: 1rem; }
+  .examples dt { color: #a1185a; } /* magenta */
+  .formal dt { color: #895f49; } /* brown-brighter */
+  .fullWidth img { width: 100%; height: auto; }
+</style>
+
+<div class="grid">
+  <aside class="grid__item one-third palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block weight--semibold" style="color: #354c54;">On this page</h2>
+      <ul class="sub-nav">
+        <li><a href="#imageViewers">Image viewers</a> </li>
+        <li><a href="#ucf">Uncertain character format</a>
+</li>
+</ul>
+
+<p>Sooner of later you will be faced with unfamiliar letter forms. Or a few letters and numbers may be so hard to decipher that you are not at all sure what you are looking at. This page offers some help on viewing the images, on understanding the hand-writing found in old censuses and on how to enter information that you can't be sure about.</p>
+
+
+</div>
+</aside>
+<div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+
+    <p>Census entries may be hard to read for a number of reasons.</p>
+    <ul>   
+      <li>Firstly, the censuses are old, perhaps several hundred years old, and they have not been kept in the best of environments: they are often faded and may be speckled with water marks.  You may see further signs of damage.</li>
+      <li>Secondly, they will have been photographed: few of us get to actually handle the original documents today. The process of photography may have introduced issues of focus and alignment that will make reading more difficult. (The censuses are usually small bound documents that do not want to lie flat for their pictures to be taken!)</li>
+      <li>Thirdly, the education and writing skill of the person writing the record was highly variable. Sometimes you will see good spelling and penmanship: at other times you will wonder.</li>
+    </ul>
+
+    <p>As you gain experience as a transcriber, you will find it easier to recognise letters, digits and even words. You will also find a dedicated image viewer useful. For those parts of a census entry where you remain unsure, use our Uncertain Character Format: this enables you to enter as much information as possible, in a way that is compatible with a database search.</p>
+
+    <hr class="rule rule--ornament" />
+
+    <h2 id="imageViewers">Image viewers</h2>
+
+    <p>Your computer no doubt came with a basic image viewer installed: this will be fine for working with good quality images. However, there are some more sophisticated (free) viewers out there that can be of practical help with reading images of poorer quality.</p>
+
+    <p class="flush--bottom">Viewers used by our volunteers include:</p>
+
+    <ul>
+      <li><a href="http://www.xnview.com/en/xnviewmp/">XnViewMP</a>
+        <ul>
+          <li>available for Windows, Mac and Linux</li>
+          <li>current version (0.79) requires Mac OS newer than Snow Leopard</li>
+          <li>not obvious whether or not older versions are still available</li>
+        </ul>
+      </li>
+      <li><a href="http://www.xnview.com/en/xnview/">XnView</a>
+        <ul>
+          <li>Windows and Linux</li>
+        </ul>
+      </li>
+      <li><a href="https://www.gimp.org/downloads/">GIMP 2</a>
+        <ul>
+          <li>for Windows, Mac, Linux and many others</li>
+          <li>versions older than the current one are available, if needed</li>
+        </ul>
+      </li>
+      <li><a href="http://www.irfanview.com/">IrfanView</a>
+        <ul>
+          <li>Windows only</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Improving readability</h3>
+    <p>Don't expect miracles: a poor image can only be enhanced so much. And do be prepared to spend some time experimenting with the settings: there are many image variables to consider, as well as your particular screen and eyesight. The menu names given below are from GIMP 2: the other programs will use similar names. The most generally useful options are:</p>
+    <ul>
+      <li>Zoom — bigger is not always better</li>
+      <li>Colors menu &gt; Brightness-Contrast
+        <ul>
+          <li>if the image is dark, try increasing the brightness, in small steps</li>
+          <li>if the writing is faint, try increasing the contrast, again in small steps</li>
+        </ul>
+      </li>
+      <li>Filter menu &gt; Enhance &gt; Sharpen — keep an eye on the preview as you adjust the setting</li>
+    </ul>
+
+    <p>Although many images will be enhanced usefully by using the basic adjustments listed above, you might find some of the other options on the Colors menu helpful.</p>
+
+    <hr class="rule rule--ornament" />
+
+    <h2 id="ucf">Uncertain Character Format (UCF)</h2>
+
+    <p>Some common types of uncertainty that you are likely to encounter in your first few batches of transcription, and the technique to use for each of them, are given below. This is followed by more details of the format that we use.</p> 
+
+    <h3>Some examples</h3>
+    <dl class="examples">
+      <dt>I can see one letter which could be an <q>l</q> or a <q>t</q>.</dt>
+      <dd>[lt]</dd>
+
+      <dt>I can see one character which could be anything.</dt>
+      <dd>_ <br />(one underscore)</dd>
+
+      <dt>I can see two characters which could be anything.</dt>
+      <dd>__ <br />(two underscores)</dd>
+
+      <dt>I <em>think</em> the letter is a <q>b</q>.</dt>
+      <dd>[b_]</dd>
+
+      <dt>I see a group of characters that I can't read — I don't know how many.</dt>
+      <dd>*</dd>
+
+      <dt>I can see two or three letters that I can't read.</dt>
+      <dd>_{2,3}</dd>
+
+      <dt>I can see something which could be a letter or just an ink blot.</dt>
+      <dd>_{0,1}</dd>
+
+      <dt>I think I see the word <q>John</q>.</dt>
+      <dd>John?</dd>
+
+    </dl>
+
+    <h3>The format in detail</h3>
+
+    <dl class="formal">
+      <dt> _ (underscore)</dt>
+      <dd>A single uncertain character. It could be anything but is definitely one character. It can be repeated for each uncertain character.</dd>
+
+      <dt>* (asterisk)</dt>
+      <dd>Several adjacent uncertain characters. A single * is used when there are 1 or more adjacent uncertain characters. It is not used immediately before or after a _ or another *.<br /> Note: If it is clear there is a space, then * * is used to represent 2 words, neither of which can be read.</dd>
+
+      <dt>[abc]</dt>
+      <dd>A single character that could be any one of the contained characters and only those characters. There must be at least two characters between the brackets.
+  <br />For example, [79] would mean either a 7 or a 9, whereas [C_] would mean a C or some other character.</dd>
+
+      <dt>{min,max}  </dt>
+      <dd>Repeat count of preceding character occurs somewhere between min and max times. max may be omitted, meaning there is no upper limit. So _{1,} would be equivalent to *, and _{0,1} means that it is unclear if there is any character.</dd>
+
+      <dt>?</dt>
+      <dd>Sometimes you will be able to read all of the characters but remain uncertain of the word. In this case append a ? at the end of the word, e.g. RACHARD? However, the most frequent use of the ? is with transcripts that have been donated to us and then converted for entry into FreeCEN.</dd>
+    </dl>
+
+    <p>Note: Using a single * is preferable to spending a long time trying to decide the min and max values to use in the more precise _{min,max} format.</p>
+
+    <p class="islet islet--orange">Technical note: Although this UCF format has many similarities to regular expressions (as used in some office software, programming languages, Unix, etc.), it is not identical and in particular there is no escape mechanism.</p>
+</div>
+</div>
+<div class="grid"><div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+  </div>
+</div>

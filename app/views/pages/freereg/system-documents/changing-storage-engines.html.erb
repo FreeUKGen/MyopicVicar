@@ -1,0 +1,76 @@
+<h1>Changing Storage Engines</h1>
+
+<h1>Notes on how to change storage engines on Mongodb.</h1>
+<p>This applies to the change from MMAPv1 to Wired Tiger</p>
+<h2>Standalone system</h2>
+<p>&#160;<strong>Assumes that Mongodb =&gt; 3.2 is installed.</strong>
+</p>
+<p>cd to the folder location for the Mongodb binaries (for 3.2). (Except on test3 or replicated cluster)</p>
+<p>Keep Mongod running</p>
+<p>mongodump --out c:fr2 --db myopic_vicar_development_kirk</p>
+<p>where myopic_vicar_development_kirk is the name of the database and </p>
+<p>c:fr2 is the location of a tmp file to hold the dump</p>
+<p><strong>Repeat for other databases eg writable_development</strong>
+</p>
+<p>Create a new folder to hold the new database (likely next to the current location)</p>
+<p>Make sure permissions and ownership are OK</p>
+<p>Stop the current version of mongod</p>
+<p>Start a new version of mongod</p>
+<p>mongod.exe --dbpath e:\wired_tiger_test_august  --storageEngine wiredTiger</p>
+<p>where the dbpath points to the new database folder you just created.</p>
+<p>Once again in the Mongodb binaries folder restore the dumped copy</p>
+<p>mongorestore c:fr2/myopic_vicar_development_kirk &#160;&#160;-d myopic_vicar_development_kirk</p>
+<p>where&#160; c:fr2/myopic_vicar_development_kirk is the location of the dump you created. (Note the need to specify the database name in the location.)</p>
+<p>and&#160;-d myopic_vicar_development_kirk specifies your database name (Note the formatting difference in the dump and restore one has --db and the other has -d&#160;</p>
+<p>Repeat for other databases</p>
+<p>Dumping and restoring takes about 15 minutes for 2,000,000 search records</p>
+<h2>For the replicated cluster</h2>
+<p>1.	Prepare data directory</p>
+<p>cd /var/db/mongodb/&#160;</p>
+<p>&#160;sudo mkdir wired_tiger</p>
+<p>cd wired_tiger</p>
+<p>&#160;sudo mkdir replicated</p>
+<p>sudo mkdir local</p>
+<p>cd ../</p>
+<p>&#160;sudo chown -R mongodb wired_tiger&#160;</p>
+<p>&#160;sudo chmod -R 775 wired_tiger</p>
+<p>2.	Check permission and ownerships</p>
+<p>ls –la&#160;</p>
+<p>&#160;cd wired_tiger</p>
+<p>&#160;ls –la</p>
+<p><br />3.	Create the new conf files.&#160;</p>
+<p>Copy from brazza /usr/local/etc/&#160;to your local folder the 2 files</p>
+<p>mongodb-wired_tiger-replicated.conf </p>
+<p>mongodb-wired_tiger-local.conf </p>
+<p>then</p>
+<p><br />sudo cp mongodb-wired_tiger-replicated.conf /usr/local/etc/mongodb-wired_tiger-replicated.conf</p>
+<p>sudo cp mongodb-wired_tiger-local.conf /usr/local/etc/mongodb-wired_tiger-local.conf</p>
+<p>Check permission and ownerships</p>
+<p>cd /usr/local/etc/&#160;</p>
+<p>&#160;ls –la</p>
+<p><br />4.	Shut down the server to searches on FR</p>
+<p><strong>On colobus</strong>
+</p>
+<p>sudo /root/bin/haproxy-freereg2.sh brazza disable</p>
+<p>5. Take a copy of the writable_development database</p>
+<p>mongodump --port 27018 --out c:fr2 --db writable_development</p>
+<p>where</p>
+<p>c:fr2 is the location of a tmp file to hold the dump</p>
+<p>6.	 Stop the current mongos</p>
+<p>mongo32  --ssl  –sslAllowInvalidCertificates</p>
+<p>use admin</p>
+<p>db.shutdownServer() </p>
+<p>mongo32 --port 27018</p>
+<p>use admin</p>
+<p>db.shutdownServer()</p>
+<p>7.	Start the new replicated Mongod</p>
+<p>sudo -u mongodb mongod32 --config /usr/local/etc/mongodb-wired_tiger-replicated.conf</p>
+<p>8.	Follow along with the replicated.logs</p>
+<p>tail –f /var/db/mongodb/wired_tiger/replicated/replicated.log</p>
+<p>tail –f /raid/mongodb/wired_tiger/local/local.log</p>
+<p>9. Start the new local mongod</p>
+<p>sudo -u mongodb mongod32 --config /usr/local/etc/mongodb-wired_tiger-local.conf</p>
+<p>10. load in the writable_development database</p>
+<p>mongorestore --port 27018 c:fr2/writable_development -d writable_development</p>
+<p>11.	Restart the searches when 7 finished</p>
+<p>sudo /root/bin/haproxy-freereg2.sh brazza enable</p>

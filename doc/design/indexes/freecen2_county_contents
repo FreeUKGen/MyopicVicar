@@ -1,0 +1,26 @@
+db.runCommand(
+  {
+    createIndexes: "freecen2_county_contents",
+    indexes: [
+        {
+            key: {
+                interval_end: -1
+            },
+            name: "interval_end_1"
+        },
+        {
+            key: {
+                county: 1
+            },
+            name: "county_1"
+        },
+        {
+            key: {
+                county: 1,
+                interval_end: -1
+            },
+            name: "county_interval_end_1"
+        }
+    ]
+  }
+)

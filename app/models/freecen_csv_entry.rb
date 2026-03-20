@@ -1043,7 +1043,8 @@ class FreecenCsvEntry
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 5.<br>"
                 message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
                 record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
-              elsif record[:year] == '1911' && record[:rooms].to_i > 20
+              end
+              if %w[1891 1901 1911].include?(record[:year]) && record[:rooms].to_i > 20
                 messageb = "Warning: line #{num} Rooms #{record[:rooms]} is greater than 20.<br>"
                 message += messageb   if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
                 record[:warning_messages] += messageb  if record[:record_valid].blank? || record[:record_valid].casecmp?('false')
@@ -2034,7 +2035,8 @@ class FreecenCsvEntry
       end
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
+        ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
+        # ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Quaord Sacra', 'Where Census Taken', 'Piece', 'Ward', 'Constituency'] #927
       else
         ['Census Year', 'County', 'Census District', 'Enumeration District', 'Civil Parish', 'Ecclesiastical Parish', 'Where Census Taken', 'Piece', 'Ward', 'Constituency']
       end
@@ -2345,19 +2347,19 @@ class FreecenCsvEntry
       ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
     when '1861'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children', 'Occupation']
       else
         ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
       end
     when '1871'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children', 'Occupation']
       else
         ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
       end
     when '1881'
       if ChapmanCode::CODES['Scotland'].values.member?(chapman_code)
-        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children' 'Occupation']
+        ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'School Children', 'Occupation']
       else
         ['Sequence', 'Surname', 'Forenames', 'Relationship', 'Marital Status', 'Sex', 'Age', 'Occupation']
       end

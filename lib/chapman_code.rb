@@ -74,6 +74,28 @@ module ChapmanCode
         ctryhash = {}
         ctryval.each_pair do |kk, vv|
           if Rails.application.config.freecen2_place_cache
+            place_cache = Freecen2PlaceCache.find_by(chapman_code: vv.to_s)
+            #check if the place cache is present 
+            has_no_places = place_cache.present? && 
+                           JSON.parse(place_cache.places_json).with_indifferent_access.blank?
+            ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s) ||
+              (has_no_places && !%w[ENG IRL SCT WLS].include?(vv.to_s))
+          else
+            ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s)
+          end
+        end
+        hsh[ctry] = ctryhash
+      end
+      hsh
+    end
+
+    def codes_for_cen_county_search_old
+      hsh = {}
+      codes = ChapmanCode.remove_codes_cen_keep_country(ChapmanCode::CODES)
+      codes.each_pair do |ctry, ctryval|
+        ctryhash = {}
+        ctryval.each_pair do |kk, vv|
+          if Rails.application.config.freecen2_place_cache
             ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s) ||
               (JSON.parse(Freecen2PlaceCache.find_by(chapman_code: vv.to_s).places_json).with_indifferent_access.blank? && !%w[ENG IRL SCT WLS].include?(vv.to_s))
           else

@@ -1261,7 +1261,7 @@ class CsvRecords <  CsvFile
       csvfile.header[:def]  = true
       project.write_messages_to_all("Flexible csv flag detected. The next line will be taken a column specification. <p>", true)
 
-      if !valid_field_definition?(@data_lines[0][0].downcase)
+      if !valid_field_definition?(@data_lines[0][0].downcase,csvfile)
         proceed = false
         csvfile.header_error << "The field order definition is missing. "
       else
@@ -1289,11 +1289,11 @@ class CsvRecords <  CsvFile
     while n < header_fields.length
       #need to verify fields
       header_fields[n].nil? ? field = nil : field = header_fields[n].downcase
-      if field.present? && valid_field_definition?(field)
+      if field.present? && valid_field_definition?(field,csvfile)
         @data_entry_order[field.to_sym] = n
       else
         proceed = false
-        csvfile.header_error << "The field order definition at position #{n} contains an invalid field #{header_fields[n]}; (is it blank?)}. <br>"
+        csvfile.header_error << "The field order definition at position #{n} contains an invalid field: #{header_fields[n]} (is it blank?)}. <br>"
       end
       n = n + 1
     end
@@ -1375,8 +1375,17 @@ class CsvRecords <  CsvFile
     end
   end
 
-  def valid_field_definition?(fields)
-    entry_fields = Freereg1CsvEntry.attribute_names
+  def valid_field_definition?(fields,csvfile)
+    record_type = csvfile.header[:record_type]
+    case record_type
+    when RecordType::BAPTISM
+      entry_fields = FreeregOptionsConstants::FLEXIBLE_CSV_FORMAT_BAPTISM
+    when RecordType::BURIAL
+      entry_fields = FreeregOptionsConstants::FLEXIBLE_CSV_FORMAT_BURIAL
+    when RecordType::MARRIAGE
+      entry_fields = FreeregOptionsConstants::FLEXIBLE_CSV_FORMAT_MARRIAGE
+    end
+    #entry_fields = Freereg1CsvEntry.attribute_names
     entry_fields << "chapman_code"
     entry_fields << "place_name"
     result = true
@@ -1574,6 +1583,12 @@ class CsvRecord < CsvRecords
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
+
+    FreeregValidations.validate_record_date!(@data_record, :baptism_date)
+    FreeregValidations.validate_record_date!(@data_record, :birth_date)
+    FreeregValidations.validate_record_date!(@data_record, :confirmation_date)
+    FreeregValidations.validate_record_date!(@data_record, :received_into_church_date)
+
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:baptism_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:birth_date]) if @data_record[:year].blank?
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:confirmation_date]) if @data_record[:year].blank?
@@ -1610,6 +1625,10 @@ class CsvRecord < CsvRecords
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
+
+    FreeregValidations.validate_record_date!(@data_record, :burial_date)
+    FreeregValidations.validate_record_date!(@data_record, :death_date)
+
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:burial_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:death_date]) if @data_record[:year].blank?
     @data_record[:relative_surname] = Unicode::upcase(@data_record[:relative_surname]) unless @data_record[:relative_surname].nil?
@@ -1626,7 +1645,7 @@ class CsvRecord < CsvRecords
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
-    if csvfile.header[:def]
+    if csvfile.header[:def] 
       FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS.each do |field|
         field_symbol = field.to_sym
         @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
@@ -1644,6 +1663,10 @@ class CsvRecord < CsvRecords
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
+ 
+    FreeregValidations.validate_record_date!(@data_record, :marriage_date)
+    FreeregValidations.validate_record_date!(@data_record, :contract_date)
+    
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if @data_record[:year].blank?
     #(@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false

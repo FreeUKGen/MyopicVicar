@@ -261,7 +261,7 @@ class Freecen2PlacesController < ApplicationController
   def get_reasons
     @reasons = []
     PlaceEditReason.all.order_by(reason: 1).each do |reason|
-      @reasons << reason.reason
+      @reasons << reason.reason unless session[:role] == 'validator' && reason.reason == 'Edit Alternative Place Name'
     end
   end
 
@@ -551,7 +551,10 @@ class Freecen2PlacesController < ApplicationController
       proceed = @place.update_attributes(freecen2_place_params)
 
       if proceed
-        flash[:notice] = 'The update the Place was successful'
+        flash[:notice] = 'The update of the Place was successful'
+        @place_after_edit = Freecen2Place.find_by("_id": params[:id])
+        @user = get_user
+        Freecen2Place.notify_county_coord_of_place_update(@place_after_edit, @user)
         redirect_to freecen2_place_path(@place)
       else
         flash[:notice] = 'The update of the Place was unsuccessful'

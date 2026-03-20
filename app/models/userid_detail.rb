@@ -52,6 +52,7 @@ class UseridDetail
   field :acknowledge_with_pseudo_name, type: Boolean
   field :pseudo_name, type: String
   field :recieve_system_emails, type: Boolean, default: true
+  field :favorite_actions, type: Array, default: []
   # Note if you add or change fields you may need to update the display and edit field order in /lib/freereg_options_constants
 
   attr_accessor :action, :message, :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy
@@ -237,7 +238,32 @@ class UseridDetail
     #self.new_transcription_agreement = "Unknown"
   end
 
+  # In app/models/userid_detail.rb, add these methods:
+  def add_favorite_action(action)
+    return false if self.favorite_actions.length >= 5
+    return false if self.favorite_actions.include?(action)
+    
+    self.favorite_actions << action
+    self.save
+    true
+  end
 
+  def remove_favorite_action(action)
+    self.favorite_actions.delete(action)
+    self.save
+  end
+
+  def favorite_actions_sorted
+    self.favorite_actions.sort
+  end
+
+  def can_add_favorite?
+    self.favorite_actions.length < 5
+  end
+
+  def is_favorite?(action)
+    self.favorite_actions.include?(action)
+  end
 
   def count_not_checked_messages
     self.reload

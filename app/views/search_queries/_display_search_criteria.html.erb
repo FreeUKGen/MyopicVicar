@@ -41,10 +41,10 @@
         <% if @ucf_results.size > 0 %>
           <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Exact Result', ' Exact Results') %> and <br>
             <%= pluralize(@ucf_results.size, ' Uncertain Result', ' Uncertain Results')%></h2>
-        <% elsif  @result_count < FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS  %>
+        <% elsif  @result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")  %>
           <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
         <%else%>
-          <h2 class="gamma flush--bottom"> We found more than <%= FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS %> Results</h2>
+          <h2 class="gamma flush--bottom"> We found more than <%= FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %> Results</h2>
         <% end%>
         <% unless defined?(@printable_format) && @printable_format%>
           <small class="additional zeta">Listed by date. Select a heading to sort by that column; select again to reverse the order.
