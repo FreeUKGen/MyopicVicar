@@ -204,7 +204,11 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parish = Freecen2CivilParish.new
     @options = {}
     Freecen2CivilParish.chapman_code(@chapman_code).order_by(name: 1, year: 1).each do |civil_parish|
-      @options["#{civil_parish.name} (#{civil_parish.year}) (#{civil_parish.freecen2_piece.number})"] = civil_parish._id
+      if civil_parish.freecen2_piece.present?
+        @options["#{civil_parish.name} (#{civil_parish.year}) (#{civil_parish.freecen2_piece.number})"] = civil_parish._id
+      else
+        @options["#{civil_parish.name} (#{civil_parish.year}) (Piece missing)"] = civil_parish._id
+      end
     end
     @location = 'location.href= "/freecen2_civil_parishes/" + this.value'
     @prompt = 'Select Civil Parish)'
