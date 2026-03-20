@@ -1,5 +1,6 @@
 <%# app/views/best_guess/_display_postems.html.erb %>
-<% if record.postems_list.present? %>
+<% postems_to_display = local_assigns[:postems].nil? ? record.postems_list : local_assigns[:postems] %>
+<% if postems_to_display.present? %>
   <div id="display_postems">
     <div>
       <h4 class="flush--bottom">Postems</h4>
@@ -10,7 +11,7 @@
           <th>Postem</th>
         </thead>
         <tbody>
-          <% record.postems_list.each do |postem|%>
+          <% postems_to_display.each do |postem|%>
             <tr>
               <td>
                 <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>

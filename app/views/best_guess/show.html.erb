@@ -51,7 +51,7 @@
             Do you know more about the people or event in this record that you are willing to share with other researchers?<br /> 
             We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
           </p>
-          <%= render partial: 'display_postems', locals: { record: @current_record } %>
+          <%= render partial: 'display_postems', locals: { record: @current_record, postems: @postems_for_display } %>
           <p class="push-half--bottom">Submit a postem:</p>
           <div class="">
             <%= semantic_form_for(@new_postem) do |f| %>

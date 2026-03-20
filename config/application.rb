@@ -58,9 +58,19 @@ module MyopicVicar
     config.template_set = app['template_set']
     config.search_table = app['search_table']
     config.advert_key = app['advert_key']
-    config.gtm_key = app['gtm_key']
+    config.gtm_key = app['gtm_key'] 
     config.master = app['master'].presence || ENV['MASTER'].presence
     config.freebmd_master_url = app['freebmd_master_url'].presence || ENV['FREEBMD_MASTER_URL'].presence
+    # Postem API: service reads ENV; allow freeukgen_application.yml to set when ENV not set.
+    # Accept both snake_case keys and ENV-style keys (some deployments use the latter).
+    api_url = app['freebmd_postem_api_url'].presence || app['FREEBMD_POSTEM_API_URL'].presence
+    api_key = app['freebmd_api_key'].presence || app['FREEBMD_API_KEY'].presence
+    ENV['FREEBMD_POSTEM_API_URL'] ||= api_url
+    ENV['FREEBMD_API_KEY'] ||= api_key
+
+    # Display postems API: read-only, master-only in FreeBMD1
+    display_url = app['freebmd_postems_display_api_url'].presence || app['FREEBMD_POSTEMS_DISPLAY_API_URL'].presence
+    ENV['FREEBMD_POSTEMS_DISPLAY_API_URL'] ||= display_url
     config.district_data_csv = app['district_data_csv']
     config.postem_blocked_hashes = app['postem_blocked_hashes'].presence || []
     # Custom directories with classes and modules you want to be autoloadable.

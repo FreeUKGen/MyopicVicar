@@ -264,6 +264,28 @@ class BestGuessController < ApplicationController
     @new_postem = record_best_guess_hash.postems.new
     @postem_honeypot = "postem#{rand.to_s[2..11]}"
     session[:postem_honeypot] = @postem_honeypot
+
+    # Use the FreeBMD Perl API for reading postems so replicas don't show stale data.
+    begin
+      service = FreebmdPostemsDisplayService.new
+      postems_rows = service.fetch_postems(
+        database: Postem.connection.current_database,
+        hash: record_best_guess_hash.Hash,
+        include_html: false
+      )
+
+      row_struct = Struct.new(:Created, :Information)
+      @postems_for_display = postems_rows.map do |row|
+        row_symbol = row.is_a?(Hash) ? row : {}
+        row_struct.new(row_symbol[:created].to_i, row_symbol[:information].to_s)
+      end
+    rescue FreebmdPostemsDisplayService::PostemsUnavailableError => e
+      Rails.logger.warn("Postems display API unavailable (likely non-master): #{e.message}")
+      redirect_to_master_for_postem_display_if_not_master and return
+    rescue StandardError => e
+      Rails.logger.warn("Postems display API failed; falling back to DB: #{e.message}")
+      @postems_for_display = record_best_guess_hash.postems.to_a
+    end
   end
 
   def get_original_record(search_id = nil, saved_record = nil)
