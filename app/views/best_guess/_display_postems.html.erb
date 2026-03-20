@@ -1,5 +1,5 @@
 <%# app/views/best_guess/_display_postems.html.erb %>
-<% postems_to_display = local_assigns[:postems].nil? ? record.postems_list : local_assigns[:postems] %>
+<% postems_to_display = local_assigns.key?(:postems) ? local_assigns[:postems] : record.postems_list %>
 <% if postems_to_display.present? %>
   <div id="display_postems">
     <div>

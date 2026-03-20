@@ -260,6 +260,7 @@ class BestGuessController < ApplicationController
   def list_postems
     record_hash_value = @current_record.record_hash
     record_best_guess_hash = BestGuessHash.where(Hash: record_hash_value).first
+    @postems_for_display = []
     return unless record_best_guess_hash
     @new_postem = record_best_guess_hash.postems.new
     @postem_honeypot = "postem#{rand.to_s[2..11]}"
@@ -284,7 +285,8 @@ class BestGuessController < ApplicationController
       redirect_to_master_for_postem_display_if_not_master and return
     rescue StandardError => e
       Rails.logger.warn("Postems display API failed; falling back to DB: #{e.message}")
-      @postems_for_display = record_best_guess_hash.postems.to_a
+      # Avoid association cache contamination from @new_postem (postems.new) 
+      @postems_for_display = Postem.where(Hash: record_best_guess_hash.Hash).to_a
     end
   end
 
