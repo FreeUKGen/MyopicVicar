@@ -282,7 +282,9 @@ class BestGuessController < ApplicationController
       end
     rescue FreebmdPostemsDisplayService::PostemsUnavailableError => e
       Rails.logger.warn("Postems display API unavailable (likely non-master): #{e.message}")
-      redirect_to_master_for_postem_display_if_not_master and return
+      # Intentionally show an empty array instead of redirecting.
+      # This avoids master redirects during UI rendering; replicas may be stale.
+      @postems_for_display = []
     rescue StandardError => e
       Rails.logger.warn("Postems display API failed; falling back to DB: #{e.message}")
       # Avoid association cache contamination from @new_postem (postems.new) 
