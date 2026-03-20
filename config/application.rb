@@ -68,6 +68,14 @@ module MyopicVicar
     ENV['FREEBMD_POSTEM_API_URL'] ||= api_url
     ENV['FREEBMD_API_KEY'] ||= api_key
 
+    # Optional: comma-separated API hostnames allowed in FREEBMD_POSTEM_API_URL (empty = allow any host)
+    postem_allowed_hosts = app['freebmd_postem_allowed_hosts'].presence || app['FREEBMD_POSTEM_ALLOWED_HOSTS'].presence
+    ENV['FREEBMD_POSTEM_ALLOWED_HOSTS'] ||= postem_allowed_hosts if postem_allowed_hosts.present?
+
+    # Optional: Net::HTTP open/read timeout in seconds for create-postem API (default 10 in service)
+    postem_http_timeout = app['freebmd_postem_http_timeout_seconds'].presence || app['FREEBMD_POSTEM_HTTP_TIMEOUT'].presence
+    ENV['FREEBMD_POSTEM_HTTP_TIMEOUT'] ||= postem_http_timeout.to_s if postem_http_timeout.present?
+
     # Display postems API: read-only, master-only in FreeBMD1
     display_url = app['freebmd_postems_display_api_url'].presence || app['FREEBMD_POSTEMS_DISPLAY_API_URL'].presence
     ENV['FREEBMD_POSTEMS_DISPLAY_API_URL'] ||= display_url

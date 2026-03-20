@@ -11,7 +11,7 @@ class FreebmdPostemService
     @api_endpoint = ENV.fetch('FREEBMD_POSTEM_API_URL', 'https://www.freebmd.org.uk/api/create-postem.pl')
     @api_key = ENV.fetch('FREEBMD_API_KEY', nil)
     @allowed_hosts = parse_allowed_hosts(ENV['FREEBMD_POSTEM_ALLOWED_HOSTS'])
-    @timeout = 10 # seconds
+    @timeout = postem_http_timeout_seconds
   end
 
   # create a postem via freebmd1 perl api
@@ -58,6 +58,13 @@ class FreebmdPostemService
   end
 
   private
+
+  def postem_http_timeout_seconds
+    t = ENV['FREEBMD_POSTEM_HTTP_TIMEOUT'].to_s.strip
+    return 10 if t.blank?
+    n = t.to_i
+    n.positive? ? n : 10
+  end
 
   def validate_inputs!(record, information)
     raise ArgumentError, 'record cannot be nil' unless record
