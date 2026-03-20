@@ -102,6 +102,7 @@ class FreebmdPostemService
 
     request_path = uri.path.to_s.sub(%r{/+\z}, '')
     request = Net::HTTP::Post.new(request_path, headers)
+    # FreeBMD1 API scripts expect the JSON payload in the request body.
     request.body = payload.to_json
 
     response = http.request(request)

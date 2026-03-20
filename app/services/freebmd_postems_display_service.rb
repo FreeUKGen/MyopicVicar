@@ -55,7 +55,7 @@ class FreebmdPostemsDisplayService
     http.open_timeout = @timeout
     http.read_timeout = @timeout
 
-    headers = {}
+    headers = { 'Content-Type' => 'application/json' }
     if @api_key.present?
       api_key = @api_key.to_s
       if api_key.match?(/[\r\n]/)
@@ -65,8 +65,8 @@ class FreebmdPostemsDisplayService
     end
 
     request = Net::HTTP::Post.new(uri.request_uri, headers)
-    # FreeBMD Perl CGI scripts expect the JSON payload in the `POSTDATA` CGI param.
-    request.set_form_data('POSTDATA' => payload.to_json)
+    # FreeBMD1 API scripts expect the JSON payload in the request body.
+    request.body = payload.to_json
 
     response = http.request(request)
     code = response.code.to_i
