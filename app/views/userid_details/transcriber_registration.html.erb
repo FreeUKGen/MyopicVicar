@@ -6,7 +6,7 @@
       <p>Thank you for volunteering as a transcriber for <%= appname %>. To join one of our existing teams of transcribers (we call them syndicates), please fill in your details below and make a selection from the list of <q>available syndicates</q> for counties currently accepting transcribers.</p>
       <p>Please read our <%= link_to "Privacy Notice", helpful_links[:privacyNotice] %> for information on how we will protect and use your data.</p>
       <p>Upon successful submission, you will receive an email that contains a link to complete the registration process. Click on that link or copy and paste it into your browser. You must respond to the email <em>within 24 hours</em>. Don&rsquo;t forget to check your spam folder if you don&rsquo;t receive it.</p>
-      <p>If you have any questions about FreeREG or volunteering, please <%= link_to 'contact us','/contacts/new' %>.</p>
+      <p>If you have any questions about <%= appname%> or volunteering, please <%= link_to 'contact us','/contacts/new' %>.</p>
       <p>Once your registration is complete, your new coordinator will be in touch to help you get started with training.</p>
       <p>We look forward to welcoming you aboard.</p>
     </div>
@@ -122,19 +122,19 @@
         <label class="label ttip" for="<%= @userid[:honeypot] %>" > Leave this field blank </label>
         <input type="text" id="<%= @userid[:honeypot] %>" name="<%= @userid[:honeypot] %>">
         <input type="hidden" id="__TIME" name="__TIME" value="<%= Time.now %>" />
-            </li>
-            <%= f.action :submit, :as => :input, :label => 'Register as Transcriber',
+      </li>
+      <%= f.action :submit, :as => :input, :label => 'Register as Transcriber',
         :button_html => { :class => "btn", :type => 'submit' },
         :wrapper_html => { :class => "grid__item one-whole" } %>
-          </ol>
-        </fieldset>
-      <% end %>
-      <div class="grid">
-        <aside class="grid__item one-whole">
-          <div class = "adsense_box push--ends reg_adsense">
-            <p class = "text--center">Advertisement</p>
-            <%#= fullwidth_adsense %>
-            <%= my_heritage_720_90_second %>
-          </div>
-        </aside>
-      </div>
+    </ol>
+  </fieldset>
+<% end %>
+<div class="grid">
+  <aside class="grid__item one-whole">
+    <div class = "adsense_box push--ends reg_adsense">
+      <p class = "text--center">Advertisement</p>
+      <%#= fullwidth_adsense %>
+      <%= my_heritage_720_90_second %>
+    </div>
+  </aside>
+</div>
