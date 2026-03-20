@@ -85,6 +85,160 @@ namespace :update_lost_search_record_ids do
     puts "Created: #{created}, Updated: #{updated}, Skipped: #{skipped}, Errors: #{errors}"
     puts "Done." unless dry_run
   end
+
+  desc "Build LegacySearchRecordMapping by scanning SearchQuery snapshots once (CSV of lost SearchRecord ids only)."
+  task :from_search_queries, [:lost_ids_csv, :dry_run, :after_c_at, :before_c_at, :batch_size] => :environment do |_t, args|
+    require 'set'
+    require 'csv'
+
+    csv_path = args[:lost_ids_csv].to_s
+    dry_run = args[:dry_run].to_s.downcase == 'dry_run'
+    after_c_at = args[:after_c_at].to_s
+    before_c_at = args[:before_c_at].to_s
+    batch_size = (args[:batch_size].presence || 500).to_i
+
+    if csv_path.blank?
+      puts "Usage: rake update_lost_search_record_ids:from_search_queries[lost_ids.csv, dry_run|, after_c_at, before_c_at, batch_size]"
+      puts "CSV should be one column of old/lost SearchRecord ids (header optional)."
+      abort
+    end
+
+    path = Pathname.new(csv_path)
+    path = Rails.root.join(csv_path) unless path.absolute?
+    unless File.file?(path)
+      puts "File not found: #{path}"
+      abort
+    end
+
+    # Load ids from CSV (header optional). Also tolerates comma-separated lines; first token wins.
+    lost_ids = Set.new
+    File.readlines(path.to_s).each do |line|
+      line = line.strip
+      next if line.blank?
+      next if line =~ /\A(old_id|lost_id|search_record_id)\b/i
+      first = line.split(',').first.to_s.strip
+      next unless first =~ /\A[0-9a-fA-F]{24}\z/
+      lost_ids.add(first.downcase)
+    end
+
+    puts "Loaded lost ids: #{lost_ids.size}"
+    if lost_ids.empty?
+      abort
+    end
+
+    # Optional rebuild-window filtering
+    query = {}
+    if after_c_at.present? || before_c_at.present?
+      after_time = after_c_at.present? ? (Time.parse(after_c_at) rescue nil) : nil
+      before_time = before_c_at.present? ? (Time.parse(before_c_at) rescue nil) : nil
+      if after_time && before_time
+        query[:c_at] = after_time..before_time
+      elsif after_time
+        query[:c_at] = { '$gte' => after_time }
+      elsif before_time
+        query[:c_at] = { '$lte' => before_time }
+      end
+    end
+
+    # Scan SearchQuery snapshots once and extract freereg1_csv_entry_id from embedded record hashes
+    projection = { 'search_result.records' => 1, '_id' => 1 }
+
+    mapping_old_to_entry_oid = {} # old_id(string) => entry_oid (BSON::ObjectId or string)
+    scanned = 0
+    matched = 0
+    missing_entry_id = 0
+
+    puts "Scanning SearchQuery snapshots (batch_size=#{batch_size})..."
+    cursor = SearchQuery.collection.find(query, projection).batch_size(batch_size)
+    cursor.each do |doc|
+      scanned += 1
+      records_hash = doc['search_result'] && doc['search_result']['records']
+      next unless records_hash.is_a?(Hash)
+
+      records_hash.each do |old_id_key, rec_hash|
+        old_id = old_id_key.to_s.downcase
+        next unless lost_ids.include?(old_id)
+        next if mapping_old_to_entry_oid.key?(old_id)
+        next unless rec_hash.is_a?(Hash)
+
+        entry_id = rec_hash['freereg1_csv_entry_id'] || rec_hash[:freereg1_csv_entry_id]
+        if entry_id.present?
+          mapping_old_to_entry_oid[old_id] = entry_id
+          matched += 1
+        else
+          missing_entry_id += 1
+        end
+      end
+
+      if (scanned % (batch_size * 10)).zero?
+        puts "Scanned=#{scanned}, mapped=#{mapping_old_to_entry_oid.size}, matched_old_ids=#{matched}, missing_entry_id=#{missing_entry_id}"
+      end
+    end
+
+    puts "Scan complete. scanned=#{scanned}, mapped_old_to_entry=#{mapping_old_to_entry_oid.size}, missing_entry_id=#{missing_entry_id}"
+
+    entry_ids = mapping_old_to_entry_oid.values.compact.uniq
+    if entry_ids.empty?
+      abort
+    end
+
+    entry_oids = entry_ids.map do |v|
+      if v.is_a?(BSON::ObjectId)
+        v
+      else
+        BSON::ObjectId.from_string(v.to_s) rescue nil
+      end
+    end.compact.uniq
+
+    if entry_oids.empty?
+      abort
+    end
+
+    # Map entry_oid => new SearchRecord id
+    entry_oid_to_new_id = {}
+    SearchRecord.collection.find(
+      { freereg1_csv_entry_id: { '$in' => entry_oids } },
+      { '_id' => 1, 'freereg1_csv_entry_id' => 1 }
+    ).each do |sr|
+      entry_oid_to_new_id[sr['freereg1_csv_entry_id'].to_s] = sr['_id'].to_s
+    end
+
+    puts "Found current SearchRecords for entry_ids: #{entry_oid_to_new_id.size}"
+
+    created = 0
+    updated = 0
+    skipped = 0
+    failed = 0
+
+    mapping_old_to_entry_oid.each do |old_id, entry_id|
+      entry_oid = entry_id.is_a?(BSON::ObjectId) ? entry_id.to_s : (BSON::ObjectId.from_string(entry_id.to_s).to_s rescue nil)
+      new_id = entry_oid ? entry_oid_to_new_id[entry_oid] : nil
+      if new_id.blank?
+        failed += 1
+        next
+      end
+
+      existing = LegacySearchRecordMapping.find_by(old_id: old_id)
+      if existing.present?
+        if existing.new_id.to_s != new_id
+          unless dry_run
+            existing.update_attributes!(new_id: new_id)
+          end
+          updated += 1
+        else
+          skipped += 1
+        end
+      else
+        unless dry_run
+          LegacySearchRecordMapping.create!(old_id: old_id, new_id: new_id)
+        end
+        created += 1
+      end
+    end
+
+    puts "Mapping results: created=#{created}, updated=#{updated}, skipped=#{skipped}, failed=#{failed}"
+    puts "Done." unless dry_run
+  end
 end
 
 # Default: run from CSV (pass path as first arg)
