@@ -55,11 +55,18 @@ class FreebmdPostemsDisplayService
     http.open_timeout = @timeout
     http.read_timeout = @timeout
 
-    headers = { 'Content-Type' => 'application/json' }
-    headers['X-FreeBMD-API-Key'] = @api_key if @api_key.present?
+    headers = {}
+    if @api_key.present?
+      api_key = @api_key.to_s
+      if api_key.match?(/[\r\n]/)
+        raise PostemDisplayError, 'FREEBMD_API_KEY contains invalid characters'
+      end
+      headers['X-FreeBMD-API-Key'] = api_key
+    end
 
     request = Net::HTTP::Post.new(uri.request_uri, headers)
-    request.body = payload.to_json
+    # FreeBMD Perl CGI scripts expect the JSON payload in the `POSTDATA` CGI param.
+    request.set_form_data('POSTDATA' => payload.to_json)
 
     response = http.request(request)
     code = response.code.to_i
