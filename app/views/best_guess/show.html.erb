@@ -43,7 +43,6 @@
     </section>
     <%= render partial: 'display_scans', locals: { record: @current_record } %>
     <p class="push-half--bottom"><%= raw ERB.new(ApplicationText::SCAN_HELP_TEXT).result(binding) %></p>
-    <% if @option == '2' %>
       <div id="postems">
         <div>
           <h4 class="push-half--bottom">Postems</h4>
@@ -70,7 +69,6 @@
           </div>
         </div>
       </div>
-    <% end %>
     <h3 class="push-half--top push-half--bottom">Need help?</h3>
     <p class="push-half--bottom">
       You can find information about the Entry Information page in our <%= link_to 'Help', '/help/entry_help'%> section.

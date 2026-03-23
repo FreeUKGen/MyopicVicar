@@ -1,24 +1,20 @@
-# updated postems controller that delegates to freebmd1 perl api
-# this ensures postems are created through the perl codebase's single source of truth
-# preserving all logging, validation, and database update mechanisms
-
 class PostemsController < ApplicationController
-  include MasterOnlyRedirect
+  # flash lives in the session cookie (~4KB total after signing); keep notices short
+  FLASH_NOTICE_MAX_CHARS = 1500
 
   skip_before_action :require_login
-  before_action :redirect_to_master_unless_master, only: [:create]
 
   def create
     return if spam_detected?(postem_params[:honeypot])
 
     if postem_hash_blocked?(postem_params[:Hash])
-      flash[:notice] = "Postems cannot be added for this record."
+      assign_postem_flash_notice("Postems cannot be added for this record.")
       redirect_back(fallback_location: root_path) && return
     end
 
     best_guess_hash = BestGuessHash.find_by(Hash: postem_params[:Hash])
     unless best_guess_hash
-      flash[:notice] = "Record not found."
+      assign_postem_flash_notice("Record not found.")
       redirect_back(fallback_location: root_path) && return
     end
 
@@ -41,30 +37,31 @@ class PostemsController < ApplicationController
       )
 
       if response[:dry_run]
-        flash[:notice] = "Preview: #{response[:message]} No data was saved."
+        assign_postem_flash_notice("Preview: #{response[:message]} No data was saved.")
         redirect_back(fallback_location: root_path)
       else
-        flash[:notice] = "Added Postem successfully. #{response[:note]}"
+        assign_postem_flash_notice("Added Postem successfully. #{response[:note]}")
         redirect_to postem_success_redirect_path
       end
 
     rescue FreebmdPostemService::ValidationError => e
-      flash[:notice] = "Validation error: #{e.message}"
+      Rails.logger.warn("Postem validation: #{e.message}")
+      assign_postem_flash_notice("Validation error: #{e.message}")
       redirect_back(fallback_location: root_path)
 
     rescue FreebmdPostemService::AuthenticationError => e
       Rails.logger.error("FreeBMD API authentication failed: #{e.message}")
-      flash[:notice] = "System error: unable to create postem. Please try again later."
+      assign_postem_flash_notice("System error: unable to create postem. Please try again later.")
       redirect_back(fallback_location: root_path)
 
     rescue FreebmdPostemService::PostemCreationError => e
-      Rails.logger.error("FreeBMD API error: #{e.message}")
-      flash[:notice] = "Error creating postem: #{e.message}"
+      Rails.logger.error("FreeBMD API error (full): #{e.message}")
+      assign_postem_flash_notice("Error creating postem: #{e.message}")
       redirect_back(fallback_location: root_path)
 
     rescue StandardError => e
       Rails.logger.error("Unexpected error creating postem: #{e.message}\n#{e.backtrace.join("\n")}")
-      flash[:notice] = "System error: unable to create postem. Please try again later."
+      assign_postem_flash_notice("System error: unable to create postem. Please try again later.")
       redirect_back(fallback_location: root_path)
     end
   end
@@ -73,6 +70,10 @@ class PostemsController < ApplicationController
 
   def spam_detected?(honeypot)
     honeypot.present?
+  end
+
+  def assign_postem_flash_notice(text)
+    flash[:notice] = text.to_s.truncate(FLASH_NOTICE_MAX_CHARS, omission: "…", separator: " ")
   end
 
   def postem_hash_blocked?(hash_value)

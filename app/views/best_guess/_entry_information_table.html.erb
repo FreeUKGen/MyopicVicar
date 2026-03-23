@@ -149,7 +149,6 @@
     <% end %>
     <% if entry_type == "marriage" %>
       <% if record.AssociateName.present? %>
-        <% if @spouse_record.present? %>
           <tr>
             <th scope="row">
               Spouse Name
@@ -181,16 +180,6 @@
               <% end %>
             </td>
           </tr>
-        <% else %>
-          <tr>
-            <th scope="row">
-              Spouse Name
-            </th>
-            <td>
-              <%= record.AssociateName %>
-            </td>
-          </tr>
-        <% end %>
       <% else %>
         <tr>
           <th scope="row">Entries on page <%= record.Page %></th>

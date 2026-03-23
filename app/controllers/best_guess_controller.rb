@@ -1,6 +1,4 @@
 class BestGuessController < ApplicationController
-  include MasterOnlyRedirect
-
   before_action :viewed
   skip_before_action :require_login
 
@@ -18,7 +16,6 @@ class BestGuessController < ApplicationController
     prepare_to_show_saved_entry if show_saved_record == 'true'
     @original_record = get_original_record(search_id, show_saved_record)
     @page_number = params[:page_number].to_i
-    @option = params[:filter_option].present? ? params[:filter_option] : '2'    # record_from_page = params[:record_of_page].to_i if params[:record_of_page].present?
     record_id = params[:id]
     @current_record = BestGuess.find_by(RecordNumber: record_id)
     unless @current_record
@@ -26,18 +23,12 @@ class BestGuessController < ApplicationController
       redirect_back(fallback_location: root_path) && return
     end
 
-    # Only master has Postem rows; if this record has postems, serve from master
-    if record_has_postems?(@current_record)
-      redirect_to_master_for_postem_display_if_not_master and return
-    end
-
-    @spouse_record = @current_record.get_spouse_record
-    @postems_count = @current_record&.postems_list&.count || 0
+    @record_hash_value = @current_record.record_hash
+    @postems_count = Postem.where(Hash: @record_hash_value).count
     page_entries = @current_record.entries_in_the_page
     @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(record_id, page_entries)
     @display_date = false
-    show_scans
-    show_postem_or_scan
+    list_postems
     @url = generate_url
     if @search_query.present?
       @search_result = @search_query.search_result
@@ -73,12 +64,8 @@ class BestGuessController < ApplicationController
     record_number = params[:entry_id]
     @search_id = params[:search_id] if @search
     @current_record = BestGuess.where(RecordNumber: record_number).first
-    if @current_record && record_has_postems?(@current_record)
-      redirect_to_master_for_postem_display_if_not_master and return
-    end
     @spouse_record =  @current_record.get_spouse_record
     #show_scans
-    show_postem_or_scan
     @url = generate_url
     #@spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).where.not(RecordNumber: record_number).first
   end
@@ -94,13 +81,6 @@ class BestGuessController < ApplicationController
     @primary_referral_record, @primary_next_record, @primary_previous_record = record_cycle params[:primary_referral_number], @primary_array
     @secondary_referral_record, @secondary_next_record, @secondary_previous_record = record_cycle params[:secondary_referral_number], @secondary_array
   end
-
-  #def notes_vino
-    #referral = @record.reference_record_information
-    #current_record_number =  referral.first
-    #current_record_number = params[:referral_number] if params[:primary_referral_number].present?
-    #@referral_record = BestGuess.where(RecordNumber: current_record_number).first
-  #end
 
   def record_cycle(current = nil, array)
     current_record_number = current.presence || array.first
@@ -127,8 +107,6 @@ class BestGuessController < ApplicationController
     @page_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
     @page_records = @record.possible_alternate_names if from_quarter_to_year(@record.QuarterNumber) >= 1993 && @record.RecordTypeID != 3
   end
-
-  
 
   def sort_records(records)
     results.sort! do |x, y|
@@ -238,12 +216,9 @@ class BestGuessController < ApplicationController
   end
 
   def show_postem_or_scan
-    case @option
-    when '1'
-      show_scans
-    when '2'
-      list_postems
-    end
+    # The views render scans via the `display_scans` partial (which calls `record.get_scans`).
+    # Avoid doing the same scan computations in the controller.
+    list_postems
   end
 
   def show_scans
@@ -258,7 +233,7 @@ class BestGuessController < ApplicationController
   end
 
   def list_postems
-    record_hash_value = @current_record.record_hash
+    record_hash_value = @record_hash_value || @current_record.record_hash
     record_best_guess_hash = BestGuessHash.where(Hash: record_hash_value).first
     return unless record_best_guess_hash
     @new_postem = record_best_guess_hash.postems.new
