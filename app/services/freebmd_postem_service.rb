@@ -8,6 +8,7 @@ class FreebmdPostemService
   class ValidationError < StandardError; end
 
   def initialize
+    require 'timeout'
     @api_endpoint = ENV.fetch('FREEBMD_POSTEM_API_URL', 'https://www.freebmd.org.uk/api/create-postem.pl')
     @api_key = ENV.fetch('FREEBMD_API_KEY', nil)
     @timeout = 10 # seconds
@@ -51,6 +52,8 @@ class FreebmdPostemService
     end
   rescue Timeout::Error
     raise PostemCreationError, 'API request timed out'
+  rescue ValidationError, AuthenticationError, PostemCreationError
+    raise
   rescue StandardError => e
     Rails.logger.error("FreeBMD Postem API error: #{e.message}")
     raise
@@ -59,14 +62,34 @@ class FreebmdPostemService
   private
 
   def validate_inputs!(record, information)
-    raise ArgumentError, 'record cannot be nil' unless record
-    raise ArgumentError, 'information cannot be blank' if information.blank?
-    raise ArgumentError, 'information must contain at least one space' unless information.to_s =~ /\s/
-    raise ArgumentError, 'information too long (max 250 chars)' if information.to_s.length > 250
+    raise ValidationError, 'record cannot be nil' unless record
+    raise ValidationError, 'information cannot be blank' if information.blank?
+
+    # This is intentionally aligned with the existing UI/API expectation:
+    # freebmd postem text must contain at least one whitespace character.
+    raise ValidationError, 'information must contain at least one space' unless information.to_s =~ /\s/
+    raise ValidationError, 'information too long (max 250 chars)' if information.to_s.length > 250
+
+    unless record.respond_to?(:RecordNumber)
+      raise ValidationError, 'record must respond to RecordNumber'
+    end
+
+    # We can derive the postem hash either from best_guess_hash or record_hash.
+    unless record.respond_to?(:record_hash) || record.respond_to?(:best_guess_hash)
+      raise ValidationError, 'record must provide record_hash or best_guess_hash'
+    end
   end
 
   def get_database_name
-    Postem.connection.current_database
+    database_name =
+      if defined?(FREEBMD_DB) && FREEBMD_DB.is_a?(Hash)
+        FREEBMD_DB['database'] || FREEBMD_DB[:database]
+      end
+
+    database_name = Postem.connection.current_database if database_name.blank?
+    raise ValidationError, 'could not determine postem database name' if database_name.blank?
+
+    database_name.to_s
   end
 
   def get_record_hash(record)
@@ -79,6 +102,7 @@ class FreebmdPostemService
   end
 
   def call_api(payload)
+    require 'uri'
     require 'net/http'
     require 'json'
 
@@ -88,10 +112,12 @@ class FreebmdPostemService
     http.open_timeout = @timeout
     http.read_timeout = @timeout
 
-    request = Net::HTTP::Post.new(uri.path, {
-      'Content-Type' => 'application/json',
-      'X-FreeBMD-API-Key' => @api_key
-    })
+    headers = { 'Content-Type' => 'application/json' }
+    # If FREEBMD_API_KEY isn't set, we must omit the header entirely
+    # (the FreeBMD endpoint may rely on IP allow-listing in that case).
+    headers['X-FreeBMD-API-Key'] = @api_key if @api_key.present?
+
+    request = Net::HTTP::Post.new(uri.request_uri, headers)
     request.body = payload.to_json
 
     response = http.request(request)
@@ -109,7 +135,8 @@ class FreebmdPostemService
     when 422
       # validation error from perl api
       data = JSON.parse(response.body, symbolize_names: true)
-      { success: false, error: data[:error], code: 422 }
+      error_message = data[:error] || data[:message] || 'Validation failed'
+      { success: false, error: error_message, code: 422 }
     else
       data = JSON.parse(response.body, symbolize_names: true) rescue {}
       raise PostemCreationError, "API error (#{response.code}): #{data[:error] || response.body}"

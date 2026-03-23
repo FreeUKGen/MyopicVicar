@@ -61,6 +61,10 @@ module MyopicVicar
     config.gtm_key = app['gtm_key']
     config.master = app['master'].presence || ENV['MASTER'].presence
     config.freebmd_master_url = app['freebmd_master_url'].presence || ENV['FREEBMD_MASTER_URL'].presence
+    api_url = app['freebmd_postem_api_url'].presence || app['FREEBMD_POSTEM_API_URL'].presence
+    api_key = app['freebmd_api_key'].presence || app['FREEBMD_API_KEY'].presence
+    ENV['FREEBMD_POSTEM_API_URL'] ||= api_url
+    ENV['FREEBMD_API_KEY'] ||= api_key
     config.district_data_csv = app['district_data_csv']
     config.postem_blocked_hashes = app['postem_blocked_hashes'].presence || []
     # Custom directories with classes and modules you want to be autoloadable.
