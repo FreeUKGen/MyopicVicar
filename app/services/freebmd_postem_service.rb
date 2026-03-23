@@ -93,11 +93,7 @@ class FreebmdPostemService
   end
 
   def get_record_hash(record)
-    # use bestguesshash table if available
-    best_guess_hash = record.best_guess_hash
-    return best_guess_hash.Hash if best_guess_hash.present?
 
-    # fallback: compute hash manually (should match perl logic)
     record.record_hash
   end
 
