@@ -220,6 +220,7 @@
         .filter(function(v) { return v.length > 0; });
       var showForm1 = formNumbers.indexOf('1') !== -1;
       var showForm2 = formNumbers.indexOf('2') !== -1;
+      var showForm3 = formNumbers.indexOf('3') !== -1;
 
       // Enforce a single-open accordion within the visible section.
       if (details.open) {
@@ -231,9 +232,13 @@
         // Backward compatibility: old config may only set `show_form: true`.
         var showForm = String($details.data('show-form')) === '1';
         if (showForm && formNumbers.length === 0) {
-          showForm1 = true
+          // Legacy behavior: `show_form: true` used to display both the main form
+          // and the corrections table block.
+          showForm1 = true;
+          showForm2 = true;
         }
-        var requiresSection3Details = String(subsectionId) === '2';
+        // Form 3 lives inside Form 1 block; if requested, ensure Form 1 is shown.
+        if (showForm3) showForm1 = true;
         if (showForm1) {
           $readAnswer.show();
           if ($reportFormBlock.length) {
@@ -252,7 +257,7 @@
             try { lastScanUrl = sessionStorage.getItem(lastScanUrlKey); } catch (e) { lastScanUrl = null; }
             if (lastScanUrl) $scanUrlInput.val(lastScanUrl);
           }
-          setSection3RequiredState(requiresSection3Details);
+          setSection3RequiredState(showForm3);
           if ($correctionsBlock.length) $correctionsBlock.toggle(showForm2);
         } else {
           $readAnswer.hide();
