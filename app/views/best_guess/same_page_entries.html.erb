@@ -24,14 +24,14 @@
           <% @page_records.each do |search_record| %>
             <% n = n +1%>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
-            <tr id="<%=search_record[:_id]%>" class="<%= record_type.downcase %>_hover" >
+            <tr id="<%= search_record[:RecordNumber] %>" class="<%= record_type.downcase %>_hover" >
                 <td>
                   <center>
                     <% if @search %>
-                      <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_id, search_record.id, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
+                      <%= link_to("View #{n}".html_safe, friendly_bmd_record_details_path(@search_id, search_record.RecordNumber, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
                     <% else %>
                     <%# raise session[:saved_search_record].inspect%>
-                      <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_non_search_path(search_record.id, search_record.friendly_url, saved_record: true), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
+                      <%= link_to("View #{n}".html_safe, friendly_bmd_record_details_non_search_path(search_record.RecordNumber, search_record.friendly_url, saved_record: true), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
                     <% end %>
                   <i><%#= seen(@search_query,search_record) %></i></center>
                 </td>
