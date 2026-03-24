@@ -36,7 +36,10 @@
         <% FreebmdDataProblem::REPORT_ERROR_SECTIONS.each_with_index do |section, section_idx| %>
           <div class="accordion-section" data-section-index="<%= section_idx %>" style="display: none;">
             <% section[:subsections].each do |sub| %>
-              <details class="accordion-item" data-subsection-id="<%= sub[:id] %>" data-show-form="<%= sub[:show_form] ? '1' : '0' %>">
+              <details class="accordion-item"
+                       data-subsection-id="<%= sub[:id] %>"
+                       data-show-form="<%= sub[:show_form] ? '1' : '0' %>"
+                       data-form-numbers="<%= Array(sub[:form_numbers]).join(',') %>">
                 <summary class="accordion-item__summary"><%= sub[:label] %></summary>
                 <div class="accordion-item__body answer_explanations">
                   <%= render_report_error_answer(sub[:answer]) %>
@@ -208,6 +211,13 @@
     function handleAccordionToggle(details) {
       var $details = $(details);
       var subsectionId = $details.data('subsection-id');
+      var formNumbersRaw = String($details.data('form-numbers') || '');
+      var formNumbers = formNumbersRaw
+        .split(',')
+        .map(function(v) { return $.trim(String(v)); })
+        .filter(function(v) { return v.length > 0; });
+      var showForm1 = formNumbers.indexOf('1') !== -1;
+      var showForm2 = formNumbers.indexOf('2') !== -1;
 
       // Enforce a single-open accordion within the visible section.
       if (details.open) {
@@ -216,10 +226,13 @@
 
       if (details.open) {
         if ($queryInput.length) $queryInput.val(subsectionId);
-        // Only show the submit UI + form when this subsection opts in.
+        // Backward compatibility: old config may only set `show_form: true`.
         var showForm = String($details.data('show-form')) === '1';
+        if (showForm && formNumbers.length === 0) {
+          showForm1 = true
+        }
         var requiresSection3Details = String(subsectionId) === '2';
-        if (showForm) {
+        if (showForm1) {
           $readAnswer.show();
           if ($reportFormBlock.length) {
             var $host = $details.find('.report_form_host').first();
@@ -238,11 +251,13 @@
             if (lastScanUrl) $scanUrlInput.val(lastScanUrl);
           }
           setSection3RequiredState(requiresSection3Details);
+          if ($correctionsBlock.length) $correctionsBlock.toggle(showForm2);
         } else {
           $readAnswer.hide();
           $('#read_explanation').prop('checked', false);
           if ($reportFormBlock.length) $reportFormBlock.hide().appendTo('body');
           setSection3RequiredState(false);
+          if ($correctionsBlock.length) $correctionsBlock.hide();
         }
       } else {
         // If the user closes the currently-selected subsection, clear selection UI.
@@ -252,16 +267,7 @@
           $('#read_explanation').prop('checked', false);
           if ($reportFormBlock.length) $reportFormBlock.hide().appendTo('body');
           setSection3RequiredState(false);
-        }
-      }
-
-      // Show/hide the corrections table based on per-subsection flag.
-      if ($correctionsBlock.length) {
-        var showFormForCorrections = String($details.data('show-form')) === '1';
-        if (details.open && showFormForCorrections) {
-          $correctionsBlock.show();
-        } else {
-          $correctionsBlock.hide();
+          if ($correctionsBlock.length) $correctionsBlock.hide();
         }
       }
     }

@@ -97,6 +97,10 @@ It is also possible that this is a transcription error - if this is the case, pl
 	# Report error page: 3 main sections, each with subsections (accordion). Id is stored as contact.query.
 	# Each subsection :answer may be plain text (wrapped in <p> by the view) or HTML (e.g. multiple <p>, <ul>, <a>).
 	# Use HTML when you need paragraphs, lists or links; content is sanitized before output.
+	# Optional :form_numbers controls which UI blocks appear in report_error:
+	#   1 => main report form
+	#   2 => corrections table block
+	# Example: form_numbers: [1,2] shows both.
 	REPORT_ERROR_SECTIONS = [
 		{
 			title: "An error",
@@ -108,7 +112,8 @@ It is also possible that this is a transcription error - if this is the case, pl
 						<p>If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
 						<p>Enter the correct information in the relevant field(s) on the form below. Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we will protect and use your data, and then complete the form below.</p>
 					HTML
-					show_form: true
+					show_form: true,
+					form_numbers: [1]
 				},
 				{ id: 1, label: "The transcription information does match the GRO index scan [GRO error]", answer: ANSWERS[1], show_form: false }
 			]
@@ -123,7 +128,8 @@ It is also possible that this is a transcription error - if this is the case, pl
 						<p>If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
 						<p>Enter the correct information in the relevant field(s) on the form below. Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we will protect and use your data, and then complete the form below.</p>
 					HTML
-					show_form: true
+					show_form: true,
+					form_numbers: [2]
 				},
 				{
 					id: 3, label: "A record is missing from the GRO index scan",
@@ -135,7 +141,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 					HTML
 					show_form: false
 				}
-			]
+			]omissionsomissions
 		},
 		{
 			title: "Anything else/miscellaneous",
