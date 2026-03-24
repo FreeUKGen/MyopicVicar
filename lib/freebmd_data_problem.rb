@@ -141,7 +141,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 					HTML
 					show_form: false
 				}
-			]omissionsomissions
+			]
 		},
 		{
 			title: "Anything else/miscellaneous",

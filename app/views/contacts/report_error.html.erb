@@ -36,14 +36,16 @@
         <% FreebmdDataProblem::REPORT_ERROR_SECTIONS.each_with_index do |section, section_idx| %>
           <div class="accordion-section" data-section-index="<%= section_idx %>" style="display: none;">
             <% section[:subsections].each do |sub| %>
+              <% form_numbers = Array(sub[:form_numbers]).map(&:to_i) %>
+              <% show_form_1 = sub[:show_form] || form_numbers.include?(1) %>
               <details class="accordion-item"
                        data-subsection-id="<%= sub[:id] %>"
-                       data-show-form="<%= sub[:show_form] ? '1' : '0' %>"
-                       data-form-numbers="<%= Array(sub[:form_numbers]).join(',') %>">
+                       data-show-form="<%= show_form_1 ? '1' : '0' %>"
+                       data-form-numbers="<%= form_numbers.join(',') %>">
                 <summary class="accordion-item__summary"><%= sub[:label] %></summary>
                 <div class="accordion-item__body answer_explanations">
                   <%= render_report_error_answer(sub[:answer]) %>
-                  <% if sub[:show_form] %>
+                  <% if show_form_1 %>
                     <div class="report_form_host push--top"></div>
                   <% end %>
                 </div>
