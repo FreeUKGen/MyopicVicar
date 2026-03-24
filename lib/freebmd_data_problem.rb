@@ -116,8 +116,25 @@ It is also possible that this is a transcription error - if this is the case, pl
 		{
 			title: "Data is missing",
 			subsections: [
-				{ id: 2, label: "A record appears on the GRO index scan but is missing from our database / we have only transcribed part of the page", answer: ANSWERS[2], show_form: false },
-				{ id: 3, label: "A record is missing from the GRO index scan", answer: ANSWERS2[9], show_form: false }
+				{
+					id: 2,
+					label: "A record appears on the GRO index scan but is missing from our database/we have only transcribed part of the page",
+					answer: <<~HTML.strip,
+						<p>If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
+						<p>Enter the correct information in the relevant field(s) on the form below. Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we will protect and use your data, and then complete the form below.</p>
+					HTML
+					show_form: true
+				},
+				{
+					id: 3, label: "A record is missing from the GRO index scan",
+					answer: <<~HTML.strip,
+						<p>We cannot change the database if our transcription matches the information on the GRO index (scan).</p>
+						<p>If you believe there is an error in the GRO Index, you will need to contact the General Register Office (GRO) to request a correction</p>
+						<p>If the GRO confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
+						<small>(Was: If you wish to get the GRO Index corrected you should apply to the GRO. Contact the GRO with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.)</small>
+					HTML
+					show_form: false
+				}
 			]
 		},
 		{
