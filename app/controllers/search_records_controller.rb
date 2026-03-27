@@ -13,24 +13,41 @@
 #
 class SearchRecordsController < ApplicationController
   before_action :viewed
+  before_action :redirect_legacy_search_record_id, only: [:show, :show_citation, :show_print_version]
   skip_before_action :require_login
   require 'csv'
   rescue_from Mongo::Error::OperationFailure, with: :catch_error
 
+  # Redirect old citation/record URLs (pre-rebuild SearchRecord ids) to the current record when a mapping exists.
+  def redirect_legacy_search_record_id
+    return if params[:id].blank?
+    return if SearchRecord.record_id(params[:id]).first.present?
+    mapping = LegacySearchRecordMapping.find_by(old_id: params[:id].to_s)
+    return if mapping.blank?
+    new_id = mapping.new_id
+    if request.path.include?('show_citation')
+      redirect_to show_citation_record_path(new_id) and return
+    elsif request.path.include?('show_print_version')
+      redirect_to show_print_version_search_record_path(new_id) and return
+    else
+      redirect_to search_record_path(new_id) and return
+    end
+  end
+
   def catch_error
     logger.warn("#{appname_upcase}::RECORD: Record encountered a problem #{params}")
     flash[:notice] = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
-    redirect_back(fallback_location: new_search_query_path)
+    redirect_back_or_new_search_query
   end
 
   def index
     flash[:notice] = 'That action does not exist'
-    redirect_back(fallback_location: new_search_query_path) && return
+    redirect_back_or_new_search_query && return
   end
 
   def show
     proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+    redirect_back_or_new_search_query(notice: message) && return unless proceed
 
     @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?) ? true : false
     @appname = appname_downcase
@@ -237,7 +254,7 @@ class SearchRecordsController < ApplicationController
     @entry.display_fields(@search_record)
     proceed, @place_id, @church_id, @register_id, extended_def = @entry.location_ids
     message = 'There is an issue with the linkages for this records. Please contact us using the Website Problem option to report this message'
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+    redirect_back_or_new_search_query(notice: message) && return unless proceed
 
     @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
     @image_id = @entry.get_the_image_id(@church, @user, session[:manage_user_origin], session[:image_server_group_id], session[:chapman_code])
@@ -254,7 +271,7 @@ class SearchRecordsController < ApplicationController
 
   def show_print_version
     proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+    redirect_back_or_new_search_query(notice: message) && return unless proceed
 
     @show_navigation = false
     @appname = appname_downcase
@@ -330,7 +347,7 @@ class SearchRecordsController < ApplicationController
   # implementation of the citation generator
   def show_citation
     proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+    redirect_back_or_new_search_query(notice: message) && return unless proceed
 
     @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?) ? true : false
     @appname = appname_downcase
@@ -358,5 +375,27 @@ class SearchRecordsController < ApplicationController
 
   def viewed
     session[:viewed] ||= []
+  end
+
+  private
+
+  # Citation links are often opened from other sites; redirect_back would send users to the Referer (that site)
+  # instead of staying here with the flash. Only use redirect_back when the referer is this application.
+  def internal_referer?
+    ref = request.referer
+    return false if ref.blank?
+
+    URI.parse(ref).host.casecmp?(request.host)
+  rescue URI::InvalidURIError
+    false
+  end
+
+  def redirect_back_or_new_search_query(notice: nil)
+    flash[:notice] = notice if notice.present?
+    if internal_referer?
+      redirect_back(fallback_location: new_search_query_path)
+    else
+      redirect_to new_search_query_path
+    end
   end
 end
