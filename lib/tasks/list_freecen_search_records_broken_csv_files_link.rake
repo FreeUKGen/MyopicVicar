@@ -1,14 +1,6 @@
-desc "List FreeCEN Search_record Ids where the link to freecen_csv_files is broken"
+desc "List FreeCEN Search record Ids where the link to freecen_csv_files is broken"
 task :list_freecen_search_records_broken_csv_files_link, [:batch_size, :limit, :user_for_email, :start_after] => :environment do |_t, args|
-
   require 'user_mailer'
-
-  def self.output_to_log(message_file, message)
-    message_file.puts message.to_s
-    p message
-  end
-
-  # START
 
   start_time = Time.current
   file_date = Time.current.strftime('%Y%m%d%H%M')
@@ -31,12 +23,18 @@ task :list_freecen_search_records_broken_csv_files_link, [:batch_size, :limit, :
   email_userid = args.user_for_email
   user_email = UseridDetail.where(userid: email_userid).first
   abort 'Invalid user for email argument. User not found' unless user_email
-  email_address =  user_email.email_address
+  friendly_email = "#{user_email.person_forename} #{user_email.person_surname} <#{user_email.email_address}>"
   start_after_id = nil
-  start_after_id = args_start_after if arges_start_after.present?
+  start_after_id = args.start_after if args.start_after.present?
 
-  initial_message = "Listing FreeCEN Search_record Ids where the link to freecen_csv_files is broken : Batch size = #{batch_size} Limit = #{limit}, User for email = #{email_userid}, Start Id = #{start_after_id} at #{start_time}"
-  output_to_log(file_for_log, initial_message)
+  message = "Listing FreeCEN Search_record Ids where the link to freecen_csv_files is broken : Batch size = #{batch_size} Limit = #{limit}, User for email = #{email_userid}, Start Id = #{start_after_id} at #{start_time}"
+  log_file.puts message
+  p message
+
+  search_recs_to_process = SearchRecord.where(:freecen_csv_file_id.ne => nil).count
+  message = "Total records with freecen_csv_file_id specified = #{search_recs_to_process}"
+  log_file.puts message
+  p message
 
   last_id = BSON::ObjectId(start_after_id) rescue nil
   broken_ids = []
@@ -62,28 +60,35 @@ task :list_freecen_search_records_broken_csv_files_link, [:batch_size, :limit, :
     last_id = batch.last.id
     processed += batch.size
 
-    output_to_log(file_for_log, "Last processed ID: #{last_id}")
-    output_to_log(file_for_log, "Processed so far: #{processed} | Broken so far #{broken_ids.size}")
+    message = "Last processed ID: #{last_id}"
+    log_file.puts message
+    p message
+
+    message = "Processed so far: #{processed} | Broken so far #{broken_ids.size}"
+    log_file.puts message
+    p message
 
     break if limit && processed >= limit
   end
 
-  email_message = "Sending csv file via email to #{email_userid}"
-  output_to_log(file_for_log, email_message)
+  message = "Sending csv file via email to #{email_userid}"
+  log_file.puts message
+  p message
 
-  email_subject = 'FREECEN:: Listing FreeCEN Search_record Ids where the link to freecen_csv_files is broken.'
-  email_body += "Records to process Limit = #{limit} "
+  email_subject = 'FREECEN:: Listing FreeCEN Search record Ids where the link to freecen_csv_files is broken.'
+  email_body = "Records to process limit = #{limit}."
   email_body += "\n"
-  email_body += "#{broken_ids.size} orphaned Search Records found"
+  email_body += "#{broken_ids.size} orphaned Search records found."
   email_body += "\n"
   if broken_ids.size.positive?
-    email_body += "See file #{file_for_txt} for List."
+    email_body += "See file #{file_for_txt} for list of Search record ids."
     email_body += "\n"
   end
-  UserMailer.freecen_processing_report(email_address, email_subject, email_body)
+  UserMailer.freecen_processing_report(friendly_email, email_subject, email_body).deliver
 
   end_time = Time.current
   run_time = end_time - start_time
-  final_message = "Finished. Last processed ID: #{last_id}, Run Time = #{run_time}" # Save this to resume later
-  output_to_log(file_for_log, final_message)
+  message = "Finished. Processed: #{processed} Search records. Last ID: #{last_id}, Run Time = #{run_time.round(2)} secs" # Save this to resume later
+  log_file.puts message
+  p message
 end
