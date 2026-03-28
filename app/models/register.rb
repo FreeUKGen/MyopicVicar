@@ -336,10 +336,10 @@ class Register
     church_name = self.church.church_name
     new_register_type = RegisterType.display_name(self.register_type)
     old_location_names =[]
-    old_location_names << "#{place_name} (#{church_name})"
+    old_location_names << "#{place_name} ||| #{church_name}"
     old_location_names  << " [#{RegisterType.display_name(old_type)}]"
     new_location_names =[]
-    new_location_names << "#{place_name} (#{church_name})"
+    new_location_names << "#{place_name} ||| #{church_name}"
     new_location_names[1] = " [#{new_register_type}]"
     result = SearchRecord.collection.find({place_id: place._id, location_names: old_location_names}).hint("place_location").update_many({"$set" => {:location_names => new_location_names}})
     files = self.freereg1_csv_files

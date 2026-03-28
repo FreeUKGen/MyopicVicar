@@ -36,7 +36,7 @@
       chapman = record.chapman_code
       register_type = RegisterType.display_name(register.register_type)
       record_location_names = []
-      record_location_names << "#{place.place_name} (#{church.church_name})" 
+      record_location_names << "#{place.place_name} ||| #{church.church_name}" 
       record_location_names << " [#{register_type}]"
       unless record_location_names[0].strip == location[0].strip 
         reason = "#{record_location_names[0]}, #{location[0]}"      
@@ -67,7 +67,7 @@
       chapman = place.chapman_code
       register_type = RegisterType.display_name(register.register_type)
       location_names =[]
-      location_names << "#{place_name} (#{church_name})"
+      location_names << "#{place_name} ||| #{church_name}"
       location_names  << " [#{register_type}]"
       file.freereg1_csv_entries.all.no_timeout.each do |entry|
         record = entry.search_record

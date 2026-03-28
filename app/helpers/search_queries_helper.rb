@@ -166,22 +166,44 @@ module SearchQueriesHelper
   end
 
   def format_for_line_breaks (names)
-    place = ' '
-    name_parts = names[0].split(') ')
-    case
-    when name_parts.length == 1
-      (place, church) = names[0].split(' (')
-    when name_parts.length == 2
-      place = name_parts[0] + ")"
-      name_parts[1][0] = ""
-      church = name_parts[1]
+    location_string = names[0].to_s.strip
+    place = ''
+    church = ''
+
+    # Parse both formats:
+    # - new: "<place> ||| <church>"
+    # - legacy: "<place> (<church>)" (church may include parentheses)
+    if location_string.include?('|||')
+      place, church = location_string.split('|||', 2).map { |p| p.to_s.strip }
+    elsif location_string.present? && location_string.end_with?(')') && location_string.include?('(')
+      last_close_idx = location_string.rindex(')')
+      stack = []
+      open_idx_for_last = nil
+
+      i = 0
+      while i <= last_close_idx
+        byte = location_string.getbyte(i)
+        if byte == 40 # '('
+          stack << i
+        elsif byte == 41 # ')'
+          open_idx_for_last = stack.pop
+          break if i == last_close_idx
+        end
+        i += 1
+      end
+
+      if open_idx_for_last
+        place = location_string[0...open_idx_for_last].to_s.sub(/\s+$/, '')
+        church = location_string[(open_idx_for_last + 1)...last_close_idx].to_s
+      else
+        place = location_string
+        church = ''
+      end
     else
+      place = location_string
+      church = ''
     end
-    if church.present?
-      church = church[0..-2]
-    else
-      church = ' '
-    end
+
     if names[1]
       register_type = names[1].gsub('[', '').gsub(']', '')
       loc = [place, church, register_type].join(' : ')
@@ -189,7 +211,7 @@ module SearchQueriesHelper
       loc = place
     end
 
-    return loc
+    loc
   end
 
   def place_name_from_id(ids)

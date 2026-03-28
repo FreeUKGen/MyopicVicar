@@ -21,7 +21,7 @@ task :correct_a_place => :environment do
       register.freereg1_csv_files.each do |file|
         p file
         location_names =[]
-        location_names << "#{place_name} (#{church_name})"
+        location_names << "#{place_name} ||| #{church_name}"
         location_names  << " [#{register_type}]"
         p location_names
         file.update_attributes(:place => place_name)
