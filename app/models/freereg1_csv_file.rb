@@ -102,11 +102,11 @@ class Freereg1CsvFile
   has_many :batch_errors
 
   has_many :freereg1_csv_entries, validate: false, order: :id.asc
-  VALID_DAY = /\A\d{1,2}\z/
-  VALID_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
-  VALID_YEAR = /\A\d{4}\z/
-  ANOTHER_VALID_YEAR = /\A\d{2}\z/
-  MONTHS = {
+  VALID_DAY ||= /\A\d{1,2}\z/
+  VALID_MONTH ||= ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP","SEPT", "OCT", "NOV", "DEC", "*","JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
+  VALID_YEAR ||= /\A\d{4}\z/
+  ANOTHER_VALID_YEAR ||= /\A\d{2}\z/
+  MONTHS ||= {
     'Jan' => '01',
     'Feb' => '02',
     'Mar' => '03',
@@ -634,13 +634,124 @@ class Freereg1CsvFile
     end
   end
 
+  # def clean_up_place_ucf_list
+  #   proceed, place, _church, _register = self.location_from_file
+  #   if proceed && place.present?
+  #     ucf_list = place.ucf_list
+  #     ucf_list = ucf_list.delete_if {|key, value| key.to_s == self.id.to_s}
+  #     place.update(ucf_list: ucf_list)
+  #   end
+  # end
+
   def clean_up_place_ucf_list
-    proceed, place, _church, _register = self.location_from_file
-    if proceed && place.present?
-      ucf_list = place.ucf_list
-      ucf_list = ucf_list.delete_if {|key, value| key.to_s == self.id.to_s}
-      place.update(ucf_list: ucf_list)
+    Rails.logger.info("[Freereg1CsvFile##{id}] Starting clean_up_place_ucf_list")
+
+    proceed, place, _church, _register = location_from_file
+
+    # --- Guard Clause 1: No place lookup ---
+    unless proceed
+      Rails.logger.warn("[Freereg1CsvFile##{id}] Aborting cleanup: location_from_file returned proceed=false")
+      return
     end
+
+    # --- Guard Clause 2: No place found ---
+    if place.blank?
+      Rails.logger.warn("[Freereg1CsvFile##{id}] Aborting cleanup: no associated Place found")
+      return
+    end
+
+    # --- Load the Place’s UCF list safely ---
+    place_list = place.ucf_list || {}
+    file_id    = id.to_s
+
+    begin
+      # --- Idempotency Check: If the Place already does NOT reference this file ---
+      unless place_list.key?(file_id)
+        Rails.logger.info("[Freereg1CsvFile##{id}] Place already clean; no entry to remove")
+      else
+        # Remove only this file’s entry
+        cleaned_list = place_list.reject { |key, _value| key == file_id }
+
+        # Only write if something actually changed
+        if cleaned_list != place_list
+          Rails.logger.info("[Freereg1CsvFile##{id}] Removing entry from Place##{place.id} ucf_list")
+          
+          # Atomic update with counters
+          place.update(
+            ucf_list: cleaned_list,
+            ucf_list_updated_at: DateTime.now,
+            ucf_list_file_count: cleaned_list.keys.size,
+            ucf_list_record_count: cleaned_list.values.flatten.compact.uniq.size
+            )
+        else
+          Rails.logger.info("[Freereg1CsvFile##{id}] No changes needed for Place##{place.id}")
+        end
+      end
+
+      # --- Clean this file’s own list (idempotent) ---
+      if self.ucf_list.present?
+        Rails.logger.info("[Freereg1CsvFile##{id}] Clearing this file’s own ucf_list")
+        update(ucf_list: [])
+      else
+        Rails.logger.info("[Freereg1CsvFile##{id}] File ucf_list already empty")
+      end
+
+      Rails.logger.info("[Freereg1CsvFile##{id}] Finished clean_up_place_ucf_list")
+
+    rescue StandardError => e
+      Rails.logger.error(
+        "[Freereg1CsvFile##{id}] Failed during clean_up_place_ucf_list: " \
+         " file: #{id} | #{e.class} - #{e.message}"
+      )
+      raise e
+    end
+  end
+
+  # Replaces load-modify-save pattern with single atomic operation
+  def clean_up_place_ucf_list_atomic
+    return unless persisted?
+
+    proceed, place, _church, _register = location_from_file
+    return unless proceed && place.present?
+    
+    file_id_str = id.to_s
+    
+    # Fetch fresh place instance (no .reload)
+    fresh_place = Place.where(id: place.id).first
+    return unless fresh_place
+
+    record_count = fresh_place.ucf_list&.dig(file_id_str)&.size || 0
+
+    # If already cleaned up → idempotent no-op
+    return if record_count.zero?
+
+    Place.collection.update_one(
+      { _id: place.id },
+      {
+        '$unset' => { "ucf_list.#{file_id_str}" => '' },
+        '$inc' => {
+          # ucf_list_updated_at: Time.current,
+          ucf_list_file_count: -1,
+          ucf_list_record_count: -record_count
+        }
+      }
+    )
+    place.update(
+      ucf_list_updated_at: DateTime.now
+    )
+
+    # Update only fields that exist on Freereg1CsvFile
+    update(ucf_list: [])
+    
+    Rails.logger.info(
+      "[Freereg1CsvFile##{id}] Atomic cleanup complete: " \
+      "removed #{record_count} records from Place##{place.id}"
+    )
+  rescue StandardError => e
+    Rails.logger.error(
+      "[Freereg1CsvFile##{id}] Atomic cleanup failed: #{e.class} - #{e.message}"
+    )
+    raise e
   end
 
   def define_colour
@@ -861,7 +972,8 @@ class Freereg1CsvFile
       # deal with file and its records
       add_to_rake_delete_list
       save_to_attic
-      clean_up_place_ucf_list
+      # clean_up_place_ucf_list
+      clean_up_place_ucf_list_atomic  
       delete
       # deal with the Physical Files collection
       PhysicalFile.delete_document(self.userid, self.file_name)
@@ -869,21 +981,45 @@ class Freereg1CsvFile
     end
   end
 
+  # def remove_from_ucf_list
+  #   proceed, place, _church, _register = location_from_file
+  #   if proceed
+  #     place.ucf_list.delete_if { |key, value| key.to_s == id.to_s }
+  #     place.save
+  #   end
+  # end
+
   def remove_from_ucf_list
-    proceed, place, _church, _register = location_from_file
-    if proceed
-      place.ucf_list.delete_if { |key, value| key.to_s == id.to_s }
-      place.save
-    end
+    # duplicate method, redirect to:
+    # TODO: to be removed
+    clean_up_place_ucf_list
   end
 
+  # def search_record_ids_with_wildcard_ucf
+  #   ids = []
+  #   self.freereg1_csv_entries.each do |entry|
+  #     entry.reload
+  #     ids << entry.search_record.id if entry.search_record && entry.search_record.contains_wildcard_ucf?
+  #   end
+  #   ids
+  # end
+
+  # Using Mongoid criteria
   def search_record_ids_with_wildcard_ucf
-    ids = []
-    self.freereg1_csv_entries.each do |entry|
-      entry.reload
-      ids << entry.search_record.id if entry.search_record && entry.search_record.contains_wildcard_ucf?
-    end
-    ids
+    # 1. Get the IDs of the entries for this file
+    entry_ids = freereg1_csv_entries.pluck(:id)
+    return [] if entry_ids.empty?
+
+    wildcard_regex = /[*_?{}]/
+
+    # 2. Find SearchRecords where the 'freereg1_csv_entry_id' matches our entries
+    # AND the embedded search_names contain a wildcard
+    SearchRecord.where(:freereg1_csv_entry_id.in => entry_ids)
+                .any_of(
+                  { "search_names.first_name" => wildcard_regex },
+                  { "search_names.last_name"  => wildcard_regex }
+                )
+                .distinct(:id).map(&:to_s)
   end
 
   def to_register

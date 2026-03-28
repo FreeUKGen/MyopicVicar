@@ -1,0 +1,11 @@
+<% html = MyopicVicar::Application.config.site_notice_banner_html %>
+<% if html.present? %>
+  <div class="site-notice-banner" role="status" aria-live="polite">
+    <div class="container">
+      <div class="islet islet--bordered push--bottom project_border_color">
+        <%= sanitize(html, tags: %w[h2 h3 p a br strong em ul ol li], attributes: { 'a' => %w[href target rel] }) %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
