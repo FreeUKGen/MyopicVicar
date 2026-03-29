@@ -1,0 +1,36 @@
+<%= form_with(model: emendation_rule, local: true) do |form| %>
+  <% if emendation_rule.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(emendation_rule.errors.count, "error") %> prohibited this rule from being saved:</h2>
+      <ul>
+      <% emendation_rule.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= form.label :emendation_type_id, "Type" %><br>
+    <%= form.collection_select :emendation_type_id, EmendationType.all, :id, :name, prompt: "Select a Type" %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= form.label :original, "Abbreviation/Original Text" %><br>
+    <%= form.text_field :original %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= form.label :replacement, "Replacement Text" %><br>
+    <%= form.text_field :replacement %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= form.label :gender, "Gender Filter (Optional)" %><br>
+    <%= form.select :gender, options_for_select([['Applies to Both', nil], ['Male (m)', 'm'], ['Female (f)', 'f']], emendation_rule.gender) %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

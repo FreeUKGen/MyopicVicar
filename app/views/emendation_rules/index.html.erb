@@ -1,30 +1,47 @@
-<% title "Forename abbreviations" %>
-<h1 class="title text--center">Forename variants</h1> 
-<div class="read-length">
-  <style scoped="scoped">
-    nav.simpleIndex a { display: inline-block; padding: 5px; width: 2.5rem; }
-  </style>
-  <p>This page lists forenames (first names) together with the variations, abbreviations, and Latin forms that will be found automatically for each forename in a search.</p>
-  <p>You could use your browser's Find command to go to a particular forename or abbreviation &mdash; see the Edit menu.</p>
-  <div class="island island--bordered push--bottom">
-    <h2 class="epsilon weight--normal push-half--bottom">Go to forenames beginning with:</h2>
-    <nav class="simpleIndex">
-    <% @alphabet_keys.each do |letter| %>
-      <%= link_to "#{letter.capitalize}", "##{letter}" %>
-    <% end %>
-    </nav>
-  </div>
+<%= render 'shared/emendations_nav' %>
 
-  <% @emendation_rules.each do |key,values| %>
-<div class="push--bottom">
-    <h3 class="beta push-half--bottom" id="<%= key %>"><%= "#{key}".upcase %></h3>
-    <dl>
-    <% values.each do |emendation_rules_replacement|  %>
-      <dt class="weight--semibold"> <%= emendation_rules_replacement.capitalize %></dt>
-      <dd><%= EmendationRule.all_original_by_replacement(emendation_rules_replacement)*",\n" %></dd>
-    <% end %>
-    </dl>
-</div>
-  <hr class="rule">
+<h1>Emendation Rules</h1>
+
+<%= link_to 'Create New Rule', new_emendation_rule_path, class: "btn" %>
+
+<div class="a-z-jumper" style="margin: 20px 0;">
+  <strong>Jump to:</strong>
+  <% @alphabet_keys.each do |letter| %>
+    <%= link_to letter.upcase, "##{letter}", style: "margin-right: 5px;" %>
   <% end %>
 </div>
+
+<% @emendation_rules_grouped.each do |letter, replacements| %>
+  <h2 id="<%= letter %>" style="border-bottom: 1px solid #eee; margin-top: 30px;"><%= letter.upcase %></h2>
+  
+  <% replacements.each do |replacement| %>
+    <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+      <thead>
+        <tr style="background-color: #f9f9f9;">
+          <th colspan="4" style="text-align: left; padding: 10px;">
+            Replacement: <%= replacement.capitalize %>
+          </th>
+        </tr>
+        <tr>
+          <th style="text-align: left; padding: 5px;">Original</th>
+          <th style="text-align: left; padding: 5px;">Type</th>
+          <th style="text-align: left; padding: 5px;">Gender</th>
+          <th style="text-align: right; padding: 5px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @rules_by_replacement[replacement]&.each do |rule| %>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 5px;"><%= rule.original %></td>
+            <td style="padding: 5px;"><%= rule.emendation_type&.name %></td>
+            <td style="padding: 5px;"><%= rule.gender.presence || 'Both' %></td>
+            <td style="text-align: right; padding: 5px;">
+              <%= link_to 'Edit', edit_emendation_rule_path(rule) %> |
+              <%= link_to 'Delete', emendation_rule_path(rule), method: :delete, data: { confirm: 'Are you sure?' } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+<% end %>
