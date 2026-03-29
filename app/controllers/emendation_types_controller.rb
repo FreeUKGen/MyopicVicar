@@ -12,4 +12,54 @@
 # See the License for the specific language governing permissions and
 #
 class EmendationTypesController < ApplicationController
+
+  before_action :set_emendation_type, only: [:show, :edit, :update, :destroy]
+
+  def index
+    @emendation_types = EmendationType.all
+  end
+
+  def new
+    @emendation_type = EmendationType.new
+  end
+
+  def show
+    # The before_action automatically loads @emendation_type
+  end
+
+  def create
+    @emendation_type = EmendationType.new(emendation_type_params)
+    if @emendation_type.save
+      redirect_to emendation_types_path, notice: 'Emendation type was successfully created.'
+    else
+      render :new
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    if @emendation_type.update(emendation_type_params)
+      redirect_to emendation_types_path, notice: 'Emendation type was successfully updated.'
+    else
+      render :edit
+    end
+  end
+
+  def destroy
+    @emendation_type.destroy
+    redirect_to emendation_types_path, notice: 'Emendation type was successfully destroyed.'
+  end
+
+  private
+
+  def set_emendation_type
+    @emendation_type = EmendationType.find(params[:id])
+  end
+
+  def emendation_type_params
+    params.require(:emendation_type).permit(:name, :target_field, :origin)
+  end
+
 end

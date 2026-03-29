@@ -1,0 +1,30 @@
+<%= render 'shared/emendations_nav' %>
+
+<h1>Emendation Types</h1>
+
+<%= link_to 'Create New Type', new_emendation_type_path, class: "btn", style: "margin-bottom: 20px; display: inline-block;" %>
+
+<table style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr style="background-color: #f9f9f9; border-bottom: 2px solid #ddd;">
+      <th style="text-align: left; padding: 10px;">Name</th>
+      <th style="text-align: left; padding: 10px;">Target Field</th>
+      <th style="text-align: left; padding: 10px;">Origin</th>
+      <th style="text-align: right; padding: 10px;">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @emendation_types.each do |type| %>
+      <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 10px;"><strong><%= type.name %></strong></td>
+        <td style="padding: 10px;"><%= type.target_field %></td>
+        <td style="padding: 10px;"><%= type.origin.presence || 'N/A' %></td>
+        <td style="text-align: right; padding: 10px;">
+          <%= link_to 'Manage Rules', emendation_rules_path(emendation_type_id: type.id), style: "margin-right: 15px;" %>
+          <%= link_to 'Edit', edit_emendation_type_path(type) %> |
+          <%= link_to 'Delete', emendation_type_path(type), method: :delete, data: { confirm: 'Are you sure you want to delete this type and all its associated rules?' } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,31 @@
+<%= form_with(model: emendation_type, local: true) do |form| %>
+  <% if emendation_type.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(emendation_type.errors.count, "error") %> prohibited this type from being saved:</h2>
+      <ul>
+      <% emendation_type.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= form.label :name, "Emendation Type Name" %><br>
+    <%= form.text_field :name, placeholder: "e.g., expansion, variants" %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= form.label :target_field, "Target Field" %><br>
+    <%= form.select :target_field, options_for_select([['First Name', 'first_name'], ['Last Name', 'last_name']], emendation_type.target_field) %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= form.label :origin, "Origin (Optional Description)" %><br>
+    <%= form.text_field :origin, placeholder: "e.g., manual entry" %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
