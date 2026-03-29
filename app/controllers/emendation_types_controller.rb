@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 #
 class EmendationTypesController < ApplicationController
-
+  before_action :require_login
   before_action :set_emendation_type, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -21,10 +21,6 @@ class EmendationTypesController < ApplicationController
 
   def new
     @emendation_type = EmendationType.new
-  end
-
-  def show
-    # The before_action automatically loads @emendation_type
   end
 
   def create
@@ -48,8 +44,13 @@ class EmendationTypesController < ApplicationController
   end
 
   def destroy
-    @emendation_type.destroy
-    redirect_to emendation_types_path, notice: 'Emendation type was successfully destroyed.'
+    # Caution: We should alert the user if rules exist before deleting.
+    if @emendation_type.emendation_rules.any?
+      redirect_to emendation_types_path, alert: "Cannot delete this Type because it currently has #{@emendation_type.emendation_rules.count} rules associated with it. Please reassign or delete the rules first."
+    else
+      @emendation_type.destroy
+      redirect_to emendation_types_path, notice: 'Emendation type was successfully deleted.'
+    end
   end
 
   private
@@ -61,5 +62,5 @@ class EmendationTypesController < ApplicationController
   def emendation_type_params
     params.require(:emendation_type).permit(:name, :target_field, :origin)
   end
-
+  
 end

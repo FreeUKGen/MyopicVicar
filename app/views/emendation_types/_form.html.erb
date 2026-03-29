@@ -1,7 +1,7 @@
 <%= form_with(model: emendation_type, local: true) do |form| %>
   <% if emendation_type.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(emendation_type.errors.count, "error") %> prohibited this type from being saved:</h2>
+    <div class="alert alert--negative">
+      <h2 class="epsilon"><%= pluralize(emendation_type.errors.count, "error") %> prohibited this type from being saved:</h2>
       <ul>
       <% emendation_type.errors.full_messages.each do |message| %>
         <li><%= message %></li>
@@ -10,22 +10,27 @@
     </div>
   <% end %>
 
-  <div class="field" style="margin-bottom: 15px;">
-    <%= form.label :name, "Emendation Type Name" %><br>
-    <%= form.text_field :name, placeholder: "e.g., expansion, variants" %>
+  <div class="grid">
+    <div class="grid__item lap-one-half palm-one-whole push--bottom">
+      <%= form.label :name, "Emendation Type Name" %>
+      <%= form.text_field :name, placeholder: "e.g., expansion, variants", class: "text-input" %>
+      <small class="text--muted">The name defining a group of emendation rules.</small>
+    </div>
+
+    <div class="grid__item lap-one-half palm-one-whole push--bottom">
+      <%= form.label :target_field, "Target Field" %>
+      <%= form.select :target_field, options_for_select([['First Name', 'first_name'], ['Last Name', 'last_name']], emendation_type.target_field), {}, { class: "text-input" } %>
+      <small class="text--muted">Which field these rules apply against during data ingest.</small>
+    </div>
+
+    <div class="grid__item lap-one-half palm-one-whole push--bottom">
+      <%= form.label :origin, "Origin Info (Optional)" %>
+      <%= form.text_field :origin, placeholder: "e.g., Web UI", class: "text-input" %>
+    </div>
   </div>
 
-  <div class="field" style="margin-bottom: 15px;">
-    <%= form.label :target_field, "Target Field" %><br>
-    <%= form.select :target_field, options_for_select([['First Name', 'first_name'], ['Last Name', 'last_name']], emendation_type.target_field) %>
-  </div>
-
-  <div class="field" style="margin-bottom: 15px;">
-    <%= form.label :origin, "Origin (Optional Description)" %><br>
-    <%= form.text_field :origin, placeholder: "e.g., manual entry" %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit %>
+  <div class="push--top">
+    <%= form.submit class: "btn" %>
+    <%= link_to 'Cancel', emendation_types_path, class: "btn btn--negative" %>
   </div>
 <% end %>
