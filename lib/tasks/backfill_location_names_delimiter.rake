@@ -67,9 +67,12 @@ task :backfill_location_names_delimiter, %i[chapman_codes limit fix] => :environ
           next
         end
 
-        sr.location_names = Array(sr.location_names)
-        sr.location_names[0] = new_location0
-        sr.location_names[1] = sr.location_names[1].to_s # keep as-is (may be '')
+        # Assign whole array: Mongoid often does not persist in-place edits to array fields (location_names[0]=...).
+        old_ln = sr.read_attribute(:location_names) || []
+        new_ln = old_ln.dup
+        new_ln[0] = new_location0
+        new_ln[1] = new_ln[1].to_s if new_ln.size > 1
+        sr.write_attribute(:location_names, new_ln)
 
         sr.digest = sr.cal_digest
         sr.save!
