@@ -1,43 +1,46 @@
 <%= render 'shared/emendations_nav' %>
 
-<h1>Emendation Rules</h1>
+<h1>Manage Emendation Rules</h1>
 
-<%= link_to 'Create New Rule', new_emendation_rule_path, class: "btn" %>
+<%= link_to 'Create New Rule', new_emendation_rule_path, class: "btn btn--small", style: "margin-bottom: 20px;" %>
 
-<div class="a-z-jumper" style="margin: 20px 0;">
-  <strong>Jump to:</strong>
-  <% @alphabet_keys.each do |letter| %>
-    <%= link_to letter.upcase, "##{letter}", style: "margin-right: 5px;" %>
-  <% end %>
+<div class="island island--bordered push--bottom">
+  <h2 class="epsilon weight--normal push-half--bottom">Jump to initial letter:</h2>
+  <nav class="simpleIndex">
+    <% @alphabet_keys.each do |letter| %>
+      <%= link_to letter.upcase, "##{letter}", style: "display: inline-block; padding: 5px; width: 2.5rem;" %>
+    <% end %>
+  </nav>
 </div>
 
 <% @emendation_rules_grouped.each do |letter, replacements| %>
-  <h2 id="<%= letter %>" style="border-bottom: 1px solid #eee; margin-top: 30px;"><%= letter.upcase %></h2>
+  <h2 id="<%= letter %>" class="beta push-half--bottom" style="border-bottom: 2px solid #ccc; padding-top: 20px;"><%= letter.upcase %></h2>
   
   <% replacements.each do |replacement| %>
-    <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+    <table class="table--bordered table--striped" style="width: 100%; margin-bottom: 20px;">
       <thead>
-        <tr style="background-color: #f9f9f9;">
-          <th colspan="4" style="text-align: left; padding: 10px;">
+        <tr>
+          <th colspan="4" class="weight--semibold text--left">
             Replacement: <%= replacement.capitalize %>
           </th>
         </tr>
         <tr>
-          <th style="text-align: left; padding: 5px;">Original</th>
-          <th style="text-align: left; padding: 5px;">Type</th>
-          <th style="text-align: left; padding: 5px;">Gender</th>
-          <th style="text-align: right; padding: 5px;">Actions</th>
+          <th class="text--left">Original / Abbreviation</th>
+          <th class="text--left">Type</th>
+          <th class="text--left">Gender</th>
+          <th class="text--right">Actions</th>
         </tr>
       </thead>
       <tbody>
         <% @rules_by_replacement[replacement]&.each do |rule| %>
-          <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 5px;"><%= rule.original %></td>
-            <td style="padding: 5px;"><%= rule.emendation_type&.name %></td>
-            <td style="padding: 5px;"><%= rule.gender.presence || 'Both' %></td>
-            <td style="text-align: right; padding: 5px;">
-              <%= link_to 'Edit', edit_emendation_rule_path(rule) %> |
-              <%= link_to 'Delete', emendation_rule_path(rule), method: :delete, data: { confirm: 'Are you sure?' } %>
+          <tr>
+            <td><%= rule.original %></td>
+            <td><%= rule.emendation_type&.name %></td>
+            <td><%= rule.gender.presence || 'Both' %></td>
+            <td class="text--right">
+              <%= link_to 'Edit', edit_emendation_rule_path(rule), class: "btn btn--small" %>
+              <!-- Data-confirm utilizes Rails UJS to create a pop-up confirmation before standard browser execution without heavy javascript libraries -->
+              <%= link_to 'Delete', emendation_rule_path(rule), method: :delete, data: { confirm: 'Are you absolutely sure you want to delete this rule? This cannot be undone.' }, class: "btn btn--small btn--negative" %>
             </td>
           </tr>
         <% end %>
