@@ -1,4 +1,11 @@
-<div class="emendations-nav" style="margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-  <%= link_to "Manage Types", emendation_types_path, class: current_page?(emendation_types_path) ? 'active' : '' %> |
-  <%= link_to "Manage Rules", emendation_rules_path, class: current_page?(emendation_rules_path) ? 'active' : '' %>
+<div class="island island--bordered push--bottom" style="padding: 10px;">
+  <span class="weight--semibold" style="margin-right: 15px;">Site Administration:</span>
+  
+  <% types_active = current_page?(emendation_types_path) || current_page?(new_emendation_type_path) || (params[:controller] == 'emendation_types' && params[:action] == 'edit') %>
+  <% rules_active = current_page?(emendation_rules_path) || current_page?(new_emendation_rule_path) || (params[:controller] == 'emendation_rules' && params[:action] == 'edit') %>
+  
+  <%= link_to "Manage Types (#{@emendation_types_count || EmendationType.count})", emendation_types_path, class: types_active ? "btn btn--small" : "btn btn--small btn--neutral" ,
+    style: "margin-bottom: 0;" %> 
+  
+  <%= link_to "Manage Rules (#{@emendation_rules_count || EmendationRule.count})", emendation_rules_path, class: rules_active ? "btn btn--small" : "btn btn--small btn--neutral" %>
 </div>
