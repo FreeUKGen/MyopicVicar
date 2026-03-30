@@ -22,7 +22,7 @@ task :delete_orphaned_freecen_search_records,[:limit] => [:environment] do |t, a
 
 
   input_file.each_line  do |line|
-    break if total_recs >= args.limit.to_i
+    break if del_recs >= args.limit.to_i
 
     total_recs += 1
     rec_id = line.chomp
