@@ -10,6 +10,10 @@
 <% end%>
 <p>The following is the information submitted.</p>
 <p>  <b><%= @contact.contact_type %>:</b></p>
+<% if @appname.downcase == 'freebmd' && @contact.session_data.is_a?(Hash) && @contact.session_data['freebmd_field_report'].present? %>
+  <p><b>Entry as displayed (field + suggested correction highlighted):</b></p>
+  <%= render partial: 'contacts/freebmd_field_report_table', locals: { rows: @contact.session_data['freebmd_field_report'], variant: :email } %>
+<% end %>
 <p>  <%= @contact.body %></p>
 <% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
   <p><a href="<%=Rails.application.config.website%>/freereg1_csv_entries/<%=@contact.entry_id%>"> <%=@contact.line_id %> </a></p>

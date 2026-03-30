@@ -1,5 +1,11 @@
 module ContactsHelper
 
+  def freebmd_field_report_rows(contact)
+    return [] unless contact&.session_data.is_a?(Hash)
+
+    contact.session_data['freebmd_field_report'].presence || []
+  end
+
   def do_we_show_archive_contact_action?(contact)
     !contact.archived? && contact.not_being_kept? ? do_we_permit = true : do_we_permit = false
     do_we_permit

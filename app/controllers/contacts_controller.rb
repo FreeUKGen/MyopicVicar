@@ -14,6 +14,7 @@
 class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
+  require 'freebmd_contact_field_report'
 
   skip_before_action :require_login, only: [:new, :report_error, :create, :show, :question_answer_finder]
 
@@ -372,6 +373,7 @@ class ContactsController < ApplicationController
   # report_error does not submit contact[body]; the model requires :body. Build it from
   # session_data (FreeBMD corrections, section 3 missing-entry fields) or a minimal fallback.
   def merge_contact_body_for_data_problem
+    attach_freebmd_field_report_snapshot!
     extra_comments = @contact.body.to_s.strip
     auto = auto_body_from_report_error_session_data
     if auto.present? && extra_comments.present?
@@ -388,50 +390,79 @@ class ContactsController < ApplicationController
     end
   end
 
+  def attach_freebmd_field_report_snapshot!
+    return unless appname_downcase == 'freebmd'
+    return if @contact.record_id.blank?
+
+    record = BestGuess.find_by(RecordNumber: @contact.record_id)
+    return unless record
+
+    sd = normalize_session_data_hash(@contact.session_data)
+    corrections = sd['corrections']
+    corrections = {} unless corrections.is_a?(Hash)
+    sd['freebmd_field_report'] = FreebmdContactFieldReport.build_rows(record, corrections)
+    @contact.session_data = sd
+  end
+
   def auto_body_from_report_error_session_data
     sd = normalize_session_data_hash(@contact.session_data)
     return nil if sd.blank?
 
+    chunks = []
+    if sd['freebmd_field_report'].present?
+      chunks << FreebmdContactFieldReport.to_plain_text(sd['freebmd_field_report'])
+    else
+      co = corrections_only_plain_text_chunk(sd['corrections'])
+      chunks << co if co.present?
+    end
+
+    s3 = section3_plain_text_chunk(sd['section3'])
+    chunks << s3 if s3.present?
+
+    chunks.any? ? chunks.compact.join("\n\n") : nil
+  end
+
+  def corrections_only_plain_text_chunk(corrections)
+    return nil unless corrections.is_a?(Hash)
+
     lines = []
-    corrections = sd['corrections']
-    if corrections.is_a?(Hash)
-      correction_labels = {
-        'surname' => 'Surname',
-        'given_name' => 'Given name',
-        'registration_date' => 'Registration date',
-        'mothers_maiden_name' => "Mother's maiden name",
-        'age_or_dob' => 'Age at death / date of birth',
-        'spouse_name' => 'Spouse name',
-        'district' => 'District',
-        'volume' => 'Volume',
-        'register_number' => 'Register number',
-        'entry_number' => 'Entry number',
-        'page' => 'Page'
-      }
-      corrections.each do |key, val|
-        next if val.blank?
+    correction_labels = {
+      'surname' => 'Surname',
+      'given_name' => 'Given name',
+      'registration_date' => 'Registration date',
+      'mothers_maiden_name' => "Mother's maiden name",
+      'age_or_dob' => 'Age at death / date of birth',
+      'spouse_name' => 'Spouse name',
+      'district' => 'District',
+      'volume' => 'Volume',
+      'register_number' => 'Register number',
+      'entry_number' => 'Entry number',
+      'page' => 'Page'
+    }
+    corrections.each do |key, val|
+      next if val.blank?
 
-        key_s = key.to_s
-        label = correction_labels[key_s] || key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
-        lines << "#{label}: #{val}"
-      end
+      key_s = key.to_s
+      label = correction_labels[key_s] || key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
+      lines << "#{label}: #{val}"
     end
-
-    section3 = sd['section3']
-    if section3.is_a?(Hash) && section3.values.any? { |v| v.present? }
-      lines << '--- Missing entry details ---'
-      section3.each do |key, val|
-        next if val.blank?
-
-        key_s = key.to_s
-        next if key_s == 'multiple_entries' && val.to_s != '1'
-
-        label = key_s == 'multiple_entries' ? 'Multiple entries' : key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
-        lines << "#{label}: #{val}"
-      end
-    end
-
     lines.any? ? lines.join("\n") : nil
+  end
+
+  def section3_plain_text_chunk(section3)
+    return nil unless section3.is_a?(Hash) && section3.values.any? { |v| v.present? }
+
+    lines = ['--- Missing entry details ---']
+    section3.each do |key, val|
+      next if val.blank?
+
+      key_s = key.to_s
+      next if key_s == 'multiple_entries' && val.to_s != '1'
+
+      label = key_s == 'multiple_entries' ? 'Multiple entries' : key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
+      lines << "#{label}: #{val}"
+    end
+    lines.size > 1 ? lines.join("\n") : nil
   end
 
   def normalize_session_data_hash(sd)

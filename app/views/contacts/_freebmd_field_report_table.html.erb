@@ -1,0 +1,41 @@
+<%# locals: rows, variant: :app (default) | :email %>
+<% variant ||= :app %>
+<% is_email = (variant == :email) %>
+<table class="table--bordered table--data table--left-aligned freebmd-field-report-table" style="width:100%;max-width:48rem;border-collapse:collapse;">
+  <thead>
+    <tr>
+      <th style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;">Field</th>
+      <th style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;">Current details</th>
+      <th style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;">User correction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% Array(rows).each do |r| %>
+      <% r = r.stringify_keys %>
+      <% corrected = r['corrected'] == true || r['corrected'].to_s == 'true' %>
+      <tr class="<%= 'freebmd-report-row--corrected' if corrected %>">
+        <th scope="row" class="freebmd-report-field-label" style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;<%= 'color:#9b1c1c;font-weight:600;' if is_email && corrected %>"><%= r['field'] %></th>
+        <td class="freebmd-report-current" style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;"><%= r['current'] %></td>
+        <td class="freebmd-report-suggested" style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;<%= 'color:#9b1c1c;font-weight:600;' if is_email && corrected %>">
+          <% if corrected %>
+            <%= r['correction'] %>
+          <% else %>
+            &mdash;
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<% unless is_email %>
+  <style>
+    .freebmd-field-report-table .freebmd-report-row--corrected .freebmd-report-field-label,
+    .freebmd-field-report-table .freebmd-report-row--corrected .freebmd-report-suggested {
+      color: #9b1c1c;
+      font-weight: 600;
+    }
+    .freebmd-field-report-table .freebmd-report-row--corrected .freebmd-report-suggested {
+      background: #fff5f5;
+    }
+  </style>
+<% end %>
