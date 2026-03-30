@@ -44,9 +44,13 @@
                        data-form-numbers="<%= form_numbers.join(',') %>">
                 <summary class="accordion-item__summary"><%= sub[:label] %></summary>
                 <div class="accordion-item__body answer_explanations">
-                  <%= render_report_error_answer(sub[:answer]) %>
                   <% if show_form_1 %>
-                    <div class="report_form_host push--top"></div>
+                    <div class="report-error-explanation-and-form">
+                      <%= render_report_error_answer(sub[:answer]) %>
+                      <div class="report_form_host push--top"></div>
+                    </div>
+                  <% else %>
+                    <%= render_report_error_answer(sub[:answer]) %>
                   <% end %>
                 </div>
               </details>
@@ -169,6 +173,11 @@
   .report-error-accordion .accordion-item[open] .accordion-item__summary::before { content: "\25bc\00a0"; }
   .report-error-accordion .accordion-item__body { padding: 0 1rem 1rem; border-top: 1px solid #eee; }
   .report-error-accordion .answer_explanations { margin-top: 0.5rem; }
+  /* Match FreeBMD corrections table / form block width (see partial max-width 48rem). */
+  .report-error-explanation-and-form {
+    max-width: 48rem;
+    width: 100%;
+  }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
