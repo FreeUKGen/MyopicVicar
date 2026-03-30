@@ -335,9 +335,9 @@ class CsvFile < CsvFiles
       @success = true
       project.member_message_file = self.define_member_message_file
       @file_start = Time.new
-      p "FREEREG:CSV_PROCESSING: Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
+      p "FREEREG:CSV_PROCESSING: Started the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}"
       project.write_log_file("******************************************************************* <br>")
-      project.write_messages_to_all("Started on the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
+      project.write_messages_to_all("Started the file #{@header[:file_name]} for #{@header[:userid]} at #{@file_start}. <p>", true)
       @success, message = self.ensure_processable?(project) unless project.force_rebuild
       #p "finished file checking #{message}. <br>"
       return false, message unless @success
@@ -711,7 +711,11 @@ class CsvFile < CsvFiles
   def extract_the_array_of_lines(csvtxt)
     #now get all the data
     self.slurp_fail_message = "the CSV parser failed. The CSV file might not be formatted correctly. <br>"
-    @array_of_data_lines = CSV.parse(csvtxt, {:row_sep => "\r\n",:skip_blanks => true})
+    # Parse without skip_blanks so blank lines are preserved as nil-element rows.
+    # This lets separate_into_header_and_data_lines count them toward the physical
+    # file row number reported in error messages.
+    @array_of_data_lines = CSV.parse(csvtxt, {:row_sep => "\r\n"})
+    # @array_of_data_lines = CSV.parse(csvtxt, {:row_sep => "\r\n",:skip_blanks => true})
     #remove zzz fields and white space
     @array_of_data_lines.each do |line|
       line.each_index    {|x| line[x] = line[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless line[x].nil? }
@@ -868,7 +872,7 @@ class CsvFile < CsvFiles
     if freereg1_csv_file.nil?
       freereg1_csv_file = Freereg1CsvFile.new(batch_header)
       freereg1_csv_file.update_register
-      message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
+      message = "Created a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
     else
       freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def], :order => self.header[:order])
       message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
@@ -924,26 +928,37 @@ end
 
 class CsvRecords <  CsvFile
 
-  attr_accessor :array_of_lines, :header_lines, :data_lines, :data_entry_order
+  attr_accessor :array_of_lines, :header_lines, :data_lines, :data_entry_order, :data_line_file_rows
 
   def initialize(data_array)
-    @array_of_lines = data_array
-    @data_entry_order = Hash.new
-    @data_lines = Array.new {Array.new}
-    @header_lines = Array.new {Array.new}
+    @array_of_lines      = data_array
+    @data_entry_order    = Hash.new
+    @data_lines          = Array.new { Array.new }
+    @header_lines        = Array.new { Array.new }
+    # Parallel array: data_line_file_rows[i] holds the physical file row number (1-based)
+    # for data_lines[i]. Built by separate_into_header_and_data_lines.
+    @data_line_file_rows = Array.new
   end
 
-  def separate_into_header_and_data_lines(csvfile,project)
+  def separate_into_header_and_data_lines(csvfile, project)
     #p "Getting header and data lines"
-    n = 0
+    file_row = 0   # 1-based physical file row counter — increments for every row including blanks
     @array_of_lines.each do |line|
-      n = n + 1
+      file_row += 1
+
+      # Blank lines (CSV.parse returns an array of nils when skip_blanks is off).
+      # Count them toward file_row so subsequent row numbers stay accurate,
+      # but do not classify them as header or data lines.
+      next if line.compact.empty?
       first_character = "?"
-      first_character = line[0].slice(0) unless  line[0].nil?
-      if (first_character == "+" || first_character ==  "#") || line[0] =~ FreeregOptionsConstants::HEADER_DETECTION
+      first_character = line[0].slice(0) unless line[0].nil?
+      if (first_character == "+" || first_character == "#") || line[0] =~ FreeregOptionsConstants::HEADER_DETECTION
         @header_lines << line
       else
         @data_lines << line
+        # Record the physical file row for this data line so callers can report
+        # the exact spreadsheet row number in error messages.
+        @data_line_file_rows << file_row
       end
     end
     return true
@@ -1260,7 +1275,7 @@ class CsvRecords <  CsvFile
       @data_entry_order = get_default_data_entry_order(csvfile)
     when header_field[0] == "#" && header_field[1] == "DEF"
       csvfile.header[:def]  = true
-      project.write_messages_to_all("Flexible csv flag detected. The next line will be taken a column specification. <p>", true)
+      project.write_messages_to_all("Flexible csv flag detected. <p>", true)
 
       if !valid_field_definition?(@data_lines[0][0].downcase,csvfile)
         proceed = false
@@ -1269,8 +1284,14 @@ class CsvRecords <  CsvFile
         proceed, @data_entry_order = extract_data_field_order(@data_lines[0],csvfile)
       end
 
-      project.write_messages_to_all("Will use the following column specification \n\r #{@data_lines[0]} ", true)
-      @data_lines.shift if proceed
+      project.write_messages_to_all("Using the following column specification \n\r #{@data_lines[0]}. <br><br>", true)
+      if proceed
+        # Remove the field-definition row from both @data_lines and the parallel
+        # @data_line_file_rows so the two arrays stay in sync. After shift,
+        # @data_line_file_rows[0] holds the file row of the first true data row.
+        @data_lines.shift
+        @data_line_file_rows.shift
+      end
     else
       csvfile.header[:lds] = "no"
       csvfile.header[:def]  = false
@@ -1294,7 +1315,20 @@ class CsvRecords <  CsvFile
         @data_entry_order[field.to_sym] = n
       else
         proceed = false
-        csvfile.header_error << "The field order definition at position #{n} contains an invalid field: #{header_fields[n]} (is it blank?)}. <br>"
+
+        col_letter = ("A".."ZZ").to_a[n] || "?"
+        close_match = get_closest_valid_field(field, csvfile)
+        Rails.logger.info("\n---close_match: #{close_match.inspect}")
+        if close_match.present?
+          insert = "Do you mean #{close_match}?"
+        else
+          insert = "Stray text or blank space?"
+        end
+
+          # convert position to 1 base index for output message
+          pos = n + 1
+          suffix = header_fields[n].present? ? "." : ""
+          csvfile.header_error << "The field order definition at position #{pos}/ (column #{col_letter}) contains an invalid field: #{header_fields[n]}#{suffix} #{insert} <br>"
       end
       n = n + 1
     end
@@ -1305,9 +1339,22 @@ class CsvRecords <  CsvFile
   def extract_the_data(csvfile,project)
     success = true
     n = 0
+    expected_columns = @data_entry_order.values.max.to_i + 1
     @data_lines.each do |line|
       n = n + 1
       #p "processing line #{n}"
+            # Look up the physical file row for this data line.
+      # @data_line_file_rows[n-1] was populated by separate_into_header_and_data_lines
+      # and already accounts for header lines, blank lines, and the DEF field-definition row.
+      file_row = @data_line_file_rows[n - 1]
+
+      if line.length > expected_columns
+        surplus_fields = line[expected_columns..-1]
+        if surplus_fields.present? && surplus_fields.any?(&:present?)
+          message = "Warning: data line #{n} (row #{file_row}) contains surplus columns that will be silently ignored.<br>"
+          project.write_messages_to_all(message, true)
+        end
+      end
       @record = CsvRecord.new(line)
       success, message = @record.extract_data_line(self, csvfile, project, n)
       #success,message = @record.add_record_to_appropriate_file(location,self,csvfile,project,n) if success.present?
@@ -1319,6 +1366,26 @@ class CsvRecords <  CsvFile
     csvfile.unique_locations.length.present? && csvfile.unique_locations.length > 1
     return success, n
   end
+
+  def get_closest_valid_field(invalid_field, csvfile)
+    record_type = csvfile.header[:record_type]
+    case record_type
+    when RecordType::BAPTISM
+      entry_fields = FreeregOptionsConstants::FLEXIBLE_CSV_FORMAT_BAPTISM
+    when RecordType::BURIAL
+      entry_fields = FreeregOptionsConstants::FLEXIBLE_CSV_FORMAT_BURIAL
+    when RecordType::MARRIAGE
+      entry_fields = FreeregOptionsConstants::FLEXIBLE_CSV_FORMAT_MARRIAGE
+    else
+      entry_fields = []
+    end
+    entry_fields = entry_fields + ["chapman_code", "place_name"]
+    return "" if entry_fields.empty? || invalid_field.blank?
+
+    closest = entry_fields.min_by { |valid_field| Text::Levenshtein.distance(invalid_field, valid_field) }
+    closest
+  end
+
 
   def get_default_data_entry_order(csvfile)
     order = FreeregOptionsConstants::ENTRY_ORDER_DEFINITION[csvfile.header[:record_type]]
@@ -1350,7 +1417,7 @@ class CsvRecords <  CsvFile
     csvfile.header_error << "The file has been process as extended but this file does not contain a DEF control"  unless success5
     if csvfile.header_error.present?
       if !success || !success1 || !success2 || !success3 || !success4 || !success5
-        project.write_messages_to_all("Processing was terminated because of a fatal header error. <p>",true)
+        project.write_messages_to_all("Processing was terminated because of a fatal header error. <br>",true)
         inform_the_user(csvfile,project)
         return false, "Header problem"
       else
@@ -1492,20 +1559,24 @@ class CsvRecord < CsvRecords
 
   def extract_register_location(csvrecords,csvfile,project,line)
     #p "Extracting location"
+    # Look up the physical file row for this data line (line is 1-based data-line index).
+    # @data_line_file_rows already accounts for header lines, blank lines, and the DEF
+    # field-definition row consumed by extract_from_header_five.
+    file_row = csvrecords.data_line_file_rows[line - 1]
     success1 = false
     success4 = false
     success5 = false
     register_location = Hash.new
     if no_location_fields?(@data_line,csvrecords,csvfile)
-      project.write_messages_to_all("The line #{line} has no location information ie no place/church/register. <br>", true)
+      project.write_messages_to_all("data line #{line} (row #{file_row}) has no location information ie no place/church/register. <br>", true)
       return false
     end
     chapman_code = @data_line[csvrecords.data_entry_order[:chapman_code]]
     success = true if FreeregValidations.valid_chapman_code?(chapman_code)
-    project.write_messages_to_all("The county code #{chapman_code} at field #{@data_line[csvrecords.data_entry_order[:chapman_code]]} is invalid at line #{line}. <br>", true)   if  !success
+    project.write_messages_to_all("The county code #{chapman_code} at field #{@data_line[csvrecords.data_entry_order[:chapman_code]]} is invalid at data line #{line} (row #{file_row}). <br>", true) if !success
     place_name = @data_line[csvrecords.data_entry_order[:place_name]]
     success1, set_place_name = validate_place_and_set(place_name,chapman_code)
-    project.write_messages_to_all("The place name at field #{@data_line[csvrecords.data_entry_order[:place_name]]} is invalid at line #{line}. <br>", true)   if  !success1
+    project.write_messages_to_all("The place name at field #{@data_line[csvrecords.data_entry_order[:place_name]]} is invalid at data line #{line} (row #{file_row}). <br>", true) if !success1
     place_name = set_place_name if success1
     #allows for different Register type input
     if csvfile.header[:def] && csvrecords.data_entry_order[:register_type].present?
@@ -1517,10 +1588,10 @@ class CsvRecord < CsvRecords
     else
       #part of church name
       success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
-      project.write_messages_to_all("The church field #{church_name} is invalid at line #{line}. <br>", true)   if  !success4
+      project.write_messages_to_all("The church field #{church_name} is invalid at data line #{line} (row #{file_row}). <br>", true) if !success4
       success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1 && success4
     end
-    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at line #{line}. <br>", true)   if  !success5
+    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at data line #{line} (row #{file_row}). <br>", true) if !success5
     #we use the server church name in case of case differences
     church_name = set_church_name if  success5
     return false unless success && success1 && success4 && success5
@@ -1585,6 +1656,9 @@ class CsvRecord < CsvRecords
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
 
+    # Transient: physical file row for display in error messages. Not persisted to MongoDB.
+    @data_record[:file_row] = csvrecords.data_line_file_rows[line - 1]
+
     FreeregValidations.validate_record_date!(@data_record, :baptism_date)
     FreeregValidations.validate_record_date!(@data_record, :birth_date)
     FreeregValidations.validate_record_date!(@data_record, :confirmation_date)
@@ -1627,6 +1701,9 @@ class CsvRecord < CsvRecords
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
 
+    # Transient: physical file row for display in error messages. Not persisted to MongoDB.
+    @data_record[:file_row] = csvrecords.data_line_file_rows[line - 1]
+
     FreeregValidations.validate_record_date!(@data_record, :burial_date)
     FreeregValidations.validate_record_date!(@data_record, :death_date)
 
@@ -1665,6 +1742,9 @@ class CsvRecord < CsvRecords
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
  
+    # Transient: physical file row for display in error messages. Not persisted to MongoDB.
+    @data_record[:file_row] = csvrecords.data_line_file_rows[line - 1]
+
     FreeregValidations.validate_record_date!(@data_record, :marriage_date)
     FreeregValidations.validate_record_date!(@data_record, :contract_date)
     
