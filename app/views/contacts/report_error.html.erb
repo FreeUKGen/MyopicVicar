@@ -144,6 +144,10 @@
           <input id="email_address" name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
         <% end%>
       </li>
+      <li class="grid__item one-whole lap-one-whole palm-one-whole push--bottom">
+        <label class="label ttip" for="contact_report_body" tabindex="0">Additional comments (optional)</label>
+        <textarea id="contact_report_body" name="contact[body]" class="text-input" rows="4" cols="40" placeholder="Anything else we should know (optional if you filled corrections above)."><%= @contact.body %></textarea>
+      </li>
       <li class="grid__item one-third lap-three-fifths lap-clear--left palm-one-whole push--bottom">
         <label class="ttip" for="screenshot" tabindex="0">Screenshot or image</label>
         <input class="push--bottom" id="screenshot" name="contact[screenshot]" type="file">

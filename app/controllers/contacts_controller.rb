@@ -58,11 +58,15 @@ class ContactsController < ApplicationController
         @contact.selected_county = nil # string 'nil' to nil
       end
       if @contact.contact_type == 'Data Problem'
+        merge_contact_body_for_data_problem
         assign_record_url_and_save
       end
       @contact.save
       if @contact.errors.any?
-        flash[:notice] = 'There was a problem with your submission please review'
+        flash[:notice] = [
+          'There was a problem with your submission please review.',
+          @contact.errors.full_messages.join(' ')
+        ].join(' ')
         if @contact.contact_type == 'Data Problem'
           redirect_to(@contact.previous_page_url) && return
         else
@@ -363,7 +367,81 @@ class ContactsController < ApplicationController
 
     record = BestGuess.find_by(RecordNumber: @contact.record_id)
     @contact.record_url = build_record_url(record) if record.present?
-    @contact.save
+  end
+
+  # report_error does not submit contact[body]; the model requires :body. Build it from
+  # session_data (FreeBMD corrections, section 3 missing-entry fields) or a minimal fallback.
+  def merge_contact_body_for_data_problem
+    extra_comments = @contact.body.to_s.strip
+    auto = auto_body_from_report_error_session_data
+    if auto.present? && extra_comments.present?
+      @contact.body = "#{auto}\n\n--- Additional comments ---\n#{extra_comments}"
+    elsif extra_comments.present?
+      @contact.body = extra_comments
+    elsif auto.present?
+      @contact.body = auto
+    else
+      parts = []
+      parts << "Subsection: #{@contact.query}" if @contact.query.present?
+      parts << "Record: #{@contact.record_id}" if @contact.record_id.present?
+      @contact.body = parts.any? ? "Data problem report. #{parts.join('. ')}." : 'Data problem report.'
+    end
+  end
+
+  def auto_body_from_report_error_session_data
+    sd = normalize_session_data_hash(@contact.session_data)
+    return nil if sd.blank?
+
+    lines = []
+    corrections = sd['corrections']
+    if corrections.is_a?(Hash)
+      correction_labels = {
+        'surname' => 'Surname',
+        'given_name' => 'Given name',
+        'registration_date' => 'Registration date',
+        'mothers_maiden_name' => "Mother's maiden name",
+        'age_or_dob' => 'Age at death / date of birth',
+        'spouse_name' => 'Spouse name',
+        'district' => 'District',
+        'volume' => 'Volume',
+        'register_number' => 'Register number',
+        'entry_number' => 'Entry number',
+        'page' => 'Page'
+      }
+      corrections.each do |key, val|
+        next if val.blank?
+
+        key_s = key.to_s
+        label = correction_labels[key_s] || key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
+        lines << "#{label}: #{val}"
+      end
+    end
+
+    section3 = sd['section3']
+    if section3.is_a?(Hash) && section3.values.any? { |v| v.present? }
+      lines << '--- Missing entry details ---'
+      section3.each do |key, val|
+        next if val.blank?
+
+        key_s = key.to_s
+        next if key_s == 'multiple_entries' && val.to_s != '1'
+
+        label = key_s == 'multiple_entries' ? 'Multiple entries' : key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
+        lines << "#{label}: #{val}"
+      end
+    end
+
+    lines.any? ? lines.join("\n") : nil
+  end
+
+  def normalize_session_data_hash(sd)
+    return {} if sd.blank?
+
+    h = sd.respond_to?(:to_unsafe_h) ? sd.to_unsafe_h : sd
+    h = h.to_hash if h.respond_to?(:to_hash) && !h.is_a?(Hash)
+    h.stringify_keys
+  rescue StandardError
+    {}
   end
 
   def build_record_url(record)
