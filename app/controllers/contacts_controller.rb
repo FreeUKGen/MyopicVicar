@@ -76,7 +76,9 @@ class ContactsController < ApplicationController
       else
         flash[:notice] = 'Thank you for contacting us!'
         @contact.communicate_initial_contact
-        if @contact.query
+        if @contact.contact_type == 'Data Problem'
+          redirect_to(contact_path(@contact.id)) && return
+        elsif @contact.query
           redirect_to(search_query_path(@contact.query)) && return
         else
           redirect_to(new_search_query_path) && return
