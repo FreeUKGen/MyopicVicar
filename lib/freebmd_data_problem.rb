@@ -115,7 +115,15 @@ It is also possible that this is a transcription error - if this is the case, pl
 					show_form: true,
 					form_numbers: [1,2]
 				},
-				{ id: 1, label: "The transcription information does match the GRO index scan.", answer: ANSWERS[1], show_form: false }
+				{ id: 1,
+				  label: "The transcription information does match the GRO index scan.",
+				  answer: <<~HTML.strip,
+						<p>We cannot change the database if our transcription matches the information on the GRO index (scan).</p>
+						<p>If you believe there is an error in the GRO Index, you will need to contact the <a href="https://www.gro.gov.uk/" target="_blank" rel="noopener">General Register Office (GRO)</a> to request a correction.</p>
+						<p>If the GRO confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
+						<small>(Was: If you wish to get the GRO Index corrected you should apply to the GRO. Contact the GRO with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.)</small>
+					HTML,
+				  show_form: false }
 			]
 		},
 		{
