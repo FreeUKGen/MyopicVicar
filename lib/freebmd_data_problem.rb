@@ -137,7 +137,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 						<p>Enter the correct information in the relevant field(s) on the form below. Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we will protect and use your data, and then complete the form below.</p>
 					HTML
 					show_form: true,
-					form_numbers: [2, 3]
+					form_numbers: [1, 3]
 				},
 				{
 					id: 3, label: "A record is missing from the GRO index scan",
