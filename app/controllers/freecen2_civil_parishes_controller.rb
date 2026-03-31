@@ -97,7 +97,11 @@ class Freecen2CivilParishesController < ApplicationController
     @chapman_code = @freecen2_civil_parish.chapman_code
     @freecen2_piece = @freecen2_civil_parish.piece_name
     @freecen2_civil_parishes = @freecen2_civil_parish.civil_parish_names
-    @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
+    if @records
+      @places = [@freecen2_place]
+    else
+      @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
+    end
     session[:freecen2_civil_parish] = @freecen2_civil_parish.name
 
     @freecen2_civil_parish.freecen2_hamlets.build
@@ -296,7 +300,7 @@ class Freecen2CivilParishesController < ApplicationController
         @freecen2_civil_parish.save
       end
       if @freecen2_civil_parish.errors.any?
-        flash[:notice] = "The update of the civil parish failed #{@freecen_csv_entry.errors.full_messages}."
+        flash[:notice] = "The update of the civil parish failed #{@freecen2_civil_parish.errors.full_messages}."
         redirect_back(fallback_location: edit_freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)) && return
       else
         flash[:notice] = 'Update was successful'
