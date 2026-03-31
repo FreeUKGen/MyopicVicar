@@ -11,7 +11,7 @@
 <p>The following is the information submitted.</p>
 <p>  <b><%= @contact.contact_type %>:</b></p>
 <% if @appname.downcase == 'freebmd' && @contact.session_data.is_a?(Hash) && @contact.session_data['freebmd_field_report'].present? %>
-  <p><b>Original entry</b> (index line as on FreeBMD; suggested corrections highlighted):</p>
+  <p><b>Original entry</b> — columns are fields; first data row &ldquo;As shown&rdquo;, second row &ldquo;User correction&rdquo; (highlighted where supplied):</p>
   <%= render partial: 'contacts/freebmd_field_report_table', locals: { rows: @contact.session_data['freebmd_field_report'], variant: :email } %>
 <% end %>
 <% if @appname.downcase == 'freebmd' && @contact.session_data.is_a?(Hash) && freebmd_missing_entry_rows(@contact).present? %>
