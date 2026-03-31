@@ -107,7 +107,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 			subsections: [
 				{
 					id: 0,
-					label: "The transcription information does not match the scan [mistranscription]",
+					label: "The transcription information does not match the scan.",
 					answer: <<~HTML.strip,
 						<p>If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
 						<p>Enter the correct information in the relevant field(s) on the form below. Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we will protect and use your data, and then complete the form below.</p>
@@ -115,7 +115,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 					show_form: true,
 					form_numbers: [1,2]
 				},
-				{ id: 1, label: "The transcription information does match the GRO index scan [GRO error]", answer: ANSWERS[1], show_form: false }
+				{ id: 1, label: "The transcription information does match the GRO index scan.", answer: ANSWERS[1], show_form: false }
 			]
 		},
 		{
