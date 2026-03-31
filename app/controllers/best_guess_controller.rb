@@ -98,6 +98,7 @@ class BestGuessController < ApplicationController
   def same_page_entries
     @search = params[:search_id].present?
     @search_id = params[:search_id] if @search
+    @search_query = SearchQuery.find(@search_id) if @search && @search_id.present?
     record_number = params[:entry_id]
     @record = BestGuess.find(record_number)
     @volume = @record.Volume #params[:volume]

@@ -3,7 +3,7 @@
 <div class='container'>
   <% if @search %>
     <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @record.RecordNumber), class: " btn   btn--small" if @search_id.present?%>
-    <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @record, @record.friendly_url), class: " btn   btn--small" unless @record.blank?%>
+    <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @record.RecordNumber, @record.friendly_url, search_entry: @record.RecordNumber), class: " btn   btn--small" unless @record.blank?%>
     <% end %>
   <h1 class="lead"><%= "Entries in Page: #{@page}, Volume: #{@volume} at District: #{@district} for #{format_quarter(@quarter.to_i)}" %></h1>
 </div>
@@ -28,7 +28,7 @@
                 <td>
                   <center>
                     <% if @search %>
-                      <%= link_to("View #{n}".html_safe, friendly_bmd_record_details_path(@search_id, search_record.RecordNumber, search_record.friendly_url), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
+                      <%= link_to("View #{n}".html_safe, friendly_bmd_record_details_path(@search_id, search_record.RecordNumber, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
                     <% else %>
                     <%# raise session[:saved_search_record].inspect%>
                       <%= link_to("View #{n}".html_safe, friendly_bmd_record_details_non_search_path(search_record.RecordNumber, search_record.friendly_url, saved_record: true), :rel => "nofollow", :title => "", class: "btn  btn--small") %>
