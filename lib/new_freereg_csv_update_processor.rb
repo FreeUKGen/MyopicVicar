@@ -1568,15 +1568,15 @@ class CsvRecord < CsvRecords
     success5 = false
     register_location = Hash.new
     if no_location_fields?(@data_line,csvrecords,csvfile)
-      project.write_messages_to_all("data line #{line} (row #{file_row}) has no location information ie no place/church/register. <br>", true)
+      project.write_messages_to_all("row #{file_row} has no location information ie no place/church/register. <br>", true)
       return false
     end
     chapman_code = @data_line[csvrecords.data_entry_order[:chapman_code]]
     success = true if FreeregValidations.valid_chapman_code?(chapman_code)
-    project.write_messages_to_all("The county code #{chapman_code} at field #{@data_line[csvrecords.data_entry_order[:chapman_code]]} is invalid at data line #{line} (row #{file_row}). <br>", true) if !success
+    project.write_messages_to_all("The county code #{chapman_code} at field #{@data_line[csvrecords.data_entry_order[:chapman_code]]} is invalid in row #{file_row}. <br>", true) if !success
     place_name = @data_line[csvrecords.data_entry_order[:place_name]]
     success1, set_place_name = validate_place_and_set(place_name,chapman_code)
-    project.write_messages_to_all("The place name at field #{@data_line[csvrecords.data_entry_order[:place_name]]} is invalid at data line #{line} (row #{file_row}). <br>", true) if !success1
+    project.write_messages_to_all("The place name at field #{@data_line[csvrecords.data_entry_order[:place_name]]} is invalid in row #{file_row}. <br>", true) if !success1
     place_name = set_place_name if success1
     #allows for different Register type input
     if csvfile.header[:def] && csvrecords.data_entry_order[:register_type].present?
@@ -1588,10 +1588,10 @@ class CsvRecord < CsvRecords
     else
       #part of church name
       success4,message,church_name,register_type = self.extract_register_type_and_church_name(csvrecords,csvfile,project,line)
-      project.write_messages_to_all("The church field #{church_name} is invalid at data line #{line} (row #{file_row}). <br>", true) if !success4
+      project.write_messages_to_all("The church field #{church_name} is invalid in row #{file_row}. <br>", true) if !success4
       success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1 && success4
     end
-    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} at data line #{line} (row #{file_row}). <br>", true) if !success5
+    project.write_messages_to_all("The church name #{church_name} is not in the database for #{place_name} in row #{file_row}.<br>", true) if !success5
     #we use the server church name in case of case differences
     church_name = set_church_name if  success5
     return false unless success && success1 && success4 && success5
