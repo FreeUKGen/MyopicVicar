@@ -90,10 +90,19 @@
                   <center>
                     <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
                     <br>
-                    <% if has_postem %>
-                      <span class="accessibility">Postem Available</span>
-                      <%= app_icons[:postem].html_safe %>
-                    <% end %>
+                    <a href="<%= friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber)%>#postems">
+                      <% if rec.postems_list.present? %>
+                        <span class="accessibility">Postem Available</span>
+                        <i class="fa fa-envelope-open"></i>
+                      <% else %>
+                        <span class="accessibility">Create a Postem</span>
+                        <i class="fa fa-envelope"></i>
+                      <% end %>
+                    </a>
+                    <%# if has_postem %>
+                      <!--span class="accessibility">Postem Available</span-->
+                      <%#= app_icons[:postem].html_safe %>
+                    <%# end %>
                     <% if has_scan %>
                       <span class="accessibility">Scans Available</span>
                       <i class="fas fa-file-image" style='color:#00857e'></i>

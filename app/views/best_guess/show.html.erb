@@ -30,7 +30,17 @@
   <% end %>
   <% record_type = RecordType::display_name(@current_record.RecordTypeID) %>
   <div class="grid__item one-half lap-one-whole palm-one-whole ">
-    <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s #{record_type.downcase} record" %></h1>
+    <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s #{record_type.downcase} record" %>
+      <a href="#postems">
+        <% if @current_record.postems_list.present? %>
+          <span class="accessibility">Postem Available</span>
+          <i class="fa fa-envelope-open"></i>
+        <% else %>
+          <span class="accessibility">Create a Postem</span>
+          <i class="fa fa-envelope"></i>
+        <% end %>
+      </a>
+    </h1>
     <hr>
     <section>
       <div class="table-container">
