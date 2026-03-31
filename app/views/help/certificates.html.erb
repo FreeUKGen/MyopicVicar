@@ -1,4 +1,36 @@
 <section id="certificates">
   <h1 class="title text--center">Help: Order a Certificate</h1>
-  <%= Help.create_island(Help::Certificates) %>
+  <div class="help-page-layout">
+    <div class="grid__item two-thirds lap-three-fifths palm-one-whole">
+      <%= Help.create_island(Help::Certificates) %>
+    </div>
+    <aside class="grid__item one-third lap-two-fifths palm-one-whole help-page-sidebar" aria-label="Help navigation and advertisement">
+      <div class="help-page-sidebar__inner">
+        <%= Help.create_help_menu(Help::TopLevelPages) %>
+        <div class="help-page-ad push-half--top" aria-label="Advertisement">
+          <h2 class="title-block help-page-ad__title">Advertisement</h2>
+          <!-- GAM 71161633/FRBMD_freebmd2orguk/Vrec_Sticky -->
+          <div data-fuse="Vrec_Sticky"></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+  <style>
+    .help-page-layout {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      overflow: visible;
+    }
+    .help-page-layout > .grid__item { float: none !important; }
+    .help-page-layout > .grid__item.two-thirds { flex: 1 1 66.666%; min-width: 0; }
+    .help-page-layout > .help-page-sidebar { flex: 0 0 33.333%; position: sticky; top: 0; align-self: flex-start; }
+    .help-page-ad__title { text-align: center; }
+    .help-page-sidebar .grid__item,
+    .help-page-sidebar .float--right { float: none !important; width: auto !important; max-width: none !important; }
+    @media (max-width: 720px) {
+      .help-page-layout { display: block; }
+      .help-page-sidebar { position: static; top: auto; }
+    }
+  </style>
 </section>

@@ -2,26 +2,56 @@
 <title>Certificate Help</title>
 <section id="certificates_help">
   <h1 class="title body_content_title">Help</h1>
-  <div id="help_search">
-    <h2>Order a certificate</h2>
+  <div class="help-page-layout">
+    <div id="help_search" class="grid__item two-thirds lap-three-fifths palm-one-whole">
+      <h2>Order a certificate</h2>
 
-    <p>To order a certificate from the G.R.O., follow these steps:</p>
-    <ol>
-      <li><b>Access Entry information page</b><br/>
-        On the Search Results page, click on the name in the first column in the record you’re interested in to go to the Entry information page.</li>
+      <p>To order a certificate from the G.R.O., follow these steps:<p>
+      <ol>
+        <li><b>Access Entry information page</b><br/>
+          On the Search Results page, click on the name in the first column in the record you’re interested in to go to the Entry information page.</li>
 
-      <li><b>Note key details</b><br/>
-        On the Entry information page, make a note of the following details: name, quarter (or month) and year of registration, district, volume and page numbers. These details are required when ordering a certificate.</li>
+        <li><b>Note key details</b><br/>
+          On the Entry information page, make a note of the following details: name, quarter (or month) and year of registration, district, volume and page numbers. These details are required when ordering a certificate.</li>
 
-      <li><b>Verify with original index</b> (if available)<br/>
-        If the camera icon appears in the "More Information" table row, click it to view an image of the original index (if available). This will allow you to verify the accuracy of the transcription.</li>
+        <li><b>Verify with original index</b> (if available)<br/>
+          If the camera icon appears in the "More Information" table row, click it to view an image of the original index (if available). This will allow you to verify the accuracy of the transcription.</li>
 
-      <li><b>Check for notes (Postems)</b><br/>
-        Before ordering the certificate, click the envelope icon to check for Postems. Other FreeBMD users may have left helpful notes regarding the information on the certificate, which could save you the cost of ordering a certificate.</li>
+        <li><b>Check for notes (Postems)</b><br/>
+          Before ordering the certificate, click the envelope icon to check for Postems. Other FreeBMD users may have left helpful notes regarding the information on the certificate, which could save you the cost of ordering a certificate.</li>
 
-      <li><b>Order a certificate</b><br/>
-        Once you're ready to order, go to the <a href="https://www.gro.gov.uk/gro/content/certificates/indexes_search.asp">G.R.O. ordering page</a>. This is where you can place the order for the certificate.</li>
-    </ol>
+        <li><b>Order a certificate</b><br/>
+          Once you're ready to order, go to the <a href="https://www.gro.gov.uk/gro/content/certificates/indexes_search.asp">G.R.O. ordering page</a>. This is where you can place the order for the certificate.</li></ol>
 
+      <!--p>For more detailed information and other advanced search tips see the Further Help below.</p-->
+    </div>
+    <aside class="grid__item one-third lap-two-fifths palm-one-whole help-page-sidebar" aria-label="Help navigation and advertisement">
+      <div class="help-page-sidebar__inner">
+        <%= render partial: "help_header" %>
+        <div class="help-page-ad push-half--top" aria-label="Advertisement">
+          <h2 class="title-block help-page-ad__title">Advertisement</h2>
+          <!-- GAM 71161633/FRBMD_freebmd2orguk/Vrec_Sticky -->
+          <div data-fuse="Vrec_Sticky"></div>
+        </div>
+      </div>
+    </aside>
   </div>
+  <style>
+    .help-page-layout {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      overflow: visible;
+    }
+    .help-page-layout > .grid__item { float: none !important; }
+    .help-page-layout > .grid__item.two-thirds { flex: 1 1 66.666%; min-width: 0; }
+    .help-page-layout > .help-page-sidebar { flex: 0 0 33.333%; position: sticky; top: 0; align-self: flex-start; }
+    .help-page-ad__title { text-align: center; }
+    .help-page-sidebar .grid__item,
+    .help-page-sidebar .float--right { float: none !important; width: auto !important; max-width: none !important; }
+    @media (max-width: 720px) {
+      .help-page-layout { display: block; }
+      .help-page-sidebar { position: static; top: auto; }
+    }
+  </style>
 </section>
