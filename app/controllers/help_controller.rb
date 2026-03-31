@@ -2,6 +2,7 @@
 
 class HelpController < ApplicationController
   skip_before_action :require_login
+  layout 'help'
 
   def show_page
     if params[:page].present?
