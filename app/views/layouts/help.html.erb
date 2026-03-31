@@ -1,17 +1,4 @@
-<%# Help layout (scoped to HelpController). Uses the existing application sidebar slot, but opts out of grid overflow clipping so sticky works. %>
-<script>
-  (function () {
-    function applyHelpLayoutClass() {
-      if (document.body) document.body.classList.add('help-layout-page');
-    }
-    // Full page load
-    document.addEventListener('DOMContentLoaded', applyHelpLayoutClass);
-    // Turbolinks navigation (common in this app)
-    document.addEventListener('turbolinks:load', applyHelpLayoutClass);
-    // In case this script runs after DOM is already ready
-    applyHelpLayoutClass();
-  })();
-</script>
+<%# Help layout (scoped to HelpController). Minimal sticky sidebar + one overflow override. %>
 
 <% unless content_for?(:sidebar) %>
   <% content_for :sidebar do %>
@@ -31,8 +18,9 @@
 <%= yield %>
 
 <style>
-  /* Sticky is blocked by `.grid { overflow:hidden; }` in the grid system. Opt out for help pages only. */
-  body.help-layout-page .container > .grid { overflow: visible !important; }
+  /* Sticky is blocked by `.grid { overflow:hidden; }` in the grid system.
+     Override it on help pages (this style tag is only rendered for help). */
+  #bmd_site_content .container > .grid { overflow: visible !important; }
 
   .help-layout-ad__title { text-align: center; }
   .help-layout-sidebar { position: sticky; top: 0; align-self: flex-start; }
