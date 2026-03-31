@@ -1,8 +1,16 @@
 <%# Help layout (scoped to HelpController). Uses the existing application sidebar slot, but opts out of grid overflow clipping so sticky works. %>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    document.body.classList.add('help-layout-page');
-  });
+  (function () {
+    function applyHelpLayoutClass() {
+      if (document.body) document.body.classList.add('help-layout-page');
+    }
+    // Full page load
+    document.addEventListener('DOMContentLoaded', applyHelpLayoutClass);
+    // Turbolinks navigation (common in this app)
+    document.addEventListener('turbolinks:load', applyHelpLayoutClass);
+    // In case this script runs after DOM is already ready
+    applyHelpLayoutClass();
+  })();
 </script>
 
 <% unless content_for?(:sidebar) %>
