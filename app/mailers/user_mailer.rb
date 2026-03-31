@@ -36,6 +36,7 @@ class UserMailer < ActionMailer::Base
     mail(:to => to_email, :subject => subj, :body => report, :content_type => "text/plain")
   end
   add_template_helper(EmailHelper)
+  add_template_helper(ContactsHelper)
 
   def acknowledge_communication(original)
     @appname = appname

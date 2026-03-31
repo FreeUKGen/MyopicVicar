@@ -46,17 +46,19 @@ class FreebmdContactFieldReport
     def to_plain_text(rows)
       return '' if rows.blank?
 
-      lines = ['FreeBMD entry as displayed with user corrections:']
+      field_lines = []
       Array(rows).each do |r|
         r = r.stringify_keys
         base = "#{r['field']}: #{r['current']}"
         if truthy?(r['corrected'])
-          lines << "#{base}  →  suggested correction: #{r['correction']}"
+          field_lines << "#{base}\n  → suggested correction: #{r['correction']}"
         else
-          lines << base
+          field_lines << base
         end
       end
-      lines.join("\n")
+      # Title line kept short; caller may add a banner above this block.
+      header = 'Fields from the index entry (corrections shown where supplied)'
+      [header, field_lines.join("\n")].join("\n\n")
     end
 
     private

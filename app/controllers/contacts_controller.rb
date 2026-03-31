@@ -404,13 +404,20 @@ class ContactsController < ApplicationController
     @contact.session_data = sd
   end
 
+  REPORT_ERROR_BODY_SECTION_RULE = '------------------------------------------------------------'
+
   def auto_body_from_report_error_session_data
     sd = normalize_session_data_hash(@contact.session_data)
     return nil if sd.blank?
 
     chunks = []
     if sd['freebmd_field_report'].present?
-      chunks << FreebmdContactFieldReport.to_plain_text(sd['freebmd_field_report'])
+      inner = FreebmdContactFieldReport.to_plain_text(sd['freebmd_field_report'])
+      chunks << [
+        'CURRENT INDEX ENTRY (FreeBMD — values as shown on the report page)',
+        REPORT_ERROR_BODY_SECTION_RULE,
+        inner
+      ].join("\n")
     else
       co = corrections_only_plain_text_chunk(sd['corrections'])
       chunks << co if co.present?
@@ -419,7 +426,7 @@ class ContactsController < ApplicationController
     s3 = section3_plain_text_chunk(sd['section3'])
     chunks << s3 if s3.present?
 
-    chunks.any? ? chunks.compact.join("\n\n") : nil
+    chunks.any? ? chunks.compact.join("\n\n#{REPORT_ERROR_BODY_SECTION_RULE}\n\n") : nil
   end
 
   def corrections_only_plain_text_chunk(corrections)
@@ -452,7 +459,7 @@ class ContactsController < ApplicationController
   def section3_plain_text_chunk(section3)
     return nil unless section3.is_a?(Hash) && section3.values.any? { |v| v.present? }
 
-    lines = ['--- Missing entry details ---']
+    field_lines = []
     section3.each do |key, val|
       next if val.blank?
 
@@ -460,9 +467,15 @@ class ContactsController < ApplicationController
       next if key_s == 'multiple_entries' && val.to_s != '1'
 
       label = key_s == 'multiple_entries' ? 'Multiple entries' : key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
-      lines << "#{label}: #{val}"
+      field_lines << "#{label}: #{val}"
     end
-    lines.size > 1 ? lines.join("\n") : nil
+    return nil if field_lines.empty?
+
+    [
+      'MISSING OR ADDITIONAL ENTRY (details supplied by reporter — may not relate to the line above)',
+      REPORT_ERROR_BODY_SECTION_RULE,
+      field_lines.join("\n")
+    ].join("\n")
   end
 
   def normalize_session_data_hash(sd)
