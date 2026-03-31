@@ -1,37 +1,9 @@
 <% title "Help pages" %>
 <%= render partial: "help_menu_js" %>
 <h1>Help</h1>
-<div class="grid__item one-whole">
-  <p class="lead">Struggling to use FreeBMD? Not finding someone you expected to find? Not sure what to do next? This page contains answers to common problems, and has links to more detailed information.</p>
-</div>
-
-<div class="help-page-layout">
-  <div class="grid__item two-thirds lap-three-fifths palm-one-whole">
-    <%# The help menu JS toggles sections on this page; content is rendered below elsewhere. %>
+<div class="grid">
+  <div class="grid__item one-whole">
+    <p class="lead">Struggling to use FreeBMD? Not finding someone you expected to find?  Not sure what to do next?  This page contains answers to common problems, and has links to more detailed information.</p>
   </div>
-
-  <aside class="grid__item one-third lap-two-fifths palm-one-whole help-page-sidebar" aria-label="Help navigation">
-    <div class="help-page-sidebar__inner">
-      <%= Help.in_page_help_menu(Help::TopLevelPages) %>
-    </div>
-  </aside>
+  <%= Help.in_page_help_menu(Help::TopLevelPages) %>
 </div>
-
-<style>
-  .help-page-layout {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-    overflow: visible;
-  }
-  .help-page-layout > .grid__item { float: none !important; }
-  .help-page-layout > .grid__item.two-thirds { flex: 1 1 66.666%; min-width: 0; }
-  .help-page-layout > .help-page-sidebar { flex: 0 0 33.333%; position: sticky; top: 0; align-self: flex-start; }
-  /* Help.in_page_help_menu returns a floated grid item; neutralize inside the sticky sidebar. */
-  .help-page-sidebar .grid__item,
-  .help-page-sidebar .float--right { float: none !important; width: auto !important; max-width: none !important; }
-  @media (max-width: 720px) {
-    .help-page-layout { display: block; }
-    .help-page-sidebar { position: static; top: auto; }
-  }
-</style>
