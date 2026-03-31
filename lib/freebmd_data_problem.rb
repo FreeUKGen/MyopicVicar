@@ -122,7 +122,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 						<p>If you believe there is an error in the GRO Index, you will need to contact the <a href="https://www.gro.gov.uk/" target="_blank" rel="noopener">General Register Office (GRO)</a> to request a correction.</p>
 						<p>If the GRO confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
 						<small>(Was: If you wish to get the GRO Index corrected you should apply to the GRO. Contact the GRO with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.)</small>
-					HTML,
+					HTML
 				  show_form: false }
 			]
 		},
