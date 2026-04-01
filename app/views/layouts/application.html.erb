@@ -8,26 +8,25 @@
   <!--<![endif]-->
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
-    <!-- publift fuse tag -->
+    <!-- publift fuse tag (disabled during donation campaign — see DonationCampaign) -->
+    <% unless DonationCampaign.active? %>
       <script async src="https://cdn.fuseplatform.net/publift/tags/2/4135/fuse.js"></script>
-    <!-- fusetag ends here-->
-    <script>
-      // Get an initialisation-safe reference to the Fuse Queue
-      const fusetag = window.fusetag || (window.fusetag = { que: [] });
+      <script>
+        // Get an initialisation-safe reference to the Fuse Queue
+        const fusetag = window.fusetag || (window.fusetag = { que: [] });
 
-      fusetag.que.push(function() {
-          // Indicate that the core load is complete, and that page targeting
-          // should be applied to the 'weather' and 'age' keys
-          fusetag.pageInit({
-              pageTargets: [
-                  {
-                      'key': 'freebmd_site',
-                      'value': 'beta',
-                  }
-              ]
-          });
-      });
-    </script>
+        fusetag.que.push(function() {
+            fusetag.pageInit({
+                pageTargets: [
+                    {
+                        'key': 'freebmd_site',
+                        'value': 'beta',
+                    }
+                ]
+            });
+        });
+      </script>
+    <% end %>
     <script>
       window.googletag = window.googletag || { cmd: [] };
         googletag.cmd.push(function () {
@@ -163,7 +162,9 @@
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
     <%= javascript_include_tag "#{appname.downcase}_advert_control.js" %>
-     <%#= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
+    <% if DonationCampaign.active? && appname.downcase == 'freebmd' %>
+      <%= javascript_include_tag "javascripts/freebmd_fuse_tag.js" %>
+    <% end %>
     <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
     <% end %>

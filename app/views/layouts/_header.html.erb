@@ -77,16 +77,23 @@
     </button>
   </header>
 <% end %>
-<%# unless browser.safari? && browser.full_version.to_f < 15.4 %>
-  <!--div id="overlay"></div>
-  <dialog id="myDialog" role="dialog">
-    <%#= render "layouts/fundraise_cta" %>
-    <%#= render "layouts/donate_cta" %>
-  </dialog-->
+<% unless browser.safari? && browser.full_version.to_f < 15.4 %>
+  <% if DonationCampaign.active? %>
+    <div id="overlay"></div>
+    <dialog id="myDialog" role="dialog">
+      <%= render "layouts/donate_cta" %>
+    </dialog>
+  <% end %>
   <!--dialog id="myDialog1" role="dialog">
     <%#= render "reminder_to_donate/form"%>
-  </dialog>
-  <dialog id="myDialog2" role="dialog">
+  </dialog-->
+  <!--dialog id="myDialog2" role="dialog">
     <%#= render "donate_cta_feedback/form"%>
   </dialog-->
-<%# end %>
+<% end %>
+
+<style>
+.myDialog::backdrop {
+  background-color: rgba(0,0,0,0.5);
+}
+</style>
