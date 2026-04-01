@@ -849,7 +849,7 @@ class CsvFile < CsvFiles
           batch_error.freereg1_csv_file = freereg1_csv_file
           batch_error.save
           batch_errors = batch_errors + 1
-          message = "Data Error in line #{datarecord[:file_line_number]} problem was #{success}.<br>"
+          message = "Data Error in row #{datarecord[:file_row]}. The problem was #{success}.<br>"
           project.write_messages_to_all(message,true)
         end #end success  no change
       end #end record
@@ -1284,7 +1284,9 @@ class CsvRecords <  CsvFile
         proceed, @data_entry_order = extract_data_field_order(@data_lines[0],csvfile)
       end
 
-      project.write_messages_to_all("Using the following column specification \n\r #{@data_lines[0]}. <br><br>", true)
+      # convert @data_line[0] from array to a string for display only
+      header_columns = @data_lines[0].compact.join(", ")
+      project.write_messages_to_all("The following column names were found on line 6 of your file:\n\r #{header_columns} <br><br>", true)
       if proceed
         # Remove the field-definition row from both @data_lines and the parallel
         # @data_line_file_rows so the two arrays stay in sync. After shift,
@@ -1319,16 +1321,20 @@ class CsvRecords <  CsvFile
         col_letter = ("A".."ZZ").to_a[n] || "?"
         close_match = get_closest_valid_field(field, csvfile)
         Rails.logger.info("\n---close_match: #{close_match.inspect}")
+
+        # convert position to 1 base index for output message
+        pos = n + 1
+        suffix = header_fields[n].present? ? "." : ""
+
         if close_match.present?
-          insert = "Do you mean #{close_match}?"
+          insert = "contains an invalid name: #{header_fields[n]}#{suffix} Do you mean #{close_match}?"
+          # insert = "Do you mean #{close_match}?"
         else
-          insert = "Stray text or blank space?"
+          insert = "has no title."
+          # insert = "Stray text or blank spaces?"
         end
 
-          # convert position to 1 base index for output message
-          pos = n + 1
-          suffix = header_fields[n].present? ? "." : ""
-          csvfile.header_error << "The field order definition at position #{pos}/ (column #{col_letter}) contains an invalid field: #{header_fields[n]}#{suffix} #{insert} <br>"
+        csvfile.header_error << "The column name defined at position #{pos}/ (column #{col_letter} in a spreadsheet) #{insert} <br>"
       end
       n = n + 1
     end
