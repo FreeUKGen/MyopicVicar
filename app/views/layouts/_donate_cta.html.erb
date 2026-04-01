@@ -6,7 +6,7 @@
         <div class="grid__item desk-wide-one-half desk-two-thirds lap-one-whole palm-one-whole" id="thank_you">
             <div class="" id="main_box">
                 <div class="grid__item desk-three-quarters lap-one-whole palm-one-whole logo_div">
-                  <%= image_tag("png/ty_#{appname_downcase}.png", alt: "Thank you for using #{appname_downcase}")%><%#= "Free#{appname_downcase[4,4].upcase}"%>
+                  <h3>Thank you for using FreeBMD</h3>
                 </div>
                 <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                     <p id="charity_text" class="weight--semibold push-half--bottom">We're a registered charity and we need your support.</p>
@@ -34,15 +34,9 @@
             </aside>
         </div>
         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole text--center push-half--bottom">
-            <%=button_tag "Remind me later <i class='fa fa-clock push-half--left'></i>".html_safe , id:"reminder_form_controller", class: "remind_me_later_cta push-half--right", type: "button"%>
+            <%#=button_tag "Remind me later <i class='fa fa-clock push-half--left'></i>".html_safe , id:"reminder_form_controller", class: "remind_me_later_cta push-half--right", type: "button"%>
             <%=button_tag "<i class='fa fa-times push-half--right close_cta'></i> Close".html_safe , id:"close_donate_cta_pop_up", class: "", type: "button"%>
         </div>
-        <aside class="grid__item lap-one-whole palm-one-whole " id="fundraising_box_2">
-                <%= image_tag("png/fr.png", alt: "Fundraising", class: "", id:"fundraising")%>
-        </aside>
-         <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
-            <small class= "float--right push--right">Send any feedback to <span style='color:blue'>feedback@freeukgenealogy.org.uk</span></small>
-         </div>
     </div>
 </div>
 
