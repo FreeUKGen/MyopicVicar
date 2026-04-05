@@ -87,7 +87,7 @@ module Communication
         prepend_alert("ALERT! This file was uploaded to your county by userid: #{@userid.userid} from the #{@userid.syndicate.capitalize} syndicate.")
       end
 
-      @subject = "WARNING: #{@userid.userid}/#{@file_name} serious processing problem"
+      @subject = "WARNING: #{@userid.userid}/#{@file_name} serious processing problem on #{Time.current.strftime('%Y-%m-%d')}"
 
       handle_eligibility_alert
     end
@@ -98,25 +98,25 @@ module Communication
       datemax = @batch_result.datemax.to_s
 
       @subject =
-        "#{@userid.userid}/#{@file_name} processed with #{errors} errors over period #{datemin}-#{datemax}"
+        "#{@userid.userid}/#{@file_name} processed on #{Time.current.strftime('%Y-%m-%d')} with #{errors} errors over period #{datemin}-#{datemax}"
     end
 
     def build_freereg_cross_county_subject
       errors  = @batch_result.errors || '.....'
 
       @subject = 
-        "* * * ALERT! Data uploaded to your county from: #{@userid.userid}/#{@file_name} with #{errors} errors. * * *"
+        "* * * ALERT! Data uploaded to your county from: #{@userid.userid}/#{@file_name} on #{Time.current.strftime('%Y-%m-%d')} with #{errors} errors. * * *"
     end
 
     # ---------------------------------------------------------------------------
     # FREECEN MESSAGE LOGIC
     # ---------------------------------------------------------------------------
     def build_freecen_message
-      @subject = "#{@userid.userid} processed #{@file_name} at #{Time.current}"
+      @subject = "#{@userid.userid} processed #{@file_name} on #{Time.current}"
     end
 
     def build_freecen_failure_message
-      @subject = "WARNING: #{@userid&.userid} processing #{@file_name}"
+      @subject = "WARNING: #{@userid&.userid} processing #{@file_name} on #{Time.current.strftime('%Y-%m-%d')}"
       prepend_alert("The system encountered an error while processing your FreeCEN file.")
     end
 
@@ -124,11 +124,11 @@ module Communication
     # DEFAULT MESSAGE LOGIC
     # ---------------------------------------------------------------------------
     def build_default_message
-      @subject = "Batch #{@file_name} processed"
+      @subject = "Batch #{@file_name} processed on #{Time.current.strftime('%Y-%m-%d')}"
     end
 
     def build_default_failure_message
-      @subject = "Batch #{@file_name} processing FAILED"
+      @subject = "Batch #{@file_name} processing FAILED on #{Time.current.strftime('%Y-%m-%d')}"
     end
 
     # ---------------------------------------------------------------------------
