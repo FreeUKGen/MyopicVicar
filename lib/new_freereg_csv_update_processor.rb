@@ -1285,7 +1285,7 @@ class CsvRecords <  CsvFile
       end
 
       # convert @data_line[0] from array to a string for display only
-      header_columns = @data_lines[0].compact.join(", ")
+      header_columns = @data_lines[0].map { |v| v.presence || "MISSING_COLUMN_NAME" }.join(", ")
       project.write_messages_to_all("The following column names were found on line 6 of your file:\n\r #{header_columns} <br><br>", true)
       if proceed
         # Remove the field-definition row from both @data_lines and the parallel
@@ -1334,7 +1334,7 @@ class CsvRecords <  CsvFile
           # insert = "Stray text or blank spaces?"
         end
 
-        csvfile.header_error << "The column name defined at position #{pos}/ (column #{col_letter} in a spreadsheet) #{insert} <br>"
+        csvfile.header_error << "The column name defined at position #{pos} (column #{col_letter} in a spreadsheet) #{insert} <br>"
       end
       n = n + 1
     end
