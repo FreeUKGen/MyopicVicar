@@ -24,7 +24,6 @@ class BestGuessController < ApplicationController
     end
     get_user_info_from_userid if cookies.signed[:userid].present?
     prepare_to_show_saved_entry if show_saved_record == 'true'
-    @original_record = get_original_record(search_id, show_saved_record)
     @page_number = params[:page_number].to_i
 
     @current_record = resolve_best_guess_for_show
@@ -36,6 +35,8 @@ class BestGuessController < ApplicationController
     if @search && @search_record.blank? && record_hash_freebmd_request?
       @search_record = @current_record
     end
+
+    @original_record = get_original_record(search_id, show_saved_record)
 
     @anchor_entry = (@resolved_record_hash.presence || @current_record.RecordNumber).to_s if @search
 
