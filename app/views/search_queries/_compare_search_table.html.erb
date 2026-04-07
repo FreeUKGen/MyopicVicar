@@ -18,12 +18,12 @@
     <% search_results.each do |search_record| %>
       <% n = n +1 %>
       <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
-      <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
+      <tr id="<%=search_record.record_hash%>" class="<%= record_type.downcase %>_hover" >
         <% unless print_friendly %>
           <% unless old_search_results%>
             <td>
               <center>
-                <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, old_search_results: old_search_results), rel: "nofollow", class: "btn  btn--small")%>
+                <%= link_to("View #{n}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, search_entry: search_record.RecordNumber, record_hash: search_record.record_hash, old_search_results: old_search_results), rel: "nofollow", class: "btn  btn--small")%>
                 <i><%= seen(@search_query,search_record) %></i>
               </center>
             </td>

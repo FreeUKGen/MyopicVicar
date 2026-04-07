@@ -883,6 +883,156 @@
     [response, next_record, previous_record]
   end
 
+  # FreeBMD: search_result.records keys are stable record_hash values (see persist_results).
+  # Used for bookmarks and navigation after BestGuess primary keys (RecordNumber) are reassigned on rebuild.
+  def bmd_flatten_records_with_hash_keys
+    return [] unless freebmd_app? && search_result&.records.is_a?(Hash)
+
+    pairs = []
+    search_result.records.each do |hkey, val|
+      key = hkey.to_s
+      next if val.nil?
+
+      if val.is_a?(Array)
+        val.each do |v|
+          attrs = bmd_normalize_snapshot_attrs(v)
+          pairs << [key, attrs] if attrs
+        end
+      else
+        attrs = bmd_normalize_snapshot_attrs(val)
+        pairs << [key, attrs] if attrs
+      end
+    end
+    pairs
+  end
+
+  def bmd_normalize_snapshot_attrs(val)
+    attrs = val.respond_to?(:attributes) ? val.attributes : val
+    return nil unless attrs.is_a?(Hash)
+
+    attrs.deep_symbolize_keys
+  end
+
+  def bmd_snapshot_contains_record_hash?(record_hash)
+    return false unless search_result&.records.is_a?(Hash) && record_hash.present?
+
+    key = record_hash.to_s
+    search_result.records.key?(key) || search_result.records.key?(record_hash)
+  end
+
+  # Stable hash key for a hit that was stored under this RecordNumber when the search ran.
+  # Lets old bookmarks (path + search_entry only, no record_hash param) survive BestGuess rebuilds.
+  def bmd_record_hash_for_snapshot_record_number(record_number)
+    return nil if record_number.blank?
+
+    rn = record_number.to_s
+    bmd_flatten_records_with_hash_keys.each do |hkey, attrs|
+      return hkey if attrs[:RecordNumber].to_s == rn
+    end
+    nil
+  end
+
+  def sort_freebmd_hash_key_pairs!(pairs)
+    return pairs if order_field.blank? || pairs.blank?
+
+    pairs.sort! do |a, b|
+      xa, ya = a[1], b[1]
+      case order_field
+      when *selected_sort_fields
+        ord = order_field.to_sym
+        if order_asc
+          (xa[ord] || '') <=> (ya[ord] || '')
+        else
+          (ya[ord] || '') <=> (xa[ord] || '')
+        end
+      when SearchOrder::DATE
+        if order_asc
+          (xa[:search_date] || '') <=> (ya[:search_date] || '')
+        else
+          (ya[:search_date] || '') <=> (xa[:search_date] || '')
+        end
+      when SearchOrder::LOCATION
+        if order_asc
+          compare_location(xa, ya)
+        else
+          compare_location(ya, xa)
+        end
+      when SearchOrder::NAME
+        if order_asc
+          compare_name(xa, ya)
+        else
+          compare_name(ya, xa)
+        end
+      when SearchOrder::SURNAME
+        if order_asc
+          compare_name_bmd(xa, ya, 'Surname', ['GivenName', 'QuarterNumber', 'District'])
+        else
+          compare_name_bmd(ya, xa, 'Surname', ['GivenName', 'QuarterNumber', 'District'])
+        end
+      when SearchOrder::FIRSTNAME
+        if order_asc
+          compare_name_bmd(xa, ya, 'GivenName', ['Surname', 'QuarterNumber', 'District'])
+        else
+          compare_name_bmd(ya, xa, 'GivenName', ['Surname', 'QuarterNumber', 'District'])
+        end
+      when SearchOrder::BMD_RECORD_TYPE
+        if order_asc
+          (xa[:RecordTypeID] || '') <=> (ya[:RecordTypeID] || '')
+        else
+          (ya[:RecordTypeID] || '') <=> (xa[:RecordTypeID] || '')
+        end
+      when SearchOrder::BMD_DATE
+        if order_asc
+          compare_name_bmd(xa, ya, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
+        else
+          compare_name_bmd(ya, xa, 'QuarterNumber', ['Surname', 'GivenName', 'District'])
+        end
+      when SearchOrder::DISTRICT
+        if order_asc
+          compare_name_bmd(xa, ya, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
+        else
+          compare_name_bmd(ya, xa, 'District', ['Surname', 'GivenName', 'QuarterNumber'])
+        end
+      when SearchOrder::BMD_ASSOCIATE_NAME
+        if order_asc
+          compare_name_bmd(xa, ya, 'AssociateName', ['Surname', 'GivenName', 'QuarterNumber'])
+        else
+          compare_name_bmd(ya, xa, 'AssociateName', ['Surname', 'GivenName', 'QuarterNumber'])
+        end
+      when SearchOrder::BMD_AGE_AT_DEATH
+        if order_asc
+          compare_name_bmd(xa, ya, 'AgeAtDeath', ['Surname', 'GivenName', 'QuarterNumber'])
+        else
+          compare_name_bmd(ya, xa, 'AgeAtDeath', ['Surname', 'GivenName', 'QuarterNumber'])
+        end
+      else
+        0
+      end
+    end
+    pairs
+  end
+
+  # Returns [ok, next_best_guess, previous_best_guess] using stable hash keys and current BestGuessHash rows.
+  def bmd_next_and_previous_by_record_hash(record_hash)
+    record_hash = record_hash.to_s
+    pairs = bmd_flatten_records_with_hash_keys
+    return [false, nil, nil] if pairs.blank?
+
+    sort_freebmd_hash_key_pairs!(pairs)
+    idx = pairs.index { |hkey, _| hkey == record_hash }
+    return [false, nil, nil] if idx.nil?
+
+    next_rec = nil
+    prev_rec = nil
+    if idx.positive?
+      prev_rec = BestGuessHash.find_by(Hash: pairs[idx - 1][0])&.best_guess
+    end
+    if idx < pairs.length - 1
+      next_rec = BestGuessHash.find_by(Hash: pairs[idx + 1][0])&.best_guess
+    end
+    [true, next_rec, prev_rec]
+  end
+
   def no_additional_census_fields?
     result = false
     result = true if !disabled && occupation.blank? && marital_status.blank? && language.blank? && sex.blank?
