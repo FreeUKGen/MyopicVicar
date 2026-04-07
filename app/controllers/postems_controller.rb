@@ -85,7 +85,7 @@ class PostemsController < ApplicationController
 
   def postem_success_redirect_path
     if @search_query.present?
-      friendly_bmd_record_details_path(@search_query.id, @record.RecordNumber, @record.friendly_url)
+      friendly_bmd_record_details_path(@search_query.id, @record.RecordNumber, @record.friendly_url, search_entry: @record.RecordNumber, record_hash: @record.record_hash)
     else
       friendly_bmd_record_details_non_search_path(@record.RecordNumber, @record.friendly_url)
     end

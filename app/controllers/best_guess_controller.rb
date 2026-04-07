@@ -10,30 +10,49 @@ class BestGuessController < ApplicationController
     @search = search_id.present?
     @search_entry = params[:search_entry]
     @saved_entry_number = params[:saved_entry]
-    prepare_for_show_search_entry if @search
-    return if @search && @search_query.blank?
+    @record_hash_param = params[:record_hash].presence
+
+    if @search
+      @search_query = SearchQuery.where(id: search_id).first
+      redirect_back(fallback_location: new_search_query_path) && return if @search_query.blank?
+
+      assign_resolved_record_hash
+      prepare_for_show_search_entry
+      return if performed?
+    else
+      assign_resolved_record_hash
+    end
     get_user_info_from_userid if cookies.signed[:userid].present?
     prepare_to_show_saved_entry if show_saved_record == 'true'
     @original_record = get_original_record(search_id, show_saved_record)
     @page_number = params[:page_number].to_i
-    record_id = params[:id]
-    @current_record = BestGuess.find_by(RecordNumber: record_id)
+
+    @current_record = resolve_best_guess_for_show
     unless @current_record
       flash[:notice] = 'The record you requested does not exist.'
       redirect_back(fallback_location: root_path) && return
     end
 
+    if @search && @search_record.blank? && record_hash_freebmd_request?
+      @search_record = @current_record
+    end
+
+    @anchor_entry = (@resolved_record_hash.presence || @current_record.RecordNumber).to_s if @search
+
     @record_hash_value = @current_record.record_hash
     @postems_count = Postem.where(Hash: @record_hash_value).count
     page_entries = @current_record.entries_in_the_page
-    @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(record_id, page_entries)
+    @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@current_record.RecordNumber, page_entries)
     @display_date = false
     list_postems
     @url = generate_url
     if @search_query.present?
       @search_result = @search_query.search_result
       @viewed_records = @search_result.viewed_records
-      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+      rh = @current_record.record_hash
+      @viewed_records << rh if rh.present? && !@viewed_records.include?(rh)
+      rn = @current_record.RecordNumber.to_s
+      @viewed_records << rn unless @viewed_records.include?(rn)
       @search_result.update(viewed_records: @viewed_records)
     end
   end
@@ -160,7 +179,7 @@ class BestGuessController < ApplicationController
     user.save
     flash[:notice] = user.save ? "The entry is saved. Use 'View Saved Entries' action in Your Actions list to view your saved searches list." : 'unsuccessful'
     if params[:search_id].present?
-      redirect_to friendly_bmd_record_details_url(params[:search_id],entry_id, @entry.friendly_url)
+      redirect_to friendly_bmd_record_details_url(params[:search_id], entry_id, @entry.friendly_url, search_entry: entry_id, record_hash: @entry.record_hash)
       return
     else
       redirect_to best_guess_path(@entry.RecordNumber) && return
@@ -176,7 +195,7 @@ class BestGuessController < ApplicationController
     user.save
     flash[:notice] = user.save ? "The record is unsaved" : 'unsuccessful'
     if params[:search_id].present?
-      redirect_to friendly_bmd_record_details_path(params[:search_id],entry_id, @entry.friendly_url)
+      redirect_to friendly_bmd_record_details_path(params[:search_id], entry_id, @entry.friendly_url, search_entry: entry_id, record_hash: @entry.record_hash)
       return
     else
        redirect_to best_guess_path(@entry.RecordNumber)
@@ -255,14 +274,57 @@ class BestGuessController < ApplicationController
     helpers.entry_information_path_for(@current_record)
   end
 
+  def record_hash_freebmd_request?
+    @resolved_record_hash.present? && SearchQuery.app_template.to_s.casecmp('freebmd').zero?
+  end
+
+  def resolve_best_guess_for_show
+    if record_hash_freebmd_request?
+      BestGuessHash.find_by(Hash: @resolved_record_hash.to_s)&.best_guess
+    else
+      BestGuess.find_by(RecordNumber: params[:id])
+    end
+  end
+
+  # record_hash query param, or (FreeBMD + saved search only) derived from snapshot RecordNumber in URL.
+  def assign_resolved_record_hash
+    @resolved_record_hash = @record_hash_param
+    return if @resolved_record_hash.present?
+    return unless SearchQuery.app_template.to_s.casecmp('freebmd').zero?
+    return unless @search && @search_query.present?
+
+    @resolved_record_hash = @search_query.bmd_record_hash_for_snapshot_record_number(params[:id])
+    if @resolved_record_hash.blank? && params[:search_entry].present?
+      @resolved_record_hash = @search_query.bmd_record_hash_for_snapshot_record_number(params[:search_entry])
+    end
+    @resolved_record_hash = @resolved_record_hash.presence
+  end
+
   def prepare_for_show_search_entry
     session[:search_entry_number] = @search_entry if @search_entry.present?
     clean_session_for_search
     @search_record_number = session[:search_entry_number]
     @anchor_entry = @search_record_number
-    redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
-    @search_record = BestGuess.find(@search_record_number)
+    if record_hash_freebmd_request?
+      missing = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
+      unless @search_query.bmd_snapshot_contains_record_hash?(@resolved_record_hash)
+        flash[:notice] = missing
+        flash.keep
+        redirect_back(fallback_location: new_search_query_path) && return
+      end
+      ok, @next_record, @previous_record = @search_query.bmd_next_and_previous_by_record_hash(@resolved_record_hash)
+      unless ok
+        flash[:notice] = missing
+        flash.keep
+        redirect_back(fallback_location: new_search_query_path) && return
+      end
+      @search_record = nil
+    else
+      redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+
+      @search_record = BestGuess.find(@search_record_number)
+    end
   end
 
   def prepare_to_show_saved_entry

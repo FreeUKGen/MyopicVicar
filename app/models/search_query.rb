@@ -920,8 +920,7 @@
     search_result.records.key?(key) || search_result.records.key?(record_hash)
   end
 
-  # Stable hash key for a hit that was stored under this RecordNumber when the search ran.
-  # Lets old bookmarks (path + search_entry only, no record_hash param) survive BestGuess rebuilds.
+
   def bmd_record_hash_for_snapshot_record_number(record_number)
     return nil if record_number.blank?
 
