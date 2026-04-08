@@ -16,6 +16,10 @@ class Contact
   field :github_number, type: String
   field :session_data, type: Hash
   field :screenshot, type: String
+  field :screenshot2, type: String
+  field :screenshot3, type: String
+  field :screenshot4, type: String
+  field :screenshot5, type: String
   field :record_id, type: String
   field :entry_id, type: String
   field :hash_id, type: String
