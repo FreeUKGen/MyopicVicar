@@ -2272,10 +2272,19 @@
   end
 
   def get_bmd_search_results
-    search_results = self.sort_search_results.flatten
-    #raise search_results.inspect
-    return get_bmd_search_response, search_results.map{|h| SearchQuery.get_search_table.new(h)}, ucf_search_results, search_result_count if get_bmd_search_response
     return get_bmd_search_response if !get_bmd_search_response
+
+    # Preserve snapshot hash keys from search_result.records (same as persist_results) so links
+    # and tr#id use the canonical key; BestGuess.new(attrs) alone can diverge via district/assoc.
+    pairs = bmd_flatten_records_with_hash_keys
+    sort_freebmd_hash_key_pairs!(pairs)
+    table = SearchQuery.get_search_table
+    search_results = pairs.map do |hkey, attrs|
+      r = table.new(attrs.transform_keys(&:to_s))
+      r.snapshot_record_hash = hkey.to_s if r.respond_to?(:snapshot_record_hash=)
+      r
+    end
+    [get_bmd_search_response, search_results, ucf_search_results, search_results.size]
   end
 
   def ucf_search_results
