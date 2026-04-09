@@ -10,7 +10,8 @@ class BestGuessController < ApplicationController
     @search = search_id.present?
     @search_entry = params[:search_entry]
     @saved_entry_number = params[:saved_entry]
-    @record_hash_param = params[:record_hash].presence
+    rh = params[:record_hash].presence
+    @record_hash_param = rh.present? ? URI.decode_www_form_component(rh).presence : nil
 
     if @search
       @search_query = SearchQuery.where(id: search_id).first
