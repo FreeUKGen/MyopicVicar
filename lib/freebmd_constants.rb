@@ -5,6 +5,6 @@ module FreebmdConstants
 
   CHAPMAN_CODE_ELIMINATIONS = ['All England', 'All Wales']
 
-  ISSUES = ['Data Question', 'Website Problem', 'Volunteering Question', 'Enhancement Suggestion', 'Thank-you' , 'General Comment']
+  ISSUES = ['Website Problem', 'Enhancement Suggestion', 'Genealogical Question', 'General Comment']
 
 end
