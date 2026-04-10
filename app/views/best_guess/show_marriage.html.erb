@@ -76,11 +76,14 @@
         <%= render partial: 'display_scans', locals: { record: @current_record } %>
         <%= render partial: 'display_postems', locals: { record: @current_record } %>
       </div>
-      <div class="islet islet--bordered">
-        <p>More on spouse:</p>
-      <%= render partial: 'entry_queries', locals: { record: @spouse_record } %>
-      <%= render partial: 'display_scans', locals: { record: @spouse_record } %>
-      <%= render partial: 'display_postems', locals: { record: @spouse_record } %>
+      <% if @spouse_record.present? %>
+        <div class="islet islet--bordered">
+          <p>More on spouse:</p>
+          <%= render partial: 'entry_queries', locals: { record: @spouse_record } %>
+          <%= render partial: 'display_scans', locals: { record: @spouse_record } %>
+          <%= render partial: 'display_postems', locals: { record: @spouse_record } %>
+        </div>
+      <% end %>
     </div>
   </div>
   <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_2 -->
