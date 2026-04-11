@@ -170,7 +170,7 @@
                 <% elsif type == "marriages" %>
                   <%= spouse_display %><br>
                 <% else %>
-                  <%= link_to spouse_display, show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+                  <%= link_to spouse_display, show_marriage_details_non_search_path(entry_id: record.RecordNumber, record_hash: record.record_hash) %><br>
                 <% end %>
               <% else %>
                 <%= spouse_display %><br>

@@ -81,14 +81,40 @@ class BestGuessController < ApplicationController
   end
 
   def show_marriage
-    @search = params[:search_id].present? ? true : false
-    record_number = params[:entry_id]
+    @search = params[:search_id].present?
+    entry_id = params[:entry_id]
     @search_id = params[:search_id] if @search
-    @current_record = BestGuess.where(RecordNumber: record_number).first
-    @spouse_record =  @current_record.get_spouse_record
-    #show_scans
+
+    if @search
+      @search_query = SearchQuery.where(id: @search_id).first
+      if @search_query.blank?
+        flash[:notice] = 'The marriage record you requested no longer exists or could not be found. Please try a new search.'
+        redirect_back(fallback_location: new_search_query_path) && return
+      end
+    else
+      @search_query = nil
+    end
+
+    explicit_hash = params[:record_hash].to_s.presence
+    effective_hash = explicit_hash
+    if effective_hash.blank? && @search_query.present? && @search_query.freebmd_app?
+      snap = @search_query.bmd_record_hash_for_snapshot_record_number(entry_id)
+      effective_hash = snap.to_s.presence
+    end
+
+    @current_record = resolve_marriage_best_guess(entry_id, effective_hash)
+
+    if @current_record.blank?
+      flash[:notice] = 'The marriage record you requested no longer exists or could not be found. Please try a new search.'
+      redirect_to(marriage_details_fallback_path) && return
+    end
+
+    if effective_hash.present? && entry_id.present? && entry_id.to_s != @current_record.RecordNumber.to_s
+      redirect_to(marriage_details_canonical_path, status: :moved_permanently) && return
+    end
+
+    @spouse_record = @current_record.get_spouse_record
     @url = generate_url
-    #@spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).where.not(RecordNumber: record_number).first
   end
 
   def show_reference_entry
@@ -343,6 +369,57 @@ class BestGuessController < ApplicationController
 
   def clean_session_for_saved_entry
     session.delete(:search_entry_number)
+  end
+
+  # Marriage URLs use RecordNumber in the path. After a DB reload that *reuses* the same number for a
+  # different row, RecordNumber alone is wrong. Stable identity comes from (in order): an explicit
+  # record_hash query param, or for FreeBMD in-search requests the hash key from SearchQuery#search_result
+  # for that RecordNumber (see bmd_record_hash_for_snapshot_record_number). We only trust the
+  # RecordNumber lookup if its hash matches; otherwise we resolve via BestGuessHash. Non-search URLs
+  # without record_hash still rely on path id only (same limitation as plain bookmarks).
+  def resolve_marriage_best_guess(entry_id, hash_param)
+    normalized_hash = normalize_marriage_hash_param(hash_param)
+
+    rec = BestGuess.find_by(RecordNumber: entry_id) if entry_id.present?
+
+    if rec.present? && normalized_hash.present?
+      rec = nil unless marriage_record_matches_hash?(rec, normalized_hash)
+    end
+
+    if rec.blank? && normalized_hash.present?
+      rec = BestGuessHash.find_by(Hash: normalized_hash)&.best_guess
+      rec ||= BestGuessHash.find_by(Hash: hash_param.to_s.strip)&.best_guess if hash_param.present?
+    end
+
+    rec
+  end
+
+  def normalize_marriage_hash_param(hash_param)
+    return nil if hash_param.blank?
+
+    hash_param.to_s.strip.sub(/==\z/, '')
+  end
+
+  def marriage_record_matches_hash?(record, normalized_hash_param)
+    return false if record.blank? || normalized_hash_param.blank?
+
+    normalize_marriage_hash_param(record.record_hash) == normalized_hash_param
+  end
+
+  def marriage_details_fallback_path
+    if @search && @search_id.present?
+      search_query_path(@search_id)
+    else
+      new_search_query_path
+    end
+  end
+
+  def marriage_details_canonical_path
+    if @search && @search_id.present?
+      show_marriage_details_path(search_id: @search_id, entry_id: @current_record.RecordNumber)
+    else
+      show_marriage_details_non_search_path(entry_id: @current_record.RecordNumber, record_hash: @current_record.record_hash)
+    end
   end
 
 end

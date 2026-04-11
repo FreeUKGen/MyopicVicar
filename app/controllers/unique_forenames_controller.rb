@@ -2,13 +2,27 @@ class UniqueForenamesController < ApplicationController
   skip_before_action :require_login
 
   def index
-    @term_in_context = "^"+params[:term]
+    term = params[:term].to_s.strip
+    if term.blank?
+      render json: []
+      return
+    end
+
+    # User input is embedded in a regex; characters like [ . * ? must be escaped or Mongo raises
+    # Mongo::Error::OperationFailure (invalid regular expression).
+    @term_in_context = "^#{Regexp.escape(term)}"
     @forenames = UniqueForename.where({"Name": {"$regex": @term_in_context, "$options": "i"}}).limit(10)
     render :json => get_search_names_hash(@forenames)
   end
 
   def show
-    @forenames = UniqueForename.where({"Name": {"$regex": @term_in_context}})
+    term = params[:id].to_s.strip
+    if term.blank?
+      head :not_found
+      return
+    end
+    pattern = "^#{Regexp.escape(term)}"
+    @forenames = UniqueForename.where({"Name": {"$regex": pattern, "$options": "i"}})
   end
 
   # this returns JSON as an array of names:
