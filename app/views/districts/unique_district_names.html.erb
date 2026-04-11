@@ -4,8 +4,8 @@
       <%= link_to 'View Birth Names', unique_district_names_path(id: @district_number, record_type: "birth" ), method: :get, :class => "btn   btn--small" unless @record_type == "birth" %>
       <%= link_to 'View Marriage Names', unique_district_names_path(id: @district_number, record_type: "marriage" ), method: :get, :class => "btn   btn--small" unless @record_type == "marriage"%>
       <%= link_to 'View Death Names', unique_district_names_path(id: @district_number, record_type: "death" ), method: :get, :class => "btn   btn--small" unless @record_type == "death"%>
-      <%= link_to 'View '+params[:record_type].capitalize+' surnames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "0" ), method: :get, :class => "btn   btn--small"  unless @name_type == "0" %>
-      <%= link_to 'View '+params[:record_type].capitalize+' forenames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "1" ), method: :get, :class => "btn   btn--small"  unless @name_type == "1" %>
+      <%= link_to 'View '+@record_type.capitalize+' surnames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "0" ), method: :get, :class => "btn   btn--small"  unless @name_type == "0" %>
+      <%= link_to 'View '+@record_type.capitalize+' forenames', unique_district_names_path( id: @district_number, record_type: @record_type, name_type: "1" ), method: :get, :class => "btn   btn--small"  unless @name_type == "1" %>
     </div>
     <%= render 'flash_notice' %>
     <!--h2>Names for people in <%#= @district.DistrictName %></h2-->
