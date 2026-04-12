@@ -336,16 +336,21 @@ class BestGuessController < ApplicationController
 
     if record_hash_freebmd_request?
       missing = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
-      unless @search_query.bmd_snapshot_contains_record_hash?(@resolved_record_hash)
+      # Spouse / same-register-page links use a valid record_hash but that row is often *not* a key in
+      # this search's snapshot (only matching hits are stored). Reject only when the hash does not resolve.
+      hkey = normalize_marriage_hash_param(@resolved_record_hash)
+      bg_from_hash = BestGuessHash.find_by(Hash: hkey)&.best_guess if hkey.present?
+      bg_from_hash ||= BestGuessHash.find_by(Hash: @resolved_record_hash.to_s.strip)&.best_guess
+      unless bg_from_hash
         flash[:notice] = missing
         flash.keep
         redirect_back(fallback_location: new_search_query_path) && return
       end
-      ok, @next_record, @previous_record = @search_query.bmd_next_and_previous_by_record_hash(@resolved_record_hash)
-      unless ok
-        flash[:notice] = missing
-        flash.keep
-        redirect_back(fallback_location: new_search_query_path) && return
+      if @search_query.bmd_snapshot_contains_record_hash?(@resolved_record_hash)
+        ok, @next_record, @previous_record = @search_query.bmd_next_and_previous_by_record_hash(@resolved_record_hash)
+        @next_record = @previous_record = nil unless ok
+      else
+        @next_record = @previous_record = nil
       end
       @search_record = nil
     else
