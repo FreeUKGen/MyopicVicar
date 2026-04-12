@@ -390,21 +390,38 @@
     return x_name['last_name'] <=> y_name['last_name']
   end
 
+  # FreeBMD search snapshots use symbol keys (e.g. :Surname); sort comparators pass string names
+  # (e.g. 'Surname'). Plain h['Surname'] is nil on symbol-keyed hashes, so sorting appeared broken.
+  def sort_field_lookup(obj, fieldname)
+    return nil if obj.nil?
+
+    key_str = fieldname.to_s
+    key_sym = fieldname.to_sym
+    if obj.is_a?(Hash)
+      return obj[key_str] if obj.key?(key_str)
+      return obj[key_sym] if obj.key?(key_sym)
+
+      nil
+    elsif obj.respond_to?(:[])
+      obj[key_str] || obj[key_sym]
+    end
+  end
+
   def field_values_match(x, y, fieldname)
     # Handle if x and y are arrays of hashes
     if x.is_a?(Array) && y.is_a?(Array)
       # Compare arrays by checking if any element in x matches any element in y
       x.any? do |x_item|
         y.any? do |y_item|
-          compare_values(x_item[fieldname], y_item[fieldname])
+          compare_values(sort_field_lookup(x_item, fieldname), sort_field_lookup(y_item, fieldname))
         end
       end
     elsif x.is_a?(Array)
-      x.any? { |item| compare_values(item[fieldname], y[fieldname]) }
+      x.any? { |item| compare_values(sort_field_lookup(item, fieldname), sort_field_lookup(y, fieldname)) }
     elsif y.is_a?(Array)
-      y.any? { |item| compare_values(x[fieldname], item[fieldname]) }
+      y.any? { |item| compare_values(sort_field_lookup(x, fieldname), sort_field_lookup(item, fieldname)) }
     else
-      compare_values(x[fieldname], y[fieldname])
+      compare_values(sort_field_lookup(x, fieldname), sort_field_lookup(y, fieldname))
     end
   end
 
@@ -441,25 +458,25 @@
     if x.is_a?(Array) && y.is_a?(Array)
       x.each do |x_item|
         y.each do |y_item|
-          comparison = compare_single_values(x_item[fieldname], y_item[fieldname])
+          comparison = compare_single_values(sort_field_lookup(x_item, fieldname), sort_field_lookup(y_item, fieldname))
           return comparison unless comparison == 0
         end
       end
       return 0 # If all comparisons are equal
     elsif x.is_a?(Array)
       x.each do |item|
-        comparison = compare_single_values(item[fieldname], y[fieldname])
+        comparison = compare_single_values(sort_field_lookup(item, fieldname), sort_field_lookup(y, fieldname))
         return comparison unless comparison == 0
       end
       return 0
     elsif y.is_a?(Array)
       y.each do |item|
-        comparison = compare_single_values(x[fieldname], item[fieldname])
+        comparison = compare_single_values(sort_field_lookup(x, fieldname), sort_field_lookup(item, fieldname))
         return comparison unless comparison == 0
       end
       return 0
     else
-      compare_single_values(x[fieldname], y[fieldname])
+      compare_single_values(sort_field_lookup(x, fieldname), sort_field_lookup(y, fieldname))
     end
   end
 
