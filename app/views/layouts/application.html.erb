@@ -8,8 +8,10 @@
   <!--<![endif]-->
   <head>
     <script src="/prebid_ads.js" type="text/javascript"></script>
-    <!-- Publift fuse tag-->
+    <!-- Publift fuse tag (disabled during donation campaign — see DonationCampaign) -->
+    <% unless DonationCampaign.active? %>
     <script async src='<%= fuse_tags_source %>' type="text/javascript"></script>
+    <% end %>
     <!-- Google Tag Manager -->
     <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -100,7 +102,9 @@
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %> 
-    <%#= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
+    <% if DonationCampaign.active? && %w[freereg freecen].include?(appname.downcase) %>
+      <%= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
+    <% end %>
     <% if appname.downcase == 'freecen' && GdprCountries::FOLLOWED_COUNTRIES.include?(user_location) %>
       <%= javascript_include_tag "javascripts/freecen_gdpr.js" %>
     <% end %>

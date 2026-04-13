@@ -147,8 +147,8 @@ class SearchQueriesController < ApplicationController
   end
 
   def new
-    page = Refinery::Page.where(slug: 'message').first
-    @page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
+    #page = Refinery::Page.where(slug: 'message').first
+    #@page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
 
     @search_query = SearchQuery.new
     session.delete(:query)

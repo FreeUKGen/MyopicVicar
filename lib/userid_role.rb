@@ -124,7 +124,7 @@ module UseridRole
     'System Documentation' => '/system-documents',
     'FreeCEN FreeREG Roadmap' => '/system-documents/development-FreeREG Roadmap',
     'FreeREG FreeREG Roadmap' => 'https://docs.google.com/document/d/1A8sEE7yAaT-2Y8rxWxunRT85BpwAkGaIQBEzVE6dNx8/edit?usp=sharing',
-    'Logout' => '/refinery/logout',
+    'Logout' => '/manage_resources/logout',
     'Message System' => '/messages',
     'Manage Images' => '/sources',
     'Assignments' => '/assignments/my_own',

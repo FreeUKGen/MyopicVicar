@@ -9,7 +9,7 @@
     <%= render 'cen_coordinator_data_problem'%>
   <% end %>
 <% end %>
-<% if @communication.screenshot_url.present?%>
+<% if @communication.screenshot_url.present? || (@communication.respond_to?(:screenshots) && @communication.screenshots.present?) %>
   <p>A copy of any attachment is provided.</p>
-<% end%>
+<% end %>
 <p>The <%= @appname %> Team</p>

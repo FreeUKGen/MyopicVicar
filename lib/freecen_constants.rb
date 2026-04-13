@@ -79,6 +79,10 @@ module Freecen
                                'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
                                'Orkney', 'Shetland', 'Strathclyde', 'Tayside', 'Western'].freeze
 
+  # Public contact form: counties with no county coordinator in ops are routed to CONTACT_FALLBACK_COORDINATOR_USERID (confirm with ops).
+  CONTACT_COUNTY_COORDINATOR_FALLBACK_CHAPMANS = %w[SSX HEF NTT].freeze
+  CONTACT_FALLBACK_COORDINATOR_USERID = 'CENManager'.freeze
+
   LOCATION = %w[enumeration_district civil_parish ecclesiastical_parish where_census_taken ward parliamentary_constituency poor_law_union
                        police_district sanitary_district special_water_district scavenging_district special_lighting_district school_board
                        location_flag].freeze
