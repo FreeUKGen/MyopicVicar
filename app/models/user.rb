@@ -57,49 +57,76 @@ class User
 
   # Override Devise method to find user by login (email or username)
   def self.find_for_database_authentication(warden_conditions)
-    conditions = warden_conditions. dup
-    
+    conditions = send(:devise_parameter_filter).filter(warden_conditions.dup).with_indifferent_access
+
     if (login = conditions.delete(:login))
       sanitized_login = sanitize_login(login)
       return nil unless sanitized_login
-      
-      # SAFE:  Mongoid automatically escapes values
-      where(conditions).or(
-        { email: sanitized_login },
-        { username:  sanitized_login }
-      ).first
-    elsif conditions.key? (:email) || conditions.key?(:username)
-      where(conditions).first
+
+      find_user_by_login_fields(sanitized_login, where(conditions.to_h))
+    elsif conditions[:email].present? || conditions[:username].present?
+      find_first_matching_filtered(conditions)
     end
   end
 
-  def self.find_first_by_auth_conditions(warden_conditions)
-    conditions = warden_conditions.dup
-    
+  # Devise calls this for password reset (reset_password_keys: [:email]) and other lookups.
+  # Must apply the same ParameterFilter as upstream Devise, or mixed-case emails never match
+  # and users see "email not found". Also accept optional +opts+ like the default implementation.
+  def self.find_first_by_auth_conditions(tainted_conditions, opts = {})
+    conditions = send(:devise_parameter_filter).filter(tainted_conditions.dup).merge(opts).with_indifferent_access
+
     if (login = conditions.delete(:login))
       sanitized_login = sanitize_login(login)
       return nil unless sanitized_login
-      
-      # SAFE: Mongoid automatically escapes values - call . or on where()
-      where({}).or(
-        { email: sanitized_login },
-        { username: sanitized_login }
-      ).first
+
+      find_user_by_login_fields(sanitized_login, where(conditions.to_h))
     else
-      where(conditions).first
+      find_first_matching_filtered(conditions)
     end
+  end
+
+  # Try exact match on filtered attributes, then case-insensitive email/username (legacy rows).
+  def self.find_first_matching_filtered(conditions)
+    return nil if conditions.blank?
+
+    h = conditions.to_h
+    user = where(h).first
+    return user if user
+
+    email = conditions[:email]
+    username = conditions[:username]
+    login_value = email.presence || username.presence
+    return nil if login_value.blank?
+
+    other = conditions.to_h.except(:email, :username, 'email', 'username')
+    sanitized = sanitize_login(login_value)
+    return nil unless sanitized
+
+    find_user_by_login_fields(sanitized, where(other))
+  end
+
+  # Exact match first (indexed; matches Devise-normalized email). If none, case-insensitive
+  # match via $expr + $toLower (no user-controlled regex). Requires MongoDB 3.6+.
+  def self.find_user_by_login_fields(sanitized_login, base_criteria)
+    user = base_criteria.or({ email: sanitized_login }, { username: sanitized_login }).first
+    return user if user
+
+    base_criteria.any_of(
+      { '$expr' => { '$eq' => [{ '$toLower' => '$email' }, sanitized_login] } },
+      { '$expr' => { '$eq' => [{ '$toLower' => '$username' }, sanitized_login] } }
+    ).first
   end
 
   # Sanitize login input
   def self.sanitize_login(login)
     return nil if login.blank?
-    
+
     # Sanitize: strip whitespace and convert to lowercase
     sanitized = login.to_s.strip.downcase
-    
+
     # Return nil if empty or too long (prevent DoS)
-    return nil if sanitized.blank? || sanitized. length > 255
-    
+    return nil if sanitized.blank? || sanitized.length > 255
+
     sanitized
   end
 
