@@ -47,6 +47,7 @@ class Contact
 
   validates_presence_of :name, :email_address, :body
   validates :email_address, format: { :with => /\A[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}\z/i }
+  validate :validate_freebmd_missing_entry_fields
 
   mount_uploader :screenshot, ScreenshotUploader
 
@@ -502,6 +503,32 @@ class Contact
   end
 
   private
+
+  def validate_freebmd_missing_entry_fields
+    return unless contact_type == 'Data Problem'
+    return unless MyopicVicar::Application.config.template_set.to_s.downcase == 'freebmd'
+
+    # Subsections 2 and 6 map to "record appears on scan but missing from DB/partial page"
+    # (have scan / do not have scan). Also validate when section3 payload is present to
+    # protect against malformed submissions.
+    sd = session_data.is_a?(Hash) ? session_data : {}
+    section3 = sd['section3'] || sd[:section3]
+    requires_section3 = %w[2 6].include?(query.to_s) || section3.is_a?(Hash)
+    return unless requires_section3
+
+    section3 = section3.is_a?(Hash) ? section3.stringify_keys : {}
+    required_fields = %w[event year surname forename district page_number]
+    required_fields.each do |field|
+      next if section3[field].present?
+
+      label = field.tr('_', ' ').capitalize
+      errors.add(:base, "Missing entry field is required: #{label}")
+    end
+
+    if section3['multiple_entries'].to_s != '1'
+      errors.add(:base, 'Missing entry field is required: Multiple entries')
+    end
+  end
 
   def reply_sent_messages(message, sender_userid, contact_recipients, other_recipients)
     @message = message

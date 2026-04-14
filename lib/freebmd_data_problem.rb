@@ -131,10 +131,26 @@ It is also possible that this is a transcription error - if this is the case, pl
 			subsections: [
 				{
 					id: 2,
-					label: "A record appears on the GRO index scan but is missing from our database/we have only transcribed part of the page",
+					label: "A record appears on the GRO index scan but is missing from our database OR we have only transcribed part of the page (You have the scan)",
 					answer: <<~HTML.strip,
-						<p>If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
-						<p>Enter the correct information in the relevant field(s) on the form below. Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we will protect and use your data, and then complete the form below.</p>
+						<p>If you have identified that an entry on a transcribed page has not been transcribed, please attach a correction to the immediately preceding entry.</p>
+						<p>Use a wildcard search to find surrounding entries. See <a href="https://www.freebmd2.org.uk/help/search_help#first-name-surname" target="_blank" rel="noopener">Search help: First name &amp; Surname</a>.</p>
+						<p>When reporting, fill in details of the missing entry. You only need to complete fields that are different from the preceding entry. The <strong>Missing entry or entries</strong> box must be checked.</p>
+						<p>If there are multiple missing entries, enter details for the first missing entry and also check the <strong>Multiple entries</strong> box.</p>
+						<p>Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we protect and use your data, then complete the form below.</p>
+					HTML
+					show_form: true,
+					form_numbers: [1, 3]
+				},
+				{
+					id: 6,
+					label: "A record appears on the GRO index scan but is missing from our database OR we have only transcribed part of the page (You do not have the scan)",
+					answer: <<~HTML.strip,
+						<p>If you have not yet located the scan, first try to find the immediately preceding entry and then report from there.</p>
+						<p>Use a wildcard search to find surrounding entries. See <a href="https://www.freebmd2.org.uk/help/search_help#first-name-surname" target="_blank" rel="noopener">Search help: First name &amp; Surname</a>.</p>
+						<p>When reporting, fill in details of the missing entry. You only need to complete fields that are different from the preceding entry. The <strong>Missing entry or entries</strong> box must be checked.</p>
+						<p>If there are multiple missing entries, enter details for the first missing entry and also check the <strong>Multiple entries</strong> box.</p>
+						<p>Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we protect and use your data, then complete the form below.</p>
 					HTML
 					show_form: true,
 					form_numbers: [1, 3]
