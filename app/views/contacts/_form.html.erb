@@ -33,7 +33,7 @@
               <input id="name" name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>" placeholder="Required" required="required">
             <% end %>
           </li>
-          <li class="grid__item two-fifths palm-one-whole push--bottom" id="email_address_input">
+          <li class="grid__item two-fifths palm-one-whole float--right push--bottom" id="email_address_input">
             <label tabindex="0" for="email_address" class="label ttip">Your email address
               <%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
               <span class="ttip__text">Required: so we can contact you; it will not be made public</span>
@@ -61,7 +61,7 @@
               </select>
             </li>
           <% end %>
-          <li class="grid__item one-half palm-one-whole push--bottom">
+          <li class="grid__item two-thirds palm-one-whole float--right push--bottom">
             <label tabindex="0" for="body" class="ttip">Comment or question
               <%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
               <% if appname_downcase == "freereg"%>
@@ -71,9 +71,9 @@
               <% end %>
             </label>
             <% if @contact.body.nil? %>
-              <textarea name="contact[body]" id="body" style="width: 100%;" wrap="hard" cols="60" rows="8" placeholder="Required" required="required"></textarea>
+              <textarea name="contact[body]" id="body" style="width: 100%;" wrap="hard" cols="80" rows="10" placeholder="Required" required="required"></textarea>
             <% else%>
-              <textarea name="contact[body]" id="body" style="width: 100%;" wrap="hard" cols="60" rows="8" placeholder="Required" required="required"><%=@contact.body%></textarea>
+              <textarea name="contact[body]" id="body" style="width: 100%;" wrap="hard" cols="80" rows="10" placeholder="Required" required="required"><%=@contact.body%></textarea>
             <% end%>
           </li>
           <% if appname_downcase != "freebmd"%>
@@ -106,7 +106,7 @@
               </select>
             </li>
           <% end %>
-          <li class="grid__item one-half palm-one-whole push--bottom">
+          <li class="grid__item one-third palm-one-whole push--bottom">
             <label tabindex="0" for="screenshot" class="ttip">Screenshot or image <span class="weight--normal"> (optional) </span>
               <%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
               <span class="ttip__text">Please select the image(s) you wish to upload (jpg, jpeg or gif only)</span>
@@ -117,7 +117,7 @@
             <label for="name2">Please add your name again:</label>
             <input type="text" name="contact[contact_name]" id="name2">
           </li>
-          <%= f.action :submit, :as => :input,  :label => 'Submit' , :button_html => { :class => "btn" }, :wrapper_html => { :class => "grid__item  one-third" }  %>
+          <%= f.action :submit, :as => :input,  :label => 'Submit' , :button_html => { :class => "btn", :style => "padding-top: 0 !important; padding-bottom: 0 !important; float: right;" }, :wrapper_html => { :class => "grid__item one-fifth float--right push--bottom" }  %>
         </ul>
       <% end %>
     </section>
