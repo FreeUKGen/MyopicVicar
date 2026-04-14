@@ -409,7 +409,7 @@ class Contact
     when 'Genealogical Question'
       role = 'genealogy_coordinator'
     when 'Enhancement Suggestion'
-      role = 'project_manager'
+      role = 'website_coordinator'
     else
       role = 'general_communication_coordinator'
     end
