@@ -222,8 +222,8 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
           unless result
             row_has_issue = true
             message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record, error crerating fc2 District record;#{row_has_issue}"
-            @output_file.puts "District #{row['Chapman']} #{row['Piece']} #{@district_object} - create error"
-            @output_file.puts @district_object.errors.full_messages
+            output_file.puts "District #{row['Chapman']} #{row['Piece']} #{@district_object} - create error"
+            output_file.puts @district_object.errors.full_messages
             crash
           end
 
@@ -267,8 +267,8 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
           unless result
             row_has_issue = true
             message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record, error creating fc2 Civil Parish record;#{row_has_issue}"
-            @output_file.puts "Civil Parish #{row['Chapman']} #{row['Piece']} #{@civll_parish_object} - create error"
-            @output_file.puts @civil_parish_object.errors.full_messages
+            output_file.puts "Civil Parish #{row['Chapman']} #{row['Piece']} #{@civll_parish_object} - create error"
+            output_file.puts @civil_parish_object.errors.full_messages
             crash
           end
 
@@ -302,8 +302,8 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
         result = @fc2piece_object.save if run_mode == 'UPDATE' && proceed
         unless result
           message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record, error creating fc2 Piece record;#{row_has_issue}"
-          @output_file.puts "Piece #{row['Chapman']} #{row['Piece']} #{fc2piece_object} - create error"
-          @output_file.puts @fc2piece_object.errors.full_messages
+          output_file.puts "Piece #{row['Chapman']} #{row['Piece']} #{fc2piece_object} - create error"
+          output_file.puts @fc2piece_object.errors.full_messages
         end
 
         # update civil parish records for the piece to have the piece id
