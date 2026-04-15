@@ -72,13 +72,7 @@ class Freecen2CivilParishesController < ApplicationController
     civil_parish_names = @freecen2_piece.add_update_civil_parish_list
     @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
 
-    # Return to civil parishes for this piece (same navigation as before delete). Path requires :id
-    # segment plus piece_id query param; see index_for_piece. Use 303 so clients GET after DELETE.
-    redirect_to index_for_piece_freecen2_civil_parishes_path(
-      @freecen2_piece.id,
-      piece_id: @freecen2_piece.id,
-      type: session[:type]
-    ), status: :see_other
+    redirect_to freecen2_civil_parishes_path
   end
 
   def district_place_name
@@ -164,15 +158,14 @@ class Freecen2CivilParishesController < ApplicationController
     end
 
     @chapman_code = session[:chapman_code]
-    piece_key = params[:piece_id].presence || params[:id]
-    @freecen2_piece = Freecen2Piece.find_by(_id: piece_key)
+    @freecen2_piece = Freecen2Piece.find_by(_id: params[:piece_id])
 
     if @freecen2_piece.blank?
       flash[:notice] = 'Piece not found'
       return redirect_to new_manage_resource_path
     end
     @year = @freecen2_piece.year
-    @freecen2_civil_parishes = Freecen2CivilParish.where(freecen2_piece_id: @freecen2_piece.id).all.order_by(name: 1)
+    @freecen2_civil_parishes = Freecen2CivilParish.where(freecen2_piece_id: params[:piece_id]).all.order_by(name: 1)
     @type = params[:type]
     @scotland = scotland_county?(@chapman_code)
   end

@@ -18,7 +18,7 @@ module Freecen2PiecesHelper
 
   def civil_link(piece)
     if piece.present?
-      link_to 'Civil Parishes', index_for_piece_freecen2_civil_parishes_path(piece.id, piece_id: piece.id, type: @type), class: 'btn   btn--small', title:' Displays a list of the Civil Parishes which belong to this Sub District (Piece)'
+      link_to 'Civil Parishes', index_for_piece_freecen2_civil_parishes_path(piece_id: piece.id, type: @type), class: 'btn   btn--small', title:' Displays a list of the Civil Parishes which belong to this Sub District (Piece)'
     else
       'There is no piece'
     end
