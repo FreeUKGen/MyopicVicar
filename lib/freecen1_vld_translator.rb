@@ -67,11 +67,14 @@ module Freecen
 
     def translate_individual(individual, chapman_code, full_year, file_id)
       # create the search record for the person
+      individual.ensure_citation_key!
+      individual.save(validate: false) if individual.changed?
       transcript_name = { first_name: individual.forenames, last_name: individual.surname, type: 'primary' }
 
       transcript_date = translate_date(individual, full_year)
 
-      record = SearchRecord.new(transcript_dates: [transcript_date], transcript_names: [transcript_name], chapman_code: chapman_code, record_type: full_year, freecen1_vld_file_id: file_id)
+      record = SearchRecord.new(transcript_dates: [transcript_date], transcript_names: [transcript_name], chapman_code: chapman_code, record_type: full_year, freecen1_vld_file_id: file_id,
+                                citation_key: individual.citation_key)
       record.place_id = individual.freecen_piece.place_id if individual.freecen_piece.present?
       record.freecen2_place_id = individual.freecen_piece.freecen2_place_id if individual.freecen_piece.present?
       record.birth_chapman_code = individual.verbatim_birth_county if individual.verbatim_birth_county.present?

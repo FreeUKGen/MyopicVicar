@@ -17,11 +17,16 @@ class FreecenCsvEntry
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   include Mongoid::Attributes::Dynamic
+  include HasCitationKey
   require 'freecen_validations'
   require 'record_type'
   require 'freecen_constants'
   require 'chapman_code'
   require 'age_parser'
+
+  def self.citation_key_prefix
+    'fcc'
+  end
 
   field :address_flag, type: String
   field :age, type: String
@@ -2939,12 +2944,15 @@ class FreecenCsvEntry
 
   def translate_individual(piece, district, chapman_code, place, file_id)
     # create the search record for the person
+    ensure_citation_key!
+    save(validate: false) if changed?
     transcript_name = { first_name: forenames, last_name: surname, type: 'primary' }
     transcript_date = translate_date
 
     record = SearchRecord.new(transcript_dates: [transcript_date], transcript_names: [transcript_name], chapman_code: chapman_code,
                               record_type: year, freecen2_civil_parish_id: freecen2_civil_parish_id, freecen2_place_id: place.id,
-                              freecen2_piece_id: piece.id, freecen2_district_id: district.id, freecen_csv_entry_id: _id, freecen_csv_file_id: file_id)
+                              freecen2_piece_id: piece.id, freecen2_district_id: district.id, freecen_csv_entry_id: _id, freecen_csv_file_id: file_id,
+                              citation_key: citation_key)
     if birth_county.present?
       record.birth_chapman_code = birth_county
     elsif verbatim_birth_county.present?

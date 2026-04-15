@@ -20,7 +20,7 @@ class SearchRecordsController < ApplicationController
 
   def redirect_legacy_search_record_id
     return if params[:id].blank?
-    return if SearchRecord.record_id(params[:id]).first.present?
+    return if SearchRecord.find_for_show_param(params[:id]).present?
     mapping = LegacySearchRecordMapping.find_by(old_id: params[:id].to_s)
     return if mapping.blank?
     new_id = mapping.new_id
@@ -94,7 +94,7 @@ class SearchRecordsController < ApplicationController
       @cen_next_dwelling = prev_next_dwellings[1]
       @dweling_values = @dwelling.dwelling_display_values(@cen_year, @cen_chapman_code)
     end
-    @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) unless @search_query.blank? || @search_query.is_a?(String)
+    @response, @next_record, @previous_record = @search_query.next_and_previous_records(@search_record.id.to_s) unless @search_query.blank? || @search_query.is_a?(String)
     add_head
     add_evidence_explained_values
     add_address_for_citation
@@ -209,7 +209,8 @@ class SearchRecordsController < ApplicationController
     if @search_query.present?
       @search_result = @search_query.search_result
       @viewed_records = @search_result.viewed_records
-      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+      rid = @search_record.id.to_s
+      @viewed_records << rid unless @viewed_records.include?(rid)
       @search_result.update_attribute(:viewed_records, @viewed_records)
     end
   end
@@ -261,9 +262,10 @@ class SearchRecordsController < ApplicationController
     if @search_query.present?
       @search_result = @search_query.search_result
       @viewed_records = @search_result.viewed_records
-      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+      rid = @search_record.id.to_s
+      @viewed_records << rid unless @viewed_records.include?(rid)
       @search_result.update_attribute(:viewed_records, @viewed_records)
-      @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) if params[:ucf].blank?
+      @response, @next_record, @previous_record = @search_query.next_and_previous_records(@search_record.id.to_s) if params[:ucf].blank?
     end
   end
 
@@ -329,7 +331,7 @@ class SearchRecordsController < ApplicationController
     add_uninhabited
     @type = session[:cen_index_type]
     @freecen_csv_entry.add_address(@freecen_csv_file_id, @dwel)
-    @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) unless @search_query.is_a?(String)
+    @response, @next_record, @previous_record = @search_query.next_and_previous_records(@search_record.id.to_s) unless @search_query.is_a?(String)
     @cen_chapman_code = @chapman_code
     @cen_year = @year
     @cen_prev_dwelling = @dwel == 1 ? nil : @dwel - 1
