@@ -200,6 +200,7 @@ class ContactsController < ApplicationController
     @options = FreeregOptionsConstants::ISSUES - ['Thank-you'] if appname_downcase == 'freereg'
     @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+    apply_freecen_gazetteer_contact_prefill
     #flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?
   end
 
@@ -378,6 +379,41 @@ class ContactsController < ApplicationController
 
   def contact_params
     params.require(:contact).permit!
+  end
+
+  # Prefill Contact from FreeCEN Gazetteer (freecen2_places search / place show). Routed as Data Question to county coordinator.
+  def apply_freecen_gazetteer_contact_prefill
+    return unless appname_downcase == 'freecen'
+    return if params[:from_gazetteer].blank?
+
+    place_id = params[:freecen2_place_id].to_s.strip
+    return if place_id.blank?
+
+    place = Freecen2Place.where(id: place_id).first
+    return if place.blank?
+
+    @contact.contact_type = 'Data Question'
+    @contact.selected_county = place.chapman_code
+    @contact.problem_page_url = request.referer.presence
+    path = freecen2_place_path(place)
+    base = request.base_url.chomp('/')
+    @contact.body = "[Gazetteer enquiry — add your question below]\n\n" \
+                     "Place: #{place.place_name}\n" \
+                     "County (Chapman code): #{place.chapman_code}\n" \
+                     "Place page: #{base}#{path}\n"
+    prefill_contact_from_session_userid_detail
+  end
+
+  def prefill_contact_from_session_userid_detail
+    return if session[:userid_detail_id].blank?
+
+    ud = UseridDetail.where(id: session[:userid_detail_id]).first
+    return if ud.blank?
+
+    fn = ud.person_forename.to_s.strip
+    sn = ud.person_surname.to_s.strip
+    @contact.name = [fn, sn].reject(&:blank?).join(' ') if @contact.name.blank?
+    @contact.email_address = ud.email_address if @contact.email_address.blank?
   end
 
   def delete_reply_messages(contact_id)

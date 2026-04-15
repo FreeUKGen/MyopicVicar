@@ -57,4 +57,10 @@ module Freecen2PlacesHelper
   def search_names_clear_form
     link_to 'Clear Form', search_names_freecen2_place_path(clear_form: true), class: 'btn btn--small'
   end
+
+  # Prefilled Contact (Data Question) for the county coordinator; opened from Gazetteer search or place page.
+  def contact_county_coordinator_gazetteer_path(place)
+    return '#' if place.blank?
+    new_contact_path(from_gazetteer: '1', freecen2_place_id: place.id.to_s)
+  end
 end

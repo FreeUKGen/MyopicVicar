@@ -24,32 +24,44 @@
         <th class='sticky-header '>Show on map<br>
           <small> Opens new tab</small></th>
         <th class='sticky-header t20'>Source:</th>
-        <th class='sticky-header t20'>Notes<br>
-          <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(session[:role]) %>
-            <th class='sticky-header '>Action<br>
-            </tr>
-          <% end%>
-        </thead>
-        <tbody >
-          <% if @results.present? %>
-            <% @results.each do |place| %>
-              <tr>
-                <td ><%= link_to(place.place_name, freecen2_place_path(place), class: 'btn   btn--small', title: 'Additional information on the place' )%> </td>
-                <td class='t20'> <%= alternate(place) %></td>
-                <td > <%= place.chapman_code %></td>
-                <td > <%= place.latitude%></td>
-                <td > <%= place.longitude%></td>
-                <td > <%= locate(place.latitude,place.longitude) %></td>
-                <td class='t20'> <%= place.source%></td>
-                <td class='t20'> <%= place.place_notes%></td>
-                <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(session[:role]) %>
-                  <td ><%= link_to 'Edit', edit_freecen2_place_path(place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %></td>
-                </tr>
-              <% end%>
-            <% end%>
-          <% else %>
-            <tr> There are no such names </tr>
-          <% end%>
-        </tbody>
-      </table>
-    </div>
+        <th class='sticky-header t20'>Notes</th>
+        <% if session[:userid_detail_id].present? %>
+          <th class='sticky-header t20'>County coordinator</th>
+        <% end %>
+        <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(session[:role]) %>
+          <th class='sticky-header '>Action</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody >
+      <% if @results.present? %>
+        <% @results.each do |place| %>
+          <tr>
+            <td ><%= link_to(place.place_name, freecen2_place_path(place), class: 'btn   btn--small', title: 'Additional information on the place' )%> </td>
+            <td class='t20'> <%= alternate(place) %></td>
+            <td > <%= place.chapman_code %></td>
+            <td > <%= place.latitude%></td>
+            <td > <%= place.longitude%></td>
+            <td > <%= locate(place.latitude,place.longitude) %></td>
+            <td class='t20'> <%= place.source%></td>
+            <td class='t20'> <%= place.place_notes%></td>
+            <% if session[:userid_detail_id].present? %>
+              <td class='t20'>
+                <%= link_to 'Contact', contact_county_coordinator_gazetteer_path(place),
+                  class: 'btn btn--small',
+                  title: 'Send a Data Question to this county’s coordinator about this Gazetteer place' %>
+              </td>
+            <% end %>
+            <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(session[:role]) %>
+              <td ><%= link_to 'Edit', edit_freecen2_place_path(place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="11">There are no such names</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
