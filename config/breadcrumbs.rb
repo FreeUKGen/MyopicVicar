@@ -1962,7 +1962,7 @@ crumb :edit_name_freecen2_civil_parish do |file, county, year|
 end
 
 crumb :freecen2_civil_parishes_index_for_piece do |file, county, year|
-  link 'FreeCen2 Civil Parish for Piece', index_for_piece_freecen2_civil_parishes_path(file)
+  link 'FreeCen2 Civil Parish for Piece', index_for_piece_freecen2_civil_parishes_path(file.id, piece_id: file.id)
   parent :show_freecen2_piece, file, county, year
 end
 
