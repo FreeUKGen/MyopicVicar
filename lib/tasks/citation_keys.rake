@@ -15,7 +15,7 @@ namespace :citation_keys do
 
     puts 'Backfilling SearchRecord (FreeREG only: freereg1_csv_entry present)...'
     sr_total = 0
-    SearchRecord.where(citation_key: nil, :freereg1_csv_entry_id.ne => nil).no_timeout.each do |sr|
+    SearchRecord.where(citation_key: nil).no_timeout.each do |sr|
       key = sr.freereg1_csv_entry&.citation_key
       if key.present?
         sr.citation_key = key
