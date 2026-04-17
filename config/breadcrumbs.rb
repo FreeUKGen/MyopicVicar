@@ -338,6 +338,10 @@ crumb :rename_register do |county, place, church, register|
   link 'Rename Register', rename_register_path
   parent :show_register, county, place, church, register
 end
+crumb :merge_preview_register do |county, place, church, register|
+  link 'Merge duplicate registers', merge_preview_register_path(register)
+  parent :show_register, county, place, church, register
+end
 
 # manage syndicate
 crumb :syndicate_selection do

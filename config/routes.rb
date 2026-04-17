@@ -511,7 +511,8 @@ MyopicVicar::Application.routes.draw do
 
 
   get 'registers/:id/rename', :to => 'registers#rename', :as => :rename_register
-  get 'registers/:id/merge(.:format)', :to => 'registers#merge', :as => :merge_register
+  get 'registers/:id/merge_preview(.:format)', :to => 'registers#merge_preview', :as => :merge_preview_register
+  post 'registers/:id/merge(.:format)', :to => 'registers#merge', :as => :merge_register
   get 'registers/:id/relocate', :to => 'registers#relocate', :as => :relocate_register
   get 'registers/:id/create_image_server', :to => 'registers#create_image_server', :as => :create_image_server_register
   get 'registers/create_image_server_return', :to => 'registers#create_image_server_return', :as => :create_image_server_return_register

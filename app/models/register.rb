@@ -41,6 +41,10 @@ class Register
   index({ alternate_register_name: 1})
   index({ church_id: 1, alternate_register_name: 1})
 
+  def self.strip_string_fields_except
+    %i[register_notes]
+  end
+
   class << self
     def id(id)
       where(:id => id)
@@ -52,6 +56,26 @@ class Register
         register_type = RegisterType::APPROVED_OPTIONS[register_type] if RegisterType.approved_option_keys.include?(register_type)
       end
       register_type
+    end
+
+    # Register type codes that should identify the same register when matching uploads
+    # to existing records (avoids duplicate Register rows caused by alternate_register_name drift).
+    # PT/PH are Phillimore "new" vs legacy codes; OT/TR cover Transcript vs Other Transcript storage.
+    def register_type_codes_for_duplicate_match(register_type)
+      code = check_and_correct_register_type(register_type)
+      code = code.to_s.strip
+      return :unspecified if code.empty?
+
+      case code
+      when 'OT', 'TR'
+        %w[OT TR]
+      when 'DT', 'DW'
+        %w[DT DW]
+      when 'PT', 'PH'
+        %w[PT PH]
+      else
+        [code]
+      end
     end
 
     def create_register_for_church(args,freereg1_csv_file)
@@ -92,19 +116,19 @@ class Register
 
     def find_register(args)
       @@my_church = Church.find_by_name_and_place(args[:chapman_code], args[:place_name], args[:church_name])
-      if @@my_church
-        my_church_id = @@my_church[:_id]
-        register = Register.where(:church_id =>my_church_id, :alternate_register_name=> args[:alternate_register_name] ).first
-        unless register then
-          register = Register.where(:church_id =>my_church_id, :register_name=> args[:alternate_register_name] ).first
-          unless register
-            register = nil
-          end
-        end
+      return nil unless @@my_church
+
+      my_church_id = @@my_church.id
+      codes = register_type_codes_for_duplicate_match(args[:register_type])
+      if codes == :unspecified
+        Register.where(church_id: my_church_id).any_of(
+          { register_type: nil },
+          { register_type: '' },
+          { register_type: ' ' }
+        ).first
       else
-        register = nil
+        Register.where(church_id: my_church_id, :register_type.in => codes).first
       end
-      register
     end
 
     def image_transcriptions_calculation(register_id)
@@ -315,19 +339,7 @@ class Register
   end
 
   def merge_registers
-    register_id = self._id
-    church = self.church
-    church.registers.each do |register|
-      register.register_type
-      unless (register._id == register_id || register.register_type != self.register_type)
-        return [false, "a register being merged has input"] if register.has_input?
-        register.freereg1_csv_files.each do |file|
-          file.update_attribute(:register_id, register_id)
-        end
-        church.registers.delete(register)
-      end
-    end
-    return [true, ""]
+    RegisterMergeService.new(self).call
   end
 
   def propogate_register_type_change(old_type)

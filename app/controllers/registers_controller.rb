@@ -102,16 +102,27 @@ class RegistersController < ApplicationController
     get_user_info_from_userid
   end
 
+  def merge_preview
+    load(params[:id])
+    redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
+      @church.blank? || @place.blank?
+
+    @merge_preview = RegisterMergeService.new(@register).preview
+  end
+
   def merge
     load(params[:id])
     redirect_back(fallback_location: root_path, notice: 'There was a missing ownership link') && return if @register.blank? ||
       @church.blank? || @place.blank?
 
     proceed, message = @register.merge_registers
-    redirect_back(fallback_location: register_path(@register), notice: "Merge unsuccessful; #{message}") && return unless proceed
+    unless proceed
+      flash[:alert] = "Merge unsuccessful: #{message}"
+      redirect_to(merge_preview_register_path(@register)) && return
+    end
 
     @register.calculate_register_numbers
-    flash[:notice] = 'The merge of the Register was successful'
+    flash[:notice] = message.presence || 'The merge completed successfully.'
     redirect_to(register_path(@register))
   end
 

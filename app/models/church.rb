@@ -28,6 +28,10 @@ class Church
   belongs_to :place, index: true
   index({ place_id: 1, church_name: 1 })
 
+  def self.strip_string_fields_except
+    %i[church_notes]
+  end
+
   ############################################################# class methods
 
   class << self

@@ -95,6 +95,11 @@ class Place
   has_many :gaps
 
   has_many :open_names_per_place
+
+  def self.strip_string_fields_except
+    %i[place_notes]
+  end
+
   PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem

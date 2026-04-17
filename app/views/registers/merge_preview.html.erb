@@ -1,0 +1,77 @@
+<% breadcrumb :merge_preview_register, @county, @place, @church, @register %>
+<p style="text-align: center">
+  Merge duplicate registers of type <b><%= @merge_preview[:register_type_label] %></b>
+  for <b><%= @church_name %></b> in <b><%= @place_name %></b> of <b><%= @county %></b>
+</p>
+<%= render 'flash_notice' %>
+<% if @merge_preview[:error].present? %>
+  <section class="island island--light">
+    <p style="color:red"><%= @merge_preview[:error] %></p>
+    <%= link_to 'Back to register', register_path(@register), class: 'btn   btn--small push-half--top' %>
+  </section>
+<% elsif @merge_preview[:no_candidates] %>
+  <section class="island island--light">
+    <p><%= @merge_preview[:message] %></p>
+    <%= link_to 'Back to register', register_path(@register), class: 'btn   btn--small push-half--top' %>
+  </section>
+<% else %>
+  <section class="island island--light">
+    <% if @merge_preview[:blockers].any? %>
+      <p style="color:red">
+        <strong>Merge is blocked:</strong> one or more duplicate registers have coordinator-entered metadata
+        (status, quality, source, copyright, notes, or min/max year).
+      </p>
+      <ul>
+        <% @merge_preview[:blockers].each do |b| %>
+          <li>Register <code><%= b[:id] %></code> — <%= b[:block_reason] %></li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <h5>Duplicate registers to merge into this one</h5>
+    <p>Target register id: <code><%= @register.id %></code></p>
+
+    <table class="table--bordered table--data">
+      <tr>
+        <th>Duplicate register id</th>
+        <% RegisterMergeService::DEPENDENCY_MODELS.each do |m| %>
+          <th><%= RegisterMergeService.model_label(m.name) %></th>
+        <% end %>
+        <th>Status</th>
+      </tr>
+      <% @merge_preview[:candidates].each do |c| %>
+        <tr>
+          <td><%= c[:id] %></td>
+          <% RegisterMergeService::DEPENDENCY_MODELS.each do |m| %>
+            <td><%= c[:dependency_counts][m.name].to_i %></td>
+          <% end %>
+          <td><%= c[:blocked] ? 'Blocked' : 'OK' %></td>
+        </tr>
+      <% end %>
+      <tr>
+        <th>Totals moved</th>
+        <% RegisterMergeService::DEPENDENCY_MODELS.each do |m| %>
+          <th><%= @merge_preview[:totals][m.name].to_i %></th>
+        <% end %>
+        <th></th>
+      </tr>
+    </table>
+
+    <p class="push-half--top">
+      Confirming will reassign all listed batches, sources, embargo rules, gaps, and unique-name rows to this register,
+      then <strong>delete</strong> the duplicate register document(s). This cannot be undone.
+    </p>
+
+    <% if @merge_preview[:merge_allowed] %>
+      <%= button_to 'Confirm merge',
+                    merge_register_path(@register),
+                    method: :post,
+                    class: 'btn   btn--small',
+                    data: { confirm: 'Merge all duplicate registers listed above into this register and delete their register entries? This cannot be undone.' } %>
+    <% else %>
+      <p><strong>Confirm merge</strong> is disabled until every blocked register is edited or cleared.</p>
+    <% end %>
+
+    <%= link_to 'Back to register', register_path(@register), class: 'btn   btn--small push-half--top' %>
+  </section>
+<% end %>

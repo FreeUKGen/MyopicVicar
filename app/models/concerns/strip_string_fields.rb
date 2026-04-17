@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-# Automatically trims leading and trailing whitespace from string fields
-# on create and update. Include in any model that needs this behavior.
+# Normalizes string fields before validation: trims ends and collapses
+# internal runs of whitespace to a single space. Include in any model that
+# needs this behavior.
 #
 # Usage:
 #   include StripStringFields
 #
-# Optionally exclude specific fields by overriding strip_string_fields_except:
+# Optionally exclude specific fields by overriding strip_string_fields_except
+# (those attributes are left unchanged — e.g. free-text notes):
 #   include StripStringFields
 #   def self.strip_string_fields_except
 #     [:password, :raw_notes]
@@ -23,8 +25,8 @@ module StripStringFields
     excluded = self.class.respond_to?(:strip_string_fields_except) ? self.class.strip_string_fields_except : []
     attrs.except(*excluded.map(&:to_s)).each do |key, value|
       next unless value.is_a?(String)
-      stripped = value.strip
-      self[key] = stripped if value != stripped
+      normalized = value.strip.gsub(/\s+/, ' ')
+      self[key] = normalized if value != normalized
     end
   end
 end
