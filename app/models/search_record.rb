@@ -205,6 +205,18 @@ class SearchRecord
       if bson_object_id_string?(id_s)
         rec = record_id(id_s).first
         return rec if rec.present?
+
+        # FreeREG: same 24-char id may be the Freereg1CsvEntry _id stored on SearchRecord#freereg1_csv_entry_id
+        # (stable across search record rebuilds when the entry row persists).
+        begin
+          oid = BSON::ObjectId.from_string(id_s)
+        rescue BSON::Error::InvalidObjectId
+          oid = nil
+        end
+        if oid
+          rec = where(freereg1_csv_entry_id: oid).first
+          return rec if rec.present?
+        end
       end
       where(citation_key: id_s).first
     end
@@ -554,6 +566,8 @@ class SearchRecord
   ############################################################################# instance methods ####################################################################
 
   def to_param
+    return freereg1_csv_entry_id.to_s if freereg1_csv_entry_id.present?
+
     citation_key.presence || id.to_s
   end
 

@@ -42,7 +42,7 @@ module SearchRecordsHelper
     id_for_url =
       case record
       when SearchRecord
-        record.citation_key.presence || record.id.to_s
+        record.to_param
       when BSON::ObjectId
         record.to_s
       else
