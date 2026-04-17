@@ -69,8 +69,10 @@ class Freecen2CivilParishesController < ApplicationController
 
     success = @freecen2_civil_parish.destroy
     flash[:notice] = success ? 'Civil Parish deleted' : 'Civil Parish deletion failed'
-    civil_parish_names = @freecen2_piece.add_update_civil_parish_list
-    @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
+    if @freecen2_piece.present?
+      civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+      @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
+    end
 
     redirect_to freecen2_civil_parishes_path
   end

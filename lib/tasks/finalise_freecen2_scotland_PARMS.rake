@@ -26,14 +26,13 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
   @missing_place_names = []
 
   # Print the time etc before start the process
+
   start_time = Time.now
   run_info = "Started finialise Scotland PARMS at #{start_time} in run mode = #{run_mode} limit = #{lim} input file = #{input_file_name}.csv year = #{file_year}"
   p run_info
   output_file.puts run_info
 
   rec_count = 0
-  # codes = ChapmanCode.remove_codes(ChapmanCode::CODES)
-  # codes = codes['Scotland'].values
 
   input_file = Rails.root.join('tmp', "#{input_file_name}.csv")
 
@@ -87,7 +86,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
       # check district
 
       fc2_districts = Freecen2District.where(chapman_code: row['Chapman'], year: file_year)
-      # ********** AEV - OK this approach works do same for civil parishes
+
       found = false
       if fc2_districts.present?
 
@@ -146,7 +145,8 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
       end
 
-      # Report on Has VLD files or has CSV files ?????? unless row has issues
+      # Report on has VLD files or has CSV files unless row has issues
+
       vld_file_count = fc2_piece.vld_files.count
 
       fc2_csv_files = FreecenCsvFile.where(freecen2_piece_id: fc2_piece.id).count
@@ -158,6 +158,8 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
       end
 
     else
+
+      # **** Piece does not already exist ****
 
       # is it a Piece ending with a non-numeric?
 
@@ -260,47 +262,42 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
       civil_parishes = row['Parishes'].split(',')
 
       civil_parishes.each do |cp|
-        fc2_cp = Freecen2CivilParish.find_by(chapman_code: row['Chapman'], year: file_year, name: cp)
+        fc2_cps = Freecen2CivilParish.where(chapman_code: row['Chapman'], year: file_year)
 
-        next if fc2_cp.present?
+        cp_found = false
+        if fc2_cps.present?
 
-        # check civil parish is recorded as fc2_place
+          fc2_cps.each do |cps|
+            cp_found = true if cps.name.downcase == cp.downcase
+            break if cp_found == true
 
-        myname = Freecen2Place.standard_place(cp)
-
-        cp_place = Freecen2Place.find_by(chapman_code: row['Chapman'], standard_place_name: myname)
-
-        cp_place = Freecen2Place.find_by(:chapman_code => row['Chapman'], "alternate_freecen2_place_names.standard_alternate_name" => myname) unless cp_place.present?
-
-        if cp_place.present?
-
-          action = run_mode == 'UPDATE' ? 'so creating' : 'so will create'
-
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record, #{action} new fc2 Civil Parish record;#{row_has_issue}"
-
-          @civll_parish_object = Freecen2CivilParish.new(name: cp, chapman_code: row['Chapman'],
-                                                         year: file_year, freecen2_place_id: cp_place.id)
-          result = true
-          result = @civll_parish_object.save if run_mode == 'UPDATE'
-          unless result
-            row_has_issue = true
-            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record, error creating fc2 Civil Parish record;#{row_has_issue}"
-            output_file.puts "Civil Parish #{row['Chapman']} #{row['Piece']} #{@civll_parish_object} - create error"
-            output_file.puts @civil_parish_object.errors.full_messages
-            crash
           end
 
-        else
+          next if cp_found == true
+
+          # check civil parish is recorded as fc2_place
 
           myname = Freecen2Place.standard_place(cp)
-          @missing_place_names << "#{myname} a Civil Parish in | #{row['Chapman']}"
-          row_has_issue = true
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record and no fc2_place record (Gaz) for Civil Parish Place name ;#{row_has_issue}"
 
+          cp_place = Freecen2Place.find_by(chapman_code: row['Chapman'], standard_place_name: myname)
+
+          cp_place = Freecen2Place.find_by(:chapman_code => row['Chapman'], "alternate_freecen2_place_names.standard_alternate_name" => myname) unless cp_place.present?
+
+          if cp_place.present?
+
+            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record;#{row_has_issue}"
+
+          else
+
+            myname = Freecen2Place.standard_place(cp)
+            @missing_place_names << "#{myname} a Civil Parish in | #{row['Chapman']}"
+            row_has_issue = true
+            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record and no fc2_place record (Gaz) for Civil Parish Place name ;#{row_has_issue}"
+
+          end
         end
-      end
 
-      #  end
+      end
 
       # Create the Piece
 
