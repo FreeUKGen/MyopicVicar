@@ -77,7 +77,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
       # check name
 
-      unless fc2_piece.name == row['Name']
+      unless fc2_piece.name.downcase == row['Name'].downcase
 
         row_has_issue = true
         message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Name']}] does not match existing fc2 Piece record name [#{fc2_piece.name}];#{row_has_issue}"
@@ -86,15 +86,33 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
       # check district
 
-      fc2_district = Freecen2District.find_by(chapman_code: row['Chapman'], year: file_year, name: row['District'])
+      fc2_districts = Freecen2District.where(chapman_code: row['Chapman'], year: file_year)
+      # ********** AEV - OK this approach works do same for civil parishes
+      found = false
+      if fc2_districts.present?
 
-      if fc2_district.present?
+        fc2_districts.each do |fc2_district|
 
-        unless fc2_district.id == fc2_piece.freecen2_district_id
+          found = true if fc2_district.name.downcase == row['District'].downcase
+          @district = fc2_district if found == true
+          break if found == true
 
-          input_dst = "[#{row['District']}]"
+        end
+
+        if found == true
+
+          unless @district.id == fc2_piece.freecen2_district_id
+
+            input_dst = "[#{row['District']}]"
+            row_has_issue = true
+            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};" + input_dst + " does not match district record linked to existing fc2 Piece [#{f@district.name}];#{row_has_issue}"
+
+          end
+
+        else
+
           row_has_issue = true
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};" + input_dst + " does not match district record linked to existing fc2 pPece [#{fc2_district.name}];#{row_has_issue}"
+          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record;#{row_has_issue}"
 
         end
 
@@ -107,13 +125,13 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
       # check civil parishes
 
-      unless fc2_piece.civil_parish_names == row['Parishes']
+      unless fc2_piece.civil_parish_names.downcase == row['Parishes'].downcase
 
         action = run_mode == 'UPDATE' ? 'so updating' : 'so can update'
 
         civil_parish_names_string = fc2_piece.add_update_civil_parish_list
 
-        if civil_parish_names_string == row['Parishes']
+        if civil_parish_names_string.downcase == row['Parishes'].downcase
 
           message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Parishes']}] civil parish links match existing fc2 Piece record but civil parish names string mismatch #{action} to [#{civil_parish_names_string}];#{row_has_issue}"
 
