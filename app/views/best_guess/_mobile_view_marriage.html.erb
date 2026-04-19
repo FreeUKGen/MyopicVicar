@@ -105,7 +105,7 @@
           <% district = District.where(DistrictNumber: record[:DistrictNumber]).first %>
           <% if district.present? %>
             <% if @search %>
-              <%= district_link_or_name_id(district, record, search_id) %>
+              <%= district_link_or_name_id(district, record, search_id, page: params[:page], results_per_page: params[:results_per_page]) %>
             <% else%>
               <%= link_to "#{record[:District]}", district_friendly_url_path(id: district.DistrictNumber, friendly: district.district_friendly_url) %>
             <% end %>
@@ -127,7 +127,7 @@
           <% spouse_district = District.where(DistrictNumber: spouse[:DistrictNumber]).first %>
           <% if spouse_district.present? %>
             <% if @search %>
-              <%= district_link_or_name_id(spouse_district, spouse, search_id) %>
+              <%= district_link_or_name_id(spouse_district, spouse, search_id, page: params[:page], results_per_page: params[:results_per_page]) %>
             <% else%>
               <%= link_to "#{spouse[:District]}", district_friendly_url_path(id: spouse_district.DistrictNumber, friendly: spouse_district.district_friendly_url) %>
             <% end %>

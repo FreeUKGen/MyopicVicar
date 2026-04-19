@@ -4,7 +4,11 @@ module DistrictsHelper
     logger.warn(link_hash)
     case
     when link_hash[:search_query].present? && !link_hash[:search_record].present?
-      a = link_to "#{app_icons[:left_arrow_pink]} Back to search results".html_safe, search_query_path(link_hash[:search_query])
+      back_opts = {}
+      back_opts[:page] = link_hash[:page] if link_hash[:page].present?
+      back_opts[:results_per_page] = link_hash[:results_per_page] if link_hash[:results_per_page].present?
+      a = link_to "#{app_icons[:left_arrow_pink]} Back to search results".html_safe,
+                  search_query_path(link_hash[:search_query], back_opts)
     when link_hash[:search_record].present?
       sr = link_hash[:search_record]
       sq = link_hash[:search_query]
@@ -33,35 +37,41 @@ module DistrictsHelper
     return a
   end
 
-  def district_link_or_name(district, search_record, search_query)
+  def district_link_or_name(district, search_record, search_query, page: nil, results_per_page: nil)
     return search_record[:District] unless district.present?
     
     if district.valid?
+      path_opts = {
+        id: district.DistrictNumber,
+        friendly: district.district_friendly_url,
+        search_id: search_query.id
+      }
+      path_opts[:page] = page if page.present?
+      path_opts[:results_per_page] = results_per_page if results_per_page.present?
       link_to(
         titleize_string(search_record[:District]),
-        district_friendly_url_path(
-          id: district.DistrictNumber,
-          friendly: district.district_friendly_url,
-          search_id: search_query.id
-        )
+        district_friendly_url_path(path_opts)
       )
     else
       district.DistrictName
     end
   end
 
-  def district_link_or_name_id(district, search_record, search_id)
+  def district_link_or_name_id(district, search_record, search_id, page: nil, results_per_page: nil)
     return search_record[:District] unless district.present?
     
     if district.valid?
+      path_opts = {
+        id: district.DistrictNumber,
+        friendly: district.district_friendly_url,
+        entry_id: search_record.RecordNumber,
+        search_id: search_id
+      }
+      path_opts[:page] = page if page.present?
+      path_opts[:results_per_page] = results_per_page if results_per_page.present?
       link_to(
         titleize_string(search_record[:District]),
-        district_friendly_url_path(
-          id: district.DistrictNumber,
-          friendly: district.district_friendly_url,
-          entry_id: search_record.RecordNumber,
-          search_id: search_id
-        )
+        district_friendly_url_path(path_opts)
       )
     else
       district.DistrictName
