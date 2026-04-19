@@ -46,7 +46,8 @@ module DistrictsHelper
         )
       )
     else
-      district.DistrictName
+      label = search_record[:District].presence || district.DistrictName
+      label.present? ? titleize_string(label.to_s) : 'Registration district'
     end
   end
 
@@ -64,7 +65,8 @@ module DistrictsHelper
         )
       )
     else
-      district.DistrictName
+      label = search_record[:District].presence || district.DistrictName
+      label.present? ? titleize_string(label.to_s) : 'Registration district'
     end
   end
 end

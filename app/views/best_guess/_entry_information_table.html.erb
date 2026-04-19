@@ -199,7 +199,11 @@
           <% if @search %>
             <%= district_link_or_name_id(district, record, search_id) %>
           <% else%>
-            <%= link_to "#{record[:District]}", district_friendly_url_path(id: district.DistrictNumber, friendly: district.district_friendly_url) %>
+            <% if district.valid? %>
+              <%= link_to "#{record[:District]}", district_friendly_url_path(id: district.DistrictNumber, friendly: district.district_friendly_url) %>
+            <% else %>
+              <%= record[:District] %>
+            <% end %>
           <% end %>
         <% else %>
           <%= record.display_district_name %>
@@ -208,7 +212,7 @@
           <%= 'No data' %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
-        <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+        <% if district.present? && (record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase) %>
           <a class="footnote-link" id="link-to-district-query" href="#district-query">
             [district query] <span class="accessibility">potential issue with this District name</span>
           </a>
