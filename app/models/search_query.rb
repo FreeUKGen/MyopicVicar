@@ -3120,7 +3120,12 @@
   end
 
   def searched_records
-    search_result.records.values
+    vals = search_result.records.values
+    # FreeBMD: persist_results stores duplicate record_hash keys as [attrs_a, attrs_b] (Array).
+    # sort_results indexes each row with x[order_sym]; Arrays raise TypeError. Match bmd_search_results.
+    return vals.flatten if freebmd_app?
+
+    vals
   end
 
   def sorted_and_paged_searched_records
