@@ -277,6 +277,7 @@ class BestGuess < FreebmdDbBase
     friendly.gsub!(/\W/, '-')
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
+    friendly
   end
 
   def get_comments

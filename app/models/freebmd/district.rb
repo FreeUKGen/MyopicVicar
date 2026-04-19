@@ -70,6 +70,7 @@ class District < FreebmdDbBase
     friendly.gsub!(/\W/, '-')
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
+    friendly
   end
 
   def District.districts_as_array
