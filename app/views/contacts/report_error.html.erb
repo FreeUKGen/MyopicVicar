@@ -36,24 +36,50 @@
         <% FreebmdDataProblem::REPORT_ERROR_SECTIONS.each_with_index do |section, section_idx| %>
           <div class="accordion-section" data-section-index="<%= section_idx %>" style="display: none;">
             <% section[:subsections].each do |sub| %>
-              <% form_numbers = Array(sub[:form_numbers]).map(&:to_i) %>
-              <% show_form_1 = sub[:show_form] || form_numbers.include?(1) %>
-              <details class="accordion-item"
-                       data-subsection-id="<%= sub[:id] %>"
-                       data-show-form="<%= show_form_1 ? '1' : '0' %>"
-                       data-form-numbers="<%= form_numbers.join(',') %>">
-                <summary class="accordion-item__summary"><%= sub[:label] %></summary>
-                <div class="accordion-item__body answer_explanations">
-                  <% if show_form_1 %>
-                    <div class="report-error-explanation-and-form">
-                      <%= render_report_error_answer(sub[:answer]) %>
-                      <div class="report_form_host push--top"></div>
-                    </div>
-                  <% else %>
-                    <%= render_report_error_answer(sub[:answer]) %>
+              <% if sub[:children].present? %>
+                <div class="accordion-nested-group" role="group" aria-label="<%= sub[:label].to_s.truncate(120) %>">
+                  <p class="accordion-nested-group__heading"><%= sub[:label] %></p>
+                  <% sub[:children].each do |leaf| %>
+                    <% form_numbers = Array(leaf[:form_numbers]).map(&:to_i) %>
+                    <% show_form_1 = leaf[:show_form] || form_numbers.include?(1) %>
+                    <details class="accordion-item"
+                             data-subsection-id="<%= leaf[:id] %>"
+                             data-show-form="<%= show_form_1 ? '1' : '0' %>"
+                             data-form-numbers="<%= form_numbers.join(',') %>">
+                      <summary class="accordion-item__summary"><%= leaf[:label] %></summary>
+                      <div class="accordion-item__body answer_explanations">
+                        <% if show_form_1 %>
+                          <div class="report-error-explanation-and-form">
+                            <%= render_report_error_answer(leaf[:answer]) %>
+                            <div class="report_form_host push--top"></div>
+                          </div>
+                        <% else %>
+                          <%= render_report_error_answer(leaf[:answer]) %>
+                        <% end %>
+                      </div>
+                    </details>
                   <% end %>
                 </div>
-              </details>
+              <% else %>
+                <% form_numbers = Array(sub[:form_numbers]).map(&:to_i) %>
+                <% show_form_1 = sub[:show_form] || form_numbers.include?(1) %>
+                <details class="accordion-item"
+                         data-subsection-id="<%= sub[:id] %>"
+                         data-show-form="<%= show_form_1 ? '1' : '0' %>"
+                         data-form-numbers="<%= form_numbers.join(',') %>">
+                  <summary class="accordion-item__summary"><%= sub[:label] %></summary>
+                  <div class="accordion-item__body answer_explanations">
+                    <% if show_form_1 %>
+                      <div class="report-error-explanation-and-form">
+                        <%= render_report_error_answer(sub[:answer]) %>
+                        <div class="report_form_host push--top"></div>
+                      </div>
+                    <% else %>
+                      <%= render_report_error_answer(sub[:answer]) %>
+                    <% end %>
+                  </div>
+                </details>
+              <% end %>
             <% end %>
           </div>
         <% end %>
@@ -173,6 +199,9 @@
   .report-error-accordion .accordion-item[open] .accordion-item__summary::before { content: "\25bc\00a0"; }
   .report-error-accordion .accordion-item__body { padding: 0 1rem 1rem; border-top: 1px solid #eee; }
   .report-error-accordion .answer_explanations { margin-top: 0.5rem; }
+  .report-error-accordion .accordion-nested-group { margin-bottom: 0.75rem; padding: 0.25rem 0 0.25rem 0.75rem; border-left: 3px solid #ccc; }
+  .report-error-accordion .accordion-nested-group__heading { font-weight: 600; margin: 0.35rem 0 0.6rem; line-height: 1.35; }
+  .report-error-accordion .accordion-nested-group .accordion-item { margin-left: 0; }
   /* Match FreeBMD corrections table / form block width (see partial max-width 48rem). */
   .report-error-explanation-and-form {
     max-width: 48rem;
