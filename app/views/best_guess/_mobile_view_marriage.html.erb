@@ -107,7 +107,7 @@
             <% if @search %>
               <%= district_link_or_name_id(district, record, search_id) %>
             <% else%>
-              <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber)%>
+              <%= link_to "#{record[:District]}", district_friendly_url_path(id: district.DistrictNumber, friendly: district.district_friendly_url) %>
             <% end %>
           <% else %>
             <%= record.display_district_name %>
@@ -129,7 +129,7 @@
             <% if @search %>
               <%= district_link_or_name_id(spouse_district, spouse, search_id) %>
             <% else%>
-              <%= link_to "#{spouse[:District]}", district_friendly_url_path(spouse_district.district_friendly_url, id: spouse_district.DistrictNumber)%>
+              <%= link_to "#{spouse[:District]}", district_friendly_url_path(id: spouse_district.DistrictNumber, friendly: spouse_district.district_friendly_url) %>
             <% end %>
           <% else %>
             <%= spouse.display_district_name %>
