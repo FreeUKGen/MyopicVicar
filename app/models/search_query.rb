@@ -3153,7 +3153,7 @@
       qn = saved_record[:QuarterNumber]
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = this_record_atts["Surname"]
-      given_names = this_record_atts["GivenName"].split(' ')
+      given_names = this_record_atts["GivenName"].to_s.split(' ')
       #given_name = given_names[0]
       #given_names.shift()
       #other_given_names = given_names.join(' ') if given_names.present?
@@ -3161,8 +3161,8 @@
       f = f+1 if saved_record[:RecordTypeID] == 3
       #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
-      gedcom << '2 SURN '+surname.capitalize
+      gedcom << '1 NAME '+this_record_atts['GivenName'].to_s+' /'+surname.to_s.capitalize+'/'
+      gedcom << '2 SURN '+surname.to_s.capitalize
       given_names.each do |name|
         gedcom << '2 GIVN '+name
       end
@@ -3170,8 +3170,8 @@
       gedcom << '1 BIRT' if saved_record[:RecordTypeID] == 1
       gedcom << '1 DEAT' if saved_record[:RecordTypeID] == 2
       gedcom << '1 MARR' if saved_record[:RecordTypeID] == 3
-      gedcom << '2 DATE '+quarter
-      gedcom << '2 PLAC '+this_record_atts['District']
+      gedcom << '2 DATE '+quarter.to_s
+      gedcom << '2 PLAC '+this_record_atts['District'].to_s
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+saved_record.record_hash+'/'+saved_record.friendly_url
     end
     gedcom << ''
@@ -3188,7 +3188,7 @@
       qn = rec[:QuarterNumber]
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = rec[:Surname]
-      given_names = rec[:GivenName].split(' ')
+      given_names = rec[:GivenName].to_s.split(' ')
       #given_name = given_names[0]
       #given_names.shift()
       #other_given_names = given_names.join(' ') if given_names.present?
@@ -3197,18 +3197,19 @@
       entry = BestGuess.where(RecordNumber: rec[:RecordNumber]).first
       #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
-      gedcom << '2 SURN '+surname.capitalize
+      gedcom << '1 NAME '+rec[:GivenName].to_s+' /'+surname.to_s.capitalize+'/'
+      gedcom << '2 SURN '+surname.to_s.capitalize
       given_names.each do |name|
         gedcom << '2 GIVN '+name
       end
-      #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if rec[:RecordTypeID] == 1
       gedcom << '1 DEAT' if rec[:RecordTypeID] == 2
       gedcom << '1 MARR' if rec[:RecordTypeID] == 3
-      gedcom << '2 DATE '+quarter
-      gedcom << '2 PLAC '+rec[:District]
-      gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
+      gedcom << '2 DATE '+quarter.to_s
+      gedcom << '2 PLAC '+rec[:District].to_s
+      if entry.present?
+        gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash.to_s+'/'+entry.friendly_url.to_s
+      end
     end
     gedcom << '0 TRLR'
     gedcom

@@ -56,9 +56,9 @@ module DownloadAsCsv
       unless record.nil?
       qn = record[:QuarterNumber]
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
-      surname = record[:Surname]
-      given_names = record[:GivenName].split(' ')
-      given_name = given_names[0]
+      surname = record[:Surname].to_s
+      given_names = record[:GivenName].to_s.split(' ')
+      given_name = given_names[0].to_s
       given_names.shift()
       other_given_names = given_names.join(' ') if given_names.present?
       entry = BestGuess.where(RecordNumber: record[:RecordNumber]).first
@@ -73,9 +73,11 @@ module DownloadAsCsv
       gedcom << '1 BIRT' if record[:RecordTypeID] == 1
       gedcom << '1 DEAT' if record[:RecordTypeID] == 2
       gedcom << '1 MARR' if record[:RecordTypeID] == 3
-      gedcom << '2 DATE '+quarter
-      gedcom << '2 PLAC '+record[:District]
-      gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
+      gedcom << '2 DATE '+quarter.to_s
+      gedcom << '2 PLAC '+record[:District].to_s
+      if entry.present?
+        gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash.to_s+'/'+entry.friendly_url.to_s
+      end
       end
     end
     gedcom
