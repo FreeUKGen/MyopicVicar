@@ -14,11 +14,11 @@
     </ul>
   </div>
 <% end %>
-<div >
-  <p class="push-half--bottom desk-wide-three-quarters desk-three-quarters lap-one-whole palm-one-whole">The data in the FreeBMD website is transcribed by our volunteers from scans of pages in the General Register Office indexes. These indexes were created by copying selected information from certificates, pooling it centrally, and creating an index by hand. The format of these indexes has changed over time, from handwritten pages, to typed pages, then to computer printout. The quality of the scans we have been given access to (often a scan of fiche or microfilm, which is itself a copy of the source page) has also varied - some are very hard to read.</p>
-  <p class="push-half--bottom desk-wide-three-quarters desk-three-quarters lap-one-whole palm-one-whole">Please select the option below which best describes your reason for thinking the data in this entry is wrong, and an explanation will appear, advising what (if anything) you should report to us.</p>
+<div class="grid" >
+  <p class="grid__item push-half--bottom desk-wide-three-quarters desk-three-quarters lap-one-whole palm-one-whole">The data in the FreeBMD website is transcribed by our volunteers from scans of pages in the General Register Office indexes. These indexes were created by copying selected information from certificates, pooling it centrally, and creating an index by hand. The format of these indexes has changed over time, from handwritten pages, to typed pages, then to computer printout. The quality of the scans we have been given access to (often a scan of fiche or microfilm, which is itself a copy of the source page) has also varied - some are very hard to read.</p>
+  <p class="grid__item push-half--bottom desk-wide-three-quarters desk-three-quarters lap-one-whole palm-one-whole">Please select the option below which best describes your reason for thinking the data in this entry is wrong, and an explanation will appear, advising what (if anything) you should report to us.</p>
 </div>
-  <div class="push palm-flush--bottom">
+  <div class="push--bottom">
   <ol class="grid">
     <li class="grid__item one-half lap-one-whole palm-one-whole" id="section_select_li">
       <label class="ttip" for="report_error_section" tabindex="0">Select section</label>
@@ -192,7 +192,8 @@
 </div>
 <style>
   .report-error-accordion .accordion-section { margin-top: 1rem; }
-  .report-error-accordion .accordion-item { border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; }
+  .report-error-accordion .accordion-item { border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; transition: background-color 0.15s ease; }
+  .report-error-accordion .accordion-item:hover { background-color: #fff; }
   .report-error-accordion .accordion-item__summary { padding: 0.75rem 1rem; cursor: pointer; font-weight: 500; list-style: none; }
   .report-error-accordion .accordion-item__summary::-webkit-details-marker { display: none; }
   .report-error-accordion .accordion-item__summary::before { content: "\25b6\00a0"; }
