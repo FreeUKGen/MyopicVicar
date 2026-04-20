@@ -212,12 +212,12 @@
     margin-bottom: 0.75rem;
     padding: 0.25rem 0 0.25rem 0.75rem;
     border-left: 3px solid #ccc;
-    transition: background-color 0.15s ease;
+    transition: border-left-color 0.15s ease;
   }
-  /* :has() — parent highlights when a nested <details> is hovered or focused (modern browsers) */
+  /* Group cue only: full-width #f4f4f4 on the parent made every sibling <details> look hovered. */
   .report-error-accordion .accordion-nested-group:has(.accordion-item:hover),
   .report-error-accordion .accordion-nested-group:has(.accordion-item:focus-within) {
-    background-color: #f4f4f4;
+    border-left-color: rgb(0, 95, 204);
   }
   .report-error-accordion .accordion-nested-group__heading { font-weight: 600; margin: 0.35rem 0 0.6rem; line-height: 1.35; }
   .report-error-accordion .accordion-nested-group .accordion-item { margin-left: 0; }
