@@ -1,4 +1,6 @@
 module FreebmdDataProblem
+	# Alias for convenience in interpolated strings (canonical value: GroAbbrev::ACCESSIBILITY_HTML).
+	GRO_ABBREV_ACCESSIBILITY_HTML = GroAbbrev::ACCESSIBILITY_HTML
 
 	QUESTIONS = [
 		"An error",
@@ -7,8 +9,8 @@ module FreebmdDataProblem
 	]
 
 	ANSWERS = [
-		"FreeBMD transcribes exactly what is in the GRO index, and we do not change it to be correct as per the GRO certificate, or other certain knowledge. You may use the postem system (linked) to provide this information, which may be of great help to other family historians. If you wish to get the GRO Index corrected you should apply to the GRO [please put information here from https://www.freebmd.org.uk/FAQ.html#22].",
-		"FreeBMD transcribes EXACTLY what is in the GRO index for this event, and we do not change it to be correct as per another event in the index. If you wish to get the GRO Index corrected you should apply to the GRO [please link here to information on FreeBMD2 from https://www.freebmd.org.uk/FAQ.html#22].",
+		"FreeBMD transcribes exactly what is in the #{GRO_ABBREV_ACCESSIBILITY_HTML} index, and we do not change it to be correct as per the #{GRO_ABBREV_ACCESSIBILITY_HTML} certificate, or other certain knowledge. You may use the postem system (linked) to provide this information, which may be of great help to other family historians. If you wish to get the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index corrected you should apply to the #{GRO_ABBREV_ACCESSIBILITY_HTML} [please put information here from https://www.freebmd.org.uk/FAQ.html#22].",
+		"FreeBMD transcribes EXACTLY what is in the #{GRO_ABBREV_ACCESSIBILITY_HTML} index for this event, and we do not change it to be correct as per another event in the index. If you wish to get the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index corrected you should apply to the #{GRO_ABBREV_ACCESSIBILITY_HTML} [please link here to information on FreeBMD2 from https://www.freebmd.org.uk/FAQ.html#22].",
 		"If you have identified that an entry or entries on a scan of a page has not been transcribed you should attach a correction to the immediately preceding entry (find the name on the page and search using those details, and use the 'report a data error' button on that record.
 If you have done this, and are back at this point, please use this link [link to reporting page] to report the following entry as missing.  You only need to change the details that are different, such as the name of the missing person, and check the 'missing entry' or 'missing entries' box - you only need to check the missing entries box on the first person if multiple entries are missing: we will make sure all the missing entries are transcribed."
 	]
@@ -33,7 +35,7 @@ If you have done this, and are back at this point, please use this link [link to
 	]
 
 	ANSWERS2 = [
-		"FreeBMD transcribes exactly what is in the GRO index, and we do not change it to be correct as per the GRO certificate, or other certain knowledge. You may use the postem system (linked) to provide this information, which may be of great help to other family historians. If you wish to get the GRO Index corrected you should apply to the GRO [please put information here from https://www.freebmd.org.uk/FAQ.html#22].",
+		"FreeBMD transcribes exactly what is in the #{GRO_ABBREV_ACCESSIBILITY_HTML} index, and we do not change it to be correct as per the #{GRO_ABBREV_ACCESSIBILITY_HTML} certificate, or other certain knowledge. You may use the postem system (linked) to provide this information, which may be of great help to other family historians. If you wish to get the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index corrected you should apply to the #{GRO_ABBREV_ACCESSIBILITY_HTML} [please put information here from https://www.freebmd.org.uk/FAQ.html#22].",
 		"It is not an error to find names appearing twice under alternative spellings in the Index. This happened when names were poorly written on the original copy. You may use the postem system (linked) to provide this information, which may be of help to other family historians.",
 		"Districts are spelt and abbreviated in a variety of ways. FreeBMD records the actual spelling from the index and links this to the definitive form of the name for searching, so we do not 'correct' them. To see the definitive form, you can click on the name of the district.",
 		"The Registration District covers a larger area than the location with the same name as the Registration District, and some places were covered by more than one registration district (at the same time) or moved between registration districts over time. We know it can be confusing to see an unexpected place name, and therefore have put a link from the district name to a page which gives a detailed and comprehensive history of that registration district.",
@@ -43,20 +45,20 @@ If you have done this, and are back at this point, please use this link [link to
 		"To report a problem with a scan, please start on the Entry Page with the issue.  [see also https://docs.google.com/document/d/17EzCa8Gl130ACmG00LEJFKcAU-83Yg2Z8Oiu0Cu0BeU/edit?usp=sharing for text which may be needed].",
 		"If you have identified that an entry or entries on a scan of a page has not been transcribed you should attach a correction to the immediately preceding entry (find the name on the page and search using those details, and use the 'report a data error' button on that record.  
 If you have done this, and are back at this point, please use this link [link to reporting page] to report the following entry as missing.  You only need to change the details that are different, such as the name of the missing person, and check the 'missing entry' or 'missing entries' box - you only need to check the missing entries box on the first person if multiple entries are missing: we will make sure all the missing entries are transcribed.",
-"We transcribe exactly as on the GRO index, which may itself contain errors.  
-If it is possible to search for this entry on the GRO website (https://www.gro.gov.uk/gro/content/certificates/login.asp - you do not need to actually order a certificate), please do so, and if it is there, let us know the volume and page concerned below/on this form.
-If the entry has not yet been indexed by the GRO, please use the form below/on this form - please provide as much information as you know about the date and location of the event",
+"We transcribe exactly as on the #{GRO_ABBREV_ACCESSIBILITY_HTML} index, which may itself contain errors.  
+If it is possible to search for this entry on the #{GRO_ABBREV_ACCESSIBILITY_HTML} website (https://www.gro.gov.uk/gro/content/certificates/login.asp - you do not need to actually order a certificate), please do so, and if it is there, let us know the volume and page concerned below/on this form.
+If the entry has not yet been indexed by the #{GRO_ABBREV_ACCESSIBILITY_HTML}, please use the form below/on this form - please provide as much information as you know about the date and location of the event",
 "In some circumstances there are both handwritten and typed scans available and the FreeBMD policy is that the two should be seen as completely independent attestations to the same historical event and the two should be kept and served as separate records. When submitting a correction you should check the scan(s) referenced when you click on the Scan available icon.",
-"This is usually because the GRO index itself contains identical entries, and we transcribe exactly what is in the index.  Please check the scan(s) to see if this is the case.
+"This is usually because the #{GRO_ABBREV_ACCESSIBILITY_HTML} index itself contains identical entries, and we transcribe exactly what is in the index.  Please check the scan(s) to see if this is the case.
 It is also possible that this is a transcription error - if this is the case, please let us know by using the form below [form or email address?]",
 	"Where the transcriber was unable to read the record fully, uncertainty will be shown by use of special characters: []{}_*. The majority of such entries will be corrected in the fullness of time as better quality source becomes available. It should be noted that as all corrections are verified before being applied, it is unlikely that our source will be any more readable now than it was when it was transcribed, and such corrections are unlikely to be applied. If you have a legible copy of this page (e.g. one you photographed when the indexes were open for public consulation), please use [this form] to provide your contact details so that we can invite you to send us the image.",
-	"FreeBMD transcribes EXACTLY what is in the GRO index for this event, and we do not change it to be correct as per another event in the index. If you wish to get the GRO Index corrected you should apply to the GRO [please link here to information on FreeBMD2 from https://www.freebmd.org.uk/FAQ.html#22].",
-	"FreeBMD transcribes EXACTLY what is in the GRO index for THIS  person in the event, and we do not change it to be correct as per the index for a spouse or mother. If you wish to get the GRO Index corrected you should apply to the GRO [please link to information on FreeBMD2 from https://www.freebmd.org.uk/FAQ.html#22].",
+	"FreeBMD transcribes EXACTLY what is in the #{GRO_ABBREV_ACCESSIBILITY_HTML} index for this event, and we do not change it to be correct as per another event in the index. If you wish to get the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index corrected you should apply to the #{GRO_ABBREV_ACCESSIBILITY_HTML} [please link here to information on FreeBMD2 from https://www.freebmd.org.uk/FAQ.html#22].",
+	"FreeBMD transcribes EXACTLY what is in the #{GRO_ABBREV_ACCESSIBILITY_HTML} index for THIS  person in the event, and we do not change it to be correct as per the index for a spouse or mother. If you wish to get the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index corrected you should apply to the #{GRO_ABBREV_ACCESSIBILITY_HTML} [please link to information on FreeBMD2 from https://www.freebmd.org.uk/FAQ.html#22].",
 	"--",
 	]
 
 	ANSWERS3 = [
-		"If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.",
+		"If our transcription does not match the information shown in the #{GRO_ABBREV_ACCESSIBILITY_HTML} index scan, please let us know using the form below. We will review the details and correct the database if needed.",
 		"--",
 		"--",
 		"--",
@@ -97,7 +99,8 @@ It is also possible that this is a transcription error - if this is the case, pl
 	# Report error page: 3 main sections, each with subsections (accordion). Id is stored as contact.query.
 	# Each subsection :answer may be plain text (wrapped in <p> by the view) or HTML (e.g. multiple <p>, <ul>, <a>).
 	# Use HTML when you need paragraphs, lists or links; content is sanitized before output.
-	# Whole-word "GRO" in :answer strings is replaced with accessibility markup (see ApplicationHelper#gro_abbrev_html).
+	# In :answer / ANSWERS* strings, interpolate +GRO_ABBREV_ACCESSIBILITY_HTML+ (same string as GroAbbrev::ACCESSIBILITY_HTML).
+	# Plain "GRO" in :label and QUESTIONS2 is still expanded in the report_error view via +gro_abbrev_in_user_text+.
 	# Optional :form_numbers controls which UI blocks appear in report_error:
 	#   1 => main report form
 	#   2 => corrections table block
@@ -112,7 +115,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 					id: 0,
 					label: "The transcription information does not match the scan.",
 					answer: <<~HTML.strip,
-						<p>If our transcription does not match the information shown in the GRO index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
+						<p>If our transcription does not match the information shown in the #{GRO_ABBREV_ACCESSIBILITY_HTML} index scan, please let us know using the form below. We will review the details and correct the database if needed.</p>
 						<p>Enter the correct information in the relevant field(s) on the form below. Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we will protect and use your data, and then complete the form below.</p>
 					HTML
 					show_form: true,
@@ -121,10 +124,10 @@ It is also possible that this is a transcription error - if this is the case, pl
 				{ id: 1,
 				  label: "The transcription information does match the GRO index scan.",
 				  answer: <<~HTML.strip,
-						<p>We cannot change the database if our transcription matches the information on the GRO index (scan).</p>
-						<p>If you believe there is an error in the GRO Index, you will need to contact the <a href="https://www.gro.gov.uk/" target="_blank" rel="noopener">General Register Office (GRO)</a> to request a correction.</p>
-						<p>If the GRO confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
-						<small>(Was: If you wish to get the GRO Index corrected you should apply to the GRO. Contact the GRO with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.)</small>
+						<p>We cannot change the database if our transcription matches the information on the #{GRO_ABBREV_ACCESSIBILITY_HTML} index (scan).</p>
+						<p>If you believe there is an error in the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index, you will need to contact the <a href="https://www.gro.gov.uk/" target="_blank" rel="noopener">General Register Office (#{GRO_ABBREV_ACCESSIBILITY_HTML})</a> to request a correction.</p>
+						<p>If the #{GRO_ABBREV_ACCESSIBILITY_HTML} confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
+						<small>(Was: If you wish to get the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index corrected you should apply to the #{GRO_ABBREV_ACCESSIBILITY_HTML}. Contact the #{GRO_ABBREV_ACCESSIBILITY_HTML} with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.)</small>
 					HTML
 				  show_form: false }
 			]
@@ -166,10 +169,10 @@ It is also possible that this is a transcription error - if this is the case, pl
 				{
 					id: 3, label: "A record is missing from the GRO index scan",
 					answer: <<~HTML.strip,
-						<p>We cannot change the database if our transcription matches the information on the GRO index (scan).</p>
-						<p>If you believe there is an error in the GRO Index, you will need to contact the General Register Office (GRO) to request a correction</p>
-						<p>If the GRO confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
-						<small>(Was: If you wish to get the GRO Index corrected you should apply to the GRO. Contact the GRO with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.)</small>
+						<p>We cannot change the database if our transcription matches the information on the #{GRO_ABBREV_ACCESSIBILITY_HTML} index (scan).</p>
+						<p>If you believe there is an error in the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index, you will need to contact the General Register Office (#{GRO_ABBREV_ACCESSIBILITY_HTML}) to request a correction</p>
+						<p>If the #{GRO_ABBREV_ACCESSIBILITY_HTML} confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
+						<small>(Was: If you wish to get the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index corrected you should apply to the #{GRO_ABBREV_ACCESSIBILITY_HTML}. Contact the #{GRO_ABBREV_ACCESSIBILITY_HTML} with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.)</small>
 					HTML
 					show_form: false
 				}
@@ -179,7 +182,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 			title: "Anything else/miscellaneous",
 			subsections: [
 				{ id: 4, label: "E.g. Scan image not clear (but transcribed correctly and not a GRO error)", answer: ANSWERS2[11], show_form: false },
-				{ id: 5, label: "A particular year/Qtr/event has a page missing (GRO issue, not us – very rare)", answer: "This is a GRO index issue rather than a FreeBMD transcription issue. You may contact the GRO about missing pages. We are unable to add entries that do not appear in the index.", show_form: false }
+				{ id: 5, label: "A particular year/Qtr/event has a page missing (GRO issue, not us – very rare)", answer: "This is a #{GRO_ABBREV_ACCESSIBILITY_HTML} index issue rather than a FreeBMD transcription issue. You may contact the #{GRO_ABBREV_ACCESSIBILITY_HTML} about missing pages. We are unable to add entries that do not appear in the index.", show_form: false }
 			]
 		}
 	].freeze

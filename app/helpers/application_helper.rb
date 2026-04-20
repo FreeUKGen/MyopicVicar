@@ -13,10 +13,6 @@
 # limitations under the License.
 #
 module ApplicationHelper
-  # General Register Office initialism: visible "GRO" for sighted users; hidden dots so assistive tech reads G.R.O.
-  # Use +gro_abbrev_html+ in ERB, or rely on +render_report_error_answer+ / +gro_abbrev_in_user_text+ for word "GRO".
-  GRO_ABBREV_ACCESSIBILITY_HTML = 'G<span class="accessibility">.</span>R<span class="accessibility">.</span>O'.freeze
-
   # Entry-information path/URL for a BestGuess record (FreeBMD). Shared by BestGuessController and ContactsController.
   def entry_information_path_for(record)
     return nil if record.blank?
@@ -1238,14 +1234,14 @@ module ApplicationHelper
     end
   end
 
-  # Inserts the accessibility-aware GRO markup (safe for HTML contexts).
+  # Inserts the accessibility-aware GRO markup (safe for HTML contexts). Canonical fragment: GroAbbrev::ACCESSIBILITY_HTML.
   def gro_abbrev_html
-    GRO_ABBREV_ACCESSIBILITY_HTML.html_safe
+    GroAbbrev::ACCESSIBILITY_HTML.html_safe
   end
 
   # Escape +text+, then replace whole word "GRO" with the accessibility markup (+.html_safe+ result).
   def gro_abbrev_in_user_text(text)
-    ERB::Util.html_escape(text.to_s).gsub(/\bGRO\b/, GRO_ABBREV_ACCESSIBILITY_HTML).html_safe
+    ERB::Util.html_escape(text.to_s).gsub(/\bGRO\b/, GroAbbrev::ACCESSIBILITY_HTML).html_safe
   end
 
   # Plain "G.R.O" for aria-label and other attribute-only strings (no HTML).
