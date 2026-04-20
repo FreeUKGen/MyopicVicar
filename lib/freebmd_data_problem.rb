@@ -1,3 +1,5 @@
+require_relative 'gro_abbrev' unless defined?(GroAbbrev::ACCESSIBILITY_HTML)
+
 module FreebmdDataProblem
 	# Alias for convenience in interpolated strings (canonical value: GroAbbrev::ACCESSIBILITY_HTML).
 	GRO_ABBREV_ACCESSIBILITY_HTML = GroAbbrev::ACCESSIBILITY_HTML
