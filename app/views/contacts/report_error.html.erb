@@ -192,11 +192,18 @@
 </div>
 <style type="text/css">
   .report-error-accordion .accordion-section { margin-top: 1rem; }
-  .report-error-accordion .accordion-section:hover { background-color: #fff; }
+  .report-error-accordion .accordion-section:hover { background-color: #f4f4f4; }
   .report-error-accordion .accordion-item { border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; transition: background-color 0.15s ease; }
-  .report-error-accordion .accordion-item:hover { background-color: #fff; }
+  .report-error-accordion .accordion-item:hover { background-color: #f4f4f4; }
+  /* Keyboard: whole row reads as “active” when summary or content inside has focus */
+  .report-error-accordion .accordion-item:focus-within { background-color: #f4f4f4; }
   .report-error-accordion .accordion-item__summary { padding: 0.75rem 1rem; cursor: pointer; font-weight: 500; list-style: none; }
-  .report-error-accordion .accordion-item__summary:hover { background-color: #fff; }
+  .report-error-accordion .accordion-item__summary:hover { background-color: #f4f4f4; }
+  .report-error-accordion .accordion-item__summary:focus { outline: none; }
+  .report-error-accordion .accordion-item__summary:focus-visible {
+    outline: 2px solid rgb(0, 95, 204);
+    outline-offset: 2px;
+  }
   .report-error-accordion .accordion-item__summary::-webkit-details-marker { display: none; }
   .report-error-accordion .accordion-item__summary::before { content: "\25b6\00a0"; }
   .report-error-accordion .accordion-item[open] .accordion-item__summary::before { content: "\25bc\00a0"; }
