@@ -6,7 +6,15 @@ module DistrictsHelper
     when link_hash[:search_query].present? && !link_hash[:search_record].present?
       a = link_to "#{app_icons[:left_arrow_pink]} Back to search results".html_safe, search_query_path(link_hash[:search_query])
     when link_hash[:search_record].present?
-      a = link_to "#{app_icons[:left_arrow_pink]} Back to entry".html_safe, friendly_bmd_record_details_path(link_hash[:search_query].id,link_hash[:search_record].id, link_hash[:search_record].friendly_url, search_entry: link_hash[:search_record].RecordNumber)
+      sr = link_hash[:search_record]
+      sq = link_hash[:search_query]
+      back_url =
+        if sq.present?
+          friendly_bmd_record_details_path(sq.id, sr.RecordNumber, sr.friendly_url, search_entry: sr.RecordNumber, record_hash: sr.record_hash)
+        else
+          friendly_bmd_record_details_non_search_path(sr.RecordNumber, sr.friendly_url, search_entry: sr.RecordNumber, record_hash: sr.record_hash)
+        end
+      a = link_to "#{app_icons[:left_arrow_pink]} Back to entry".html_safe, back_url
     when link_hash[:district].present? && !link_hash[:search_query].present?
       a= link_to "#{app_icons[:left_arrow_pink]} Back to overview".html_safe, "/districts/districts_overview"
     else

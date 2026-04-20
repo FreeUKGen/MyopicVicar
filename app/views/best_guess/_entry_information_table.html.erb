@@ -73,7 +73,7 @@
 </script>
 <style type="text/css">
   .citation_container {border: 1px solid black; padding: 5px;}
-  .table--left-aligned th {width: 200px; text-align: left !important; padding-left: 20px !important;}
+  .table--left-aligned th {text-align: left !important; padding-left: 20px !important;}
   .table--left-aligned td {text-align: left !important; padding-left: 20px !important;}
 </style>
 <table class="table--bordered table--data table--left-aligned">
@@ -149,7 +149,6 @@
     <% end %>
     <% if entry_type == "marriage" %>
       <% if record.AssociateName.present? %>
-        <% if @spouse_record.present? %>
           <tr>
             <th scope="row">
               Spouse Name
@@ -171,7 +170,7 @@
                 <% elsif type == "marriages" %>
                   <%= spouse_display %><br>
                 <% else %>
-                  <%= link_to spouse_display, show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+                  <%= link_to spouse_display, show_marriage_details_non_search_path(entry_id: record.RecordNumber, record_hash: record.record_hash) %><br>
                 <% end %>
               <% else %>
                 <%= spouse_display %><br>
@@ -181,16 +180,6 @@
               <% end %>
             </td>
           </tr>
-        <% else %>
-          <tr>
-            <th scope="row">
-              Spouse Name
-            </th>
-            <td>
-              <%= record.AssociateName %>
-            </td>
-          </tr>
-        <% end %>
       <% else %>
         <tr>
           <th scope="row">Entries on page <%= record.Page %></th>
@@ -411,8 +400,8 @@
     <% if params[:search_id].present? %>
       <div class="grid">
         <div class='grid__item text--center'>
-          <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
-          <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
+          <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber, record_hash: @previous_record.record_hash), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
+          <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber, record_hash: @next_record.record_hash), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
         </div>
       </div>
     <% end %>

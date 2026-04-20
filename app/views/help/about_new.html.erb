@@ -1,16 +1,14 @@
 <% title "Introducing the new FreeBMD website" %>
 <section id="body_content">
   <h1 id="body_content_title">Introducing the new FreeBMD website</h1>
-  <div class="grid">
-    <div class="grid__item one_whole">
+  <div class="help-about-new-layout">
+    <div class="grid__item two-thirds lap-three-fifths palm-one-whole">
       <p class="lead">Websites are changing rapidly, and more and more users expect to find information as quickly as possible. They also expect an interface that looks good and works well across all devices, especially on smaller screens such as phones and tablets.</p>
-      <%= Help.create_help_menu(Help::AboutPages, 'In this section') %>
       <p>We have been working to develop a new version of FreeBMD that not only keeps up with the times but is also more accessible to everyone, regardless of how they use the site. We have therefore been making changes to the colours used, the language used, and are attempting to achieve the <a href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank">WCAG AA accessibility standard</a>.</p>
       <p>Our goal is to develop a new and improved website that is as good as the original FreeBMD. It will ultimately be better, with a more user-friendly interface and new features to support your research.</p>
       <p class="lead">You can still use the original FreeBMD. It will continue to be updated with new data each month, and the site will remain available for the foreseeable future.      </p>
-    </div>
-    <div class="grid__item two-thirds lap-three-fifths  palm-one-whole">
-    <h2>New features and improvements</h2>
+
+      <h2>New features and improvements</h2>
       <h3>Searching</h3>
       <ul class="validation-list">
       <li><i class="fa fa-check" style="color: #00857E;"></i> Autosuggest for surnames, forenames, counties and Registration Districts — start typing to select</li>
@@ -55,4 +53,67 @@
       <p>We continue to work on improvements and will release updates to the new FreeBMD. We will post information about updates on this page, so make sure you visit to stay informed about updates, both here and on our <a href="https://www.facebook.com/freeukgen">social&nbsp;media</a>.</p>
       <p>We value your feedback as we continue to develop the website. Please try the new site and report any issues or suggestions you have on the ‘Give us Feedback’ button located near the bottom of every page.</p>
     </div>
+
+    <aside class="grid__item one-third lap-two-fifths palm-one-whole help-about-new-sidebar" aria-label="In this section and advertisement">
+      <div class="help-about-new-sidebar__inner">
+        <%= Help.create_help_menu(Help::AboutPages, 'In this section') %>
+        <div class="help-about-new-ad push-half--top" aria-label="Advertisement">
+          <h2 class="title-block help-about-new-ad__title">Advertisement</h2>
+          <!-- GAM 71161633/FRBMD_freebmd2orguk/AboutNew_Sticky -->
+          <div data-fuse="Vrec_Sticky"></div>
+        </div>
+      </div>
+    </aside>
   </div>
+
+  <style>
+    /* Mirror working sticky layout (e.g. same_page_entries): flex row + no overflow clipping. */
+    .help-about-new-layout {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      overflow: visible !important;
+    }
+
+    .help-about-new-layout > .grid__item {
+      float: none !important; /* grid items are float-based; flex handles layout here */
+    }
+
+    .help-about-new-layout > .grid__item.two-thirds {
+      flex: 1 1 66.666%;
+      min-width: 0;
+    }
+
+    .help-about-new-layout > .help-about-new-sidebar {
+      flex: 0 0 33.333%;
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+    }
+
+    .help-about-new-sidebar__inner {
+      z-index: 1;
+    }
+
+    .help-about-new-ad__title {
+      text-align: center;
+    }
+
+    /* Help.create_help_menu returns a floated grid item; inside our sidebar we want it to stack normally. */
+    .help-about-new-sidebar .grid__item {
+      float: none !important;
+      width: auto !important;
+      max-width: none !important;
+    }
+
+    .help-about-new-sidebar .float--right {
+      float: none !important;
+    }
+
+    /* On small screens stack and disable sticky. */
+    @media (max-width: 720px) {
+      .help-about-new-layout { display: block; }
+      .help-about-new-layout > .help-about-new-sidebar { margin-top: 1rem; }
+      .help-about-new-sidebar__inner { position: static; top: auto; }
+    }
+  </style>

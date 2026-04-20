@@ -16,6 +16,10 @@ class BestGuess < FreebmdDbBase
   extend SharedSearchMethods
   require 'security_hash'
 
+  # Set on in-memory rows built from SearchQuery#search_result snapshot so #record_hash matches
+  # the persisted Mongo key (see persist_results / bmd_flatten_records_with_hash_keys).
+  attr_accessor :snapshot_record_hash
+
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
   ENTRY_REFERENCE = 512
@@ -462,6 +466,8 @@ class BestGuess < FreebmdDbBase
   end
 
   def record_hash
+    return snapshot_record_hash.to_s if snapshot_record_hash.present?
+
     surname = self.Surname.encode('ISO-8859-1').upcase
     given_name = self.GivenName.encode('ISO-8859-1').upcase
     Rails.env.development? ? district_name = self.District.upcase : district_name = self.district.DistrictName.upcase
