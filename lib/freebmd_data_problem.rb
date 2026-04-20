@@ -97,6 +97,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 	# Report error page: 3 main sections, each with subsections (accordion). Id is stored as contact.query.
 	# Each subsection :answer may be plain text (wrapped in <p> by the view) or HTML (e.g. multiple <p>, <ul>, <a>).
 	# Use HTML when you need paragraphs, lists or links; content is sanitized before output.
+	# Whole-word "GRO" in :answer strings is replaced with accessibility markup (see ApplicationHelper#gro_abbrev_html).
 	# Optional :form_numbers controls which UI blocks appear in report_error:
 	#   1 => main report form
 	#   2 => corrections table block

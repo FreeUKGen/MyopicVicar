@@ -108,9 +108,14 @@ module ContactsHelper
     if rendered.include?('{{PRIVACY_POLICY_LINK}}') && defined?(Constant::PRIVACY_POLICY_LINK)
       rendered = rendered.gsub('{{PRIVACY_POLICY_LINK}}', Constant::PRIVACY_POLICY_LINK.to_s)
     end
+    rendered = rendered.gsub(/\bGRO\b/, ApplicationHelper::GRO_ABBREV_ACCESSIBILITY_HTML)
 
     if rendered.include?('<')
-      sanitize(rendered, tags: %w[p br ul ol li a strong em], attributes: { 'a' => ['href', 'target'] })
+      sanitize(
+        rendered,
+        tags: %w[p br ul ol li a strong em span small],
+        attributes: { 'a' => %w[href target rel], 'span' => %w[class] }
+      )
     else
       simple_format(rendered)
     end

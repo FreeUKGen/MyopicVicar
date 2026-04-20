@@ -1,4 +1,4 @@
-<h1 class="title">Errors and omissions in the GRO Index data</h1>
+<h1 class="title">Errors and omissions in the <%= gro_abbrev_html %> Index data</h1>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
     <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
@@ -37,8 +37,8 @@
           <div class="accordion-section" data-section-index="<%= section_idx %>" style="display: none;">
             <% section[:subsections].each do |sub| %>
               <% if sub[:children].present? %>
-                <div class="accordion-nested-group" role="group" aria-label="<%= sub[:label].to_s.truncate(120) %>">
-                  <p class="accordion-nested-group__heading"><%= sub[:label] %></p>
+                <div class="accordion-nested-group" role="group" aria-label="<%= gro_abbrev_plain_in_text(sub[:label]).truncate(120) %>">
+                  <p class="accordion-nested-group__heading"><%= gro_abbrev_in_user_text(sub[:label]) %></p>
                   <% sub[:children].each do |leaf| %>
                     <% form_numbers = Array(leaf[:form_numbers]).map(&:to_i) %>
                     <% show_form_1 = leaf[:show_form] || form_numbers.include?(1) %>
@@ -46,7 +46,7 @@
                              data-subsection-id="<%= leaf[:id] %>"
                              data-show-form="<%= show_form_1 ? '1' : '0' %>"
                              data-form-numbers="<%= form_numbers.join(',') %>">
-                      <summary class="accordion-item__summary"><%= leaf[:label] %></summary>
+                      <summary class="accordion-item__summary"><%= gro_abbrev_in_user_text(leaf[:label]) %></summary>
                       <div class="accordion-item__body answer_explanations">
                         <% if show_form_1 %>
                           <div class="report-error-explanation-and-form">
@@ -67,7 +67,7 @@
                          data-subsection-id="<%= sub[:id] %>"
                          data-show-form="<%= show_form_1 ? '1' : '0' %>"
                          data-form-numbers="<%= form_numbers.join(',') %>">
-                  <summary class="accordion-item__summary"><%= sub[:label] %></summary>
+                  <summary class="accordion-item__summary"><%= gro_abbrev_in_user_text(sub[:label]) %></summary>
                   <div class="accordion-item__body answer_explanations">
                     <% if show_form_1 %>
                       <div class="report-error-explanation-and-form">
