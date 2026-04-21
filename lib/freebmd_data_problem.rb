@@ -157,14 +157,10 @@ It is also possible that this is a transcription error - if this is the case, pl
 							id: 6,
 							label: "You do not have the scan",
 							answer: <<~HTML.strip,
-								<p>If you have not yet located the scan, first try to find the immediately preceding entry and then report from there.</p>
-								<p>Use a wildcard search to find surrounding entries. See <a href="https://www.freebmd2.org.uk/help/search_help#first-name-surname" target="_blank" rel="noopener">Search help: First name &amp; Surname</a>.</p>
-								<p>When reporting, fill in details of the missing entry. You only need to complete fields that are different from the preceding entry. The <strong>Missing entry or entries</strong> box must be checked.</p>
-								<p>If there are multiple missing entries, enter details for the first missing entry and also check the <strong>Multiple entries</strong> box.</p>
-								<p>Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we protect and use your data, then complete the form below.</p>
+							    <p>Advice on how to find the scan - preceding entry. See <a href="/help/search_help#first-name-surname">Search help: First name &amp; Surname</a></p>
+								<p>If you have identified that an entry on a transcribed page has not been transcribed you should attach a correction to the immediately preceding entry (use a wildcard search to get surrounding entries) filling in the details of the missing entry (only those fields that are different from the preceding entry need be completed). The Missing entry or entries box must be checked. If there are multiple missing entries fill in the details for the first and check the Multiple entries box in addition to the Missing entry or entries box</p>
 							HTML
-							show_form: true,
-							form_numbers: [1, 3]
+							show_form: false
 						}
 					]
 				},
@@ -183,8 +179,11 @@ It is also possible that this is a transcription error - if this is the case, pl
 		{
 			title: "Anything else/miscellaneous",
 			subsections: [
-				{ id: 4, label: "E.g. Scan image not clear (but transcribed correctly and not a GRO error)", answer: ANSWERS2[11], show_form: false },
-				{ id: 5, label: "A particular year/Qtr/event has a page missing (GRO issue, not us – very rare)", answer: "This is a #{GRO_ABBREV_ACCESSIBILITY_HTML} index issue rather than a FreeBMD transcription issue. You may contact the #{GRO_ABBREV_ACCESSIBILITY_HTML} about missing pages. We are unable to add entries that do not appear in the index.", show_form: false }
+				{ id: 4, label: "Scan image not clear, a particular year/Qtr/event has a page missing etc", 
+				  answer: "Please describe the issue below and we will do our best to address it.", 
+				  show_form: true,
+				  form_numbers: [3] 
+				}
 			]
 		}
 	].freeze
