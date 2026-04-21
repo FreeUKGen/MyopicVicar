@@ -157,7 +157,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 							id: 6,
 							label: "You do not have the scan",
 							answer: <<~HTML.strip,
-							    <p>Advice on how to find the scan - preceding entry. See <a href="/help/search_help#first-name-surname">Search help: First name &amp; Surname</a></p>
+							    <p>Advice on how to find the scan - preceding entry. See <a href="/help/search_help#firstname_surname">Search help: First name &amp; Surname</a></p>
 								<p>If you have identified that an entry on a transcribed page has not been transcribed you should attach a correction to the immediately preceding entry (use a wildcard search to get surrounding entries) filling in the details of the missing entry (only those fields that are different from the preceding entry need be completed). The Missing entry or entries box must be checked. If there are multiple missing entries fill in the details for the first and check the Multiple entries box in addition to the Missing entry or entries box</p>
 							HTML
 							show_form: false
