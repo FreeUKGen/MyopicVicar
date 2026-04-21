@@ -179,10 +179,10 @@ It is also possible that this is a transcription error - if this is the case, pl
 		{
 			title: "Anything else/miscellaneous",
 			subsections: [
-				{ id: 4, label: "Scan image not clear, a particular year/Qtr/event has a page missing etc", 
-				  answer: "Please describe the issue below and we will do our best to address it.", 
+				{ id: 4, label: "Scan image not clear, a particular year/Qtr/event has a page missing etc",
+				  answer: "Please describe the issue below and we will do our best to address it.",
 				  show_form: true,
-				  form_numbers: [3] 
+				  form_numbers: [4]
 				}
 			]
 		}

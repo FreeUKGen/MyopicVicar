@@ -175,7 +175,7 @@
         <% end%>
       </li>
       <li class="grid__item one-whole lap-one-whole palm-one-whole">
-        <label class="label ttip" for="contact_report_body" tabindex="0">Additional comments (optional)</label>
+        <label class="label ttip" for="contact_report_body" tabindex="0" id="contact_report_body_label">Additional comments (optional)</label>
         <textarea id="contact_report_body" name="contact[body]" class="text-input" rows="4" cols="40" placeholder="Anything else we should know (optional if you filled corrections above)."><%= @contact.body %></textarea>
       </li>
       <li class="grid__item one-third lap-three-fifths lap-clear--left palm-one-whole push--bottom">
@@ -242,6 +242,20 @@
     var $section3Block = $('#section3_required_fields_block');
     var $section3RequiredFields = $('.section3-required-field');
     var $section3RequiredCheckbox = $('.section3-required-checkbox');
+    var $bodyInput = $('#contact_report_body');
+    var $bodyLabel = $('#contact_report_body_label');
+    var defaultBodyLabel = 'Additional comments (optional)';
+    var defaultBodyPlaceholder = 'Anything else we should know (optional if you filled corrections above).';
+    var issueBodyLabel = 'Describe issue';
+    var issueBodyPlaceholder = 'Please describe the issue in detail. Line breaks and spacing will be preserved.';
+
+    function setDescribeIssueMode(enabled) {
+      if ($bodyLabel.length) $bodyLabel.text(enabled ? issueBodyLabel : defaultBodyLabel);
+      if ($bodyInput.length) {
+        $bodyInput.attr('placeholder', enabled ? issueBodyPlaceholder : defaultBodyPlaceholder);
+        $bodyInput.prop('required', enabled);
+      }
+    }
 
     function setSection3RequiredState(enabled) {
       if ($section3Block.length) $section3Block.toggle(enabled);
@@ -261,6 +275,7 @@
       if ($queryInput.length) $queryInput.val('');
       if ($correctionsBlock.length) $correctionsBlock.hide();
       setSection3RequiredState(false);
+      setDescribeIssueMode(false);
       if ($reportFormBlock.length) $reportFormBlock.hide().appendTo('body');
       if (sectionIdx === '') {
         $subsectionsLi.hide();
@@ -282,6 +297,7 @@
       var showForm1 = formNumbers.indexOf('1') !== -1;
       var showForm2 = formNumbers.indexOf('2') !== -1;
       var showForm3 = formNumbers.indexOf('3') !== -1;
+      var showForm4 = formNumbers.indexOf('4') !== -1;
 
       // Enforce a single-open accordion within the visible section.
       if (details.open) {
@@ -298,8 +314,9 @@
           showForm1 = true;
           showForm2 = true;
         }
-        // Form 3 lives inside Form 1 block; if requested, ensure Form 1 is shown.
+        // Form 3/4 live inside Form 1 block; if requested, ensure Form 1 is shown.
         if (showForm3) showForm1 = true;
+        if (showForm4) showForm1 = true;
         if (showForm1) {
           $readAnswer.show();
           if ($reportFormBlock.length) {
@@ -319,12 +336,14 @@
             if (lastScanUrl) $scanUrlInput.val(lastScanUrl);
           }
           setSection3RequiredState(showForm3);
+          setDescribeIssueMode(showForm4);
           if ($correctionsBlock.length) $correctionsBlock.toggle(showForm2);
         } else {
           $readAnswer.hide();
           $('#read_explanation').prop('checked', false);
           if ($reportFormBlock.length) $reportFormBlock.hide().appendTo('body');
           setSection3RequiredState(false);
+          setDescribeIssueMode(false);
           if ($correctionsBlock.length) $correctionsBlock.hide();
         }
       } else {
@@ -335,6 +354,7 @@
           $('#read_explanation').prop('checked', false);
           if ($reportFormBlock.length) $reportFormBlock.hide().appendTo('body');
           setSection3RequiredState(false);
+          setDescribeIssueMode(false);
           if ($correctionsBlock.length) $correctionsBlock.hide();
         }
       }
