@@ -1239,13 +1239,13 @@ module ApplicationHelper
     GroAbbrev::ACCESSIBILITY_HTML.html_safe
   end
 
-  # Escape +text+, then replace whole word "GRO" with the accessibility markup (+.html_safe+ result).
+  # Escape +text+, then replace whole-word "GRO" or "G.R.O" with the accessibility markup (+.html_safe+ result).
   def gro_abbrev_in_user_text(text)
-    ERB::Util.html_escape(text.to_s).gsub(/\bGRO\b/, GroAbbrev::ACCESSIBILITY_HTML).html_safe
+    ERB::Util.html_escape(text.to_s).gsub(/\bG(?:\.R\.O|RO)\b/, GroAbbrev::ACCESSIBILITY_HTML).html_safe
   end
 
   # Plain "G.R.O" for aria-label and other attribute-only strings (no HTML).
   def gro_abbrev_plain_in_text(text)
-    text.to_s.gsub(/\bGRO\b/, 'G.R.O')
+    text.to_s.gsub(/\bG(?:\.R\.O|RO)\b/, 'G.R.O')
   end
 end
