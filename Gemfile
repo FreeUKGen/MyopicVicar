@@ -52,3 +52,4 @@ gem 'font_awesome5_rails'
 gem 'rubocop-rails'
 gem 'rubocop', '~> 1.23.0', require: false
 gem 'browser'
+gem "mongo_session_store", "~> 3.2"
