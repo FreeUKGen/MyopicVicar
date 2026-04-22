@@ -235,30 +235,30 @@ class SearchQuery
       return Set.new if recs.blank?
 
       raw = recs.map { |r| r[:freereg1_csv_entry_id] || r['freereg1_csv_entry_id'] }.compact
-      oids = raw.filter_map { |id| to_object_id_for_query(id) }.uniq
+      oids = raw.map { |id| to_object_id_for_query(id) }.compact.uniq
       return Set.new if oids.empty?
 
       entries = Freereg1CsvEntry.in(_id: oids).only(:_id, :freereg1_csv_file_id).to_a
 
-      file_ids = entries.map(&:freereg1_csv_file_id).filter_map { |id| to_object_id_for_query(id) }.uniq
+      file_ids = entries.map(&:freereg1_csv_file_id).map { |id| to_object_id_for_query(id) }.compact.uniq
       return Set.new if file_ids.empty?
 
       files = Freereg1CsvFile.in(_id: file_ids).only(:_id, :register_id).to_a
       file_by_id = files.index_by { |f| f.id.to_s }
 
-      reg_ids = files.map(&:register_id).filter_map { |id| to_object_id_for_query(id) }.uniq
+      reg_ids = files.map(&:register_id).map { |id| to_object_id_for_query(id) }.compact.uniq
       return Set.new if reg_ids.empty?
 
       registers = Register.in(_id: reg_ids).only(:_id, :church_id).to_a
       reg_by_id = registers.index_by { |r| r.id.to_s }
 
-      church_ids = registers.map(&:church_id).filter_map { |id| to_object_id_for_query(id) }.uniq
+      church_ids = registers.map(&:church_id).map { |id| to_object_id_for_query(id) }.compact.uniq
       return Set.new if church_ids.empty?
 
       churches = Church.in(_id: church_ids).only(:_id, :place_id).to_a
       church_by_id = churches.index_by { |c| c.id.to_s }
 
-      place_ids = churches.map(&:place_id).filter_map { |id| to_object_id_for_query(id) }.uniq
+      place_ids = churches.map(&:place_id).map { |id| to_object_id_for_query(id) }.compact.uniq
       valid_places = place_ids.empty? ? [] : Place.in(_id: place_ids).only(:_id).to_a
       valid_place_id_strings = Set.new(valid_places.map { |p| p.id.to_s })
 
