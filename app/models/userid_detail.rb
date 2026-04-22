@@ -556,11 +556,19 @@ class UseridDetail
   end
 
   def email_address_does_not_exist
-    if self.changed.include?('email_address')
-      errors.add(:email_address, "Userid email already exists on change") if
-      UseridDetail.where(:email_address => self[:email_address]).exists?  && (self.userid != User.where(:username => self[:userid]))
-      errors.add(:email_address, "Refinery email already exists on change") if
-      User.where(:email => self[:email_address]).exists? && (self.userid != User.where(:username => self[:userid]))
+    return unless changed.include?('email_address')
+
+    new_email = self[:email_address].to_s
+    return if new_email.blank?
+
+    if UseridDetail.where(email_address: new_email, :id.ne => id).exists?
+      errors.add(:email_address, "Userid email already exists on change")
+    end
+
+    refinery_user = User.where(username: self.userid).first
+    other = User.where(email: /\A#{::Regexp.escape(new_email)}\z/i).first
+    if other.present? && (refinery_user.nil? || other.id != refinery_user.id)
+      errors.add(:email_address, "Refinery email already exists on change")
     end
   end
 
@@ -660,13 +668,6 @@ class UseridDetail
       u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
       u.save
     end
-  end
-
-  def userid_and_email_address_does_not_exist
-    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exists") if User.where(:username => self[:userid]).exists?
-    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    errors.add(:email_address, "Refinery email already exists") if User.where(:email => self[:email_address]).exists?
   end
 
   def write_userid_file
