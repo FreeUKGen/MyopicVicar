@@ -8,7 +8,7 @@ class SearchQuery
   require 'name_role'
   require 'date_parser'
   require 'app'
-
+  require 'set'
 
   # consider extracting this from entities
   module SearchOrder
@@ -205,25 +205,94 @@ class SearchQuery
       rec
     end
 
-    def does_the_entry_exist?(search_record)
+    # @param valid_freereg_entry_ids [Set, nil] If present, O(1) membership instead of N+1 queries (built via .valid_freereg_entry_ids_for_result_hashes).
+    def does_the_entry_exist?(search_record, valid_freereg_entry_ids: nil)
       case App.name.downcase
-      when 'freereg'
-        entry = search_record[:freereg1_csv_entry_id]
-        if entry.present?
-          actual_entry = Freereg1CsvEntry.find_by(_id: entry)
-          if actual_entry.present?
-            proceed, _place, _church, _register = actual_entry.location_from_entry
-          else
-            proceed = false
-          end
-        else
-          proceed = false
-        end
       when 'freecen'
-        proceed = true
+        return true
+      when 'freereg'
+        entry_id = search_record[:freereg1_csv_entry_id] || search_record['freereg1_csv_entry_id']
+        return false if entry_id.blank?
+        if valid_freereg_entry_ids
+          return valid_freereg_entry_ids.include?(object_id_to_s(entry_id))
+        end
+        # Fallback (single check): one batched call.
+        return valid_freereg_entry_ids_for_result_hashes([search_record]).include?(object_id_to_s(entry_id))
+      else
+        return true
       end
-      proceed
     end
+
+    def object_id_to_s(oid)
+      oid.to_s
+    end
+    private :object_id_to_s
+
+    # Batched equivalent of +Freereg1CsvEntry#location_from_entry+ for many search result hashes: file → register → church → place must exist
+    # (mirrors +Freereg1CsvFile.freereg1_csv_file_valid?+, +Register.register_valid?+, +Church.church_valid?+, +Place.place_valid?+ using batched +in+ loads).
+    # Returns a Set of +freereg1_csv_entry_id+ as strings.
+    def valid_freereg_entry_ids_for_result_hashes(recs)
+      return Set.new if recs.blank?
+
+      raw = recs.map { |r| r[:freereg1_csv_entry_id] || r['freereg1_csv_entry_id'] }.compact
+      oids = raw.filter_map { |id| to_object_id_for_query(id) }.uniq
+      return Set.new if oids.empty?
+
+      entries = Freereg1CsvEntry.in(_id: oids).only(:_id, :freereg1_csv_file_id).to_a
+
+      file_ids = entries.map(&:freereg1_csv_file_id).filter_map { |id| to_object_id_for_query(id) }.uniq
+      return Set.new if file_ids.empty?
+
+      files = Freereg1CsvFile.in(_id: file_ids).only(:_id, :register_id).to_a
+      file_by_id = files.index_by { |f| f.id.to_s }
+
+      reg_ids = files.map(&:register_id).filter_map { |id| to_object_id_for_query(id) }.uniq
+      return Set.new if reg_ids.empty?
+
+      registers = Register.in(_id: reg_ids).only(:_id, :church_id).to_a
+      reg_by_id = registers.index_by { |r| r.id.to_s }
+
+      church_ids = registers.map(&:church_id).filter_map { |id| to_object_id_for_query(id) }.uniq
+      return Set.new if church_ids.empty?
+
+      churches = Church.in(_id: church_ids).only(:_id, :place_id).to_a
+      church_by_id = churches.index_by { |c| c.id.to_s }
+
+      place_ids = churches.map(&:place_id).filter_map { |id| to_object_id_for_query(id) }.uniq
+      valid_places = place_ids.empty? ? [] : Place.in(_id: place_ids).only(:_id).to_a
+      valid_place_id_strings = Set.new(valid_places.map { |p| p.id.to_s })
+
+      good = Set.new
+      entries.each do |entry|
+        fid = to_object_id_for_query(entry.freereg1_csv_file_id)
+        next if fid.nil?
+
+        file = file_by_id[fid.to_s]
+        next unless file
+
+        rid = to_object_id_for_query(file.register_id)
+        reg = rid ? reg_by_id[rid.to_s] : nil
+        next unless reg
+
+        cid = to_object_id_for_query(reg.church_id)
+        church = cid ? church_by_id[cid.to_s] : nil
+        next unless church
+
+        pid = to_object_id_for_query(church.place_id)
+        next if pid.nil? || !valid_place_id_strings.include?(pid.to_s)
+
+        good << entry.id.to_s
+      end
+      good
+    end
+
+    def to_object_id_for_query(id)
+      return if id.nil?
+      return id if id.is_a?(BSON::ObjectId)
+      s = id.to_s
+      return BSON::ObjectId.from_string(s) if BSON::ObjectId.legal?(s)
+    end
+    private :to_object_id_for_query
   end
 
   ############################################################################# instance methods #####################################################
@@ -826,11 +895,14 @@ class SearchQuery
   def persist_additional_results(results)
     return unless results
 
+    recs = results.to_a
+    valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
+
     # finally extract the records IDs and persist them
     records = {}
-    results.each do |rec|
+    recs.each do |rec|
       rec_id = rec['_id'].to_s
-      proceed = SearchQuery.does_the_entry_exist?(rec)
+      proceed = SearchQuery.does_the_entry_exist?(rec, valid_freereg_entry_ids: valid_entry_ids)
       if proceed
         record = rec
         records[rec_id] = record
@@ -847,17 +919,16 @@ class SearchQuery
 
   def persist_results(results)
     return unless results
-    # finally extract the records IDs and persist them
+
+    recs = results.to_a
+    valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
+
     records = {}
-    results.each do |rec|
+    recs.each do |rec|
+      rec_id = rec['_id'].to_s
       record = rec # should be a SearchRecord despite Mongoid bug
-      rec_id = record['_id'].to_s
-      record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
-      record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
-      records[rec_id] = record
-      proceed = SearchQuery.does_the_entry_exist?(rec)
+      proceed = SearchQuery.does_the_entry_exist?(rec, valid_freereg_entry_ids: valid_entry_ids)
       if proceed
-        rec_id = record['_id'].to_s
         record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
         record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
         records[rec_id] = record
