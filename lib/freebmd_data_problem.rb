@@ -127,7 +127,7 @@ It is also possible that this is a transcription error - if this is the case, pl
 				  label: "The transcription information does match the GRO index scan.",
 				  answer: <<~HTML.strip,
 						<p>We cannot change the database if our transcription matches the information on the #{GRO_ABBREV_ACCESSIBILITY_HTML} index (scan).</p>
-						<p>If you believe there is an error in the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index, you will need to contact the <a href="https://www.gro.gov.uk/" target="_blank" rel="noopener">General Register Office (#{GRO_ABBREV_ACCESSIBILITY_HTML})</a> to request a correction.</p>
+						<p>If you believe there is an error in the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index, you will need to <a href="https://www.gro.gov.uk/" target="_blank" rel="noopener">contact them</a> to request a correction.</p>
 						<p>If the #{GRO_ABBREV_ACCESSIBILITY_HTML} confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
 						<small>(Was: If you wish to get the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index corrected you should apply to the #{GRO_ABBREV_ACCESSIBILITY_HTML}. Contact the #{GRO_ABBREV_ACCESSIBILITY_HTML} with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.)</small>
 					HTML

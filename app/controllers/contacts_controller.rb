@@ -78,7 +78,7 @@ class ContactsController < ApplicationController
         flash[:notice] = 'Thank you for contacting us!'
         @contact.communicate_initial_contact
         if @contact.contact_type == 'Data Problem'
-          redirect_to(contact_path(@contact.id)) && return
+          redirect_to(data_problem_redirect_target(@contact)) && return
         elsif @contact.query
           redirect_to(search_query_path(@contact.query)) && return
         else
@@ -492,6 +492,10 @@ class ContactsController < ApplicationController
 
   def build_record_url(record)
     helpers.full_entry_information_url_for(record)
+  end
+
+  def data_problem_redirect_target(contact)
+    contact.problem_page_url.presence || contact.record_url.presence || contact_path(contact.id)
   end
 
   def contact_params
