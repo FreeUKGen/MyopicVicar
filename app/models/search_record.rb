@@ -555,9 +555,10 @@ class SearchRecord
 
   ############################################################################# instance methods ####################################################################
 
-  # FreeREG: public URLs use the parish line id (same after SearchRecord is destroyed and recreated).
+  # In-app links (search results, show, next/prev) use the SearchRecord id. Stable line-level URLs for
+  # bibliography are built only in SearchRecordsHelper#search_record_link (citation) via freereg1_csv_entry_id.
   def to_param
-    freereg1_csv_entry_id.present? ? freereg1_csv_entry_id.to_s : id.to_s
+    id.to_s
   end
 
   def url_param_matches?(id_s)
