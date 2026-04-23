@@ -189,6 +189,40 @@ class SearchRecord
       where(id: id)
     end
 
+    def bson_object_id_string?(s)
+      s = s.to_s
+      s.length == 24 && s.match?(/\A[0-9a-f]{24}\z/i)
+    end
+
+    # Resolve :id from URLs. For FreeREG, the same 24-char id may be SearchRecord _id or freereg1_csv_entry_id
+    # (stable after SearchRecord rebuild).
+    def find_for_show_param(raw_id)
+      return nil if raw_id.blank?
+
+      id_s = raw_id.to_s.strip
+      return nil unless bson_object_id_string?(id_s)
+
+      begin
+        oid = BSON::ObjectId.from_string(id_s)
+      rescue BSON::Error, ArgumentError, RangeError
+        return nil
+      end
+      rec = where(id: oid).first
+      return rec if rec.present?
+
+      where(freereg1_csv_entry_id: oid).first
+    end
+
+    # For search results stored as hashes: current param may be _id or freereg1_csv_entry_id (FreeREG).
+    def param_matches_stored_result?(rec, id_s)
+      id_s = id_s.to_s
+      rid = rec[:_id] || rec['_id']
+      return true if rid.present? && rid.to_s == id_s
+      eid = rec[:freereg1_csv_entry_id] || rec['freereg1_csv_entry_id']
+      return true if eid.present? && eid.to_s == id_s
+      false
+    end
+
     def between_dates(county, previous_midnight, last_midnight)
       last_id = BSON::ObjectId.from_time(last_midnight)
       first_id = BSON::ObjectId.from_time(previous_midnight)
@@ -223,7 +257,7 @@ class SearchRecord
         return [false, search_query, search_record, messagea]
       end
       search_query = search.present? ? SearchQuery.search_id(search).first : ''
-      search_record = SearchRecord.record_id(param[:id]).first
+      search_record = SearchRecord.find_for_show_param(param[:id])
       if search_record.blank?
         logger.warn(warning)
         logger.warn "#{search_record} no longer exists"
@@ -520,6 +554,18 @@ class SearchRecord
   end
 
   ############################################################################# instance methods ####################################################################
+
+  # FreeREG: public URLs use the parish line id (same after SearchRecord is destroyed and recreated).
+  def to_param
+    freereg1_csv_entry_id.present? ? freereg1_csv_entry_id.to_s : id.to_s
+  end
+
+  def url_param_matches?(id_s)
+    id_s = id_s.to_s
+    return true if id.to_s == id_s
+    return true if freereg1_csv_entry_id.present? && freereg1_csv_entry_id.to_s == id_s
+    false
+  end
 
   def add_digest
     self.digest = self.cal_digest

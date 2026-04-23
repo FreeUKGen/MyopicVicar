@@ -20,7 +20,7 @@ class SearchRecordsController < ApplicationController
 
   def redirect_legacy_search_record_id
     return if params[:id].blank?
-    return if SearchRecord.record_id(params[:id]).first.present?
+    return if SearchRecord.find_for_show_param(params[:id]).present?
     mapping = LegacySearchRecordMapping.find_by(old_id: params[:id].to_s)
     return if mapping.blank?
     new_id = mapping.new_id

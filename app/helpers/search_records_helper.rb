@@ -29,7 +29,7 @@ module SearchRecordsHelper
     viewed_records = search_results.viewed_records
     field = ''
     if viewed_records.present?
-      field = '(Seen)' if viewed_records.include?("#{search_record[:_id]}")
+      field = '(Seen)' if viewed_records.any? { |v| search_record.url_param_matches?(v) }
     end
     field
   end
@@ -39,8 +39,8 @@ module SearchRecordsHelper
   end
 
   def search_record_link(record)
-    field = Rails.application.config.website + '/search_records/' + record
-    field
+    id_for_url = record.is_a?(SearchRecord) ? record.to_param : record.to_s
+    Rails.application.config.website + '/search_records/' + id_for_url
   end
 
 end

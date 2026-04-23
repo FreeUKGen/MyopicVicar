@@ -439,7 +439,7 @@ class Contact
 
   def obtain_coordinator
     coordinator = nil
-    search_record = SearchRecord.record_id(self.record_id).first
+    search_record = SearchRecord.find_for_show_param(self.record_id)
     if search_record.present?
       county = County.where(chapman_code: search_record.chapman_code).first
       coordinator = county.county_coordinator if county.present?
