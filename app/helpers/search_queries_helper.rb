@@ -97,6 +97,12 @@ module SearchQueriesHelper
   end
 
   def format_freereg_location(search_record)
+    # Denormalized on SearchRecord; avoids N+1 via freereg1_csv_entry → file → register/church/place per row.
+    names = search_record[:location_names] || search_record['location_names']
+    if names.present? && names[0].present? && names[1].present?
+      return format_for_line_breaks(names)
+    end
+
     result = false
     entry = search_record.freereg1_csv_entry
     file = entry.freereg1_csv_file if entry.present?
