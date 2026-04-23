@@ -848,16 +848,23 @@ class SearchQuery
     params = {}
     name_params = {}
     if query_contains_wildcard?
-      name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name
-      name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
+      name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name.present?
+      name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name.present?
       params['search_names'] = { '$elemMatch' => name_params }
     else
       if fuzzy
-        name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name
+        name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name.present?
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
-        params['search_soundex'] = { '$elemMatch' => name_params }
+        if name_params.key?('first_name') && name_params.key?('last_name')
+          # Keep name pairs bound to the same embedded document when both are present.
+          params['search_soundex'] = { '$elemMatch' => name_params }
+        elsif name_params.key?('last_name')
+          params['search_soundex.last_name'] = name_params['last_name']
+        elsif name_params.key?('first_name')
+          params['search_soundex.first_name'] = name_params['first_name']
+        end
       else
-        name_params['first_name'] = first_name.downcase if first_name
+        name_params['first_name'] = first_name.downcase if first_name.present?
         name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
         name_params['last_name'] = nil if self.no_surname
         params['search_names'] = { '$elemMatch': name_params }
