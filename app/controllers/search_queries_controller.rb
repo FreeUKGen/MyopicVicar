@@ -620,7 +620,22 @@ class SearchQueriesController < ApplicationController
   private
 
   def search_params
-    params.require(:search_query).permit!
+    sq = params.require(:search_query).permit!
+    normalize_spouse_surname_alias!(sq)
+    sq
+  end
+
+  # Legacy / alternate param name (not a Mongoid field). Map into spouses_mother_surname.
+  def normalize_spouse_surname_alias!(sq)
+    return sq unless sq.respond_to?(:delete)
+
+    legacy = sq.delete(:spouse_surname)
+    legacy = legacy.presence || sq.delete('spouse_surname').presence
+    return sq if legacy.blank?
+
+    current = sq[:spouses_mother_surname].presence || sq['spouses_mother_surname'].presence
+    sq[:spouses_mother_surname] = legacy if current.blank?
+    sq
   end
 
   def filter(results)

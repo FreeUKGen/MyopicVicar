@@ -17,16 +17,19 @@ class DistrictsController < ApplicationController
 	end
 
 	def unique_district_names
-		if params[:record_type].present? then @record_type = params[:record_type] else @record_type = "birth" end
-		record_type_id = RecordType::FREEBMD_OPTIONS[@record_type.upcase]
-		if params[:name_type].present? then @name_type = params[:name_type] else @name_type = "1" end
+		@record_type = params[:record_type].presence || 'birth'
+		record_type_id = district_unique_names_record_type_id(@record_type)
+		@name_type = params[:name_type].presence || '1'
 		@district_number = params[:id]
 		@district = District.where(DistrictNumber: @district_number).first
-		if @name_type == "0"
-			@unique_names_0 = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_surnames
-		else
-			@unique_names_0 = DistrictUniqueName.where(district_number: @district_number, record_type: record_type_id).first.unique_forenames
-		end
+		district_no = @district_number.to_i
+		unique_row = DistrictUniqueName.find_by(district_number: district_no, record_type: record_type_id)
+		@unique_names_0 =
+			if @name_type == '0'
+				Array(unique_row&.unique_surnames).compact
+			else
+				Array(unique_row&.unique_forenames).compact
+			end
 		if params[:filter].present?
 			@filter = params[:filter].downcase
 			pattern = ::Regexp.new(/#{@filter}/)
@@ -39,7 +42,8 @@ class DistrictsController < ApplicationController
 				@unique_names = @unique_names_0.sort_by!(&:downcase)
 		end
 		@unique_names.map!(&:titleize)
-		@unique_names, @remainders = @district.letterize(@unique_names)
+		letterize_subject = @district || District.new
+		@unique_names, @remainders = letterize_subject.letterize(@unique_names)
 	end
 
   def alphabet_selection
@@ -111,8 +115,29 @@ class DistrictsController < ApplicationController
   def fetch_unique_name_counts(district_number, record_type)
     unique_name = DistrictUniqueName.find_by(district_number: district_number, record_type: record_type)
     count = unique_name.present? ? unique_name.total_records : 0
-    uniq_surname_count = unique_name.present? ? unique_name.unique_surnames.count : "none"
-    uniq_forename_count = unique_name.present? ? unique_name.unique_forenames.count : "none"
+    uniq_surname_count = unique_name.present? ? Array(unique_name.unique_surnames).compact.count : 'none'
+    uniq_forename_count = unique_name.present? ? Array(unique_name.unique_forenames).compact.count : 'none'
     [count, uniq_surname_count, uniq_forename_count]
+  end
+
+  # DistrictUniqueName.record_type is 1 / 2 / 3. Params may be malformed (e.g. trailing punctuation in URLs).
+  def district_unique_names_record_type_id(record_type_param)
+    raw = record_type_param.to_s.strip
+    # Mangled query strings, e.g. record_type=birthpe=birth — prefer last segment after '='.
+    raw = raw.split('=').last.strip if raw.include?('=')
+
+    letters_only = raw.upcase.gsub(/[^A-Z]/, '')
+    return RecordType::BIRTHS if letters_only.blank?
+
+    return RecordType::MARRIAGES if letters_only.start_with?('MARRIAGE')
+    return RecordType::DEATHS if letters_only.start_with?('DEATH')
+    return RecordType::BIRTHS if letters_only.start_with?('BIRTH')
+
+    mapped = RecordType::FREEBMD_OPTIONS[letters_only]
+    case mapped
+    when Integer then mapped
+    when Array then mapped.first.to_i
+    else RecordType::BIRTHS
+    end
   end
 end
