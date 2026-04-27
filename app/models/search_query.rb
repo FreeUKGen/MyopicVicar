@@ -1641,8 +1641,8 @@
                   age_at_death.present? || check_age_range?
 
         # Apply filters that return Relations
-        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && bmd_record_type == ['3']
-        records = spouse_given_name_filter(records) if spouse_first_name.present?
+        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
+        records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
 
         # Get count early if we don't need array methods (more efficient)
         record_count = 0
@@ -1715,8 +1715,8 @@
         records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
         records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?
         records = records.where(search_conditions) if search_conditions.present?
-        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
-        records = spouse_given_name_filter(records) if self.spouse_first_name.present?
+        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? && marriage_in_bmd_search?
+        records = spouse_given_name_filter(records) if self.spouse_first_name.present? && marriage_in_bmd_search?
         records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
         records = combined_age_results records if self.age_at_death.present? || check_age_range?
         records.count
@@ -1797,8 +1797,8 @@
                   age_at_death.present? || check_age_range?
 
         # Apply filters that return Relations
-        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && bmd_record_type == ['3']
-        records = spouse_given_name_filter(records) if spouse_first_name.present?
+        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
+        records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
 
         # Get count early if we don't need array methods (more efficient)
         record_count = 0
@@ -1872,6 +1872,11 @@
     params[:RecordTypeID] = bmd_record_type.map(&:to_i) if bmd_record_type.present?
     params[:RecordTypeID] = RecordType.all_types if bmd_record_type.blank? || bmd_record_type == ['0']
     params
+  end
+
+  # Marriage record type id in FreeBMD is 3 (may be stored as string or integer).
+  def marriage_in_bmd_search?
+    Array(bmd_record_type).any? { |t| t.to_s == '3' }
   end
 
   def bmd_county_params
@@ -3029,7 +3034,10 @@
   end
 
   def search_pre_spouse_surname records
-    pre_spouse_surname_join = records.joins(spouse_join_condition)
+    join_sql = spouse_join_condition
+    return records if join_sql.blank?
+
+    pre_spouse_surname_join = records.joins(join_sql)
     records = pre_spouse_surname_join.where("b.Surname = ?", spouses_mother_surname)
     records = pre_spouse_surname_join.where("b.Surname like ?", "#{name_wildcard_search(spouses_mother_surname)}#{conditional_percentage_wildcard(spouses_mother_surname)}") if do_wildcard_seach?spouses_mother_surname
     records
@@ -3101,7 +3109,9 @@
   end
 
   def spouse_join_condition
-    if self.spouses_mother_surname.present? || self.spouse_first_name.present?#&& start_year_quarter < 301
+    return '' unless marriage_in_bmd_search?
+
+    if self.spouses_mother_surname.present? || self.spouse_first_name.present?
       spouse_surname_join_condition
     else
       ''
