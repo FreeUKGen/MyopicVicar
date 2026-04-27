@@ -198,7 +198,7 @@
                         </li>
                     </ol>
                     <ol class="grid search_form bmd_conditional_fields_row hard--left" role="group" aria-label="Spouse, parent surname, and age or birth year. These fields appear when the record types you choose can use them.">
-                        <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
+                        <li class="grid__item desk-wide-one-third desk-one-third lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
                                 <div class='labels'>
                                     <%= label_tag 'spouse_first_name', "Spouse first name(s)".html_safe, class: "ttip" do %>
                                         <%= "Spouse's first name(s)".html_safe %>
@@ -213,7 +213,7 @@
                                 </label>
                             </li>
 
-                            <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spouseormothersurname display_none" id="spouse_or_mother_surname_div">
+                            <li class="grid__item desk-wide-one-third desk-one-third lap-one-half palm-one-whole spouseormothersurname display_none" id="spouse_or_mother_surname_div">
                                 <div class='labels'>
                                     <%= label_tag 'spouses_mother_surname', "Spouse/Mothers surname".html_safe, class: "ttip spouse_or_mother_surname_label" do %>
                                         <%= "Spouse/Mothers surname".html_safe %>
@@ -222,7 +222,7 @@
                                 <%= text_field_tag '', set_value(@search_query.spouses_mother_surname) || set_value(@search_query.mother_last_name), class: 'text-input', id: 'spouses_mother_surname'%>
                             </li>
                             
-                            <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
+                            <li class="grid__item desk-wide-one-third desk-one-third lap-one-half palm-one-whole dateofbirths display_none flush--bottom" id= "age_at_death_or_date_of_birth_div">
                                 <div class='labels'>
                                     <%#= label_tag 'death_select_box', "Age at Death".html_safe, class: "ttip" do %>
                                         <%#= "Age at Death".html_safe %>
@@ -278,7 +278,7 @@
                     </ol>
                     <ol class="grid search_form" role="presentation">
 
-                        <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole countiess">
+                        <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole countiess">
                             <p id="hint_bmd_counties" class="accessibility">Hold Control (Windows) or Command (Mac) and click to select several counties. Leave unselected to search all counties. Typing may offer matching county suggestions.</p>
                             <div class='labels'>
                                 <div class="countieslabel">
@@ -835,7 +835,7 @@
                 $('#spouses_mother_surname').prop('disabled', false);
                 if (birth && marriage) {
                     $('#spouses_mother_surname').prop('name', 'search_query[spouses_mother_surname]');
-                    $('.spouse_or_mother_surname_label').text("Spouse's Surname / Mother's Maiden Name");
+                    $('.spouse_or_mother_surname_label').text("Spouse/Mothers surname");
                 } else if (birth) {
                     $('#spouses_mother_surname').prop('name', 'search_query[mother_last_name]');
                     $('.spouse_or_mother_surname_label').attr('tabindex', '0');
