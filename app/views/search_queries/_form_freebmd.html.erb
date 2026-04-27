@@ -106,14 +106,15 @@
             <%= semantic_form_for(@search_query) do |f| %>
                 <fieldset class="input" style="padding-right:10px;">
                     <legend>Search options</legend>
-                    <ol class="grid search_form">
+                    <ol class="grid search_form" role="presentation">
                         <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole firstnamegrid flush--bottom">
+                            <p id="hint_bmd_first_name" class="accessibility">As you type, matching forenames may appear below. Use arrow keys to pick a suggestion or continue typing.</p>
                             <div class='labels push-half--bottom'>
                                 <%= label_tag 'first_name','' , class: "ttip", id: 'firstname'  do %>
                                     <%="First name(s)".html_safe %>
                                 <% end %>
                             </div>
-                            <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0" %>
+                            <%= text_field_tag 'search_query[first_name]', set_value(@search_query.first_name), class: 'text-input flush--bottom', role: 'textbox', id: 'first_name', :autocomplete => '/unique_forenames', tabindex: "0", 'aria-describedby': 'hint_bmd_first_name' %>
                             <label>
                                 <small>
                                     <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
@@ -123,12 +124,13 @@
                         </li>
 
                       <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
+                            <p id="hint_bmd_last_name" class="accessibility">As you type, matching surnames may appear below. Use arrow keys to pick a suggestion or continue typing.</p>
                             <div class='labels push-half--bottom'>
                                 <%= label_tag 'last_name', "Surname".html_safe, class: "ttip" do %>
                                     <%= "Surname".html_safe %>
                                 <% end %>
                             </div>
-                            <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', :autocomplete => '/unique_surnames', tabindex: "0"%>
+                            <%= text_field_tag 'search_query[last_name]', set_value(@search_query.last_name), class: 'text-input flush--bottom', id: 'last_name', :autocomplete => '/unique_surnames', tabindex: "0", 'aria-describedby': 'hint_bmd_last_name' %>
                             <label>
                                 <small class="ttip__text">
                                     <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
@@ -138,7 +140,7 @@
                       </li>
 
                       <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
-                        <fieldset class="choices" id="">
+                        <fieldset class="choices">
                             <legend class="label">From Quarter & Year</legend>
                             <div class='flex_container'>
                                 <div class="flex_item">
@@ -154,7 +156,7 @@
                       </li>
 
                       <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangetogrid">
-                        <fieldset class="choices" id="">
+                        <fieldset class="choices">
                             <legend class="label">To Quarter & Year</legend>
                             <div class='flex_container'>
                                 <div class="flex_item">
@@ -170,7 +172,7 @@
                       </li>
 
                         <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole recordTypeGrid">
-                            <fieldset class="choices" id="">
+                            <fieldset class="choices">
                                 <legend class="label">Record Type</legend>
                                 <ol class="choices-group">
                                     <li class="choice">
@@ -194,8 +196,9 @@
                                 </ol>
                             </fieldset>
                         </li>
-                        <div class="grid__item desk-wide-one-whole desk-three-quarters hard--left push--bottom">
-                            <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
+                    </ol>
+                    <ol class="grid search_form bmd_conditional_fields_row hard--left" role="group" aria-label="Spouse, parent surname, and age or birth year. These fields appear when the record types you choose can use them.">
+                        <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole spousefirstnamess display_none flush--bottom" id="spouse_firstnames_div">
                                 <div class='labels'>
                                     <%= label_tag 'spouse_first_name', "Spouse first name(s)".html_safe, class: "ttip" do %>
                                         <%= "Spouse's first name(s)".html_safe %>
@@ -272,9 +275,11 @@
                                 </label>
                                 
                             </li>
-                        </div>
+                    </ol>
+                    <ol class="grid search_form" role="presentation">
 
-                        <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole countiess">
+                        <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole countiess">
+                            <p id="hint_bmd_counties" class="accessibility">Hold Control (Windows) or Command (Mac) and click to select several counties. Leave unselected to search all counties. Typing may offer matching county suggestions.</p>
                             <div class='labels'>
                                 <div class="countieslabel">
                                     <%= label_tag 'search_query_chapman_codes', "Counties/Country".html_safe, class: "ttip" do %>
@@ -289,7 +294,7 @@
                                 <% all_wales_codes = codes['Wales']['All Wales'] %>
                                 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
 
-                                <select name="search_query[chapman_codes][]" multiple="multiple" class="form-control" id="search_query_chapman_codes" tabindex="0">
+                                <select name="search_query[chapman_codes][]" multiple="multiple" class="form-control" id="search_query_chapman_codes" tabindex="0" aria-describedby="hint_bmd_counties">
                                     <option value="">Search all counties</option>
                                     <option value="all_england">All England</option>
                                     <option value="all_wales">All Wales</option>
@@ -307,6 +312,7 @@
                             </li>
 
                             <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
+                                <p id="hint_bmd_districts" class="accessibility">Hold Control (Windows) or Command (Mac) and click to select several registration districts.</p>
                                 <div class='labels'>
                                     <div class='districtslabel'>
                                         <%= label_tag 'search_query_districts', "Districts #{app_icons[:info]}".html_safe, class: "ttip" do %>
@@ -315,7 +321,7 @@
                                     </div>
                                 </div>
                                 <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-                                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {selected: @search_query.districts, multiple: true, id: 'search_query_districts', tabindex: "0"} %>
+                                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {selected: @search_query.districts, multiple: true, id: 'search_query_districts', tabindex: "0", 'aria-describedby': 'hint_bmd_districts'} %>
                                 
                             </li>
                             <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole volumes">
