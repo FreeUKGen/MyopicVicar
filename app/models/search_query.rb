@@ -1879,6 +1879,11 @@
     Array(bmd_record_type).any? { |t| t.to_s == '3' }
   end
 
+  # Death record type id in FreeBMD is 2 (see RecordType::DEATHS).
+  def death_in_bmd_search?
+    Array(bmd_record_type).any? { |t| t.to_s == '2' }
+  end
+
   def bmd_county_params
     params = {}
     params[:chapman_codes] = {County: chapman_codes} if self.chapman_codes.present?
@@ -1923,9 +1928,10 @@
     min_age = validate_age(self.min_age_at_death)
     max_age = validate_age(self.max_age_at_death)
     return records if min_age.nil? || max_age.nil? || min_age > max_age
+    t = SearchQuery.get_search_table.table_name
     records.where(
-      "CAST(BestGuess.AgeAtDeath AS UNSIGNED) BETWEEN ? AND ? AND " \
-      "BestGuess.AgeAtDeath REGEXP '^[0-9]+$'",
+      "CAST(#{t}.AgeAtDeath AS UNSIGNED) BETWEEN ? AND ? AND " \
+      "#{t}.AgeAtDeath REGEXP '^[0-9]+$'",
       min_age, max_age
     )
     #records.where("AgeAtDeath BETWEEN ? AND ?", min_age, max_age)
@@ -2642,13 +2648,31 @@
     end
   end
 
+  # Deaths-only rows with no age recorded (still returned when an age range is used).
+  def blank_age_death_records(death_records)
+    t = SearchQuery.get_search_table.table_name
+    death_records.where("#{t}.AgeAtDeath IS NULL OR #{t}.AgeAtDeath = ?", '')
+  end
+
   def combined_age_results records
     records = records
     results = []
-    results.concat(records.where(AgeAtDeath: [""])) unless self.match_recorded_ages_or_dates
+    # Age-at-death range applies to death index rows only. Previously we OR'd every row with a
+    # blank AgeAtDeath (almost all births/marriages), which made the range filter ineffective when
+    # several record types were selected together.
+    if check_age_range? && death_in_bmd_search?
+      death_records = records.where(RecordTypeID: RecordType::DEATHS)
+      results.concat(age_range_search(death_records))
+      results.concat(blank_age_death_records(death_records)) unless self.match_recorded_ages_or_dates
+      non_death_ids = Array(bmd_record_type).map(&:to_i) - [RecordType::DEATHS]
+      results.concat(records.where(RecordTypeID: non_death_ids)) if non_death_ids.any?
+    else
+      unless self.match_recorded_ages_or_dates
+        t = SearchQuery.get_search_table.table_name
+        results.concat(records.where("#{t}.AgeAtDeath IS NULL OR #{t}.AgeAtDeath = ?", ''))
+      end
+    end
     results.concat(aad_search(records)) unless self.age_at_death.blank?
-    #raise results.count.inspect
-    results.concat(age_range_search(records)) if check_age_range?
     #raise results.count.inspect
     invalid_age_records = invalid_age_records(records)
     results.concat(date_of_birth_uncertain_aad(invalid_age_records))
