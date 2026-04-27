@@ -2384,7 +2384,7 @@
     month_patterns = month.values.map { |v| "UPPER(#{best_guess_table}.AgeAtDeath) LIKE ?" }.join(' OR ')
     month_like_patterns = month.values.map { |v| "%#{v}%" }
     
-    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+    records.where("#{best_guess_table}.QuarterNumber >= ?", DOB_START_QUARTER)
       .where.not(month_patterns, *month_like_patterns)
   end
 
@@ -2404,7 +2404,7 @@
     month_patterns = month.values.map { |v| "UPPER(#{best_guess_table}.AgeAtDeath) LIKE ?" }.join(' OR ')
     month_like_patterns = month.values.map { |v| "%#{v}%" }
     
-    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+    records.where("#{best_guess_table}.QuarterNumber >= ?", DOB_START_QUARTER)
       .where(month_patterns, *month_like_patterns)
   end
 
@@ -2498,11 +2498,13 @@
   end
 
   def dob_recordss records
-    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+    t = SearchQuery.get_search_table.table_name
+    records.where("#{t}.QuarterNumber >= ?", DOB_START_QUARTER)
   end
 
   def non_dob_records records
-    records.where('QuarterNumber < ?', DOB_START_QUARTER)
+    t = SearchQuery.get_search_table.table_name
+    records.where("#{t}.QuarterNumber < ?", DOB_START_QUARTER)
   end
 
   def combined_results records
@@ -2512,6 +2514,8 @@
     # MySQL 5.7 compatible: Use UNION to combine queries at database level
     # Security: Validate input parameters
     return records if DOB_START_QUARTER.nil?
+
+    best_guess_tbl = SearchQuery.get_search_table.table_name
     
     # Check if the query has JOINs (e.g., includes(:CountyCombos))
     has_joins = records.to_sql.include?('JOIN')
@@ -2549,13 +2553,13 @@
     end
     
     # 1. Old records (QuarterNumber < 530): Calculate DOB from age
-    non_dob_results = records.where('QuarterNumber < ?', DOB_START_QUARTER)
+    non_dob_results = records.where("#{best_guess_tbl}.QuarterNumber < ?", DOB_START_QUARTER)
     old_records_query = date_of_birth_search_range_a(non_dob_results)
     sql = get_sql.call(old_records_query)
     subqueries << sql if sql.present?
     
     # 2. Modern records (QuarterNumber >= 530): Multiple search strategies
-    dob_results = records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+    dob_results = records.where("#{best_guess_tbl}.QuarterNumber >= ?", DOB_START_QUARTER)
     
     # 2a. Exact DOB match
     exact_dob_query = dob_exact_search(dob_results)
