@@ -105,6 +105,7 @@
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
   DEFAULT_RESULTS_PER_PAGE = 50
+  EXACT_DOB_IN_MEMORY_WARN_THRESHOLD = 10_000
 
   field :first_name, type: String# , :required => false
   field :last_name, type: String# , :required => false
@@ -2686,21 +2687,34 @@
   # - keeps "no age/DOB" rows unless match_recorded_ages_or_dates is enabled
   # Returns an Array of BestGuess rows, deduplicated by record hash.
   def combined_results_exact_dob(records)
+    started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    # Use an in-memory path to avoid DB planner/statement issues seen with certain
+    # date spans in MySQL while preserving the existing inclusion semantics.
+    all_rows = records.to_a
+    if all_rows.size > EXACT_DOB_IN_MEMORY_WARN_THRESHOLD
+      logger.warn("#{App.name_upcase}: YOB in-memory fallback loaded #{all_rows.size} rows (threshold #{EXACT_DOB_IN_MEMORY_WARN_THRESHOLD})")
+    end
     results = []
 
-    non_dob_results = non_dob_records(records)
+    non_dob_results = all_rows.select { |r| r.QuarterNumber.to_i < DOB_START_QUARTER }
     results.concat(Array(date_of_birth_search_range_a(non_dob_results)))
 
-    dob_results = dob_recordss(records)
-    results.concat(Array(dob_exact_search(dob_results)))
+    dob_results = all_rows.select { |r| r.QuarterNumber.to_i >= DOB_START_QUARTER }
+    if dob_at_death.present?
+      date_value = date_array(dob_at_death)[0].to_s
+      results.concat(dob_results.select { |r| r.AgeAtDeath.to_s.include?(date_value) })
+    end
 
-    invalid_age_records = invalid_age_records_sql(dob_results)
-    results.concat(Array(date_of_birth_search_range_a(invalid_age_records)))
-    results.concat(Array(date_of_birth_uncertain_aad(invalid_age_records)))
+    invalid_rows = invalid_age_records(dob_results)
+    results.concat(Array(date_of_birth_search_range_a(invalid_rows)))
+    results.concat(Array(date_of_birth_uncertain_aad(invalid_rows)))
 
-    results.concat(Array(no_aad_or_dob(records)))
+    results.concat(Array(no_aad_or_dob(all_rows)))
 
-    normalize_freebmd_combined_result_rows(results)
+    normalized = normalize_freebmd_combined_result_rows(results)
+    elapsed_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round
+    logger.warn("#{App.name_upcase}: YOB in-memory fallback elapsed=#{elapsed_ms}ms input_rows=#{all_rows.size} output_rows=#{normalized.size}")
+    normalized
   rescue ActiveRecord::StatementInvalid => e
     logger.error("Combined exact DOB fallback query error: #{e.class}")
     records.none
