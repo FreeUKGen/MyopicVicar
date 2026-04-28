@@ -2556,7 +2556,7 @@
     # using mixed Relation/Array filters directly. The SQL UNION path below can fail on some
     # MySQL plans when date bounds are widened (e.g. start year 1900), resulting in
     # ActiveRecord::StatementInvalid and zero rows.
-    if dob_at_death.present? && !date_of_birth_range?
+    if death_at_age.to_s == '3' && dob_at_death.present?
       return combined_results_exact_dob(records)
     end
     
