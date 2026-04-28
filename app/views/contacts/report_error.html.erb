@@ -260,7 +260,8 @@
     function setSection3RequiredState(enabled) {
       if ($section3Block.length) $section3Block.toggle(enabled);
       if ($section3RequiredFields.length) $section3RequiredFields.prop('required', enabled);
-      if ($section3RequiredCheckbox.length) $section3RequiredCheckbox.prop('required', enabled);
+      // "Multiple entries" is optional; single missing-entry reports must be allowed.
+      if ($section3RequiredCheckbox.length) $section3RequiredCheckbox.prop('required', false);
       if (!enabled) {
         $section3RequiredFields.val('');
         $section3RequiredCheckbox.prop('checked', false);

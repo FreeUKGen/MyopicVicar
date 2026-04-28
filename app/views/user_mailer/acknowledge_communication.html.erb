@@ -4,8 +4,13 @@
 <p>The following is the information you submitted.</p>
 <p>  <b><%= @communication.contact_type %>:</b></p>
 <% if @appname.downcase == 'freebmd' && @communication.session_data.is_a?(Hash) && @communication.session_data['freebmd_field_report'].present? %>
-  <p><b>Original entry</b> — columns are fields; first data row &ldquo;As shown&rdquo;, second row &ldquo;User correction&rdquo; (highlighted where supplied):</p>
-  <%= render partial: 'contacts/freebmd_field_report_table', locals: { rows: @communication.session_data['freebmd_field_report'], variant: :email } %>
+  <% missing_entry_report = freebmd_missing_entry_rows(@communication).present? %>
+  <% if missing_entry_report %>
+    <p><b>Original entry</b> — columns are fields; row shown: &ldquo;As shown&rdquo;.</p>
+  <% else %>
+    <p><b>Original entry</b> — columns are fields; first data row &ldquo;As shown&rdquo;, second row &ldquo;User correction&rdquo; (highlighted where supplied):</p>
+  <% end %>
+  <%= render partial: 'contacts/freebmd_field_report_table', locals: { rows: @communication.session_data['freebmd_field_report'], variant: :email, show_corrections: !missing_entry_report } %>
 <% end %>
 <% if @appname.downcase == 'freebmd' && @communication.session_data.is_a?(Hash) && freebmd_missing_entry_rows(@communication).present? %>
   <p><b>Missing entry</b> (as submitted on the form):</p>

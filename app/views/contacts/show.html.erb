@@ -25,12 +25,17 @@
         <%= render 'show_data_problem' if @contact.contact_type == 'Data Problem' && (@contact.entry_id.present? || (appname_downcase == 'freebmd' && @contact.record_id.present?)) %>
         <%= render 'show_actor' %>
         <% if appname_downcase == 'freebmd' && @contact.contact_type == 'Data Problem' %>
+          <% missing_entry_report = freebmd_missing_entry_rows(@contact).present? %>
           <% if freebmd_field_report_rows(@contact).present? %>
             <tr>
               <td colspan="2">
                 <h3 class="gamma push-half--bottom">Original entry</h3>
-                <p class="push-half--bottom">Each column is a field. First row: values as indexed; second row: user corrections (highlighted where supplied).</p>
-                <%= render 'contacts/freebmd_field_report_table', rows: freebmd_field_report_rows(@contact) %>
+                <% if missing_entry_report %>
+                  <p class="push-half--bottom">Each column is a field. Row shown: values as indexed.</p>
+                <% else %>
+                  <p class="push-half--bottom">Each column is a field. First row: values as indexed; second row: user corrections (highlighted where supplied).</p>
+                <% end %>
+                <%= render 'contacts/freebmd_field_report_table', rows: freebmd_field_report_rows(@contact), show_corrections: !missing_entry_report %>
               </td>
             </tr>
           <% end %>

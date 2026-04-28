@@ -1,6 +1,7 @@
-<%# locals: rows, variant: :app (default) | :email — horizontal: fields as columns, "As shown" / "User correction" as rows %>
+<%# locals: rows, variant: :app (default) | :email, show_corrections: true/false (default true) %>
 <% variant ||= :app %>
 <% is_email = (variant == :email) %>
+<% show_corrections = true if local_assigns[:show_corrections].nil? %>
 <% rows_arr = Array(rows).map { |r| r.stringify_keys } %>
 <div style="overflow-x:auto;max-width:100%;">
   <table class="table--bordered table--data table--left-aligned freebmd-field-report-table" style="width:100%;max-width:100%;border-collapse:collapse;">
@@ -19,20 +20,22 @@
           <td style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;vertical-align:top;"><%= r['current'] %></td>
         <% end %>
       </tr>
-      <tr class="freebmd-report-horizontal-corrections">
-        <th scope="row" style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;background:#f9f9f9;white-space:nowrap;">User correction</th>
-        <% rows_arr.each do |r| %>
-          <% corrected = r['corrected'] == true || r['corrected'].to_s == 'true' %>
-          <td class="<%= 'freebmd-report-hcell--corrected' if corrected %>"
-              style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;vertical-align:top;<%= 'color:#9b1c1c;font-weight:600;background:#fff5f5;' if is_email && corrected %>">
-            <% if corrected %>
-              <%= r['correction'] %>
-            <% else %>
-              &mdash;
-            <% end %>
-          </td>
-        <% end %>
-      </tr>
+      <% if show_corrections %>
+        <tr class="freebmd-report-horizontal-corrections">
+          <th scope="row" style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;background:#f9f9f9;white-space:nowrap;">User correction</th>
+          <% rows_arr.each do |r| %>
+            <% corrected = r['corrected'] == true || r['corrected'].to_s == 'true' %>
+            <td class="<%= 'freebmd-report-hcell--corrected' if corrected %>"
+                style="text-align:left;border:1px solid #ccc;padding:0.35rem 0.5rem;vertical-align:top;<%= 'color:#9b1c1c;font-weight:600;background:#fff5f5;' if is_email && corrected %>">
+              <% if corrected %>
+                <%= r['correction'] %>
+              <% else %>
+                &mdash;
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
     </tbody>
   </table>
 </div>
