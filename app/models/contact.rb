@@ -525,9 +525,7 @@ class Contact
       errors.add(:base, "Missing entry field is required: #{label}")
     end
 
-    if section3['multiple_entries'].to_s != '1'
-      errors.add(:base, 'Missing entry field is required: Multiple entries')
-    end
+    # "Multiple entries" is optional: allow reports for a single missing entry.
   end
 
   def reply_sent_messages(message, sender_userid, contact_recipients, other_recipients)
