@@ -1573,10 +1573,30 @@
 
   def mother_surname_search
     params = {}
-    if self.mother_last_name.present?
-      params[:AssociateName] = self.mother_last_name  unless has_wildcard?self.mother_last_name || mother_name_partial?
-    end
+    # NOTE: In FreeBMD, AssociateName is overloaded:
+    # - Birth: Mother's maiden name
+    # - Marriage: spouse surname (handled separately via marriage_surname_filteration)
+    # - Death: not a reliable mother/spouse field
+    #
+    # Therefore we do NOT constrain the base query by AssociateName here (it would filter out
+    # Death records when multiple record types are selected).
     params
+  end
+
+  # Apply mother surname only to Birth records while leaving non-birth rows unaffected.
+  def apply_mother_surname_filter(records)
+    return records unless records.is_a?(ActiveRecord::Relation)
+    return records unless mother_last_name.present?
+    return records unless birth_in_bmd_search?
+    return records if has_wildcard?(mother_last_name) || mother_name_partial?
+
+    t = SearchQuery.get_search_table.table_name
+    value = sanitize_search_input(mother_last_name)
+    return records if value.blank?
+
+    non_birth = records.where.not(RecordTypeID: RecordType::BIRTHS)
+    births = records.where(RecordTypeID: RecordType::BIRTHS).where("#{t}.AssociateName = ?", value)
+    non_birth.or(births)
   end
 
   def start_year_quarter
@@ -1632,6 +1652,8 @@
         if conditions = search_conditions_arel
           records = records.where(conditions)
         end
+
+        records = apply_mother_surname_filter(records)
 
         # Log SQL once
         logger.warn("SQL: #{records.to_sql}")
@@ -1790,6 +1812,8 @@
           records = records.where(conditions)
         end
 
+        records = apply_mother_surname_filter(records)
+
         # Log SQL once
         logger.warn("SQL: #{records.to_sql}")
 
@@ -1879,6 +1903,11 @@
   # Marriage record type id in FreeBMD is 3 (may be stored as string or integer).
   def marriage_in_bmd_search?
     Array(bmd_record_type).any? { |t| t.to_s == '3' }
+  end
+
+  # Birth record type id in FreeBMD is 1 (see RecordType::BIRTHS).
+  def birth_in_bmd_search?
+    Array(bmd_record_type).any? { |t| t.to_s == '1' }
   end
 
   # Death record type id in FreeBMD is 2 (see RecordType::DEATHS).
@@ -2148,7 +2177,11 @@
     # Mother surname wildcard
     if mn_cond = build_mother_surname_wildcard_condition
       conditions << mn_cond[:sql]
-      values << mn_cond[:value]
+      if mn_cond[:values].is_a?(Array)
+        values.concat(mn_cond[:values])
+      else
+        values << mn_cond[:value]
+      end
     end
   
     return nil if conditions.empty?
@@ -3423,8 +3456,9 @@
 
 	def build_mother_surname_wildcard_condition
 	  return nil unless mother_last_name.present? && do_wildcard_seach?(mother_last_name)
+    return nil unless birth_in_bmd_search?
 
 	  pattern = "#{name_wildcard_search(mother_last_name)}#{conditional_percentage_wildcard(mother_last_name)}"
-	  { sql: "BestGuess.AssociateName LIKE ?", value: pattern }
+	  { sql: "(BestGuess.RecordTypeID != ? OR BestGuess.AssociateName LIKE ?)", values: [RecordType::BIRTHS, pattern] }
 	end
 end
