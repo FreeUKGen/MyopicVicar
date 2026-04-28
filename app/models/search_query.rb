@@ -2867,10 +2867,16 @@
 
   def marriage_surname_filteration(records)
     return records unless spouses_mother_surname.present?
+    return records unless records.is_a?(ActiveRecord::Relation)
     
     # Security: Validate and sanitize spouse surname input
     sanitized_surname = sanitize_search_input(spouses_mother_surname)
     return records if sanitized_surname.blank?
+
+    # Spouse surname is a marriage concept. When multiple record types are selected (Birth/Marriage/Death),
+    # applying this to the base query would incorrectly remove Death (and often Birth) rows.
+    non_marriages = records.where.not(RecordTypeID: RecordType::MARRIAGES)
+    marriages = records.where(RecordTypeID: RecordType::MARRIAGES)
     
     best_guess_table = SearchQuery.get_search_table.table_name
     marriage_table = BestGuessMarriage.table_name
@@ -2881,8 +2887,8 @@
     quoted_best_guess = connection.quote_table_name(best_guess_table)
     quoted_marriage = connection.quote_table_name(marriage_table)
     
-    # String JOIN with properly quoted table names
-    records_with_join = records.joins(
+    # String JOIN with properly quoted table names (marriages only)
+    records_with_join = marriages.joins(
       "LEFT JOIN #{quoted_marriage} AS b ON " \
       "b.Volume = #{quoted_best_guess}.Volume AND " \
       "b.Page = #{quoted_best_guess}.Page AND " \
@@ -2901,11 +2907,13 @@
     end
     
     # Parameterized WHERE (safe from SQL injection)
-    records_with_join.where(
+    filtered_marriages = records_with_join.where(
       "(#{quoted_best_guess}.QuarterNumber >= ? AND #{quoted_best_guess}.AssociateName #{operator} ?) OR " \
       "(#{quoted_best_guess}.QuarterNumber < ? AND b.Surname #{operator} ?)",
       quarter_threshold, value, quarter_threshold, value
     ).distinct
+
+    non_marriages.or(filtered_marriages)
   end
 
   def marriage_surname_filteration_o(records)
@@ -3005,16 +3013,23 @@
     # Sanitize the search term for SQL LIKE
     search_term = sanitize_sql_like(self.spouse_first_name&.strip)
     return records if search_term.blank?
+
+    # Spouse first name is a marriage concept. If multiple record types are selected, keep
+    # non-marriage rows unchanged and only filter marriages.
+    non_marriages = records.where.not(RecordTypeID: RecordType::MARRIAGES)
+    marriages = records.where(RecordTypeID: RecordType::MARRIAGES)
     
     # Use INNER JOIN to only get records that have matching marriage records
     # Join condition: same Volume, Page, QuarterNumber, but different RecordNumber
-    records_with_join = records.joins("INNER JOIN #{marriage_table} as m ON m.Volume = #{best_guess_table}.Volume AND m.Page = #{best_guess_table}.Page AND m.QuarterNumber = #{best_guess_table}.QuarterNumber AND m.RecordNumber != #{best_guess_table}.RecordNumber")
+    records_with_join = marriages.joins("INNER JOIN #{marriage_table} as m ON m.Volume = #{best_guess_table}.Volume AND m.Page = #{best_guess_table}.Page AND m.QuarterNumber = #{best_guess_table}.QuarterNumber AND m.RecordNumber != #{best_guess_table}.RecordNumber")
     
     # Use SQL LIKE for case-insensitive partial matching (equivalent to Ruby's include?)
     # LOWER() on column for case-insensitive comparison, %search_term% for substring match
     # Lowercase the pattern in Ruby before passing to SQL
     pattern = "%#{search_term.downcase}%"
-    records_with_join.where("LOWER(m.GivenName) LIKE ?", pattern).distinct
+    filtered_marriages = records_with_join.where("LOWER(m.GivenName) LIKE ?", pattern).distinct
+
+    non_marriages.or(filtered_marriages)
   end
   
   def spouse_first_name_filteration_array(records)
