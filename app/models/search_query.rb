@@ -1654,6 +1654,7 @@
           # Apply array-returning methods (these may convert Relation to Array)
           records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
           records = combined_age_results(records) if age_at_death.present? || check_age_range?
+          records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
 
           # Handle both Relation and Array results AFTER combined methods
           if records.is_a?(Array)
@@ -1812,6 +1813,7 @@
           # Apply array-returning methods (these may convert Relation to Array)
           records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
           records = combined_age_results(records) if age_at_death.present? || check_age_range?
+          records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
 
           # Handle both Relation and Array results AFTER combined methods
           if records.is_a?(Array)
@@ -2654,6 +2656,33 @@
     death_records.where("#{t}.AgeAtDeath IS NULL OR #{t}.AgeAtDeath = ?", '')
   end
 
+  # combined_age_results returns an Array of Relations and/or in-memory rows. Count/persist must
+  # see concrete BestGuess rows, not Relation objects (otherwise "array size" is meaningless and
+  # persist_results breaks).
+  def normalize_freebmd_combined_result_rows(mixed)
+    return mixed unless mixed.is_a?(Array)
+
+    rows = []
+    mixed.each do |entry|
+      case entry
+      when ActiveRecord::Relation
+        rows.concat(entry.to_a)
+      when Array
+        rows.concat(entry)
+      else
+        rows << entry if entry.respond_to?(:read_attribute)
+      end
+    end
+
+    rows.index_by do |r|
+      next r.object_id unless r.respond_to?(:record_hash)
+
+      r.record_hash
+    rescue StandardError
+      "#{r.read_attribute(:RecordNumber)}-#{r.read_attribute(:RecordTypeID)}-#{r.read_attribute(:QuarterNumber)}"
+    end.values
+  end
+
   def combined_age_results records
     records = records
     results = []
@@ -2674,11 +2703,20 @@
     end
     results.concat(aad_search(records)) unless self.age_at_death.blank?
     #raise results.count.inspect
-    invalid_age_records = invalid_age_records(records)
-    results.concat(date_of_birth_uncertain_aad(invalid_age_records))
-    dob_records = records_with_dob(records)
-    results.concat(calculate_age_range_for_dob(dob_records)) if check_age_range?
-    results.concat(calculate_age_for_dob(dob_records)) if age_at_death.present?
+    # death_at_age "2" = numeric Age Range (DEATH_AGE_OPTIONS): min/max apply only via
+    # age_range_search on deaths. The branches below reuse min/max for DOB / uncertain-age
+    # semantics and would pull births and non-matching rows back into the result set.
+    dob_records = nil
+    unless death_at_age.to_s == '2'
+      invalid_age_records = invalid_age_records(records)
+      results.concat(date_of_birth_uncertain_aad(invalid_age_records))
+      dob_records = records_with_dob(records)
+      results.concat(calculate_age_range_for_dob(dob_records)) if check_age_range?
+    end
+    if age_at_death.present? && death_at_age.to_s != '2'
+      dob_records ||= records_with_dob(records)
+      results.concat(calculate_age_for_dob(dob_records))
+    end
     results.uniq
   end
 
