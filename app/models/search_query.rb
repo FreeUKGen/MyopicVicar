@@ -2551,6 +2551,14 @@
   def combined_results records
     return records if records.blank?
     return records unless records.is_a?(ActiveRecord::Relation)
+
+    # Year-of-birth exact search (death_at_age=3 with dob_at_death present) is more reliable
+    # using mixed Relation/Array filters directly. The SQL UNION path below can fail on some
+    # MySQL plans when date bounds are widened (e.g. start year 1900), resulting in
+    # ActiveRecord::StatementInvalid and zero rows.
+    if dob_at_death.present? && !date_of_birth_range?
+      return combined_results_exact_dob(records)
+    end
     
     # MySQL 5.7 compatible: Use UNION to combine queries at database level
     # Security: Validate input parameters
@@ -2655,6 +2663,33 @@
   rescue ActiveRecord::StatementInvalid => e
     # Security: Log error but don't expose details to user
     logger.error("Combined results query error: #{e.class}")
+    records.none
+  end
+
+  # Fallback path for exact Year-of-Birth searches (death_at_age option 3).
+  # Keeps the intended behavior:
+  # - includes inferred YOB from numeric ages in older records
+  # - includes encoded month/year forms (e.g. 19MY1883) via exact/uncertain matching
+  # - keeps "no age/DOB" rows unless match_recorded_ages_or_dates is enabled
+  # Returns an Array of BestGuess rows, deduplicated by record hash.
+  def combined_results_exact_dob(records)
+    results = []
+
+    non_dob_results = non_dob_records(records)
+    results.concat(Array(date_of_birth_search_range_a(non_dob_results)))
+
+    dob_results = dob_recordss(records)
+    results.concat(Array(dob_exact_search(dob_results)))
+
+    invalid_age_records = invalid_age_records_sql(dob_results)
+    results.concat(Array(date_of_birth_search_range_a(invalid_age_records)))
+    results.concat(Array(date_of_birth_uncertain_aad(invalid_age_records)))
+
+    results.concat(Array(no_aad_or_dob(records)))
+
+    normalize_freebmd_combined_result_rows(results)
+  rescue ActiveRecord::StatementInvalid => e
+    logger.error("Combined exact DOB fallback query error: #{e.class}")
     records.none
   end
   
