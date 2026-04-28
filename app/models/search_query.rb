@@ -1673,8 +1673,15 @@
         if !needs_array_result && records.respond_to?(:count)
           record_count = records.count
         else
-          # Apply array-returning methods (these may convert Relation to Array)
-          records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
+          # Apply array-returning methods (these may convert Relation to Array).
+          # Year-of-Birth modes (3 exact, 4 range) must bypass UNION-based combined_results
+          # because that path can raise StatementInvalid on some MySQL plans when date bounds
+          # are wide.
+          if (death_at_age.to_s == '3' && dob_at_death.present?) || (death_at_age.to_s == '4' && date_of_birth_range?)
+            records = combined_results_exact_dob(records)
+          elsif date_of_birth_range? || dob_at_death.present?
+            records = combined_results(records)
+          end
           records = combined_age_results(records) if age_at_death.present? || check_age_range?
           records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
 
@@ -1834,8 +1841,15 @@
           logger.warn("Record count before limit: #{record_count}")
           records = records.limit(max_limit) if record_count > max_limit
         else
-          # Apply array-returning methods (these may convert Relation to Array)
-          records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
+          # Apply array-returning methods (these may convert Relation to Array).
+          # Year-of-Birth modes (3 exact, 4 range) must bypass UNION-based combined_results
+          # because that path can raise StatementInvalid on some MySQL plans when date bounds
+          # are wide.
+          if (death_at_age.to_s == '3' && dob_at_death.present?) || (death_at_age.to_s == '4' && date_of_birth_range?)
+            records = combined_results_exact_dob(records)
+          elsif date_of_birth_range? || dob_at_death.present?
+            records = combined_results(records)
+          end
           records = combined_age_results(records) if age_at_death.present? || check_age_range?
           records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
 
@@ -2552,11 +2566,10 @@
     return records if records.blank?
     return records unless records.is_a?(ActiveRecord::Relation)
 
-    # Year-of-birth exact search (death_at_age=3 with dob_at_death present) is more reliable
-    # using mixed Relation/Array filters directly. The SQL UNION path below can fail on some
-    # MySQL plans when date bounds are widened (e.g. start year 1900), resulting in
-    # ActiveRecord::StatementInvalid and zero rows.
-    if death_at_age.to_s == '3' && dob_at_death.present?
+    # Year-of-birth modes are more reliable using mixed Relation/Array filters directly.
+    # The SQL UNION path below can fail on some MySQL plans when date bounds are widened
+    # (e.g. start year 1900), resulting in ActiveRecord::StatementInvalid and zero rows.
+    if (death_at_age.to_s == '3' && dob_at_death.present?) || (death_at_age.to_s == '4' && date_of_birth_range?)
       return combined_results_exact_dob(records)
     end
     
