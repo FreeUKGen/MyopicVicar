@@ -2629,6 +2629,12 @@
     # 2c. Records with DOB (has month indicators)
     date_of_birth_records = records_with_dob_sql(dob_results)
     year_query = age_at_death_with_year(date_of_birth_records)
+    # age_at_death_with_year intentionally falls back to Array for wide DOB ranges (>50 years).
+    # For UNION construction we need a Relation/SQL, so convert array rows back to an indexed Relation.
+    if year_query.is_a?(Array)
+      record_numbers = year_query.map { |r| r[:RecordNumber] || r.try(:RecordNumber) }.compact.uniq
+      year_query = records.where(RecordNumber: record_numbers) if record_numbers.any?
+    end
     sql = get_sql.call(year_query)
     subqueries << sql if sql.present?
     
