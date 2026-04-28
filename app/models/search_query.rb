@@ -2558,19 +2558,22 @@
 
     best_guess_tbl = SearchQuery.get_search_table.table_name
     
-    # Check if the query has JOINs (e.g., includes(:CountyCombos))
+    # Check if the query has JOINs (e.g., includes(:CountyCombos) or our spouse/mother filters).
+    # IMPORTANT: Not all JOINs cause ActiveRecord to alias columns as t0_r0/t0_r1/...
+    # The t0_r* aliases typically appear when AR builds a wide select list for eager loading.
     has_joins = records.to_sql.include?('JOIN')
-    
-    # If there are JOINs, we need to map ActiveRecord aliases to column names
-    # ActiveRecord uses t0_r0, t0_r1, etc. for BestGuess columns when JOINs are present
-    best_guess_column_aliases = if has_joins
-      # Map of alias index to column name (t0_r0 = RecordNumber, t0_r1 = ChunkNumber, etc.)
-      column_names = SearchQuery.get_search_table.column_names
-      column_names.map.with_index { |col, idx| "t0_r#{idx} AS #{col}" }.join(', ')
-    else
-      # No JOINs, use column names directly
-      SearchQuery.get_search_table.column_names.join(', ')
-    end
+    expects_arel_aliases = has_joins && records.to_sql.include?('t0_r0')
+
+    # Column projection to use in UNION wrapping.
+    # - If AR produced t0_r* aliases, map them back to real column names.
+    # - Otherwise, select real column names directly (works for queries selecting BestGuess.*).
+    best_guess_column_projection =
+      if expects_arel_aliases
+        column_names = SearchQuery.get_search_table.column_names
+        column_names.map.with_index { |col, idx| "t0_r#{idx} AS #{col}" }.join(', ')
+      else
+        SearchQuery.get_search_table.column_names.join(', ')
+      end
     
     # Collect subquery SQLs for UNION
     subqueries = []
@@ -2583,10 +2586,9 @@
       # Skip if SQL is empty or invalid
       return nil if sql.blank? || sql.strip.empty?
       
-      # If there are JOINs, we need to extract only BestGuess columns using aliases
+      # If there are JOINs, wrap and project a stable column set for UNION.
       if has_joins
-        # Wrap to select only BestGuess table columns using aliases
-        "SELECT #{best_guess_column_aliases} FROM (#{sql}) AS temp"
+        "SELECT #{best_guess_column_projection} FROM (#{sql}) AS temp"
       else
         # No JOINs, use SQL as-is
         sql
