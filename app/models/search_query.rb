@@ -2604,10 +2604,14 @@
     # 2. Modern records (QuarterNumber >= 530): Multiple search strategies
     dob_results = records.where("#{best_guess_tbl}.QuarterNumber >= ?", DOB_START_QUARTER)
     
-    # 2a. Exact DOB match
-    exact_dob_query = dob_exact_search(dob_results)
-    sql = get_sql.call(exact_dob_query)
-    subqueries << sql if sql.present?
+    # 2a. Exact DOB match (only when an exact DOB value was entered).
+    # For DOB-range searches, dob_at_death is blank; calling dob_exact_search in that case
+    # returns dob_results unchanged and unintentionally admits out-of-range rows.
+    if dob_at_death.present?
+      exact_dob_query = dob_exact_search(dob_results)
+      sql = get_sql.call(exact_dob_query)
+      subqueries << sql if sql.present?
+    end
     
     # 2b. Invalid age records (no month indicators)
     invalid_age_records = invalid_age_records_sql(dob_results)
