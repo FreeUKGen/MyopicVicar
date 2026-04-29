@@ -34,7 +34,7 @@ class GithubClosedYesterdayNotifier
 
     repo = Rails.application.config.github_issues_repo
     day_s = day.strftime('%Y-%m-%d')
-    query = "repo:#{repo} is:issue is:closed created:#{from.strftime('%Y-%m-%d')}..#{to.strftime('%Y-%m-%d')} closed:#{from.strftime('%Y-%m-%d')}..#{to.strftime('%Y-%m-%d')}"
+    query = "repo:#{repo} is:issue is:closed created:#{from.strftime('%Y-%m-%d')}..#{to.strftime('%Y-%m-%d')} closed:#{day_s}..#{day_s}"
 
     items = search_all_issues(query)
     puts "GitHub search returned #{items.size} issue(s) closed on #{day_s} in #{repo}."
