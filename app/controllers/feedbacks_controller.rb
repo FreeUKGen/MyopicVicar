@@ -41,18 +41,13 @@ class FeedbacksController < ApplicationController
   def create
     session[:return_to] ||= request.referer
     @feedback = Feedback.new(feedback_params)
-    #eliminate any flash message as the conversion to bson fails
     session.delete(:flash)
-    @feedback.session_data = session.to_hash
-    @feedback.session_data['warden_user_authentication_devise_user_key_key'] = @feedback.session_data['warden.user.authentication_devise_user.key'][0].to_s.gsub(/\W/, '') if @feedback.session_data['warden.user.authentication_devise_user.key'].present?
-    @feedback.session_data['warden_user_authentication_devise_user_key_value'] = @feedback.session_data['warden.user.authentication_devise_user.key'][1] if @feedback.session_data['warden.user.authentication_devise_user.key'].present?
-    @feedback.session_data.delete('warden.user.authentication_devise_user.key') if @feedback.session_data['warden.user.authentication_devise_user.key'].present?
-    @feedback.session_data['warden_user_authentication_devise_user_key_session'] = @feedback.session_data['warden.user.authentication_devise_user.session']
-    @feedback.session_data.delete('warden.user.authentication_devise_user.session') if @feedback.session_data['warden.user.authentication_devise_user.session'].present?
+  
+    @feedback.session_data = build_safe_session_data
     @feedback.session_id = session.to_hash['session_id']
     @feedback.save
     redirect_back(fallback_location: new_feedback_path, notice: 'There was a problem creating your feedback!') && return if @feedback.errors.any?
-
+  
     flash.notice = 'Thank you for your feedback!'
     @feedback.feedback_type == 'freecen handbook feedback' ? @feedback.communicate_handbook_feedback : @feedback.communicate_initial_contact
     if session[:return_to].present?
@@ -313,6 +308,36 @@ class FeedbacksController < ApplicationController
   end
 
   private
+
+  def build_safe_session_data
+    source = session.to_hash
+    safe = source.slice('session_id', 'locale', 'return_to')
+    safe['original_request_method'] = request.request_method
+    safe['original_request_path'] = request.fullpath
+    safe['referer'] = request.referer if request.referer.present?
+    deep_mongo_safe_value(safe)
+  end
+  
+  def deep_mongo_safe_value(value)
+    case value
+    when Hash
+      value.each_with_object({}) do |(k, v), acc|
+        key = sanitize_mongo_key(k)
+        next if key.blank?
+        acc[key] = deep_mongo_safe_value(v)
+      end
+    when Array
+      value.map { |v| deep_mongo_safe_value(v) }
+    else
+      value
+    end
+  end
+  
+  def sanitize_mongo_key(key)
+    ks = key.to_s
+    return nil if ks.blank? || ks.start_with?('$')
+    ks.tr('.', '_')
+  end
 
   def feedback_params
     params.require(:feedback).permit!

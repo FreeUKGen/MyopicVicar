@@ -280,10 +280,24 @@ class ApplicationController < ActionController::Base
   def require_login
     # Skip authentication for asset requests (should be served by web server, but fallback for Rails)
     return if request.path.start_with?('/assets/')
-    
-    if session[:userid_detail_id].nil?
+
+    unless user_signed_in?
       flash[:notice] = "You must be logged in to access that action"
-      redirect_to(new_search_query_path) && return  # halts request cycle
+      redirect_to(new_search_query_path) && return
+    end
+
+    uid = current_user.userid_detail_id
+    if uid.blank?
+      flash[:notice] = 'Your account is not linked to a member profile. Please contact support.'
+      sign_out(:user)
+      redirect_to(new_search_query_path) && return
+    end
+
+    # Legacy code paths use session[:userid_detail_id] and cookies.signed[:userid]; keep them aligned with Warden.
+    if session[:userid_detail_id].to_s != uid.to_s || session[:devise].to_s != current_user.id.to_s
+      session[:userid_detail_id] = uid.to_s
+      session[:devise] = current_user.id.to_s
+      cookies.signed[:userid] = uid.to_s
     end
   end
 

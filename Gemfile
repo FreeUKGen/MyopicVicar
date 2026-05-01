@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails'
+gem 'rails', '5.2.8'
 gem 'tzinfo-data' #needed by windows
 gem 'mysql2'
 #gem 'refinerycms'

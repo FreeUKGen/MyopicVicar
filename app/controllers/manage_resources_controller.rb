@@ -72,8 +72,13 @@ class ManageResourcesController < ApplicationController
 
   def logout
     @message = flash[:notice]
+    # Devise runs Warden logout hooks (clears remember_user_token cookie) only if we sign out here.
+    # reset_session alone does not call those hooks — "Keep me logged in" would sign the user back in.
+    sign_out(:user) if respond_to?(:sign_out)
     cookies.delete :userid
+    cookies.delete :Administrator
     cookies.delete :remember_authentication_devise_user_token
+    cookies.delete :remember_user_token
     reset_session
   end
 
