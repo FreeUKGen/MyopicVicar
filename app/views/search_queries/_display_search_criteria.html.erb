@@ -41,6 +41,9 @@
         <% if @ucf_results.size > 0 %>
           <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Exact Result', ' Exact Results') %> and <br>
             <%= pluralize(@ucf_results.size, ' Uncertain Result', ' Uncertain Results')%></h2>
+        <% elsif @results_truncated %>
+          <h2 class="gamma flush--bottom"> We are showing <%= pluralize(@result_count, ' Result', ' Results') %> after filters</h2>
+          <p class="zeta flush--top">The search hit the maximum number of records we retrieve at once; more matches may exist.</p>
         <% elsif  @result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")  %>
           <h2 class="gamma flush--bottom"> We found <%= pluralize(@result_count, ' Result', ' Results') %></h2>
         <%else%>

@@ -1,0 +1,11 @@
+<div class="island islet--light push-half--bottom">
+  <h2 class="gamma flush--bottom">Incomplete result set</h2>
+  <p class="read-length">
+    This search filled our maximum retrieve limit of
+    <%= FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %>
+    matching records before any display filters (such as embargo rules) were applied.
+    Fewer rows may appear below after those filters run.
+    There may still be additional matches in the database that were not in that batch—please narrow your search
+    (for example date range, place, names, or record type) and search again if you need fuller coverage.
+  </p>
+</div>

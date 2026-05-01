@@ -92,7 +92,8 @@ class SearchStatistic
     logger.info 'process_query'
     self.n_searches += 1
     self.n_zero_result += 1   if query.result_count == 0
-    self.n_limit_result += 1  if query.result_count == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    self.n_limit_result += 1  if query.try(:results_fetch_capped) ||
+      query.result_count == FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
 
     self.total_results += (query.result_count || 0)
 
