@@ -18,9 +18,10 @@ class SearchRecordsController < ApplicationController
   require 'csv'
   rescue_from Mongo::Error::OperationFailure, with: :catch_error
 
-  # FreeREG: upgrade live SearchRecord _id URLs to freereg1_csv_entry_id for citation/print (matches
+  # FreeREG: upgrade live SearchRecord _id URLs to freereg1_csv_entry_id (matches
   # SearchRecordsHelper#search_record_link). When the id no longer exists, try LegacySearchRecordByEntry
-  # (inverted: legacy ids per line) then LegacySearchRecordMapping (flat old_id -> target).
+  # (inverted: legacy ids per line) then LegacySearchRecordMapping (flat old_id -> target); resolve
+  # mapping new_id SearchRecord ids to entry id so redirects are not stuck on another _id.
   def redirect_legacy_search_record_id
     return if params[:id].blank?
 
@@ -35,6 +36,12 @@ class SearchRecordsController < ApplicationController
         return
       elsif request.path.include?('show_print_version')
         redirect_to path_with_request_query(show_print_version_search_record_path(entry)), status: :moved_permanently
+        return
+      elsif params[:friendly].present?
+        redirect_to path_with_request_query(friendly_search_record_path(entry, record.friendly_url)), status: :moved_permanently
+        return
+      else
+        redirect_to path_with_request_query(search_record_path(entry)), status: :moved_permanently
         return
       end
     end
@@ -51,10 +58,16 @@ class SearchRecordsController < ApplicationController
       target_id = mapping.freereg1_csv_entry_id.presence || mapping.new_id
     end
     return if target_id.blank?
+
+    target_id = freereg_canonical_id_for_redirect(target_id)
+    return if target_id.blank?
+
     if request.path.include?('show_citation')
       redirect_to path_with_request_query(show_citation_record_path(target_id)), status: :moved_permanently
     elsif request.path.include?('show_print_version')
       redirect_to path_with_request_query(show_print_version_search_record_path(target_id)), status: :moved_permanently
+    elsif params[:friendly].present?
+      redirect_to path_with_request_query(friendly_search_record_path(target_id, params[:friendly])), status: :moved_permanently
     else
       redirect_to path_with_request_query(search_record_path(target_id)), status: :moved_permanently
     end
@@ -406,6 +419,14 @@ class SearchRecordsController < ApplicationController
   def path_with_request_query(path)
     q = request.query_string
     q.present? ? "#{path}?#{q}" : path
+  end
+
+  # When flat mapping only stored another SearchRecord _id in new_id, resolve to freereg1_csv_entry_id.
+  def freereg_canonical_id_for_redirect(target_id)
+    return target_id if target_id.blank? || appname_downcase != 'freereg'
+
+    rec = SearchRecord.find_for_show_param(target_id)
+    rec&.freereg1_csv_entry_id.present? ? rec.freereg1_csv_entry_id.to_s : target_id
   end
 
   # Citation links are often opened from other sites; redirect_back would send users to the Referer (that site)
