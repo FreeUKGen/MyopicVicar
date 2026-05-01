@@ -221,6 +221,8 @@ class SearchQuery
         end
       when 'freecen'
         proceed = true
+      else
+        proceed = true
       end
       proceed
     end
@@ -580,7 +582,7 @@ class SearchQuery
   def get_and_sort_results_for_display
     unless self.search_result&.records.respond_to?(:values)
       Rails.logger.warn { "SearchQuery#get_and_sort_results_for_display: No records found or records not hash-like" }
-      return false
+      return false, [], [], 0
     end
 
     # Step 1: Extract values
@@ -625,9 +627,9 @@ class SearchQuery
     # Final return
     response = true
     return response, wrapped_results, ucf_results, result_count
-  rescue => e
-    Rails.logger.error { "[GetSortDisplay] ---Error in get_and_sort_results_for_display: #{e.message}\n#{e.backtrace.take(5).ai(plain: true)}" }
-    return false
+  rescue StandardError => e
+    Rails.logger.error { "[GetSortDisplay] ---Error in get_and_sort_results_for_display: #{e.message}\n#{e.backtrace.take(5).join("\n")}" }
+    return false, [], [], 0
   end
 
 
@@ -854,14 +856,13 @@ class SearchQuery
       rec_id = record['_id'].to_s
       record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
       record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
-      records[rec_id] = record
       proceed = SearchQuery.does_the_entry_exist?(rec)
       if proceed
-        rec_id = record['_id'].to_s
-        record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
-        record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
         records[rec_id] = record
       else
+        # Broken linkage (e.g. missing Freereg1CsvEntry): drop from this saved search and remove orphan index row.
+        # See persist_additional_results for the same pattern. Risk: false negatives in does_the_entry_exist?
+        # (transient DB, logic bugs) could delete a valid SearchRecord — prefer background cleanup if that becomes an issue.
         search_record = SearchRecord.where(id: rec['_id']).first
         search_record&.destroy
       end

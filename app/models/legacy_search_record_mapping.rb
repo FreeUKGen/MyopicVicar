@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-# Stores mapping from old SearchRecord _id (before rebuild or delete) to the current record.
-# Populated manually (CSV rake) and automatically when a FreeREG SearchRecord is destroyed
-# (see SearchRecord before_destroy). Redirect target: prefer freereg1_csv_entry_id; fall back to new_id
+# Flat mapping: old SearchRecord _id -> new_id / freereg1_csv_entry_id.
+# Populated via CSV rake (update_lost_search_record_ids) and SearchRecord.write_legacy_freereg_mapping!.
+# Redirect resolution also tries LegacySearchRecordByEntry (inverted: many legacy ids per entry).
+# Redirect target: prefer freereg1_csv_entry_id; fall back to new_id
 # (SearchRecord id or entry id — see SearchRecord.find_for_show_param).
 class LegacySearchRecordMapping
   include Mongoid::Document

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-# Loads legacy SearchRecord id -> current target mapping and populates LegacySearchRecordMapping.
+# Loads legacy SearchRecord id -> current target mapping into LegacySearchRecordMapping (flat)
+# and LegacySearchRecordByEntry (inverted: legacy ids per freereg1_csv_entry_id).
 # Old citation/record URLs then redirect to the current record.
 #
 # CSV: header row optional. Required: old_id (or lost_id) plus at least one of:
@@ -86,6 +87,12 @@ namespace :update_lost_search_record_ids do
           rec.update_attributes!(attrs)
           updated += 1
         end
+        rec.reload
+        entry_for_inverted = LegacySearchRecordByEntry.freereg_entry_id_from_flat_mapping(rec)
+        LegacySearchRecordByEntry.add_legacy_id!(
+          freereg1_csv_entry_id: entry_for_inverted,
+          legacy_search_record_id: old_id
+        ) if entry_for_inverted.present?
       else
         created += 1
       end

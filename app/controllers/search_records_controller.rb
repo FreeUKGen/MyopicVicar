@@ -19,8 +19,8 @@ class SearchRecordsController < ApplicationController
   rescue_from Mongo::Error::OperationFailure, with: :catch_error
 
   # FreeREG: upgrade live SearchRecord _id URLs to freereg1_csv_entry_id for citation/print (matches
-  # SearchRecordsHelper#search_record_link). When the id no longer exists, LegacySearchRecordMapping
-  # supplies old_id -> entry id (or new SearchRecord id).
+  # SearchRecordsHelper#search_record_link). When the id no longer exists, try LegacySearchRecordByEntry
+  # (inverted: legacy ids per line) then LegacySearchRecordMapping (flat old_id -> target).
   def redirect_legacy_search_record_id
     return if params[:id].blank?
 
@@ -41,9 +41,15 @@ class SearchRecordsController < ApplicationController
 
     return if record.present?
 
-    mapping = LegacySearchRecordMapping.find_by(old_id: id_s)
-    return if mapping.blank?
-    target_id = mapping.freereg1_csv_entry_id.presence || mapping.new_id
+    target_id = nil
+    inverted = LegacySearchRecordByEntry.find_by_legacy_search_record_id(id_s)
+    target_id = inverted.freereg1_csv_entry_id if inverted.present?
+    if target_id.blank?
+      mapping = LegacySearchRecordMapping.find_by(old_id: id_s)
+      return if mapping.blank?
+
+      target_id = mapping.freereg1_csv_entry_id.presence || mapping.new_id
+    end
     return if target_id.blank?
     if request.path.include?('show_citation')
       redirect_to path_with_request_query(show_citation_record_path(target_id)), status: :moved_permanently
