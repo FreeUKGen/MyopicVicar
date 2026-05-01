@@ -168,16 +168,23 @@ module ApplicationHelper
     return a
   end
 
+  # Stable string for the browser session (do not pass as :session_id to url_for —
+  # that key is reserved for Rack::Session::SessionId and url_for calls #public_id on it.)
+  def browser_session_id_string
+    raw = request.session_options[:id] || request.session['session_id']
+    raw.respond_to?(:public_id) ? raw.public_id : raw.to_s
+  end
+
   def problem_url
     # construct url parameters for problem reports
     problem_time = Time.now.utc
-    session_id = request.session['session_id']
+    sid = browser_session_id_string
     problem_page_url=request.env['REQUEST_URI']
     previous_page_url=request.env['HTTP_REFERER']
     feedback_type=Feedback::FeedbackType::ISSUE
     user_id = session[:userid]
     url = main_app.new_feedback_path({ :feedback_time => problem_time,
-                                       :session_id => session_id,
+                                       :report_session_id => sid,
                                        :user_id => user_id,
                                        :problem_page_url => problem_page_url,
                                        :previous_page_url => previous_page_url,
@@ -198,13 +205,13 @@ module ApplicationHelper
 
   def suggestion_options
     problem_time = Time.now.utc
-    session_id = request.session['session_id']
+    sid = browser_session_id_string
     problem_page_url = request.env['REQUEST_URI']
     feedback_type='freecen handbook feedback'
     user_id = session[:userid]
 
     {  :feedback_time => problem_time,
-       :session_id => session_id,
+       :report_session_id => sid,
        :user_id => user_id,
        :problem_page_url => problem_page_url,
        :feedback_type => feedback_type }
@@ -213,14 +220,14 @@ module ApplicationHelper
   def problem_button_options
     # construct url parameters for problem reports
     problem_time = Time.now.utc
-    session_id = request.session['session_id']
+    sid = browser_session_id_string
     problem_page_url = request.env['REQUEST_URI']
     previous_page_url = request.env['HTTP_REFERER']
     feedback_type=Feedback::FeedbackType::ISSUE
     user_id = session[:userid]
 
     {  :feedback_time => problem_time,
-       :session_id => session_id,
+       :report_session_id => sid,
        :user_id => user_id,
        :problem_page_url => problem_page_url,
        :previous_page_url => previous_page_url,
