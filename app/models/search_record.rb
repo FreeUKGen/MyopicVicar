@@ -167,6 +167,10 @@ class SearchRecord
   # Allows MongoDB to index into the array of embedded documents.
   index({ "search_names.first_name": 1, "search_names.last_name": 1 })
 
+  # FreeREG: preserve published /search_records/:id URLs when this row is removed (rebuild, entry delete, etc.).
+  # Set Thread.current[:skip_legacy_freereg_search_record_mapping] = true to skip (e.g. full collection wipe).
+  before_destroy :write_legacy_freereg_search_record_mapping
+
   class << self
     # This is FreeREG-specific and should be considered
     def baptisms
@@ -211,6 +215,24 @@ class SearchRecord
       return rec if rec.present?
 
       where(freereg1_csv_entry_id: oid).first
+    end
+
+    # Ensures LegacySearchRecordMapping has old_id -> freereg1_csv_entry_id for redirects. Safe to call
+    # before delete/destroy_all paths that skip Mongoid callbacks.
+    def write_legacy_freereg_mapping!(old_id:, freereg1_csv_entry_id:)
+      return if old_id.blank? || freereg1_csv_entry_id.blank?
+
+      old_s = old_id.to_s
+      entry_s = freereg1_csv_entry_id.to_s
+      return if old_s == entry_s
+
+      mapping = LegacySearchRecordMapping.find_or_initialize_by(old_id: old_s)
+      mapping.freereg1_csv_entry_id = entry_s
+      mapping.new_id = entry_s if mapping.new_id.blank?
+      mapping.save(validate: false)
+    rescue StandardError => e
+      app = MyopicVicar::Application.config.freexxx_display_name.to_s.upcase
+      Rails.logger.warn("#{app}::SEARCH_RECORD legacy mapping failed old_id=#{old_id} entry_id=#{freereg1_csv_entry_id}: #{e.class}: #{e.message}")
     end
 
     # For search results stored as hashes: current param may be _id or freereg1_csv_entry_id (FreeREG).
@@ -309,7 +331,10 @@ class SearchRecord
     end
 
     def delete_freereg1_csv_entries
+      Thread.current[:skip_legacy_freereg_search_record_mapping] = true
       SearchRecord.where(:freereg1_csv_entry_id.exists => true).destroy_all
+    ensure
+      Thread.current[:skip_legacy_freereg_search_record_mapping] = false
     end
 
     def delete_freecen_individual_entries
@@ -1246,5 +1271,14 @@ class SearchRecord
 
   def dwelling_info
     freecen_individual.freecen_dwelling
+  end
+
+  private
+
+  def write_legacy_freereg_search_record_mapping
+    return if Thread.current[:skip_legacy_freereg_search_record_mapping]
+    return unless freereg1_csv_entry_id.present?
+
+    self.class.write_legacy_freereg_mapping!(old_id: id, freereg1_csv_entry_id: freereg1_csv_entry_id)
   end
 end

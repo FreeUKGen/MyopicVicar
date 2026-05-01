@@ -18,18 +18,39 @@ class SearchRecordsController < ApplicationController
   require 'csv'
   rescue_from Mongo::Error::OperationFailure, with: :catch_error
 
+  # FreeREG: upgrade live SearchRecord _id URLs to freereg1_csv_entry_id for citation/print (matches
+  # SearchRecordsHelper#search_record_link). When the id no longer exists, LegacySearchRecordMapping
+  # supplies old_id -> entry id (or new SearchRecord id).
   def redirect_legacy_search_record_id
     return if params[:id].blank?
-    return if SearchRecord.find_for_show_param(params[:id]).present?
-    mapping = LegacySearchRecordMapping.find_by(old_id: params[:id].to_s)
+
+    id_s = params[:id].to_s.strip
+    record = SearchRecord.find_for_show_param(id_s)
+
+    if appname_downcase == 'freereg' && record.present? && record.freereg1_csv_entry_id.present? &&
+       record.id.to_s == id_s
+      entry = record.freereg1_csv_entry_id.to_s
+      if request.path.include?('show_citation')
+        redirect_to path_with_request_query(show_citation_record_path(entry)), status: :moved_permanently
+        return
+      elsif request.path.include?('show_print_version')
+        redirect_to path_with_request_query(show_print_version_search_record_path(entry)), status: :moved_permanently
+        return
+      end
+    end
+
+    return if record.present?
+
+    mapping = LegacySearchRecordMapping.find_by(old_id: id_s)
     return if mapping.blank?
-    new_id = mapping.new_id
+    target_id = mapping.freereg1_csv_entry_id.presence || mapping.new_id
+    return if target_id.blank?
     if request.path.include?('show_citation')
-      redirect_to show_citation_record_path(new_id) and return
+      redirect_to path_with_request_query(show_citation_record_path(target_id)), status: :moved_permanently
     elsif request.path.include?('show_print_version')
-      redirect_to show_print_version_search_record_path(new_id) and return
+      redirect_to path_with_request_query(show_print_version_search_record_path(target_id)), status: :moved_permanently
     else
-      redirect_to search_record_path(new_id) and return
+      redirect_to path_with_request_query(search_record_path(target_id)), status: :moved_permanently
     end
   end
 
@@ -375,6 +396,11 @@ class SearchRecordsController < ApplicationController
   end
   
   private
+
+  def path_with_request_query(path)
+    q = request.query_string
+    q.present? ? "#{path}?#{q}" : path
+  end
 
   # Citation links are often opened from other sites; redirect_back would send users to the Referer (that site)
   # instead of staying here with the flash. Only use redirect_back when the referer is this application.

@@ -835,8 +835,8 @@ class SearchQuery
         record = rec
         records[rec_id] = record
       else
-        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
-        search_record.delete if search_record.present?
+        search_record = SearchRecord.where(id: rec['_id']).first
+        search_record&.destroy
       end
     end
     self.search_result.records = self.search_result.records.merge(records)
@@ -862,8 +862,8 @@ class SearchQuery
         record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
         records[rec_id] = record
       else
-        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
-        search_record.delete if search_record.present?
+        search_record = SearchRecord.where(id: rec['_id']).first
+        search_record&.destroy
       end
     end
     self.search_result = SearchResult.new
