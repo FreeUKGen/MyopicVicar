@@ -761,7 +761,7 @@ class SearchQuery
   def locate_index(records, current)
     n = 0
     records.each do |record|
-      break if record[:_id].to_s == current
+      break if SearchRecord.param_matches_stored_result?(record, current)
 
       n += 1
     end

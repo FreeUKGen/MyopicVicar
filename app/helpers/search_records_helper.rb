@@ -1,3 +1,4 @@
+require 'set'
 module SearchRecordsHelper
 
   def dwelling_offset_message(offset)
@@ -25,22 +26,43 @@ module SearchRecordsHelper
   end
 
   def viewed(search_query, search_record)
-    search_results = search_query.search_result
-    viewed_records = search_results.viewed_records
-    field = ''
-    if viewed_records.present?
-      field = '(Seen)' if viewed_records.include?("#{search_record[:_id]}")
+    # Memoized per request; viewed_records is read once; Set gives O(1) lookup per id candidate.
+    @viewed_search_record_id_set ||= Set.new(
+      (search_query&.search_result&.viewed_records || []).map(&:to_s)
+    )
+    return '' if @viewed_search_record_id_set.empty?
+
+    id_strings =
+      if search_record.is_a?(SearchRecord)
+        [search_record.id, search_record.freereg1_csv_entry_id].compact.map(&:to_s)
+      else
+        rid = search_record[:_id] || search_record['_id']
+        eid = search_record[:freereg1_csv_entry_id] || search_record['freereg1_csv_entry_id']
+        [rid, eid].compact.map(&:to_s)
+      end
+
+    if id_strings.any? { |s| @viewed_search_record_id_set.include?(s) }
+      '(Seen)'
+    else
+      ''
     end
-    field
   end
 
   def entitle(record)
     record = record.present? ? record.titleize : record
   end
 
+  # Citation / bookmark URL only: for FreeREG use the line id (stable if SearchRecord is rebuilt). Else SearchRecord id.
   def search_record_link(record)
-    field = Rails.application.config.website + '/search_records/' + record
-    field
+    id_for_url =
+      if record.is_a?(SearchRecord) && record.freereg1_csv_entry_id.present?
+        record.freereg1_csv_entry_id.to_s
+      elsif record.is_a?(SearchRecord)
+        record.id.to_s
+      else
+        record.to_s
+      end
+    Rails.application.config.website + '/search_records/' + id_for_url
   end
 
 end

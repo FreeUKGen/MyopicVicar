@@ -212,8 +212,9 @@ class ContactsController < ApplicationController
     @contact.record_id = params[:id]
     case appname_downcase
     when 'freereg'
-      redirect_back(fallback_location: contacts_path, notice: 'The record was not found') && return if params[:id].blank? || SearchRecord.find(params[:id]).blank?
-      @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
+      sr = params[:id].blank? ? nil : SearchRecord.find_for_show_param(params[:id])
+      redirect_back(fallback_location: contacts_path, notice: 'The record was not found') && return if params[:id].blank? || sr.blank?
+      @contact.entry_id = sr.freereg1_csv_entry._id
       @freereg1_csv_entry = Freereg1CsvEntry.find(@contact.entry_id)
       @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
       @contact.line_id = @freereg1_csv_entry.line_id

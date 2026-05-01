@@ -13,6 +13,6 @@
       <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%> <%=entitle(@entry['marriage_date'])%>
     <%end%>
     <br>
-    Web address:<%=search_record_link(@search_record[:_id])%>  viewed <%=Date.today.strftime("%e %b %Y")%>
+    Web address:<%=search_record_link(@search_record)%>  viewed <%=Date.today.strftime("%e %b %Y")%>
   </p>
 </section>

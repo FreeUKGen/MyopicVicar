@@ -7,7 +7,7 @@
   <div>
     <dl class="table-display">
       <dt>Detail</dt>
-      <dd><%= link_to("Detail ", friendly_search_record_path(search_record.id, search_record.friendly_url, :search_id => @search_query, :ucf => false)) %>
+      <dd><%= link_to("Detail ", friendly_search_record_path(search_record, search_record.friendly_url, :search_id => @search_query, :ucf => false)) %>
         <i><%= viewed(@search_query,search_record)%></i></dd>
       <dt > Person or persons</dt>
       <dd ><% search_record.transcript_names.uniq.each_with_index do |name, i| %>
@@ -44,7 +44,7 @@
     <div>
       <dl class="table-display">
         <dt>Detail</dt>
-        <dd><%= link_to("Detail ", friendly_search_record_path(search_record.id, search_record.friendly_url, :search_id => @search_query, :ucf => false)) %>
+        <dd><%= link_to("Detail ", friendly_search_record_path(search_record, search_record.friendly_url, :search_id => @search_query, :ucf => false)) %>
           <i><%= viewed(@search_query,search_record)%></i></dd>
         <dt > Person or persons</dt>
         <dd ><% search_record.transcript_names.uniq.each_with_index do |name, i| %>
