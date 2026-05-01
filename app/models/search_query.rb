@@ -207,24 +207,30 @@ class SearchQuery
       rec
     end
 
-    def does_the_entry_exist?(search_record)
+    # Optional freereg_entries_by_id: String _id => Freereg1CsvEntry (batch preload for secondary-date merge).
+    def does_the_entry_exist?(search_record, freereg_entries_by_id: nil)
       case App.name.downcase
       when 'freereg'
-        entry = search_record[:freereg1_csv_entry_id]
-        if entry.present?
-          actual_entry = Freereg1CsvEntry.find_by(_id: entry)
+        entry_id = search_record[:freereg1_csv_entry_id] || search_record['freereg1_csv_entry_id']
+        if entry_id.blank?
+          false
+        else
+          cache = freereg_entries_by_id
+          key = entry_id.to_s
+          actual_entry = cache.is_a?(Hash) ? cache[key] : nil
+          actual_entry ||= Freereg1CsvEntry.find_by(_id: entry_id)
           if actual_entry.present?
             proceed, _place, _church, _register = actual_entry.location_from_entry
+            proceed
           else
-            proceed = false
+            false
           end
-        else
-          proceed = false
         end
       when 'freecen'
-        proceed = true
+        true
+      else
+        true
       end
-      proceed
     end
   end
 
@@ -870,17 +876,30 @@ class SearchQuery
       self.results_fetch_capped = true
     end
 
+    freereg_entries_by_id = {}
+    if App.name == 'FreeREG' && secondary_batch.present?
+      entry_ids = secondary_batch.filter_map do |r|
+        (r[:freereg1_csv_entry_id] || r['freereg1_csv_entry_id']).presence
+      end.uniq
+      if entry_ids.present?
+        Freereg1CsvEntry.where(:_id.in => entry_ids).each do |e|
+          freereg_entries_by_id[e.id.to_s] = e
+        end
+      end
+    end
+    entry_cache = freereg_entries_by_id.presence
+
     # finally extract the records IDs and persist them
     records = {}
     secondary_batch.each do |rec|
       rec_id = rec['_id'].to_s
-      proceed = SearchQuery.does_the_entry_exist?(rec)
+      proceed = SearchQuery.does_the_entry_exist?(rec, freereg_entries_by_id: entry_cache)
       if proceed
         record = rec
         records[rec_id] = record
       else
-        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
-        search_record.delete if search_record.present?
+        search_record = SearchRecord.where(id: rec['_id']).first
+        search_record&.destroy
       end
     end
     self.search_result.records = self.search_result.records.merge(records)
@@ -906,8 +925,8 @@ class SearchQuery
         record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
         records[rec_id] = record
       else
-        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
-        search_record.delete if search_record.present?
+        search_record = SearchRecord.where(id: rec['_id']).first
+        search_record&.destroy
       end
     end
     self.search_result = SearchResult.new
