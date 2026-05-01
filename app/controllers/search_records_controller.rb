@@ -20,6 +20,19 @@ class SearchRecordsController < ApplicationController
 
   def redirect_legacy_search_record_id
     return if params[:id].blank?
+    requested_id = params[:id].to_s
+    # Canonicalize legacy FreeREG citation links that still use SearchRecord _id.
+    # This keeps old links working while switching users/search engines to the stable entry-based URL.
+    if action_name == 'show_citation' && SearchRecord.bson_object_id_string?(requested_id)
+      search_record = SearchRecord.record_id(requested_id).first
+      if search_record.present? && search_record.freereg1_csv_entry_id.present?
+        canonical_id = search_record.freereg1_csv_entry_id.to_s
+        if requested_id != canonical_id
+          redirect_to show_citation_record_path(canonical_id, request.query_parameters), status: :moved_permanently and return
+        end
+      end
+    end
+    
     return if SearchRecord.find_for_show_param(params[:id]).present?
     mapping = LegacySearchRecordMapping.find_by(old_id: params[:id].to_s)
     return if mapping.blank?

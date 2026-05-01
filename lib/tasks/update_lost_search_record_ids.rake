@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
-# Loads old SearchRecord id -> new SearchRecord id mapping from a CSV and populates
+# Loads old SearchRecord id -> redirect target id mapping from a CSV and populates
 # LegacySearchRecordMapping. Old citation/record URLs then redirect to the current record.
 #
-# CSV format: two columns — old/lost id and current id. Header row optional.
+# The second column (new_id / current_id) may be either:
+#   - the current SearchRecord _id, or
+#   - Freereg1CsvEntry _id (freereg1_csv_entry_id), which stays stable when the search row is rebuilt
+#     and matches canonical FreeREG URLs from SearchRecord#to_param.
+#
+# CSV format: two columns — old/lost id and new/current id. Header row optional.
 # Examples:
 #   old_id,new_id
 #   507f1f77bcf86cd799439011,507f191e810c19729de860ea
@@ -13,10 +18,10 @@
 #
 # Usage:
 #   RAILS_ENV=production bundle exec rake update_lost_search_record_ids[path/to/mapping.csv]
-#   rake "update_lost_search_record_ids[dry_run]"  # with csv path for dry run
+#   rake "update_lost_search_record_ids:from_csv[path/to/mapping.csv,dry_run]"
 #
 namespace :update_lost_search_record_ids do
-  desc "Load CSV of old_id,new_id (or lost_id,current_id) and create LegacySearchRecordMapping records."
+  desc "Load CSV of old_id,new_id (or lost_id,current_id) into LegacySearchRecordMapping; new/current id may be SearchRecord or freereg1_csv_entry id."
   task :from_csv, [:csv_path, :dry_run] => :environment do |_t, args|
     csv_path = args[:csv_path].to_s
     dry_run = args[:dry_run].to_s.downcase == 'dry_run'
@@ -24,6 +29,7 @@ namespace :update_lost_search_record_ids do
     if csv_path.blank?
       puts "Usage: rake update_lost_search_record_ids:from_csv[path/to/mapping.csv]"
       puts "CSV must have two columns: old_id and new_id (or lost_id and current_id). Header row optional."
+      puts "new_id/current_id may be the current SearchRecord id or freereg1_csv_entry_id (stable across rebuilds)."
       next
     end
 
@@ -95,5 +101,6 @@ task :update_lost_search_record_ids, [:csv_path] => :environment do |_t, args|
   else
     puts "Usage: rake update_lost_search_record_ids[path/to/mapping.csv]"
     puts "CSV format: old_id,new_id (or lost_id,current_id). One row per mapping."
+    puts "Second column may be SearchRecord id or freereg1_csv_entry_id. Dry run: rake \"update_lost_search_record_ids:from_csv[path.csv,dry_run]\""
   end
 end
