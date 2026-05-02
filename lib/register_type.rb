@@ -11,7 +11,9 @@ module RegisterType
                       "Unknown" => "UK","Unspecified" => " " }
 
   def self.display_name(value)
-    APPROVED_OPTIONS.key(value)
+    # Stored "Unspecified" register type uses a single space as the code (historical); blank often arrives as "".
+    lookup = value.to_s.empty? ? " " : value
+    APPROVED_OPTIONS.key(lookup)
   end
 
   def self.specified?(value)

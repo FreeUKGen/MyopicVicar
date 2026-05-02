@@ -83,8 +83,11 @@ class SearchQuery
     }
   end
 
-  WILDCARD = /[?*]/
-  UCF = /[\[\{}_\*\?]/
+  # WILDCARD = /[?*]/
+  # UCF = /[\[\{}_\*\?]/
+  WILDCARD   = /[?*]/.freeze
+  UCF        = /[\[\{}_\*\?]/.freeze
+  VALID_YEAR = /\b\d{4}\b/.freeze
 
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
@@ -374,38 +377,139 @@ class SearchQuery
     name_parts[0].downcase
   end
 
+  # def filter_ucf_records(records)
+  #   filtered_records = []
+  #   records.each do |record|
+  #     record = SearchRecord.record_id(record.to_s).first
+  #     next if record.blank?
+
+  #     next if record.search_date.blank?
+
+  #     next if record.search_date.match(UCF)
+
+  #     next if record_type.present? && record.record_type != record_type
+
+  #     next if start_year.present? && ((record.search_date.to_i < start_year || record.search_date.to_i > end_year))
+
+  #     record.search_names.each do |name|
+  #       if name.type == SearchRecord::PersonType::PRIMARY || inclusive || witness
+  #         begin
+  #           if name.contains_wildcard_ucf?
+  #             if first_name.blank? && last_name.present? && name.last_name.present?
+  #               filtered_records << record if last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
+  #             elsif last_name.blank? && first_name.present? && name.first_name.present?
+  #               filtered_records << record if first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+  #             elsif last_name.present? && first_name.present? && name.last_name.present? && name.first_name.present?
+  #               filtered_records << record if last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) &&
+  #                 first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+  #             end
+  #           end
+  #         rescue RegexpError
+  #         end
+  #       end
+  #     end
+  #   end
+  #   filtered_records
+  # end
+
   def filter_ucf_records(records)
+    Rails.logger.info "\n[filter_ucf_records] starting with #{records.size} raw records"
+    Rails.logger.info "[filter_ucf_records] Start loop of search records\n"
+
     filtered_records = []
-    records.each do |record|
-      record = SearchRecord.record_id(record.to_s).first
+
+    records.each do |raw_record|
+      Rails.logger.info "[filter_ucf_records] Processing raw search record: #{raw_record.inspect}"
+
+      record = SearchRecord.record_id(raw_record.to_s).first
+      Rails.logger.info "[filter_ucf_records] Search Record:\n#{record.inspect}"
+
       next if record.blank?
 
-      next if record.search_date.blank?
+      if record.search_date.blank?
+        Rails.logger.info "[filter_ucf_records] Skipping search record: blank search_date"
+        next
+      end
 
-      next if record.search_date.match(UCF)
+      if record.search_date.match(UCF) && !record.search_date.match(VALID_YEAR)
+        Rails.logger.info "[filter_ucf_records] Skipping search record: search_date matches UCF"
+        next
+      end
 
-      next if record_type.present? && record.record_type != record_type
+      if record_type.present? && record.record_type != record_type
+        Rails.logger.info "[filter_ucf_records] Skipping search record: record_type mismatch"
+        next
+      end
 
-      next if start_year.present? && ((record.search_date.to_i < start_year || record.search_date.to_i > end_year))
-
-      record.search_names.each do |name|
-        if name.type == SearchRecord::PersonType::PRIMARY || inclusive || witness
-          begin
-            if name.contains_wildcard_ucf?
-              if first_name.blank? && last_name.present? && name.last_name.present?
-                filtered_records << record if last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase))
-              elsif last_name.blank? && first_name.present? && name.first_name.present?
-                filtered_records << record if first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
-              elsif last_name.present? && first_name.present? && name.last_name.present? && name.first_name.present?
-                filtered_records << record if last_name.downcase.match(UcfTransformer.ucf_to_regex(name.last_name.downcase)) &&
-                  first_name.downcase.match(UcfTransformer.ucf_to_regex(name.first_name.downcase))
-              end
-            end
-          rescue RegexpError
-          end
+      if start_year.present?
+        year = record.search_date.to_i
+        if year < start_year || year > end_year
+          Rails.logger.info "[filter_ucf_records] Skipping search record: year #{year} outside #{start_year}-#{end_year}"
+          next
         end
       end
+
+      Rails.logger.info "\n[filter_ucf_records] Start loop of search name(s)"
+      record.search_names.each do |name|
+        Rails.logger.info "\n+++ [filter_ucf_records] Evaluating search name: #{name.attributes}"
+
+        unless name.type == SearchRecord::PersonType::PRIMARY || inclusive || witness
+          Rails.logger.info "[filter_ucf_records] Skipping name: not PRIMARY and no inclusive/witness flags\n"
+          next
+        end
+
+        begin
+          if name.contains_wildcard_ucf?
+            Rails.logger.info "[filter_ucf_records] Wildcard UCF detected for name"
+
+            # CASE 1: Only last name provided
+            if first_name.blank? && last_name.present? && name.last_name.present?
+              regex = UcfTransformer.ucf_to_regex(name.last_name.downcase)
+
+              Rails.logger.info "[filter_ucf_records] last_name_regex: #{regex}"
+
+              if last_name.downcase.match(regex)
+                Rails.logger.info "[filter_ucf_records] Matched last name wildcard"
+                filtered_records << record
+              end
+
+            # CASE 2: Only first name provided
+            elsif last_name.blank? && first_name.present? && name.first_name.present?
+              regex = UcfTransformer.ucf_to_regex(name.first_name.downcase)
+
+              Rails.logger.info "[filter_ucf_records] first_name_regex: #{regex}"
+              
+              if first_name.downcase.match(regex)
+                Rails.logger.info "[filter_ucf_records] Matched first name wildcard"
+                filtered_records << record
+              end
+
+            # CASE 3: Both names provided
+            elsif last_name.present? && first_name.present? &&
+                  name.last_name.present? && name.first_name.present?
+
+              last_regex  = UcfTransformer.ucf_to_regex(name.last_name.downcase)
+              first_regex = UcfTransformer.ucf_to_regex(name.first_name.downcase)
+
+              Rails.logger.info "[filter_ucf_records] last_regex: #{last_regex} , first_regex: #{first_regex}"
+
+              if last_name.downcase.match(last_regex) &&
+                first_name.downcase.match(first_regex)
+                Rails.logger.info "[filter_ucf_records] Matched both first and last name wildcards"
+                filtered_records << record
+              end
+            end
+          end
+        rescue RegexpError => e
+          Rails.logger.error "[filter_ucf_records] RegexpError for name #{name.inspect}: #{e.message}"
+        end
+      end
+      Rails.logger.info "[filter_ucf_records] End loop of search names\n"
     end
+    Rails.logger.info "[filter_ucf_records] End loop of search records\n"
+
+    Rails.logger.info "[filter_ucf_records] filter_ucf_records: returning #{filtered_records.size} filtered records\n"
+
     filtered_records
   end
 
@@ -454,24 +558,78 @@ class SearchQuery
     filtered_records
   end
 
-  def get_and_sort_results_for_display
-    if self.search_result.records.respond_to?(:values)
-      search_results = self.search_result.records.values
-      search_results = self.filter_name_types(search_results)
-      search_results = self.filter_embargoed(search_results)
-      search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
-      result_count = search_results.length.present? ? search_results.length : 0
-      search_results = self.sort_results(search_results) unless search_results.nil?
+  # def get_and_sort_results_for_display
+  #   if self.search_result.records.respond_to?(:values)
+  #     search_results = self.search_result.records.values
+  #     search_results = self.filter_name_types(search_results)
+  #     search_results = self.filter_embargoed(search_results)
+  #     search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
+  #     result_count = search_results.length.present? ? search_results.length : 0
+  #     search_results = self.sort_results(search_results) unless search_results.nil?
 
-      ucf_results = self.ucf_results if self.ucf_results.present?
-      ucf_results = [] if ucf_results.blank?
-      response = true
-      return response, search_results.map{ |h| SearchRecord.new(h) }, ucf_results, result_count
-    else
-      response = false
-      return response
+  #     ucf_results = self.ucf_results if self.ucf_results.present?
+  #     ucf_results = [] if ucf_results.blank?
+  #     response = true
+  #     return response, search_results.map{ |h| SearchRecord.new(h) }, ucf_results, result_count
+  #   else
+  #     response = false
+  #     return response
+  #   end
+  # end
+
+  def get_and_sort_results_for_display
+    unless self.search_result&.records.respond_to?(:values)
+      Rails.logger.warn { "SearchQuery#get_and_sort_results_for_display: No records found or records not hash-like" }
+      return false
     end
+
+    # Step 1: Extract values
+    search_results = self.search_result.records.values.compact
+    # Rails.logger.info { "[GetSortDisplay] ---Step 1: Extracted raw results (search records) (#{search_results.size})\n#{search_results}" }
+
+    # Step 2: Filter name types
+    search_results = filter_name_types(search_results)
+    # Rails.logger.info { "[GetSortDisplay] ---Step 2: After filter_name_types (search records) (#{search_results.size})\n#{search_results}" }
+
+    # Step 3: Filter embargoed
+    search_results = filter_embargoed(search_results)
+    # Rails.logger.info { "[GetSortDisplay] ---Step 3: After filter_embargoed (search records) (#{search_results.size})\n#{search_results}" }
+
+    # Step 4: Census additional fields (only for FreeCEN)
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      search_results = filter_census_addional_fields(search_results)
+      Rails.logger.info { "[GetSortDisplay] ---Step 4: After filter_census_additional_fields (#{search_results.size})\n#{search_results}" }
+    end
+
+    # Step 5: Count results safely
+    result_count = search_results.present? ? search_results.length : 0
+    # Rails.logger.info { "[GetSortDisplay] ---Step 5: Result count = #{result_count}" }
+
+    # Step 6: Sort results safely
+    search_results = sort_results(search_results) if search_results.present?
+    # Rails.logger.info { "[GetSortDisplay] ---Step 6: After sort_results (#{search_results.size})\n#{search_results}" }
+
+    # Step 7: Handle UCF results safely
+    ucf_results = self.ucf_results.presence || []
+    # Rails.logger.info { "[GetSortDisplay] ---Step 7: UCF results (#{ucf_results.size})\n#{ucf_results}" }
+
+    # Step 8: Wrap results in SearchRecord objects
+    wrapped_results = search_results.map { |h| SearchRecord.new(h) }
+    # Rails.logger.info { "[GetSortDisplay] ---Step 8: Wrapped results into SearchRecord objects\n#{wrapped_results}" }
+
+    # Step 8.5: Deduplicate — remove UCF results that are already in normal results
+    search_result_ids = wrapped_results.map(&:id).to_set
+    ucf_results = ucf_results.reject { |record| search_result_ids.include?(record.id) }
+    # Rails.logger.info { "[GetSortDisplay] ---Step 8.5: After deduplication (#{ucf_results.size})\n#{ucf_results}" }
+
+    # Final return
+    response = true
+    return response, wrapped_results, ucf_results, result_count
+  rescue => e
+    Rails.logger.error { "[GetSortDisplay] ---Error in get_and_sort_results_for_display: #{e.message}\n#{e.backtrace.take(5).ai(plain: true)}" }
+    return false
   end
+
 
   def include_record_for_fuzzy_search(search_name)
     include_record = false
@@ -621,8 +779,8 @@ class SearchQuery
     params = {}
     name_params = {}
     if query_contains_wildcard?
-      name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name
-      name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name
+      name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name.present?
+      name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name.present?
       params['search_names'] = { '$elemMatch' => name_params }
     else
       if fuzzy
@@ -630,7 +788,7 @@ class SearchQuery
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
         params['search_soundex'] = { '$elemMatch' => name_params }
       else
-        name_params['first_name'] = first_name.downcase if first_name
+        name_params['first_name'] = first_name.downcase if first_name.present?
         name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
         name_params['last_name'] = nil if self.no_surname
         params['search_names'] = { '$elemMatch': name_params }
@@ -884,21 +1042,63 @@ class SearchQuery
     params
   end
 
+  # def search_ucf
+  #   start_ucf_time = Time.now.utc
+  #   ucf_records = Place.extract_ucf_records(place_ids)
+  #   ucf_records = filter_ucf_records(ucf_records)
+  #   if ucf_records.present?
+  #     ucf_filtered_count = ucf_records.length
+  #     search_result.ucf_records = ucf_records.map { |sr| sr.id }
+  #   else
+  #     ucf_filtered_count = 0
+  #   end
+  #   self.ucf_filtered_count = ucf_filtered_count
+  #   runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
+  #   self.runtime_ucf = runtime_ucf
+  #   save
+  # end
+
   def search_ucf
-    start_ucf_time = Time.now.utc
-    ucf_records = Place.extract_ucf_records(place_ids)
-    ucf_records = filter_ucf_records(ucf_records)
-    if ucf_records.present?
-      ucf_filtered_count = ucf_records.length
-      search_result.ucf_records = ucf_records.map { |sr| sr.id }
-    else
-      ucf_filtered_count = 0
+    started_at = Time.now.utc
+    log_ucf(:info, "Starting UCF search", started_at: started_at)
+
+    # Guard Clauses — fail fast, predictable behavior
+    return fail_ucf!("Missing place_ids") if place_ids.blank?
+    return fail_ucf!("Missing search_result") if search_result.nil?
+
+    # Step 1: Extract UCF records (safe wrapper)
+    ucf_records = safe_extract_ucf_records(place_ids)
+    log_ucf(:info, "UCF records extracted", count: ucf_records.size)
+
+    # Step 2: Filter UCF records (safe wrapper)
+    filtered = safe_filter_ucf_records(ucf_records)
+    log_ucf(:info, "UCF records filtered", filtered_count: filtered.size)
+
+    # Step 3: Assign filtered IDs to search_result
+    search_result.ucf_records = filtered.map(&:id)
+    log_ucf(:info, "Assigned filtered UCF record IDs")
+
+    # Step 4: Persist metrics on SearchQuery
+    self.ucf_filtered_count = filtered.size
+    self.runtime_ucf        = elapsed_ms(started_at)
+
+    log_ucf(
+      :info,
+      "UCF metrics updated",
+      runtime_ms: runtime_ucf,
+      place_count: safe_count(places),
+      result_count: safe_count(search_result.ucf_records)
+    )
+
+    # Step 5: Save safely
+    unless save
+      log_ucf(:error, "SearchQuery save failed", errors: errors.full_messages)
+      return false
     end
-    self.ucf_filtered_count = ucf_filtered_count
-    runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
-    self.runtime_ucf = runtime_ucf
-    save
-  end
+
+    log_ucf(:info, "UCF search complete")
+    true
+  end  
 
   def sort_results(results)
     # next reorder in memory
@@ -1050,5 +1250,39 @@ class SearchQuery
 
   def selected_sort_fields
     [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::BIRTH_PLACE, SearchOrder::TYPE ]
+  end
+
+  def safe_extract_ucf_records(ids)
+    Place.extract_ucf_records(ids)
+  rescue => e
+    log_ucf(:error, "extract_ucf_records failed", error: e.message)
+    []
+  end
+
+  def safe_filter_ucf_records(records)
+    filter_ucf_records(records)
+  rescue => e
+    log_ucf(:error, "filter_ucf_records failed", error: e.message)
+    []
+  end
+
+  def elapsed_ms(start_time)
+    ((Time.now.utc - start_time) * 1000.0).round(2)
+  end
+
+  def safe_count(collection)
+    collection.respond_to?(:count) ? collection.count : 0
+  end
+
+  def fail_ucf!(message)
+    log_ucf(:warn, "UCF aborted: #{message}")
+    false
+  end
+
+  def log_ucf(level, message, payload = {})
+    Rails.logger.public_send(
+      level,
+      "[SEARCH_UCF] #{message} | #{payload.to_json}"
+    )
   end
 end

@@ -15,6 +15,7 @@ class SearchRecord
   # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
   SYMBOLS_TO_CLEAN = ['.', ':', ';', "'", '-', '`', '"'].freeze
+  DELETE_SET = SYMBOLS_TO_CLEAN.join.gsub('-', '\-').freeze
 
   module Source
     TRANSCRIPT = 'transcript'
@@ -160,6 +161,11 @@ class SearchRecord
 
 
   index({ place_id: 1, locations_names: 1 }, { name: 'place_location' })
+
+  # This speeds up the lookup of SearchRecords by their Entry ID
+  index({ freereg1_csv_entry_id: 1 })
+  # Allows MongoDB to index into the array of embedded documents.
+  index({ "search_names.first_name": 1, "search_names.last_name": 1 })
 
   class << self
     # This is FreeREG-specific and should be considered
@@ -605,10 +611,35 @@ class SearchRecord
     the_digest
   end
 
-  def contains_wildcard_ucf?
-    search_names.detect do |name|
-      name.contains_wildcard_ucf?
+  # def contains_wildcard_ucf?
+  #   search_names.detect do |name|
+  #     name.contains_wildcard_ucf?
+  #   end
+  # end
+
+  # Returns the SearchName object if found (truthy), or nil (falsy)
+  # Used in entry edit logic where truthiness is sufficient
+  # Callers: Freereg1CsvEntry#update_place_ucf_list
+  def contains_wildcard_ucf
+    Rails.logger.info "Checking SearchRecord #{id} for wildcard UCFs..."
+
+    ucf_name = search_names.detect do |name|
+      result = name.contains_wildcard_ucf?  # search_name
+      Rails.logger.debug "Evaluating name: \n#{name.inspect} -> contains_wildcard_ucf = #{result}"
+      result
     end
+    
+    if ucf_name
+      Rails.logger.info "Wildcard UCF detected in SearchRecord #{id}"
+      Rails.logger.debug "ucf name details: /n#{ucf_name.inspect}"
+    else
+      Rails.logger.info "No wildcard UCF detected in SearchRecord #{id}"
+    end
+    
+    Rails.logger.debug "ucf_name: #{ucf_name.inspect}"
+
+    # return the object or nil (falsy)
+    ucf_name
   end
 
   def copy_name(name)
@@ -665,13 +696,13 @@ class SearchRecord
   def format_location
     location_array = []
     if freereg1_csv_entry
-      register = freereg1_csv_entry.freereg1_csv_file.register
+      register = freereg1_csv_entry.freereg1_csv_file&.register
       register_type = ''
       register_type = RegisterType.display_name(register.register_type) unless register.nil? # should not be nil but!
-      church = register.church
+      church = register&.church
       church_name = ''
       church_name = church.church_name unless church.nil? # should not be nil but!
-      place = church.place
+      place = church&.place
       place_name = place.place_name unless place.nil? # should not be nil but!
       location_array << "#{place_name} (#{church_name})"
       location_array << " [#{register_type}]"
@@ -910,41 +941,74 @@ class SearchRecord
   end
 
   def populate_search_names
-    return unless transcript_names && transcript_names.size > 0
-    #possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
-    #other_last_name = {}
-    # other_last_name = transcript_names.each{|n| other_last_name["#{n[:role]}"] = [n[:last_name]] if n[:last_name].present?}
-    #get_last_name = other_possible_last_name(other_last_name)
+    return unless transcript_names.present? && transcript_names.any?
+
+    Rails.logger.info("[SearchRecord] Starting populate_search_names with #{transcript_names.size} transcript_names")
+
     transcript_names.each do |name_hash|
-      person_type = PersonType::FAMILY
-      person_type = PersonType::PRIMARY if name_hash[:type] == 'primary'
-      person_type = PersonType::WITNESS if name_hash[:type] == 'witness'
-      person_role = name_hash[:role].nil? ? nil : name_hash[:role]
-      if MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.blank?
-        person_gender = freecen_individual.sex.downcase unless freecen_individual.nil? || freecen_individual.sex.nil?
-      elsif MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.present?
-        entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
-        person_gender =  entry.present? ? entry.sex : gender_from_role(person_role)
-      else
-        person_gender = gender_from_role(person_role)
-      end
+      Rails.logger.debug("[SearchRecord] Processing name_hash: #{name_hash.inspect}")
+
+      # 1. Person type
+      person_type =
+        case name_hash[:type]
+        when 'primary' then PersonType::PRIMARY
+        when 'witness' then PersonType::WITNESS
+        else PersonType::FAMILY
+        end
+      Rails.logger.debug("[SearchRecord] person_type resolved to #{person_type}")
+
+      # 2. Role
+      person_role = name_hash[:role].presence
+      Rails.logger.debug("[SearchRecord] person_role resolved to #{person_role.inspect}")
+
+      # 3. Gender resolution
+      person_gender =
+        if MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.blank?
+          freecen_individual&.sex&.downcase
+        elsif MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.present?
+          entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
+          entry.present? ? entry.sex : gender_from_role(person_role)
+        else
+          gender_from_role(person_role)
+        end
+      Rails.logger.debug("[SearchRecord] person_gender resolved to #{person_gender.inspect}")
+
+      # 4. Build search name
       name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
-      search_names << name if name
-      if name_contains_symbols?(name_hash['first_name']) || name_contains_symbols?(name_hash['last_name'])
-        cleaned_first_name = clean_name(name_hash['first_name']) if name_hash[:first_name].present?
-        cleaned_last_name = clean_name(name_hash['last_name']) if name_hash[:last_name].present?
-        sn = search_name(cleaned_first_name, cleaned_last_name, person_type, person_role, person_gender)
-        search_names << sn if sn
+      if name
+        search_names << name
+        Rails.logger.info("[SearchRecord] Added search_name: #{name.inspect}")
+      end
+
+      # 5. Handle symbol cleaning
+      if name_contains_symbols?(name_hash[:first_name]) || name_contains_symbols?(name_hash[:last_name])
+        cleaned_first_name = clean_name(name_hash[:first_name]) if name_hash[:first_name].present?
+        cleaned_last_name  = clean_name(name_hash[:last_name])  if name_hash[:last_name].present?
+
+        sn_cleaned = search_name(cleaned_first_name, cleaned_last_name, person_type, person_role, person_gender)
+        if sn_cleaned
+          search_names << sn_cleaned
+          Rails.logger.info("[SearchRecord] Added cleaned search_name: #{sn_cleaned.inspect}")
+        end
       end
     end
+
+    Rails.logger.info("[SearchRecord] Finished populate_search_names with #{search_names.size} total search_names")
   end
 
+  # def name_contains_symbols?(names)
+  #   SYMBOLS_TO_CLEAN.any? { |sym| names.include?(sym) } if names.present?
+  # end
+
   def name_contains_symbols?(names)
-    SYMBOLS_TO_CLEAN.any? { |sym| names.include?(sym) } if names.present?
+    return false if names.blank?
+    SYMBOLS_TO_CLEAN.any? { |sym| names.include?(sym) }
   end
 
   def clean_name(transcript_name)
-    transcript_name.delete(SYMBOLS_TO_CLEAN.join.gsub('-', '\-'))
+    return transcript_name if transcript_name.blank?
+    cleaned = transcript_name.delete(DELETE_SET)
+    cleaned.squeeze(' ').strip
   end
 
   def other_possible_last_name last_names_hash

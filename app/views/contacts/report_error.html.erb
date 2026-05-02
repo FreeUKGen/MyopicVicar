@@ -64,11 +64,11 @@
         <% end%>
       </li>
       <li class="grid__item one-third lap-three-fifths lap-clear--left palm-one-whole push--bottom">
-        <label class="ttip" for="screenshot" tabindex="0">Screenshot or image
+        <label class="ttip" for="screenshots" tabindex="0">Screenshot or image
           <span class="weight--normal" style="display: inline-block;"> (optional) <%= image_tag 'png/info.png', alt: 'Info', height: '16' %></span>
           <span class="ttip__text">Please select any supporting images (jpg, jpeg, png, or gif only)</span>
         </label>
-        <input class="push--bottom" id="screenshot" name="contact[screenshot]" type="file">
+        <input class="push--bottom" id="screenshots" name="contact[screenshots][]" type="file" multiple="multiple" accept="image/*">
       </li>
       <%= f.action :submit, :as  => :input, :label => 'Report Error' , :button_html => { :class => "btn" }, :wrapper_html => { :class => "grid__item  one-third lap-two-fifths palm-one-whole push--bottom" } %>
       <li class="betterstyling">

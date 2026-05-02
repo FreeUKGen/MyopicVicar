@@ -225,9 +225,9 @@ class Freereg1CsvEntry
   index({freereg1_csv_file_id: 1, record_digest:1})
   index({person_forename: 1})
   index({mother_forename: 1})
-  index({groom_forenamen: 1})
+  index({groom_forename: 1})
   index({groom_father_forename: 1})
-  index({female_relative_forenamee: 1})
+  index({female_relative_forename: 1})
   index({father_forename: 1})
   index({burial_person_forename: 1})
   index({bride_forename: 1})
@@ -422,21 +422,71 @@ class Freereg1CsvEntry
     errors.add(:register_type, "Invalid register type") unless RegisterType::OPTIONS.values.include?(self.register_type)
   end
 
+  # def clean_up_ucf_list
+  #   entry = self
+  #   file = entry.freereg1_csv_file
+  #   return if file.blank? || file.ucf_list.blank?
+
+  #   proceed, place, _church, _register = file.location_from_file
+  #   search_record = entry.search_record
+  #   if search_record.present? && proceed
+  #     file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
+  #     file.ucf_updated = DateTime.now.to_date
+  #     file.save
+  #     if proceed && place.present? && place.ucf_list.present? && place.ucf_list[file.id.to_s].present?
+  #       place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
+  #       place.save
+  #     end
+  #   end
+  # end
+
   def clean_up_ucf_list
-    entry = self
-    file = entry.freereg1_csv_file
-    return if file.blank? || file.ucf_list.blank?
+    # get associated freereg1_csv_file and assign to local variable
+    file = freereg1_csv_file
+    return if file.blank?
 
     proceed, place, _church, _register = file.location_from_file
-    search_record = entry.search_record
-    if search_record.present? && proceed
-      file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s }
-      file.ucf_updated = DateTime.now.to_date
-      file.save
-      if proceed && place.present? && place.ucf_list.present? && place.ucf_list[file.id.to_s].present?
-        place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
-        place.save
-      end
+
+    Rails.logger.info(
+    "UCF: Operation | action: clean_up_ucf_list | place_id: #{place.id} | file_id: #{file.id} | record_id: {search_record.id}"
+    )
+
+    # Guard: no associated search_record, nothing to remove from UCF lists
+    search_record = search_record()
+    return if search_record.blank?
+
+    # Normalize the ID once for reuse
+    search_record_id = search_record.id.to_s
+
+    # ---------------------------------------------------------
+    # 1. FILE-LEVEL UCF CLEANUP (Array)
+    # ---------------------------------------------------------
+    # Remove the ID from file.ucf_list atomically
+    # Freereg1CsvFile.where(id: file.id).update_one(
+    Freereg1CsvFile.where(id: file.id).update_all(
+      {
+        '$pull' => { 'ucf_list' => search_record_id },
+        '$set'  => { 'ucf_updated' => Time.zone.today }
+      }
+    )
+
+    # ---------------------------------------------------------
+    # 2. PLACE-LEVEL UCF CLEANUP (Hash of Arrays)
+    # ---------------------------------------------------------
+    return unless proceed && place.present?
+
+    # Normalize the ID once for reuse
+    file_key = file.id.to_s
+
+    # Only run if the place actually has a list for this file
+    if place.ucf_list[file_key].present?
+      # Remove the ID from place.ucf_list atomically
+      # Place.where(id: place.id).update_one(
+      Place.where(id: place.id).update_all(
+        {
+          '$pull' => { "ucf_list.#{file_key}" => search_record_id }
+        }
+      )
     end
   end
 
@@ -835,51 +885,96 @@ class Freereg1CsvEntry
     search_record.update_location(self, freereg1_csv_file) if search_record.present? && freereg1_csv_file.present?
   end
 
+  # def update_place_ucf_list(place, file, old_search_record)
+  #   file_in_ucf_list = place.ucf_list.has_key?(file.id.to_s)
+  #   search_record_has_ucf = search_record.contains_wildcard_ucf?.present? ? true : false
+  #   # No change
+  #   return if !file_in_ucf_list && !search_record_has_ucf
+
+  #   # list there and record has
+  #   if file_in_ucf_list && search_record_has_ucf
+  #     return if place.ucf_list[file.id.to_s].include?(search_record.id.to_s)
+  #     place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
+  #     file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present? && file.ucf_list.present?
+  #     place.ucf_list[file.id.to_s] << search_record.id
+  #     if file.ucf_list.blank?
+  #       file.ucf_list = []
+  #     end
+  #     file.ucf_list << search_record.id
+  #     file.ucf_updated = DateTime.now.to_date
+  #     file.save
+  #     place.save
+  #     return
+  #   end
+  #   if file_in_ucf_list && !search_record_has_ucf
+  #     place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
+  #     place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
+  #     file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present? && file.ucf_list.present?
+  #     file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s } if file.ucf_list.present?
+  #     file.ucf_updated = DateTime.now.to_date
+  #     file.save
+  #     place.save
+  #     return
+  #   end
+
+  #   if !file_in_ucf_list && search_record_has_ucf
+  #     place.ucf_list[file.id.to_s] = []
+  #     place.ucf_list[file.id.to_s] << search_record.id
+  #     if file.ucf_list.blank?
+  #       file.ucf_list = []
+  #     end
+  #     file.ucf_list << search_record.id
+  #     file.ucf_updated = DateTime.now.to_date
+  #     file.save
+  #     place.save
+  #   end
+  # end
+
   def update_place_ucf_list(place, file, old_search_record)
-    file_in_ucf_list = place.ucf_list.has_key?(file.id.to_s)
-    search_record_has_ucf = search_record.contains_wildcard_ucf?.present? ? true : false
-    # No change
-    return if !file_in_ucf_list && !search_record_has_ucf
 
-    # list there and record has
-    if file_in_ucf_list && search_record_has_ucf
-      return if place.ucf_list[file.id.to_s].include?(search_record.id.to_s)
-      place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
-      file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present? && file.ucf_list.present?
-      place.ucf_list[file.id.to_s] << search_record.id
-      if file.ucf_list.blank?
-        file.ucf_list = []
-      end
-      file.ucf_list << search_record.id
-      file.ucf_updated = DateTime.now.to_date
-      file.save
-      place.save
-      return
-    end
-    if file_in_ucf_list && !search_record_has_ucf
-      place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present?
-      place.ucf_list[file.id.to_s].delete_if { |record| record.to_s == search_record.id.to_s }
-      file.ucf_list.delete_if { |record| record.to_s == old_search_record.id.to_s } if old_search_record.present? && file.ucf_list.present?
-      file.ucf_list.delete_if { |record| record.to_s == search_record.id.to_s } if file.ucf_list.present?
-      file.ucf_updated = DateTime.now.to_date
-      file.save
-      place.save
+    # Validate all preconditions before attempting update
+    valid, error_message = validate_ucf_update_preconditions(place, file, old_search_record)
+
+    unless valid
+      Rails.logger.warn(
+        "[UCF] Validation failed | reason: #{error_message} | entry_id: #{id}"
+      )
       return
     end
 
-    if !file_in_ucf_list && search_record_has_ucf
-      place.ucf_list[file.id.to_s] = []
-      place.ucf_list[file.id.to_s] << search_record.id
-      if file.ucf_list.blank?
-        file.ucf_list = []
+    # Remove destroyed old_search_record from further processing
+    old_search_record = nil if old_search_record.present? && old_search_record.destroyed?
+
+
+    file_key = file.id.to_s
+    file_in_ucf_list = place.ucf_list.key?(file_key)
+    search_record_has_ucf = search_record.contains_wildcard_ucf.present?
+
+    Rails.logger.info(
+      "UCF: Validation complete | action: update_place_ucf_list | place_id: #{place.id} | file_id: #{file.id} | record_id: #{search_record.id}"
+    )
+
+    # Case 0: No change required
+    return unless file_in_ucf_list || search_record_has_ucf
+
+    # Single persistence wrapper with rollback capability
+    safe_update_ucf!(place, file) do
+      if file_in_ucf_list && search_record_has_ucf
+        handle_add_ucf(place, file, file_key, old_search_record)
+
+      elsif file_in_ucf_list && !search_record_has_ucf
+        handle_remove_ucf(place, file, file_key, old_search_record)
+
+      elsif !file_in_ucf_list && search_record_has_ucf
+        handle_new_ucf(place, file, file_key)
       end
-      file.ucf_list << search_record.id
-      file.ucf_updated = DateTime.now.to_date
-      file.save
-      place.save
     end
+
+    Rails.logger.info(
+      "[UCF] Update complete | place_id: #{place.id} | file_id: #{file.id} | entry_id: #{id}"
+    )
   end
-
+  
   def errors_in_fields
     if freereg1_csv_file.blank?
       check_embargo = false
@@ -1436,6 +1531,7 @@ class Freereg1CsvEntry
       p "freereg entry validations #{id} no record type"
     end
   end
+
   def get_listing_of_witnesses
     witnesses = Array.new
     single_witness = Array.new(2)
@@ -1466,6 +1562,133 @@ class Freereg1CsvEntry
         self[attr] = sanitized
       end
     end
+  end
+
+   private
+
+   def safe_update_ucf!(place, file)
+    # Save original state for rollback
+    original_place_list = place.ucf_list.deep_dup
+    original_file_list  = file.ucf_list&.dup || []
+
+    begin
+      yield  # perform the mutation block
+
+      file.ucf_updated = Date.today
+      file.save!
+      place.save!
+
+    rescue => e
+      # Rollback on failure
+      Rails.logger.error "safe_update_ucf! rollback triggered: #{e.class} - #{e.message}"
+      
+      place.ucf_list = original_place_list
+      file.ucf_list  = original_file_list
+
+      place.save
+      file.save
+
+      raise e
+    end
+  end
+
+  def handle_add_ucf(place, file, file_key, old_search_record)
+    return if place.ucf_list[file_key].include?(search_record.id.to_s)
+
+    cleanup_old_ids(place, file, file_key, old_search_record)
+
+    place.ucf_list[file_key] << search_record.id
+    file.ucf_list ||= []
+    file.ucf_list << search_record.id
+
+    update_and_save(file, place, "Case A: Added UCF record")
+  end
+
+  def handle_remove_ucf(place, file, file_key, old_search_record)
+    cleanup_old_ids(place, file, file_key, old_search_record)
+    place.ucf_list[file_key].delete(search_record.id.to_s)
+    file.ucf_list ||= []
+    file.ucf_list&.delete(search_record.id.to_s)
+
+    update_and_save(file, place, "Case B: Removed UCF record")
+  end
+
+  def handle_new_ucf(place, file, file_key)
+    place.ucf_list[file_key] = [search_record.id]
+    file.ucf_list ||= []
+    file.ucf_list << search_record.id
+
+    update_and_save(file, place, "Case C: Created new UCF list")
+  end
+
+  def cleanup_old_ids(place, file, file_key, old_search_record)
+    return unless old_search_record.present?
+
+    place.ucf_list[file_key].delete(old_search_record.id.to_s)
+    file.ucf_list&.delete(old_search_record.id.to_s)
+
+    Rails.logger.info { "---   cleanup_old_ids removed #{old_search_record.id}" }
+  end
+
+  def update_and_save(file, place, message)
+    file.ucf_updated = Date.today
+
+    # --- Recalculate place counters and timestamp ---
+    place.ucf_list_record_count = place.ucf_record_ids.size
+    place.ucf_list_file_count   = place.ucf_list.keys.size
+    place.ucf_list_updated_at   = DateTime.now
+
+  # --- Persist changes ---
+    file.save
+    Rails.logger.info { "---✔ #{message} - updated file ucf_list" }
+    
+    place.save
+    Rails.logger.info { "---✔ #{message} - updated place ucf_list" }
+
+  end
+
+  def validate_ucf_update_preconditions(place, file, old_search_record)
+    # === Check 1: Entry exists ===
+    unless persisted?
+      return [false, "Entry not persisted to database"]
+    end
+
+    # === Check 2: Entry not destroyed ===
+    if destroyed?
+      return [false, "Entry has been destroyed"]
+    end
+
+    # === Check 3: File exists and not destroyed ===
+    unless file.present?
+      return [false, "File not provided"]
+    end
+
+    if file.destroyed?
+      return [false, "File has been destroyed (id: #{file._id})"]
+    end
+
+    # === Check 4: Place exists and not destroyed ===
+    unless place.present?
+      return [false, "Place not provided"]
+    end
+
+    if place.destroyed?
+      return [false, "Place has been destroyed (id: #{place._id})"]
+    end
+
+    # === Check 5: SearchRecord present ===
+    unless search_record.present?
+      return [false, "SearchRecord not found for entry"]
+    end
+
+    # === Check 6: Old SearchRecord (if any) state ===
+    if old_search_record.present? && old_search_record.destroyed?
+      # Not an error - just log and continue with nil
+      Rails.logger.debug("Old SearchRecord destroyed for entry #{id}")
+    end
+
+    # All validations passed
+    [true, ""]
   end
 
 end

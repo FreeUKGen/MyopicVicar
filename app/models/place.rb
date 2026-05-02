@@ -55,6 +55,9 @@ class Place
   field :open_record_count, type: Integer, default: 0
   field :unique_surnames, type: Array
   field :unique_forenames, type: Array
+  field :ucf_list_updated_at, type: DateTime
+  field :ucf_list_record_count, type: Integer, default: 0
+  field :ucf_list_file_count, type: Integer, default: 0
 
   embeds_many :alternateplacenames
 
@@ -145,15 +148,40 @@ class Place
       where(:modified_place_name => place)
     end
 
-    def extract_ucf_records(place_ids)
-      records = []
-      place_ids.each do |place|
+    # def extract_ucf_records(place_ids)
+    #   records = []
+    #   place_ids.each do |place|
 
-        Place.id(place).first.ucf_list.each_value do |value|
-          records << value
+    #     Place.id(place).first.ucf_list.each_value do |value|
+    #       records << value
+    #     end
+    #   end
+    #   records = records.flatten.compact
+    # end
+
+    def extract_ucf_records(place_ids)
+      Rails.logger.info(
+        "UCF: Operation | action: extract_ucf_records | place_ids: #{place_ids}"
+      )
+      return [] if place_ids.blank?
+      
+      # Fetch only the ucf_list field for all places in one query
+      places = Place.where(:_id.in => place_ids).only(:ucf_list)
+
+      records = []
+
+      # Extract all record IDs
+      places.each do |place|
+        next if place.ucf_list.blank?
+
+        # ucf_list is a Hash<String, UcfRecord>
+        place.ucf_list.each_value do |record|
+          # Collect values from the UCF list
+          records << record if record.present?
         end
       end
-      records = records.flatten.compact
+
+      records.flatten
     end
 
     def valid_chapman_code?(chapman_code)
@@ -633,9 +661,16 @@ class Place
     end
   end
 
+  # def ucf_record_ids
+  #   self.ucf_list.values.inject([]) { |accum, value| accum + value }
+  # end
+
   def ucf_record_ids
-    self.ucf_list.values.inject([]) { |accum, value| accum + value }
-  end
+    # Returns all unique SearchRecord IDs across all files in ucf_list
+    # .compact removes any nils to prevent crashes
+    # .flatten(1) turns the nested arrays into one single array
+    self.ucf_list.values.compact.flatten(1).uniq
+  end  
 
   def update_reg_data_present
     if self.data_present?
@@ -657,11 +692,75 @@ class Place
     PlaceCache.refresh(chapman_code)
   end
 
+  # def update_ucf_list(file)
+  #   ids = file.search_record_ids_with_wildcard_ucf
+  #   self.ucf_list[file.id.to_s] = ids if ids && ids.size > 0
+  #   file.ucf_list = ids if ids && ids.size > 0
+  #   file.ucf_updated = DateTime.now.to_date
+  # end
+
   def update_ucf_list(file)
+    # --- Guard Clauses -------------------------------------------------------
+    return unless file.present?
+
+    unless file.respond_to?(:search_record_ids_with_wildcard_ucf)
+      Rails.logger.error(
+        "UCF: Operation aborted | reason: missing method | " \
+        "place_id: #{id} | file_id: #{file.try(:id)}"
+      )
+      return
+    end
+
+    # --- Logging --------------------------------------------------------------
+    Rails.logger.info(
+      "UCF: Operation | action: update_ucf_list | place_id: #{id} | file_id: #{file.id}"
+    )
+
+    # --- Fetch IDs ------------------------------------------------------------
     ids = file.search_record_ids_with_wildcard_ucf
-    self.ucf_list[file.id.to_s] = ids if ids && ids.size > 0
-    file.ucf_list = ids if ids && ids.size > 0
-    file.ucf_updated = DateTime.now.to_date
+    Rails.logger.debug "Flagged SearchRecord IDs from File #{file.id}: #{ids.inspect}"
+
+    # --- Update Place + File --------------------------------------------------
+    file_key = file.id.to_s
+
+    if ids.present?
+      # Case: Wildcard records found
+      
+      # Place-level UCF list
+      self.ucf_list[file_key] = ids  # Array of IDs
+      # File-level UCF list
+      file.ucf_list = ids
+
+      Rails.logger.info(
+        "UCF: wildcard records found | place_id: #{id} | file_id: #{file.id} | count: #{ids.size}"
+      )
+    else
+      # Case: No wildcard records - Explicit empty states 
+      # self.ucf_list.delete(file_key) # alternate approach
+      self.ucf_list[file.id.to_s] = []
+      file.ucf_list = []
+
+      Rails.logger.info(
+        "UCF: no wildcard records | place_id: #{id} | file_id: #{file.id}"
+      )
+    end
+
+    # --- Always update timestamps + counters ---------------------------------
+    today = DateTime.now.to_date
+    now   = DateTime.now
+
+    file.ucf_updated          = today
+    self.ucf_list_updated_at  = now
+    self.ucf_list_record_count = ucf_record_ids.size
+    self.ucf_list_file_count   = ucf_list.keys.size
+
+    file.save
+    self.save
+
+    Rails.logger.info(
+      "UCF: summary | place_id: #{id} | file_id: #{file.id} | " \
+      "record_count: #{ucf_list_record_count} | file_count: #{ucf_list_file_count}"
+    )
   end
 
   def clean_up_ucf_list

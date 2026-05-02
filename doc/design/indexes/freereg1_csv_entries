@@ -37,9 +37,9 @@ db.runCommand(
         },
         {
             key: {
-                groom_forenamen: 1
+                groom_forename: 1
             },
-            name: "groom_forenamen"
+            name: "groom_forename"
         },
         {
             key: {

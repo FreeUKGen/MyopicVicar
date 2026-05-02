@@ -72,23 +72,24 @@
           </li>
           <% if 'freecen' == MyopicVicar::Application.config.template_set %>
             <li class="grid__item one-half palm-one-whole push--bottom">
-              <label tabindex="0" for="selected_county" class="ttip">Contact a specific county <span class="weight--normal"> (optional) </span>
+              <label tabindex="0" for="selected_county" class="ttip">County
                 <%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
-                <span class="ttip__text">If you wish to contact a coordinator for one specific county, please select the county here.</span>
+                <span class="ttip__text">Required for <strong>Data Question</strong> (your message goes to that county’s coordinator) and for <strong>Volunteering Question</strong> (your message goes to that county’s syndicate coordinator). Optional for other categories — include a county if your question is about a specific area.</span>
               </label>
               <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
-              <select name="contact[selected_county]" id="selected_county" class="select" size="5">
-                <option value="nil">No specific county</option>
+              <select name="contact[selected_county]" id="selected_county" class="select" size="5" aria-describedby="selected_county_hint">
+                <option value="nil">Select a county…</option>
                 <%= grouped_options_for_select(grouped_options) %>
               </select>
+              <p id="selected_county_hint" class="push--top" style="margin-bottom:0;"><small>Nature of contact <strong>Data Question</strong> or <strong>Volunteering Question</strong>: you must choose a county above.</small></p>
             </li>
           <% end %>
           <li class="grid__item one-half palm-one-whole push--bottom">
-            <label tabindex="0" for="screenshot" class="ttip">Screenshot or image <span class="weight--normal"> (optional) </span>
+            <label tabindex="0" for="screenshots" class="ttip">Screenshot or image <span class="weight--normal"> (optional) </span>
               <%= image_tag 'png/info.png', alt: 'Information', height: '16' %>
-              <span class="ttip__text">Please select the image you wish to upload (jpg, jpeg or gif only)</span>
+              <span class="ttip__text">Please select any supporting images (jpg, jpeg, png, or gif only)</span>
             </label>
-            <input name="contact[screenshot]" id="screenshot" type="file">
+            <input name="contact[screenshots][]" id="screenshots" type="file" multiple="multiple" accept="image/*">
           </li>
           <li class="betterstyling">
             <label for="name2">Please add your name again:</label>

@@ -72,8 +72,13 @@ class ManageResourcesController < ApplicationController
 
   def logout
     @message = flash[:notice]
+    # Devise runs Warden logout hooks (clears remember_user_token cookie) only if we sign out here.
+    # reset_session alone does not call those hooks — "Keep me logged in" would sign the user back in.
+    sign_out(:user) if respond_to?(:sign_out)
     cookies.delete :userid
+    cookies.delete :Administrator
     cookies.delete :remember_authentication_devise_user_token
+    cookies.delete :remember_user_token
     reset_session
   end
 
@@ -91,18 +96,17 @@ class ManageResourcesController < ApplicationController
       clean_session_for_syndicate
       clean_session_for_county
       clean_session_for_images
-      Refinery::Page.where(slug: 'transcriber-agreement-acceptance').exists? ?
-        @acceptance = Refinery::Page.where(slug: 'transcriber-agreement-acceptance').first.parts.first.body.html_safe : @acceptance = ''
-      Refinery::Page.where(slug: 'information-for-members').exists? ?
-        @page = Refinery::Page.where(slug: 'information-for-members').first.parts.first.body.html_safe : @page = ''
+      #Refinery::Page.where(slug: 'transcriber-agreement-acceptance').exists? ?
+       # @acceptance = Refinery::Page.where(slug: 'transcriber-agreement-acceptance').first.parts.first.body.html_safe : @acceptance = ''
+      #Refinery::Page.where(slug: 'information-for-members').exists? ?
+       # @page = Refinery::Page.where(slug: 'information-for-members').first.parts.first.body.html_safe : @page = ''
       @manage_resources = ManageResource.new
       render 'actions'
     end
   end
 
   def pages
-    current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
-    redirect_to '/cms/refinery/pages'
+    current_authentication_devise_user = User.where(:id => session[:devise]).first
   end
 
   def selection

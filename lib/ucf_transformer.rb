@@ -74,29 +74,94 @@ module UcfTransformer
     name_array + transformed_names
   end
 
+  # Detect if a string contains any wildcard UCF characters
   def self.contains_wildcard_ucf?(name_part)
-    # print "\tcontains_wildcard_ucf?(#{name_part}) => #{name_part.match(/[\*_]/) ? 'true' : 'false'}\n"
+    # Early return if blank
     if name_part.blank?
-      result = false
-    else
-      result = name_part.match(/[\*_]/).present? ? true : false
+      Rails.logger.debug "[UCF Check] Received blank input"
+      return false
     end
-    result
+
+    # Define the set of wildcard UCF characters
+    wildcard_chars = ['*', '_', '?', '{', '}']
+
+    # Build a regex that matches any of them
+    regex = Regexp.union(wildcard_chars)
+
+    # Perform the match
+    flagged = name_part.match?(regex)
+
+    # Debugging output
+    Rails.logger.info "[UCF Check] Scanning string: #{name_part.inspect}"
+    Rails.logger.debug "[UCF Check] Wildcard characters: #{wildcard_chars.join(' ')}"
+    Rails.logger.debug "[UCF Check] Regex built: #{regex.inspect}"
+    Rails.logger.debug "[UCF Check] Flagged? #{flagged}"
+
+    flagged
   end
 
+  # def self.ucf_to_regex(name_part)
+  #   transformed =
+  #      name_part
+  #       .gsub(/\./, '\.')              # escape literal dots
+  #       .gsub(/_\{(\d+,\d+|\d+,\s*|\d+)\}/) { |m|
+  #         # Handle underscore + curly brace quantifiers
+  #         quantifier = m.match(/_\{(.+)\}/)[1]
+  #         "\\w{#{quantifier}}"
+  #       }
+  #       .gsub(/_/, ".")                # underscore → any single char
+  #       .gsub(/\*/, '\w+')             # asterisk → word characters
+  #       .gsub(/\[([^\]]+)\]/, '[\1]')  # preserve square bracket groups
+
+  #   begin
+  #     Regexp.new(transformed)
+  #   rescue RegexpError => e
+  #     Rails.logger.warn("[#{Time.current.iso8601}] UCF regex error: #{e.message}")
+  #     name_part
+  #   end
+  # end
+
   def self.ucf_to_regex(name_part)
-    if name_part.match(/(.{.,\d?})/).present?
-      # _{2,3}
-      name_part = name_part.gsub(/(.{.,\d?})/, '\w+')
-    else
-      name_part = name_part.gsub(/\./, '\.').gsub(/_/, ".").gsub(/\*/, '\w+')
-    end
+    return name_part if name_part.blank?
+    
+    # 1. Escape literal dots: "Dr.J*" -> "Dr\.J*"
+    # This prevents the dot from matching "any character" in Regex.
+    regex_string = name_part.gsub('.', '\.')
+
+    # 2a. Handle underscore + range wildcards: "Den_{1,2}is" -> "Den.{1,2}is"
+    # UCF ranges with underscore mean "any sequence of length n to m", which in Regex is ".{n,m}".
+    regex_string = regex_string.gsub(/_\{(\d*,?\d*)\}/, '.{\1}')
+
+    # 2b. Bare quantifiers are left unchanged: "Den{1,2}is" stays as "Den{1,2}is"
+    # In standard regex, {m,n} applies to the preceding character/group (the 'n' repeats m-n times).
+    # No substitution needed for bare quantifiers.
+
+    # 3. Convert single character wildcards: "Sm_th" -> "Sm.th"
+    # UCF "_" matches exactly one character, which in Regex is ".".
+    regex_string = regex_string.gsub('_', '.')
+
+    # 4. Convert multi-character wildcards: "Jo*" -> "Jo\w+"
+    # UCF "*" matches one or more word characters, which in Regex is "\w+".
+    regex_string = regex_string.gsub('*', '\w+')
+
     begin
-      ::Regexp.new(name_part)
-    rescue RegexpError
+      # Detect unclosed quantifiers
+      if regex_string =~ /\{\d+(?:,\d+)?$/
+        raise RegexpError, "Unclosed quantifier"
+      end
+
+      # Add anchors to enforce exact full-string matching (not substring matching)
+      anchored_pattern = "^#{regex_string}$"
+
+      # Attempt to create a new Regular Expression object with case-insensitive matching.
+      ::Regexp.new(anchored_pattern, Regexp::IGNORECASE)
+    rescue RegexpError => e
+      # If the resulting pattern is invalid Regex (e.g. mismatched brackets),
+      # log a warning and return the original string so the application doesn't crash.
+      Rails.logger.warn("UCF to Regex conversion failed for '#{name_part}': #{e.message}")
       name_part
     end
-  end
+  end 
 
   def self.wildcard_ucf_to_regex(name_part)
   end

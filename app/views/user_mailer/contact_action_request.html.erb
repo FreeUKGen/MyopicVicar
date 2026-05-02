@@ -20,8 +20,9 @@
   <% end %>
 <% end %>
 <p>
-  <% if @contact.screenshot_url.present?%>
+  <% if @contact.screenshot_url.present? || (@contact.respond_to?(:screenshots) && @contact.screenshots.present?) %>
     <p>An image/attachment is provided</p>
-  <% end%></p>
+  <% end %>
+</p>
 <p>The <%= @appname %> Team</p>
 </p>

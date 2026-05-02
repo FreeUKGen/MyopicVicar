@@ -29,6 +29,10 @@ doc/app
 /log/**
 /log/**/*
 /public/**
+# Track newsletter PDFs (stable /freecen/newsletters/ URLs); /public/** would hide them otherwise.
+!/public/freecen/
+!/public/freecen/newsletters/
+!/public/freecen/newsletters/**
 /test_data/*
 /tmp/*
 /tmp/*/*
