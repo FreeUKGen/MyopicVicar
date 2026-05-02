@@ -124,26 +124,23 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
       # check civil parishes
 
-      unless fc2_piece.civil_parish_names.downcase == row['Parishes'].downcase
+      civil_parish_names_string = fc2_piece.add_update_civil_parish_list
 
-        action = run_mode == 'UPDATE' ? 'so updating' : 'so can update'
+      if civil_parish_names_string.present? && fc2_piece.civil_parish_names.blank?
+        fc2_piece.update(civil_parish_names: civil_parish_names_string)
+      end
 
-        civil_parish_names_string = fc2_piece.add_update_civil_parish_list
+      civil_parish_names_string_for_match = civil_parish_names_string.blank? ? ' ' : civil_parish_names_string
+      input_parishes_for_match = row['Parishes'].blank? ? ' ' : row['Parishes']
 
-        if civil_parish_names_string.downcase == row['Parishes'].downcase
+      unless civil_parish_names_string_for_match.downcase == input_parishes_for_match.downcase
 
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Parishes']}] civil parish links match existing fc2 Piece record but civil parish names string mismatch #{action} to [#{civil_parish_names_string}];#{row_has_issue}"
-
-          fc2_piece.update(civil_parish_names: civil_parish_names_string) if run_mode == 'UPDATE'
-
-        else
-
-          row_has_issue = true
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Parishes']}] do not match existing fc2 Piece record civil parishes [#{civil_parish_names_string}];#{row_has_issue}"
-
-        end
+        row_has_issue = true
+        message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Parishes']}] do not match existing fc2 Piece record civil parishes [#{civil_parish_names_string}];#{row_has_issue}"
 
       end
+
+      # end
 
       # Report on has VLD files or has CSV files unless row has issues
 
