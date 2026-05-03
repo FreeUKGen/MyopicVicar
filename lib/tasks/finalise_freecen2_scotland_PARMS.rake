@@ -57,6 +57,10 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
     if fc2_piece.present?
 
+      vld_file_count = fc2_piece.vld_files.count
+
+      fc2_csv_files = FreecenCsvFile.where(freecen2_piece_id: fc2_piece.id).count
+
       # check year
 
       unless fc2_piece.year == file_year
@@ -74,14 +78,14 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
         message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Chapman']}] does not match existing fc2 Piece record chapman_code [#{fc2_piece.chapman_code}];#{row_has_issue}"
       end
 
-      # check name
+      # check piece name
 
       unless fc2_piece.name.downcase == row['Name'].downcase
 
         row_has_issue = true
         message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Name']}] does not match existing fc2 Piece record name [#{fc2_piece.name}];#{row_has_issue}"
-
       end
+
 
       # check district
 
@@ -104,7 +108,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
             input_dst = "[#{row['District']}]"
             row_has_issue = true
-            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};" + input_dst + " does not match district record linked to existing fc2 Piece [#{f@district.name}];#{row_has_issue}"
+            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};" + input_dst + " does not match district record linked to existing fc2 Piece [#{@district.name}];#{row_has_issue}"
 
           end
 
@@ -143,10 +147,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
       # end
 
       # Report on has VLD files or has CSV files unless row has issues
-
-      vld_file_count = fc2_piece.vld_files.count
-
-      fc2_csv_files = FreecenCsvFile.where(freecen2_piece_id: fc2_piece.id).count
 
       if row_has_issue
         message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};Existing Piece has #{ vld_file_count} linked VLD files and #{fc2_csv_files} linked CSV files;#{row_has_issue}"
@@ -210,7 +210,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
       # Create New Piece etc.
 
-      action = run_mode == 'UPDATE' ? 'so creating' : 'so will create'
+      action = run_mode == 'UPDATE' ? 'so creating' : 'can create'
 
       message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};fc2 Piece does not exist #{action} new fc2 Piece;#{row_has_issue}" unless row_has_issue
 
@@ -226,7 +226,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
         if place_id.present?
 
-          action = run_mode == 'UPDATE' ? 'so creating' : 'so will create'
+          action = run_mode == 'UPDATE' ? 'so creating' : 'can create'
 
           message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record, #{action} new fc2 District record;#{row_has_issue}"
 
