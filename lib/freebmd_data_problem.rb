@@ -12,8 +12,6 @@ module FreebmdDataProblem
 	# Report error page: 3 main sections, each with subsections (accordion). Id is stored as contact.query.
 	# Each subsection :answer may be plain text (wrapped in <p> by the view) or HTML (e.g. multiple <p>, <ul>, <a>).
 	# Use HTML when you need paragraphs, lists or links; content is sanitized before output.
-	# In :answer / ANSWERS* strings, interpolate +GRO_ABBREV_ACCESSIBILITY_HTML+ (same string as GroAbbrev::ACCESSIBILITY_HTML).
-	# Plain "GRO" in :label and QUESTIONS2 is still expanded in the report_error view via +gro_abbrev_in_user_text+.
 	# Optional :form_numbers controls which UI blocks appear in report_error:
 	#   1 => main report form
 	#   2 => corrections table block
@@ -35,7 +33,7 @@ module FreebmdDataProblem
 					form_numbers: [1,2]
 				},
 				{ id: 1,
-				  label: "The transcription information does match the #{GRO_ABBREV_ACCESSIBILITY_HTML} index scan.",
+				  label: "The transcription information does match the GRO index scan.",
 				  answer: <<~HTML.strip,
 						<p>We cannot change the database if our transcription matches the information on the #{GRO_ABBREV_ACCESSIBILITY_HTML} index (scan).</p>
 						<p>If you believe there is an error in the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index, you will need to <a href="https://www.gro.gov.uk/" target="_blank" rel="noopener">contact them</a> to request a correction.</p>
@@ -49,7 +47,7 @@ module FreebmdDataProblem
 			title: "Data is missing",
 			subsections: [
 				{
-					label: "A record appears on the #{GRO_ABBREV_ACCESSIBILITY_HTML} index scan but is missing from our database OR we have only transcribed part of the page",
+					label: "A record appears on the GRO index scan but is missing from our database OR we have only transcribed part of the page",
 					children: [
 						{
 							id: 2,
@@ -76,7 +74,7 @@ module FreebmdDataProblem
 					]
 				},
 				{
-					id: 3, label: "A record is missing from the #{GRO_ABBREV_ACCESSIBILITY_HTML} index scan",
+					id: 3, label: "A record is missing from the GRO index scan",
 					answer: <<~HTML.strip,
 						<p>We cannot do anything about data missing from the #{GRO_ABBREV_ACCESSIBILITY_HTML}. If you believe that a record is missing from the #{GRO_ABBREV_ACCESSIBILITY_HTML} index you will need to <a href="https://www.gro.gov.uk/gro/content/certificates/contact_us.asp" target="_blank" rel="noopener">contact them</a> to discuss.</p>
 						<p>If you receive resolution from the #{GRO_ABBREV_ACCESSIBILITY_HTML}, please share this information with us.</p>
