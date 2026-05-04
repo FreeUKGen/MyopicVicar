@@ -182,7 +182,9 @@
         <label class="ttip" for="screenshot" tabindex="0">Screenshot or image</label>
         <input class="push--bottom" id="screenshot" name="contact[screenshot]" type="file">
       </li>
-      <%= f.action :submit, :as  => :input, :label => 'Submit Report' , :button_html => { :class => "btn" }, :wrapper_html => { :class => "grid__item  one-whole lap-two-fifths palm-one-whole push--bottom" } %>
+      <li class="grid__item one-whole text--center push--bottom">
+        <%= button_tag 'Submit Report', type: 'submit', class: ' kittumani spinner-controller ladda-button', id: 'report_error_submit', data: { style: 'contract', color: appname.downcase, size: 's', 'spinner-color' => '#ffffff' } %>
+      </li>
       <li class="betterstyling">
         <label for="contact_name_confirm">Please add your name again:</label>
         <input id="contact_name_confirm" type="text" name="contact[contact_name]">
@@ -370,5 +372,14 @@
     $('#read_explanation').change(function() {
       if ($reportFormBlock.length) $reportFormBlock.toggle();
     });
+
+    // Match FreeBMD search form submit (ladda contract spinner).
+    var $reportSubmit = $('#report_error_submit');
+    if ($reportSubmit.length && typeof Ladda !== 'undefined') {
+      $reportSubmit.on('click', function() {
+        var l = Ladda.create(this);
+        l.start();
+      });
+    }
   });
 </script>
