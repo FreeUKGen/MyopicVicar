@@ -183,7 +183,7 @@
         <input class="push--bottom" id="screenshot" name="contact[screenshot]" type="file">
       </li>
       <li class="grid__item one-whole text--center push--bottom">
-        <%= button_tag 'Submit Report', type: 'submit', class: ' kittumani spinner-controller ladda-button', id: 'report_error_submit', data: { style: 'contract', color: appname.downcase, size: 's', 'spinner-color' => '#ffffff' } %>
+        <%= button_tag 'Submit Report', type: 'submit', class: ' kittumani spinner-controller ladda-button report-error-form__submit', id: 'report_error_submit', data: { style: 'contract', color: appname.downcase, size: 's', 'spinner-color' => '#ffffff' } %>
       </li>
       <li class="betterstyling">
         <label for="contact_name_confirm">Please add your name again:</label>
@@ -193,6 +193,10 @@
   <% end %>
 </div>
 <style type="text/css">
+  /* Submit Report: Ladda/search-button styles often set a fixed min-width; use intrinsic width */
+  #report_error_submit.report-error-form__submit {
+    width: unset;
+  }
   .report-error-accordion .accordion-section { margin-top: 1rem; }
   .report-error-accordion .accordion-item { border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; transition: background-color 0.15s ease; }
   .report-error-accordion .accordion-item:hover { background-color: #f4f4f4; }
