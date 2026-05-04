@@ -54,7 +54,7 @@ module FreebmdDataProblem
 							label: "You have the scan",
 							answer: <<~HTML.strip,
 								<p>If you have identified that an entry on a transcribed page has not been transcribed, please attach a correction to the immediately preceding entry.</p>
-								<p>Use a wildcard search to find surrounding entries. See <a href="/help/search_help#first-name-surname" target="_blank" rel="noopener">Search help: First name &amp; Surname</a>.</p>
+								<p>Use a wildcard search to find surrounding entries. See <a href="/help/search_help#firstname_surname" target="_blank" rel="noopener">Search help: First name &amp; Surname</a>.</p>
 								<p>When reporting, fill in details of the missing entry. You only need to complete fields that are different from the preceding entry. The <strong>Missing entry or entries</strong> box must be checked.</p>
 								<p>If there are multiple missing entries, enter details for the first missing entry and also check the <strong>Multiple entries</strong> box.</p>
 								<p>Please read our <a href="{{PRIVACY_POLICY_LINK}}">Privacy Notice</a> for information on how we protect and use your data, then complete the form below.</p>
