@@ -41,7 +41,8 @@
                   <p class="accordion-nested-group__heading"><%= gro_abbrev_in_user_text(sub[:label]) %></p>
                   <% sub[:children].each do |leaf| %>
                     <% form_numbers = Array(leaf[:form_numbers]).map(&:to_i) %>
-                    <% show_form_1 = leaf[:show_form] || form_numbers.include?(1) %>
+                    <%# Match JS: form blocks 1/3/4 live in the main form host; 2 is corrections only. %>
+                    <% show_form_1 = leaf[:show_form] || form_numbers.include?(1) || form_numbers.include?(3) || form_numbers.include?(4) %>
                     <details class="accordion-item"
                              data-subsection-id="<%= leaf[:id] %>"
                              data-show-form="<%= show_form_1 ? '1' : '0' %>"
@@ -62,7 +63,8 @@
                 </div>
               <% else %>
                 <% form_numbers = Array(sub[:form_numbers]).map(&:to_i) %>
-                <% show_form_1 = sub[:show_form] || form_numbers.include?(1) %>
+                <%# Match JS: form blocks 1/3/4 use report_form_host; without this, only [4] omits the host. %>
+                <% show_form_1 = sub[:show_form] || form_numbers.include?(1) || form_numbers.include?(3) || form_numbers.include?(4) %>
                 <details class="accordion-item"
                          data-subsection-id="<%= sub[:id] %>"
                          data-show-form="<%= show_form_1 ? '1' : '0' %>"
