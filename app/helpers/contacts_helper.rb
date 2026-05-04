@@ -1,3 +1,5 @@
+require 'constant' unless defined?(Constant)
+
 module ContactsHelper
 
   FREEBMD_SECTION3_DISPLAY_ORDER = %w[event year quarter surname forename district page_number multiple_entries].freeze
@@ -105,7 +107,7 @@ module ContactsHelper
   def render_report_error_answer(answer)
     return '' if answer.blank?
     rendered = answer.to_s
-    if rendered.include?('{{PRIVACY_POLICY_LINK}}') && defined?(Constant::PRIVACY_POLICY_LINK)
+    if rendered.include?('{{PRIVACY_POLICY_LINK}}')
       rendered = rendered.gsub('{{PRIVACY_POLICY_LINK}}', Constant::PRIVACY_POLICY_LINK.to_s)
     end
     rendered = rendered.gsub(/\bG(?:\.R\.O|RO)\b/, GroAbbrev::ACCESSIBILITY_HTML)
@@ -114,7 +116,7 @@ module ContactsHelper
       sanitize(
         rendered,
         tags: %w[p br ul ol li a strong em span small],
-        attributes: { 'a' => %w[href target rel], 'span' => %w[class] }
+        attributes: %w[href target rel class]
       )
     else
       simple_format(rendered)
