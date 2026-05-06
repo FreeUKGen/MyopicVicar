@@ -26,17 +26,12 @@ class SearchRecordsController < ApplicationController
     id_s = params[:id].to_s.strip
     record = SearchRecord.find_for_show_param(id_s)
 
-    # FreeREG: canonical URLs use freereg1_csv_entry id (301 from legacy /search_records/... paths).
-    if appname_downcase == 'freereg' && record.present? && record.freereg1_csv_entry_id.present?
+    # FreeREG: only citation URLs 301 to freereg1_csv_entry (stable bibliography). Record show and print stay on search_records.
+    if appname_downcase == 'freereg' && request.path.include?('show_citation') &&
+       record.present? && record.freereg1_csv_entry_id.present?
       entry = record.freereg1_csv_entry_id.to_s
       if record.id.to_s == id_s || entry == id_s
-        if request.path.include?('show_citation')
-          redirect_freereg_permanent(show_citation_freereg1_csv_entry_path(entry)) and return
-        elsif request.path.include?('show_print_version')
-          redirect_freereg_permanent(show_print_version_freereg1_csv_entry_path(entry)) and return
-        else
-          redirect_freereg_permanent(freereg1_csv_entry_path(entry)) and return
-        end
+        redirect_freereg_permanent(show_citation_freereg1_csv_entry_path(entry)) and return
       end
     end
 
@@ -53,14 +48,8 @@ class SearchRecordsController < ApplicationController
     end
 
     new_id = mapping.new_id
-    if appname_downcase == 'freereg' && entry_id.present?
-      if request.path.include?('show_citation')
-        redirect_freereg_permanent(show_citation_freereg1_csv_entry_path(entry_id)) and return
-      elsif request.path.include?('show_print_version')
-        redirect_freereg_permanent(show_print_version_freereg1_csv_entry_path(entry_id)) and return
-      else
-        redirect_freereg_permanent(freereg1_csv_entry_path(entry_id)) and return
-      end
+    if appname_downcase == 'freereg' && entry_id.present? && request.path.include?('show_citation')
+      redirect_freereg_permanent(show_citation_freereg1_csv_entry_path(entry_id)) and return
     elsif request.path.include?('show_citation')
       redirect_to show_citation_record_path(new_id) and return
     elsif request.path.include?('show_print_version')

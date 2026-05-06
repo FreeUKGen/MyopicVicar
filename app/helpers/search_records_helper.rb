@@ -38,7 +38,7 @@ module SearchRecordsHelper
     record = record.present? ? record.titleize : record
   end
 
-  # Bookmark / citation URL: FreeREG prefers stable freereg1_csv_entry id; other apps use SearchRecord id.
+  # Citation / bibliography URL only: FreeREG uses stable freereg1_csv_entry id. Elsewhere use SearchRecord id.
   def search_record_link(record)
     base = Rails.application.config.website
     if appname_downcase == 'freereg'
