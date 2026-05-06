@@ -42,13 +42,14 @@ class MessagesController < ApplicationController
     )
 
     if @message.save
-      redirect_to(select_individual_messages_path(
-                    id: @message.id,
-                    role: 'county_coordinator',
-                    default_chapman: chapman,
-                    allowed_chapmans: allowed_chapmans,
-                    source: 'gazetteer'
-                  )) && return
+      # Let the user add/adjust the message body first, then proceed to recipient selection.
+      redirect_to(edit_message_path(@message.id,
+        next: 'select_individual',
+        role: 'county_coordinator',
+        default_chapman: chapman,
+        allowed_chapmans: allowed_chapmans,
+        source: 'gazetteer'
+      )) && return
     end
 
     redirect_back(fallback_location: search_names_freecen2_place_path, notice: "Unable to start communication: #{@message.errors.full_messages.join(', ')}")
@@ -676,6 +677,7 @@ class MessagesController < ApplicationController
       return
     end
     @sent_message.update_attributes(sent_time: Time.now)
+    @message.update_attributes(message_sent_time: Time.now)
     @message.add_message_to_userid_messages(UseridDetail.look_up_id(@user_userid)) unless @user_userid.blank?
     acutal_recipients.each do |recipient|
       @message.add_message_to_userid_messages(UseridDetail.look_up_id(recipient))
@@ -798,6 +800,15 @@ class MessagesController < ApplicationController
     case params[:commit]
     when 'Save'
       @message.update_attributes(message_params)
+      if params[:next].to_s == 'select_individual'
+        redirect_to(select_individual_messages_path(
+                      id: @message.id,
+                      role: params[:role],
+                      default_chapman: params[:default_chapman],
+                      allowed_chapmans: params[:allowed_chapmans],
+                      source: params[:source]
+                    )) && return
+      end
     when 'Select Role'
       redirect_to action: 'select_individual', id: params[:id], role: params[:message][:action]
       return
@@ -806,7 +817,7 @@ class MessagesController < ApplicationController
     else
       send_message
     end
-    redirect_to message_path(@message.id, source: 'original') unless @problem_with_syndicate.present? && @problem_with_syndicate = true
+    redirect_to(message_path(@message.id, source: 'original')) unless @problem_with_syndicate.present? && @problem_with_syndicate == true
   end
 
   private
