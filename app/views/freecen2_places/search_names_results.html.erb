@@ -12,6 +12,52 @@
     <%= link_to 'Create New Freecen2 Place', new_freecen2_place_path(name:session[:search_names][:search]), method: :get, :class => "btn   btn--small", title: 'Permits the addition of a new place' %>
   <% end%>
 </div>
+
+<% if session[:userid_detail_id].present? %>
+  <% gaz_search = session.dig(:search_names, :search).to_s %>
+  <% default_chap = ChapmanCode.values_at(session.dig(:search_names, :search_county).to_s).presence %>
+  <% chapmans_from_results = @results.present? ? @results.map(&:chapman_code).compact.uniq.sort : [] %>
+  <% default_chap = chapmans_from_results.first if default_chap.blank? && chapmans_from_results.present? %>
+
+  <div class="text--center push--bottom">
+    <label for="gazetteer_cc_chapman" class="weight--semibold">County coordinator:</label>
+    <select id="gazetteer_cc_chapman" class="select" style="max-width: 320px;">
+      <% chapmans_from_results = [default_chap].compact.uniq + (chapmans_from_results - [default_chap]) %>
+      <% if chapmans_from_results.blank? %>
+        <option value="">Select a county…</option>
+      <% else %>
+        <% chapmans_from_results.each do |chap| %>
+          <% label = "#{chap} - #{ChapmanCode.name_from_code(chap)}" %>
+          <option value="<%= chap %>" <%= 'selected="selected"' if chap == default_chap %>><%= label %></option>
+        <% end %>
+      <% end %>
+    </select>
+
+    <% base_url = communicate_county_coordinator_gazetteer_chapman_path(search: gaz_search, chapman_code: '__CHAP__') %>
+    <%= link_to 'Communicate with county coordinator',
+      base_url,
+      id: 'gazetteer_cc_button',
+      class: 'btn btn--small',
+      title: 'Send a Data Question about this Gazetteer search to the selected county coordinator' %>
+  </div>
+
+  <script>
+    (function () {
+      var select = document.getElementById("gazetteer_cc_chapman");
+      var button = document.getElementById("gazetteer_cc_button");
+      if (!select || !button) return;
+
+      var template = button.getAttribute("href");
+      function updateHref() {
+        var chap = select.value || "";
+        button.setAttribute("href", template.replace("__CHAP__", encodeURIComponent(chap)));
+      }
+      select.addEventListener("change", updateHref);
+      updateHref();
+    })();
+  </script>
+<% end %>
+
 <div class="scrollable ">
   <table  class="table--bordered table--data table--striped " >
     <thead >
@@ -25,9 +71,6 @@
           <small> Opens new tab</small></th>
         <th class='sticky-header t20'>Source:</th>
         <th class='sticky-header t20'>Notes</th>
-        <% if session[:userid_detail_id].present? %>
-          <th class='sticky-header t20'>County coordinator</th>
-        <% end %>
         <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(session[:role]) %>
           <th class='sticky-header '>Action</th>
         <% end %>
@@ -45,13 +88,6 @@
             <td > <%= locate(place.latitude,place.longitude) %></td>
             <td class='t20'> <%= place.source%></td>
             <td class='t20'> <%= place.place_notes%></td>
-            <% if session[:userid_detail_id].present? %>
-              <td class='t20'>
-                <%= link_to 'Contact', contact_county_coordinator_gazetteer_path(place),
-                  class: 'btn btn--small',
-                  title: 'Send a Data Question to this county’s coordinator about this Gazetteer place' %>
-              </td>
-            <% end %>
             <% if %w[validator data_manager system_administrator county_coordinator master_county_coordinator executive_director project_manager].include?(session[:role]) %>
               <td ><%= link_to 'Edit', edit_freecen2_place_path(place), method: :get,data: { confirm: 'Are you sure?' }, :class => "btn  btn--small", title: 'Edit the place including the addition of alternate place names' %></td>
             <% end %>
@@ -59,7 +95,9 @@
         <% end %>
       <% else %>
         <tr>
-          <td colspan="11">There are no such names</td>
+          <td colspan="11">
+            There are no such names
+          </td>
         </tr>
       <% end %>
     </tbody>

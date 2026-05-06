@@ -55,6 +55,7 @@ class ContactsController < ApplicationController
     @contact = Contact.new(contact_params)
     if @contact.contact_name.blank? #spam trap
       @contact.previous_page_url = request.env['HTTP_REFERER']
+      @contact.session_data = safe_session_data
       if @contact.selected_county == 'nil'
         @contact.selected_county = nil # string 'nil' to nil
       end
@@ -200,6 +201,7 @@ class ContactsController < ApplicationController
     @options = FreeregOptionsConstants::ISSUES - ['Thank-you'] if appname_downcase == 'freereg'
     @contact.contact_time = Time.now
     @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+    @contact.session_data = safe_session_data
     apply_freecen_gazetteer_contact_prefill
     #flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?
   end
@@ -386,21 +388,33 @@ class ContactsController < ApplicationController
     return unless appname_downcase == 'freecen'
     return if params[:from_gazetteer].blank?
 
-    place_id = params[:freecen2_place_id].to_s.strip
-    return if place_id.blank?
-
-    place = Freecen2Place.where(id: place_id).first
-    return if place.blank?
-
     @contact.contact_type = 'Data Question'
-    @contact.selected_county = place.chapman_code
     @contact.problem_page_url = request.referer.presence
-    path = freecen2_place_path(place)
-    base = request.base_url.chomp('/')
-    @contact.body = "[Gazetteer enquiry — add your question below]\n\n" \
-                     "Place: #{place.place_name}\n" \
-                     "County (Chapman code): #{place.chapman_code}\n" \
-                     "Place page: #{base}#{path}\n"
+
+    place = nil
+    place_id = params[:freecen2_place_id].to_s.strip
+    place = Freecen2Place.where(id: place_id).first if place_id.present?
+
+    gaz_search = params[:gazetteer_search].to_s.strip
+    gaz_county_name = params[:gazetteer_county_name].to_s.strip
+    gaz_chapman = params[:gazetteer_chapman].to_s.strip
+
+    if place.present?
+      @contact.selected_county = place.chapman_code
+      path = freecen2_place_path(place)
+      base = request.base_url.chomp('/')
+      @contact.body = "[Gazetteer enquiry — add your question below]\n\n" \
+                       "Place: #{place.place_name}\n" \
+                       "County (Chapman code): #{place.chapman_code}\n" \
+                       "Place page: #{base}#{path}\n"
+    else
+      chap = gaz_chapman.presence
+      chap ||= ChapmanCode.values_at(gaz_county_name) if gaz_county_name.present?
+      @contact.selected_county = chap if chap.present?
+      @contact.body = "[Gazetteer enquiry (no matching place found) — add your question below]\n\n" \
+                       "Searched for: #{gaz_search.presence || '(not provided)'}\n" \
+                       "County selected in search: #{gaz_county_name.presence || '(none)'}\n"
+    end
     prefill_contact_from_session_userid_detail
   end
 
@@ -418,6 +432,35 @@ class ContactsController < ApplicationController
 
   def delete_reply_messages(contact_id)
     Message.where(source_contact_id: contact_id).destroy
+  end
+
+  # We store a small, non-sensitive subset of session/request context to help coordinators
+  # resolve issues without having to ask the user for basic diagnostics.
+  def safe_session_data
+    keep_keys = %w[
+      userid
+      userid_detail_id
+      role
+      chapman_code
+      county
+      place_id
+      place_name
+      type
+      search_names
+    ]
+
+    data = {}
+    keep_keys.each do |k|
+      data[k] = session[k.to_sym] if session.key?(k.to_sym)
+      data[k] = session[k] if session.key?(k)
+    end
+
+    data['request'] = {
+      'path' => request&.fullpath,
+      'referer' => request&.referer,
+      'user_agent' => request&.user_agent
+    }
+    data
   end
 
 end
