@@ -17,6 +17,35 @@ class MessagesController < ApplicationController
   require 'userid_role'
   require 'reply_userid_role'
 
+  # Shortcut entrypoint for FreeCEN Gazetteer: start a Communicate Action thread to a county coordinator
+  # for a specific chapman code.
+  def gazetteer_county_coordinator
+    get_user_info_from_userid
+    redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'You need to be logged in to communicate') && return if @user.blank?
+
+    session[:message_base] = 'communication'
+
+    chapman = params[:chapman].to_s.strip
+    search = params[:search].to_s.strip
+    county_name = chapman.present? ? ChapmanCode.name_from_code(chapman) : ''
+
+    @message = Message.new(
+      nature: 'communication',
+      userid: @user.userid,
+      message_time: Time.now,
+      subject: 'Gazetteer enquiry (county coordinator)',
+      body: "[Gazetteer enquiry — add your message below]\n\n" \
+            "Search: #{search.presence || '(not provided)'}\n" \
+            "County: #{county_name.presence || '(not selected)'} (#{chapman.presence || '---'})\n"
+    )
+
+    if @message.save
+      redirect_to(select_individual_messages_path(id: @message.id, role: 'county_coordinator', default_chapman: chapman, source: 'gazetteer')) && return
+    end
+
+    redirect_back(fallback_location: search_names_freecen2_place_path, notice: "Unable to start communication: #{@message.errors.full_messages.join(', ')}")
+  end
+
   def archive
     @message = Message.find(params[:id])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
@@ -560,6 +589,16 @@ class MessagesController < ApplicationController
 
     session[:com_role] = params[:role]
     @people = @message.select_the_list_of_individuals(params[:role])
+    if params[:default_chapman].present? && params[:role] == 'county_coordinator' && @people.present?
+      county_name = ChapmanCode.name_from_code(params[:default_chapman].to_s.strip).to_s
+      if county_name.present?
+        match_idx = @people.index { |p| p.to_s.start_with?("#{county_name} (") }
+        if match_idx.present? && match_idx > 0
+          match = @people.delete_at(match_idx)
+          @people.unshift(match)
+        end
+      end
+    end
     redirect_to(select_role_message_path(@message.id, source: params[:action]), notice: 'There is no one associated with that role') && return if @people.blank?
   end
 

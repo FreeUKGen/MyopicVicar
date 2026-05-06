@@ -35,7 +35,7 @@
       <% end %>
     </select>
 
-    <% base_url = communicate_county_coordinator_gazetteer_chapman_path(search: gaz_search, chapman_code: '__CHAP__') %>
+    <% base_url = communicate_action_county_coordinator_gazetteer_path(search: gaz_search, chapman_code: '__CHAP__') %>
     <%= link_to 'Communicate with county coordinator',
       base_url,
       id: 'gazetteer_cc_button',
