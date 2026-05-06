@@ -27,6 +27,7 @@ class MessagesController < ApplicationController
 
     chapman = params[:chapman].to_s.strip
     search = params[:search].to_s.strip
+    allowed_chapmans = params[:allowed_chapmans].to_s.strip
     county_name = chapman.present? ? ChapmanCode.name_from_code(chapman) : ''
 
     @message = Message.new(
@@ -40,7 +41,13 @@ class MessagesController < ApplicationController
     )
 
     if @message.save
-      redirect_to(select_individual_messages_path(id: @message.id, role: 'county_coordinator', default_chapman: chapman, source: 'gazetteer')) && return
+      redirect_to(select_individual_messages_path(
+                    id: @message.id,
+                    role: 'county_coordinator',
+                    default_chapman: chapman,
+                    allowed_chapmans: allowed_chapmans,
+                    source: 'gazetteer'
+                  )) && return
     end
 
     redirect_back(fallback_location: search_names_freecen2_place_path, notice: "Unable to start communication: #{@message.errors.full_messages.join(', ')}")
@@ -599,6 +606,16 @@ class MessagesController < ApplicationController
         end
       end
     end
+
+    # Gazetteer: restrict the list to only counties present in the search results list.
+    if params[:source].to_s == 'gazetteer' && params[:role] == 'county_coordinator' && params[:allowed_chapmans].present? && @people.present?
+      chapmans = params[:allowed_chapmans].to_s.split(',').map { |c| c.to_s.strip }.reject(&:blank?).uniq
+      allowed_names = chapmans.map { |c| ChapmanCode.name_from_code(c).to_s }.reject(&:blank?).uniq
+      if allowed_names.present?
+        @people = @people.select { |p| allowed_names.any? { |n| p.to_s.start_with?("#{n} (") } }
+      end
+    end
+
     redirect_to(select_role_message_path(@message.id, source: params[:action]), notice: 'There is no one associated with that role') && return if @people.blank?
   end
 

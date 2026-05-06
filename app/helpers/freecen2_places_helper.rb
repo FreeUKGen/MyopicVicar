@@ -83,7 +83,11 @@ module Freecen2PlacesHelper
   end
 
   # Start the internal Communicate Action flow (Message) to a county coordinator from Gazetteer.
-  def communicate_action_county_coordinator_gazetteer_path(search:, chapman_code:)
-    gazetteer_county_coordinator_message_path(search: search.to_s, chapman: chapman_code.to_s)
+  def communicate_action_county_coordinator_gazetteer_path(search:, chapman_code:, allowed_chapmans:)
+    gazetteer_county_coordinator_message_path(
+      search: search.to_s,
+      chapman: chapman_code.to_s,
+      allowed_chapmans: allowed_chapmans.to_s
+    )
   end
 end
