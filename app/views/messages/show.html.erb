@@ -29,11 +29,57 @@
 <% end%>
 <%= render 'message_detail'%>
 <% if @message.session_data.present? %>
+  <% sd = @message.session_data || {} %>
+  <% prev_url = sd['previous_page_url'].to_s %>
+  <% curr_url = sd['current_page_url'].to_s %>
+  <% userid = sd['userid'].to_s %>
+  <% role = sd['role'].to_s %>
+  <% search_names = sd['search_names'].is_a?(Hash) ? sd['search_names'] : {} %>
+  <% search_term = (search_names['search'] || search_names[:search]).to_s %>
+  <% search_county = (search_names['search_county'] || search_names[:search_county]).to_s %>
   <div class="grid">
     <section class="island">
       <div class="grid__item">
         <h4 class="text--center push--bottom">Session information</h4>
-        <pre style="white-space: pre-wrap;"><%= JSON.pretty_generate(@message.session_data) rescue @message.session_data.inspect %></pre>
+        <table class="table--bordered table--data" style="text-align: left">
+          <colgroup>
+            <col class="t25">
+            <col class="t75">
+          </colgroup>
+          <tr>
+            <th class="caps">Field</th>
+            <th class="caps">Value</th>
+          </tr>
+          <tr>
+            <td>Current page</td>
+            <td class="weight--semibold"><%= curr_url.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>Previous page</td>
+            <td class="weight--semibold"><%= prev_url.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>UserID</td>
+            <td class="weight--semibold"><%= userid.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>Role</td>
+            <td class="weight--semibold"><%= role.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>Gazetteer search</td>
+            <td class="weight--semibold"><%= search_term.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>Gazetteer county</td>
+            <td class="weight--semibold"><%= search_county.presence || 'none' %></td>
+          </tr>
+        </table>
+
+        <details class="push--top">
+          <summary class="weight--semibold">Show raw session data</summary>
+          <pre style="white-space: pre-wrap;"><%= JSON.pretty_generate(sd) rescue sd.inspect %></pre>
+        </details>
       </div>
     </section>
   </div>
