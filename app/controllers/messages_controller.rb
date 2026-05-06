@@ -40,6 +40,15 @@ class MessagesController < ApplicationController
             "Search: #{search.presence || '(not provided)'}\n" \
             "County: #{county_name.presence || '(not selected)'} (#{chapman.presence || '---'})\n"
     )
+    @message.path = request.fullpath
+    @message.session_data = {
+      'previous_page_url' => request.referer,
+      'current_page_url' => request.original_url,
+      'role' => session[:role],
+      'userid' => session[:userid],
+      'userid_detail_id' => session[:userid_detail_id],
+      'search_names' => session[:search_names]
+    }
 
     if @message.save
       # Let the user add/adjust the message body first, then proceed to recipient selection.

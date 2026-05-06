@@ -28,3 +28,13 @@
   <% end%>
 <% end%>
 <%= render 'message_detail'%>
+<% if @message.session_data.present? %>
+  <div class="grid">
+    <section class="island">
+      <div class="grid__item">
+        <h4 class="text--center push--bottom">Session information</h4>
+        <pre style="white-space: pre-wrap;"><%= JSON.pretty_generate(@message.session_data) rescue @message.session_data.inspect %></pre>
+      </div>
+    </section>
+  </div>
+<% end %>

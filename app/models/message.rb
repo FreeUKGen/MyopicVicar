@@ -13,6 +13,7 @@ class Message
   field :attachment, type: String
   field :identifier, type: String
   field :path, type: String
+  field :session_data, type: Hash
   field :file_name, type: String
   field :images, type: String
   field :recipients, type: Array
