@@ -44,6 +44,8 @@ class MessagesController < ApplicationController
     @message.session_data = {
       'previous_page_url' => request.referer,
       'current_page_url' => request.original_url,
+      'gazetteer_chapman' => chapman,
+      'gazetteer_county_name' => county_name,
       'role' => session[:role],
       'userid' => session[:userid],
       'userid_detail_id' => session[:userid_detail_id],

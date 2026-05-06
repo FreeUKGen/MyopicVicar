@@ -34,9 +34,12 @@
   <% curr_url = sd['current_page_url'].to_s %>
   <% userid = sd['userid'].to_s %>
   <% role = sd['role'].to_s %>
+  <% gaz_chapman = sd['gazetteer_chapman'].to_s %>
+  <% gaz_county_name = sd['gazetteer_county_name'].to_s %>
   <% search_names = sd['search_names'].is_a?(Hash) ? sd['search_names'] : {} %>
   <% search_term = (search_names['search'] || search_names[:search]).to_s %>
   <% search_county = (search_names['search_county'] || search_names[:search_county]).to_s %>
+  <% display_county = gaz_county_name.presence || search_county.presence || (gaz_chapman.present? ? "#{ChapmanCode.name_from_code(gaz_chapman)} (#{gaz_chapman})" : '') %>
   <div class="grid">
     <section class="island">
       <div class="grid__item">
@@ -72,7 +75,7 @@
           </tr>
           <tr>
             <td>Gazetteer county</td>
-            <td class="weight--semibold"><%= search_county.presence || 'none' %></td>
+            <td class="weight--semibold"><%= display_county.presence || 'none' %></td>
           </tr>
         </table>
       </div>
