@@ -24,6 +24,7 @@ class MessagesController < ApplicationController
     redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'You need to be logged in to communicate') && return if @user.blank?
 
     session[:message_base] = 'communication'
+    session[:host] = request.host if session[:host].blank?
 
     chapman = params[:chapman].to_s.strip
     search = params[:search].to_s.strip
@@ -657,12 +658,23 @@ class MessagesController < ApplicationController
 
   def send_communication
     get_user_info_from_userid
+    session[:host] = request.host if session[:host].blank?
+    if params[:recipients].blank?
+      flash[:notice] = 'You did not select any recipients'
+      redirect_back(fallback_location: select_individual_messages_path(id: @message.id, role: session[:com_role], source: 'gazetteer')) && return
+    end
     acutal_recipients = @message.extract_actual_recipients(params[:recipients], session[:com_role])
     session.delete(:com_role)
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user_userid, recipients: acutal_recipients)
     @message.sent_messages << [@sent_message]
     @sent_message.save
-    UserMailer.send_message(@message, acutal_recipients, @user_userid, session[:host]).deliver_now
+    begin
+      UserMailer.send_message(@message, acutal_recipients, @user_userid, session[:host]).deliver_now
+    rescue StandardError => e
+      logger.warn("MESSAGES:SEND_COMMUNICATION: mail failure for #{@message.id}: #{e.class} #{e.message}")
+      flash[:notice] = "Communication saved, but email delivery failed: #{e.message}"
+      return
+    end
     @sent_message.update_attributes(sent_time: Time.now)
     @message.add_message_to_userid_messages(UseridDetail.look_up_id(@user_userid)) unless @user_userid.blank?
     acutal_recipients.each do |recipient|
