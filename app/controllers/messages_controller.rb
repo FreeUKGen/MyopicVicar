@@ -675,6 +675,27 @@ class MessagesController < ApplicationController
       flash[:notice] = 'You did not select any recipients'
       redirect_back(fallback_location: select_individual_messages_path(id: @message.id, role: session[:com_role], source: 'gazetteer')) && return
     end
+
+    # Persist the actual selection (user may have changed from the default).
+    begin
+      recipients_raw = Array(params[:recipients]).map(&:to_s).reject(&:blank?)
+      if recipients_raw.present?
+        sd = @message.session_data.is_a?(Hash) ? @message.session_data : {}
+        sd['selected_recipients'] = recipients_raw
+        # For county coordinators, the value is like "Bedfordshire (USERID) [Name]".
+        # We capture the county name prefix so the UI can show the chosen county.
+        if session[:com_role].to_s == 'county_coordinator'
+          chosen_county_name = recipients_raw.first.to_s.split(' (').first.to_s.strip
+          chap = ChapmanCode.values_at(chosen_county_name) rescue nil
+          sd['selected_gazetteer_county_name'] = chosen_county_name if chosen_county_name.present?
+          sd['selected_gazetteer_chapman'] = chap if chap.present?
+        end
+        @message.update_attributes(session_data: sd)
+      end
+    rescue StandardError => e
+      logger.warn("MESSAGES:SEND_COMMUNICATION: unable to persist recipient selection for #{@message.id}: #{e.class} #{e.message}")
+    end
+
     acutal_recipients = @message.extract_actual_recipients(params[:recipients], session[:com_role])
     session.delete(:com_role)
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user_userid, recipients: acutal_recipients)

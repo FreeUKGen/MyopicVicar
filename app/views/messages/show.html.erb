@@ -36,10 +36,16 @@
   <% role = sd['role'].to_s %>
   <% gaz_chapman = sd['gazetteer_chapman'].to_s %>
   <% gaz_county_name = sd['gazetteer_county_name'].to_s %>
+  <% chosen_chapman = sd['selected_gazetteer_chapman'].to_s %>
+  <% chosen_county_name = sd['selected_gazetteer_county_name'].to_s %>
   <% search_names = sd['search_names'].is_a?(Hash) ? sd['search_names'] : {} %>
   <% search_term = (search_names['search'] || search_names[:search]).to_s %>
   <% search_county = (search_names['search_county'] || search_names[:search_county]).to_s %>
-  <% display_county = gaz_county_name.presence || search_county.presence || (gaz_chapman.present? ? "#{ChapmanCode.name_from_code(gaz_chapman)} (#{gaz_chapman})" : '') %>
+  <% display_county = chosen_county_name.presence ||
+                      gaz_county_name.presence ||
+                      search_county.presence ||
+                      (chosen_chapman.present? ? "#{ChapmanCode.name_from_code(chosen_chapman)} (#{chosen_chapman})" : '') ||
+                      (gaz_chapman.present? ? "#{ChapmanCode.name_from_code(gaz_chapman)} (#{gaz_chapman})" : '') %>
   <div class="grid">
     <section class="island">
       <div class="grid__item">
