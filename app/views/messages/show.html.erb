@@ -75,11 +75,6 @@
             <td class="weight--semibold"><%= search_county.presence || 'none' %></td>
           </tr>
         </table>
-
-        <details class="push--top">
-          <summary class="weight--semibold">Show raw session data</summary>
-          <pre style="white-space: pre-wrap;"><%= JSON.pretty_generate(sd) rescue sd.inspect %></pre>
-        </details>
       </div>
     </section>
   </div>
