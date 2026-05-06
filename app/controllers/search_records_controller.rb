@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 #
 class SearchRecordsController < ApplicationController
+  include FreeregSearchRecordShow
+
   before_action :viewed
   before_action :redirect_legacy_search_record_id, only: [:show, :show_citation, :show_print_version]
   skip_before_action :require_login
@@ -20,11 +22,46 @@ class SearchRecordsController < ApplicationController
 
   def redirect_legacy_search_record_id
     return if params[:id].blank?
-    return if SearchRecord.record_id(params[:id]).first.present?
-    mapping = LegacySearchRecordMapping.find_by(old_id: params[:id].to_s)
+
+    id_s = params[:id].to_s.strip
+    record = SearchRecord.find_for_show_param(id_s)
+
+    # FreeREG: canonical URLs use freereg1_csv_entry id (301 from legacy /search_records/... paths).
+    if appname_downcase == 'freereg' && record.present? && record.freereg1_csv_entry_id.present?
+      entry = record.freereg1_csv_entry_id.to_s
+      if record.id.to_s == id_s || entry == id_s
+        if request.path.include?('show_citation')
+          redirect_freereg_permanent(show_citation_freereg1_csv_entry_path(entry)) and return
+        elsif request.path.include?('show_print_version')
+          redirect_freereg_permanent(show_print_version_freereg1_csv_entry_path(entry)) and return
+        else
+          redirect_freereg_permanent(freereg1_csv_entry_path(entry)) and return
+        end
+      end
+    end
+
+    return if record.present?
+
+    mapping = LegacySearchRecordMapping.find_by(old_id: id_s)
     return if mapping.blank?
+
+    target = SearchRecord.find_for_show_param(mapping.new_id.to_s)
+    entry_id = target&.freereg1_csv_entry_id&.to_s
+    if entry_id.blank?
+      legacy_entry = Freereg1CsvEntry.where(id: mapping.new_id).first
+      entry_id = legacy_entry.id.to_s if legacy_entry.present?
+    end
+
     new_id = mapping.new_id
-    if request.path.include?('show_citation')
+    if appname_downcase == 'freereg' && entry_id.present?
+      if request.path.include?('show_citation')
+        redirect_freereg_permanent(show_citation_freereg1_csv_entry_path(entry_id)) and return
+      elsif request.path.include?('show_print_version')
+        redirect_freereg_permanent(show_print_version_freereg1_csv_entry_path(entry_id)) and return
+      else
+        redirect_freereg_permanent(freereg1_csv_entry_path(entry_id)) and return
+      end
+    elsif request.path.include?('show_citation')
       redirect_to show_citation_record_path(new_id) and return
     elsif request.path.include?('show_print_version')
       redirect_to show_print_version_search_record_path(new_id) and return
@@ -246,25 +283,7 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_freereg
-    # common code for the three show versions show print and citation
-    @entry = @search_record.freereg1_csv_entry
-    @record_name = @search_record.get_record_names
-    @entry.display_fields(@search_record)
-    proceed, @place_id, @church_id, @register_id, extended_def = @entry.location_ids
-    message = 'There is an issue with the linkages for this records. Please contact us using the Website Problem option to report this message'
-    redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
-
-    @annotations = Annotation.find(@search_record[:annotation_ids]) if @search_record[:annotation_ids]
-    @image_id = @entry.get_the_image_id(@church, @user, session[:manage_user_origin], session[:image_server_group_id], session[:chapman_code])
-    @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type], @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
-    @embargoed = @search_record[:embargoed]
-    if @search_query.present?
-      @search_result = @search_query.search_result
-      @viewed_records = @search_result.viewed_records
-      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
-      @search_result.update_attribute(:viewed_records, @viewed_records)
-      @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) if params[:ucf].blank?
-    end
+    assign_ivars_for_freereg_search_record_show! || nil
   end
 
   def show_print_version
@@ -373,26 +392,12 @@ class SearchRecordsController < ApplicationController
   def viewed
     session[:viewed] ||= []
   end
-  
+
   private
 
-  # Citation links are often opened from other sites; redirect_back would send users to the Referer (that site)
-  # instead of staying here with the flash. Only use redirect_back when the referer is this application.
-  def internal_referer?
-    ref = request.referer
-    return false if ref.blank?
-
-    URI.parse(ref).host.casecmp?(request.host)
-    rescue URI::InvalidURIError
-    false
-  end
-
-  def redirect_back_or_new_search_query(notice: nil)
-    flash[:notice] = notice if notice.present?
-    if internal_referer?
-      redirect_back(fallback_location: new_search_query_path)
-    else
-      redirect_to new_search_query_path
-    end
+  def redirect_freereg_permanent(path)
+    q = request.query_string.presence
+    url = q.present? ? "#{path}?#{q}" : path
+    redirect_to url, status: :moved_permanently
   end
 end

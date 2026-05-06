@@ -38,9 +38,21 @@ module SearchRecordsHelper
     record = record.present? ? record.titleize : record
   end
 
+  # Bookmark / citation URL: FreeREG prefers stable freereg1_csv_entry id; other apps use SearchRecord id.
   def search_record_link(record)
-    field = Rails.application.config.website + '/search_records/' + record
-    field
+    base = Rails.application.config.website
+    if appname_downcase == 'freereg'
+      entry_id =
+        if record.is_a?(SearchRecord) && record.freereg1_csv_entry_id.present?
+          record.freereg1_csv_entry_id.to_s
+        elsif record.is_a?(Hash)
+          record[:freereg1_csv_entry_id].presence || record['freereg1_csv_entry_id'].presence
+        end
+      return base + freereg1_csv_entry_path(entry_id) if entry_id.present?
+    end
+
+    id_part = record.is_a?(Hash) ? (record[:_id] || record['_id'] || record[:id] || record['id']) : record
+    base + '/search_records/' + id_part.to_s
   end
 
 end

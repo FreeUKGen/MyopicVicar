@@ -189,6 +189,24 @@ class SearchRecord
       where(id: id)
     end
 
+    # Resolve id from URL: SearchRecord _id, or (FreeREG) freereg1_csv_entry_id when param is the line id.
+    def find_for_show_param(raw_id)
+      return nil if raw_id.blank?
+
+      id_s = raw_id.to_s.strip
+      return nil unless id_s.length == 24 && id_s.match?(/\A\h{24}\z/)
+
+      begin
+        oid = BSON::ObjectId.from_string(id_s)
+      rescue BSON::Error, ArgumentError, RangeError
+        return nil
+      end
+      rec = where(id: oid).first
+      return rec if rec.present?
+
+      where(freereg1_csv_entry_id: oid).first
+    end
+
     def between_dates(county, previous_midnight, last_midnight)
       last_id = BSON::ObjectId.from_time(last_midnight)
       first_id = BSON::ObjectId.from_time(previous_midnight)
@@ -223,7 +241,7 @@ class SearchRecord
         return [false, search_query, search_record, messagea]
       end
       search_query = search.present? ? SearchQuery.search_id(search).first : ''
-      search_record = SearchRecord.record_id(param[:id]).first
+      search_record = SearchRecord.find_for_show_param(param[:id])
       if search_record.blank?
         logger.warn(warning)
         logger.warn "#{search_record} no longer exists"

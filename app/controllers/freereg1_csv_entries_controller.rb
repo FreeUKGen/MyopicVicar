@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 #
 class Freereg1CsvEntriesController < ApplicationController
+  include FreeregSearchRecordShow
+
   require 'chapman_code'
   require 'freereg_validations'
   require 'freereg_options_constants'
+  require 'csv'
 
-  skip_before_action :require_login, only: [:show]
+  skip_before_action :require_login, only: %i[show show_citation show_print_version]
 
   ActionController::Parameters.permit_all_parameters = true
 
@@ -295,6 +298,83 @@ class Freereg1CsvEntriesController < ApplicationController
     @order, @array_of_entries, @json_of_entries = @freereg1_csv_entry.order_fields_for_record_type(record_type, @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
   end
 
+  # Entry-id citation URL (public); same output as search_records#show_citation for FreeREG.
+  def show_citation
+    return unless ensure_freereg_app_for_entry_urls!
+
+    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
+    unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
+      redirect_back_or_new_search_query(notice: 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.') && return
+    end
+
+    @get_zero_year_records = 'true' if params[:zero_record] == 'true'
+    @zero_year = 'true' if params[:zero_listing] == 'true'
+    display_info
+
+    merged = params.permit!.to_h.merge('id' => @freereg1_csv_entry.id.to_s)
+    proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], ActionController::Parameters.new(merged))
+    redirect_back_or_new_search_query(notice: message) && return unless proceed
+
+    params[:id] = @search_record.id.to_s
+
+    @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?)
+    @appname = appname_downcase
+    @display_date = false
+    @printable_format = true
+    @display_date = true
+    @all_data = true
+    assign_ivars_for_freereg_search_record_show! || return
+
+    respond_to do |format|
+      @viewed_date = Date.today.strftime("%e %b %Y")
+      @viewed_year = Date.today.strftime("%Y")
+      @type = params[:citation_type]
+      format.html { render 'search_records/citation', layout: false }
+    end
+  end
+
+  # Entry-id print / export URL (public); same behaviour as search_records#show_print_version for FreeREG.
+  def show_print_version
+    return unless ensure_freereg_app_for_entry_urls!
+
+    @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
+    unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
+      redirect_back_or_new_search_query(notice: 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.') && return
+    end
+
+    display_info
+
+    merged = params.permit!.to_h.merge('id' => @freereg1_csv_entry.id.to_s)
+    proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], ActionController::Parameters.new(merged))
+    redirect_back_or_new_search_query(notice: message) && return unless proceed
+
+    params[:id] = @search_record.id.to_s
+
+    @show_navigation = false
+    @appname = appname_downcase
+    @display_date = false
+    assign_ivars_for_freereg_search_record_show! || return
+    @display_date = false
+    @printable_format = true
+    @display_date = true
+    @all_data = true
+    assign_ivars_for_freereg_search_record_show! || return
+
+    respond_to do |format|
+      format.html { render 'search_records/show', layout: false }
+      format.json do
+        file_name = "search-record-#{@entry.id}.json"
+        send_data @json_of_entries.to_json, type: 'application/json; header=present', disposition: "attachment; filename=\"#{file_name}\""
+      end
+      format.csv do
+        header_line = CSV.generate_line(@order, options: { row_sep: "\r\n" })
+        data_line = CSV.generate_line(@array_of_entries, options: { row_sep: "\r\n", force_quotes: true })
+        file_name = "search-record-#{@entry.id}.csv"
+        send_data (header_line + data_line), type: 'text/csv', disposition: "attachment; filename=\"#{file_name}\""
+      end
+    end
+  end
+
   def update
     @freereg1_csv_entry = Freereg1CsvEntry.find(params[:id]) if params[:id].present?
     unless Freereg1CsvEntry.valid_freereg1_csv_entry?(@freereg1_csv_entry)
@@ -362,5 +442,12 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def freereg1_csv_entry_params
     params.require(:freereg1_csv_entry).permit!
+  end
+
+  def ensure_freereg_app_for_entry_urls!
+    return true if appname_downcase == 'freereg'
+
+    redirect_to new_search_query_path, notice: 'That action is not available.'
+    false
   end
 end

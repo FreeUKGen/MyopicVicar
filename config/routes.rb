@@ -551,6 +551,8 @@ MyopicVicar::Application.routes.draw do
 
   get 'freereg1_csv_entries/:id/edit_embargo(.:format)', :to => 'freereg1_csv_entries#edit_embargo', :as => :edit_embargo_freereg1_csv_entry
   get 'freereg1_csv_entries/:id/error(.:format)', :to => 'freereg1_csv_entries#error', :as => :error_freereg1_csv_entry
+  get 'freereg1_csv_entries/:id/show_citation', :to => 'freereg1_csv_entries#show_citation', :as => :show_citation_freereg1_csv_entry
+  get 'freereg1_csv_entries/:id/show_print_version', :to => 'freereg1_csv_entries#show_print_version', :as => :show_print_version_freereg1_csv_entry
   resources :freereg1_csv_entries
 
   get 'freereg1_csv_files/:id/change_userid', :to => 'freereg1_csv_files#change_userid', :as => :change_userid_freereg1_csv_file

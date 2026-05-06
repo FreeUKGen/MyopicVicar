@@ -1,29 +1,30 @@
 <% unless defined?(@printable_format) && @printable_format %>
+  <% entry_citation = @search_record.freereg1_csv_entry_id %>
   <%= render 'nav_button_header_freereg' %>
   <div id="citation-dropdown" class="citation-dropdown no-javascript">
     <div class="text--center">
       <p>Please choose the format for one of these citation types. It will appear in a new tab below and may be copied.
         <br>
         Once you have copied your citation clicking the Generate Citation button above again will close these instructions.</p>
-      <%= link_to "WikiTree", show_citation_record_path(@search_record[:_id], :citation_type => "wikitree"), :class => "btn  btn--small " , :target => "_blank", id: 'wikitree' %>
-      <%= link_to "Family Tree Maker", show_citation_record_path(@search_record[:_id], :citation_type => "familytreemaker"), :class => "btn  btn--small " , :target => "_blank", id: 'familytreemaker' %>
-      <%= link_to "Legacy Family Tree", show_citation_record_path(@search_record[:_id], :citation_type => "legacyfamilytree"), :class => "btn  btn--small " , :target => "_blank", id: 'legacyfamilytree' %>
-      <%= link_to "MLA", show_citation_record_path(@search_record[:_id], :citation_type => "mla"), :class => "btn  btn--small " , :target => "_blank", id: 'mla' %>
-      <%= link_to "Chicago", show_citation_record_path(@search_record[:_id], :citation_type => "chicago"), :class => "btn  btn--small " , :target => "_blank", id: 'chicago' %>
-      <%= link_to "Evidence Explained", show_citation_record_path(@search_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small " , :target => "_blank", id: 'evidenceexplained' %>
-      <%= link_to "Wikipedia", show_citation_record_path(@search_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small " , :target => "_blank", id: 'wikipedia' %>
+      <%= link_to "WikiTree", (entry_citation.present? ? show_citation_freereg1_csv_entry_path(entry_citation, :citation_type => "wikitree") : show_citation_record_path(@search_record[:_id], :citation_type => "wikitree")), :class => "btn  btn--small " , :target => "_blank", id: 'wikitree' %>
+      <%= link_to "Family Tree Maker", (entry_citation.present? ? show_citation_freereg1_csv_entry_path(entry_citation, :citation_type => "familytreemaker") : show_citation_record_path(@search_record[:_id], :citation_type => "familytreemaker")), :class => "btn  btn--small " , :target => "_blank", id: 'familytreemaker' %>
+      <%= link_to "Legacy Family Tree", (entry_citation.present? ? show_citation_freereg1_csv_entry_path(entry_citation, :citation_type => "legacyfamilytree") : show_citation_record_path(@search_record[:_id], :citation_type => "legacyfamilytree")), :class => "btn  btn--small " , :target => "_blank", id: 'legacyfamilytree' %>
+      <%= link_to "MLA", (entry_citation.present? ? show_citation_freereg1_csv_entry_path(entry_citation, :citation_type => "mla") : show_citation_record_path(@search_record[:_id], :citation_type => "mla")), :class => "btn  btn--small " , :target => "_blank", id: 'mla' %>
+      <%= link_to "Chicago", (entry_citation.present? ? show_citation_freereg1_csv_entry_path(entry_citation, :citation_type => "chicago") : show_citation_record_path(@search_record[:_id], :citation_type => "chicago")), :class => "btn  btn--small " , :target => "_blank", id: 'chicago' %>
+      <%= link_to "Evidence Explained", (entry_citation.present? ? show_citation_freereg1_csv_entry_path(entry_citation, :citation_type => "evidenceexplained") : show_citation_record_path(@search_record[:_id], :citation_type => "evidenceexplained")), :class => "btn  btn--small " , :target => "_blank", id: 'evidenceexplained' %>
+      <%= link_to "Wikipedia", (entry_citation.present? ? show_citation_freereg1_csv_entry_path(entry_citation, :citation_type => "wikipedia") : show_citation_record_path(@search_record[:_id], :citation_type => "wikipedia")), :class => "btn  btn--small " , :target => "_blank", id: 'wikipedia' %>
     </div>
   </div>
   <div id="citation-dropdown" class="citation-dropdown javascript">
     <div class="text--center">
       <p>Choose the format and the citation will appear below and may be copied. Select Generate Citation button above to close this selection:</p>
-      <%= link_to "WikiTree", friendly_search_record_path(@search_record[:_id], :citation_type => "wikitree"), :class => "btn  btn--small ", id: 'wikitree' %>
-      <%= link_to "Family Tree Maker", friendly_search_record_path(@search_record[:_id], :citation_type => "familytreemaker"), :class => "btn  btn--small ", id: 'familytreemaker' %>
-      <%= link_to "Legacy Family Tree", friendly_search_record_path(@search_record[:_id], :citation_type => "legacyfamilytree"), :class => "btn  btn--small ", id: 'legacyfamilytree'  %>
-      <%= link_to "MLA", friendly_search_record_path(@search_record[:_id], :citation_type => "mla"), :class => "btn  btn--small ", id: 'mla' %>
-      <%= link_to "Chicago", friendly_search_record_path(@search_record[:_id], :citation_type => "chicago"), :class => "btn  btn--small ", id: 'chicago' %>
-      <%= link_to "Evidence Explained", friendly_search_record_path(@search_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small ", id: 'evidenceexplained' %>
-      <%= link_to "Wikipedia", friendly_search_record_path(@search_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small ", id: 'wikipedia' %>
+      <%= link_to "WikiTree", friendly_search_record_path(@search_record[:_id], @search_record.friendly_url, :citation_type => "wikitree"), :class => "btn  btn--small ", id: 'wikitree' %>
+      <%= link_to "Family Tree Maker", friendly_search_record_path(@search_record[:_id], @search_record.friendly_url, :citation_type => "familytreemaker"), :class => "btn  btn--small ", id: 'familytreemaker' %>
+      <%= link_to "Legacy Family Tree", friendly_search_record_path(@search_record[:_id], @search_record.friendly_url, :citation_type => "legacyfamilytree"), :class => "btn  btn--small ", id: 'legacyfamilytree'  %>
+      <%= link_to "MLA", friendly_search_record_path(@search_record[:_id], @search_record.friendly_url, :citation_type => "mla"), :class => "btn  btn--small ", id: 'mla' %>
+      <%= link_to "Chicago", friendly_search_record_path(@search_record[:_id], @search_record.friendly_url, :citation_type => "chicago"), :class => "btn  btn--small ", id: 'chicago' %>
+      <%= link_to "Evidence Explained", friendly_search_record_path(@search_record[:_id], @search_record.friendly_url, :citation_type => "evidenceexplained"), :class => "btn  btn--small ", id: 'evidenceexplained' %>
+      <%= link_to "Wikipedia", friendly_search_record_path(@search_record[:_id], @search_record.friendly_url, :citation_type => "wikipedia"), :class => "btn  btn--small ", id: 'wikipedia' %>
     </div>
     <% if params[:citation_type].present? %>
       <br>

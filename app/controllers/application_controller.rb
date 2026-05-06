@@ -487,4 +487,24 @@ class ApplicationController < ActionController::Base
     session.delete(:register)
     session.delete(:search_names)
   end
+
+  # Citation links are often opened from other sites; redirect_back would send users to the Referer.
+  # Only use redirect_back when the referer is this application.
+  def internal_referer?
+    ref = request.referer
+    return false if ref.blank?
+
+    URI.parse(ref).host.casecmp?(request.host)
+  rescue URI::InvalidURIError
+    false
+  end
+
+  def redirect_back_or_new_search_query(notice: nil)
+    flash[:notice] = notice if notice.present?
+    if internal_referer?
+      redirect_back(fallback_location: new_search_query_path)
+    else
+      redirect_to new_search_query_path
+    end
+  end
 end
