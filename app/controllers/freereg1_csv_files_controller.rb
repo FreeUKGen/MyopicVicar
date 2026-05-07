@@ -354,23 +354,28 @@ class Freereg1CsvFilesController < ApplicationController
 
     session[:records] = @records
     if session[:role] == 'system_administrator' || session[:role] == 'data_manager'
+      place = @freereg1_csv_file.register.church.place
       @county = session[:county]
       locations
       # setting these means that we are a DM
-      session[:selectcountry] = nil
-      session[:selectcounty] = nil
-      session[:selectplace] = session[:selectchurch] = nil
+      session[:selectcountry] = place.country
+      session[:selectcounty] = place.chapman_code
+      session[:selectplace] = @freereg1_csv_file.place
+      session[:selectchurch] = @freereg1_csv_file.church_name
+      @selected_country = place.country
       @countries = ['Select Country', 'England', 'Islands', 'Scotland', 'Wales']
       @counties = []
       @placenames = []
       @churches = []
       @register_types = []
-      @selected_place = @selected_church = @selected_register = ''
+      @selected_register = ''
     else
       # only senior managers can move between counties and countries; coordinators could loose files
       place = @freereg1_csv_file.register.church.place
       session[:selectcountry] = place.country
       session[:selectcounty] = place.chapman_code
+      session[:selectplace] = @freereg1_csv_file.place
+      session[:selectchurch] = @freereg1_csv_file.church_name
       redirect_to(action: 'update_places') && return
     end
   end
@@ -485,7 +490,7 @@ class Freereg1CsvFilesController < ApplicationController
         redirect_to(relocate_freereg1_csv_file_path(session[:freereg1_csv_file_id])) && return
       end
     end
-    locations
+    locations  
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
     @countries = [session[:selectcountry]]
     if session[:selectcounty].blank?
