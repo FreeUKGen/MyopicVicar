@@ -21,7 +21,7 @@ MyopicVicar::Application.configure do
   # Allow local dev access via the configured public website host
   # (e.g. reverse proxy / shared dev URL).
   begin
-    website_host = URI.parse(Rails.application.config.website.to_s).host
+    website_host = URI.parse(MyopicVicar::MongoConfig['website'].to_s).host
     config.hosts << website_host if website_host.present?
   rescue URI::InvalidURIError
     # ignore invalid website config

@@ -20,7 +20,7 @@ MyopicVicar::Application.configure do
   # Rails 6+ Host Authorization
   # Allow the configured public website host (some deploys reuse production env for staging).
   begin
-    website_host = URI.parse(Rails.application.config.website.to_s).host
+    website_host = URI.parse(MyopicVicar::MongoConfig['website'].to_s).host
     config.hosts << website_host if website_host.present?
   rescue URI::InvalidURIError
     # ignore invalid website config
