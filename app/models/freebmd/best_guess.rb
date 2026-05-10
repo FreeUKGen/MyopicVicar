@@ -327,14 +327,24 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_spouse_record
-    BestGuess.where(
-      Surname: self.AssociateName,
-      Volume: self.Volume,
-      Page: self.Page,
-      QuarterNumber: self.QuarterNumber,
-      DistrictNumber: self.DistrictNumber,
-      RecordTypeID: self.RecordTypeID
-    ).where.not(RecordNumber: self.RecordNumber).first
+    return nil if self.AssociateName.blank?
+
+    base = spouse_lookup_base_relation
+    return nil if base.empty?
+
+    unless spouse_surnames_match?
+      reciprocal = base.where(AssociateName: self.Surname)
+      spouse = first_spouse_matching_registration(reciprocal)
+      return spouse if spouse.present?
+      return reciprocal.first if reciprocal.one?
+    end
+
+    spouse = first_spouse_matching_registration(base)
+    return spouse if spouse.present?
+
+    return base.first if base.one?
+
+    nil
   end
 
   def image_fileds
@@ -611,6 +621,49 @@ class BestGuess < FreebmdDbBase
   end
 
   private
+
+  def spouse_lookup_base_relation
+    BestGuess.where(
+      Surname: self.AssociateName,
+      Volume: self.Volume,
+      Page: self.Page,
+      QuarterNumber: self.QuarterNumber,
+      DistrictNumber: self.DistrictNumber,
+      RecordTypeID: self.RecordTypeID
+    ).where.not(RecordNumber: self.RecordNumber)
+  end
+
+  def spouse_surnames_match?
+    self.AssociateName.present? && self.Surname.present? &&
+      self.AssociateName.casecmp?(self.Surname.to_s)
+  end
+
+  def first_spouse_matching_registration(scope)
+    numbers = linked_record_numbers_same_registration_event
+    return nil if numbers.blank?
+
+    scope.where(RecordNumber: numbers).first
+  end
+
+  def linked_record_numbers_same_registration_event
+    bg_link = BestGuessLink.where(RecordNumber: self.RecordNumber, PrimaryEntry: 1).first
+    return nil if bg_link.blank?
+
+    record_submission = Submission.find_by(AccessionNumber: bg_link.AccessionNumber, SequenceNumber: bg_link.SequenceNumber)
+    return nil if record_submission.blank?
+
+    submissions = Submission.where(
+      RomanVolume: record_submission.RomanVolume,
+      EntryNumber: record_submission.EntryNumber,
+      RegistrationNumber: record_submission.RegistrationNumber
+    )
+    links = BestGuessLink.where(
+      AccessionNumber: submissions.pluck(:AccessionNumber),
+      SequenceNumber: submissions.pluck(:SequenceNumber)
+    )
+    links.pluck(:RecordNumber).uniq - [self.RecordNumber]
+  end
+
   def record_year_and_event_type
     [
       QuarterDetails.quarter_year(self[:QuarterNumber]),
