@@ -408,13 +408,16 @@ class BestGuess < FreebmdDbBase
 
   def possible_alternate_names
     preferred_records = possible_alternate_names_by_vol_page_registration_number
-    return preferred_records if preferred_records.present? && preferred_records.any?
-    
+    return preferred_records if preferred_records.any?
+
     possible_alternate_names_by_accession_number_and_sequence_number
   end
 
   def possible_alternate_names_by_accession_number_and_sequence_number
     record_submission = self.get_submission
+    return BestGuess.none if record_submission.blank?
+    return BestGuess.none unless submission_accession_registration_lookup_safe?(record_submission)
+
     submissions = Submission.where(AccessionNumber: record_submission.AccessionNumber,  RegistrationNumber: record_submission.RegistrationNumber)
     get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumber: submissions.pluck(:SequenceNumber))
     records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber))
@@ -423,6 +426,9 @@ class BestGuess < FreebmdDbBase
 
   def possible_alternate_names_by_vol_page_registration_number
     record_submission = self.get_submission
+    return BestGuess.none if record_submission.blank?
+    return BestGuess.none unless submission_roman_vol_entry_registration_lookup_safe?(record_submission)
+
     submissions = Submission.where(RomanVolume: record_submission.RomanVolume, EntryNumber: record_submission.EntryNumber, RegistrationNumber: record_submission.RegistrationNumber)
     get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumber: submissions.pluck(:SequenceNumber))
     records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber), DistrictNumber: self.DistrictNumber, RecordTypeID: self.RecordTypeID)
@@ -529,6 +535,8 @@ class BestGuess < FreebmdDbBase
 
   def get_submission
     bg_link = BestGuessLink.where(RecordNumber: self.RecordNumber, PrimaryEntry: 1).first
+    return nil if bg_link.blank?
+
     #Submission.find_by(Surname: self.Surname, GivenName: self.GivenName, District: self.District, Volume: self.Volume, Page: page)
     Submission.find_by(AccessionNumber: bg_link.AccessionNumber, SequenceNumber: bg_link.SequenceNumber)
   end
@@ -622,6 +630,19 @@ class BestGuess < FreebmdDbBase
 
   private
 
+  # Submission rows matching RomanVolume with blank EntryNumber/RegistrationNumber are enormous;
+  # querying them hits MySQL max_statement_time on Submissions.
+  def submission_roman_vol_entry_registration_lookup_safe?(submission)
+    submission.RomanVolume.present? &&
+      submission.EntryNumber.present? &&
+      submission.RegistrationNumber.present?
+  end
+
+  def submission_accession_registration_lookup_safe?(submission)
+    submission.AccessionNumber.present? &&
+      submission.RegistrationNumber.present?
+  end
+
   def spouse_lookup_base_relation
     BestGuess.where(
       Surname: self.AssociateName,
@@ -651,6 +672,7 @@ class BestGuess < FreebmdDbBase
 
     record_submission = Submission.find_by(AccessionNumber: bg_link.AccessionNumber, SequenceNumber: bg_link.SequenceNumber)
     return nil if record_submission.blank?
+    return nil unless submission_roman_vol_entry_registration_lookup_safe?(record_submission)
 
     submissions = Submission.where(
       RomanVolume: record_submission.RomanVolume,
