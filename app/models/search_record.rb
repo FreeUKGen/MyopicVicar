@@ -487,7 +487,6 @@ class SearchRecord
     end
 
     def update_create_search_record(entry, search_version, place)
-      #create a temporary search record with the new information
       change, embargo_record = entry.process_embargo
       if change
         entry.embargo_records << embargo_record
@@ -495,27 +494,27 @@ class SearchRecord
         entry.reload
       end
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
-      search_record = entry.search_record
-      new_search_record = SearchRecord.new(search_record_parameters)
-      new_search_record[:freereg1_csv_entry_id] = entry.id
-      new_search_record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
-      new_search_record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
-      new_search_record.transform
-      new_search_record.digest = new_search_record.cal_digest
-      if search_record.present?
-        if new_search_record.digest == search_record.digest
-          return 'no update'
-        end
+      existing = entry.search_record
+      previous_digest = existing&.digest
+
+      record = existing || SearchRecord.new
+      record.assign_attributes(search_record_parameters)
+      record[:freereg1_csv_entry_id] = entry.id
+      record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
+      record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
+      record.transform
+      record.digest = record.cal_digest
+      if existing.present? && record.digest == previous_digest
+        existing.reload
+        return 'no update'
       end
-      new_search_record.search_record_version = search_version
-      new_search_record.search_date = ' ' if new_search_record.search_date.nil?
-      new_search_record.place_id = place.id
-      new_search_record.chapman_code = place.chapman_code
-      new_search_record.possible_last_names = new_search_record.transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
-      new_search_record.save
-      #search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
-      search_record.destroy if search_record.present?
-      return 'created'
+      record.search_record_version = search_version
+      record.search_date = ' ' if record.search_date.nil?
+      record.place_id = place.id
+      record.chapman_code = place.chapman_code
+      record.possible_last_names = record.transcript_names.map { |n| n[:last_name].downcase if n[:last_name].present? }.uniq.compact
+      record.save
+      existing.present? ? 'updated' : 'created'
     end
   end
 
