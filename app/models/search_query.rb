@@ -3240,13 +3240,12 @@
 
   def sanitize_search_input(input)
     return '' if input.blank?
-    # Security: Remove potentially dangerous characters for SQL injection
-    sanitized = input.to_s.strip
-    # Remove quotes, brackets, semicolons, and SQL special characters
-   # sanitized = sanitized.gsub(/[<>'"\\\/;()[\]{}]/, '')
-    sanitized = sanitized.gsub(/[<>'"\\\/;()\[\]{}]/, '')
-    # Only allow alphanumeric, spaces, hyphens, dots, and safe wildcards
-    sanitized = sanitized.gsub(/[^\w\s\-\.\*\?]/, '')
+    # Keep apostrophes in name-like input; values are used as bound params.
+    sanitized = input.to_s.strip.tr('’', "'")
+    # Remove unsafe structural characters and SQL operators.
+    sanitized = sanitized.gsub(/[<>"\\\/;()\[\]{}]/, '')
+    # Only allow alphanumeric, spaces, apostrophes, hyphens, dots, and safe wildcards
+    sanitized = sanitized.gsub(/[^\w\s'\-\.\*\?]/, '')
     # Limit length to prevent DoS attacks
     sanitized.length > 100 ? sanitized[0, 100] : sanitized
   end
