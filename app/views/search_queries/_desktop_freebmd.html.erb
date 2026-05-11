@@ -81,19 +81,22 @@
           <% search_results.each do |search_record| %>
             <% n = n +1 %>
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
-            <tr id="<%=search_record[:RecordNumber]%>" class="<%= record_type.downcase %>_hover" >
+            <tr id="<%=search_record.record_hash%>" class="<%= record_type.downcase %>_hover" >
                 <td>
-                  <% rec = BestGuess.find(search_record[:RecordNumber])%>
-                  <% postems_count = rec.postems_list.present? ? rec.postems_list.count : 0 %>
-                  <% postems_count_text = postems_count.zero? ? '' : "#{app_icons[:postem]}" %>
+                  <% rec = BestGuess.find(search_record[:RecordNumber]) %>
+                  <% record_flag = rec.record_flag %>
+                  <% has_postem = (record_flag & Constant::POSTEM).nonzero? %>
+                  <% has_scan = false #(record_flag & Constant::SCAN).nonzero? %>
                   <center>
-                    <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
+                    <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, search_entry: search_record.RecordNumber, record_hash: search_record.record_hash), :rel => "nofollow", :title => "")%>
                     <br>
-                    <% if postems_count_text.present? %>
-                      <span class="accessibility">
-                        Postem Available
-                        <%= postems_count_text.html_safe %>
-                      </span>
+                    <% if has_postem %>
+                      <span class="accessibility">Postem Available</span>
+                      <%= app_icons[:postem].html_safe %>
+                    <% end %>
+                    <% if has_scan %>
+                      <span class="accessibility">Scans Available</span>
+                      <i class="fas fa-file-image" style='color:#00857e'></i>
                     <% end %>
                     <i><%= seen(@search_query,search_record) %></i>
                   </center>
@@ -136,7 +139,7 @@
                       <% elsif spouse_records.count == 1 %>
                         <% spouse_record = spouse_records[0] %>
                         <%= link_to("#{titleize_string(spouse_record[:GivenName])} #{spouse_record[:Surname].upcase}".html_safe,
-                                    friendly_bmd_record_details_path(@search_query.id, spouse_record.id, spouse_record.friendly_url, search_entry: spouse_record.RecordNumber), :rel => "nofollow", :title => "")%>
+                                    friendly_bmd_record_details_path(@search_query.id, spouse_record.RecordNumber, spouse_record.friendly_url, search_entry: spouse_record.RecordNumber, record_hash: spouse_record.record_hash), :rel => "nofollow", :title => "")%>
                       <% elsif spouse_records.count > 1 %>
                         <%= "More than one matching spouse surname #{search_record[:AssociateName]}: check Page link to see possible spouses" %>
                       <% else %>

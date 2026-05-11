@@ -16,9 +16,18 @@ class BestGuess < FreebmdDbBase
   extend SharedSearchMethods
   require 'security_hash'
 
+  # Set on in-memory rows built from SearchQuery#search_result snapshot so #record_hash matches
+  # the persisted Mongo key (see persist_results / bmd_flatten_records_with_hash_keys).
+  attr_accessor :snapshot_record_hash
+
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
   ENTRY_REFERENCE = 512
+  ENTRY_CONFIRMED = 1
+  ENTRY_COMMENT = 2
+  ENTRY_POSTEM = 4
+  ENTRY_SCAN_AVAILABLE = 32
+  ENTRY_NEW = 128
   DISTRICT_ALIAS = 1
   DISTRICT_MISSPELT = 2
   DISTRICT_UNKNOWN = 4
@@ -268,6 +277,7 @@ class BestGuess < FreebmdDbBase
     friendly.gsub!(/\W/, '-')
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
+    friendly
   end
 
   def get_comments
@@ -411,8 +421,9 @@ class BestGuess < FreebmdDbBase
   end
 
   def postems_list
-    if get_rec_hash.present?
-      get_hash = get_rec_hash.Hash
+    hash = self.get_rec_hash
+    if hash.present?
+      get_hash = hash.Hash
       Postem.where(Hash: get_hash).all
     end
   end
@@ -435,7 +446,29 @@ class BestGuess < FreebmdDbBase
     # }
   end
 
+  def record_flag
+    flag = 0
+    entry_flags = self.Confirmed
+    record_type = self.RecordTypeID
+    marriage_record = record_type == 3
+    spouse_surname_blank = marriage_record && self.AssociateName.blank?
+    spouse_record_not_found = get_spouse_record.blank? && !spouse_surname_blank
+    spouse_not_found = spouse_record_not_found || spouse_surname_blank
+    spouse_flag = spouse_not_found ? 1 : 0
+    flag |= Constant::DOUBLE if (entry_flags & ENTRY_CONFIRMED) != 0
+    flag |= Constant::COMMENT if (entry_flags & ENTRY_COMMENT) != 0
+    flag |= Constant::POSTEM if (entry_flags & ENTRY_POSTEM) != 0
+    flag |= Constant::SCAN if (entry_flags & ENTRY_SCAN_AVAILABLE) != 0
+    flag |= Constant::ADDITION if (entry_flags & ENTRY_NEW) != 0
+    flag |= Constant::SYSTEMENTRY if (entry_flags & ENTRY_SYSTEM) != 0
+    flag |= Constant::SYSTEMLINK if (entry_flags & ENTRY_LINK) != 0
+    flag |= Constant::NOIDSPOUSE if spouse_flag
+    flag
+  end
+
   def record_hash
+    return snapshot_record_hash.to_s if snapshot_record_hash.present?
+
     surname = self.Surname.encode('ISO-8859-1').upcase
     given_name = self.GivenName.encode('ISO-8859-1').upcase
     Rails.env.development? ? district_name = self.District.upcase : district_name = self.district.DistrictName.upcase
@@ -446,6 +479,10 @@ class BestGuess < FreebmdDbBase
     record_type = self.RecordTypeID
     record_hash = Digest::MD5.base64digest("#{surname}/#{given_name}/#{district_name}/#{volume}/#{page}/#{year}/#{quarter}/#{record_type}")
     record_hash.strip.chomp('==')
+  end
+
+  def record_flag_hex
+    record_flag.to_s(16)
   end
 
   def record_sequence_number

@@ -95,7 +95,7 @@
 </div>
 
 <div class="grid">
-    <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads">
+    <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads" style="height: 650px;">
       <p style="margin-bottom:5px;">Advertisement</p>
       <div data-fuse="freebmd_skyscraper_1"></div>
     </div>
@@ -281,10 +281,28 @@
                                         <% end %>
                                     </div>
                                 </div>
-
-                                <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES)) %>
+                                <% codes =  ChapmanCode::FREEBMD_CODES%>
+                                <% england_codes = codes['England'].except('All England').to_a.sort_by(&:first) %>
+                                <% wales_codes = codes['Wales'].except('All Wales').to_a.sort_by(&:first) %>
+                                <% all_england_codes = codes['England']['All England'] %>
+                                <% all_wales_codes = codes['Wales']['All Wales'] %>
                                 <% key = @search_query.chapman_codes unless @search_query.chapman_codes.nil?%>
-                                <%= autocomplete_field_tag 'search_query[chapman_codes]',set_county_value(@search_query.chapman_codes),'/search_queries/select_counties/','data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_chapman_codes', tabindex: "0" %>
+
+                                <select name="search_query[chapman_codes][]" multiple="multiple" class="form-control" id="search_query_chapman_codes" tabindex="0">
+                                    <option value="">Search all counties</option>
+                                    <option value="all_england">All England</option>
+                                    <option value="all_wales">All Wales</option>
+                                    <optgroup label="England">
+                                        <% england_codes.each do |name, code| %>
+                                            <option value="<%= code %>" <%= 'selected' if @search_query.chapman_codes.present? && @search_query.chapman_codes.include?(code) %>><%= name %> (<%= code %>)</option>
+                                        <% end %>
+                                    </optgroup>
+                                    <optgroup label="Wales">
+                                        <% wales_codes.each do |name, code| %>
+                                            <option value="<%= code %>" <%= 'selected' if @search_query.chapman_codes.present? && @search_query.chapman_codes.include?(code) %>><%= name %> (<%= code %>)</option>
+                                        <% end %>
+                                    </optgroup>
+                                </select>
                             </li>
 
                             <li class="grid__item desk-wide-three-eighths desk-three-eighths lap-one-half palm-one-whole districtss">
@@ -296,7 +314,7 @@
                                     </div>
                                 </div>
                                 <% @districts = DistrictToCounty.includes(:District).distinct.order( 'DistrictName ASC' )%>
-                                <%= autocomplete_field_tag 'search_query[districts]', set_district(@search_query.districts), '/search_queries/districts_of_selected_counties', 'data-delimiter' => ',', :multiple => true, class: 'text-input flush--bottom', role: 'textbox', id: 'search_query_districts', tabindex: "0" %>
+                                <%= f.select :districts, @districts.pluck(:DistrictName, :DistrictNumber), {include_hidden: false}, {selected: @search_query.districts, multiple: true, id: 'search_query_districts', tabindex: "0"} %>
                                 
                             </li>
                             <li class="grid__item desk-wide-one-quarter desk-one-quarter lap-one-half palm-one-whole volumes">
@@ -503,6 +521,57 @@
 </script>
 
 <script>
+    <% codes = ChapmanCode::FREEBMD_CODES %>
+    <% england_codes = codes['England'].except('All England').to_a.sort_by(&:first) %>
+    <% wales_codes = codes['Wales'].except('All Wales').to_a.sort_by(&:first) %>
+    <% all_england_codes = codes['England']['All England'] %>
+    <% all_wales_codes = codes['Wales']['All Wales'] %>
+    // Store county codes for "All England" and "All Wales" selections
+    var allEnglandCodes = <%= raw all_england_codes.to_json %>;
+    var allWalesCodes = <%= raw all_wales_codes.to_json %>;
+    var englandCountyCodes = <%= raw england_codes.map { |name, code| code }.to_json %>;
+    var walesCountyCodes = <%= raw wales_codes.map { |name, code| code }.to_json %>;
+
+    // Handle form submission - convert "all_england" and "all_wales" to actual county codes
+    $('#new_search_query').on('submit', function(e) {
+        var $select = $('#search_query_chapman_codes');
+        var selectedValues = [];
+        var hasAllEngland = false;
+        var hasAllWales = false;
+
+        $select.find('option:selected').each(function() {
+            var val = $(this).val();
+            if (val === 'all_england') {
+                hasAllEngland = true;
+            } else if (val === 'all_wales') {
+                hasAllWales = true;
+            } else if (val !== '') {
+                selectedValues.push(val);
+            }
+        });
+
+        // Add all county codes if "All England" or "All Wales" is selected
+        if (hasAllEngland) {
+            selectedValues = selectedValues.concat(englandCountyCodes);
+        }
+        if (hasAllWales) {
+            selectedValues = selectedValues.concat(walesCountyCodes);
+        }
+
+        // Remove duplicates
+        selectedValues = $.unique(selectedValues);
+
+        // Clear and set the actual values
+        $select.find('option').prop('selected', false);
+        selectedValues.forEach(function(code) {
+            $select.find('option[value="' + code + '"]').prop('selected', true);
+        });
+
+        // Remove the special "all_england" and "all_wales" options from selection
+        $select.find('option[value="all_england"]').prop('selected', false);
+        $select.find('option[value="all_wales"]').prop('selected', false);
+    });
+
     $('#search_query_districts').empty();
     $(document).ready(function() {
         $("#search_query_chapman_codess").change(function () {
@@ -523,19 +592,56 @@
                 }
             });
         });
-        $("#search_query_chapman_codes").change(function (event) {
-            var counties = $(this).val();
-            //$.each($("#search_query_chapman_codes option:selected"), function() {
-            //  counties.push($(this).val())
-            //});
-            $.ajax({
-                url: "/search_queries/districts_of_selected_counties",
-                type: "GET",
-                data: {
-                    selected_counties: counties
+        
+        $("#search_query_chapman_codes").change(function() {
+            var counties = [];
+            var hasAllEngland = false;
+            var hasAllWales = false;
+            
+            // Check if "All England" or "All Wales" is selected
+            $.each($("#search_query_chapman_codes option:selected"), function() {
+                var val = $(this).val();
+                if (val === 'all_england') {
+                    hasAllEngland = true;
+                } else if (val === 'all_wales') {
+                    hasAllWales = true;
+                } else if (val !== '') {
+                    counties.push(val);
                 }
             });
+            
+            // If "All England" is selected, add all English county codes
+            if (hasAllEngland) {
+                counties = counties.concat(englandCountyCodes);
+            }
+            
+            // If "All Wales" is selected, add all Welsh county codes
+            if (hasAllWales) {
+                counties = counties.concat(walesCountyCodes);
+            }
+            
+            // Remove duplicates
+            counties = $.unique(counties);
+            
+            // Only make AJAX call if there are counties selected
+            if (counties.length > 0) {
+                // Build query string with array notation to ensure Rails receives all values
+                var queryParams = counties.map(function(code) {
+                    return 'selected_counties[]=' + encodeURIComponent(code);
+                }).join('&');
+                queryParams += '&county_code=true';
+                
+                $.ajax({
+                    url: "/search_queries/districts_of_selected_counties?" + queryParams,
+                    type: "GET"
+                });
+            } else {
+                // "Search all counties" selected -> clear districts
+                $('#search_query_districts').empty();
+            }
         });
+
+
 
         var chapman_codes = <%= raw @search_query.chapman_codes %>;
         if (chapman_codes && chapman_codes.length > 0) {
