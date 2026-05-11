@@ -330,11 +330,20 @@ class BestGuessController < ApplicationController
   end
 
   def resolve_best_guess_for_show
-    if record_hash_freebmd_request?
-      BestGuessHash.find_by(Hash: @resolved_record_hash.to_s)&.best_guess
-    else
-      BestGuess.find_by(RecordNumber: params[:id])
+    unless record_hash_freebmd_request?
+      return BestGuess.find_by(RecordNumber: params[:id])
     end
+
+    # Prefer the path RecordNumber when it agrees with the provided hash.
+    # This protects against RecordNumber reuse after DB reloads (hash mismatch),
+    # while allowing disambiguation when record_hash collides across multiple rows.
+    rec = BestGuess.find_by(RecordNumber: params[:id]) if params[:id].present?
+    if rec.present? && @resolved_record_hash.present?
+      normalized = normalize_marriage_hash_param(@resolved_record_hash)
+      return rec if normalized.present? && normalize_marriage_hash_param(rec.record_hash) == normalized
+    end
+
+    BestGuessHash.find_by(Hash: @resolved_record_hash.to_s)&.best_guess
   end
 
   # record_hash query param, or (FreeBMD + saved search only) derived from snapshot RecordNumber in URL.
