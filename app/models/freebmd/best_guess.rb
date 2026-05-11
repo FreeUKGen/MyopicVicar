@@ -342,20 +342,19 @@ class BestGuess < FreebmdDbBase
       spouse = first_spouse_matching_registration(pair_scope)
       return spouse if spouse.present?
 
-      return pair_scope.first if pair_scope.one?
-
-      return nil
+      return unique_pairing_match(pair_scope)
     end
 
     reciprocal = base.where(AssociateName: self.Surname)
     spouse = first_spouse_matching_registration(reciprocal)
     return spouse if spouse.present?
-    return reciprocal.first if reciprocal.one?
+
+    return unique_pairing_match(reciprocal) if reciprocal.one?
 
     spouse = first_spouse_matching_registration(base)
     return spouse if spouse.present?
 
-    return base.first if base.one?
+    return unique_pairing_match(base) if base.one?
 
     nil
   end
@@ -672,11 +671,34 @@ class BestGuess < FreebmdDbBase
       self.AssociateName.casecmp?(self.Surname.to_s)
   end
 
+  # GRO marriage index: each party line lists the other party's surname in AssociateName.
+  # The spouse row must agree both ways, or we can pick the wrong person when several couples
+  # share a page (e.g. two "Barbara J Morris" with different husbands).
+  def marriage_index_pairing_matches?(candidate)
+    return false if candidate.blank?
+
+    candidate.Surname.to_s.casecmp?(self.AssociateName.to_s) &&
+      candidate.AssociateName.to_s.casecmp?(self.Surname.to_s)
+  end
+
+  def unique_pairing_match(scope)
+    matches = scope.to_a.select { |row| marriage_index_pairing_matches?(row) }
+    return matches.first if matches.one?
+
+    nil
+  end
+
   def first_spouse_matching_registration(scope)
     numbers = linked_record_numbers_same_registration_event
     return nil if numbers.blank?
 
-    scope.where(RecordNumber: numbers).first
+    numbers.sort.each do |record_number|
+      cand = scope.where(RecordNumber: record_number).first
+      next if cand.blank?
+
+      return cand if marriage_index_pairing_matches?(cand)
+    end
+    nil
   end
 
   def linked_record_numbers_same_registration_event
