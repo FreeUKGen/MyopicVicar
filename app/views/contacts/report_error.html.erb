@@ -229,9 +229,7 @@
         <label class="ttip" for="screenshot" tabindex="0">Screenshot or image</label>
         <input class="push--bottom" id="screenshot" name="contact[screenshot]" type="file">
       </li>
-      <li class="grid__item one-whole text--center push--bottom">
-        <%= button_tag 'Submit Report', type: 'submit', class: ' kittumani spinner-controller ladda-button report-error-form__submit', id: 'report_error_submit', data: { style: 'contract', color: appname.downcase, size: 's', 'spinner-color' => '#ffffff' } %>
-      </li>
+      <%= f.action :submit, :as  => :input, :label => 'Submit Report' , :button_html => { :class => "btn btn--small", style: "padding-top:4px !important; line-height:inherit; font-size:18px; font-weight:normal; margin:0; padding-bottom:4px !important;" }, :wrapper_html => { :class => "grid__item  one-whole lap-two-fifths palm-one-whole push--bottom text--center" } %>
       <li class="betterstyling">
         <label for="contact_name_confirm">Please add your name again:</label>
         <input id="contact_name_confirm" type="text" name="contact[contact_name]">
