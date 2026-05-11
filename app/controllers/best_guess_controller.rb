@@ -33,6 +33,29 @@ class BestGuessController < ApplicationController
       redirect_back(fallback_location: root_path) && return
     end
 
+    # FreeBMD: when a record_hash is supplied we resolve via BestGuessHash. If that hash collides
+    # (non-unique across multiple rows), the resolved RecordNumber can differ from the path :id.
+    # Redirect so the URL reflects the record actually being displayed.
+    if record_hash_freebmd_request? && params[:id].present? && @current_record.RecordNumber.to_s != params[:id].to_s
+      common_params = {
+        locale: params[:locale],
+        record_hash: @resolved_record_hash,
+        search_entry: params[:search_entry]
+      }.compact
+
+      if @search && params[:search_id].present?
+        redirect_to(
+          friendly_bmd_record_details_path(params[:search_id], @current_record.RecordNumber, @current_record.friendly_url, common_params),
+          status: :moved_permanently
+        ) && return
+      else
+        redirect_to(
+          friendly_bmd_record_details_non_search_path(@current_record.RecordNumber, @current_record.friendly_url, common_params),
+          status: :moved_permanently
+        ) && return
+      end
+    end
+
     if @search && @search_record.blank? && record_hash_freebmd_request?
       @search_record = @current_record
     end
