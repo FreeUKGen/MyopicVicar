@@ -667,7 +667,8 @@ class SearchQuery
     # Step 4: Census additional fields (only for FreeCEN)
     if MyopicVicar::Application.config.template_set == 'freecen'
       search_results = filter_census_addional_fields(search_results)
-      Rails.logger.info { "[GetSortDisplay] ---Step 4: After filter_census_additional_fields (#{search_results.size})\n#{search_results}" }
+      # Avoid logging full result payloads (large BSON hashes); uncomment for local debugging only.
+      # Rails.logger.info { "[GetSortDisplay] ---Step 4: After filter_census_additional_fields (#{search_results.size})\n#{search_results}" }
     end
 
     # Step 5: Count results safely
