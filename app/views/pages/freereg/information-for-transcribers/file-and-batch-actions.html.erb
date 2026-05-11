@@ -32,7 +32,7 @@
           <li><a href="#troubleshooting">Troubleshooting upload/replace</a> </li>
           <li><a href="#uniqueNames">View names</a> </li>
           <li><a href="#correct">Correcting errors</a> </li>
-          <li><a href="#lock">Batch and file locks</a> </li>
+          <li><a href="#lock">Transcription file locks</a> </li>
           <li><a href="#edit">Edit entries</a> </li>
           <li><a href="#fileBatch">Files vs batches</a> </li>
           <li><a href="#gaps">The Gap system (summary)</a> </li>
@@ -100,7 +100,7 @@
       <li>the file will be processed automatically, depending on its size</li>
     </ol> 
     <figure class="site image-wide">
-      <img data-rel="225x255" alt="List of batches with actions" src="/system/images/W1siZiIsIjIwMTYvMDcvMzEvMTRfNDZfNTRfODkwX2JhdGNoX3JlcG9ydC5wbmciXV0/batch-report.png?sha=87b155c42f99393e" width="842" height="205" />
+      <%= image_tag 'images/batch-report.png', alt: 'List of batches with actions', data: { rel: '225x255' }, width: 842, height: 205 %>
       <figcaption>A list of Batches: hover over the ‘i’ symbol for a key to the available Actions</figcaption>
     </figure>
     <hr class="rule" />
@@ -139,9 +139,9 @@
     <p>If you are a <strong>Trainee</strong>, you will need to use <span class="btnPress">DE</span> to delete your file, listed <strong style="color: orange;">in orange</strong>, once you have completed your training.</p>
 
     <div id="lock" class="island island--navy">
-      <h3 class="banner__title push-half--bottom">Batch and file locks</h3>
-      <p>When a batch is locked, the whole file is locked. There are actually two locks: one for you and one for your coordinator. Yours will be set if you make an online edit; your coordinator’s will be set if they make an online edit to your batch. You can remove your own lock by downloading a copy of the edited file: from any listing of your files, find the file and then select <strong>DL</strong>.</p>
-      <p>If your coordinator has set the lock after editing your batch, then they will remove it when they are sure that you have downloaded a copy of the edited file. If your coordinator has locked the batch for any other reason, they will unlock it when the reason for the lock is no longer a problem.</p>
+      <h3 class="banner__title push-half--bottom">Transcription file locks</h3>
+      <p>If you or your coordinator makes a correction to your transcription file, the file will be locked.  The purpose of a file lock is to prevent it from being replaced by a file that does not contain the correction.  To remove the lock, download the file to your computer.  You can then make additional changes to it and then upload it to the server as a replacement.</p>
+      <p>Although the transcriber and the coordinator have separate file locks, both locks can be removed by downloading the file.</p>
     </div>
 
     <h2 id="edit">Edit entries</h2>
