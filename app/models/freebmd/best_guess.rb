@@ -332,12 +332,25 @@ class BestGuess < FreebmdDbBase
     base = spouse_lookup_base_relation
     return nil if base.empty?
 
-    unless spouse_surnames_match?
-      reciprocal = base.where(AssociateName: self.Surname)
-      spouse = first_spouse_matching_registration(reciprocal)
+    # Same surname on both parties (e.g. Morris–Morris): index lines show AssociateName = that
+    # surname. Other rows may share Surname (e.g. a second "Barbara Morris" married to Marin with
+    # AssociateName MARIN); narrow to lines whose AssociateName matches this marriage's pair surname.
+    if spouse_surnames_match?
+      pair_scope = base.where(AssociateName: self.Surname)
+      return nil if pair_scope.empty?
+
+      spouse = first_spouse_matching_registration(pair_scope)
       return spouse if spouse.present?
-      return reciprocal.first if reciprocal.one?
+
+      return pair_scope.first if pair_scope.one?
+
+      return nil
     end
+
+    reciprocal = base.where(AssociateName: self.Surname)
+    spouse = first_spouse_matching_registration(reciprocal)
+    return spouse if spouse.present?
+    return reciprocal.first if reciprocal.one?
 
     spouse = first_spouse_matching_registration(base)
     return spouse if spouse.present?
