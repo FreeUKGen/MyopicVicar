@@ -111,10 +111,11 @@
     </div>
     <div id="section3_required_fields_block" style="display: none;" class="push--bottom">
       <h3 class="gamma push-half--bottom">Details for missing entry (optional — provide what you can)</h3>
+      <p id="section3_help" class="help-text push-half--bottom">Fields follow the index line layout (same information as “current details” on our entry review). Skip anything that does not apply or is not visible on the scan.</p>
       <ol class="grid">
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="label" for="section3_event">Event</label>
-          <select id="section3_event" name="contact[session_data][section3][event]" class="text-input section3-required-field">
+          <select id="section3_event" name="contact[session_data][section3][event]" class="text-input section3-required-field" aria-describedby="section3_help">
             <option value="">Please select</option>
             <option value="Birth">Birth</option>
             <option value="Death">Death</option>
@@ -123,11 +124,11 @@
         </li>
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="label" for="section3_year">Year</label>
-          <input id="section3_year" name="contact[session_data][section3][year]" type="text" class="text-input section3-required-field" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="e.g. 1891">
+          <input id="section3_year" name="contact[session_data][section3][year]" type="text" class="text-input section3-required-field" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="e.g. 1891" aria-describedby="section3_help">
         </li>
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="label" for="section3_quarter">Quarter (if relevant)</label>
-          <select id="section3_quarter" name="contact[session_data][section3][quarter]" class="text-input">
+          <select id="section3_quarter" name="contact[session_data][section3][quarter]" class="text-input" aria-describedby="section3_help">
             <option value="">Not applicable</option>
             <option value="Mar">Mar</option>
             <option value="Jun">Jun</option>
@@ -137,20 +138,64 @@
         </li>
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="label" for="section3_surname">Surname</label>
-          <input id="section3_surname" name="contact[session_data][section3][surname]" type="text" class="text-input section3-required-field">
+          <input id="section3_surname" name="contact[session_data][section3][surname]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
         </li>
         <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left">
           <label class="label" for="section3_forename">Forename</label>
-          <input id="section3_forename" name="contact[session_data][section3][forename]" type="text" class="text-input section3-required-field">
+          <input id="section3_forename" name="contact[session_data][section3][forename]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
         </li>
+
+        <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-birth" style="display: none;">
+          <label class="label" for="section3_mothers_maiden_name">Mother's maiden name</label>
+          <input id="section3_mothers_maiden_name" name="contact[session_data][section3][mothers_maiden_name]" type="text" class="text-input" aria-describedby="section3_help">
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-death" style="display: none;">
+          <label class="label" for="section3_age_or_dob">Age at death / date of birth</label>
+          <input id="section3_age_or_dob" name="contact[session_data][section3][age_or_dob]" type="text" class="text-input" placeholder="As on index" aria-describedby="section3_help">
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-marriage" style="display: none;">
+          <label class="label" for="section3_spouse_name">Spouse name</label>
+          <input id="section3_spouse_name" name="contact[session_data][section3][spouse_name]" type="text" class="text-input" aria-describedby="section3_help">
+        </li>
+
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="label" for="section3_district">District</label>
-          <input id="section3_district" name="contact[session_data][section3][district]" type="text" class="text-input section3-required-field">
+          <input id="section3_district" name="contact[session_data][section3][district]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="label" for="section3_volume">Volume</label>
+          <input id="section3_volume" name="contact[session_data][section3][volume]" type="text" class="text-input" aria-describedby="section3_help">
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="label" for="section3_register_number">Register number</label>
+          <input id="section3_register_number" name="contact[session_data][section3][register_number]" type="text" class="text-input" placeholder="If index uses register/entry" aria-describedby="section3_help">
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+          <label class="label" for="section3_entry_number">Entry number</label>
+          <input id="section3_entry_number" name="contact[session_data][section3][entry_number]" type="text" class="text-input" placeholder="Register line entry" aria-describedby="section3_help">
         </li>
         <li class="grid__item one-quarter lap-one-half palm-one-whole">
           <label class="label" for="section3_page_number">Page number</label>
-          <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input section3-required-field">
+          <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input section3-required-field" placeholder="If index uses page" aria-describedby="section3_help">
         </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-registered-extra" style="display: none;">
+          <label class="label" for="section3_registered">Registered</label>
+          <input id="section3_registered" name="contact[session_data][section3][registered]" type="text" class="text-input" placeholder="As on index (when shown)" aria-describedby="section3_help">
+        </li>
+
+        <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-marriage1994" style="display: none;">
+          <label class="label" for="section3_marriage_entry">Marriage submission — entry number</label>
+          <input id="section3_marriage_entry" name="contact[session_data][section3][marriage_submission_entry_number]" type="text" class="text-input" aria-describedby="section3_help">
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-marriage1994" style="display: none;">
+          <label class="label" for="section3_marriage_source">Marriage submission — SourceCode</label>
+          <input id="section3_marriage_source" name="contact[session_data][section3][marriage_submission_source_code]" type="text" class="text-input" aria-describedby="section3_help">
+        </li>
+        <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-marriage1994" style="display: none;">
+          <label class="label" for="section3_marriage_registered">Marriage submission — Registered</label>
+          <input id="section3_marriage_registered" name="contact[session_data][section3][marriage_submission_registered]" type="text" class="text-input" placeholder="As on index" aria-describedby="section3_help">
+        </li>
+
         <li class="grid__item one-whole push-half--top">
           <label for="section3_multiple_entries">
             <input id="section3_multiple_entries" type="checkbox" name="contact[session_data][section3][multiple_entries]" value="1" class="section3-required-checkbox">
@@ -267,16 +312,35 @@
       }
     }
 
+    function updateSection3ConditionalFields() {
+      var ev = ($('#section3_event').val() || '').toLowerCase();
+      var yr = parseInt($('#section3_year').val(), 10);
+      var yOk = !isNaN(yr);
+      $('.section3-if-birth').toggle(ev === 'birth');
+      $('.section3-if-death').toggle(ev === 'death');
+      $('.section3-if-marriage').toggle(ev === 'marriage');
+      var m1994 = ev === 'marriage' && yOk && yr >= 1994;
+      $('.section3-if-marriage1994').toggle(m1994);
+      var showReg = !(ev === 'marriage' && yOk && yr >= 1994);
+      $('.section3-if-registered-extra').toggle(showReg);
+    }
+
+    $('#section3_event, #section3_year').on('change input', updateSection3ConditionalFields);
+
     function setSection3RequiredState(enabled) {
       if ($section3Block.length) $section3Block.toggle(enabled);
       // Missing-entry details are optional
       if ($section3RequiredFields.length) $section3RequiredFields.prop('required', false);
       if ($section3RequiredCheckbox.length) $section3RequiredCheckbox.prop('required', false);
-      if (!enabled) {
-        $section3RequiredFields.val('');
-        $section3RequiredCheckbox.prop('checked', false);
+      if (!enabled && $section3Block.length) {
+        $section3Block.find('input[type=text]').val('');
+        $section3Block.find('select').val('');
+        $section3Block.find('input[type=checkbox]').prop('checked', false);
       }
+      updateSection3ConditionalFields();
     }
+
+    updateSection3ConditionalFields();
 
     $sectionSelect.on('change', function() {
       var sectionIdx = $(this).val();

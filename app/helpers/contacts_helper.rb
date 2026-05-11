@@ -2,15 +2,33 @@ require 'constant' unless defined?(Constant)
 
 module ContactsHelper
 
-  FREEBMD_SECTION3_DISPLAY_ORDER = %w[event year quarter surname forename district page_number multiple_entries].freeze
+  # Mirrors freebmd_entry_information_corrections_table / entry information field order (missing-entry path).
+  FREEBMD_SECTION3_DISPLAY_ORDER = %w[
+    event year quarter surname forename
+    mothers_maiden_name age_or_dob spouse_name
+    district volume register_number entry_number page_number
+    registered
+    marriage_submission_entry_number marriage_submission_source_code marriage_submission_registered
+    multiple_entries
+  ].freeze
   FREEBMD_SECTION3_LABELS = {
     'event' => 'Event',
     'year' => 'Year',
     'quarter' => 'Quarter',
     'surname' => 'Surname',
     'forename' => 'Forename',
+    'mothers_maiden_name' => "Mother's maiden name",
+    'age_or_dob' => 'Age at death / date of birth',
+    'spouse_name' => 'Spouse name',
     'district' => 'District',
+    'volume' => 'Volume',
+    'register_number' => 'Register number',
+    'entry_number' => 'Entry number',
     'page_number' => 'Page number',
+    'registered' => 'Registered',
+    'marriage_submission_entry_number' => 'Marriage submission — entry number',
+    'marriage_submission_source_code' => 'Marriage submission — SourceCode',
+    'marriage_submission_registered' => 'Marriage submission — Registered',
     'multiple_entries' => 'Multiple entries'
   }.freeze
 

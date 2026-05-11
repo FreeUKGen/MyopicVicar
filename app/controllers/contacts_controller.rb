@@ -465,16 +465,36 @@ class ContactsController < ApplicationController
   def section3_plain_text_chunk(section3)
     return nil unless section3.is_a?(Hash) && section3.values.any? { |v| v.present? }
 
+    s3 = section3.stringify_keys
     field_lines = []
-    section3.each do |key, val|
+    seen = []
+
+    ContactsHelper::FREEBMD_SECTION3_DISPLAY_ORDER.each do |key|
+      val = s3[key]
+      seen << key
+      next if val.blank?
+
+      next if key == 'multiple_entries' && val.to_s != '1'
+
+      label =
+        ContactsHelper::FREEBMD_SECTION3_LABELS[key] ||
+        key.tr('_', ' ').split.map(&:capitalize).join(' ')
+      display_val = key == 'multiple_entries' ? 'Yes' : val.to_s.strip
+      field_lines << "#{label}: #{display_val}"
+    end
+
+    (s3.keys - seen).sort.each do |key|
+      val = s3[key]
       next if val.blank?
 
       key_s = key.to_s
       next if key_s == 'multiple_entries' && val.to_s != '1'
 
-      label = key_s == 'multiple_entries' ? 'Multiple entries' : key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
-      field_lines << "#{label}: #{val}"
+      label = key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
+      display_val = key_s == 'multiple_entries' ? 'Yes' : val.to_s.strip
+      field_lines << "#{label}: #{display_val}"
     end
+
     return nil if field_lines.empty?
 
     [
