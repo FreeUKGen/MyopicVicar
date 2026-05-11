@@ -446,7 +446,11 @@ class ContactsController < ApplicationController
       'volume' => 'Volume',
       'register_number' => 'Register number',
       'entry_number' => 'Entry number',
-      'page' => 'Page'
+      'page' => 'Page',
+      'registered' => 'Registered',
+      'marriage_submission_entry_number' => 'Entry number (marriage submission)',
+      'marriage_submission_source_code' => 'SourceCode (marriage submission)',
+      'marriage_submission_registered' => 'Registered (marriage submission)'
     }
     corrections.each do |key, val|
       next if val.blank?

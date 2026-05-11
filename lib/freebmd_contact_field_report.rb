@@ -40,6 +40,28 @@ class FreebmdContactFieldReport
         rows << field_row('Page', record.Page.to_s, corrections, 'page')
       end
 
+      unless record.post_1994_marriage?
+        event_registered = record.event_registration
+        if event_registered.present?
+          reg_disp = bg_helper.format_registered(event_registered.to_s.dup, record.QuarterNumber)
+          rows << field_row('Registered', reg_disp.to_s, corrections, 'registered')
+        end
+      end
+
+      if entry_type == 'marriage' && record.post_1994_marriage?
+        sub = record.get_submission
+        if sub.present?
+          rows << field_row('Entry number', sub.EntryNumber.to_s, corrections, 'marriage_submission_entry_number')
+          rows << field_row('SourceCode', sub.SourceCode.to_s, corrections, 'marriage_submission_source_code')
+          month_abbr = QuarterDetails.month_hash_abbreviated[sub.Registered].to_s
+          reg_post = "#{month_abbr} #{bg_helper.format_quarter_year(record.QuarterNumber)}".strip
+          rows << field_row('Registered', reg_post, corrections, 'marriage_submission_registered')
+        end
+      end
+
+      trans_txt = record.transcribers.present? ? record.transcribers.join(', ') : 'No data'
+      rows << field_row('Transcriber', trans_txt, corrections, nil)
+
       rows
     end
 

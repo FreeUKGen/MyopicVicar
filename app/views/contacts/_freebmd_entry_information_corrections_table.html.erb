@@ -91,6 +91,51 @@
         <td><%= text_field_tag 'contact[session_data][corrections][page]', nil, class: 'text-input' %></td>
       </tr>
     <% end %>
+
+    <% show_registered_section = local_assigns.fetch(:show_registered_section, true) %>
+    <% unless record.post_1994_marriage? %>
+      <% event_registered = record.event_registration %>
+      <% if show_registered_section && event_registered.present? %>
+        <tr>
+          <th scope="row">Registered</th>
+          <td><%= format_registered(event_registered.to_s.dup, record.QuarterNumber) %></td>
+          <td><%= text_field_tag 'contact[session_data][corrections][registered]', nil, class: 'text-input' %></td>
+        </tr>
+      <% end %>
+    <% end %>
+
+    <% if entry_type == 'marriage' && record.post_1994_marriage? %>
+      <% sub = record.get_submission %>
+      <% if sub.present? %>
+        <tr>
+          <th scope="row">Entry number</th>
+          <td><%= sub.EntryNumber %></td>
+          <td><%= text_field_tag 'contact[session_data][corrections][marriage_submission_entry_number]', nil, class: 'text-input' %></td>
+        </tr>
+        <tr>
+          <th scope="row">SourceCode</th>
+          <td><%= sub.SourceCode %></td>
+          <td><%= text_field_tag 'contact[session_data][corrections][marriage_submission_source_code]', nil, class: 'text-input' %></td>
+        </tr>
+        <tr>
+          <th scope="row">Registered</th>
+          <td><%= "#{QuarterDetails.month_hash_abbreviated[sub.Registered]} #{format_quarter_year(record.QuarterNumber)}" %></td>
+          <td><%= text_field_tag 'contact[session_data][corrections][marriage_submission_registered]', nil, class: 'text-input' %></td>
+        </tr>
+      <% end %>
+    <% end %>
+
+    <tr>
+      <th scope="row">Transcriber</th>
+      <td>
+        <% if record.transcribers.present? %>
+          <%= record.transcribers.join(', ') %>
+        <% else %>
+          No data
+        <% end %>
+      </td>
+      <td></td>
+    </tr>
   </tbody>
 </table>
 
