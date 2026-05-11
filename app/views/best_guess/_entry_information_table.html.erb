@@ -104,6 +104,14 @@
         <%= "#{record_type}".capitalize %>
       </td>
     </tr>
+    <tr>
+      <th scope="row">
+        Record Number
+      </th>
+      <td>
+        <%= record.RecordNumber %>
+      </td>
+    </tr>
     <%# unless record.post_1994_marriage? %>
       <tr>
         <th scope="row">
@@ -149,6 +157,14 @@
     <% end %>
     <% if entry_type == "marriage" %>
       <% if record.AssociateName.present? %>
+          <tr>
+            <th scope="row">
+              Spouse surname (index)
+            </th>
+            <td>
+              <%= record.AssociateName %>
+            </td>
+          </tr>
           <tr>
             <th scope="row">
               Spouse Name
