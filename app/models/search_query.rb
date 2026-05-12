@@ -960,14 +960,21 @@
       return rec.map { |x| freebmd_record_number_sort_key(x) }.min.to_i
     end
 
-    val =
-      if rec.respond_to?(:read_attribute)
-        rec.read_attribute(:RecordNumber)
-      elsif rec.is_a?(Hash)
-        rec[:RecordNumber] || rec['RecordNumber']
-      elsif rec.respond_to?(:[])
-        rec[:RecordNumber] || rec['RecordNumber']
-      end
+    val = nil
+    if rec.respond_to?(:read_attribute)
+      val = rec.read_attribute(:RecordNumber)
+    end
+    if val.nil? && rec.is_a?(Hash)
+      val = rec[:RecordNumber] || rec['RecordNumber']
+    end
+    if val.nil? && rec.respond_to?(:RecordNumber)
+      val = rec.RecordNumber rescue nil
+    end
+    # Some types implement [] but only for Integer (e.g. Relation); never pass a Symbol without rescue.
+    if val.nil? && rec.respond_to?(:[])
+      val = (rec['RecordNumber'] rescue nil)
+      val = (rec[:RecordNumber] rescue nil) if val.nil?
+    end
     val.to_i
   end
 
