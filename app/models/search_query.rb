@@ -955,9 +955,16 @@
   def freebmd_record_number_sort_key(rec)
     return 0 if rec.nil?
 
+    # Snapshot values can be an array of duplicate-hash rows; Array#[] only accepts Integer keys.
+    if rec.is_a?(Array)
+      return rec.map { |x| freebmd_record_number_sort_key(x) }.min.to_i
+    end
+
     val =
       if rec.respond_to?(:read_attribute)
         rec.read_attribute(:RecordNumber)
+      elsif rec.is_a?(Hash)
+        rec[:RecordNumber] || rec['RecordNumber']
       elsif rec.respond_to?(:[])
         rec[:RecordNumber] || rec['RecordNumber']
       end
