@@ -186,8 +186,12 @@
       $('.section3-if-marriage').toggle(ev === 'marriage');
       var m1994 = ev === 'marriage' && yOk && yr >= 1994;
       $('.section3-if-marriage1994').toggle(m1994);
-      var showReg = !(ev === 'marriage' && yOk && yr >= 1994);
-      $('.section3-if-registered-extra').toggle(showReg);
+      // Quarterly birth/death index rows sometimes include a Registered column — marriage pages (including pre-1994 such as 1966) rarely use this generic slot; marriages from 1994+ use Marriage submission-* fields instead.
+      var showRegisteredExtra = ev === 'birth' || ev === 'death';
+      $('.section3-if-registered-extra').toggle(showRegisteredExtra);
+      // Entry/line-number column wording matches birth/death index layouts more than typical quarterly marriage scans (district, volume, page, spouse suffice for marriage).
+      var showEntryOrLineColumn = ev !== 'marriage';
+      $('.section3-if-entry-or-line').toggle(showEntryOrLineColumn);
     }
 
     $('#section3_event, #section3_year').on('change input', updateSection3ConditionalFields);
