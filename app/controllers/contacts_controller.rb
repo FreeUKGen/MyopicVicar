@@ -450,14 +450,18 @@ class ContactsController < ApplicationController
       'registered' => 'Registered',
       'marriage_submission_entry_number' => 'Entry number (marriage submission)',
       'marriage_submission_source_code' => 'SourceCode (marriage submission)',
-      'marriage_submission_registered' => 'Registered (marriage submission)'
+      'marriage_submission_registered' => 'Registered (marriage submission)',
+      'multiple_entries' => 'Multiple entries'
     }
     corrections.each do |key, val|
       next if val.blank?
 
       key_s = key.to_s
+      next if key_s == 'multiple_entries' && val.to_s != '1'
+
       label = correction_labels[key_s] || key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
-      lines << "#{label}: #{val}"
+      display_val = key_s == 'multiple_entries' ? 'Yes' : val.to_s
+      lines << "#{label}: #{display_val}"
     end
     lines.any? ? lines.join("\n") : nil
   end

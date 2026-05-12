@@ -59,6 +59,15 @@ class FreebmdContactFieldReport
         end
       end
 
+      if corrections['multiple_entries'].to_s == '1'
+        rows << {
+          'field' => 'Multiple entries',
+          'current' => '—',
+          'correction' => 'Yes',
+          'corrected' => true
+        }
+      end
+
       trans_txt = record.transcribers.present? ? record.transcribers.join(', ') : 'No data'
       rows << field_row('Transcriber', trans_txt, corrections, nil)
 
