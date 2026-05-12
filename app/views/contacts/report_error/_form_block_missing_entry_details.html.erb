@@ -1,7 +1,7 @@
 <%# FreeBMD report_error — form_numbers: 3 (missing entry grid). Toggled via #section3_required_fields_block in report_error JS. %>
 <div id="section3_required_fields_block" style="display: none;" class="push--bottom">
   <h3 class="gamma push-half--bottom">Details for missing entry (optional — provide what you can)</h3>
-  <p id="section3_help" class="help-text push-half--bottom">Fields follow whatever appears on your index page. Indexes vary by period: columns such as volume, page, register number, and entry line number are not all present on every layout. Leave a field blank if it does not appear on your scan (do not infer values).</p>
+  <p id="section3_help" class="help-text push-half--bottom">Fields follow whatever appears on your index page. Choose <strong>Event</strong> first: extra columns for <strong>birth and death</strong> (Registered, entry/line) appear only for those events; <strong>marriage</strong> uses district, volume, page, and spouse where relevant. Leave any field blank if that column is not on your scan.</p>
   <ol class="grid">
     <li class="grid__item one-quarter lap-one-half palm-one-whole">
       <label class="label" for="section3_event">Event</label>
@@ -60,7 +60,7 @@
       <label class="label" for="section3_register_number">Register number <span class="weight--normal">(if shown on scan)</span></label>
       <input id="section3_register_number" name="contact[session_data][section3][register_number]" type="text" class="text-input" title="Only if your scan shows a register column—not all layouts do; many use page or line instead." placeholder="Often blank—see scan" aria-describedby="section3_help">
     </li>
-    <li class="grid__item one-half lap-one-half palm-one-whole section3-if-entry-or-line clear--left lap-clear--left">
+    <li class="grid__item one-half lap-one-half palm-one-whole section3-if-entry-or-line clear--left lap-clear--left" style="display: none;">
       <label class="label" for="section3_entry_number">Entry / line number <span class="weight--normal">(if shown on scan)</span></label>
       <input id="section3_entry_number" name="contact[session_data][section3][entry_number]" type="text" class="text-input" title="Only if your scan shows an entry line or printed line number; omit if absent." placeholder="Often blank—see scan" aria-describedby="section3_help">
     </li>

@@ -189,8 +189,8 @@
       // Quarterly birth/death index rows sometimes include a Registered column — marriage pages (including pre-1994 such as 1966) rarely use this generic slot; marriages from 1994+ use Marriage submission-* fields instead.
       var showRegisteredExtra = ev === 'birth' || ev === 'death';
       $('.section3-if-registered-extra').toggle(showRegisteredExtra);
-      // Entry/line-number column wording matches birth/death index layouts more than typical quarterly marriage scans (district, volume, page, spouse suffice for marriage).
-      var showEntryOrLineColumn = ev !== 'marriage';
+      // Entry/line applies to birth/death index rows only; marriage (any year) omits it — and with Event still "Please select" we must not show it (ev === '' would satisfy ev !== 'marriage' and wrongly revealed the field before).
+      var showEntryOrLineColumn = ev === 'birth' || ev === 'death';
       $('.section3-if-entry-or-line').toggle(showEntryOrLineColumn);
     }
 
