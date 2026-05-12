@@ -27,6 +27,7 @@
     BMD_DATE = 'QuarterNumber'
     BMD_ASSOCIATE_NAME = 'AssociateName'
     BMD_AGE_AT_DEATH = 'AgeAtDeath'
+    BMD_RECORD_NUMBER = 'RecordNumber'
     BIRTH_PLACE = 'birth_place'
 
     ALL_ORDERS = [
@@ -43,7 +44,8 @@
       BMD_RECORD_TYPE,
       BMD_DATE,
       BMD_ASSOCIATE_NAME,
-      BMD_AGE_AT_DEATH
+      BMD_AGE_AT_DEATH,
+      BMD_RECORD_NUMBER
     ]
   end
 
@@ -949,7 +951,49 @@
     nil
   end
 
+  # Legacy FreeBMD (Perl SearchDB) orders hits by ascending RecordNumber; mirror that for MySQL-backed search.
+  def freebmd_record_number_sort_key(rec)
+    return 0 if rec.nil?
+
+    val =
+      if rec.respond_to?(:read_attribute)
+        rec.read_attribute(:RecordNumber)
+      elsif rec.respond_to?(:[])
+        rec[:RecordNumber] || rec['RecordNumber']
+      end
+    val.to_i
+  end
+
+  # For snapshot rows keyed by record_hash; value may be one hash or an array of duplicate-hash entries.
+  def freebmd_pair_min_record_number(pair)
+    _hkey, attrs = pair
+    Array(attrs).map { |entry| freebmd_record_number_sort_key(entry) }.min.to_i
+  end
+
+  def sort_bmd_hit_rows_by_record_number!(rows)
+    return rows if rows.blank?
+
+    rows.sort_by! { |r| freebmd_record_number_sort_key(r) }
+    rows
+  end
+
+  def finalize_freebmd_mysql_search_order(records)
+    return records unless freebmd_app?
+
+    if records.is_a?(Array)
+      sort_bmd_hit_rows_by_record_number!(records)
+    elsif records.respond_to?(:reorder)
+      records.reorder(:RecordNumber)
+    else
+      records
+    end
+  end
+
   def sort_freebmd_hash_key_pairs!(pairs)
+    if freebmd_app? && order_field.blank?
+      pairs.sort! { |a, b| freebmd_pair_min_record_number(a) <=> freebmd_pair_min_record_number(b) }
+      return pairs
+    end
     return pairs if order_field.blank? || pairs.blank?
 
     pairs.sort! do |a, b|
@@ -1021,6 +1065,12 @@
           compare_name_bmd(xa, ya, 'AgeAtDeath', ['Surname', 'GivenName', 'QuarterNumber'])
         else
           compare_name_bmd(ya, xa, 'AgeAtDeath', ['Surname', 'GivenName', 'QuarterNumber'])
+        end
+      when SearchOrder::BMD_RECORD_NUMBER
+        if order_asc
+          freebmd_pair_min_record_number(a) <=> freebmd_pair_min_record_number(b)
+        else
+          freebmd_pair_min_record_number(b) <=> freebmd_pair_min_record_number(a)
         end
       else
         0
@@ -1312,6 +1362,12 @@
   end
 
   def sort_results(results)
+    # Legacy FreeBMD default: ORDER BY RecordNumber (no column sort selected).
+    if freebmd_app? && order_field.blank?
+      sort_bmd_hit_rows_by_record_number!(results) if results.present?
+      return results
+    end
+
     # next reorder in memory
    # raise SearchOrder::SURNAME.inspect
     return results if order_field.blank?
@@ -1440,6 +1496,12 @@
           results.sort! do |x, y|
             compare_name_bmd(y, x, 'AgeAtDeath',['Surname', 'GivenName', 'QuarterNumber'])
           end
+        end
+      when SearchOrder::BMD_RECORD_NUMBER
+        if self.order_asc
+          results.sort! { |x, y| freebmd_record_number_sort_key(x) <=> freebmd_record_number_sort_key(y) }
+        else
+          results.sort! { |x, y| freebmd_record_number_sort_key(y) <=> freebmd_record_number_sort_key(x) }
         end
       end
     end
@@ -1867,6 +1929,7 @@
           end
         end
 
+        records = finalize_freebmd_mysql_search_order(records)
         persist_results(records)
         [records, record_count, true, 0]
       end
