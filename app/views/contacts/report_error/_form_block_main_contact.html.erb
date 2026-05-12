@@ -1,0 +1,32 @@
+<%# FreeBMD report_error — form_numbers: 1 (always with form); 4 only adjusts #contact_report_body via JS setDescribeIssueMode (no extra markup). %>
+<ol class="grid">
+  <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left" id="name_input">
+    <label class="label ttip" for="name" tabindex="0">Your name</label>
+    <% if @contact.name.nil? %>
+      <input id="name" name="contact[name]" type="text" class="text-input" placeholder="Required" required="required">
+    <% else %>
+      <input id="name" name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
+    <% end %>
+  </li>
+  <li class="grid__item one-quarter lap-one-half palm-one-whole" id="email_address_input">
+    <label class="label ttip" for="email_address" tabindex="0">Your email address</label>
+    <% if @contact.email_address.nil? %>
+      <input id="email_address" name="contact[email_address]" type="text" class="text-input" placeholder="Required" required="required">
+    <% else%>
+      <input id="email_address" name="contact[email_address]" type="text" class="text-input" value="<%=@contact.email_address%>">
+    <% end%>
+  </li>
+  <li class="grid__item one-whole lap-one-whole palm-one-whole">
+    <label class="label ttip" for="contact_report_body" tabindex="0" id="contact_report_body_label">Additional comments (optional)</label>
+    <textarea id="contact_report_body" name="contact[body]" class="text-input" rows="4" cols="40" placeholder="Anything else we should know (optional if you filled corrections above)."><%= @contact.body %></textarea>
+  </li>
+  <li class="grid__item one-third lap-three-fifths lap-clear--left palm-one-whole">
+    <label class="label ttip" for="screenshot" tabindex="0">Screenshot or image <span class="weight--normal"> (optional)</span></label>
+    <input class="push--bottom" id="screenshot" name="contact[screenshot]" type="file">
+  </li>
+  <%= f.action :submit, :as  => :input, :label => 'Submit Report' , :button_html => { :class => "btn btn--small", style: "padding-top:4px !important; line-height:inherit; font-size:18px; font-weight:normal; margin:0; padding-bottom:4px !important;" }, :wrapper_html => { :class => "grid__item  one-whole lap-two-fifths palm-one-whole push--bottom text--center" } %>
+  <li class="betterstyling">
+    <label for="contact_name_confirm">Please add your name again:</label>
+    <input id="contact_name_confirm" type="text" name="contact[contact_name]">
+  </li>
+</ol>

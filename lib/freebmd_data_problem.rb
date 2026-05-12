@@ -12,10 +12,12 @@ module FreebmdDataProblem
 	# Report error page: 3 main sections, each with subsections (accordion). Id is stored as contact.query.
 	# Each subsection :answer may be plain text (wrapped in <p> by the view) or HTML (e.g. multiple <p>, <ul>, <a>).
 	# Use HTML when you need paragraphs, lists or links; content is sanitized before output.
-	# Optional :form_numbers controls which UI blocks appear in report_error:
-	#   1 => main report form
-	#   2 => corrections table block
-	# Example: form_numbers: [1,2] shows both.
+	# Optional :form_numbers controls which UI blocks appear in report_error (toggle logic in contacts/report_error.html.erb JS):
+	#   1 => contacts/report_error/_form_block_main_contact.html.erb + shared hidden fields partial
+	#   2 => contacts/report_error/_form_block_corrections_table.html.erb
+	#   3 => contacts/report_error/_form_block_missing_entry_details.html.erb
+	#   4 => no separate partial; tweaks #contact_report_body label/placeholder/required via JS only
+	# Example: form_numbers: [1,2] shows main contact fields and corrections table.
 	# A subsection hash may use :children => [ {...}, ... ] instead of :id/:answer at the top level;
 	# those appear as a nested accordion under :label (shared heading).
 	REPORT_ERROR_SECTIONS = [
