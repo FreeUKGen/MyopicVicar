@@ -4,7 +4,15 @@
   <p id="section3_help" class="help-text push-half--bottom">Fields follow whatever appears on your index page. Choose <strong>Event</strong> first: extra columns for <strong>birth and death</strong> (Registered, entry/line) appear only for those events; <strong>marriage</strong> uses district, volume, page, and spouse where relevant. Leave any field blank if that column is not on your scan.</p>
   <ol class="grid">
     <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_event">Event</label>
+      <label class="label" for="section3_surname">Surname</label>
+      <input id="section3_surname" name="contact[session_data][section3][surname]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+    </li>
+    <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left">
+      <label class="label" for="section3_forename">Given Name</label>
+      <input id="section3_forename" name="contact[session_data][section3][forename]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+    </li>
+    <li class="grid__item one-quarter lap-one-half palm-one-whole">
+      <label class="label" for="section3_event">Record Type</label>
       <select id="section3_event" name="contact[session_data][section3][event]" class="text-input section3-required-field" aria-describedby="section3_help">
         <option value="">Please select</option>
         <option value="Birth">Birth</option>
@@ -26,14 +34,6 @@
         <option value="Dec">Dec</option>
       </select>
     </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_surname">Surname</label>
-      <input id="section3_surname" name="contact[session_data][section3][surname]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
-    </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left">
-      <label class="label" for="section3_forename">Forename</label>
-      <input id="section3_forename" name="contact[session_data][section3][forename]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
-    </li>
 
     <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-birth" style="display: none;">
       <label class="label" for="section3_mothers_maiden_name">Mother's maiden name</label>
@@ -48,21 +48,13 @@
       <input id="section3_spouse_name" name="contact[session_data][section3][spouse_name]" type="text" class="text-input" aria-describedby="section3_help">
     </li>
     <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_volume">Volume <span class="weight--normal">(if shown on scan)</span></label>
-      <input id="section3_volume" name="contact[session_data][section3][volume]" type="text" class="text-input" title="Leave blank if the index does not list a volume for this entry." placeholder="Fill only when column appears" aria-describedby="section3_help">
+      <label class="label" for="section3_volume">Volume</label>
+      <input id="section3_volume" name="contact[session_data][section3][volume]" type="text" class="text-input" aria-describedby="section3_help">
     </li>
 
     <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_page_number">Page number <span class="weight--normal">(if shown on scan)</span></label>
-      <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input" title="Use the printed page from the scan only when that column appears; leave blank otherwise." placeholder="Fill only when column appears" aria-describedby="section3_help">
-    </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_register_number">Register number <span class="weight--normal">(if shown on scan)</span></label>
-      <input id="section3_register_number" name="contact[session_data][section3][register_number]" type="text" class="text-input" title="Only if your scan shows a register column—not all layouts do; many use page or line instead." placeholder="Often blank—see scan" aria-describedby="section3_help">
-    </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-entry-or-line clear--left lap-clear--left" style="display: none;">
-      <label class="label" for="section3_entry_number">Entry / line number <span class="weight--normal">(if shown on scan)</span></label>
-      <input id="section3_entry_number" name="contact[session_data][section3][entry_number]" type="text" class="text-input" title="Only if your scan shows an entry line or printed line number; omit if absent." placeholder="Often blank—see scan" aria-describedby="section3_help">
+      <label class="label" for="section3_page_number">Page number</label>
+      <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input" aria-describedby="section3_help">
     </li>
     <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-registered-extra" style="display: none;">
       <label class="label" for="section3_registered">Registered</label>
