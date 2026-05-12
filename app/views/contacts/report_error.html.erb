@@ -142,16 +142,11 @@
   }
   /* Form block 3 (missing entry): half-width pairs so placeholders/readable text aren’t cramped in quarters. */
   #section3_required_fields_block .grid__item { min-width: 0; }
-  /* Page row: use native [hidden] from JS; jQuery .toggle() + inline-block grid items was leaving the row invisible. */
-  #section3_page_row[hidden] {
-    display: none !important;
+  #section3_required_fields_block .text-input {
+    overflow: visible;
+    text-overflow: clip;
   }
-  #section3_required_fields_block ol.grid > li#section3_page_row:not([hidden]) {
-    display: inline-block !important;
-    width: 100%;
-    box-sizing: border-box;
-    vertical-align: top;
-  }
+</style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
 <script type="text/javascript">
@@ -183,9 +178,8 @@
     }
 
     function updateSection3ConditionalFields() {
-      var $s3root = $('#section3_required_fields_block');
-      var ev = ($s3root.find('#section3_event').val() || '').toLowerCase();
-      var yr = parseInt($s3root.find('#section3_year').val(), 10);
+      var ev = ($('#section3_event').val() || '').toLowerCase();
+      var yr = parseInt($('#section3_year').val(), 10);
       var yOk = !isNaN(yr);
       $('.section3-if-birth').toggle(ev === 'birth');
       $('.section3-if-death').toggle(ev === 'death');
@@ -197,16 +191,13 @@
       $('.section3-if-bd-register-entry').toggle(regEntryFormat);
       // Page: entry_information uses Page for all marriages and for birth/death only when NOT register/entry format.
       var showSection3Page = ev === 'marriage' || ((ev === 'birth' || ev === 'death') && !regEntryFormat);
-      var $pageRow = $('#section3_page_row');
-      if ($pageRow.length) {
-        $pageRow.prop('hidden', !showSection3Page);
-      }
+      $('.section3-if-show-page').toggle(showSection3Page);
       // Registered (classical): corrections show for birth/death unless post-1994 marriage; we skip marriage entirely here.
       var showRegisteredExtra = ev === 'birth' || ev === 'death';
       $('.section3-if-registered-extra').toggle(showRegisteredExtra);
     }
 
-    $('#section3_required_fields_block').on('change input', '#section3_event, #section3_year', updateSection3ConditionalFields);
+    $('#section3_event, #section3_year').on('change input', updateSection3ConditionalFields);
 
     function setSection3RequiredState(enabled) {
       if ($section3Block.length) $section3Block.toggle(enabled);
