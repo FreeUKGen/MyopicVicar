@@ -246,11 +246,13 @@
 
       // Enforce a single-open accordion within the visible section.
       if (details.open) {
+        // Update selection *before* closing siblings: closing fires their `toggle` synchronously;
+        // their close handler compares contact[query] to subsection-id — if still the old id, it would hide the form.
+        if ($queryInput.length) $queryInput.val(subsectionId);
         $details.closest('.accordion-section').find('details.accordion-item').not(details).prop('open', false);
       }
 
       if (details.open) {
-        if ($queryInput.length) $queryInput.val(subsectionId);
         // Backward compatibility: old config may only set `show_form: true`.
         var showForm = String($details.data('show-form')) === '1';
         if (showForm && formNumbers.length === 0) {
