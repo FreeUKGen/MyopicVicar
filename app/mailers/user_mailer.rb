@@ -63,30 +63,35 @@ class UserMailer < Devise::Mailer
     ccs_emails
   end
 
-  def batch_processing_failure(message, user, batch)
-    @appname = appname
-    @message = File.read(message)
-    @userid, @userid_email = user_email_lookup(user)
-    @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
-    @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
-    subject = "#{@userid.userid}/#{batch} processing encountered serious problem at #{Time.now}"
-    adjust_email_recipients(subject)
+  def batch_processing_failure(message_path, user, batch)
+    result = Communication::MailRoutingPipeline.new(
+      message_path: message_path,
+      user: user,
+      batch_name: batch,
+      appname: appname,
+      success: false
+    ).call
+
+    @appname = capitalize_suffix(appname.to_s)
+    @message = result.message
+    @person_forename = result.person_forename
+
+    mail(to: result.to, cc: result.cc, subject: result.subject)
   end
 
-  def batch_processing_success(message, user, batch)
-    @appname = appname
-    @message = File.read(message)
-    @userid, @userid_email = user_email_lookup(user)
-    @batch = Freereg1CsvFile.where(file_name: batch, userid: user).first
-    @syndicate_coordinator, @syndicate_coordinator_email = syndicate_coordinator_email_lookup(@userid)
-    @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
-    case appname.downcase
-    when 'freereg'
-      subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
-    when 'freecen'
-      subject = "#{@userid.userid} processed #{batch} at #{Time.now} "
-    end
-    adjust_email_recipients(subject)
+  def batch_processing_success(message_path, user, batch)
+    result = Communication::MailRoutingPipeline.new(
+      message_path: message_path,
+      user: user,
+      batch_name: batch,
+      appname: appname
+    ).call
+
+    @appname = capitalize_suffix(appname.to_s)
+    @message = result.message
+    @person_forename = result.person_forename
+
+    mail(to: result.to, cc: result.cc, subject: result.subject)
   end
 
   def communicate_github_issue_creation(feedback)
@@ -602,22 +607,6 @@ class UserMailer < Devise::Mailer
 
   private
 
-  def adjust_email_recipients(message)
-    if @userid.active && @userid.email_address_valid && @userid.registration_completed(@userid) && !@userid.no_processing_messages
-      if @county_coordinator == @syndicate_coordinator
-        mail(:to => @userid_email, :cc => @syndicate_coordinator_email, :subject => message)
-      else
-        mail(:to => @userid_email, :cc => [@syndicate_coordinator_email, @county_coordinator_email], :subject => message)
-      end
-    else
-      if @county_coordinator == @syndicate_coordinator
-        mail(:to => @syndicate_coordinator_email, :subject => message)
-      else
-        mail(:to => @syndicate_coordinator_email, :cc => @county_coordinator_email, :subject => message)
-      end
-    end
-  end
-
   def app_specific_email_upload_stats
     to_email = ''
     cc_email = ''
@@ -630,6 +619,13 @@ class UserMailer < Devise::Mailer
       cc_email = "vinodhini.subbu@freeukgenealogy.org.uk"
     end
     [to_email, cc_email]
+  end
+
+  def capitalize_suffix(appname, n = 3)
+    name = appname.to_s
+    prefix = name[0...-n].capitalize
+    suffix = name[-n..-1].upcase
+    "#{prefix}#{suffix}"
   end
 
   def get_email_address_array_from_array_of_userids(userids)
@@ -655,126 +651,6 @@ class UserMailer < Devise::Mailer
       email_address = "#{appname} Servant <no-reply@#{appname.downcase}.org.uk>"
     end
     email_address
-  end
-
-  def user_email_lookup(user)
-    userid = UseridDetail.userid(user).first
-    if userid.present?
-      friendly_email = "#{userid.person_forename} #{userid.person_surname} <#{userid.email_address}>"
-    else
-      friendly_email = "#{appname} Servant <no-reply@#{appname.downcase}.org.uk>"
-    end
-    [userid, friendly_email]
-  end
-
-  def syndicate_coordinator_email_lookup(userid)
-    if userid.present?
-      syndicate = Syndicate.where(syndicate_code: userid.syndicate).first
-      if syndicate.present?
-        syndicate_coordinator_id = syndicate.syndicate_coordinator
-        syndicate_coordinator = UseridDetail.userid(syndicate_coordinator_id).first
-        if syndicate_coordinator.present? && syndicate_coordinator.active && syndicate_coordinator.email_address_valid
-          friendly_email = "#{syndicate_coordinator.person_forename} #{syndicate_coordinator.person_surname} <#{syndicate_coordinator.email_address}>"
-        else
-          syndicate_coordinator, friendly_email = sndmanager_email_lookup
-        end
-      else
-        syndicate_coordinator, friendly_email = sndmanager_email_lookup
-      end
-    else
-      syndicate_coordinator, friendly_email = sndmanager_email_lookup
-    end
-    [syndicate_coordinator, friendly_email]
-  end
-
-  def county_coordinator_email_lookup(file_name, userid)
-    if file_name.blank? || userid.blank?
-      case appname.downcase
-      when 'freereg'
-        county_coordinator, friendly_email = regmanager_email_lookup
-      when 'freecen'
-        county_coordinator, friendly_email = cenmanager_email_lookup
-      end
-    else
-      case appname.downcase
-      when 'freereg'
-        batch_id = Freereg1CsvFile.where(file_name: file_name, userid: userid).first
-      when 'freecen'
-        batch_id = FreecenCsvFile.where(file_name: file_name, userid: userid).first
-      end
-      if batch_id.blank?
-        county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
-      else
-        county = County.where(chapman_code: batch_id.county).first
-        if county.present?
-          county_coordinator_id = county.county_coordinator
-          county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
-          if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
-            friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
-          else
-            county_coordinator, friendly_email = sndmanager_email_lookup
-          end
-        else
-          county_coordinator, friendly_email = extract_chapman_code_from_file_name(file_name)
-        end
-      end
-    end
-    [county_coordinator, friendly_email]
-  end
-
-  def regmanager_email_lookup
-    regmanager = UseridDetail.userid('REGManager').first
-    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
-    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
-    [regmanager, friendly_email]
-  end
-
-  def sbmanager_email_lookup
-    sbmanager = UseridDetail.userid('SBManager').first
-    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sbmanager.blank?
-    friendly_email = "#{sbmanager.person_forename} #{sbmanager.person_surname} <#{sbmanager.email_address}>" if sbmanager.present?
-    [sbmanager, friendly_email]
-  end
-
-  def cenmanager_email_lookup
-    regmanager = UseridDetail.userid('CENManager').first
-    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if regmanager.blank?
-    friendly_email = "#{regmanager.person_forename} #{regmanager.person_surname} <#{regmanager.email_address}>" if regmanager.present?
-    [regmanager, friendly_email]
-  end
-
-  def sndmanager_email_lookup
-    sndmanager = UseridDetail.userid('FR Exec Lead').first
-    friendly_email = 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>' if sndmanager.blank?
-    friendly_email = "#{sndmanager.person_forename} #{sndmanager.person_surname} <#{sndmanager.email_address}>" if sndmanager.present?
-    [sndmanager, friendly_email]
-  end
-
-  def extract_chapman_code_from_file_name(file_name)
-    case appname.downcase
-    when 'freereg'
-      parts = file_name.split('.')
-      chapman_code = parts[0].slice(0..2)
-    when 'freecen'
-      year, piece, _fields = Freecen2Piece.extract_year_and_piece(file_name, @chapman_code)
-      actual_piece = Freecen2Piece.where(year: year, number: piece.upcase).first
-      chapman_code = actual_piece.chapman_code if actual_piece.present?
-    end
-    if ChapmanCode.value?(chapman_code)
-      county = County.where(chapman_code: chapman_code).first
-      if county.present?
-        county_coordinator_id = county.county_coordinator
-        county_coordinator = UseridDetail.where(userid: county_coordinator_id).first
-        if county_coordinator.present? && county_coordinator.active && county_coordinator.email_address_valid
-          friendly_email = "#{county_coordinator.person_forename} #{county_coordinator.person_surname} <#{county_coordinator.email_address}>"
-        else
-          county_coordinator, friendly_email = sndmanager_email_lookup
-        end
-      else
-        county_coordinator, friendly_email = sndmanager_email_lookup
-      end
-    end
-    [county_coordinator, friendly_email]
   end
 
 end
