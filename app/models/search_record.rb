@@ -4,6 +4,7 @@ class SearchRecord
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   include Mongoid::Attributes::Dynamic
+  include HasCitationKey
   require 'name_role'
   require 'record_type'
   require 'emendor'
@@ -11,6 +12,9 @@ class SearchRecord
   require 'freereg1_translator'
   require 'date_parser'
 
+  def self.citation_key_prefix
+    'sr'
+  end
 
   # include Emendor
   SEARCHABLE_KEYS = [:first_name, :last_name]
@@ -189,6 +193,34 @@ class SearchRecord
       where(id: id)
     end
 
+    def bson_object_id_string?(s)
+      s = s.to_s
+      s.length == 24 && s.match?(/\A[0-9a-f]{24}\z/i)
+    end
+
+    def find_for_show_param(raw_id)
+      return nil if raw_id.blank?
+
+      id_s = raw_id.to_s.strip
+      if bson_object_id_string?(id_s)
+        rec = record_id(id_s).first
+        return rec if rec.present?
+
+        # FreeREG: same 24-char id may be the Freereg1CsvEntry _id stored on SearchRecord#freereg1_csv_entry_id
+        # (stable across search record rebuilds when the entry row persists).
+        begin
+          oid = BSON::ObjectId.from_string(id_s)
+        rescue BSON::Error::InvalidObjectId
+          oid = nil
+        end
+        if oid
+          rec = where(freereg1_csv_entry_id: oid).first
+          return rec if rec.present?
+        end
+      end
+      where(citation_key: id_s).first
+    end
+
     def between_dates(county, previous_midnight, last_midnight)
       last_id = BSON::ObjectId.from_time(last_midnight)
       first_id = BSON::ObjectId.from_time(previous_midnight)
@@ -223,7 +255,7 @@ class SearchRecord
         return [false, search_query, search_record, messagea]
       end
       search_query = search.present? ? SearchQuery.search_id(search).first : ''
-      search_record = SearchRecord.record_id(param[:id]).first
+      search_record = SearchRecord.find_for_show_param(param[:id])
       if search_record.blank?
         logger.warn(warning)
         logger.warn "#{search_record} no longer exists"
@@ -261,14 +293,17 @@ class SearchRecord
 
     def create_search_record(entry, search_version, place_id)
       # Usewd only by a few old rake tasks. It was effectively replaced by update_create_search_record(entry, search_version, place)
+      entry.ensure_citation_key!
+      entry.save(validate: false) if entry.changed?
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = SearchRecord.new(search_record_parameters)
       search_record.freereg1_csv_entry = entry
+      search_record.citation_key = entry.citation_key
       search_record.search_record_version = search_version
       search_record.transform
       search_record.place_id = place_id
       search_record.digest = search_record.cal_digest
-      search_record.possible_last_names = transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
+      search_record.possible_last_names = search_record.transcript_names.map { |n| n[:last_name].downcase if n[:last_name].present? }.uniq.compact
       search_record.save
       #p search_record
       'created'
@@ -344,7 +379,10 @@ class SearchRecord
         @@tts[:translate_tts] += Benchmark.measure { record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry)) }
 
         @@tts[:place_lookup_tts] += Benchmark.measure do
+          entry.ensure_citation_key!
+          entry.save(validate: false) if entry.changed?
           record.freereg1_csv_entry = entry
+          record.citation_key = entry.citation_key
           file = entry.freereg1_csv_file
           if @@file.nil? || @@owner.nil?
             places = file.register.church.place
@@ -369,7 +407,10 @@ class SearchRecord
         end
       else
         record = SearchRecord.new(Freereg1Translator.translate(entry.freereg1_csv_file, entry))
+        entry.ensure_citation_key!
+        entry.save(validate: false) if entry.changed?
         record.freereg1_csv_entry = entry
+        record.citation_key = entry.citation_key
         file = entry.freereg1_csv_file
         if @@file.nil? || @@owner.nil?
           places = file.register.church.place
@@ -494,10 +535,13 @@ class SearchRecord
         entry.save
         entry.reload
       end
+      entry.ensure_citation_key!
+      entry.save(validate: false) if entry.changed?
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       search_record = entry.search_record
       new_search_record = SearchRecord.new(search_record_parameters)
       new_search_record[:freereg1_csv_entry_id] = entry.id
+      new_search_record.citation_key = entry.citation_key
       new_search_record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
       new_search_record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
       new_search_record.transform
@@ -520,6 +564,12 @@ class SearchRecord
   end
 
   ############################################################################# instance methods ####################################################################
+
+  def to_param
+    return freereg1_csv_entry_id.to_s if freereg1_csv_entry_id.present?
+
+    citation_key.presence || id.to_s
+  end
 
   def add_digest
     self.digest = self.cal_digest

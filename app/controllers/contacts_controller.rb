@@ -209,16 +209,18 @@ class ContactsController < ApplicationController
     @contact.contact_type = 'Data Problem'
     @contact.problem_page_url = request.headers["HTTP_REFERER"]
     @contact.query = params[:query]
-    @contact.record_id = params[:id]
+    search_rec = SearchRecord.find_for_show_param(params[:id])
+    redirect_back(fallback_location: contacts_path, notice: 'The record was not found') && return if params[:id].blank? || search_rec.blank?
+
+    @contact.record_id = search_rec.id.to_s
     case appname_downcase
     when 'freereg'
-      redirect_back(fallback_location: contacts_path, notice: 'The record was not found') && return if params[:id].blank? || SearchRecord.find(params[:id]).blank?
-      @contact.entry_id = SearchRecord.find(params[:id]).freereg1_csv_entry._id
+      @contact.entry_id = search_rec.freereg1_csv_entry._id
       @freereg1_csv_entry = Freereg1CsvEntry.find(@contact.entry_id)
       @contact.county = @freereg1_csv_entry.freereg1_csv_file.county
       @contact.line_id = @freereg1_csv_entry.line_id
     when 'freecen'
-      @rec = SearchRecord.where("id" => @contact.record_id).first
+      @rec = search_rec
       @ind_id = @rec.freecen_individual_id
       @contact.county = @rec.chapman_code
       unless @rec.nil?

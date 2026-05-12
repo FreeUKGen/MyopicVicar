@@ -17,11 +17,16 @@ class Freereg1CsvEntry
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
   include Mongoid::Attributes::Dynamic
+  include HasCitationKey
   require 'freereg_validations'
   require 'record_type'
   require 'freereg_options_constants'
   require 'multiple_witness'
   require 'chapman_code'
+
+  def self.citation_key_prefix
+    'fr1'
+  end
 
   # IF your add or delete fields you MAY have to alter the freereg_options_constants fields for baptisms, burials and marriages to enable the
   # new_freereg_csv_update_processor to process them

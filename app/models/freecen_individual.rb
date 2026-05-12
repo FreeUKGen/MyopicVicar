@@ -1,5 +1,6 @@
 class FreecenIndividual
   include Mongoid::Document
+  include HasCitationKey
   field :sequence_in_household, type: Integer
   field :individual_flag, type: String
   field :surname, type: String
@@ -21,6 +22,10 @@ class FreecenIndividual
   field :disability, type: String
   field :language, type: String
   field :notes, type: String
+
+  def self.citation_key_prefix
+    'fcv'
+  end
 
   belongs_to :freecen1_vld_file, index: true
   belongs_to :freecen_dwelling, index: true

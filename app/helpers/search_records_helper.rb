@@ -39,8 +39,16 @@ module SearchRecordsHelper
   end
 
   def search_record_link(record)
-    field = Rails.application.config.website + '/search_records/' + record
-    field
+    id_for_url =
+      case record
+      when SearchRecord
+        record.to_param
+      when BSON::ObjectId
+        record.to_s
+      else
+        record.to_s
+      end
+    Rails.application.config.website + '/search_records/' + id_for_url
   end
 
 end
