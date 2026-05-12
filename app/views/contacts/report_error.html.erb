@@ -140,6 +140,12 @@
     max-width: 48rem;
     width: 100%;
   }
+  /* Form block 3 (missing entry): half-width pairs so placeholders/readable text aren’t cramped in quarters. */
+  #section3_required_fields_block .grid__item { min-width: 0; }
+  #section3_required_fields_block .text-input {
+    overflow: visible;
+    text-overflow: clip;
+  }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>

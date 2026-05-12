@@ -1,7 +1,7 @@
 <%# FreeBMD report_error — form_numbers: 3 (missing entry grid). Toggled via #section3_required_fields_block in report_error JS. %>
 <div id="section3_required_fields_block" style="display: none;" class="push--bottom">
   <h3 class="gamma push-half--bottom">Details for missing entry (optional — provide what you can)</h3>
-  <p id="section3_help" class="help-text push-half--bottom">Fields follow the index line layout (same information as “current details” on our entry review). Skip anything that does not apply or is not visible on the scan.</p>
+  <p id="section3_help" class="help-text push-half--bottom">Fields follow whatever appears on your index page. Indexes vary by period: columns such as volume, page, register number, and entry line number are not all present on every layout. Leave a field blank if it does not appear on your scan (do not infer values).</p>
   <ol class="grid">
     <li class="grid__item one-quarter lap-one-half palm-one-whole">
       <label class="label" for="section3_event">Event</label>
@@ -48,25 +48,25 @@
       <input id="section3_spouse_name" name="contact[session_data][section3][spouse_name]" type="text" class="text-input" aria-describedby="section3_help">
     </li>
 
-    <li class="grid__item one-quarter lap-one-half palm-one-whole">
+    <li class="grid__item one-whole lap-one-whole palm-one-whole push-half--top">
       <label class="label" for="section3_district">District</label>
       <input id="section3_district" name="contact[session_data][section3][district]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
     </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_volume">Volume</label>
-      <input id="section3_volume" name="contact[session_data][section3][volume]" type="text" class="text-input" aria-describedby="section3_help">
+    <li class="grid__item one-half lap-one-half palm-one-whole clear--left">
+      <label class="label" for="section3_volume">Volume <span class="weight--normal">(if shown on scan)</span></label>
+      <input id="section3_volume" name="contact[session_data][section3][volume]" type="text" class="text-input" title="Leave blank if the index does not list a volume for this entry." placeholder="Fill only when column appears" aria-describedby="section3_help">
     </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_register_number">Register number</label>
-      <input id="section3_register_number" name="contact[session_data][section3][register_number]" type="text" class="text-input" placeholder="If index uses register/entry" aria-describedby="section3_help">
+    <li class="grid__item one-half lap-one-half palm-one-whole">
+      <label class="label" for="section3_register_number">Register number <span class="weight--normal">(if shown on scan)</span></label>
+      <input id="section3_register_number" name="contact[session_data][section3][register_number]" type="text" class="text-input" title="Only if your scan shows a register column—not all layouts do; many use page or line instead." placeholder="Often blank—see scan" aria-describedby="section3_help">
     </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_entry_number">Entry number</label>
-      <input id="section3_entry_number" name="contact[session_data][section3][entry_number]" type="text" class="text-input" placeholder="Register line entry" aria-describedby="section3_help">
+    <li class="grid__item one-half lap-one-half palm-one-whole clear--left lap-clear--left">
+      <label class="label" for="section3_entry_number">Entry / line number <span class="weight--normal">(if shown on scan)</span></label>
+      <input id="section3_entry_number" name="contact[session_data][section3][entry_number]" type="text" class="text-input" title="Only if your scan shows an entry line or printed line number; omit if absent." placeholder="Often blank—see scan" aria-describedby="section3_help">
     </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_page_number">Page number</label>
-      <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input section3-required-field" placeholder="If index uses page" aria-describedby="section3_help">
+    <li class="grid__item one-half lap-one-half palm-one-whole">
+      <label class="label" for="section3_page_number">Page number <span class="weight--normal">(if shown on scan)</span></label>
+      <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input" title="Use the printed page from the scan only when that column appears; leave blank otherwise." placeholder="Fill only when column appears" aria-describedby="section3_help">
     </li>
     <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-registered-extra" style="display: none;">
       <label class="label" for="section3_registered">Registered</label>
