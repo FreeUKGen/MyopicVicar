@@ -978,10 +978,17 @@
     val.to_i
   end
 
-  # For snapshot rows keyed by record_hash; value may be one hash or an array of duplicate-hash entries.
+  # For snapshot rows keyed by record_hash; pair[1] is a single attr hash (flatten already splits arrays of rows).
+  # Do not use Array(attrs) on a Hash — that becomes [[k,v],…] and breaks RecordNumber extraction.
   def freebmd_pair_min_record_number(pair)
     _hkey, attrs = pair
-    Array(attrs).map { |entry| freebmd_record_number_sort_key(entry) }.min.to_i
+    return 0 if attrs.nil?
+
+    if attrs.is_a?(Array)
+      attrs.map { |entry| freebmd_record_number_sort_key(entry) }.min.to_i
+    else
+      freebmd_record_number_sort_key(attrs)
+    end
   end
 
   def sort_bmd_hit_rows_by_record_number!(rows)
