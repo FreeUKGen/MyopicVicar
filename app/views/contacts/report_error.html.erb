@@ -237,6 +237,19 @@
       }
     });
 
+    function scrollOpenedAccordionIntoView(el) {
+      if (!el || !el.getBoundingClientRect) return;
+      window.requestAnimationFrame(function() {
+        window.requestAnimationFrame(function() {
+          try {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } catch (e) {
+            el.scrollIntoView(true);
+          }
+        });
+      });
+    }
+
     function handleAccordionToggle(details) {
       var $details = $(details);
       var subsectionId = $details.data('subsection-id');
@@ -299,6 +312,7 @@
           setDescribeIssueMode(false);
           if ($correctionsBlock.length) $correctionsBlock.hide();
         }
+        scrollOpenedAccordionIntoView(details);
       } else {
         // If the user closes the currently-selected subsection, clear selection UI.
         if ($queryInput.length && String($queryInput.val()) === String(subsectionId)) {
