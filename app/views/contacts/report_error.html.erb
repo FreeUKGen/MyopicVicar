@@ -189,9 +189,7 @@
       // Same rules as BestGuess#register_entry_number_format: year >= 1993 && birth/death (RecordTypeID < 3).
       var regEntryFormat = (ev === 'birth' || ev === 'death') && yOk && yr >= 1993;
       $('.section3-if-bd-register-entry').toggle(regEntryFormat);
-      // Page: entry_information uses Page for all marriages and for birth/death only when NOT register/entry format.
-      var showSection3Page = ev === 'marriage' || ((ev === 'birth' || ev === 'death') && !regEntryFormat);
-      $('.section3-if-show-page').toggle(showSection3Page);
+      // Page number is always shown in the Volume row (see partial); leave blank when not on scan (e.g. modern B/D with register/entry).
       // Registered (classical): corrections show for birth/death unless post-1994 marriage; we skip marriage entirely here.
       var showRegisteredExtra = ev === 'birth' || ev === 'death';
       $('.section3-if-registered-extra').toggle(showRegisteredExtra);
