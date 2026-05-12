@@ -47,21 +47,22 @@
       <label class="label" for="section3_spouse_name">Spouse name</label>
       <input id="section3_spouse_name" name="contact[session_data][section3][spouse_name]" type="text" class="text-input" aria-describedby="section3_help">
     </li>
-    <li class="grid__item one-half lap-one-half palm-one-whole">
+    <li class="grid__item one-quarter lap-one-half palm-one-whole">
       <label class="label" for="section3_volume">Volume <span class="weight--normal">(if shown on scan)</span></label>
       <input id="section3_volume" name="contact[session_data][section3][volume]" type="text" class="text-input" title="Leave blank if the index does not list a volume for this entry." placeholder="Fill only when column appears" aria-describedby="section3_help">
     </li>
-    <li class="grid__item one-half lap-one-half palm-one-whole">
+
+    <li class="grid__item one-quarter lap-one-half palm-one-whole">
+      <label class="label" for="section3_page_number">Page number <span class="weight--normal">(if shown on scan)</span></label>
+      <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input" title="Use the printed page from the scan only when that column appears; leave blank otherwise." placeholder="Fill only when column appears" aria-describedby="section3_help">
+    </li>
+    <li class="grid__item one-quarter lap-one-half palm-one-whole">
       <label class="label" for="section3_register_number">Register number <span class="weight--normal">(if shown on scan)</span></label>
       <input id="section3_register_number" name="contact[session_data][section3][register_number]" type="text" class="text-input" title="Only if your scan shows a register column—not all layouts do; many use page or line instead." placeholder="Often blank—see scan" aria-describedby="section3_help">
     </li>
-    <li class="grid__item one-half lap-one-half palm-one-whole section3-if-entry-or-line clear--left lap-clear--left" style="display: none;">
+    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-entry-or-line clear--left lap-clear--left" style="display: none;">
       <label class="label" for="section3_entry_number">Entry / line number <span class="weight--normal">(if shown on scan)</span></label>
       <input id="section3_entry_number" name="contact[session_data][section3][entry_number]" type="text" class="text-input" title="Only if your scan shows an entry line or printed line number; omit if absent." placeholder="Often blank—see scan" aria-describedby="section3_help">
-    </li>
-    <li class="grid__item one-half lap-one-half palm-one-whole">
-      <label class="label" for="section3_page_number">Page number <span class="weight--normal">(if shown on scan)</span></label>
-      <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input" title="Use the printed page from the scan only when that column appears; leave blank otherwise." placeholder="Fill only when column appears" aria-describedby="section3_help">
     </li>
     <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-registered-extra" style="display: none;">
       <label class="label" for="section3_registered">Registered</label>
