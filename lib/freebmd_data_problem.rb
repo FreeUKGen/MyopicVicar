@@ -67,7 +67,15 @@ module FreebmdDataProblem
 							id: 6,
 							label: "You do not have the scan",
 							answer: <<~HTML.strip,
-							    <p>If you have identified that an entry on a transcribed page has not been transcribed you should report the missing entry/entries via the immediately preceding entry (use a <a href="/help/search_help#firstname_surname" target="_blank" rel="noopener">wildcard search</a> to get surrounding entries) filling in the details of the missing entry (only those fields that are different from the preceding entry need be completed). The <strong>Missing entry or entries</strong> box must be checked. If there are multiple missing entries, fill in the details for the first and check the <strong>Multiple entries</strong> box in addition to the <strong>Missing entry or entries</strong> box</p>
+								<p>If you find that an entry on a transcribed page is missing from FreeBMD, follow these steps:</p>
+								<ol>
+									<li>Perform a <a href="/help/search_help#firstname_surname" target="_blank" rel="noopener">wildcard search</a> to find nearby entries on the page.</li>
+									<li>Select the entry immediately before the missing one.</li>
+									<li>Download the scan and submit a report.</li>
+									<li>Select 'Data is missing' (you now have the scan).</li>
+									<li>Enter the details of the missing entry in the form. You only need to complete the fields that are different from the previous entry.</li>
+									<li>If more than one entry is missing, enter the details for the first missing entry and also tick the <strong>Multiple entries</strong> box.</li>
+								</ol>
 							HTML
 							show_form: false
 						}
