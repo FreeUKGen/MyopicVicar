@@ -38,9 +38,8 @@ module FreebmdDataProblem
 				  label: "The transcription information does match the GRO index scan.",
 				  answer: <<~HTML.strip,
 						<p>We cannot change the database if our transcription matches the information on the #{GRO_ABBREV_ACCESSIBILITY_HTML} index (scan).</p>
-						<p>If you believe there is an error in the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index, you will need to <a href="https://www.gro.gov.uk/" target="_blank" rel="noopener">contact them</a> to request a correction.</p>
+						<p>If you believe there is an error in the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index, you will need to <a href="https://www.gro.gov.uk/gro/content/certificates/contact_us.asp" target="_blank" rel="noopener">contact them</a> to request a correction.</p>
 						<p>If the #{GRO_ABBREV_ACCESSIBILITY_HTML} confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
-						<small>(Was: If you wish to get the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index corrected you should apply to the #{GRO_ABBREV_ACCESSIBILITY_HTML}. Contact the #{GRO_ABBREV_ACCESSIBILITY_HTML} with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.)</small>
 					HTML
 				  show_form: false }
 			]
