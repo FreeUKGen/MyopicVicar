@@ -124,18 +124,6 @@
         </tr>
       <% end %>
     <% end %>
-
-    <tr>
-      <th scope="row">Transcriber</th>
-      <td>
-        <% if record.transcribers.present? %>
-          <%= record.transcribers.join(', ') %>
-        <% else %>
-          No data
-        <% end %>
-      </td>
-      <td></td>
-    </tr>
   </tbody>
 </table>
 
