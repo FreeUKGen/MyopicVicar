@@ -6,92 +6,140 @@
   <h3 class="gamma push-half--bottom">Details for missing entry (optional — provide what you can)</h3>
   <p id="section3_help" class="help-text push-half--bottom">Match the columns on your index scan. Choose <strong>Record type</strong> and <strong>year</strong> first: for <strong>births and deaths from 1993 onward</strong> the GRO layout uses <strong>Register number</strong> and <strong>Entry number</strong> instead of a printed <strong>page</strong> column (same rules as the entry information page). <strong>Marriages</strong> always use <strong>page</strong>; from 1994, <strong>Marriage submission</strong> fields may appear on the scan too. <strong>Registered</strong> (below) applies only to births/deaths when that column exists. Leave blank what is not on your scan.</p>
   <ol class="grid">
-    <li class="grid__item one-half lap-one-half palm-one-whole">
-      <label class="label" for="section3_event">Record Type</label>
-      <select id="section3_event" name="contact[session_data][section3][event]" class="text-input section3-required-field" aria-describedby="section3_help">
-        <option value="">Please select</option>
-        <option value="Birth">Birth</option>
-        <option value="Death">Death</option>
-        <option value="Marriage">Marriage</option>
-      </select>
-    </li>
-    <li class="grid__item one-half lap-one-half palm-one-whole">
-      <label class="label" for="section3_year">Year</label>
-      <input id="section3_year" name="contact[session_data][section3][year]" type="text" class="text-input section3-required-field" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="e.g. 1996" aria-describedby="section3_help">
-    </li>
-
-    <li class="grid__item one-quarter lap-one-half palm-one-whole push-half--top clear--left lap-clear--left">
-      <label class="label" for="section3_surname">Surname</label>
-      <input id="section3_surname" name="contact[session_data][section3][surname]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
-    </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole">
-      <label class="label" for="section3_forename">Given Name</label>
-      <input id="section3_forename" name="contact[session_data][section3][forename]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
-    </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left lap-clear--left">
-      <label class="label" for="section3_quarter">Quarter (if relevant)</label>
-      <select id="section3_quarter" name="contact[session_data][section3][quarter]" class="text-input" aria-describedby="section3_help">
-        <option value="">Not applicable</option>
-        <option value="Mar">Mar</option>
-        <option value="Jun">Jun</option>
-        <option value="Sep">Sep</option>
-        <option value="Dec">Dec</option>
-      </select>
+    <li class="grid__item one-whole">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_event">Record Type</label>
+          <select id="section3_event" name="contact[session_data][section3][event]" class="text-input section3-required-field" aria-describedby="section3_help">
+            <option value="">Please select</option>
+            <option value="Birth">Birth</option>
+            <option value="Death">Death</option>
+            <option value="Marriage">Marriage</option>
+          </select>
+        </div>
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_year">Year</label>
+          <input id="section3_year" name="contact[session_data][section3][year]" type="text" class="text-input section3-required-field" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="e.g. 1996" aria-describedby="section3_help">
+        </div>
+      </div>
     </li>
 
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-birth" style="display: none;">
-      <label class="label" for="section3_mothers_maiden_name">Mother's maiden name</label>
-      <input id="section3_mothers_maiden_name" name="contact[session_data][section3][mothers_maiden_name]" type="text" class="text-input" aria-describedby="section3_help">
-    </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-death" style="display: none;">
-      <label class="label" for="section3_age_or_dob">Age at death / date of birth</label>
-      <input id="section3_age_or_dob" name="contact[session_data][section3][age_or_dob]" type="text" class="text-input" placeholder="As on index" aria-describedby="section3_help">
-    </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-marriage" style="display: none;">
-      <label class="label" for="section3_spouse_name">Spouse name</label>
-      <input id="section3_spouse_name" name="contact[session_data][section3][spouse_name]" type="text" class="text-input" aria-describedby="section3_help">
-    </li>
-
-    <li class="grid__item one-half lap-one-whole palm-one-whole push-half--top clear--left">
-      <label class="label" for="section3_district">District</label>
-      <input id="section3_district" name="contact[session_data][section3][district]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+    <li class="grid__item one-whole push-half--top">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_surname">Surname</label>
+          <input id="section3_surname" name="contact[session_data][section3][surname]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+        </div>
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_forename">Given Name</label>
+          <input id="section3_forename" name="contact[session_data][section3][forename]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+        </div>
+      </div>
     </li>
 
-    <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left lap-clear--left">
-      <label class="label" for="section3_volume">Volume <span class="weight--normal">(if shown)</span></label>
-      <input id="section3_volume" name="contact[session_data][section3][volume]" type="text" class="text-input" aria-describedby="section3_help">
+    <li class="grid__item one-whole push-half--top">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_quarter">Quarter (if relevant)</label>
+          <select id="section3_quarter" name="contact[session_data][section3][quarter]" class="text-input" aria-describedby="section3_help">
+            <option value="">Not applicable</option>
+            <option value="Mar">Mar</option>
+            <option value="Jun">Jun</option>
+            <option value="Sep">Sep</option>
+            <option value="Dec">Dec</option>
+          </select>
+        </div>
+      </div>
     </li>
 
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-bd-register-entry" style="display: none;">
-      <label class="label" for="section3_register_number">Register number</label>
-      <input id="section3_register_number" name="contact[session_data][section3][register_number]" type="text" class="text-input" title="Births and deaths from 1993 onward (BestGuess#register_entry_number_format)." placeholder="From scan" aria-describedby="section3_help">
+    <li class="grid__item one-whole section3-if-birth" style="display: none;">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_mothers_maiden_name">Mother's maiden name</label>
+          <input id="section3_mothers_maiden_name" name="contact[session_data][section3][mothers_maiden_name]" type="text" class="text-input" aria-describedby="section3_help">
+        </div>
+      </div>
     </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-bd-register-entry clear--left lap-clear--left" style="display: none;">
-      <label class="label" for="section3_entry_number">Entry number</label>
-      <input id="section3_entry_number" name="contact[session_data][section3][entry_number]" type="text" class="text-input" title="Pairs with Register number on modern birth/death index lines." placeholder="From scan" aria-describedby="section3_help">
+    <li class="grid__item one-whole section3-if-death" style="display: none;">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_age_or_dob">Age at death / date of birth</label>
+          <input id="section3_age_or_dob" name="contact[session_data][section3][age_or_dob]" type="text" class="text-input" placeholder="As on index" aria-describedby="section3_help">
+        </div>
+      </div>
+    </li>
+    <li class="grid__item one-whole section3-if-marriage" style="display: none;">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_spouse_name">Spouse name</label>
+          <input id="section3_spouse_name" name="contact[session_data][section3][spouse_name]" type="text" class="text-input" aria-describedby="section3_help">
+        </div>
+      </div>
     </li>
 
-    <li class="grid__item one-half lap-one-quarter palm-one-whole section3-if-show-page" style="display: none;">
-      <label class="label" for="section3_page_number">Page number <span class="weight--normal">(when used)</span></label>
-      <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input" title="Marriages (all years) and births/deaths before the 1993 register/entry layout." placeholder="Printed page" aria-describedby="section3_help">
+    <li class="grid__item one-whole push-half--top">
+      <div class="grid">
+        <div class="grid__item one-whole lap-one-whole palm-one-whole">
+          <label class="label" for="section3_district">District</label>
+          <input id="section3_district" name="contact[session_data][section3][district]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+        </div>
+      </div>
     </li>
 
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-registered-extra clear--left lap-clear--left" style="display: none;">
-      <label class="label" for="section3_registered">Registered <span class="weight--normal">(births/deaths)</span></label>
-      <input id="section3_registered" name="contact[session_data][section3][registered]" type="text" class="text-input" placeholder="If column on scan" aria-describedby="section3_help">
+    <li class="grid__item one-whole push-half--top">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_volume">Volume <span class="weight--normal">(if shown)</span></label>
+          <input id="section3_volume" name="contact[session_data][section3][volume]" type="text" class="text-input" aria-describedby="section3_help">
+        </div>
+        <div class="grid__item one-half lap-one-half palm-one-whole section3-if-bd-register-entry" style="display: none;">
+          <label class="label" for="section3_register_number">Register number</label>
+          <input id="section3_register_number" name="contact[session_data][section3][register_number]" type="text" class="text-input" title="Births and deaths from 1993 onward (BestGuess#register_entry_number_format)." placeholder="From scan" aria-describedby="section3_help">
+        </div>
+        <div class="grid__item one-half lap-one-half palm-one-whole section3-if-show-page" style="display: none;">
+          <label class="label" for="section3_page_number">Page number <span class="weight--normal">(when used)</span></label>
+          <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input" title="Marriages (all years) and births/deaths before the 1993 register/entry layout." placeholder="Printed page" aria-describedby="section3_help">
+        </div>
+      </div>
     </li>
 
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-marriage1994" style="display: none;">
-      <label class="label" for="section3_marriage_entry">Marriage submission — entry number</label>
-      <input id="section3_marriage_entry" name="contact[session_data][section3][marriage_submission_entry_number]" type="text" class="text-input" aria-describedby="section3_help">
+    <li class="grid__item one-whole push-half--top section3-if-bd-register-entry" style="display: none;">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_entry_number">Entry number</label>
+          <input id="section3_entry_number" name="contact[session_data][section3][entry_number]" type="text" class="text-input" title="Pairs with Register number on modern birth/death index lines." placeholder="From scan" aria-describedby="section3_help">
+        </div>
+      </div>
     </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-marriage1994 clear--left lap-clear--left" style="display: none;">
-      <label class="label" for="section3_marriage_source">Marriage submission — SourceCode</label>
-      <input id="section3_marriage_source" name="contact[session_data][section3][marriage_submission_source_code]" type="text" class="text-input" aria-describedby="section3_help">
+
+    <li class="grid__item one-whole push-half--top section3-if-registered-extra" style="display: none;">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_registered">Registered <span class="weight--normal">(births/deaths)</span></label>
+          <input id="section3_registered" name="contact[session_data][section3][registered]" type="text" class="text-input" placeholder="If column on scan" aria-describedby="section3_help">
+        </div>
+      </div>
     </li>
-    <li class="grid__item one-quarter lap-one-half palm-one-whole section3-if-marriage1994" style="display: none;">
-      <label class="label" for="section3_marriage_registered">Marriage submission — Registered</label>
-      <input id="section3_marriage_registered" name="contact[session_data][section3][marriage_submission_registered]" type="text" class="text-input" placeholder="As on index" aria-describedby="section3_help">
+
+    <li class="grid__item one-whole push-half--top section3-if-marriage1994" style="display: none;">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_marriage_entry">Marriage submission — entry number</label>
+          <input id="section3_marriage_entry" name="contact[session_data][section3][marriage_submission_entry_number]" type="text" class="text-input" aria-describedby="section3_help">
+        </div>
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_marriage_source">Marriage submission — SourceCode</label>
+          <input id="section3_marriage_source" name="contact[session_data][section3][marriage_submission_source_code]" type="text" class="text-input" aria-describedby="section3_help">
+        </div>
+      </div>
+    </li>
+    <li class="grid__item one-whole push-half--top section3-if-marriage1994" style="display: none;">
+      <div class="grid">
+        <div class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="label" for="section3_marriage_registered">Marriage submission — Registered</label>
+          <input id="section3_marriage_registered" name="contact[session_data][section3][marriage_submission_registered]" type="text" class="text-input" placeholder="As on index" aria-describedby="section3_help">
+        </div>
+      </div>
     </li>
 
     <li class="grid__item one-whole push-half--top">
