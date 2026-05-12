@@ -67,8 +67,7 @@ module FreebmdDataProblem
 							id: 6,
 							label: "You do not have the scan",
 							answer: <<~HTML.strip,
-							    <p>Advice on how to find the scan - preceding entry. See <a href="/help/search_help#firstname_surname">Search help: First name &amp; Surname</a></p>
-								<p>If you have identified that an entry on a transcribed page has not been transcribed you should attach a correction to the immediately preceding entry (use a wildcard search to get surrounding entries) filling in the details of the missing entry (only those fields that are different from the preceding entry need be completed). The Missing entry or entries box must be checked. If there are multiple missing entries fill in the details for the first and check the Multiple entries box in addition to the Missing entry or entries box</p>
+							    <p>If you have identified that an entry on a transcribed page has not been transcribed you should report the missing entry/entries via the immediately preceding entry (use a <a href="/help/search_help#firstname_surname" target="_blank" rel="noopener">wildcard search</a> to get surrounding entries) filling in the details of the missing entry (only those fields that are different from the preceding entry need be completed). The <strong>Missing entry or entries</strong> box must be checked. If there are multiple missing entries, fill in the details for the first and check the <strong>Multiple entries</strong> box in addition to the <strong>Missing entry or entries</strong> box</p>
 							HTML
 							show_form: false
 						}
@@ -87,7 +86,7 @@ module FreebmdDataProblem
 		{
 			title: "Anything else/miscellaneous",
 			subsections: [
-				{ id: 4, label: "Scan image not clear, a particular year/Qtr/event has a page missing etc",
+				{ id: 4, label: "E.g. scan image not clear, or a particular Year/Quarter/Event has a page missing etc.",
 				  answer: "Please describe the issue below and we will do our best to address it.",
 				  show_form: true,
 				  form_numbers: [4]
