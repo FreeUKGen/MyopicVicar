@@ -186,12 +186,15 @@
       $('.section3-if-marriage').toggle(ev === 'marriage');
       var m1994 = ev === 'marriage' && yOk && yr >= 1994;
       $('.section3-if-marriage1994').toggle(m1994);
-      // Quarterly birth/death index rows sometimes include a Registered column — marriage pages (including pre-1994 such as 1966) rarely use this generic slot; marriages from 1994+ use Marriage submission-* fields instead.
+      // Same rules as BestGuess#register_entry_number_format: year >= 1993 && birth/death (RecordTypeID < 3).
+      var regEntryFormat = (ev === 'birth' || ev === 'death') && yOk && yr >= 1993;
+      $('.section3-if-bd-register-entry').toggle(regEntryFormat);
+      // Page: entry_information uses Page for all marriages and for birth/death only when NOT register/entry format.
+      var showSection3Page = ev === 'marriage' || ((ev === 'birth' || ev === 'death') && !regEntryFormat);
+      $('.section3-if-show-page').toggle(showSection3Page);
+      // Registered (classical): corrections show for birth/death unless post-1994 marriage; we skip marriage entirely here.
       var showRegisteredExtra = ev === 'birth' || ev === 'death';
       $('.section3-if-registered-extra').toggle(showRegisteredExtra);
-      // Entry/line applies to birth/death index rows only; marriage (any year) omits it — and with Event still "Please select" we must not show it (ev === '' would satisfy ev !== 'marriage' and wrongly revealed the field before).
-      var showEntryOrLineColumn = ev === 'birth' || ev === 'death';
-      $('.section3-if-entry-or-line').toggle(showEntryOrLineColumn);
     }
 
     $('#section3_event, #section3_year').on('change input', updateSection3ConditionalFields);
