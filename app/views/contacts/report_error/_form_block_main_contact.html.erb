@@ -1,6 +1,6 @@
 <%# FreeBMD report_error — form_numbers: 1 (always with form); 4 only adjusts #contact_report_body via JS setDescribeIssueMode (no extra markup). %>
 <ol class="grid">
-  <li class="grid__item one-quarter lap-one-half palm-one-whole clear--left" id="name_input">
+  <li class="grid__item one-half lap-one-half palm-one-whole clear--left" id="name_input">
     <label class="label ttip" for="name" tabindex="0">Your name</label>
     <% if @contact.name.nil? %>
       <input id="name" name="contact[name]" type="text" class="text-input" placeholder="Required" required="required">
@@ -8,7 +8,7 @@
       <input id="name" name="contact[name]" type="text" class="text-input" value="<%=@contact.name%>">
     <% end %>
   </li>
-  <li class="grid__item one-quarter lap-one-half palm-one-whole" id="email_address_input">
+  <li class="grid__item one-half lap-one-half palm-one-whole" id="email_address_input">
     <label class="label ttip" for="email_address" tabindex="0">Your email address</label>
     <% if @contact.email_address.nil? %>
       <input id="email_address" name="contact[email_address]" type="text" class="text-input" placeholder="Required" required="required">
