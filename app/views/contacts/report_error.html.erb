@@ -228,7 +228,13 @@
         return;
       }
       $subsectionsLi.show();
-      $accordionSections.filter('[data-section-index="' + sectionIdx + '"]').show();
+      var $shownSection = $accordionSections.filter('[data-section-index="' + sectionIdx + '"]');
+      $shownSection.show();
+      // Single subsection (e.g. "Anything else/miscellaneous"): open it so the form appears without an extra click.
+      var $itemsInSection = $shownSection.find('details.accordion-item');
+      if ($itemsInSection.length === 1) {
+        $itemsInSection.first().prop('open', true);
+      }
     });
 
     function handleAccordionToggle(details) {
