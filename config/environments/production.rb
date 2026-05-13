@@ -12,8 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'uri'
+
 MyopicVicar::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
+
+  # Rails 6+ Host Authorization
+  # Allow the configured public website host (some deploys reuse production env for staging).
+  begin
+    website_host = URI.parse(MyopicVicar::MongoConfig['website'].to_s).host
+    config.hosts << website_host if website_host.present?
+  rescue URI::InvalidURIError
+    # ignore invalid website config
+  end
 
   # Code is not reloaded between requests
   config.cache_classes = true
