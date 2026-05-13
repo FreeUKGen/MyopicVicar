@@ -13,6 +13,7 @@
 #
 class EmendationRulesController < ApplicationController
   before_action :require_login, except: [:forename_abbreviations]
+  before_action :require_system_administrator, except: [:forename_abbreviations]
   before_action :set_emendation_rule, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -88,6 +89,16 @@ class EmendationRulesController < ApplicationController
   end
 
   private
+
+  # session[:role] is set from ManageResourcesController#set_session when the member picks a role.
+  def require_system_administrator
+    @user = get_user
+    if @user.blank?
+      flash[:notice] = 'You must be logged in to access that action'
+      redirect_to(new_search_query_path) && return
+    end
+    reject_access(@user, 'Emendation rules') unless session[:role] == 'system_administrator'
+  end
 
   def set_emendation_rule
     @emendation_rule = EmendationRule.find(params[:id])
