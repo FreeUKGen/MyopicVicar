@@ -24,7 +24,7 @@ module UseridRole
       'system_administrator' => ['Upload Report','Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'County Coordinators', 'Country Coordinators', 'Denominations',  'Display Communications Coordinators', 'GAP Reasons', 'Feedback',
                                  'Manage Counties', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile',  'FreeREG Roadmap',
                                  'Search Performance', 'Site Statistics', 'Coordinators list',
-                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'System Roles', 'FreeUKGenealogy  Policies'],
+                                 'Software Version Information', 'Syndicate Coordinators', 'System Documentation', 'System Roles', 'FreeUKGenealogy  Policies', 'Emendations'],
       'project_manager' => ['Access Attic', 'Assignments', 'Batches', 'Communicate', 'Contacts', 'Coordinators list', 'Country Coordinators', 'Denominations', 'GAP Reasons', 'Feedback',
                             'Manage Counties', 'Manage Image Server', 'Manage Syndicates', 'Manage Userids', 'Message System',  'Physical Files', 'Profile',  'FreeREG Roadmap', 'Search Performance', 'Site Statistics',
                             'Software Version Information','System Documentation', 'FreeUKGenealogy  Policies'],
@@ -144,7 +144,8 @@ module UseridRole
     'CAP Report' => '/freecen2_pieces/cap_report',
     'System Roles' => '/userid_details/list_roles_and_assignees',
     'Image Server' => '/image_server_groups',
-    'Coordinators list' => '/userid_details/coordinators_list'
+    'Coordinators list' => '/userid_details/coordinators_list',
+    'Emendations' => '/emendation_types'
   }
 
   OPTIONS_TITLES = {
@@ -189,7 +190,8 @@ module UseridRole
     'Gazetteer' => 'Search for an existing place name; opens in a new tab',
     'Gazetteer CSV Download' => 'Download CSV file of Gazetteer places for a specified County',
     'Place Edit Reasons' => 'Edit the reasons for Editing a FreeCEN2 Place',
-    'Place Sources' => 'Edit sources for a FreeCEN2 Place'
+    'Place Sources' => 'Edit sources for a FreeCEN2 Place',
+    'Emendations' => 'Manage and review transcription emendations'
   }
   USERID_MANAGER_OPTIONS = ['Select specific userid', 'Select specific email', 'Select specific surname/forename',
                             'Browse userids', 'Select Role', 'Select Secondary Role', 'Transcription Agreement Accepted',
