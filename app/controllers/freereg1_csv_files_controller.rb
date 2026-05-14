@@ -346,8 +346,7 @@ class Freereg1CsvFilesController < ApplicationController
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
     session[:initial_page] = @return_location
-    # session[:selectcountry] = nil
-    # session[:selectcounty] = nil
+    
     place  = @freereg1_csv_file.register.church.place
     church = @freereg1_csv_file.register.church
 
