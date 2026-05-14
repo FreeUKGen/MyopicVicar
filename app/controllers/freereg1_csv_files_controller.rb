@@ -346,8 +346,16 @@ class Freereg1CsvFilesController < ApplicationController
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
     session[:initial_page] = @return_location
-    session[:selectcountry] = nil
-    session[:selectcounty] = nil
+    # session[:selectcountry] = nil
+    # session[:selectcounty] = nil
+    place  = @freereg1_csv_file.register.church.place
+    church = @freereg1_csv_file.register.church
+
+    session[:selectcountry] = place.country
+    session[:selectcounty]  = place.chapman_code
+    session[:selectplace]   = place.id
+    session[:selectchurch]  = church.id
+
     @records = @freereg1_csv_file.freereg1_csv_entries.count
     max_records = get_max_records(@user)
     redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
@@ -358,16 +366,23 @@ class Freereg1CsvFilesController < ApplicationController
       @county = session[:county]
       locations
       # setting these means that we are a DM
-      session[:selectcountry] = place.country
-      session[:selectcounty] = place.chapman_code
-      session[:selectplace] = @freereg1_csv_file.place
-      session[:selectchurch] = @freereg1_csv_file.church_name
-      @selected_country = place.country
+      @selected_country = session[:selectcountry]
+      @selected_county = session[:selectcounty]
+      @selected_place   = session[:selectplace]
+      @selected_church  = session[:selectchurch]
       @countries = ['Select Country', 'England', 'Islands', 'Scotland', 'Wales']
-      @counties = []
-      @placenames = []
-      @churches = []
-      @register_types = []
+      @counties = ChapmanCode::CODES[session[:selectcountry]]
+                              .map { |name, code| [name, code] }
+                              .insert(0, ['Select County', ''])
+      places = Place.chapman_code(session[:selectcounty])
+                  .not_disabled
+                  .all
+                  .order_by(place_name: 1)
+      @placenames = places.map { |p| [p.place_name, p.id] }
+                     .insert(0, ['Select Place', ''])
+      @churches = place.churches.map { |c| [c.church_name, c.id] }
+                          .insert(0, ['Select Church', ''])
+      @register_types = RegisterType::APPROVED_OPTIONS
       @selected_register = ''
     else
       # only senior managers can move between counties and countries; coordinators could loose files
