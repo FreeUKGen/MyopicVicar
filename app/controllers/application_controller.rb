@@ -106,11 +106,10 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    u = warden.user(resource_or_scope)
-    cookies.signed[:userid] = u.userid_detail_id
-    session[:userid_detail_id] = u.userid_detail_id
-    session[:devise] = u.id.to_s
-    logger.warn "#{appname_upcase}::USER current  #{u.username}"
+    cookies.signed[:userid] = current_user.userid_detail_id
+    session[:userid_detail_id] = current_user.userid_detail_id
+    session[:devise] = current_user.id
+    logger.warn "#{appname_upcase}::USER current  #{current_user.username}"
     main_app.new_manage_resource_path
   end
 
