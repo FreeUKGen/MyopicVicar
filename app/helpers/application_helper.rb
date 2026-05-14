@@ -821,11 +821,11 @@ module ApplicationHelper
 
   def helpful_links
     {
-      cookiePolicy: '/cms/about/cookie-policy',
+      cookiePolicy: '/about/cookie-policy',
       privacyNotice: Constant::PRIVACY_POLICY_LINK,
-      termAndConditions: '/cms/terms-and-conditions',
+      termAndConditions: '/terms-and-conditions',
       contactUs: contact_us_path,
-      accessibility: "#{Rails.application.config.website}/cms/about/accessibility-statement",
+      accessibility: "/about/accessibility-statement",
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
