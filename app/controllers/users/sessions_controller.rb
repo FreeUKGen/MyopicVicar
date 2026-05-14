@@ -10,6 +10,7 @@ class Users::SessionsController < Devise::SessionsController
   skip_before_action :require_no_authentication, only: [:create]
 
   skip_before_action :require_login
+
   before_action :clear_unauthenticated_flash, only: [:new]
   before_action :configure_sign_in_params, only: [:create]
 

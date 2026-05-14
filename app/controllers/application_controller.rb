@@ -85,7 +85,6 @@ class ApplicationController < ActionController::Base
   def load_message_flag
     # This tells system there is a message to display
       session[:message] = 'no' if session[:message].blank?
-      session[:message] = 'load' if Refinery::Page.present? && Refinery::Page.where(slug: 'message').exists?
   end
 
   # Legacy name from Refinery::Authentication::Devise; views still call this helper.
