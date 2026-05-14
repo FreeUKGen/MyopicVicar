@@ -1,0 +1,86 @@
+<h1>DRAFT - Age at death searches</h1>
+
+  
+ <p class="lead"> This page describes how you can <em>refine</em> the search criteria of death records by including an additional search parameter based on either the Age at Death or the Date of Birth.</p>   
+
+<div class="grid">
+  <aside class="grid__item two-fifths lap-one-half palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block" id="thisPage">On this page</h2>
+      <ul class="sub-nav">
+       <li> <a href="why"> Why this might be useful</a> </li>
+       <li> <a href="#preperation">Refining a Death search</a> </li>       
+        <li> <a href="#AaD">Age at death searches</a> </li>
+        <li> <a href="#DoB">Death searches by Date of Birth </a> </li>
+        <li> <a href="#unreadMissing">Unreadable and missing entries </a> </li>
+        <li> <a href="#ucf">Uncertain character format </a> </li>
+        <li> <a href="#calculation">How the Date of Birth is calculated </a> </li>
+      </ul>
+    </div>
+   </aside>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+ 
+  <h2 id="why"> Why this might be useful</h2>
+  <p> When the GRO death index only lists the Age at Death, it is useful to have the ability to search for an event by Date of Birth, because you may know the Date of Birth from other sources, but not the Age at Death. Otherwise, if you did not know when the person died, knowing the Date of Birth would be of little help in searching without this special FreeBMD facility.</p>  
+  <p> Note: the GRO death index records prior to the end of March 1969 list only the Age at Death, after that date they switch to Date of Birth. Since FreeBMD calculates one from the other, you can use <strong> either </strong> of these options to search on all the death record indexes covered by FreeBMD.</p>
+  <h2 id="preperation"> Refining a death search</h2>
+  <p> To do these searches you must first enter the normal search criteria for a death search: such as the name of the person that you are searching for and select <strong>Death</strong> for the record type. More information on how to do a search for deaths can be found [on our How Best to Search page]. [link: How Best to Search]. </p>
+  <p class="islet islet--light">Note: it is not possible to do an Age of Death search on Birth or Marriage records, nor on the <em>Select All </em>option: it will only work for Death searches. </p>
+  <p> You go to the <strong>Age at Death</strong> selection box. This box displays <em>Select Death Age</em> and you need to use the down arrow on the right side to choose one of four options: Age, Age Range, Date of Birth, or Date of Birth Range. Having chosen your preferred search method, the following sections tell you need to put in the <em>Age at Death</em> box (or the minimum and the maximum boxes in the case of a Range being selected). </p>
+  <h2 id="AaD"> Age at death searches </h2>
+  <p> Firstly, click on the <em>Age at Death </em>box and choose either the Age of Death or the Age Death Range. If you choose the first option you select the age by clicking on either the up or down arrows on the right side of the <em>Enter Age</em> Box. Note: the Age at Death, as given in the GRO indexes, is a whole number which is the Age at Death in years. The lowest number that can be selected is: <strong>0 (zero)</strong>, corresponding to record of the death of a baby less than one year old. Note: there are a few instances in the GRO indexes of the Age at Death being given in months, but suffixed with the letter <strong>m</strong>; however, we consider these to be 0 (zero) for search purposes.</p>
+  <p> The Age at Death may not be known precisely, so you can use the Age Range option. When using this: the upper box is for the minimum age and the lower one for the maximum age. The only restriction is that the maximum specified age should not be less than the minimum age. So, entering 56 and 58 indicates that you are searching for matching death records with an Age of Death in the range 56 to 58 years old. The opposite selection, e.g. 58 and 56, will cause an an error message to appear.</p>
+   
+ <h2 id="DoB"> Death searches by date of birth </h2>
+  <p> To do a Date of birth search on death records, you must click on the <em>Age at Death</em> box and choose either the Date of birth or the Age at Death Range. A drop-down calender appears, which defaults the current day / date. You need to use the arrows to change the date to the one you want. The down arrow in the current <em>month / year</em> box allows you to quickly select the month in the left column, by means of up and down arrows and the year in the right column by means of up and down arrows. In contrast, the each press of the left or right arrows on each the side of the current <em>month / year</em> box moves the calender one month backward or one month forward, respectively.</p>
+  <p> Note: you can just select the year (e.g. 1875) by only using the right up and down <em>year</em> arrows and the day and month will be omitted. Similarly, using just the <em>year</em> and <em>month</em> up and down arrows will cause the day to be omitted.</p>
+
+ <p> Before the June 1969 the GRO index only has Age at Death, but if you specify the Date of Birth FreeBMD does a search based on the Age at Death and the quarter in which the death was registered. However, the Age at Death derived from the Date of Birth has a wide latitude, typically 18 months when a precise Date of Birth is supplied and 30 months when only the year is supplied. This may result in you getting results outside the range that you had expected. The way in which FreeBMD <a href="#calculation"> calculates the Date of Birth range</a> is described below.</p>
+
+  <h2 id="unreadMissing"> Unreadable and missing entries </h2>
+  <p> The indexes sometimes contain entries that are partially unreadable or the Age at Death / Date of Birth may be missing. When doing an Age at Death (or Date of Birth) search FreeBMD includes such entries as if they were an Age at Death range of 0-100. Hence, such entries are likely to appear in your search though you may, initially, choose to ignore them in favour of entries that are definitely applicable.</p>
+  <p> However, for some early years the Age at Death is not present in the GRO index and you may wish to exclude entirely those entries that do not have an Age at Death. If you check the box <strong>Match only recorded ages</strong>, you will only be presented with entries for which there was an Age at Death / Date of Birth recorded and it matched your search criteria.</p>
+  <p> When partially readable entries are transcribed by FreeBMD volunteers a special format is used to describe what <strong>can</strong> be read. By examining what the transcriber <strong>could</strong> read you may be able to eliminate some of these entries. Special characters used such as _ and * are used to transcribe such entries.         A summary of the meaning of these <a href="#ucf"> special characters</a> can be found below.</p> 
+ 
+ <h2 id="ucf"> Uncertain character format</h2>
+    <p class="push-half--bottom"> The following characters are used by FreeBMD where the GRO index is difficult to read: </p>
+  <ul>
+     <dt> <strong>_ (underscore) :</strong> </dt>
+     <dd> A single uncertain character. It could be anything but is definitely only <strong>one</strong> character. It can be repeated for each uncertain character.</dd>
+     <dt> <strong> * (asterisk) : </strong> </dt>
+     <dd> There were several adjacent uncertain characters. A single <code>*</code> is used when there are <strong>one or more adjacent uncertain characters</strong>. It is not used immediately before or after a <code>_</code> or another <code> *</code>. Note: If it is clear there is a space, then <code>* *</code> is used to represent <strong>two words</strong>, neither of which can be read.</dd> 
+     <dt> <strong> [abc] :</strong> </dt>
+    <dd> A single uncertain character that could be any one of the characters listed within the square brackets and only those characters. There must be at least two characters between the brackets. For example, [79] would mean either a 7 or a 9, whereas [C_] would mean a C or some other character.</dd> 
+    <dt> <strong> <code>?</code> (question mark) :</strong> </dt>
+    <dd> Only used where it is unambiguous that there are no characters in the field, e.g. a missing Volume. The question mark must be the only character in the field. Note: If it is unclear whether the field is empty or not, then <code>_{0,1}</code> is used.</dd>
+  </ul>
+
+  <h2 id="calculation"> How the date of birth is calculated</h2>
+  <p class="islet islet--light"> After 1983 the GRO changed their system of indexing from quarterly to annual indexing. So, from January 1984 onwards there are no quarters to consider: the annual death indexes now give the month of registration for each death and these annual birth indexes give the month of registration of each birth registered after December 1983. So, for these records the date of registration of the death is known down the level of a month, but the death itself may have taken place the previous month.</p>
+  <p> The first issue to appreciate is that the date of death may be in the quarter the death was recorded in the GRO index, or in a preceding one. We limit it to the immediately preceding quarter in our calculations, but there is in principle no limit to how far back the death may actually have occurred. In the following diagram each box represents a quarter. If there is an entry for a death in quarter <em><strong>B</strong>
+</em> we assume the date of the death could be anywhere from the start of quarter <em><strong>A</strong>
+</em> to the end of quarter <em><strong>B</strong> </em>. </p>
+    
+  <figure>
+   <%= image_tag 'Age%20at%20Death%20Range.png?sha=9218f17d1ba5b2d1', alt: 'Age At Death Range', title: 'Age At Death Range', width: 707, height: 150 %>
+  <figcaption>Figure 1: showing how FreeBMD estimates uncertainties in date of birth and date of death </figcaption> 
+  </figure>
+ 
+  <h3> Explanation, in words</h3> 
+  <p> For pre-1984 deaths, Registration the death will appear in a given quarter (<strong>B</strong> on the diagram) but the death itself may have occurred in fairly late in the previous quarter (<strong>A</strong> on the diagram). For deaths from 1st January 1984 onwards, the month of the registration of the death will be recorded in the annual death indexes, but the death itself have have occurred in the previous month.</p>
+  <p> If we are searching for someone who we think died at a certain age of death (which we call <strong>n</strong> years). Then, that person could have have been born, <strong>at the latest,</strong> exactly <strong>n</strong> years before the quarter in the year in which the death was registered (which is <strong>Y</strong> on the diagram). However, the birth might have been registered anytime in the twelve-month period starting from <strong>n</strong> years prior to date of death. However, the date of death might have been the quarter before the quarter in which it was registered  (which is <strong>A</strong> on the diagram), and the date of birth might have occurred in the quarter before the quarter in which it was registered (which is <strong>X</strong> on the diagram). So, under normal circumstances, <strong>the earliest the birth,</strong> have occurred is <strong>Y</strong> on the diagram.</p>
+   
+  <h3> Expressed mathematically</h3>
+   <p class="islet islet--light"> You don't need to read this section in order to do an Age at Death or Date of Birth death Search. It is provided for anyone with a interest in how FreeBMD does these searches. </p>  
+  <p> <mark> From here downwards, this page is being working on and is subject to change - PC </mark> </p>  
+
+  <p>If we designate the Age at Death as the value <em> <strong> n,</strong> </em> the earliest the birth could have occurred is the value <em> <strong> n + 1</strong> </em> years before the start of quarter <em><strong>A</strong> </em>, that is the person died just before their (n+1)th birthday. The latest the birth could have occurred is <em> <strong> n </strong> </em> years before the end of quarter <em><strong>B </strong> </em>, that is the person had just had their nth birthday. </p>
+  <p> Hence if the Date of Birth falls in quarters <em> <strong> x </strong> </em> to <em> <strong> y </strong>
+</em> the death entry could be in quarter <em><strong>B.</strong> </em> </p>
+  <p> So, if we know that the Date of Birth falls in quarter <em> <strong> z </strong> </em>, we are looking for an entry in which the Age at Death <em> <strong> n </strong> </em> and the registration quarter <em><strong>B </strong> </em> satisfies: <em> <strong> n </strong> </em> * 4 = (<em> <strong>B </strong> </em> - <em><strong>z</strong> </em>) <code> #8805 </code> (<em> <strong> n </strong> </em> + 1) * 4 + 1. </p>
+  <p> This can be re-arranged as: <em><strong>B </strong> </em> - (<em> <strong> n </strong> </em> * 4)  = <em> <strong> z </strong> </em> = <em><strong>B </strong> </em> - ( (<em> <strong> n </strong> </em> + 1) * 4 + 1). </p>
+  <p> If only the year of birth is known then we have to consider that the Date of Birth may be from March quarter of that year (<em> <strong> zm </strong> </em>) to the December quarter of that year (<em><strong>zd)</strong> </em>. We are now look for an entry for which satisfies both: <em><strong>B</strong> </em> - (<em> <strong> n </strong> </em> * 4) = <em> <strong> zm </strong> </em> and <em> <strong> zd </strong> </em> =<em><strong> B </strong> </em> - ( (<em> <strong> n </strong> </em> + 1) * 4 + 1). </p>
+  <p> If the Age at Death is given in months (designated <em> <strong> m </strong> </em>), the corresponding formula is: <em><strong>B </strong> </em> - Int (<em> <strong> m </strong> </em> / 3) = <em> <strong> z </strong> </em> /B = <em><strong>B&#160;</strong> </em> - (Int (<em> <strong>  m</strong> </em> / 3) + 2). </p>
+  <p> Note: <em> Int </em> is short for <em>Integer function</em>, which returns the largest whole number less than or equal to the value of the real number being analysed.</p>
+    </div>
+ </div>

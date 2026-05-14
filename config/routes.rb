@@ -663,7 +663,8 @@ MyopicVicar::Application.routes.draw do
   #
   # We ask that you don't use the :as option here, as Refinery relies on it being the default of "refinery"
 
-  mount Refinery::Core::Engine, :at => '/cms'
+  #mount Refinery::Core::Engine, :at => '/cms'
+  get '*path', to: 'pages#show', as: :page, format: false
 
   #ActiveAdmin.routes(self)
 
