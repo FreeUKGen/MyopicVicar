@@ -157,7 +157,7 @@ module UseridRole
     'Contacts' => '/contacts',
     'System Documentation' => '/cms/system-documents',
     'Roadmap' => '/cms/system-documents/development-roadmap',
-    'Logout' => '/refinery/logout',
+    'Logout' => '/manage_resources/logout',
     'Message System' => '/messages',
     'Manage Images' => '/sources',
     'Assignments' => '/assignments/my_own',
@@ -382,4 +382,9 @@ module UseridRole
     'Other (please explain below)' => 'other'
   }
   REASONS_FOR_MAKING_EMAIL_INVALID = ['Mails to this email bounced', 'No Response', 'Cannot be reached']
+
+  # Actions sidebar on manage_resources (Action Page); not part of per-role OPTIONS so everyone gets a sign-out link.
+  def self.action_sidebar_roles(current_role)
+    OPTIONS.fetch(current_role).sort + ['Logout']
+  end
 end
