@@ -47,18 +47,18 @@ class User
         return nil unless stripped
   
         scope = conditions.blank? ? all : where(conditions.to_h)
-        email_criteria = { email: /\A#{Regexp.escape(stripped)}\z/i }
+        email_criteria = { email: /\A#{::Regexp.escape(stripped)}\z/i }
   
         if stripped.include?('@')
           scope.or(email_criteria).first
         else
-          scope.or(email_criteria, { username: /\A#{Regexp.escape(stripped)}\z/i }).first
+          scope.or(email_criteria, { username: /\A#{::Regexp.escape(stripped)}\z/i }).first
         end
       elsif (email = conditions[:email]).present?
         email = email.to_s.strip
         remainder = conditions.except(:email, 'email')
         scope = remainder.blank? ? all : where(remainder.to_h)
-        scope.or(email: /\A#{Regexp.escape(email)}\z/i).first
+        scope.or(email: /\A#{::Regexp.escape(email)}\z/i).first
       else
         where(conditions.to_h).first
       end
