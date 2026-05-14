@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class Users::PasswordsController < Devise::PasswordsController
+  # Same CSRF ordering issue as Users::SessionsController (Devise prepend + :rememberable).
+  skip_before_action :require_no_authentication, only: [:create]
+
   skip_before_action :require_login
   after_action :give_notice, only: :update
   before_action :store_password_reset_return_to, only: :update

@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
+  # Devise prepends `require_no_authentication` before `verify_authenticity_token`.
+  # With :rememberable it calls `warden.authenticate?` which can touch the session first
+  # and invalidate the CSRF token from the sign-in form → InvalidAuthenticityToken on POST.
+  skip_before_action :require_no_authentication, only: [:create]
+
   skip_before_action :require_login
   before_action :clear_unauthenticated_flash, only: [:new]
   before_action :configure_sign_in_params, only: [:create]
