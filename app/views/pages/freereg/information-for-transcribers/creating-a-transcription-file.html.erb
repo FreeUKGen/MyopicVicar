@@ -8,7 +8,6 @@
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
     <p class="lead">There are several ways to create a transcription file, but for Windows users our bespoke program WinREG is the best choice. For those on Mac or Linux, we recommend using a spreadsheet, as found in any office software.</p>
     <div class="island island--bordered">
-      <p>A FreeREG file should be no larger than about 2,000 records. We strongly recommend that those records be all for the same Place, Church and Register type: that is, they should amount to a single Batch.</p>
       <p>Before you begin to work, you must ensure that you have the necessary <a href="/information-for-transcribers/permission-to-transcribe">Permission to transcribe?</a> for your source.</p>
     </div>
   </div>
@@ -53,10 +52,10 @@
     <h2>WinREG</h2>
     <p>Use this link to <a href="https://drive.google.com/file/d/1VpLwBlV-emuPn_1rTr7siSy8BRR714s1/view?usp=sharing">download the WinREG installer as a zip file</a> (the most recent version of WinREG&#160;3), then unzip it and run the installer. WinREG is written by Mike Fry, an experienced transcriber.</p>
     <div class="island island--bordered">
-      <h3>WinREG on Windows 10</h3>
-      <p>We are aware that some users of WinREG are experiencing problems after a Windows 10 update.  Please run your anti-virus check after the update: that should fix the issue, with no loss of data.</p>
-      <p>You may find that WinREG does not scale properly on Windows 10, making the text too small to read. Here is the fix:</p>
-      <p>Find the WinREG.exe file using Windows Explorer: navigate to your C drive — Program files (x86) — FreeREG — WinREG for Windows. Now right-click on WinREG.exe and select <em>Properties</em>, then <em>Compatibility</em>, then <em>Settings</em>.</p>
+      <h3>WinREG on Windows 10 or Windows 11</h3>
+      <p>We are aware that some users of WinREG are experiencing problems after a Windows update.  Please run your anti-virus check after the update: that should fix the issue, with no loss of data.</p>
+      <p>You may find that WinREG does not scale properly on Windows 10 or 11, making the text too small to read. Here is the fix:</p>
+      <p>Find the WinREG.exe file using File Explorer: navigate to your C drive — Program files (x86) — FreeREG — WinREG for Windows. Now right-click on WinREG.exe and select <em>Properties</em>, then <em>Compatibility</em>, then <em>Settings</em>.</p>
       <p>Now select <em>Change high DPI settings</em>, then click the bottom option, <em>Override/disable high DPI settings</em>, to tick its box. Click on <em>OK</em>, then the next <em>OK</em>, to confirm and finish.</p>
     </div>
     <p class="push-half--bottom">There are many advantages to using WinREG:</p>
@@ -70,14 +69,7 @@
     </ul>
 
     <h2 id="spreadsheet">Spreadsheet</h2>
-    <p>If you are not able to use WinREG for any reason, then we recommend using a spreadsheet, especially one from the Open Source office suites: the first two are available for Windows, Mac OS X and Linux; they are also free of charge.</p>
-    <ul>
-      <li><a href="https://www.openoffice.org/">Apache OpenOffice</a> </li>
-      <li><a href="https://www.libreoffice.org/">LibreOffice</a> </li>
-      <li><a href="https://www.neooffice.org/neojava/en/index.php">NeoOffice</a> is for Mac OS X only and there is a small charge (starting at £8 or $10 at time of writing)</li>
-    </ul>
-    <p>A modern version of Microsoft Excel can be used, but we do not recommend older versions as they have a bug in the way they save CSV files — the kind of file that must be uploaded to the database. There is a way around this bug, but the fix involves extra work, and may itself introduce a different problem.</p>
-    <p>Other proprietary spreadsheets are available, but we have less collective experience with these.</p>
+    <p>If you are not able to use WinREG for any reason, then we recommend using a spreadsheet such as <a href="https://www.libreoffice.org/">LibreOffice</a> or Google Sheets (both free) or Microsoft Excel.</p>
     <p>You don't need to know how to do anything complicated with the spreadsheet, just how to: Save, Save as, and set the format of cells in a column (field) to Text. It would also be very useful to know how to freeze the headings, so that they are always visible. In addition, we ask that you <strong>turn off all the AutoCorrect options</strong> — the details of why and how are in the box below.</p>
     <p>We strongly recommend that you save your working file in the spreadsheet's own format (file ending). This will make it simpler to re-open the file and will preserve such things as column widths and font size for when you next work on your transcription. We also strongly recommend that you set the cell format for the whole sheet to text — this will avoid issues with the header cells that contain a + (plus) sign and also with dates.</p>
 
@@ -147,31 +139,6 @@
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole"> 
     <p class="push--top">Notice that some of the fields are empty in this example, with literally nothing between the commas: there are no unnecessary spaces. </p>
 
-    <h3 id="first_time_check">First time check</h3>
-    <p>This test is not necessary for users of Apache OpenOffice, LibreOffice or NeoOffice — all three pass.</p>
-    <p>If this is your first transcription file with Microsoft Excel (pre-2011) or another program not listed above, then this simple check will tell you whether or not it is suitable for FreeREG: in particular, some of the older versions of Excel have a bug in the way they save CSV files that makes them unsuitable. </p>
-
-    <p class="push-half--bottom">The check is simply this:</p>
-    <ol>
-      <li>open the CSV file in a text editor (Notepad or TextEdit)</li>
-      <li>find the end of a line that you know does <em>not</em> have data in the final field (column):
-        <ul>
-          <li>if it ends with one or more commas, all is well!</li>
-          <li>if there are no commas at the end, then you will need to use one of the free Office programs</li>
-        </ul>
-      </li>
-    </ol>
-    <p>Not sure? Some examples may help. A baptism entry <strong>with</strong> data in the final field — in this case, the Notes field — will end something like this, with no final comma:</p>
-    <p><code>… ,WARD,FORBES,"23, High St",,Mr Saml Ward</code> </p>
-    <p>(Note also that one of the fields has double quotes around the contents: this is because the contents — 23, High St — has a comma in it. Fields without a comma are not quoted.)</p>
-    <p>Lines <strong>without</strong> data in the final field, should end something like these:</p>
-    <p><code>… ,BAIRD,,,, <br />
-    … ,REYNOLDES,JONES,,Blacksmith,</code> </p>
-    <p>A line <strong>without</strong> content in the final field should end with <em>at least one</em> comma. If you see one or more commas at the end of such lines, then your spreadsheet has been saved correctly. <strong>You will not need to do this check again.</strong> </p>
-    <p>However, if you’re seeing entries like these, with <em>empty</em> final fields but <em>no</em> final comma(s),  </p>
-    <p><code>… ,BAIRD <br />
-    … ,REYNOLDES,JONES,,Blacksmith</code> </p>
-    <p>then you will need to download one of the free Office suites for your FreeREG transcriptions. (Experienced volunteers who use old versions of Microsoft Excel and the "dummy column" method without any problems may continue to do so, but we urge you to consider using a different spreadsheet, if possible.)</p>
     <hr class="rule rule--ornament" />
 
     <h2 id="database">Database</h2>
