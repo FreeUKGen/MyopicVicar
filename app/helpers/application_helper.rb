@@ -821,7 +821,7 @@ module ApplicationHelper
 
   def helpful_links
     {
-      cookiePolicy: '/cms/about/cookie-policy',
+      cookiePolicy: '/about/cookie-policy',
       privacyNotice: Constant::PRIVACY_POLICY_LINK,
       termAndConditions: '/terms-and-conditions',
       contactUs: contact_us_path,
