@@ -45,8 +45,7 @@ Devise.setup do |config|
     config.mailer_sender = "freecen-registration@freecen.org.uk"
   end
 
-  # Configure the class responsible to send e-mails.
-  #config.mailer = "UserMailer"
+  config.mailer = 'UserMailer'
 
   # Automatically apply schema changes in tableless databases
   #config.apply_schema = false
@@ -67,7 +66,7 @@ Devise.setup do |config|
   # session. If you need permissions, you should implement that in a before filter.
   # You can also supply a hash where the value is a boolean determining whether
   # or not authentication should be aborted when the value is not present.
-  # config.authentication_keys = [ :email ]
+  config.authentication_keys = [:login]
 
   # Configure parameters from the request object used for authentication. Each entry
   # given should be a request method and it will automatically be passed to the
@@ -79,12 +78,10 @@ Devise.setup do |config|
   # Configure which authentication keys should be case-insensitive.
   # These keys will be downcased upon creating or modifying a user and when used
   # to authenticate or find a user. Default is :email.
-  config.case_insensitive_keys = [ :email ]
+  # Preserve casing as stored; sign-in matching is case-insensitive in User.find_first_by_auth_conditions.
+  config.case_insensitive_keys = []
 
-  # Configure which authentication keys should have whitespace stripped.
-  # These keys will have whitespace before and after removed upon creating or
-  # modifying a user and when used to authenticate or find a user. Default is :email.
-  config.strip_whitespace_keys = [ :email ]
+  config.strip_whitespace_keys = [:email, :username]
 
   # Tell if authentication through request.params is enabled. True by default.
   # It can be set to an array that will enable params authentication only for the
@@ -252,7 +249,7 @@ Devise.setup do |config|
   # should add them to the navigational formats lists.
   #
   # The "*/*" below is required to match Internet Explorer requests.
-  # config.navigational_formats = ["*/*", :html]
+  config.navigational_formats = ['*/*', :html]
 
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
@@ -270,5 +267,6 @@ Devise.setup do |config|
   #   manager.intercept_401 = false
   #   manager.default_strategies(:scope => :user).unshift :some_external_strategy
   # end
-  config.router_name = :refinery
+  # Devise URL helpers use the main application router (member routes are not mounted on an engine).
+  config.router_name = :main_app
 end

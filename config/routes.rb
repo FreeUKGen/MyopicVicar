@@ -24,6 +24,9 @@ MyopicVicar::Application.routes.draw do
 
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
+
+  devise_for :users, controllers: { sessions: 'users/sessions', passwords: 'users/passwords' }
+
   get '/up', to: proc { [200, {}, ['success']] }
   get 'open', :to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
