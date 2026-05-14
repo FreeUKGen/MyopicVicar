@@ -841,8 +841,13 @@ module ApplicationHelper
     }
   end
 
-  def footer_records_stats(stat,type)
-    stat.where(record_type: type).first.total_records if stat.where(record_type: type).first.present?
+  def footer_records_stats(stat, type)
+    return 0 unless stat.respond_to?(:where)
+
+    rec = stat.where(record_type: type).first
+    return 0 if rec.blank? || !rec.respond_to?(:total_records)
+
+    rec.total_records.to_i
   end
 
   def contact_us_path
