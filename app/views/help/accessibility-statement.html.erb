@@ -1,0 +1,14 @@
+<% title "Accessibility Statement" %>
+<section id="body_content">
+  <% if MyopicVicar::Application.config.template_set.to_s == 'freebmd' %>
+    <%= render template: 'pages/freebmd/about/accessibility-statement' %>
+  <% else %>
+    <h1 id="body_content_title">Accessibility Statement</h1>
+    <div class="grid">
+      <div class="grid__item three-fifths lap-three-quarters palm-one-whole">
+        <p>For accessibility information about our websites, see
+          <a href="https://www.freeukgenealogy.org.uk/about/website-accessibility/">Free UK Genealogy — website accessibility</a>.</p>
+      </div>
+    </div>
+  <% end %>
+</section>
