@@ -72,11 +72,24 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def display_info
-    if session[:image_server_group_id].present?
-      image_server_group = ImageServerGroup.find(:id=>session[:image_server_group_id])
-      @source = Source.find(image_server_group.source_id)
+    group_id = session[:image_server_group_id].presence || params[:id]
+    if group_id.present?
+      image_server_group = ImageServerGroup.id(group_id).first
+      unless image_server_group
+        flash[:notice] = 'can not locate image group'
+        redirect_to(main_app.new_manage_resource_path) && return
+      end
+      @source = Source.id(image_server_group.source_id).first
+      unless @source
+        flash[:notice] = 'can not locate source for image group'
+        redirect_to(main_app.new_manage_resource_path) && return
+      end
     elsif session[:source_id].present?
-      @source = Source.find(session[:source_id])
+      @source = Source.id(session[:source_id]).first
+      unless @source
+        flash[:notice] = 'can not locate source'
+        redirect_to(main_app.new_manage_resource_path) && return
+      end
     else
       flash[:notice] = 'can not locate image group'
       redirect_to(main_app.new_manage_resource_path) && return
@@ -204,7 +217,7 @@ class ImageServerGroupsController < ApplicationController
     ImageServerImage.update_image_status(image_server_group, 'ar')
 
     #ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
-     ImageServerGroup.find(:id=>ig.id).update_attributes(allocation_requested_by: sc.userid, allocation_requested_through_syndicate: current_syndicate)
+     ImageServerGroup.id(ig.id).first&.update_attributes(allocation_requested_by: sc.userid, allocation_requested_through_syndicate: current_syndicate)
     UserMailer.request_cc_image_server_group(sc, cc.email_address, ig.group_name).deliver_now
 
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'Email send to County Coordinator')
