@@ -203,12 +203,12 @@ class RegisterMergeService
   end
 
   def coordinator_metadata_fields(register)
-    COORDINATOR_METADATA_FIELDS.filter_map do |field, label|
+    COORDINATOR_METADATA_FIELDS.map do |field, label|
       value = register.public_send(field)
       next if value.blank?
 
       { field: field.to_s, label: label, value: value.to_s.truncate(120) }
-    end
+    end.compact
   end
 
   def coordinator_metadata_block_reason(register)
@@ -303,9 +303,9 @@ class RegisterMergeService
   def build_success_summary(merged_ids, totals_moved)
     parts = []
     parts << "Merged #{merged_ids.size} duplicate register(s) (ids: #{merged_ids.map(&:to_s).join(', ')}) into this register."
-    detail = totals_moved.filter_map do |name, n|
+    detail = totals_moved.map do |name, n|
       "#{self.class.model_label(name)}: #{n}" if n.positive?
-    end
+    end.compact
     parts << "Reassigned — #{detail.join('; ')}." if detail.any?
     parts.join(' ')
   end
