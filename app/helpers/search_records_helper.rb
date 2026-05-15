@@ -1,3 +1,4 @@
+require 'set'
 module SearchRecordsHelper
 
   def dwelling_offset_message(offset)
@@ -25,13 +26,18 @@ module SearchRecordsHelper
   end
 
   def viewed(search_query, search_record)
-    search_results = search_query.search_result
-    viewed_records = search_results.viewed_records
-    field = ''
-    if viewed_records.present?
-      field = '(Seen)' if viewed_records.include?("#{search_record[:_id]}")
+    # Memoized per request; avoids re-reading viewed_records for every result row.
+    @viewed_search_record_id_set ||= Set.new(
+      (search_query&.search_result&.viewed_records || []).map(&:to_s)
+    )
+    return '' if @viewed_search_record_id_set.empty?
+
+    rid = search_record[:_id] || search_record['_id']
+    if @viewed_search_record_id_set.include?(rid.to_s)
+      '(Seen)'
+    else
+      ''
     end
-    field
   end
 
   def entitle(record)

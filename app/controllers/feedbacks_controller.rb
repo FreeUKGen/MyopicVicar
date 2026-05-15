@@ -347,6 +347,13 @@ class FeedbacksController < ApplicationController
     params.delete('utf8')
     params.delete('controller')
     params.delete('action')
+    # problem_url / problem_button_options pass report_session_id; Feedback stores session_id
+    rsid = params[:report_session_id].presence || params['report_session_id'].presence
+    if rsid.present? && params[:session_id].blank? && params['session_id'].blank?
+      params[:session_id] = rsid
+    end
+    params.delete(:report_session_id)
+    params.delete('report_session_id')
     params.permit!
   end
 
