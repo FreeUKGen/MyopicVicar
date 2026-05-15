@@ -57,49 +57,43 @@ class User
 
   # Override Devise method to find user by login (email or username)
   def self.find_for_database_authentication(warden_conditions)
-    conditions = warden_conditions. dup
-    
-    if (login = conditions.delete(:login))
-      sanitized_login = sanitize_login(login)
-      return nil unless sanitized_login
-      
-      # SAFE:  Mongoid automatically escapes values
-      where(conditions).or(
-        { email: sanitized_login },
-        { username:  sanitized_login }
-      ).first
-    elsif conditions.key? (:email) || conditions.key?(:username)
-      where(conditions).first
-    end
+    find_first_by_auth_conditions(warden_conditions)
   end
 
   def self.find_first_by_auth_conditions(warden_conditions)
-    conditions = warden_conditions.dup
-    
+    conditions = warden_conditions.respond_to?(:with_indifferent_access) ? warden_conditions.with_indifferent_access.dup : warden_conditions.dup
+
     if (login = conditions.delete(:login))
-      sanitized_login = sanitize_login(login)
-      return nil unless sanitized_login
-      
-      # SAFE: Mongoid automatically escapes values - call . or on where()
-      where({}).or(
-        { email: sanitized_login },
-        { username: sanitized_login }
-      ).first
+      stripped = sanitize_login(login)
+      return nil unless stripped
+
+      scope = conditions.blank? ? all : where(conditions.to_h)
+      email_criteria = { email: /\A#{::Regexp.escape(stripped)}\z/i }
+
+      if stripped.include?('@')
+        scope.or(email_criteria).first
+      else
+        scope.or(email_criteria, { username: /\A#{::Regexp.escape(stripped)}\z/i }).first
+      end
+    elsif (email = conditions[:email]).present?
+      email = email.to_s.strip
+      return nil if email.blank? || email.length > 255
+
+      remainder = conditions.except(:email, 'email')
+      scope = remainder.blank? ? all : where(remainder.to_h)
+      scope.or(email: /\A#{::Regexp.escape(email)}\z/i).first
     else
-      where(conditions).first
+      where(conditions.to_h).first
     end
   end
 
-  # Sanitize login input
+  # Sanitize login input (strip / length only; matching is case-insensitive in queries)
   def self.sanitize_login(login)
     return nil if login.blank?
-    
-    # Sanitize: strip whitespace and convert to lowercase
-    sanitized = login.to_s.strip.downcase
-    
-    # Return nil if empty or too long (prevent DoS)
-    return nil if sanitized.blank? || sanitized. length > 255
-    
+
+    sanitized = login.to_s.strip
+    return nil if sanitized.blank? || sanitized.length > 255
+
     sanitized
   end
 

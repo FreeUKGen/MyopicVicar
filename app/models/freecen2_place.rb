@@ -240,7 +240,7 @@ class Freecen2Place
       result = false
       return result if place.blank?
 
-      place_object = Freecen2Place.find(id: place)
+      place_object = Freecen2Place.find_by(id: place)
       if place_object.present?
         result = true if Freecen2Place.valid_chapman_code?(place_object.chapman_code) && Place.valid_county?(place_object.county)
       end

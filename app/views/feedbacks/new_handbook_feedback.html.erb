@@ -22,7 +22,7 @@
   <%= f.input :screenshot, :label => "Screenshot: Only jpg, jpeg, png or gif file" %>
   <%= f.input :feedback_time, :as => :hidden, input_html: {value: Time.now.utc } %>
   <%= f.input :user_id , :as => :hidden, input_html: {value: session[:userid] } %>
-  <%= f.input :session_id, :as => :hidden, input_html: {value: request.session['session_id'] } %>
+  <%= f.input :session_id, :as => :hidden, input_html: { value: browser_session_id_string } %>
   <%= f.input :problem_page_url, :as => :hidden, input_html: {value: request.env['REQUEST_URI'] } %>
   <%= f.input :previous_page_url,:as => :hidden, input_html: {value: request.env['REQUEST_URI'] } %>
   <%= f.input :feedback_type, :as => :hidden, input_html: {value: 'freecen handbook feedback' } %>
