@@ -41,8 +41,8 @@ class ImageServerImagesController < ApplicationController
     @place_name = @place.place_name
     @chapman_code = @place.chapman_code
     @user = get_user
-    @source = Source.id(session[:source_id]).first
-    @group = ImageServerGroup.id(session[:image_server_group_id]).first
+    @source = Source.find(:id=>session[:source_id])
+    @group = ImageServerGroup.find(:id=>session[:image_server_group_id])
   end
 
   def download
