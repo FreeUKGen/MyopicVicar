@@ -2,7 +2,7 @@
   <%= link_to 'Edit Register Fields', edit_register_path(@register), method: :get, :class => "btn   btn--small" %>
   <%= link_to  'Destroy Register', register_path(@register), method: :delete, data: { confirm: 'Are you sure you want to destroy this Register.? It will not happen if there are dependants!'}, :class => "btn   btn--small " %>
   <%= link_to 'Change Register Type', rename_register_path(@register), method: :get, data: { confirm: 'Are you really really sure that you to change the Register Type?'}, :class => "btn   btn--small" %>
-  <%= link_to 'Merge identical register types (preview)', merge_preview_register_path(@register), method: :get, :class => "btn   btn--small " %>
+  <%= link_to 'Dry run: merge duplicate registers', merge_preview_register_path(@register), method: :get, :class => "btn   btn--small " %>
   <%= which_image_server_link(@image_server) %>
   <%= which_embargo_rule_link(@embargo_rules) %>
   <%= which_gaps_link(@gaps) %>
