@@ -287,13 +287,14 @@ class CsvFile < CsvFiles
   attr_accessor :header, :list_of_registers, :header_error, :system_error, :data_hold,
     :array_of_data_lines, :default_charset, :file, :file_name, :userid, :uploaded_date, :slurp_fail_message,
     :file_start, :file_locations, :data, :unique_locations, :unique_existing_locations, :success,
-    :all_existing_records, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :uploaded_file_is_flexible_format
+    :all_existing_records, :existing_records_by_line_id, :total_files, :total_records, :total_data_errors, :total_header_errors, :place_id, :uploaded_file_is_flexible_format
   def initialize(file)
     standalone_filename = File.basename(file)
     full_dirname = File.dirname(file)
     parent_dirname = File.dirname(full_dirname)
     user_dirname = full_dirname.sub(parent_dirname, '').gsub(File::SEPARATOR, '')
     @all_existing_records = Hash.new
+    @existing_records_by_line_id = Hash.new
     @array_of_data_lines = Array.new {Array.new}
     @data = Hash.new
     @default_charset = "Windows-1252"
@@ -406,37 +407,99 @@ class CsvFile < CsvFiles
     success
   end
 
-  def check_and_create_db_record_for_entry(project,data_record,freereg1_csv_file)
-    #p " check and create"
-    if !project.force_rebuild
-      #p "processing create_db_record_for_entry"
-      data_record.delete(:chapman_code)
-      entry = Freereg1CsvEntry.new(data_record)
-      #p "new entry"
-      #p entry
-      new_digest = entry.cal_digest
-      if @all_existing_records.has_value?(new_digest)
-        # p "we have an existing record but may be for different location"
-        existing_record = Freereg1CsvEntry.id(@all_existing_records.key(new_digest)).first
-        if existing_record.present?
-          # p "yes we have a record"
-          success = self.existing_entry_may_be_same_location(existing_record,data_record,project,freereg1_csv_file)
-          #we need to eliminate this record from hash
-          # p "dropping hash entry"
-          @all_existing_records.delete(@all_existing_records.key(existing_record.record_digest))
-        else
-          # p "No record existed"
-          success = self.create_db_record_for_entry(project,data_record,freereg1_csv_file)
-        end
+  def check_and_create_db_record_for_entry(project, data_record, freereg1_csv_file)
+    if project.force_rebuild
+      return create_db_record_for_entry(project, data_record, freereg1_csv_file)
+    end
+
+    data_record.delete(:chapman_code)
+
+    existing_record = find_existing_record_by_line_id(data_record)
+    if existing_record.present?
+      return update_db_record_for_entry(project, existing_record, data_record, freereg1_csv_file)
+    end
+
+    entry = Freereg1CsvEntry.new(data_record)
+    new_digest = entry.cal_digest
+    if @all_existing_records.has_value?(new_digest)
+      existing_record = Freereg1CsvEntry.id(@all_existing_records.key(new_digest)).first
+      if existing_record.present?
+        success = existing_entry_may_be_same_location(existing_record, data_record, project, freereg1_csv_file)
+        remove_existing_record_from_replacement_tracking(existing_record)
       else
-        # p "no digest"
-        success = self.create_db_record_for_entry(project,data_record,freereg1_csv_file)
+        success = create_db_record_for_entry(project, data_record, freereg1_csv_file)
       end
     else
-      # p "rebuild"
-      success = self.create_db_record_for_entry(project,data_record,freereg1_csv_file)
+      success = create_db_record_for_entry(project, data_record, freereg1_csv_file)
     end
-    return success
+    success
+  end
+
+  def find_existing_record_by_line_id(data_record)
+    line_id = data_record[:line_id].to_s
+    return nil if line_id.blank?
+
+    entry_id = @existing_records_by_line_id[line_id]
+    return nil if entry_id.blank?
+
+    Freereg1CsvEntry.id(entry_id).first
+  end
+
+  def remove_existing_record_from_replacement_tracking(existing_record)
+    return if existing_record.blank?
+
+    @all_existing_records.delete(existing_record.id)
+    @existing_records_by_line_id.delete(existing_record.line_id) if existing_record.line_id.present?
+  end
+
+  def update_db_record_for_entry(project, existing_record, data_record, freereg1_csv_file)
+    prior_digest = existing_record.record_digest
+    existing_record.multiple_witnesses.clear
+    existing_record.assign_attributes(data_record)
+    attach_witnesses_to_entry(existing_record, data_record)
+    existing_record.freereg1_csv_file = freereg1_csv_file
+    existing_record.save
+    if existing_record.errors.any?
+      return existing_record.errors.messages
+    end
+
+    remove_existing_record_from_replacement_tracking(existing_record)
+
+    if existing_record.record_digest == prior_digest
+      if existing_record.search_record.present?
+        return 'nochange'
+      end
+
+      place = Place.id(place_id).first
+      if project.create_search_records && existing_record.enough_name_fields?
+        SearchRecord.update_create_search_record(existing_record, header[:search_record_version], place)
+      end
+      sleep((Rails.application.config.sleep.to_f).to_f)
+      return 'change'
+    end
+
+    place = Place.id(place_id).first
+    if project.create_search_records && existing_record.enough_name_fields?
+      SearchRecord.update_create_search_record(existing_record, header[:search_record_version], place)
+    end
+    sleep((Rails.application.config.sleep.to_f).to_f)
+    'change'
+  end
+
+  def attach_witnesses_to_entry(entry, data_record)
+    return unless data_record[:record_type] == 'ma' || data_record[:record_type] == 'ba'
+
+    entry.multiple_witnesses << MultipleWitness.new(witness_forename: data_record[:witness1_forename], witness_surname: data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
+    entry.multiple_witnesses << MultipleWitness.new(witness_forename: data_record[:witness2_forename], witness_surname: data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
+    entry.multiple_witnesses << MultipleWitness.new(witness_forename: data_record[:witness3_forename], witness_surname: data_record[:witness3_surname]) unless data_record[:witness3_forename].blank? && data_record[:witness3_surname].blank?
+    entry.multiple_witnesses << MultipleWitness.new(witness_forename: data_record[:witness4_forename], witness_surname: data_record[:witness4_surname]) unless data_record[:witness4_forename].blank? && data_record[:witness4_surname].blank?
+    entry.multiple_witnesses << MultipleWitness.new(witness_forename: data_record[:witness5_forename], witness_surname: data_record[:witness5_surname]) unless data_record[:witness5_forename].blank? && data_record[:witness5_surname].blank?
+    entry.multiple_witnesses << MultipleWitness.new(witness_forename: data_record[:witness6_forename], witness_surname: data_record[:witness6_surname]) unless data_record[:witness6_forename].blank? && data_record[:witness6_surname].blank?
+    entry.multiple_witnesses << MultipleWitness.new(witness_forename: data_record[:witness7_forename], witness_surname: data_record[:witness7_surname]) unless data_record[:witness7_forename].blank? && data_record[:witness7_surname].blank?
+    entry.multiple_witnesses << MultipleWitness.new(witness_forename: data_record[:witness8_forename], witness_surname: data_record[:witness8_surname]) unless data_record[:witness8_forename].blank? && data_record[:witness8_surname].blank?
+    entry.multiple_witnesses.each do |witness|
+      witness.witness_surname = witness.witness_surname.upcase if witness.witness_surname.present?
+    end
   end
 
   def check_and_set_characterset(code_set,csvtxt,project)
@@ -589,19 +652,7 @@ class CsvFile < CsvFiles
     #p "creating new entry"
     data_record.delete(:chapman_code)
     entry = Freereg1CsvEntry.new(data_record)
-    if data_record[:record_type] == "ma" || data_record[:record_type] == "ba"
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness1_forename],:witness_surname => data_record[:witness1_surname]) unless data_record[:witness1_forename].blank? && data_record[:witness1_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness2_forename],:witness_surname => data_record[:witness2_surname]) unless data_record[:witness2_forename].blank? && data_record[:witness2_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness3_forename], :witness_surname => data_record[:witness3_surname]) unless data_record[:witness3_forename].blank? &&  data_record[:witness3_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness4_forename], :witness_surname => data_record[:witness4_surname]) unless data_record[:witness4_forename].blank? &&  data_record[:witness4_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness5_forename], :witness_surname => data_record[:witness5_surname]) unless data_record[:witness5_forename].blank? &&  data_record[:witness5_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness6_forename], :witness_surname => data_record[:witness6_surname]) unless data_record[:witness6_forename].blank? &&  data_record[:witness6_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness7_forename], :witness_surname => data_record[:witness7_surname]) unless data_record[:witness7_forename].blank? &&  data_record[:witness7_surname].blank?
-      entry.multiple_witnesses << MultipleWitness.new(:witness_forename => data_record[:witness8_forename], :witness_surname => data_record[:witness8_surname]) unless data_record[:witness8_forename].blank? &&  data_record[:witness8_surname].blank?
-    end
-    entry.multiple_witnesses.each do |witness|
-      witness.witness_surname = witness.witness_surname.upcase if witness.witness_surname.present?
-    end
+    attach_witnesses_to_entry(entry, data_record)
     entry.freereg1_csv_file = freereg1_csv_file
     #p "creating entry"
     entry.save
@@ -724,6 +775,7 @@ class CsvFile < CsvFiles
     #p "getting existing locations"
     locations = Hash.new
     all_records_hash = Hash.new
+    @existing_records_by_line_id = Hash.new
     freereg1_csv_files = Freereg1CsvFile.where(:file_name => @header[:file_name], :userid => @header[:userid]).all
     freereg1_csv_files.each do |batch|
       args = {:chapman_code => batch.county,:place_name => batch.place,:church_name =>
@@ -733,6 +785,7 @@ class CsvFile < CsvFiles
       batch.batch_errors.delete_all
       batch.freereg1_csv_entries.each do |entry|
         all_records_hash[entry.id] = entry.record_digest
+        @existing_records_by_line_id[entry.line_id] = entry.id if entry.line_id.present?
       end
     end
     return locations,all_records_hash
