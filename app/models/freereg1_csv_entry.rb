@@ -552,20 +552,14 @@ class Freereg1CsvEntry
     self['register_type'] = search_record[:location_names][1].gsub('[','').gsub(']','') unless search_record[:location_names].nil? || search_record[:location_names][1].nil?
     place = ''
     church = ''
-    unless search_record[:location_names].nil? || search_record[:location_names][0].nil?
-      name_parts = search_record[:location_names][0].split(') ')
-      case
-      when name_parts.length == 1
-        (place, church) = search_record[:location_names][0].split(' (')
-      when name_parts.length == 2
-        place = name_parts[0] + ")"
-        name_parts[1][0] = ""
-        church = name_parts[1]
-      else
-      end
+    if search_record.present?
+      parts = search_record.respond_to?(:extract_location_parts) ? search_record.extract_location_parts : nil
+      place = parts[0] if parts && parts[0].present?
+      church = parts[1] if parts && parts[1].present?
     end
-    place.present? ? self['place'] = place.strip : self['place'] = ''
-    church.present? ? self['church_name'] = church[0..-2] : self['church_name'] = ''
+
+    self['place'] = place.to_s.strip
+    self['church_name'] = church.to_s.strip
     self['county'] = ""
     code = search_record[:chapman_code] unless search_record[:chapman_code].nil?
     ChapmanCode::CODES.each_pair do |key,value|

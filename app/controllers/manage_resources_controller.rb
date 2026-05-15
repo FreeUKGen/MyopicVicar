@@ -32,7 +32,15 @@ class ManageResourcesController < ApplicationController
     continue = true
     @user = get_user
     @user_roles = get_user_roles
-    @session_role = params[:current_role].present? ? params[:current_role] : @user.person_role #handles navigation from your actions
+    # Prefer explicit navigation param; else keep the role they were already using (e.g. after reject_access
+    # redirects here without params — do not reset multi-role members to person_role only).
+    @session_role = if params[:current_role].present?
+                      params[:current_role]
+                    elsif session[:role].present? && @user_roles.include?(session[:role])
+                      session[:role]
+                    else
+                      @user.person_role
+                    end
     @current_role = params[:user_role].present? ? params[:user_role] : @session_role
     if @user.present?
       if @user.blank?

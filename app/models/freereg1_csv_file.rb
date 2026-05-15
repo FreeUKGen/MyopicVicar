@@ -912,7 +912,7 @@ class Freereg1CsvFile
     place_name = self.place
     church_name = self.church_name
     register_type = RegisterType.display_name(self.register_type)
-    location_names << "#{place_name} (#{church_name})"
+    location_names << "#{place_name} ||| #{church_name}"
     location_names  << " [#{register_type}]"
     self.freereg1_csv_entries.no_timeout.each do |entry|
       if entry.search_record.nil?
