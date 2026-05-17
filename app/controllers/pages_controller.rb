@@ -23,6 +23,15 @@ class PagesController < ApplicationController
     
   end
   
+  # Browsers request these at the site root; they are not CMS pages under app/views/pages.
+  # Without a file in public/, Rails hits this catch-all and would raise RoutingError.
+  BROWSER_ROOT_PROBES = %w[
+    apple-touch-icon-precomposed.png
+    apple-touch-icon.png
+    favicon.ico
+    browserconfig.xml
+  ].freeze
+
   # Catch-all action to render pages dynamically based on path
   def show
     # Skip asset requests - they should be served by web server
@@ -30,9 +39,14 @@ class PagesController < ApplicationController
       head :not_found
       return
     end
-    
+
     # Get the page path from params (everything after the route)
     page_path = params[:path] || params[:id]
+
+    if BROWSER_ROOT_PROBES.include?(File.basename(page_path.to_s))
+      head :not_found
+      return
+    end
     
     # Convert path to view file name
     # Handle both "about" and "help/getting-started" style paths
