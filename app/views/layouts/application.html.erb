@@ -110,7 +110,7 @@
     <% end %>
     <%= csrf_meta_tags %>
   </head>
-  <body ontouchstart class="offcanvas  offcanvas--rev">
+  <body ontouchstart class="offcanvas  offcanvas--rev" data-turbo="false">
     <% if appname_downcase == 'freecen' || appname_downcase == 'freebmd'%>
       <!-- Google Tag Manager (noscript) -->
       <noscript><iframe src='https://www.googletagmanager.com/ns.html?id=<%= "#{gtm_key_value}"%>'

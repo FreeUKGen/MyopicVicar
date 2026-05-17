@@ -108,6 +108,12 @@ class RegistersController < ApplicationController
       @church.blank? || @place.blank?
 
     @merge_preview = RegisterMergeService.new(@register).preview
+
+    return unless turbo_frame_request?
+
+    render partial: 'registers/merge_preview_frame',
+           locals: { preview: @merge_preview, register: @register },
+           layout: false
   end
 
   def merge

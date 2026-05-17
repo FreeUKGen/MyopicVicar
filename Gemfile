@@ -56,3 +56,4 @@ gem 'rubocop', '~> 1.23.0', require: false
 gem 'browser'
 gem "mongo_session_store", "~> 3.2"
 gem 'mimemagic', '~> 0.4.3'
+gem "turbo-rails", "~> 1.5"

@@ -317,6 +317,10 @@ GEM
     tilt (2.0.10)
     traceroute (0.8.1)
       rails (>= 3.0.0)
+    turbo-rails (1.5.0)
+      actionpack (>= 6.0.0)
+      activejob (>= 6.0.0)
+      railties (>= 6.0.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     tzinfo-data (1.2020.4)
@@ -380,6 +384,7 @@ DEPENDENCIES
   simple_form
   text
   traceroute
+  turbo-rails (~> 1.5)
   tzinfo-data
   uglifier
   unicode

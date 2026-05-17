@@ -1,0 +1,8 @@
+<%= turbo_frame_tag 'merge_preview' do %>
+  <p style="text-align: center" class="push-half--bottom">
+    <%= link_to 'Refresh dry run',
+                merge_preview_register_path(register),
+                class: 'btn   btn--small' %>
+  </p>
+  <%= render 'merge_preview_content', preview: preview, register: register %>
+<% end %>

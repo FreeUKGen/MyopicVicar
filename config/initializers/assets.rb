@@ -16,6 +16,9 @@ Rails.application.config.assets.version = '1.0'
 # Enable the asset pipeline
 
 Rails.application.configure do
+  config.assets.paths << Turbo::Engine.root.join('app/assets/javascripts')
+  config.assets.precompile += %w[turbo.min.js]
+
   config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
 
   config.assets.precompile += %w[styles/scss/lap_and_up.scss]
