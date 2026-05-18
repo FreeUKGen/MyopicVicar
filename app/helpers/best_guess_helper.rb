@@ -126,7 +126,7 @@ module BestGuessHelper
       result
     end
   end
-  
+
   def id_to_event_type event_type
     case event_type
       when 1
@@ -319,7 +319,7 @@ private
     when '.gif'
       'GIF'
     when '.tif', '.tiff'
-      'TIFF'
+      'JPG'
     when '.pdf'
       'PDF'
     else
