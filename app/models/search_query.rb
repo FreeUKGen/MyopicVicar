@@ -1801,7 +1801,7 @@
   end
 
   def freebmd_max_results
-    FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    FreeregOptionsConstants::MAXIMUM_NUMBER_OF_BMD_RESULTS
   end
 
   def freebmd_capped_count(records)
@@ -1923,6 +1923,16 @@
     return records unless match_recorded_ages_or_dates
 
     records.where(RecordTypeID: RecordType::DEATHS)
+  end
+
+  # Births/marriages selected alongside deaths: return them from the base query without
+  # applying age-at-death criteria (that field is mainly meaningful on death rows).
+  def append_matching_non_death_bmd_records(results, records)
+    non_death_ids = Array(bmd_record_type).map(&:to_i) - [RecordType::DEATHS]
+    return results if non_death_ids.empty?
+
+    results << records.where(RecordTypeID: non_death_ids).limit(freebmd_max_results)
+    results
   end
 
   def bmd_county_params
@@ -2808,12 +2818,6 @@
       death_records = records.where(RecordTypeID: RecordType::DEATHS)
       results.concat(age_range_search(death_records))
       results.concat(blank_age_death_records(death_records)) unless self.match_recorded_ages_or_dates
-      unless self.match_recorded_ages_or_dates
-        non_death_ids = Array(bmd_record_type).map(&:to_i) - [RecordType::DEATHS]
-        if non_death_ids.any?
-          results << records.where(RecordTypeID: non_death_ids).limit(freebmd_max_results)
-        end
-      end
     else
       unless self.match_recorded_ages_or_dates
         t = SearchQuery.get_search_table.table_name
@@ -2837,6 +2841,7 @@
       dob_records ||= records_with_dob(age_scope)
       results.concat(calculate_age_for_dob(dob_records))
     end
+    append_matching_non_death_bmd_records(results, records)
     results.uniq
   end
 
