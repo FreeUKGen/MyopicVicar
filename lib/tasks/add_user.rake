@@ -8,7 +8,7 @@ namespace :freeuk do
     failures = []
     total = UseridDetail.count
     UseridDetail.no_timeout.each do |detail|
-      if User.where(username: detail.userid).exists?
+      if User.where(username: detail.userid_lower_case).exists?
         skipped_existing += 1
         next
       end
