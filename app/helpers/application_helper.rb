@@ -33,10 +33,20 @@ module ApplicationHelper
 
   # Pagination for search results show (Kaminari page / per), not the GRO index Page field on BestGuess.
   def bmd_search_results_pagination_params(page: nil, results_per_page: nil)
-    p = page.presence || params[:page].presence
+    p = page.presence || params[:page].presence || params[:search_page].presence
     rpp = results_per_page.presence || params[:results_per_page].presence
     {}.tap do |h|
       h[:page] = p if p.present?
+      h[:results_per_page] = rpp if rpp.present?
+    end
+  end
+
+  # same_page_entries uses query param +page+ for the GRO register page; keep results pagination separate.
+  def bmd_same_page_entries_pagination_params(page: nil, results_per_page: nil)
+    p = page.presence || params[:search_page].presence
+    rpp = results_per_page.presence || params[:results_per_page].presence
+    {}.tap do |h|
+      h[:search_page] = p if p.present?
       h[:results_per_page] = rpp if rpp.present?
     end
   end
