@@ -2589,6 +2589,18 @@
     end
   end
 
+  # Uncertain/partial DOB strings on invalid-age rows, restricted to the requested YOB range.
+  def dob_uncertain_aad_in_year_range(records)
+    return [] unless date_of_birth_range?
+
+    min_year = date_array(min_dob_at_death)[0].to_i
+    max_year = date_array(max_dob_at_death)[0].to_i
+    Array(date_of_birth_uncertain_aad(records)).select do |r|
+      year = r.AgeAtDeath.to_s.scan(/\d+/).find { |d| d.length == 4 }.to_i
+      year.positive? && (min_year..max_year).cover?(year)
+    end
+  end
+
   def age_at_death_with_year records
     return records.none if records.is_a?(ActiveRecord::Relation) && !date_of_birth_range?
     return [] if !date_of_birth_range?
@@ -2764,11 +2776,7 @@
     records.none
   end
 
-  # Fallback path for exact Year-of-Birth searches (death_at_age option 3).
-  # Keeps the intended behavior:
-  # - includes inferred YOB from numeric ages in older records
-  # - includes encoded month/year forms (e.g. 19MY1883) via exact/uncertain matching
-  # - keeps "no age/DOB" rows unless match_recorded_ages_or_dates is enabled
+  # Fallback path for Year-of-Birth searches (death_at_age options 3 exact, 4 range).
   # Returns an Array of BestGuess rows, deduplicated by record hash.
   def combined_results_exact_dob(records)
     started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -2787,13 +2795,24 @@
     if dob_at_death.present?
       date_value = date_array(dob_at_death)[0].to_s
       results.concat(dob_results.select { |r| r.AgeAtDeath.to_s.include?(date_value) })
+      invalid_rows = invalid_age_records(dob_results)
+      results.concat(Array(date_of_birth_search_range_a(invalid_rows)))
+      results.concat(Array(date_of_birth_uncertain_aad(invalid_rows)))
+    elsif date_of_birth_range?
+      # Encoded DOB (e.g. 28JA1911): match 4-digit year in range — same as UNION path.
+      results.concat(Array(age_at_death_with_year(records_with_dob(dob_results))))
+      invalid_rows = invalid_age_records(dob_results)
+      results.concat(Array(date_of_birth_search_range_a(invalid_rows)))
+      results.concat(dob_uncertain_aad_in_year_range(invalid_rows))
+    else
+      invalid_rows = invalid_age_records(dob_results)
+      results.concat(Array(date_of_birth_search_range_a(invalid_rows)))
+      results.concat(Array(date_of_birth_uncertain_aad(invalid_rows)))
     end
 
-    invalid_rows = invalid_age_records(dob_results)
-    results.concat(Array(date_of_birth_search_range_a(invalid_rows)))
-    results.concat(Array(date_of_birth_uncertain_aad(invalid_rows)))
-
-    results.concat(Array(no_aad_or_dob(all_rows)))
+    unless date_of_birth_range? || match_recorded_ages_or_dates
+      results.concat(Array(no_aad_or_dob(all_rows)))
+    end
 
     normalized = normalize_freebmd_combined_result_rows(results)
     elapsed_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round
