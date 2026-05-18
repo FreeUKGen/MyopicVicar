@@ -41,7 +41,7 @@ class BestGuessController < ApplicationController
         locale: params[:locale],
         record_hash: @resolved_record_hash,
         search_entry: params[:search_entry]
-      }.compact
+      }.merge(helpers.bmd_search_results_pagination_params).compact
 
       if @search && params[:search_id].present?
         redirect_to(

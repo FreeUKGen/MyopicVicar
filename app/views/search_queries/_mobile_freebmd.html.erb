@@ -17,7 +17,7 @@
           </td>
 
           <td>
-              <%= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, search_entry: search_record.RecordNumber, record_hash: search_record.record_hash), :rel => "nofollow", :title => "")%>
+              <%= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe, friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, bmd_entry_information_params(search_record, page: @page, results_per_page: @results_per_page)), rel: "nofollow", title: "") %>
               <i><%= seen(@search_query,search_record) %></i>
           </td>
         </tr>

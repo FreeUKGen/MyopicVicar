@@ -2,7 +2,7 @@
 <% title "Marriage Details" %>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% if @search %>
-  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @current_record.record_hash, page: @current_record.Page, results_per_page: @results_per_page), class: " btn   btn--small" if @search_id.present?%>
+  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, bmd_back_to_search_results_path(@search_query, anchor: @current_record.record_hash), class: " btn   btn--small" if @search_id.present?%>
   <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @current_record.RecordNumber, @current_record.friendly_url, search_entry: @current_record.RecordNumber, record_hash: @current_record.record_hash), class: " btn   btn--small" unless @current_record.blank?%>
 <% end %>
 <h1 class="accessibility">Marriage Informations</h1>

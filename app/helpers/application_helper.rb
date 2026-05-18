@@ -31,6 +31,27 @@ module ApplicationHelper
     "#{base}#{path}"
   end
 
+  # Pagination for search results show (Kaminari page / per), not the GRO index Page field on BestGuess.
+  def bmd_search_results_pagination_params(page: nil, results_per_page: nil)
+    p = page.presence || params[:page].presence
+    rpp = results_per_page.presence || params[:results_per_page].presence
+    {}.tap do |h|
+      h[:page] = p if p.present?
+      h[:results_per_page] = rpp if rpp.present?
+    end
+  end
+
+  def bmd_back_to_search_results_path(search_query, anchor:)
+    search_query_path(search_query, { anchor: anchor }.merge(bmd_search_results_pagination_params))
+  end
+
+  def bmd_entry_information_params(search_record, page: nil, results_per_page: nil)
+    {
+      search_entry: search_record.RecordNumber,
+      record_hash: search_record.record_hash
+    }.merge(bmd_search_results_pagination_params(page: page, results_per_page: results_per_page))
+  end
+
   DONATE_ID = {
       #field: id
       "freebmd" => '5007',
