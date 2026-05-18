@@ -1823,6 +1823,16 @@
     attrs
   end
 
+  # Rehydrate BestGuess from Mongo snapshot; CountyComboCounty is not a DB column.
+  def bmd_instantiate_from_snapshot_attrs(table, attrs, snapshot_hash: nil)
+    attrs = attrs.respond_to?(:stringify_keys) ? attrs.stringify_keys : attrs.transform_keys(&:to_s)
+    county_combo_county = attrs.delete('CountyComboCounty')
+    row = table.new(attrs)
+    row.snapshot_record_hash = snapshot_hash.to_s if snapshot_hash.present? && row.respond_to?(:snapshot_record_hash=)
+    row.county_combo_county = county_combo_county if county_combo_county.present? && row.respond_to?(:county_combo_county=)
+    row
+  end
+
   def bmd_county_lookup_for_records(results)
     combo_ids = case results
                 when Array
@@ -2314,9 +2324,7 @@
     sort_freebmd_hash_key_pairs!(pairs)
     table = SearchQuery.get_search_table
     search_results = pairs.map do |hkey, attrs|
-      r = table.new(attrs.transform_keys(&:to_s))
-      r.snapshot_record_hash = hkey.to_s if r.respond_to?(:snapshot_record_hash=)
-      r
+      bmd_instantiate_from_snapshot_attrs(table, attrs, snapshot_hash: hkey)
     end
     [get_bmd_search_response, search_results, ucf_search_results, search_results.size]
   end
