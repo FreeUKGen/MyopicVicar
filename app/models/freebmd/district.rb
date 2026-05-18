@@ -34,8 +34,12 @@ class District < FreebmdDbBase
     district_name = district_name.gsub(/ /,"-") if self.InfoBookmark == "dash"
     district_name = district_name.gsub(/upon/,"on") if self.InfoBookmark == "upon"
     district_name = district_name.gsub(/ [A-Za-z]*$/,"") if self.InfoBookmark == "trnc"
-    district_name = district_name.gsub(/ [A-Za-z]*$/,district_suffix) if self.InfoBookmark.match?(/sfx[0-9]/)
-    district_name = self.InfoBookmark unless self.InfoBookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
+    if self.InfoBookmark.present? && self.InfoBookmark.match?(/sfx[0-9]/)
+      district_name = district_name.gsub(/ [A-Za-z]*$/, district_suffix)
+    end
+    if self.InfoBookmark.present? && !self.InfoBookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
+      district_name = self.InfoBookmark
+    end
     district_name = district_name.gsub(/ /,"%20")
     district_name
   end
@@ -46,8 +50,12 @@ class District < FreebmdDbBase
     district_name = district_name.gsub(/&/,"and")
     district_name = district_name.gsub(/upon/,"on") if self.InfoBookmark == "upon"
     district_name = district_name.gsub(/ [A-Za-z]*$/,"") if self.InfoBookmark == "trnc"
-    district_name = district_name.gsub(/ [A-Za-z]*$/,district_suffix) if self.InfoBookmark.match?(/sfx[0-9]/)
-    district_name = self.InfoBookmark unless self.InfoBookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
+    if self.InfoBookmark.present? && self.InfoBookmark.match?(/sfx[0-9]/)
+      district_name = district_name.gsub(/ [A-Za-z]*$/, district_suffix)
+    end
+    if self.InfoBookmark.present? && !self.InfoBookmark.match?(/aaaa|dash|upon|trnc|sfx[0-9]/)
+      district_name = self.InfoBookmark
+    end
     district_name
   end
 
@@ -70,6 +78,7 @@ class District < FreebmdDbBase
     friendly.gsub!(/\W/, '-')
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
+    friendly
   end
 
   def District.districts_as_array
@@ -122,7 +131,12 @@ class District < FreebmdDbBase
     "#{clean(district.DistrictName)} #{district.district_validity_period district}"
   end
 
+  # Used when deciding whether to link to the public district profile (see DistrictsHelper).
+  # Invented/blank-name rows are placeholders in the GRO index and have no usable profile data.
   def valid?
+    return false if self.Invented.to_i != 0
+    return false if self.DistrictName.blank?
+
     !(self.YearStart == 9999) && !(self.QuarterStart == 9)
   end
 

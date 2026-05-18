@@ -28,8 +28,14 @@
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="intro">
     <p>This is the information we hold about the <%= "#{@district.district_name_display_format}"%> Registration District.</p>
-    <p><%= "#{@district.district_name_display_format}"%> Registration District has been in existence from <%= "#{QuarterDetails.quarter_month(@district.QuarterStart).capitalize} #{@district.YearStart}" %> until
-    <% if @district.YearEnd == 9999 %><%= 'the present day' %><% else %><%= "#{QuarterDetails.quarter_month(@district.QuarterEnd).capitalize} #{@district.YearEnd}" %><% end %>.</p>
+    <% if @district.YearStart.present? && @district.QuarterStart.present? && @district.YearEnd.present? %>
+      <p><%= "#{@district.district_name_display_format}"%> Registration District has been in existence from <%= "#{QuarterDetails.quarter_month(@district.QuarterStart).capitalize} #{@district.YearStart}" %> until
+      <% if @district.YearEnd == 9999 %><%= 'the present day' %><% elsif @district.QuarterEnd.present? %><%= "#{QuarterDetails.quarter_month(@district.QuarterEnd).capitalize} #{@district.YearEnd}" %><% else %><%= @district.YearEnd %><% end %>.</p>
+    <% elsif @district.Invented.to_i != 0 %>
+      <p>This district number is used as a placeholder for some index entries. Full district metadata (name, date range, volumes) is not held for this row.</p>
+    <% else %>
+      <p>Date range information for this registration district is not available in our database.</p>
+    <% end %>
   </div>
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="counties">
     <h2>Counties</h2>

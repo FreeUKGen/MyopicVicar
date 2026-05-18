@@ -53,7 +53,8 @@ module DistrictsHelper
         district_friendly_url_path(path_opts)
       )
     else
-      district.DistrictName
+      label = search_record[:District].presence || district.DistrictName
+      label.present? ? titleize_string(label.to_s) : 'Registration district'
     end
   end
 
@@ -74,7 +75,8 @@ module DistrictsHelper
         district_friendly_url_path(path_opts)
       )
     else
-      district.DistrictName
+      label = search_record[:District].presence || district.DistrictName
+      label.present? ? titleize_string(label.to_s) : 'Registration district'
     end
   end
 end

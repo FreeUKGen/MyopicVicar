@@ -1,6 +1,7 @@
 class Contact
   include Mongoid::Document
   include Mongoid::Timestamps
+  include GithubIssueClosable
   field :body, type: String
   field :contact_time, type: DateTime
   field :name, type: String
