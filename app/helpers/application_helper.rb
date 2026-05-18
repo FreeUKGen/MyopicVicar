@@ -38,9 +38,12 @@ module ApplicationHelper
       "freereg" => '5004',
     }
   def nav_search_form_link
-    #check_current_page(main_app.new_search_query_path)
     path = 'search_queries/new'
-    link_to('Search', main_app.new_search_query_path, class: check_current_page(path)) #unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
+    link_to(
+      'Search',
+      main_app.new_search_query_path(clear: 1),
+      class: check_current_page(path)
+    )
   end
 
   def nav_actions_page_link

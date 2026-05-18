@@ -140,13 +140,25 @@ class SearchQueriesController < ApplicationController
     url.include?('beta') ? page = beta_page : page= test_page
     @page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
 
-    @search_query = SearchQuery.new
     session.delete(:query)
-    old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?
-    @result_count = params[:result_count] if params[:result_count].present?
-    old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
-    @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
     @chapman_codes = ChapmanCode::CODES
+    @fresh_search = fresh_search_request?
+
+    if @fresh_search
+      @search_query = SearchQuery.new
+      @result_count = nil
+      return
+    end
+
+    old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?
+    @search_query = SearchQuery.new
+    @result_count = params[:result_count] if params[:result_count].present?
+
+    return unless old_query.present?
+
+    old_query.search_result.records = {} if old_query.search_result.present?
+    revise_attrs = old_query.attributes.except('_id', 'id', 'created_at', 'updated_at', 'c_at', 'u_at', 'search_result')
+    @search_query = SearchQuery.new(revise_attrs)
   end
 
   def remember
@@ -540,6 +552,11 @@ class SearchQueriesController < ApplicationController
 
     district_numbers = rows.map { |r| r.read_attribute(:DistrictNumber) }.compact.uniq
     @districts_by_number = District.where(DistrictNumber: district_numbers).index_by(&:DistrictNumber)
+  end
+
+  # Nav "Search" (?clear=1) and /search_queries/new without search_id start a blank form.
+  def fresh_search_request?
+    params[:clear].present? || params[:search_id].blank?
   end
 
 end

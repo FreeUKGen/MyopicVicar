@@ -1916,6 +1916,15 @@
     Array(bmd_record_type).any? { |t| t.to_s == '2' }
   end
 
+  # Age-at-death / encoded-DOB matching applies to death index rows only when the user
+  # checks "Match only recorded ages". Births and marriages use AgeAtDeath differently
+  # (often blank or encoded birth year), so they are excluded from age-filter subqueries.
+  def records_for_age_at_death_filter(records)
+    return records unless match_recorded_ages_or_dates
+
+    records.where(RecordTypeID: RecordType::DEATHS)
+  end
+
   def bmd_county_params
     params = {}
     params[:chapman_codes] = {County: chapman_codes} if self.chapman_codes.present?
@@ -2799,9 +2808,11 @@
       death_records = records.where(RecordTypeID: RecordType::DEATHS)
       results.concat(age_range_search(death_records))
       results.concat(blank_age_death_records(death_records)) unless self.match_recorded_ages_or_dates
-      non_death_ids = Array(bmd_record_type).map(&:to_i) - [RecordType::DEATHS]
-      if non_death_ids.any?
-        results << records.where(RecordTypeID: non_death_ids).limit(freebmd_max_results)
+      unless self.match_recorded_ages_or_dates
+        non_death_ids = Array(bmd_record_type).map(&:to_i) - [RecordType::DEATHS]
+        if non_death_ids.any?
+          results << records.where(RecordTypeID: non_death_ids).limit(freebmd_max_results)
+        end
       end
     else
       unless self.match_recorded_ages_or_dates
@@ -2809,39 +2820,32 @@
         results.concat(records.where("#{t}.AgeAtDeath IS NULL OR #{t}.AgeAtDeath = ?", ''))
       end
     end
-    results.concat(aad_search(records)) unless self.age_at_death.blank?
+    age_scope = records_for_age_at_death_filter(records)
+    results.concat(aad_search(age_scope)) unless self.age_at_death.blank?
     #raise results.count.inspect
     # death_at_age "2" = numeric Age Range (DEATH_AGE_OPTIONS): min/max apply only via
     # age_range_search on deaths. The branches below reuse min/max for DOB / uncertain-age
     # semantics and would pull births and non-matching rows back into the result set.
     dob_records = nil
     unless death_at_age.to_s == '2'
-      invalid_age_records = invalid_age_records(records)
+      invalid_age_records = invalid_age_records(age_scope)
       results.concat(date_of_birth_uncertain_aad(invalid_age_records))
-      dob_records = records_with_dob(records)
+      dob_records = records_with_dob(age_scope)
       results.concat(calculate_age_range_for_dob(dob_records)) if check_age_range?
     end
     if age_at_death.present? && death_at_age.to_s != '2'
-      dob_records ||= records_with_dob(records)
+      dob_records ||= records_with_dob(age_scope)
       results.concat(calculate_age_for_dob(dob_records))
     end
     results.uniq
   end
 
-  def aad_search records
-   # unless self.match_recorded_ages_or_dates
-      records.where(AgeAtDeath: ["", self.age_at_death])
-     # records.select {|r|
-      #  [self.age_at_death, ''].include?(r.AgeAtDeath)
-     # }
-    #else
-     # records.select {|r|
-      #  r.AgeAtDeath == self.age_at_death
-      #}
-      records.where(AgeAtDeath: [self.age_at_death])
-   # end
-
-
+  def aad_search(records)
+    if match_recorded_ages_or_dates
+      records.where(AgeAtDeath: age_at_death)
+    else
+      records.where(AgeAtDeath: ['', age_at_death])
+    end
   end
 
   def min_dob_range_quarter
