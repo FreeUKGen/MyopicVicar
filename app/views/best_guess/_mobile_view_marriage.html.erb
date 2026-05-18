@@ -73,7 +73,12 @@
               given = spouse_from_record.GivenName.to_s
               surname = spouse_from_record.Surname.present? ? spouse_from_record.Surname.upcase : ''
               name = [given, surname].reject(&:blank?).join(' ')
-              name.present? ? name : record.AssociateName.to_s
+              name = record.AssociateName.to_s if name.blank?
+              if record.AssociateName.present? && spouse_from_record.Surname.present? && !spouse_from_record.Surname.to_s.casecmp?(record.AssociateName.to_s)
+                "#{name} (#{record.AssociateName.to_s.upcase})"
+              else
+                name
+              end
             else
               record.AssociateName.to_s
             end %>
