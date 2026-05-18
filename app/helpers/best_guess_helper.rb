@@ -147,8 +147,19 @@ module BestGuessHelper
   end
 
   def same_page_as_record(record, surname)
-    same_page_records = BestGuess.where(DistrictNumber: record[:DistrictNumber], Volume: record[:Volume], Page: record[:Page], QuarterNumber: record[:QuarterNumber], RecordTypeID: record[:RecordTypeID], Surname: surname)
-    same_page_records
+    @same_page_bmd_cache ||= {}
+    cache_key = [
+      record[:DistrictNumber], record[:Volume], record[:Page],
+      record[:QuarterNumber], record[:RecordTypeID], surname.to_s
+    ]
+    @same_page_bmd_cache[cache_key] ||= BestGuess.where(
+      DistrictNumber: record[:DistrictNumber],
+      Volume: record[:Volume],
+      Page: record[:Page],
+      QuarterNumber: record[:QuarterNumber],
+      RecordTypeID: record[:RecordTypeID],
+      Surname: surname
+    ).to_a
   end
 
   def tidy_date_of_birth(field_value)

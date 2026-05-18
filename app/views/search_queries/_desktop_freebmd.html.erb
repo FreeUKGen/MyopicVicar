@@ -83,10 +83,8 @@
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record.record_hash%>" class="<%= record_type.downcase %>_hover" >
                 <td>
-                  <% rec = BestGuess.find(search_record[:RecordNumber]) %>
-                  <% record_flag = rec.record_flag %>
-                  <% has_postem = (record_flag & Constant::POSTEM).nonzero? %>
-                  <% has_scan = false #(record_flag & Constant::SCAN).nonzero? %>
+                  <% has_postem = @search_query.bmd_snapshot_has_postem?(search_record) %>
+                  <% has_scan = false %>
                   <center>
                     <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, search_entry: search_record.RecordNumber, record_hash: search_record.record_hash), :rel => "nofollow", :title => "")%>
                     <br>
@@ -114,9 +112,9 @@
                       <%= search_record[:District] %>
                       <span class="ttip__text"> <%=" (Volume #{search_record[:Volume]} Page #{search_record[:Page]})"%></span>
                     <% else %>
-                      <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
+                      <% district = @districts_by_number&.[](search_record[:DistrictNumber]) %>
                       <%= district_link_or_name(district, search_record, @search_query) %>
-                      <% @search_query.get_search_record_details(search_record).each do |key, value| %>
+                      <% @search_query.get_bmd_list_reference_details(search_record).each do |key, value| %>
                         <%= "#{key} #{value}" unless key == "Page" %>
                       <% end %>
                       Page

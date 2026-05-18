@@ -111,7 +111,7 @@
   # Columns stored on SearchQuery#search_result for FreeBMD (not full BestGuess rows).
   BMD_SNAPSHOT_ATTRIBUTE_KEYS = %w[
     RecordNumber RecordTypeID GivenName Surname OtherNames AssociateName AgeAtDeath
-    QuarterNumber DistrictNumber District Volume Page CountyComboID Flags
+    QuarterNumber DistrictNumber District Volume Page CountyComboID Flags Confirmed
   ].freeze
 
   field :first_name, type: String# , :required => false
@@ -1165,18 +1165,38 @@
   end
 
   def get_search_record_details(search_result)
+    record = bmd_search_result_record(search_result)
+    return {} unless record
+
     result_hash = {}
-    record = BestGuess.find_by(RecordNumber: search_result[:RecordNumber])
-
-    return result_hash unless record
-
     if record.register_entry_number_format
       register_entry_details(result_hash, record)
     else
       volume_page_details(result_hash, search_result)
     end
-
     result_hash
+  end
+
+  # Search results list: avoid per-row MySQL (Submission, BestGuess.find).
+  def get_bmd_list_reference_details(search_result)
+    record = bmd_search_result_record(search_result)
+    return {} unless record
+    return {} if record.register_entry_number_format
+
+    result_hash = {}
+    volume_page_details(result_hash, search_result)
+    result_hash
+  end
+
+  def bmd_search_result_record(search_result)
+    return search_result if search_result.is_a?(BestGuess)
+
+    BestGuess.find_by(RecordNumber: search_result[:RecordNumber])
+  end
+
+  def bmd_snapshot_has_postem?(search_result)
+    confirmed = search_result.read_attribute(:Confirmed) || search_result[:Confirmed]
+    confirmed.to_i & BestGuess::ENTRY_POSTEM != 0
   end
 
   def previous_record(current)

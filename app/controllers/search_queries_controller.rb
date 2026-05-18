@@ -281,6 +281,7 @@ class SearchQueriesController < ApplicationController
         @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
         @paginatable_array = @search_query.paginate_results(@search_results, @page, @results_per_page)
+        preload_freebmd_show_associations if MyopicVicar::Application.config.template_set == 'freebmd'
         if !response || @search_results.nil? || @search_query.result_count.nil?
           logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
           flash[:notice] = 'Your search results are not available. Please repeat your search'
@@ -531,6 +532,14 @@ class SearchQueriesController < ApplicationController
 
   def filter(results)
     results.select{|r| r["RecordTypeID"] == @filter_condition.to_i }
+  end
+
+  def preload_freebmd_show_associations
+    rows = @paginatable_array
+    return if rows.blank?
+
+    district_numbers = rows.map { |r| r.read_attribute(:DistrictNumber) }.compact.uniq
+    @districts_by_number = District.where(DistrictNumber: district_numbers).index_by(&:DistrictNumber)
   end
 
 end
