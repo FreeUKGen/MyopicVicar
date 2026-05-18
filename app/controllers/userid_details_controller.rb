@@ -62,7 +62,7 @@ class UseridDetailsController < ApplicationController
       @userid.add_fields(params[:commit], session[:syndicate])
       @userid.save
       if @userid.save
-        refinery_user = Refinery::Authentication::Devise::User.where(username: @userid.userid).first
+        refinery_user = User.where(username: @userid.userid).first
         refinery_user.send_reset_password_instructions
         flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
         @userid.write_userid_file
