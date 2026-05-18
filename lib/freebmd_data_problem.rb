@@ -38,7 +38,7 @@ module FreebmdDataProblem
 				  label: "The transcription information does match the GRO index scan.",
 				  answer: <<~HTML.strip,
 						<p>We cannot change the database if our transcription matches the information on the #{GRO_ABBREV_ACCESSIBILITY_HTML} index (scan).</p>
-						<p>If you believe there is an error in the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index, you will need to <a href="https://www.gro.gov.uk/gro/content/certificates/contact_us.asp" target="_blank" rel="noopener">contact them</a> to request a correction.</p>
+						<p>If you believe there is an error in the #{GRO_ABBREV_ACCESSIBILITY_HTML} Index, you will need to <a href="https://www.gro.gov.uk/gro/content/certificates/contact_us.asp" rel="noopener noreferrer">contact them</a> to request a correction.</p>
 						<p>If the #{GRO_ABBREV_ACCESSIBILITY_HTML} confirms the correction, please let us know and we will add a note to the relevant entry on FreeBMD.</p>
 					HTML
 				  show_form: false }
@@ -66,7 +66,7 @@ module FreebmdDataProblem
 							answer: <<~HTML.strip,
 								<p>If you find that an entry on a transcribed page is missing from FreeBMD, follow these steps:</p>
 								<ol>
-									<li>Perform a <a href="/help/search_help#firstname_surname" target="_blank" rel="noopener">wildcard search</a> to find nearby entries on the page.</li>
+									<li>Perform a <a href="/help/search_help#firstname_surname" rel="noopener noreferrer">wildcard search</a> to find nearby entries on the page.</li>
 									<li>Select the entry immediately before the missing one.</li>
 									<li>Download the scan and submit a report.</li>
 									<li>Select 'Data is missing' (you now have the scan).</li>
@@ -81,7 +81,7 @@ module FreebmdDataProblem
 				{
 					id: 3, label: "A record is missing from the GRO index scan",
 					answer: <<~HTML.strip,
-						<p>We cannot do anything about data missing from the #{GRO_ABBREV_ACCESSIBILITY_HTML}. If you believe that a record is missing from the #{GRO_ABBREV_ACCESSIBILITY_HTML} index you will need to <a href="https://www.gro.gov.uk/gro/content/certificates/contact_us.asp" target="_blank" rel="noopener">contact them</a> to discuss.</p>
+						<p>We cannot do anything about data missing from the #{GRO_ABBREV_ACCESSIBILITY_HTML}. If you believe that a record is missing from the #{GRO_ABBREV_ACCESSIBILITY_HTML} index you will need to <a href="https://www.gro.gov.uk/gro/content/certificates/contact_us.asp" rel="noopener noreferrer">contact them</a> to discuss.</p>
 						<p>If you receive resolution from the #{GRO_ABBREV_ACCESSIBILITY_HTML}, please share this information with us.</p>
 					HTML
 					show_form: false
