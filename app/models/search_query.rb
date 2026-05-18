@@ -106,6 +106,13 @@
   EVENT_YEAR_ONLY = 589
   DEFAULT_RESULTS_PER_PAGE = 50
   EXACT_DOB_IN_MEMORY_WARN_THRESHOLD = 10_000
+  # Max rows loaded into Ruby for exact-DOB in-memory fallback (before filtering).
+  FREEBMD_IN_MEMORY_INPUT_CAP = 10_000
+  # Columns stored on SearchQuery#search_result for FreeBMD (not full BestGuess rows).
+  BMD_SNAPSHOT_ATTRIBUTE_KEYS = %w[
+    RecordNumber RecordTypeID GivenName Surname OtherNames AssociateName AgeAtDeath
+    QuarterNumber DistrictNumber District Volume Page CountyComboID Flags
+  ].freeze
 
   field :first_name, type: String# , :required => false
   field :last_name, type: String# , :required => false
@@ -1082,11 +1089,12 @@
     return unless results
     # finally extract the records IDs and persist them
     records = {}
+    county_by_combo = SearchQuery.app_template == 'freebmd' ? bmd_county_lookup_for_records(results) : {}
     results.each do |rec|
       record = rec # should be a SearchRecord despite Mongoid bug
       rec_id = SearchQuery.app_template == 'freebmd' ? record[:RecordNumber].to_s : record['_id'].to_s
       if SearchQuery.app_template == 'freebmd'
-        rec_attr = record.attributes
+        rec_attr = bmd_snapshot_attributes(record, county_by_combo)
         rec_hash = record.record_hash
         #Handle multiple records with same hash
         if records.has_key? rec_hash
@@ -1626,113 +1634,16 @@
   end
 
   def count_records
-		if MyopicVicar::Application.config.template_set = 'freebmd'
-		  self.result_count = self.freebmd_count_records
-		else
-		  #self.count
-		end
+    if MyopicVicar::Application.config.template_set == 'freebmd'
+      _records, count, = fetch_freebmd_records(for_count: true)
+      self.result_count = count
+    else
+      #self.count
+    end
   end
 
   def freebmd_count_records
-    search_fields = bmd_adjust_field_names
-	  @search_index = SearchQuery.get_search_table.index_hint(search_fields)
-	  logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-	  begin
-      max_time = Rails.application.config.max_search_time
-      logger.warn(max_time)
-      Timeout::timeout(max_time) do
-        # Build base query
-        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
-
-        # Apply wildcard conditions (returns [sql, *values] array)
-        if wildcard_search_conditions.present?
-          sql, *values = wildcard_search_conditions
-          records = records.where(sql, *values)
-        end
-
-        if conditions = search_conditions_arel
-          records = records.where(conditions)
-        end
-
-        records = apply_mother_surname_filter(records)
-
-        # Log SQL once
-        logger.warn("SQL: #{records.to_sql}")
-
-        # Check if we need array-returning methods
-        needs_array_result = date_of_birth_range? || dob_at_death.present? ||
-                  age_at_death.present? || check_age_range?
-
-        # Apply filters that return Relations
-        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
-        records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
-
-        # Get count early if we don't need array methods (more efficient)
-        record_count = 0
-        max_limit = 1000
-
-        if !needs_array_result && records.respond_to?(:count)
-          record_count = records.count
-        else
-          # Apply array-returning methods (these may convert Relation to Array).
-          # Year-of-Birth modes (3 exact, 4 range) must bypass UNION-based combined_results
-          # because that path can raise StatementInvalid on some MySQL plans when date bounds
-          # are wide.
-          if (death_at_age.to_s == '3' && dob_at_death.present?) || (death_at_age.to_s == '4' && date_of_birth_range?)
-            records = combined_results_exact_dob(records)
-          elsif date_of_birth_range? || dob_at_death.present?
-            records = combined_results(records)
-          end
-          records = combined_age_results(records) if age_at_death.present? || check_age_range?
-          records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
-
-          # Handle both Relation and Array results AFTER combined methods
-          if records.is_a?(Array)
-            record_count = records.size
-            
-          elsif records.respond_to?(:count)
-            # This handles Relations returned from combined_results
-            record_count = records.count
-          end
-        end
-		    [[], record_count, true, 0]
-      end
-    rescue Timeout::Error
-      logger.warn("#{App.name_upcase}: Timeout")
-      [[], 0, false, 1]
-    rescue ActiveRecord::StatementInvalid => e
-      error_message = e.message.to_s.downcase
-
-      # Try to get the underlying exception message (Ruby 2.1+ uses 'cause', older versions may use 'original_exception')
-      underlying_message = ''
-      if e.respond_to?(:cause) && e.cause
-        underlying_message = e.cause.message.to_s.downcase
-      elsif e.respond_to?(:original_exception) && e.original_exception
-        underlying_message = e.original_exception.message.to_s.downcase
-      end
-
-      # Check for specific MySQL max_execution_time error patterns
-      is_max_execution_time_error = error_message.include?('max_execution_time') ||
-                      error_message.include?('maximum statement execution time exceeded') ||
-                      error_message.include?('query execution was interrupted') ||
-                      error_message.include?('execution time exceeded') ||
-                      underlying_message.include?('max_execution_time') ||
-                      underlying_message.include?('maximum statement execution time exceeded') ||
-                      underlying_message.include?('query execution was interrupted') ||
-                      underlying_message.include?('execution time exceeded')
-
-      if is_max_execution_time_error
-        # MySQL has killed the query - search must end here
-        logger.warn("#{App.name_upcase}: MySQL max_execution_time (15000ms) exceeded - search terminated: #{e.message}")
-        [[], 0, false, 3]
-      else
-        logger.warn("#{App.name_upcase}: SQL error: #{e.inspect}")
-        [[], 0, false, 2]
-      end
-    rescue => e
-      logger.warn("#{App.name_upcase}:error: #{e.inspect}")
-      [[], 0, false, 2]
-    end
+    fetch_freebmd_records(for_count: true)
   end
 
   def freebmd_count_records_old
@@ -1762,7 +1673,7 @@
   end
 
   def search_records
-    if MyopicVicar::Application.config.template_set = 'freebmd'
+    if MyopicVicar::Application.config.template_set == 'freebmd'
       self.freebmd_search_records
     else
       self.search
@@ -1797,115 +1708,160 @@
 	  second_name_wildcard || all_secondname_search
 	end
 
-	def freebmd_search_records
-	  search_fields = bmd_adjust_field_names
-	  @search_index = SearchQuery.get_search_table.index_hint(search_fields)
-	  logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+  def freebmd_search_records
+    fetch_freebmd_records(for_count: false)
+  end
 
-	  begin
+  # Shared FreeBMD search / hit-count path with consistent row and memory limits.
+  def fetch_freebmd_records(for_count: false)
+    search_fields = bmd_adjust_field_names
+    @search_index = SearchQuery.get_search_table.index_hint(search_fields)
+    logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+
+    begin
       max_time = Rails.application.config.max_search_time
       logger.warn(max_time)
 
       Timeout::timeout(max_time) do
-        # Build base query
-        records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
-
-        # Apply wildcard conditions (returns [sql, *values] array)
-        if wildcard_search_conditions.present?
-          sql, *values = wildcard_search_conditions
-          records = records.where(sql, *values)
-        end
-
-        if conditions = search_conditions_arel
-          records = records.where(conditions)
-        end
-
-        records = apply_mother_surname_filter(records)
-
-        # Log SQL once
-        logger.warn("SQL: #{records.to_sql}")
-
-        # Check if we need array-returning methods
-        needs_array_result = date_of_birth_range? || dob_at_death.present? ||
-                  age_at_death.present? || check_age_range?
-
-        # Apply filters that return Relations
-        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
-        records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
-
-        # Get count early if we don't need array methods (more efficient)
-        record_count = 0
-        max_limit = 1000
-
-        if !needs_array_result && records.respond_to?(:count)
-          record_count = records.count
-          logger.warn("Record count before limit: #{record_count}")
-          records = records.limit(max_limit) if record_count > max_limit
-        else
-          # Apply array-returning methods (these may convert Relation to Array).
-          # Year-of-Birth modes (3 exact, 4 range) must bypass UNION-based combined_results
-          # because that path can raise StatementInvalid on some MySQL plans when date bounds
-          # are wide.
-          if (death_at_age.to_s == '3' && dob_at_death.present?) || (death_at_age.to_s == '4' && date_of_birth_range?)
-            records = combined_results_exact_dob(records)
-          elsif date_of_birth_range? || dob_at_death.present?
-            records = combined_results(records)
-          end
-          records = combined_age_results(records) if age_at_death.present? || check_age_range?
-          records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
-
-          # Handle both Relation and Array results AFTER combined methods
-          if records.is_a?(Array)
-            record_count = records.size
-            logger.warn("Final array size: #{record_count}")
-            records = records.take(max_limit) if record_count > max_limit
-          elsif records.respond_to?(:count)
-            # This handles Relations returned from combined_results
-            record_count = records.count
-            logger.warn("Total records found (Relation): #{record_count}")
-            records = records.limit(max_limit) if record_count > max_limit
-          end
-        end
-
-        persist_results(records)
-        [records, record_count, true, 0]
+        records, record_count = build_freebmd_query_result
+        records = freebmd_apply_display_limit(records) unless for_count
+        persist_results(records) unless for_count
+        [for_count ? [] : records, record_count, true, 0]
       end
-	  rescue Timeout::Error
+    rescue Timeout::Error
       logger.warn("#{App.name_upcase}: Timeout")
       [[], 0, false, 1]
-	  rescue ActiveRecord::StatementInvalid => e
-		  error_message = e.message.to_s.downcase
-
-      # Try to get the underlying exception message (Ruby 2.1+ uses 'cause', older versions may use 'original_exception')
-      underlying_message = ''
-      if e.respond_to?(:cause) && e.cause
-        underlying_message = e.cause.message.to_s.downcase
-      elsif e.respond_to?(:original_exception) && e.original_exception
-        underlying_message = e.original_exception.message.to_s.downcase
-      end
-
-      # Check for specific MySQL max_execution_time error patterns
-      is_max_execution_time_error = error_message.include?('max_execution_time') ||
-                      error_message.include?('maximum statement execution time exceeded') ||
-                      error_message.include?('query execution was interrupted') ||
-                      error_message.include?('execution time exceeded') ||
-                      underlying_message.include?('max_execution_time') ||
-                      underlying_message.include?('maximum statement execution time exceeded') ||
-                      underlying_message.include?('query execution was interrupted') ||
-                      underlying_message.include?('execution time exceeded')
-
-      if is_max_execution_time_error
-        # MySQL has killed the query - search must end here
-        logger.warn("#{App.name_upcase}: MySQL max_execution_time (15000ms) exceeded - search terminated: #{e.message}")
-        [[], 0, false, 3]
-      else
-        logger.warn("#{App.name_upcase}: SQL error: #{e.inspect}")
-        [[], 0, false, 2]
-      end
-	  rescue => e
+    rescue ActiveRecord::StatementInvalid => e
+      freebmd_handle_statement_invalid(e)
+    rescue StandardError => e
       logger.warn("#{App.name_upcase}:error: #{e.inspect}")
       [[], 0, false, 2]
-	  end
+    end
+  end
+
+  def build_freebmd_query_result
+    records = SearchQuery.get_search_table.where(bmd_params_hash)
+
+    if wildcard_search_conditions.present?
+      sql, *values = wildcard_search_conditions
+      records = records.where(sql, *values)
+    end
+
+    records = records.where(search_conditions_arel) if (conditions = search_conditions_arel)
+
+    records = apply_mother_surname_filter(records)
+
+    logger.warn("SQL: #{records.to_sql}")
+
+    records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
+    records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
+
+    if freebmd_needs_array_pipeline?
+      records = run_freebmd_array_pipeline(records)
+      records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
+    end
+
+    record_count = freebmd_capped_count(records)
+
+    [records, record_count]
+  end
+
+  def freebmd_needs_array_pipeline?
+    date_of_birth_range? || dob_at_death.present? || age_at_death.present? || check_age_range?
+  end
+
+  def run_freebmd_array_pipeline(records)
+    if (death_at_age.to_s == '3' && dob_at_death.present?) || (death_at_age.to_s == '4' && date_of_birth_range?)
+      records = combined_results_exact_dob(records)
+    elsif date_of_birth_range? || dob_at_death.present?
+      records = combined_results(records)
+    end
+    records = combined_age_results(records) if age_at_death.present? || check_age_range?
+    records
+  end
+
+  def freebmd_max_results
+    FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+  end
+
+  def freebmd_capped_count(records)
+    limit = freebmd_max_results
+    n = if records.is_a?(Array)
+          records.size
+        elsif records.respond_to?(:count)
+          records.count
+        else
+          0
+        end
+    n > limit ? limit : n
+  end
+
+  def freebmd_apply_display_limit(records)
+    limit = freebmd_max_results
+    case records
+    when Array
+      records.first(limit)
+    when ActiveRecord::Relation
+      records.limit(limit)
+    else
+      records
+    end
+  end
+
+  def freebmd_limit_relation(relation, cap = FREEBMD_IN_MEMORY_INPUT_CAP)
+    return relation unless relation.is_a?(ActiveRecord::Relation)
+
+    relation.limit(cap)
+  end
+
+  def bmd_snapshot_attributes(record, county_by_combo_id = {})
+    attrs = record.attributes.slice(*BMD_SNAPSHOT_ATTRIBUTE_KEYS)
+    combo_id = record.read_attribute(:CountyComboID)
+    county = county_by_combo_id[combo_id]
+    county ||= record.CountyCombos.County if record.association(:CountyCombos).loaded? && record.CountyCombos.present?
+    attrs['CountyComboCounty'] = county if county.present?
+    attrs
+  end
+
+  def bmd_county_lookup_for_records(results)
+    combo_ids = case results
+                when Array
+                  results.map { |r| r.read_attribute(:CountyComboID) }.compact.uniq
+                when ActiveRecord::Relation
+                  results.limit(freebmd_max_results).pluck(:CountyComboID).compact.uniq
+                else
+                  []
+                end
+    return {} if combo_ids.empty?
+
+    CountyCombo.where(CountyComboID: combo_ids).pluck(:CountyComboID, :County).to_h
+  end
+
+  def freebmd_handle_statement_invalid(e)
+    error_message = e.message.to_s.downcase
+    underlying_message = ''
+    if e.respond_to?(:cause) && e.cause
+      underlying_message = e.cause.message.to_s.downcase
+    elsif e.respond_to?(:original_exception) && e.original_exception
+      underlying_message = e.original_exception.message.to_s.downcase
+    end
+
+    is_max_execution_time_error = error_message.include?('max_execution_time') ||
+      error_message.include?('maximum statement execution time exceeded') ||
+      error_message.include?('query execution was interrupted') ||
+      error_message.include?('execution time exceeded') ||
+      underlying_message.include?('max_execution_time') ||
+      underlying_message.include?('maximum statement execution time exceeded') ||
+      underlying_message.include?('query execution was interrupted') ||
+      underlying_message.include?('execution time exceeded')
+
+    if is_max_execution_time_error
+      logger.warn("#{App.name_upcase}: MySQL max_execution_time exceeded - search terminated: #{e.message}")
+      [[], 0, false, 3]
+    else
+      logger.warn("#{App.name_upcase}: SQL error: #{e.inspect}")
+      [[], 0, false, 2]
+    end
   end
 
   def bmd_record_type_params
@@ -2520,7 +2476,7 @@
       if (max_year - min_year) > 50
         # For very large ranges (>50 years), fall back to in-memory filtering
         # SQL would be too complex/inefficient for such large ranges
-        records.to_a.select{|r|
+        freebmd_limit_relation(records).to_a.select{|r|
           a = r.AgeAtDeath.scan(/\d+\d/).select{|r| r.length == 4}.pop.to_i rescue nil
           a.present? && (min_year..max_year).include?(a)
         }
@@ -2690,7 +2646,8 @@
     started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     # Use an in-memory path to avoid DB planner/statement issues seen with certain
     # date spans in MySQL while preserving the existing inclusion semantics.
-    all_rows = records.to_a
+    source = records.is_a?(ActiveRecord::Relation) ? freebmd_limit_relation(records) : records
+    all_rows = source.is_a?(ActiveRecord::Relation) ? source.to_a : Array(source).first(FREEBMD_IN_MEMORY_INPUT_CAP)
     if all_rows.size > EXACT_DOB_IN_MEMORY_WARN_THRESHOLD
       logger.warn("#{App.name_upcase}: YOB in-memory fallback loaded #{all_rows.size} rows (threshold #{EXACT_DOB_IN_MEMORY_WARN_THRESHOLD})")
     end
@@ -2766,19 +2723,27 @@
   # combined_age_results returns an Array of Relations and/or in-memory rows. Count/persist must
   # see concrete BestGuess rows, not Relation objects (otherwise "array size" is meaningless and
   # persist_results breaks).
-  def normalize_freebmd_combined_result_rows(mixed)
+  def normalize_freebmd_combined_result_rows(mixed, max_rows: nil)
     return mixed unless mixed.is_a?(Array)
 
+    max_rows ||= freebmd_max_results
     rows = []
     mixed.each do |entry|
+      break if rows.size >= max_rows
+
       case entry
       when ActiveRecord::Relation
-        rows.concat(entry.to_a)
+        remaining = max_rows - rows.size
+        rows.concat(freebmd_limit_relation(entry, remaining).to_a)
       when Array
-        rows.concat(entry)
+        rows.concat(entry.first(max_rows - rows.size))
       else
         rows << entry if entry.respond_to?(:read_attribute)
       end
+    end
+
+    if rows.size > max_rows
+      logger.warn("#{App.name_upcase}: FreeBMD combined results truncated to #{max_rows} rows")
     end
 
     rows.index_by do |r|
@@ -2787,11 +2752,17 @@
       r.record_hash
     rescue StandardError
       "#{r.read_attribute(:RecordNumber)}-#{r.read_attribute(:RecordTypeID)}-#{r.read_attribute(:QuarterNumber)}"
-    end.values
+    end.values.first(max_rows)
   end
 
   def combined_age_results records
-    records = records
+    if records.is_a?(Array)
+      return [] if records.empty?
+
+      ids = records.map { |r| r.read_attribute(:RecordNumber) }.compact.uniq.first(FREEBMD_IN_MEMORY_INPUT_CAP)
+      records = SearchQuery.get_search_table.where(RecordNumber: ids) if ids.any?
+    end
+
     results = []
     # Age-at-death range applies to death index rows only. Previously we OR'd every row with a
     # blank AgeAtDeath (almost all births/marriages), which made the range filter ineffective when
@@ -2801,7 +2772,9 @@
       results.concat(age_range_search(death_records))
       results.concat(blank_age_death_records(death_records)) unless self.match_recorded_ages_or_dates
       non_death_ids = Array(bmd_record_type).map(&:to_i) - [RecordType::DEATHS]
-      results.concat(records.where(RecordTypeID: non_death_ids)) if non_death_ids.any?
+      if non_death_ids.any?
+        results << records.where(RecordTypeID: non_death_ids).limit(freebmd_max_results)
+      end
     else
       unless self.match_recorded_ages_or_dates
         t = SearchQuery.get_search_table.table_name
