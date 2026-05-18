@@ -131,7 +131,7 @@ module ApplicationHelper
     if session[:userid_detail_id].present?
       link_to 'Logout', main_app.logout_manage_resources_path
     else
-      link_to 'Member', refinery.login_path, class: check_current_page("cms/refinery/login")
+      link_to 'Member', new_user_session_path, class: check_current_page("cms/refinery/login")
     end
   end
 
