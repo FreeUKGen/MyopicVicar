@@ -219,6 +219,19 @@
 
     updateSection3ConditionalFields();
 
+    // Re-attach #report_form_block when a section is shown again with <details> still open
+    // (changing section moves the form to body; toggle does not fire again on its own).
+    function syncOpenAccordionSubsections($section) {
+      var $openItems = $section.find('details.accordion-item').filter(function() { return this.open; });
+      if ($openItems.length > 1) {
+        $openItems.slice(1).prop('open', false);
+        $openItems = $openItems.first();
+      }
+      $openItems.each(function() {
+        handleAccordionToggle(this);
+      });
+    }
+
     $sectionSelect.on('change', function() {
       var sectionIdx = $(this).val();
       $accordionSections.hide();
@@ -231,17 +244,18 @@
       if ($reportFormBlock.length) $reportFormBlock.hide().appendTo('body');
       if (sectionIdx === '') {
         $subsectionsLi.hide();
-        $('details.accordion-item').attr('open', false);
+        $('details.accordion-item').prop('open', false);
         return;
       }
       $subsectionsLi.show();
       var $shownSection = $accordionSections.filter('[data-section-index="' + sectionIdx + '"]');
       $shownSection.show();
-      // Single subsection (e.g. "Anything else/miscellaneous"): open it so the form appears without an extra click.
       var $itemsInSection = $shownSection.find('details.accordion-item');
-      if ($itemsInSection.length === 1) {
+      // Single subsection (e.g. "Anything else/miscellaneous"): open it so the form appears without an extra click.
+      if ($itemsInSection.length === 1 && !$itemsInSection.first().prop('open')) {
         $itemsInSection.first().prop('open', true);
       }
+      syncOpenAccordionSubsections($shownSection);
     });
 
     function scrollOpenedAccordionIntoView(el) {
