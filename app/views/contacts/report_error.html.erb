@@ -232,30 +232,50 @@
       });
     }
 
-    $sectionSelect.on('change', function() {
-      var sectionIdx = $(this).val();
+    function applyReportErrorSection(sectionIdx, options) {
+      options = options || {};
+      var resetUserFields = options.resetUserFields !== false;
+
       $accordionSections.hide();
-      $readAnswer.hide();
-      $('#read_explanation').prop('checked', false);
-      if ($queryInput.length) $queryInput.val('');
-      if ($correctionsBlock.length) $correctionsBlock.hide();
-      setSection3RequiredState(false);
-      setDescribeIssueMode(false);
+      if (resetUserFields) {
+        $readAnswer.hide();
+        $('#read_explanation').prop('checked', false);
+        if ($correctionsBlock.length) $correctionsBlock.hide();
+        setSection3RequiredState(false);
+        setDescribeIssueMode(false);
+      }
       if ($reportFormBlock.length) $reportFormBlock.hide().appendTo('body');
-      if (sectionIdx === '') {
+
+      if (sectionIdx === '' || sectionIdx == null) {
         $subsectionsLi.hide();
         $('details.accordion-item').prop('open', false);
+        if ($queryInput.length) $queryInput.val('');
         return;
       }
+
       $subsectionsLi.show();
       var $shownSection = $accordionSections.filter('[data-section-index="' + sectionIdx + '"]');
       $shownSection.show();
       var $itemsInSection = $shownSection.find('details.accordion-item');
-      // Single subsection (e.g. "Anything else/miscellaneous"): open it so the form appears without an extra click.
       if ($itemsInSection.length === 1 && !$itemsInSection.first().prop('open')) {
         $itemsInSection.first().prop('open', true);
       }
       syncOpenAccordionSubsections($shownSection);
+    }
+
+    function restoreReportErrorUiFromDom() {
+      applyReportErrorSection($sectionSelect.val(), { resetUserFields: false });
+    }
+
+    $sectionSelect.on('change', function() {
+      if ($queryInput.length) $queryInput.val('');
+      applyReportErrorSection($(this).val());
+    });
+
+    // Browser Back/Forward restores <select> value but does not fire change; bfcache skips ready().
+    restoreReportErrorUiFromDom();
+    $(window).on('pageshow', function() {
+      restoreReportErrorUiFromDom();
     });
 
     function scrollOpenedAccordionIntoView(el) {
