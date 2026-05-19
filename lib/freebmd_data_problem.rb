@@ -64,7 +64,7 @@ module FreebmdDataProblem
 							id: 6,
 							label: "You do not have the scan",
 							answer: <<~HTML.strip,
-								<p>If you find that an entry on a transcribed page is missing from FreeBMD, follow these steps:</p>
+								<p>If you find that an entry on a transcribed page is missing from FreeBMD and you don't have the scan, follow these steps:</p>
 								<ol>
 									<li>Perform a <a href="/help/search_help#firstname_surname" rel="noopener noreferrer">wildcard search</a> to find nearby entries on the page.</li>
 									<li>Select the entry immediately before the missing one.</li>
