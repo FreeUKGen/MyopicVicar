@@ -12,4 +12,55 @@
 # See the License for the specific language governing permissions and
 #
 class EmendationTypesController < ApplicationController
+  before_action :require_login
+  before_action :set_emendation_type, only: [:show, :edit, :update, :destroy]
+
+  def index
+    @emendation_types = EmendationType.all
+  end
+
+  def new
+    @emendation_type = EmendationType.new
+  end
+
+  def create
+    @emendation_type = EmendationType.new(emendation_type_params)
+    if @emendation_type.save
+      redirect_to emendation_types_path, notice: 'Emendation type was successfully created.'
+    else
+      render :new
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    if @emendation_type.update(emendation_type_params)
+      redirect_to emendation_types_path, notice: 'Emendation type was successfully updated.'
+    else
+      render :edit
+    end
+  end
+
+  def destroy
+    # Caution: We should alert the user if rules exist before deleting.
+    if @emendation_type.emendation_rules.any?
+      redirect_to emendation_types_path, alert: "Cannot delete this Type because it currently has #{@emendation_type.emendation_rules.count} rules associated with it. Please reassign or delete the rules first."
+    else
+      @emendation_type.destroy
+      redirect_to emendation_types_path, notice: 'Emendation type was successfully deleted.'
+    end
+  end
+
+  private
+
+  def set_emendation_type
+    @emendation_type = EmendationType.find(params[:id])
+  end
+
+  def emendation_type_params
+    params.require(:emendation_type).permit(:name, :target_field, :origin)
+  end
+  
 end

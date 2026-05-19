@@ -2,6 +2,7 @@
 <div id="flash_container">
   <%= render "refinery/message" %>
 </div>
+<%= render "layouts/site_notice_banner" %>
 <% if !Rails.application.config.member_open %>
   <p class="text--negative">The system is currently undergoing maintenance and is unavailable to Members.</p>
 <% end %>

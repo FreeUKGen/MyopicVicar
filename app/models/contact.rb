@@ -1,3 +1,6 @@
+require 'freecen_constants'
+require 'chapman_code'
+
 class Contact
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -16,12 +19,14 @@ class Contact
   field :github_number, type: String
   field :session_data, type: Hash
   field :screenshot, type: String
+  field :screenshots, type: Array, default: []
   field :record_id, type: String
   field :entry_id, type: String
   field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
   field :selected_county, type: String # user-selected county to contact in FC2
+  field :routed_syndicate_code, type: String # FreeCEN volunteering: syndicate used for coordinator lookup / inbox
   field :fc_individual_id, type: String
   field :identifier, type: String
   field :screenshot_location, type: String
@@ -45,9 +50,12 @@ class Contact
 
   validates_presence_of :name, :email_address, :body
   validates :email_address, format: { :with => /\A[^@][\w\+.-]+@[\w.-]+[.][a-z]{2,4}\z/i }
+  validate :freecen_selected_county_requirements
 
   mount_uploader :screenshot, ScreenshotUploader
+  mount_uploaders :screenshots, ScreenshotUploader
 
+  before_validation :normalize_freecen_contact_fields
   before_create :url_check, :add_identifier, :add_screenshot_location
 
   before_destroy :delete_replies
@@ -113,7 +121,11 @@ class Contact
       when 'volunteer_coordinator'
         c = contacts.get_contacts('Volunteering Question')
       when 'website_coordinator'
-        c = contacts.get_contacts('Website Problem')
+        c = if App.name_downcase == 'freecen'
+              contacts.any_of({ contact_type: 'Website Problem' }, { contact_type: 'Enhancement Suggestion' })
+            else
+              contacts.get_contacts('Website Problem')
+            end
       when 'contacts_coordinator'
         c = contacts.any_of({contact_type: 'Data Question'}, {contact_type: 'Data Problem'})
       when 'general_communication_coordinator'
@@ -123,7 +135,16 @@ class Contact
       when 'genealogy_coordinator'
         c = contacts.get_contacts('Genealogical Question')
       when 'project_manager'
-        c = contacts.get_contacts('Enhancement Suggestion')
+        c = if App.name_downcase == 'freecen'
+              contacts.get_contacts('Enhancement Suggestion').where(:id.in => [])
+            else
+              contacts.get_contacts('Enhancement Suggestion')
+            end
+      when 'syndicate_coordinator'
+        c = nil
+        if App.name_downcase == 'freecen' && user.syndicate.present?
+          c = contacts.get_contacts('Volunteering Question').where(routed_syndicate_code: user.syndicate)
+        end
       when 'system_administrator'
         c = contacts
       when 'county_coordinator'
@@ -161,6 +182,10 @@ class Contact
     coordinator = nil
     if contact_type == 'Data Problem'
       coordinator = obtain_coordinator if record_id.present?
+    elsif freecen_routed_data_question?
+      coordinator = freecen_county_coordinator_userid_for_chapman(selected_county)
+    elsif freecen_routed_volunteering_question?
+      coordinator = freecen_syndicate_coordinator_userid_for_chapman(selected_county)
     else
       coordinator = UseridDetail.role(self.role_from_contact).active(true).first
       coordinator = UseridDetail.secondary(self.role_from_contact).active(true).first if coordinator.blank?
@@ -172,6 +197,11 @@ class Contact
   end
 
   def action_recipient_copies_userids(action_person)
+    if freecen_routed_volunteering_question? || freecen_routed_data_question?
+      update_attribute(:copies_of_contact_action_sent_to_userids, [])
+      return []
+    end
+
     action_recipient_copies_userids = []
     role = role_from_contact
     UseridDetail.role(role).active(true).all.each do |person|
@@ -214,7 +244,15 @@ class Contact
   end
 
   def add_screenshot_location
-    self.screenshot_location = "uploads/contact/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
+    if screenshot&.filename.present?
+      self.screenshot_location = "uploads/contact/screenshot/#{screenshot.model._id}/#{screenshot.filename}"
+      return
+    end
+
+    first = screenshots&.first
+    return if first.blank? || first.filename.blank?
+
+    self.screenshot_location = "uploads/contact/screenshots/#{id}/#{first.filename}"
   end
 
   def add_message_to_userid_messages_for_contact(message)
@@ -418,7 +456,7 @@ class Contact
 
     c = County.where(chapman_code: self.selected_county).first
 
-    return nil if c.nil
+    return nil if c.nil?
 
     cc_userid = c.county_coordinator
     coord = UseridDetail.where(userid: cc_userid).first unless cc_userid.nil?
@@ -452,7 +490,7 @@ class Contact
     when 'Genealogical Question'
       role = 'genealogy_coordinator'
     when 'Enhancement Suggestion'
-      role = 'project_manager'
+      role = MyopicVicar::Application.config.template_set == 'freecen' ? 'website_coordinator' : 'project_manager'
     else
       role = 'general_communication_coordinator'
     end
@@ -542,6 +580,89 @@ class Contact
   def url_check
     self.problem_page_url = 'unknown' if self.problem_page_url.nil?
     self.previous_page_url = 'unknown' if self.previous_page_url.nil?
+  end
+
+  def freecen_selected_county_requirements
+    return unless MyopicVicar::Application.config.template_set == 'freecen'
+    return unless %w[Data Question Volunteering Question].include?(contact_type)
+
+    if selected_county.blank? || selected_county.to_s == 'nil'
+      errors.add(:selected_county, 'Please choose a county for this type of question')
+    end
+  end
+
+  def normalize_freecen_contact_fields
+    return unless MyopicVicar::Application.config.template_set == 'freecen'
+    return if selected_county.blank? || selected_county.to_s == 'nil'
+
+    if contact_type == 'Data Question'
+      self.county = selected_county
+    end
+    if contact_type == 'Volunteering Question'
+      syn = freecen_syndicate_for_chapman(selected_county)
+      self.routed_syndicate_code = syn.syndicate_code if syn.present?
+    end
+  end
+
+  def freecen_routed_data_question?
+    MyopicVicar::Application.config.template_set == 'freecen' &&
+      contact_type == 'Data Question' &&
+      selected_county.present? &&
+      selected_county.to_s != 'nil'
+  end
+
+  def freecen_routed_volunteering_question?
+    MyopicVicar::Application.config.template_set == 'freecen' &&
+      contact_type == 'Volunteering Question' &&
+      selected_county.present? &&
+      selected_county.to_s != 'nil'
+  end
+
+  def freecen_county_coordinator_userid_for_chapman(chapman)
+    return nil if chapman.blank?
+
+    if Freecen::CONTACT_COUNTY_COORDINATOR_FALLBACK_CHAPMANS.include?(chapman)
+      return freecen_ops_fallback_coordinator_userid
+    end
+
+    county = County.where(chapman_code: chapman).first
+    return freecen_ops_fallback_coordinator_userid if county.blank?
+
+    cc = county.county_coordinator
+    return freecen_ops_fallback_coordinator_userid if cc.blank?
+
+    cc
+  end
+
+  def freecen_syndicate_coordinator_userid_for_chapman(chapman)
+    syn = freecen_syndicate_for_chapman(chapman)
+    if syn.present?
+      sc = syn.syndicate_coordinator
+      return sc if sc.present?
+    end
+
+    freecen_county_coordinator_userid_for_chapman(chapman)
+  end
+
+  def freecen_syndicate_for_chapman(chapman)
+    return nil if chapman.blank?
+
+    county = County.where(chapman_code: chapman).first
+    candidates = [chapman]
+    candidates << county.county_description if county&.county_description.present?
+    name = ChapmanCode.name_from_code(chapman)
+    candidates << name if name.present?
+    candidates.compact.uniq.each do |code|
+      s = Syndicate.syndicate_code(code).first
+      return s if s.present?
+    end
+    nil
+  end
+
+  def freecen_ops_fallback_coordinator_userid
+    uid = Freecen::CONTACT_FALLBACK_COORDINATOR_USERID
+    user = UseridDetail.userid(uid).active(true).first if uid.present?
+    user&.userid
   end
 
   private

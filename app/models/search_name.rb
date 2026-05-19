@@ -1,5 +1,8 @@
 class SearchName
   include Mongoid::Document
+
+  embedded_in :search_record
+
   field :first_name, type: String
   field :last_name, type: String
   field :origin, type: String

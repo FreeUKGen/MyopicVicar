@@ -48,25 +48,12 @@
 </div>
 </header>
 <% unless browser.safari? && browser.full_version.to_f < 15.4 %>
-  <%# if MyopicVicar::Application.config.cta_display_status %>
-    <!--div id="overlay"></div>
+  <% if DonationCampaign.active? %>
+    <div id="overlay"></div>
     <dialog id="myDialog" role="dialog">
-      <%#= render "layouts/fundraise_cta" %>
-    </dialog-->
-  <%# end %>
-  <!--dialog id="myDialog1" role="dialog">
-    <%#= render "reminder_to_donate/form"%>
-  </dialog-->
-  <!--dialog id="myDialog2" role="dialog">
-    <%#= render "donate_cta_feedback/form"%>
-  </dialog-->
-<% end %>
-
-<% unless browser.safari? && browser.full_version.to_f < 15.4 %>
-  <!--div id="overlay"></div>
-  <dialog id="myDialog" role="dialog">
-    <%#= render "layouts/fundraise_cta" %>
-  </dialog-->
+      <%= render "layouts/donate_cta" %>
+    </dialog>
+  <% end %>
   <!--dialog id="myDialog1" role="dialog">
     <%#= render "reminder_to_donate/form"%>
   </dialog-->

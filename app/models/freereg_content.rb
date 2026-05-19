@@ -87,8 +87,8 @@ class FreeregContent
     end
 
     def get_header_information(chapman)
-      page = Refinery::CountyPages::CountyPage.where(chapman_code: chapman).first
-      page
+      #page = Refinery::CountyPages::CountyPage.where(chapman_code: chapman).first
+      #page
     end
 
     def get_decades(files)

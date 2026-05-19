@@ -13,9 +13,25 @@
 #
 class SearchRecordsController < ApplicationController
   before_action :viewed
+  before_action :redirect_legacy_search_record_id, only: [:show, :show_citation, :show_print_version]
   skip_before_action :require_login
   require 'csv'
   rescue_from Mongo::Error::OperationFailure, with: :catch_error
+
+  def redirect_legacy_search_record_id
+    return if params[:id].blank?
+    return if SearchRecord.record_id(params[:id]).first.present?
+    mapping = LegacySearchRecordMapping.find_by(old_id: params[:id].to_s)
+    return if mapping.blank?
+    new_id = mapping.new_id
+    if request.path.include?('show_citation')
+      redirect_to show_citation_record_path(new_id) and return
+    elsif request.path.include?('show_print_version')
+      redirect_to show_print_version_search_record_path(new_id) and return
+    else
+      redirect_to search_record_path(new_id) and return
+    end
+  end
 
   def catch_error
     logger.warn("#{appname_upcase}::RECORD: Record encountered a problem #{params}")

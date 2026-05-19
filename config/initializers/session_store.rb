@@ -13,17 +13,26 @@
 # limitations under the License.
 #
 # Be sure to restart your server when you modify this file.
-MyopicVicar::Application.config.server_upgrade ?  expiry_time = 3.seconds : expiry_time= nil
+#
+# Mongoid-backed sessions keep the browser cookie small (session id only) and
+# prevent oversized Cookie headers when validations and admin flows store many
+# keys or long URLs in session.
+MongoSessionStore.collection_name = 'rails_sessions'
+
+cfg = MyopicVicar::Application.config
+expiry_time = (cfg.respond_to?(:server_upgrade) && cfg.server_upgrade) ? 3.seconds : nil
+
 case MyopicVicar::Application.config.freexxx_display_name
 when 'FreeCEN'
-  MyopicVicar::Application.config.session_store :cookie_store, key: 'FreeCEN_session', expire_after: expiry_time #480.minutes
+  MyopicVicar::Application.config.session_store :mongoid_store,
+                                                  key: 'FreeCEN_session',
+                                                  expire_after: expiry_time
 when 'FreeREG'
-  MyopicVicar::Application.config.session_store :cookie_store, key: 'FreeREG_session', expire_after: expiry_time #480.minutes
+  MyopicVicar::Application.config.session_store :mongoid_store,
+                                                  key: 'FreeREG_session',
+                                                  expire_after: expiry_time
 when 'FreeBMD'
-  MyopicVicar::Application.config.session_store :cookie_store, key: 'FreeBMD_session', expire_after: nil #480.minutes
+  MyopicVicar::Application.config.session_store :mongoid_store,
+                                                  key: 'FreeBMD_session',
+                                                  expire_after: nil
 end
-
-# Use the database for sessions instead of the cookie-based default,
-# which shouldn't be used to store highly confidential information
-# (create the session table with "rails generate session_migration")
-# MyopicVicar::Application.config.session_store :active_record_store

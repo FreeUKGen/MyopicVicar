@@ -40,8 +40,14 @@
           </tr>
         <% end %>
       </table>
-      <% if @contact.screenshot_url %>
+      <% if @contact.screenshot_url.present? %>
         <%= image_tag @contact.screenshot_url %>
+      <% end %>
+      <% if @contact.screenshots.present? %>
+        <% @contact.screenshots.each do |img| %>
+          <% next if img.blank? || img.url.blank? %>
+          <%= image_tag img.url %>
+        <% end %>
       <% end %>
     </div>
   </section>
