@@ -2,6 +2,7 @@ desc "Deactivate active users who have not uploaded a CSV file since the specifi
 task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicates] => :environment do |_t, args|
 
   require 'user_mailer'
+  require 'chapman_code'
 
   def self.output_to_log(message_file, message)
     message_file.puts message.to_s
@@ -78,13 +79,14 @@ task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicate
   @ignore_syndicates = []
   if args.exclude_syndicates.present?
     abort 'Invalid exclude_syndicates argument. Only relevant if mode = UPDATE' unless @mode == 'UPDATE'
-    abort 'Invalid exclude_syndicates argument. Syndicate names (with the word Syndicate omitted) must be enclosed in round brackets' unless args.exclude_syndicates.first == '(' && args.exclude_syndicates.last == ')'
-    syndicates = args.exclude_syndicates[1..-2].split(',')
+    abort 'Invalid exclude_syndicates argument. Chapman code must be enclosed in round brackets' unless args.exclude_syndicates.first == '(' && args.exclude_syndicates.last == ')'
+    syndicates = args.exclude_syndicates[1..-2].split(';')
     syndicates.each do |synd|
-      synd_code = "#{synd} Syndicate"
+      county_name = ChapmanCode.name_from_code(synd)
+      synd_code = "#{county_name} Syndicate"
       syndicate = Syndicate.find_by(syndicate_code: synd_code)
-      abort "Invalid exclude_syndicate value #{synd} (#{synd_code})" if syndicate.blank?
-      @ignore_syndicates << "#{synd} Syndicate"
+      abort "Invalid exclude_syndicate value #{synd}=(#{synd_code})" if syndicate.blank?
+      @ignore_syndicates << "#{synd_code} "
     end
     log_message = "Ignoring:  #{@ignore_syndicates}"
     output_to_log(file_for_log, log_message)
@@ -117,7 +119,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicate
 
     next if @ignore_syndicates.include?(synd.syndicate_code)
 
-    # next unless synd.syndicate_code == 'Essex Syndicate' || synd.syndicate_code == 'London Syndicate'        # AEV TESTING
+    # next unless synd.syndicate_code == 'Essex Syndicate'    # AEV TESTING
 
     @syndicate = synd.syndicate_code
 

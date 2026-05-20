@@ -32,7 +32,15 @@ class ManageResourcesController < ApplicationController
     continue = true
     @user = get_user
     @user_roles = get_user_roles
-    @session_role = params[:current_role].present? ? params[:current_role] : @user.person_role #handles navigation from your actions
+    # Prefer explicit navigation param; else keep the role they were already using (e.g. after reject_access
+    # redirects here without params — do not reset multi-role members to person_role only).
+    @session_role = if params[:current_role].present?
+                      params[:current_role]
+                    elsif session[:role].present? && @user_roles.include?(session[:role])
+                      session[:role]
+                    else
+                      @user.person_role
+                    end
     @current_role = params[:user_role].present? ? params[:user_role] : @session_role
     if @user.present?
       if @user.blank?
@@ -72,8 +80,13 @@ class ManageResourcesController < ApplicationController
 
   def logout
     @message = flash[:notice]
+    # Devise runs Warden logout hooks (clears remember_user_token cookie) only if we sign out here.
+    # reset_session alone does not call those hooks — "Keep me logged in" would sign the user back in.
+    sign_out(:user) if respond_to?(:sign_out)
     cookies.delete :userid
+    cookies.delete :Administrator
     cookies.delete :remember_authentication_devise_user_token
+    cookies.delete :remember_user_token
     reset_session
   end
 

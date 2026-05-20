@@ -487,7 +487,6 @@ class SearchRecord
     end
 
     def update_create_search_record(entry, search_version, place)
-      #create a temporary search record with the new information
       change, embargo_record = entry.process_embargo
       if change
         entry.embargo_records << embargo_record
@@ -495,27 +494,27 @@ class SearchRecord
         entry.reload
       end
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
-      search_record = entry.search_record
-      new_search_record = SearchRecord.new(search_record_parameters)
-      new_search_record[:freereg1_csv_entry_id] = entry.id
-      new_search_record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
-      new_search_record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
-      new_search_record.transform
-      new_search_record.digest = new_search_record.cal_digest
-      if search_record.present?
-        if new_search_record.digest == search_record.digest
-          return 'no update'
-        end
+      existing = entry.search_record
+      previous_digest = existing&.digest
+
+      record = existing || SearchRecord.new
+      record.assign_attributes(search_record_parameters)
+      record[:freereg1_csv_entry_id] = entry.id
+      record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
+      record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
+      record.transform
+      record.digest = record.cal_digest
+      if existing.present? && record.digest == previous_digest
+        existing.reload
+        return 'no update'
       end
-      new_search_record.search_record_version = search_version
-      new_search_record.search_date = ' ' if new_search_record.search_date.nil?
-      new_search_record.place_id = place.id
-      new_search_record.chapman_code = place.chapman_code
-      new_search_record.possible_last_names = new_search_record.transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
-      new_search_record.save
-      #search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
-      search_record.destroy if search_record.present?
-      return 'created'
+      record.search_record_version = search_version
+      record.search_date = ' ' if record.search_date.nil?
+      record.place_id = place.id
+      record.chapman_code = place.chapman_code
+      record.possible_last_names = record.transcript_names.map { |n| n[:last_name].downcase if n[:last_name].present? }.uniq.compact
+      record.save
+      existing.present? ? 'updated' : 'created'
     end
   end
 
@@ -669,51 +668,92 @@ class SearchRecord
   end
 
   def extract_location_parts
-    place = ''
-    name_parts = location_names[0].split(') ')
-    case
-    when name_parts.length == 1
-      (place, church) = location_names[0].split(' (')
-    when name_parts.length == 2
-      place = name_parts[0] + ")"
-      name_parts[1][0] = ""
-      church = name_parts[1]
-    end
-    if church.present?
-      church = church[0..-2]
-    else
-      church = ''
-    end
-    if location_names[1]
-      reg = location_names[1].gsub('[', '').gsub(']', '').strip
-      register_type = RegisterType::APPROVED_OPTIONS[reg]
-    else
-      register_type = ''
-    end
+    return ['', '', ''] if location_names.blank? || location_names[0].blank?
+
+    place, church = split_place_and_church_from_location_string(location_names[0])
+
+    reg_value = location_names[1].to_s
+    register_type =
+      if reg_value.present?
+        reg = reg_value.gsub('[', '').gsub(']', '').strip
+        RegisterType::APPROVED_OPTIONS[reg] || ''
+      else
+        ''
+      end
+
     [place, church, register_type]
   end
+
+  # location_names[0] is built as "#{place_name} ||| #{church_name}" (new) or legacy "#{place_name} (#{church_name})".
+  # Church names can themselves contain parentheses, so we can't reliably split legacy strings on '('.
+  # Instead, we match the final ')' with its corresponding '(' (respecting nesting).
+  def split_place_and_church_from_location_string(location_string)
+    s = location_string.to_s.strip
+    return ['', ''] if s.blank?
+
+    # New delimiter format: "<place> ||| <church>"
+    if s.include?('|||')
+      place_part, church_part = s.split('|||', 2).map { |p| p.to_s.strip }
+      return [place_part, church_part]
+    end
+
+    return [s, ''] unless s.end_with?(')') && s.include?('(')
+
+    last_close_idx = s.rindex(')')
+    return [s, ''] if last_close_idx.nil?
+
+    stack = []
+    open_idx_for_last = nil
+
+    # Walk up to the final ')', tracking nested parentheses.
+    i = 0
+    while i <= last_close_idx
+      byte = s.getbyte(i)
+      if byte == 40 # '('
+        stack << i
+      elsif byte == 41 # ')'
+        open_idx_for_last = stack.pop
+        break if i == last_close_idx
+      end
+      i += 1
+    end
+
+    return [s, ''] if open_idx_for_last.nil?
+
+    place_part = s[0...open_idx_for_last].to_s.sub(/\s+$/, '')
+    church_part = s[(open_idx_for_last + 1)...last_close_idx].to_s
+
+    [place_part, church_part]
+  end
+
+  private :split_place_and_church_from_location_string
 
   def format_location
     location_array = []
     if freereg1_csv_entry
       register = freereg1_csv_entry.freereg1_csv_file&.register
-      register_type = ''
-      register_type = RegisterType.display_name(register.register_type) unless register.nil? # should not be nil but!
       church = register&.church
-      church_name = ''
-      church_name = church.church_name unless church.nil? # should not be nil but!
-      place = church&.place
-      place_name = place.place_name unless place.nil? # should not be nil but!
-      location_array << "#{place_name} (#{church_name})"
-      location_array << " [#{register_type}]"
+      church_name = church&.church_name.to_s
+      place_obj = church&.place || place
+      place_name = place_obj&.place_name.to_s
+      location_array << "#{place_name} ||| #{church_name}"
+
+      register_type =
+
+        if register&.register_type.present?
+          RegisterType.display_name(register.register_type)
+        else
+          ''
+        end
+      location_array << (register_type.present? ? " [#{register_type}]" : '')
     elsif freecen_csv_entry_id.present?
-      # freecen
       entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
-      place = entry.freecen2_civil_parish.freecen2_place.place_name
-      location_array << place.to_s
+      cen_place = entry&.freecen2_civil_parish&.freecen2_place
+      location_array << (cen_place&.place_name).to_s
+      location_array << ''
     else
-      place_name = place.place_name unless place.nil?
-      location_array << place_name.to_s
+      location_array << place&.place_name.to_s
+      location_array << ''
     end
     location_array
   end
@@ -814,8 +854,8 @@ class SearchRecord
   def location_names_equal?(new_search_record)
     location_names = self.location_names
     new_location_names = new_search_record.location_names
-    location_names[0] == new_location_names[0] && location_names[1].strip == new_location_names[1].strip ? result = true : result = false
-    result
+    location_names[0].to_s == new_location_names[0].to_s &&
+      location_names[1].to_s.strip == new_location_names[1].to_s.strip
   end
 
   def transcript_dates_equal?(new_search_record)
@@ -898,7 +938,8 @@ class SearchRecord
 
   def secondary_search_date_equal?(new_search_record)
     secondary_search_date = self.secondary_search_date
-    new_secondary_search_date = new_search_record.secondary_search_date
+    new_secondary_search_date = new_search_record.seconda
+ry_search_date
     if secondary_search_date.present? && new_secondary_search_date.present?
       return false  if secondary_search_date != new_secondary_search_date
     else
@@ -945,7 +986,8 @@ class SearchRecord
 
     Rails.logger.info("[SearchRecord] Starting populate_search_names with #{transcript_names.size} transcript_names")
 
-    transcript_names.each do |name_hash|
+    transcript_names.each do |raw|
+      name_hash = raw.is_a?(Hash) ? raw.with_indifferent_access : raw
       Rails.logger.debug("[SearchRecord] Processing name_hash: #{name_hash.inspect}")
 
       # 1. Person type
@@ -1181,7 +1223,7 @@ class SearchRecord
       place_name = place.place_name
       church_name = church.church_name
       register_type = RegisterType.display_name(register.register_type)
-      location_names << "#{place_name} (#{church_name})"
+      location_names << "#{place_name} ||| #{church_name}"
       location_names << " [#{register_type}]"
       update(location_names: location_names, freereg1_csv_entry_id: entry.id, place_id: place.id)
     end

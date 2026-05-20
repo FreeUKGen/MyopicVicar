@@ -10,6 +10,8 @@ class UserMailer < Devise::Mailer
     default from: "#{cen_website} FreeCEN Servant <no-reply@freecen.org.uk>"
   end
 
+  helper EmailHelper
+
   def appname
     MyopicVicar::Application.config.freexxx_display_name
   end
@@ -19,7 +21,6 @@ class UserMailer < Devise::Mailer
     @freecen_report = report
     mail(:to => to_email, :subject => subj, :body => report, :content_type => "text/plain")
   end
-  add_template_helper(EmailHelper)
 
   def acknowledge_communication(original)
     @appname = appname

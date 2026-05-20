@@ -12,8 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'uri'
+
 MyopicVicar::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
+
+  # Rails 6+ Host Authorization
+  # Allow local dev access via the configured public website host
+  # (e.g. reverse proxy / shared dev URL).
+  begin
+    website_host = URI.parse(MyopicVicar::MongoConfig['website'].to_s).host
+    config.hosts << website_host if website_host.present?
+  rescue URI::InvalidURIError
+    # ignore invalid website config
+  end
 
   # In the development environment your application's code is reloaded on
   # every request.  This slows down response time but is perfect for development

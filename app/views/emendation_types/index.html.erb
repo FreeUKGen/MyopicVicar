@@ -1,0 +1,32 @@
+<%= render 'shared/emendations_nav' %>
+
+<h1>Manage Emendation Types</h1>
+
+<%= link_to 'Create New Type', new_emendation_type_path, class: "btn btn--small", style: "margin-bottom: 20px;" %>
+
+<table class="table--bordered table--striped" style="width: 100%;">
+  <thead>
+    <tr>
+      <th class="text--left">Name / Category</th>
+      <th class="text--left">Target Field</th>
+      <th class="text--left">Origin</th>
+      <th class="text--center">Rule Count</th>
+      <th class="text--right">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @emendation_types.each do |type| %>
+      <tr>
+        <td class="weight--semibold"><%= type.name %></td>
+        <td><code><%= type.target_field %></code></td>
+        <td><%= type.origin.presence || 'Manual' %></td>
+        <td class="text--center"><%= type.emendation_rules.count %></td>
+        <td class="text--right">
+          <%= link_to 'Manage Rules in Type', emendation_rules_path(emendation_type_id: type.id), class: "btn btn--small" %>
+          <%= link_to 'Edit', edit_emendation_type_path(type), class: "btn btn--small" %>
+          <%= link_to 'Delete', emendation_type_path(type), method: :delete, data: { confirm: "Are you sure you want to delete the '#{type.name}' type? Note: It will fail if rules still exist under it." }, class: "btn btn--small btn--negative" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
