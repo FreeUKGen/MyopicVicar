@@ -541,9 +541,13 @@
   end
 
   def compare_single_name_bmd(x, y, order_field, next_order_field)
+    unless x.is_a?(Hash) && y.is_a?(Hash)
+      return compare_field_values(x, y, order_field)
+    end
+
     if field_values_match(x, y, order_field)
       next_order_field.each do |field|
-        if x[field].nil? || y[field].nil?
+        if sort_field_lookup(x, field).nil? || sort_field_lookup(y, field).nil?
           return compare_field_values(x, y, field)
         end
         next if field_values_match(x, y, field)
@@ -919,7 +923,7 @@
       next if val.nil?
 
       if val.is_a?(Array)
-        val.each do |v|
+        val.flatten.each do |v|
           attrs = bmd_normalize_snapshot_attrs(v)
           pairs << [key, attrs] if attrs
         end
@@ -1099,7 +1103,8 @@
         #Handle multiple records with same hash
         if records.has_key? rec_hash
           v1 = records[rec_hash]
-          records[rec_hash]=[v1, rec_attr]
+          existing = Array(v1).flatten
+          records[rec_hash] = existing + [rec_attr]
         else
           records[rec_hash] = rec_attr
         end
@@ -3319,7 +3324,13 @@
   end
 
   def searched_records
-    search_result.records.values
+    return [] unless search_result&.records
+
+    if freebmd_app?
+      search_result.records.values.flatten.filter_map { |v| bmd_normalize_snapshot_attrs(v) }
+    else
+      search_result.records.values
+    end
   end
 
   def sorted_and_paged_searched_records
@@ -3381,8 +3392,8 @@
     search_results.each do |rec|
       qn = rec[:QuarterNumber]
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
-      surname = rec[:Surname]
-      given_names = rec[:GivenName].split(' ')
+      surname = rec[:Surname].to_s
+      given_names = rec[:GivenName].to_s.split(' ')
       #given_name = given_names[0]
       #given_names.shift()
       #other_given_names = given_names.join(' ') if given_names.present?
