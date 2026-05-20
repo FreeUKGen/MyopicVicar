@@ -3327,7 +3327,7 @@
     return [] unless search_result&.records
 
     if freebmd_app?
-      search_result.records.values.flatten.filter_map { |v| bmd_normalize_snapshot_attrs(v) }
+      search_result.records.values.flatten.map { |v| bmd_normalize_snapshot_attrs(v) }.compact
     else
       search_result.records.values
     end
