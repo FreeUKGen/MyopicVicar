@@ -1766,6 +1766,7 @@
 
   def build_freebmd_query_result
     records = SearchQuery.get_search_table.where(bmd_params_hash)
+    records = apply_bmd_chapman_code_filter(records)
 
     if wildcard_search_conditions.present?
       sql, *values = wildcard_search_conditions
@@ -1931,9 +1932,19 @@
   end
 
   def bmd_county_params
-    params = {}
-    params[:chapman_codes] = {County: chapman_codes} if self.chapman_codes.present?
-    params
+    # Used for index-hint field detection only; SQL filter is apply_bmd_chapman_code_filter (CountyComboID).
+    return {} unless chapman_codes.present?
+
+    { chapman_codes: chapman_codes }
+  end
+
+  def apply_bmd_chapman_code_filter(relation)
+    return relation unless chapman_codes.present?
+
+    combo_ids = CountyCombo.where(County: chapman_codes).pluck(:CountyComboID)
+    return relation.none if combo_ids.empty?
+
+    relation.where(CountyComboID: combo_ids)
   end
 
   def bmd_districts_params
@@ -2246,6 +2257,7 @@
 
   def bmd_params_hash
     search_fields = bmd_adjust_field_names
+    search_fields.delete(:CountyCombos)
     search_fields[:OtherNames] = search_fields.delete(:GivenName).delete_prefix('>') if second_name_wildcard
     search_fields[:GivenName].delete! ".," if search_fields[:GivenName].present?
     search_fields[:Surname] = search_fields[:Surname].delete_prefix('#') if search_fields[:Surname].present? && search_fields[:Surname].start_with?('#')
