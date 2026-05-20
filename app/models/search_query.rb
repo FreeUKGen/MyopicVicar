@@ -2703,6 +2703,13 @@
     results.concat(Array(date_of_birth_search_range_a(invalid_rows)))
     results.concat(Array(date_of_birth_uncertain_aad(invalid_rows)))
 
+    # Encoded DOB values (e.g. 25Mr1888) live in records_with_dob, not invalid_age_records.
+    # The SQL UNION path in combined_results uses age_at_death_with_year for these; mirror that here.
+    if date_of_birth_range?
+      encoded_dob_rows = records_with_dob_array(dob_results)
+      results.concat(Array(age_at_death_with_year(encoded_dob_rows)))
+    end
+
     results.concat(Array(no_aad_or_dob(all_rows)))
 
     normalized = normalize_freebmd_combined_result_rows(results)
