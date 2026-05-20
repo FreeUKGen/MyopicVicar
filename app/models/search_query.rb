@@ -962,7 +962,64 @@
     nil
   end
 
+  # Legacy FreeBMD (Perl SearchDB) orders hits by ascending RecordNumber.
+  def freebmd_record_number_sort_key(rec)
+    return 0 if rec.nil?
+
+    if rec.is_a?(Array)
+      return rec.map { |x| freebmd_record_number_sort_key(x) }.min.to_i
+    end
+
+    val = nil
+    val = rec.read_attribute(:RecordNumber) if rec.respond_to?(:read_attribute)
+    if val.nil? && rec.is_a?(Hash)
+      val = rec[:RecordNumber] || rec['RecordNumber']
+    end
+    if val.nil? && rec.respond_to?(:RecordNumber)
+      val = rec.RecordNumber rescue nil
+    end
+    if val.nil? && rec.respond_to?(:[])
+      val = (rec['RecordNumber'] rescue nil)
+      val = (rec[:RecordNumber] rescue nil) if val.nil?
+    end
+    val.to_i
+  end
+
+  def freebmd_pair_min_record_number(pair)
+    _hkey, attrs = pair
+    return 0 if attrs.nil?
+
+    if attrs.is_a?(Array)
+      attrs.map { |entry| freebmd_record_number_sort_key(entry) }.min.to_i
+    else
+      freebmd_record_number_sort_key(attrs)
+    end
+  end
+
+  def sort_bmd_hit_rows_by_record_number!(rows)
+    return rows if rows.blank?
+
+    rows.sort_by! { |r| freebmd_record_number_sort_key(r) }
+    rows
+  end
+
+  def finalize_freebmd_mysql_search_order(records)
+    return records unless freebmd_app?
+
+    if records.is_a?(Array)
+      sort_bmd_hit_rows_by_record_number!(records)
+    elsif records.respond_to?(:reorder)
+      records.reorder(:RecordNumber)
+    else
+      records
+    end
+  end
+
   def sort_freebmd_hash_key_pairs!(pairs)
+    if freebmd_app? && order_field.blank?
+      pairs.sort! { |a, b| freebmd_pair_min_record_number(a) <=> freebmd_pair_min_record_number(b) }
+      return pairs
+    end
     return pairs if order_field.blank? || pairs.blank?
 
     pairs.sort! do |a, b|
@@ -1751,8 +1808,11 @@
 
       Timeout::timeout(max_time) do
         records, record_count = build_freebmd_query_result
-        records = freebmd_apply_display_limit(records) unless for_count
-        persist_results(records) unless for_count
+        unless for_count
+          records = freebmd_apply_display_limit(records)
+          records = finalize_freebmd_mysql_search_order(records)
+          persist_results(records)
+        end
         [for_count ? [] : records, record_count, true, 0]
       end
     rescue Timeout::Error
