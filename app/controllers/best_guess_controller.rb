@@ -33,6 +33,29 @@ class BestGuessController < ApplicationController
       redirect_back(fallback_location: root_path) && return
     end
 
+    # FreeBMD: when a record_hash is supplied we resolve via BestGuessHash. If that hash collides
+    # (non-unique across multiple rows), the resolved RecordNumber can differ from the path :id.
+    # Redirect so the URL reflects the record actually being displayed.
+    if record_hash_freebmd_request? && params[:id].present? && @current_record.RecordNumber.to_s != params[:id].to_s
+      common_params = {
+        locale: params[:locale],
+        record_hash: @resolved_record_hash,
+        search_entry: params[:search_entry]
+      }.compact
+
+      if @search && params[:search_id].present?
+        redirect_to(
+          friendly_bmd_record_details_path(params[:search_id], @current_record.RecordNumber, @current_record.friendly_url, common_params),
+          status: :moved_permanently
+        ) && return
+      else
+        redirect_to(
+          friendly_bmd_record_details_non_search_path(@current_record.RecordNumber, @current_record.friendly_url, common_params),
+          status: :moved_permanently
+        ) && return
+      end
+    end
+
     if @search && @search_record.blank? && record_hash_freebmd_request?
       @search_record = @current_record
     end
@@ -307,11 +330,20 @@ class BestGuessController < ApplicationController
   end
 
   def resolve_best_guess_for_show
-    if record_hash_freebmd_request?
-      BestGuessHash.find_by(Hash: @resolved_record_hash.to_s)&.best_guess
-    else
-      BestGuess.find_by(RecordNumber: params[:id])
+    unless record_hash_freebmd_request?
+      return BestGuess.find_by(RecordNumber: params[:id])
     end
+
+    # Prefer the path RecordNumber when it agrees with the provided hash.
+    # This protects against RecordNumber reuse after DB reloads (hash mismatch),
+    # while allowing disambiguation when record_hash collides across multiple rows.
+    rec = BestGuess.find_by(RecordNumber: params[:id]) if params[:id].present?
+    if rec.present? && @resolved_record_hash.present?
+      normalized = normalize_marriage_hash_param(@resolved_record_hash)
+      return rec if normalized.present? && normalize_marriage_hash_param(rec.record_hash) == normalized
+    end
+
+    BestGuessHash.find_by(Hash: @resolved_record_hash.to_s)&.best_guess
   end
 
   # record_hash query param, or (FreeBMD + saved search only) derived from snapshot RecordNumber in URL.
