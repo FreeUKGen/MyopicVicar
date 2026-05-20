@@ -27,6 +27,7 @@
     BMD_DATE = 'QuarterNumber'
     BMD_ASSOCIATE_NAME = 'AssociateName'
     BMD_AGE_AT_DEATH = 'AgeAtDeath'
+    BMD_RECORD_NUMBER = 'RecordNumber'
     BIRTH_PLACE = 'birth_place'
 
     ALL_ORDERS = [
@@ -43,7 +44,8 @@
       BMD_RECORD_TYPE,
       BMD_DATE,
       BMD_ASSOCIATE_NAME,
-      BMD_AGE_AT_DEATH
+      BMD_AGE_AT_DEATH,
+      BMD_RECORD_NUMBER
     ]
   end
 
@@ -956,7 +958,70 @@
     nil
   end
 
+  # Legacy FreeBMD (Perl SearchDB) orders hits by ascending RecordNumber; mirror that for MySQL-backed search.
+  def freebmd_record_number_sort_key(rec)
+    return 0 if rec.nil?
+
+    # Snapshot values can be an array of duplicate-hash rows; Array#[] only accepts Integer keys.
+    if rec.is_a?(Array)
+      return rec.map { |x| freebmd_record_number_sort_key(x) }.min.to_i
+    end
+
+    val = nil
+    if rec.respond_to?(:read_attribute)
+      val = rec.read_attribute(:RecordNumber)
+    end
+    if val.nil? && rec.is_a?(Hash)
+      val = rec[:RecordNumber] || rec['RecordNumber']
+    end
+    if val.nil? && rec.respond_to?(:RecordNumber)
+      val = rec.RecordNumber rescue nil
+    end
+    # Some types implement [] but only for Integer (e.g. Relation); never pass a Symbol without rescue.
+    if val.nil? && rec.respond_to?(:[])
+      val = (rec['RecordNumber'] rescue nil)
+      val = (rec[:RecordNumber] rescue nil) if val.nil?
+    end
+    val.to_i
+  end
+
+  # For snapshot rows keyed by record_hash; pair[1] is a single attr hash (flatten already splits arrays of rows).
+  # Do not use Array(attrs) on a Hash — that becomes [[k,v],…] and breaks RecordNumber extraction.
+  def freebmd_pair_min_record_number(pair)
+    _hkey, attrs = pair
+    return 0 if attrs.nil?
+
+    if attrs.is_a?(Array)
+      attrs.map { |entry| freebmd_record_number_sort_key(entry) }.min.to_i
+    else
+      freebmd_record_number_sort_key(attrs)
+    end
+  end
+
+  def sort_bmd_hit_rows_by_record_number!(rows)
+    return rows if rows.blank?
+
+    rows.sort_by! { |r| freebmd_record_number_sort_key(r) }
+    rows
+  end
+
+  def finalize_freebmd_mysql_search_order(records)
+    return records unless freebmd_app?
+
+    if records.is_a?(Array)
+      sort_bmd_hit_rows_by_record_number!(records)
+    elsif records.respond_to?(:reorder)
+      records.reorder(:RecordNumber)
+    else
+      records
+    end
+  end
+
   def sort_freebmd_hash_key_pairs!(pairs)
+    if freebmd_app? && order_field.blank?
+      pairs.sort! { |a, b| freebmd_pair_min_record_number(a) <=> freebmd_pair_min_record_number(b) }
+      return pairs
+    end
     return pairs if order_field.blank? || pairs.blank?
 
     pairs.sort! do |a, b|
@@ -1028,6 +1093,12 @@
           compare_name_bmd(xa, ya, 'AgeAtDeath', ['Surname', 'GivenName', 'QuarterNumber'])
         else
           compare_name_bmd(ya, xa, 'AgeAtDeath', ['Surname', 'GivenName', 'QuarterNumber'])
+        end
+      when SearchOrder::BMD_RECORD_NUMBER
+        if order_asc
+          freebmd_pair_min_record_number(a) <=> freebmd_pair_min_record_number(b)
+        else
+          freebmd_pair_min_record_number(b) <=> freebmd_pair_min_record_number(a)
         end
       else
         0
@@ -1340,6 +1411,12 @@
   end
 
   def sort_results(results)
+    # Legacy FreeBMD default: ORDER BY RecordNumber (no column sort selected).
+    if freebmd_app? && order_field.blank?
+      sort_bmd_hit_rows_by_record_number!(results) if results.present?
+      return results
+    end
+
     # next reorder in memory
    # raise SearchOrder::SURNAME.inspect
     return results if order_field.blank?
@@ -1468,6 +1545,12 @@
           results.sort! do |x, y|
             compare_name_bmd(y, x, 'AgeAtDeath',['Surname', 'GivenName', 'QuarterNumber'])
           end
+        end
+      when SearchOrder::BMD_RECORD_NUMBER
+        if self.order_asc
+          results.sort! { |x, y| freebmd_record_number_sort_key(x) <=> freebmd_record_number_sort_key(y) }
+        else
+          results.sort! { |x, y| freebmd_record_number_sort_key(y) <=> freebmd_record_number_sort_key(x) }
         end
       end
     end
@@ -1744,8 +1827,11 @@
 
       Timeout::timeout(max_time) do
         records, record_count = build_freebmd_query_result
-        records = freebmd_apply_display_limit(records) unless for_count
-        persist_results(records) unless for_count
+        unless for_count
+          records = finalize_freebmd_mysql_search_order(records)
+          records = freebmd_apply_display_limit(records)
+          persist_results(records)
+        end
         [for_count ? [] : records, record_count, true, 0]
       end
     rescue Timeout::Error
@@ -1760,7 +1846,7 @@
   end
 
   def build_freebmd_query_result
-    records = SearchQuery.get_search_table.where(bmd_params_hash)
+    records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
 
     if wildcard_search_conditions.present?
       sql, *values = wildcard_search_conditions
@@ -3317,7 +3403,12 @@
   end
 
   def searched_records
-    search_result.records.values
+    vals = search_result.records.values
+    # FreeBMD: persist_results stores duplicate record_hash keys as [attrs_a, attrs_b] (Array).
+    # sort_results indexes each row with x[order_sym]; Arrays raise TypeError. Match bmd_search_results.
+    return vals.flatten if freebmd_app?
+
+    vals
   end
 
   def sorted_and_paged_searched_records
@@ -3345,7 +3436,7 @@
       qn = saved_record[:QuarterNumber]
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = this_record_atts["Surname"]
-      given_names = this_record_atts["GivenName"].split(' ')
+      given_names = this_record_atts["GivenName"].to_s.split(' ')
       #given_name = given_names[0]
       #given_names.shift()
       #other_given_names = given_names.join(' ') if given_names.present?
@@ -3353,8 +3444,8 @@
       f = f+1 if saved_record[:RecordTypeID] == 3
       #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
-      gedcom << '2 SURN '+surname.capitalize
+      gedcom << '1 NAME '+this_record_atts['GivenName'].to_s+' /'+surname.to_s.capitalize+'/'
+      gedcom << '2 SURN '+surname.to_s.capitalize
       given_names.each do |name|
         gedcom << '2 GIVN '+name
       end
@@ -3362,8 +3453,8 @@
       gedcom << '1 BIRT' if saved_record[:RecordTypeID] == 1
       gedcom << '1 DEAT' if saved_record[:RecordTypeID] == 2
       gedcom << '1 MARR' if saved_record[:RecordTypeID] == 3
-      gedcom << '2 DATE '+quarter
-      gedcom << '2 PLAC '+this_record_atts['District']
+      gedcom << '2 DATE '+quarter.to_s
+      gedcom << '2 PLAC '+this_record_atts['District'].to_s
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+saved_record.record_hash+'/'+saved_record.friendly_url
     end
     gedcom << ''
@@ -3380,7 +3471,7 @@
       qn = rec[:QuarterNumber]
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = rec[:Surname]
-      given_names = rec[:GivenName].split(' ')
+      given_names = rec[:GivenName].to_s.split(' ')
       #given_name = given_names[0]
       #given_names.shift()
       #other_given_names = given_names.join(' ') if given_names.present?
@@ -3389,18 +3480,19 @@
       entry = BestGuess.where(RecordNumber: rec[:RecordNumber]).first
       #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
-      gedcom << '2 SURN '+surname.capitalize
+      gedcom << '1 NAME '+rec[:GivenName].to_s+' /'+surname.to_s.capitalize+'/'
+      gedcom << '2 SURN '+surname.to_s.capitalize
       given_names.each do |name|
         gedcom << '2 GIVN '+name
       end
-      #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if rec[:RecordTypeID] == 1
       gedcom << '1 DEAT' if rec[:RecordTypeID] == 2
       gedcom << '1 MARR' if rec[:RecordTypeID] == 3
-      gedcom << '2 DATE '+quarter
-      gedcom << '2 PLAC '+rec[:District]
-      gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
+      gedcom << '2 DATE '+quarter.to_s
+      gedcom << '2 PLAC '+rec[:District].to_s
+      if entry.present?
+        gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash.to_s+'/'+entry.friendly_url.to_s
+      end
     end
     gedcom << '0 TRLR'
     gedcom
