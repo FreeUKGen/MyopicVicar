@@ -108,6 +108,8 @@
   EXACT_DOB_IN_MEMORY_WARN_THRESHOLD = 10_000
   # Max rows loaded into Ruby for exact-DOB in-memory fallback (before filtering).
   FREEBMD_IN_MEMORY_INPUT_CAP = 10_000
+  # Max rows persisted and shown; result_count may be higher (full MySQL match count).
+  FREEBMD_DISPLAY_LIMIT = 1000
   # Columns stored on SearchQuery#search_result for FreeBMD (not full BestGuess rows).
   BMD_SNAPSHOT_ATTRIBUTE_KEYS = %w[
     RecordNumber RecordTypeID GivenName Surname OtherNames AssociateName AgeAtDeath
@@ -1787,7 +1789,7 @@
       records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
     end
 
-    record_count = freebmd_capped_count(records)
+    record_count = freebmd_record_count(records)
 
     [records, record_count]
   end
@@ -1807,19 +1809,17 @@
   end
 
   def freebmd_max_results
-    FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS
+    FREEBMD_DISPLAY_LIMIT
   end
 
-  def freebmd_capped_count(records)
-    limit = freebmd_max_results
-    n = if records.is_a?(Array)
-          records.size
-        elsif records.respond_to?(:count)
-          records.count
-        else
-          0
-        end
-    n > limit ? limit : n
+  def freebmd_record_count(records)
+    if records.is_a?(Array)
+      records.size
+    elsif records.respond_to?(:count)
+      records.count
+    else
+      0
+    end
   end
 
   def freebmd_apply_display_limit(records)
