@@ -699,9 +699,19 @@ class Place
   #   file.ucf_updated = DateTime.now.to_date
   # end
 
-  def update_ucf_list(file)
+  # persist: :both (default) | :file | :none — controls DB writes (rake refresh uses :file + one place save)
+  def update_ucf_list(file, persist: :both)
     # --- Guard Clauses -------------------------------------------------------
     return unless file.present?
+
+    unless file.county == chapman_code && file.place == place_name
+      Rails.logger.warn(
+        "UCF: Operation skipped | reason: file location mismatch | " \
+        "place_id: #{id} | place: #{chapman_code}/#{place_name} | " \
+        "file_id: #{file.id} | file: #{file.county}/#{file.place}"
+      )
+      return
+    end
 
     unless file.respond_to?(:search_record_ids_with_wildcard_ucf)
       Rails.logger.error(
@@ -754,8 +764,17 @@ class Place
     self.ucf_list_record_count = ucf_record_ids.size
     self.ucf_list_file_count   = ucf_list.keys.size
 
-    file.save
-    self.save
+    case persist
+    when :both, true
+      file.save
+      save
+    when :file
+      file.save
+    when :none, false
+      # in-memory only; caller saves place (and optionally files) once
+    else
+      raise ArgumentError, "update_ucf_list persist must be :both, :file, or :none"
+    end
 
     Rails.logger.info(
       "UCF: summary | place_id: #{id} | file_id: #{file.id} | " \

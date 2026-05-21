@@ -530,8 +530,11 @@ namespace :ucf do
       # Reset place UCF list hash
       place.ucf_list = {}
 
-      #  Iterate through all Freereg1CsvFile files belonging to this place
-      Freereg1CsvFile.where(place_name: place.place_name).order(file_name: :asc).no_timeout.each do |file|
+      # Files are keyed by county (chapman code) + place, not place name alone
+      Freereg1CsvFile.where(
+        county: place.chapman_code,
+        place: place.place_name
+      ).order(file_name: :asc).no_timeout.each do |file|
         # Special case: skip known heavy file
         # if file.file_name == "SOMFSJBA.csv" && file.userid == "YvonneScrivener"  # This file has 48,000 entries
         #   Rails.logger.warn "Skipping heavy file #{file.file_name} for user #{file.userid}"
@@ -545,11 +548,9 @@ namespace :ucf do
         message_file.flush
         puts "#{msg}"
 
-        # Update UCF list with this Place's Freereg1CsvFile file
+        # Update in memory; save file only here, place once after all files (avoids N place writes)
         begin
-          place.update_ucf_list(file)
-          place.ucf_list[file.id.to_s] ||= [] 
-          file.save!
+          place.update_ucf_list(file, persist: :file)
         rescue => e
           Rails.logger.error "Error updating file #{file.file_name} for place #{place.place_name}: #{e.message}"
           ap e.backtrace.take(5) # show first 5 lines of backtrace
