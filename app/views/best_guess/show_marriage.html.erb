@@ -8,7 +8,11 @@
 <h1 class="accessibility">Marriage Informations</h1>
 <% unless device_type == :mobile%>
   <div class="grid">
-    <div class="grid__item one-whole lap-one-whole palm-one-whole ">
+    <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads" style="height: 650px;">
+      <p style="margin-bottom:5px;">Advertisement</p>
+      <div data-fuse="freebmd_skyscraper_1"></div>
+    </div>
+    <div class="grid__item five-sixths lap-five-sixths palm-one-whole ">
       <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
       <section>
         <div class="grid__item one-half lap-one-half palm-one-whole">
@@ -55,7 +59,7 @@
         </div>
       </section>
     </div>
-    <div class="grid__item one-whole lap-one-whole palm-one-whole ">
+    <div class="grid__item five-sixths lap-five-sixths palm-one-whole ">
       <div class="text--center">
         <p>If the scan does not contain the entry you may be able to <%= link_to "find the scan on our original site", "https://images.freebmd.org.uk/cgi/choose.pl"%>.</p>
       </div>
