@@ -2,37 +2,37 @@
 <% title "Marriage Details" %>
 <% print_friendly = (defined?(@printable_format) && @printable_format) ? true : false %>
 <% if @search %>
-  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @current_record.record_hash), class: " btn   btn--small" if @search_id.present?%>
-  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @current_record.RecordNumber, @current_record.friendly_url, search_entry: @current_record.RecordNumber, record_hash: @current_record.record_hash), class: " btn   btn--small" unless @current_record.blank?%>
+  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Results".html_safe, search_query_path(@search_query, id: @search_id, anchor: @current_record.record_hash), class: " btn   btn--small push--bottom" if @search_id.present?%>
+  <%= link_to "#{app_icons[:left_arrow_pink]} Back to Search Entry".html_safe, friendly_bmd_record_details_path(params[:search_id], @current_record.RecordNumber, @current_record.friendly_url, search_entry: @current_record.RecordNumber, record_hash: @current_record.record_hash), class: " btn   btn--small push--bottom" unless @current_record.blank?%>
 <% end %>
 <h1 class="accessibility">Marriage Informations</h1>
 <% unless device_type == :mobile%>
-<style>
-@media (max-width: 1299px) {
-  .big_screen_ads {
-    display: none;
-  }
-  .whole_advert {
-    display: block;
-  }
-}
-@media (min-width: 1300px) {
-  .big_screen_ads {
-    display: block;
-  }
-  .whole_advert {
-    display: none;
-  }
-}
-</style>
-  <div class="grid">
+  <style>
+    @media (max-width: 1299px) {
+      .big_screen_ads {
+        display: none;
+      }
+      .whole_advert {
+        display: block;
+      }
+    }
+    @media (min-width: 1300px) {
+      .big_screen_ads {
+        display: block;
+      }
+      .whole_advert {
+        display: none;
+      }
+    }
+  </style>
+  <div class="grid push--bottom">
     <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads" style="height: 650px;">
       <p style="margin-bottom:5px;">Advertisement</p>
       <div data-fuse="freebmd_skyscraper_1"></div>
     </div>
     <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
     <%= horz_advert_whole('freebmd_hrec_1') %>
-    <div class="grid__item desk-wide-five-sixths desk-one-whole lap-one-whole palm-one-whole hard--left" style="padding-right:5px;">
+    <div class="grid__item desk-wide-five-sixths desk-one-whole lap-one-whole palm-one-whole" style="padding-right:5px;">
       <div class="grid__item one-whole lap-one-whole palm-one-whole ">
         <p class="alpha push-half--top project-text-color flush--bottom text--center"><strong><%= "Marriage Details of #{@current_record[:GivenName].upcase} #{@current_record[:Surname].upcase}" %></strong></p>
         <section>
