@@ -88,6 +88,9 @@ class SearchQuery
   WILDCARD   = /[?*]/.freeze
   UCF        = /[\[\{}_\*\?]/.freeze
   VALID_YEAR = /\b\d{4}\b/.freeze
+  # UCF: cap ids loaded/filtered per search (avoids multi-minute runs on large place ucf_list).
+  UCF_RAW_ID_CAP = 10_000
+  UCF_RECORD_LOAD_BATCH = 1_000
 
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
@@ -484,104 +487,37 @@ class SearchQuery
   # end
 
   def filter_ucf_records(records)
-    Rails.logger.info "\n[filter_ucf_records] starting with #{records.size} raw records"
-    Rails.logger.info "[filter_ucf_records] Start loop of search records\n"
-
-    filtered_records = []
-
-    records.each do |raw_record|
-      Rails.logger.info "[filter_ucf_records] Processing raw search record: #{raw_record.inspect}"
-
-      record = SearchRecord.record_id(raw_record.to_s).first
-      Rails.logger.info "[filter_ucf_records] Search Record:\n#{record.inspect}"
-
-      next if record.blank?
-
-      if record.search_date.blank?
-        Rails.logger.info "[filter_ucf_records] Skipping search record: blank search_date"
-        next
-      end
-
-      if record.search_date.match(UCF) && !record.search_date.match(VALID_YEAR)
-        Rails.logger.info "[filter_ucf_records] Skipping search record: search_date matches UCF"
-        next
-      end
-
-      if record_type.present? && record.record_type != record_type
-        Rails.logger.info "[filter_ucf_records] Skipping search record: record_type mismatch"
-        next
-      end
-
-      if start_year.present?
-        year = record.search_date.to_i
-        if year < start_year || year > end_year
-          Rails.logger.info "[filter_ucf_records] Skipping search record: year #{year} outside #{start_year}-#{end_year}"
-          next
-        end
-      end
-
-      Rails.logger.info "\n[filter_ucf_records] Start loop of search name(s)"
-      record.search_names.each do |name|
-        Rails.logger.info "\n+++ [filter_ucf_records] Evaluating search name: #{name.attributes}"
-
-        unless name.type == SearchRecord::PersonType::PRIMARY || inclusive || witness
-          Rails.logger.info "[filter_ucf_records] Skipping name: not PRIMARY and no inclusive/witness flags\n"
-          next
-        end
-
-        begin
-          if name.contains_wildcard_ucf?
-            Rails.logger.info "[filter_ucf_records] Wildcard UCF detected for name"
-
-            # CASE 1: Only last name provided
-            if first_name.blank? && last_name.present? && name.last_name.present?
-              regex = UcfTransformer.ucf_to_regex(name.last_name.downcase)
-
-              Rails.logger.info "[filter_ucf_records] last_name_regex: #{regex}"
-
-              if last_name.downcase.match(regex)
-                Rails.logger.info "[filter_ucf_records] Matched last name wildcard"
-                filtered_records << record
-              end
-
-            # CASE 2: Only first name provided
-            elsif last_name.blank? && first_name.present? && name.first_name.present?
-              regex = UcfTransformer.ucf_to_regex(name.first_name.downcase)
-
-              Rails.logger.info "[filter_ucf_records] first_name_regex: #{regex}"
-              
-              if first_name.downcase.match(regex)
-                Rails.logger.info "[filter_ucf_records] Matched first name wildcard"
-                filtered_records << record
-              end
-
-            # CASE 3: Both names provided
-            elsif last_name.present? && first_name.present? &&
-                  name.last_name.present? && name.first_name.present?
-
-              last_regex  = UcfTransformer.ucf_to_regex(name.last_name.downcase)
-              first_regex = UcfTransformer.ucf_to_regex(name.first_name.downcase)
-
-              Rails.logger.info "[filter_ucf_records] last_regex: #{last_regex} , first_regex: #{first_regex}"
-
-              if last_name.downcase.match(last_regex) &&
-                first_name.downcase.match(first_regex)
-                Rails.logger.info "[filter_ucf_records] Matched both first and last name wildcards"
-                filtered_records << record
-              end
-            end
-          end
-        rescue RegexpError => e
-          Rails.logger.error "[filter_ucf_records] RegexpError for name #{name.inspect}: #{e.message}"
-        end
-      end
-      Rails.logger.info "[filter_ucf_records] End loop of search names\n"
+    started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    raw_list = Array(records).flatten.compact
+    raw_total = raw_list.size
+    if raw_total > UCF_RAW_ID_CAP
+      Rails.logger.warn(
+        "[filter_ucf_records] capping UCF candidates from #{raw_total} to #{UCF_RAW_ID_CAP}"
+      )
+      raw_list = raw_list.first(UCF_RAW_ID_CAP)
     end
-    Rails.logger.info "[filter_ucf_records] End loop of search records\n"
 
-    Rails.logger.info "[filter_ucf_records] filter_ucf_records: returning #{filtered_records.size} filtered records\n"
+    records_by_id = load_search_records_for_ucf(raw_list)
+    allowed_name_types = search_name_types_for_query
+    matched = []
+    matched_ids = Set.new
+    skipped_missing = 0
 
-    filtered_records
+    records_by_id.each_value do |record|
+      next unless ucf_record_passes_filters?(record, allowed_name_types: allowed_name_types)
+
+      if matched_ids.add?(record.id.to_s)
+        matched << record
+      end
+    end
+
+    skipped_missing = raw_list.size - records_by_id.size
+    elapsed_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round(2)
+    Rails.logger.info(
+      "[filter_ucf_records] raw=#{raw_total} loaded=#{records_by_id.size} " \
+      "missing=#{skipped_missing} matched=#{matched.size} runtime_ms=#{elapsed_ms}"
+    )
+    matched
   end
 
   def filter_census_addional_fields(search_results)
@@ -1130,7 +1066,7 @@ class SearchQuery
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-    logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
+    logger.debug { "#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}" }
     update_attribute(:search_index, @search_index)
     self.results_fetch_capped = false
     max_results = FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
@@ -1373,6 +1309,60 @@ class SearchQuery
   end
 
   private
+
+  def load_search_records_for_ucf(raw_list)
+    oids = ucf_raw_ids_to_object_ids(raw_list)
+    return {} if oids.empty?
+
+    by_id = {}
+    oids.each_slice(UCF_RECORD_LOAD_BATCH) do |slice|
+      SearchRecord.in(_id: slice).each { |record| by_id[record.id.to_s] = record }
+    end
+    by_id
+  end
+
+  def ucf_raw_ids_to_object_ids(raw_list)
+    raw_list.map { |id| self.class.send(:to_object_id_for_query, id) }.compact.uniq
+  end
+
+  def ucf_record_passes_filters?(record, allowed_name_types:)
+    return false if record.search_date.blank?
+    return false if record.search_date.match(UCF) && !record.search_date.match(VALID_YEAR)
+    return false if record_type.present? && record.record_type != record_type
+
+    if start_year.present?
+      year = record.search_date.to_i
+      return false if year < start_year || year > end_year
+    end
+
+    ucf_name_matches_query?(record, allowed_name_types: allowed_name_types)
+  end
+
+  def ucf_name_matches_query?(record, allowed_name_types:)
+    record.search_names.any? do |name|
+      next false unless allowed_name_types.include?(name.type)
+
+      next false unless name.contains_wildcard_ucf?
+
+      ucf_embedded_name_matches?(name)
+    end
+  rescue RegexpError => e
+    Rails.logger.error "[filter_ucf_records] RegexpError: #{e.message}"
+    false
+  end
+
+  def ucf_embedded_name_matches?(name)
+    if first_name.blank? && last_name.present? && name.last_name.present?
+      last_name.downcase.match?(UcfTransformer.ucf_to_regex(name.last_name.downcase))
+    elsif last_name.blank? && first_name.present? && name.first_name.present?
+      first_name.downcase.match?(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+    elsif last_name.present? && first_name.present? && name.last_name.present? && name.first_name.present?
+      last_name.downcase.match?(UcfTransformer.ucf_to_regex(name.last_name.downcase)) &&
+        first_name.downcase.match?(UcfTransformer.ucf_to_regex(name.first_name.downcase))
+    else
+      false
+    end
+  end
 
   def selected_sort_fields
     [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::BIRTH_PLACE, SearchOrder::TYPE ]

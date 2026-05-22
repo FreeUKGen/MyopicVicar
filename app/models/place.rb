@@ -160,28 +160,12 @@ class Place
     # end
 
     def extract_ucf_records(place_ids)
-      Rails.logger.info(
-        "UCF: Operation | action: extract_ucf_records | place_ids: #{place_ids}"
-      )
       return [] if place_ids.blank?
-      
-      # Fetch only the ucf_list field for all places in one query
+
       places = Place.where(:_id.in => place_ids).only(:ucf_list)
-
-      records = []
-
-      # Extract all record IDs
-      places.each do |place|
-        next if place.ucf_list.blank?
-
-        # ucf_list is a Hash<String, UcfRecord>
-        place.ucf_list.each_value do |record|
-          # Collect values from the UCF list
-          records << record if record.present?
-        end
-      end
-
-      records.flatten
+      ids = places.flat_map(&:ucf_record_ids).uniq
+      Rails.logger.debug { "UCF extract_ucf_records place_count=#{places.size} id_count=#{ids.size}" }
+      ids
     end
 
     def valid_chapman_code?(chapman_code)

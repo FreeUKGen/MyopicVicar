@@ -392,20 +392,16 @@ class SearchRecord
     end
 
     def index_hint(search_params)
-      p search_params
       search_fields = fields_from_params(search_params)
-      p search_fields
       case App.name_downcase
       when 'freebmd'
         candidates = BMD_INDEXES.keys
         index_component = BMD_INDEXES
       when 'freecen'
         if search_fields.include?('place_id')
-          p 'place_id'
           candidates = CEN_PLACE_INDEXES.keys
           index_component = CEN_PLACE_INDEXES
         elsif search_fields.include?('freecen2_place_id')
-          p 'freecen2_place_id'
           candidates = CEN2_PLACE_INDEXES.keys
           index_component = CEN2_PLACE_INDEXES
         elsif search_fields.include?('chapman_code')
@@ -432,8 +428,12 @@ class SearchRecord
       end
       scores = {}
       candidates.each { |name| scores[name] = index_score(name, search_fields, index_component) }
-      best = scores.max_by { |_k, v| v}
-      best[0]
+      best = scores.max_by { |_k, v| v }
+      hint = best[0]
+      Rails.logger.debug do
+        "[SearchRecord.index_hint] app=#{App.name_downcase} fields=#{search_fields.inspect} hint=#{hint} score=#{best[1]}"
+      end
+      hint
     end
 
     def index_score(index_name, search_fields, index_component)
