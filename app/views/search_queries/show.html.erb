@@ -9,6 +9,9 @@
     <% if @result_count >= FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %>
       <%= render 'too_many_results' %>
     <% else %>
+      <% if @results_truncated %>
+        <%= render 'results_fetch_truncated' %>
+      <% end %>
       <% if @result_count == 0 && ( @ucf_results && @ucf_results.size == 0) %>
         <div class="grid">
           <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
