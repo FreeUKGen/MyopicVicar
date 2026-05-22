@@ -1,6 +1,7 @@
 <%# Mirrors key fields from best_guess/_entry_information_table, adding a corrections input column. %>
 <% record_type_name = RecordType::display_name(record.RecordTypeID).to_s.downcase %>
 <% entry_type ||= record_type_name %>
+<% correction_field_options = { class: 'text-input', autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' } %>
 
 <table class="table--bordered table--data table--left-aligned" style="width: 100%; max-width: 48rem;">
   <thead>
@@ -14,12 +15,12 @@
     <tr>
       <th scope="row">Surname</th>
       <td><%= record.Surname %></td>
-      <td><%= text_field_tag 'contact[session_data][corrections][surname]', nil, class: 'text-input' %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][surname]', nil, correction_field_options.merge(autocomplete: 'one-time-code') %></td>
     </tr>
     <tr>
       <th scope="row">Given Name</th>
       <td><%= record.GivenName %></td>
-      <td><%= text_field_tag 'contact[session_data][corrections][given_name]', nil, class: 'text-input' %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][given_name]', nil, correction_field_options.merge(autocomplete: 'one-time-code') %></td>
     </tr>
     <tr>
       <th scope="row">Record Type</th>
@@ -29,14 +30,14 @@
     <tr>
       <th scope="row">Registration Date</th>
       <td><%= format_quarter_year(record.QuarterNumber) %></td>
-      <td><%= text_field_tag 'contact[session_data][corrections][registration_date]', nil, class: 'text-input', placeholder: 'e.g. Mar 1937' %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][registration_date]', nil, correction_field_options.merge(placeholder: 'e.g. Mar 1937') %></td>
     </tr>
 
     <% if entry_type == "birth" %>
       <tr>
         <th scope="row">Mother's Maiden Name</th>
         <td><%= record.AssociateName.presence || 'No data' %></td>
-        <td><%= text_field_tag 'contact[session_data][corrections][mothers_maiden_name]', nil, class: 'text-input' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][mothers_maiden_name]', nil, correction_field_options %></td>
       </tr>
     <% end %>
 
@@ -50,7 +51,7 @@
           <% end %>
         </th>
         <td><%= record.AgeAtDeath.presence || 'No data' %></td>
-        <td><%= text_field_tag 'contact[session_data][corrections][age_or_dob]', nil, class: 'text-input' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][age_or_dob]', nil, correction_field_options %></td>
       </tr>
     <% end %>
 
@@ -58,37 +59,37 @@
       <tr>
         <th scope="row">Spouse Name</th>
         <td><%= record.AssociateName.presence || 'No data' %></td>
-        <td><%= text_field_tag 'contact[session_data][corrections][spouse_name]', nil, class: 'text-input' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][spouse_name]', nil, correction_field_options %></td>
       </tr>
     <% end %>
 
     <tr>
       <th scope="row">District</th>
       <td><%= record.display_district_name %></td>
-      <td><%= text_field_tag 'contact[session_data][corrections][district]', nil, class: 'text-input' %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][district]', nil, correction_field_options %></td>
     </tr>
     <tr>
       <th scope="row">Volume</th>
       <td><%= record.Volume %></td>
-      <td><%= text_field_tag 'contact[session_data][corrections][volume]', nil, class: 'text-input' %></td>
+      <td><%= text_field_tag 'contact[session_data][corrections][volume]', nil, correction_field_options %></td>
     </tr>
 
     <% if record.respond_to?(:register_entry_number_format) && record.register_entry_number_format %>
       <tr>
         <th scope="row">Register number</th>
         <td><%= record.event_registration_number.presence || 'No data' %></td>
-        <td><%= text_field_tag 'contact[session_data][corrections][register_number]', nil, class: 'text-input' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][register_number]', nil, correction_field_options %></td>
       </tr>
       <tr>
         <th scope="row">Entry number</th>
         <td><%= record.event_entry_number.presence || record.Page %></td>
-        <td><%= text_field_tag 'contact[session_data][corrections][entry_number]', nil, class: 'text-input' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][entry_number]', nil, correction_field_options %></td>
       </tr>
     <% else %>
       <tr>
         <th scope="row">Page</th>
         <td><%= record.Page %></td>
-        <td><%= text_field_tag 'contact[session_data][corrections][page]', nil, class: 'text-input' %></td>
+        <td><%= text_field_tag 'contact[session_data][corrections][page]', nil, correction_field_options %></td>
       </tr>
     <% end %>
 
@@ -99,7 +100,7 @@
         <tr>
           <th scope="row">Registered</th>
           <td><%= format_registered(event_registered.to_s.dup, record.QuarterNumber) %></td>
-          <td><%= text_field_tag 'contact[session_data][corrections][registered]', nil, class: 'text-input' %></td>
+          <td><%= text_field_tag 'contact[session_data][corrections][registered]', nil, correction_field_options %></td>
         </tr>
       <% end %>
     <% end %>
@@ -110,17 +111,17 @@
         <tr>
           <th scope="row">Entry number</th>
           <td><%= sub.EntryNumber %></td>
-          <td><%= text_field_tag 'contact[session_data][corrections][marriage_submission_entry_number]', nil, class: 'text-input' %></td>
+          <td><%= text_field_tag 'contact[session_data][corrections][marriage_submission_entry_number]', nil, correction_field_options %></td>
         </tr>
         <tr>
           <th scope="row">SourceCode</th>
           <td><%= sub.SourceCode %></td>
-          <td><%= text_field_tag 'contact[session_data][corrections][marriage_submission_source_code]', nil, class: 'text-input' %></td>
+          <td><%= text_field_tag 'contact[session_data][corrections][marriage_submission_source_code]', nil, correction_field_options %></td>
         </tr>
         <tr>
           <th scope="row">Registered</th>
           <td><%= "#{QuarterDetails.month_hash_abbreviated[sub.Registered]} #{format_quarter_year(record.QuarterNumber)}" %></td>
-          <td><%= text_field_tag 'contact[session_data][corrections][marriage_submission_registered]', nil, class: 'text-input' %></td>
+          <td><%= text_field_tag 'contact[session_data][corrections][marriage_submission_registered]', nil, correction_field_options %></td>
         </tr>
       <% end %>
     <% end %>
@@ -128,6 +129,6 @@
 </table>
 <label for="corrections_multiple_entries">
   Multiple entries
-  <%= check_box_tag 'contact[session_data][corrections][multiple_entries]', '1', false, id: 'corrections_multiple_entries', style: 'margin-left: 5px;' %>
+  <%= check_box_tag 'contact[session_data][corrections][multiple_entries]', '1', false, id: 'corrections_multiple_entries', style: 'margin-left: 5px;', autocomplete: 'off' %>
 </label>
 

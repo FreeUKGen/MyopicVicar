@@ -2,6 +2,8 @@
     Field groups mirror best_guess/_entry_information_table & contacts/_freebmd_entry_information_corrections_table.
     BestGuess#register_entry_number_format → birth/death with year >= 1993: Register number + Entry number (no Page row).
     Older birth/death & all marriages: Page. Marriages with year >= 1994 also show Marriage submission-* (post_1994_marriage?). %>
+<% section3_field_options = { autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' } %>
+<% section3_name_field_options = section3_field_options.merge(autocomplete: 'one-time-code') %>
 <div id="section3_required_fields_block" style="display: none;" class="push--bottom">
   <h3 class="gamma push-half--bottom">Details for missing entry (provide what you can)</h3>
   <ol class="grid">
@@ -9,16 +11,33 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_event">Record Type</label>
-          <select id="section3_event" name="contact[session_data][section3][event]" class="text-input section3-required-field" aria-describedby="section3_help">
+          <%= tag.select(
+                id: 'section3_event',
+                name: 'contact[session_data][section3][event]',
+                class: 'text-input section3-required-field',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) do %>
             <option value="">Please select</option>
             <option value="Birth">Birth</option>
             <option value="Death">Death</option>
             <option value="Marriage">Marriage</option>
-          </select>
+          <% end %>
         </div>
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_year">Year</label>
-          <input id="section3_year" name="contact[session_data][section3][year]" type="text" class="text-input section3-required-field" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="e.g. 1996" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_year',
+                name: 'contact[session_data][section3][year]',
+                type: 'text',
+                class: 'text-input section3-required-field',
+                inputmode: 'numeric',
+                pattern: '[0-9]{4}',
+                maxlength: 4,
+                placeholder: 'e.g. 1996',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -27,11 +46,25 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_surname">Surname</label>
-          <input id="section3_surname" name="contact[session_data][section3][surname]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_surname',
+                name: 'contact[session_data][section3][surname]',
+                type: 'text',
+                class: 'text-input section3-required-field',
+                'aria-describedby': 'section3_help',
+                **section3_name_field_options
+              ) %>
         </div>
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_forename">Given Name</label>
-          <input id="section3_forename" name="contact[session_data][section3][forename]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_forename',
+                name: 'contact[session_data][section3][forename]',
+                type: 'text',
+                class: 'text-input section3-required-field',
+                'aria-describedby': 'section3_help',
+                **section3_name_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -40,17 +73,30 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_quarter">Quarter (if relevant)</label>
-          <select id="section3_quarter" name="contact[session_data][section3][quarter]" class="text-input" aria-describedby="section3_help">
+          <%= tag.select(
+                id: 'section3_quarter',
+                name: 'contact[session_data][section3][quarter]',
+                class: 'text-input',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) do %>
             <option value="">Not applicable</option>
             <option value="Mar">Mar</option>
             <option value="Jun">Jun</option>
             <option value="Sep">Sep</option>
             <option value="Dec">Dec</option>
-          </select>
+          <% end %>
         </div>
         <div class="grid__item one-half lap-one-whole palm-one-whole">
           <label class="label" for="section3_district">District</label>
-          <input id="section3_district" name="contact[session_data][section3][district]" type="text" class="text-input section3-required-field" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_district',
+                name: 'contact[session_data][section3][district]',
+                type: 'text',
+                class: 'text-input section3-required-field',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -59,7 +105,14 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_mothers_maiden_name">Mother's maiden name</label>
-          <input id="section3_mothers_maiden_name" name="contact[session_data][section3][mothers_maiden_name]" type="text" class="text-input" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_mothers_maiden_name',
+                name: 'contact[session_data][section3][mothers_maiden_name]',
+                type: 'text',
+                class: 'text-input',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -68,7 +121,15 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_age_or_dob">Age at death / date of birth</label>
-          <input id="section3_age_or_dob" name="contact[session_data][section3][age_or_dob]" type="text" class="text-input" placeholder="As on index" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_age_or_dob',
+                name: 'contact[session_data][section3][age_or_dob]',
+                type: 'text',
+                class: 'text-input',
+                placeholder: 'As on index',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -77,7 +138,14 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_spouse_name">Spouse name</label>
-          <input id="section3_spouse_name" name="contact[session_data][section3][spouse_name]" type="text" class="text-input" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_spouse_name',
+                name: 'contact[session_data][section3][spouse_name]',
+                type: 'text',
+                class: 'text-input',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -86,15 +154,39 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_volume">Volume</label>
-          <input id="section3_volume" name="contact[session_data][section3][volume]" type="text" class="text-input" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_volume',
+                name: 'contact[session_data][section3][volume]',
+                type: 'text',
+                class: 'text-input',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_page_number">Page number</label>
-          <input id="section3_page_number" name="contact[session_data][section3][page_number]" type="text" class="text-input" title="Marriages (all years) and births/deaths before the 1993 register/entry layout." aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_page_number',
+                name: 'contact[session_data][section3][page_number]',
+                type: 'text',
+                class: 'text-input',
+                title: 'Marriages (all years) and births/deaths before the 1993 register/entry layout.',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
         <div class="grid__item one-half lap-one-half palm-one-whole section3-if-bd-register-entry" style="display: none;">
           <label class="label" for="section3_register_number">Register number</label>
-          <input id="section3_register_number" name="contact[session_data][section3][register_number]" type="text" class="text-input" title="Births and deaths from 1993 onward (BestGuess#register_entry_number_format)." placeholder="From scan" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_register_number',
+                name: 'contact[session_data][section3][register_number]',
+                type: 'text',
+                class: 'text-input',
+                title: 'Births and deaths from 1993 onward (BestGuess#register_entry_number_format).',
+                placeholder: 'From scan',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -103,7 +195,16 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_entry_number">Entry number</label>
-          <input id="section3_entry_number" name="contact[session_data][section3][entry_number]" type="text" class="text-input" title="Pairs with Register number on modern birth/death index lines." placeholder="From scan" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_entry_number',
+                name: 'contact[session_data][section3][entry_number]',
+                type: 'text',
+                class: 'text-input',
+                title: 'Pairs with Register number on modern birth/death index lines.',
+                placeholder: 'From scan',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -112,7 +213,15 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_registered">Registered <span class="weight--normal">(births/deaths)</span></label>
-          <input id="section3_registered" name="contact[session_data][section3][registered]" type="text" class="text-input" placeholder="If column on scan" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_registered',
+                name: 'contact[session_data][section3][registered]',
+                type: 'text',
+                class: 'text-input',
+                placeholder: 'If column on scan',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -121,11 +230,25 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_marriage_entry">Marriage submission — entry number</label>
-          <input id="section3_marriage_entry" name="contact[session_data][section3][marriage_submission_entry_number]" type="text" class="text-input" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_marriage_entry',
+                name: 'contact[session_data][section3][marriage_submission_entry_number]',
+                type: 'text',
+                class: 'text-input',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_marriage_source">Marriage submission — SourceCode</label>
-          <input id="section3_marriage_source" name="contact[session_data][section3][marriage_submission_source_code]" type="text" class="text-input" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_marriage_source',
+                name: 'contact[session_data][section3][marriage_submission_source_code]',
+                type: 'text',
+                class: 'text-input',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -133,7 +256,15 @@
       <div class="grid">
         <div class="grid__item one-half lap-one-half palm-one-whole">
           <label class="label" for="section3_marriage_registered">Marriage submission — Registered</label>
-          <input id="section3_marriage_registered" name="contact[session_data][section3][marriage_submission_registered]" type="text" class="text-input" placeholder="As on index" aria-describedby="section3_help">
+          <%= tag.input(
+                id: 'section3_marriage_registered',
+                name: 'contact[session_data][section3][marriage_submission_registered]',
+                type: 'text',
+                class: 'text-input',
+                placeholder: 'As on index',
+                'aria-describedby': 'section3_help',
+                **section3_field_options
+              ) %>
         </div>
       </div>
     </li>
@@ -141,7 +272,15 @@
     <li class="grid__item one-whole push-half--top">
       <label for="section3_multiple_entries">
         Multiple entries
-        <input id="section3_multiple_entries" type="checkbox" name="contact[session_data][section3][multiple_entries]" value="1" class="section3-required-checkbox" style="margin-left: 5px;">
+        <%= tag.input(
+              id: 'section3_multiple_entries',
+              type: 'checkbox',
+              name: 'contact[session_data][section3][multiple_entries]',
+              value: '1',
+              class: 'section3-required-checkbox',
+              style: 'margin-left: 5px;',
+              **section3_field_options
+            ) %>
       </label>
     </li>
   </ol>
