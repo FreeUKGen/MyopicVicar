@@ -684,22 +684,20 @@
   end
 
   def get_and_sort_results_for_display
-    if self.search_result.records.respond_to?(:values)
-      search_results = self.search_result.records.values
-      search_results = self.filter_name_types(search_results)
-      search_results = self.filter_embargoed(search_results)
-      search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
-      result_count = self.result_count.present? ? self.result_count : 0
-      search_results = self.sort_results(search_results) unless search_results.nil?
-
-      ucf_results = self.ucf_results if self.ucf_results.present?
-      ucf_results = [] if ucf_results.blank?
-      response = true
-      return response, search_results.map{ |h| SearchRecord.new(h) }, ucf_results, result_count
-    else
-      response = false
-      return response
+    unless search_result&.records.is_a?(Hash)
+      return [false, [], [], 0]
     end
+
+    search_results = search_result.records.values
+    search_results = self.filter_name_types(search_results)
+    search_results = self.filter_embargoed(search_results)
+    search_results = self.filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
+    result_count = self.result_count.present? ? self.result_count : 0
+    search_results = self.sort_results(search_results) unless search_results.nil?
+
+    ucf_results = self.ucf_results if self.ucf_results.present?
+    ucf_results = [] if ucf_results.blank?
+    [true, search_results.map { |h| SearchRecord.new(h) }, ucf_results, result_count]
   end
 
   
@@ -831,6 +829,8 @@
   end
 
   def locate(record_id)
+    return nil unless search_result&.records.is_a?(Hash)
+
     records = search_result.records.values.flatten
     position = locate_index(records, record_id)
     record = position.present? ? records[position] : nil
@@ -875,7 +875,7 @@
   end
 
   def next_and_previous_records(current)
-    if search_result.records.respond_to?(:values)
+    if search_result&.records.is_a?(Hash)
       search_results = search_result.records.values
       #search_results = filter_name_types(search_results)
       search_results = filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
@@ -896,7 +896,7 @@
   end
 
   def bmd_next_and_previous_records current
-    if search_result.records.respond_to?(:values)
+    if search_result&.records.is_a?(Hash)
       search_results = search_result.records.values.flatten
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
@@ -2417,12 +2417,15 @@
   end
 
   def bmd_search_results
-   # raise self.search_result.records.values.flatten.inspect
-    self.search_result.records.values.flatten
+    return [] unless get_bmd_search_response
+
+    search_result.records.values.flatten
   end
 
   def get_bmd_search_results
-    return get_bmd_search_response if !get_bmd_search_response
+    unless get_bmd_search_response
+      return [false, [], ucf_search_results, 0]
+    end
 
     # Preserve snapshot hash keys from search_result.records (same as persist_results) so links
     # and tr#id use the canonical key; BestGuess.new(attrs) alone can diverge via district/assoc.
@@ -2432,7 +2435,7 @@
     search_results = pairs.map do |hkey, attrs|
       bmd_instantiate_from_snapshot_attrs(table, attrs, snapshot_hash: hkey)
     end
-    [get_bmd_search_response, search_results, ucf_search_results, search_results.size]
+    [true, search_results, ucf_search_results, search_results.size]
   end
 
   def ucf_search_results
@@ -2452,7 +2455,7 @@
   end
 
   def get_bmd_search_response
-    self.search_result.records.respond_to?(:values)
+    search_result&.records.is_a?(Hash)
   end
 
   def date_of_birth_range?

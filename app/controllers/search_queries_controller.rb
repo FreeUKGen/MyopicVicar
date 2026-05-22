@@ -487,6 +487,8 @@ class SearchQueriesController < ApplicationController
     if RecordType::BMD_RECORD_TYPE_ID.include?(filter_cond)
       records = filter(@search_results)
     elsif filter_cond == 4
+      return nil unless @search_query.search_result&.records.is_a?(Hash)
+
       select_hash = @search_query.search_result.records.keys - @saved_search_result_hash
       result = @search_query.search_result.records.select{|k,v| select_hash.include?(k)}
       records = result.values.map{|h| BestGuess.new(h)}
@@ -503,6 +505,8 @@ class SearchQueriesController < ApplicationController
     elsif filter_cond == 4
       records = nil
     else filter_cond == 5
+      return nil unless @search_query.search_result&.records.is_a?(Hash)
+
       select_hash = @saved_search_result_hash - @search_query.search_result.records.keys
       result = @saved_search.saved_search_result.records.select{|k,v| select_hash.include?(k)}
       records = result.values.map{|h| BestGuess.new(h)}#BestGuess.get_best_guess_records(select_hash)
