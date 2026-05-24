@@ -17,7 +17,6 @@ class ManageResourcesController < ApplicationController
   skip_before_action :require_login, only: [:logout]
 
   def create
-    #@user = UseridDetail.where(:userid => params[:manage_resource][:userid] ).first
     session[:userid] = @user.userid
     session[:first_name] = @user.person_forename
     session[:manager] = manager?(@user)
@@ -31,6 +30,15 @@ class ManageResourcesController < ApplicationController
   def is_ok_to_render_actions?
     continue = true
     @user = get_user
+    @user_roles = get_user_roles
+    @session_role = if params[:current_role].present?
+                      params[:current_role]
+                    elsif session[:role].present? && @user_roles.include?(session[:role])
+                      session[:role]
+                    else
+                      @user.person_role
+                    end
+    @current_role = params[:user_role].present? ? params[:user_role] : @session_role
     if @user.present?
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}" if appname_downcase == 'freereg'
@@ -50,11 +58,10 @@ class ManageResourcesController < ApplicationController
     when !@user.active
       flash[:notice] = 'You are not active, if you believe this to be a mistake please contact your coordinator'
       continue = false
-    when @user.person_role == "researcher" || @user.person_role == 'pending'
+    when @current_role == "researcher" || @current_role == 'pending'
       flash[:notice] = "You are not currently permitted to access the system as your functions are still under development"
       continue = false
-    when !Rails.application.config.member_open && !(@user.person_role == "system_administrator" || @user.person_role == 'technical')
-      #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+    when !Rails.application.config.member_open && !(@current_role == "system_administrator" || @current_role == 'technical')
       flash[:notice] = "The system is presently undergoing maintenance and is unavailable"
       continue = false
     end
@@ -69,8 +76,11 @@ class ManageResourcesController < ApplicationController
 
   def logout
     @message = flash[:notice]
+    sign_out(:user) if respond_to?(:sign_out)
     cookies.delete :userid
+    cookies.delete :Administrator
     cookies.delete :remember_authentication_devise_user_token
+    cookies.delete :remember_user_token
     reset_session
   end
 
@@ -88,17 +98,12 @@ class ManageResourcesController < ApplicationController
       clean_session_for_syndicate
       clean_session_for_county
       clean_session_for_images
-      Refinery::Page.where(slug: 'transcriber-agreement-acceptance').exists? ?
-        @acceptance = Refinery::Page.where(slug: 'transcriber-agreement-acceptance').first.parts.first.body.html_safe : @acceptance = ''
-      Refinery::Page.where(slug: 'information-for-members').exists? ?
-        @page = Refinery::Page.where(slug: 'information-for-members').first.parts.first.body.html_safe : @page = ''
       @manage_resources = ManageResource.new
       render 'actions'
     end
   end
 
   def pages
-    current_authentication_devise_user = Refinery::Authentication::Devise::User.where(:id => session[:devise]).first
     redirect_to '/cms/refinery/pages'
   end
 
@@ -117,14 +122,14 @@ class ManageResourcesController < ApplicationController
     @userid = @user.userid
     @first_name = @user.person_forename if @user.present?
     @manager = manager?(@user)
-    @roles = UseridRole::OPTIONS.fetch(@user.person_role)
+    @roles = UseridRole.action_sidebar_roles(@current_role)
     session[:userid] = @userid
     session[:user_id] = @user_id
     session[:first_name] = @first_name
     session[:manager] = manager?(@user)
-    session[:role] = @user.person_role
-    logger.warn "FREEREG::USER user #{@user.userid}"  if appname_downcase == 'freereg'
-    logger.warn "FREECEN::USER user #{@user.userid}"  if appname_downcase == 'freecen'
+    session[:role] = @current_role
+    logger.warn "FREEREG::USER user #{@user.userid}" if appname_downcase == 'freereg'
+    logger.warn "FREECEN::USER user #{@user.userid}" if appname_downcase == 'freecen'
   end
 
   def show
@@ -141,8 +146,7 @@ class ManageResourcesController < ApplicationController
   end
 
   def user_is_computer?
-    @user.person_role == 'computer' ? result = true : result = false
-    result
+    @current_role == 'computer'
   end
 
   private

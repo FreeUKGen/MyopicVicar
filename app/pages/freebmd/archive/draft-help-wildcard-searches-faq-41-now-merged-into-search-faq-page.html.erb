@@ -1,0 +1,18 @@
+<h1>DRAFT Help wildcard searches FAQ 41 (now merged into Search FAQ page)</h1>
+
+<h2> Wildcard searches</h2>
+<div><p>The wildcards facility is available in all names except Spouse GivenName. A wildcard search makes it easier to find variant spellings of a surname, or to find where a family has a tradition of using a particular second name.</p>
+<p>Wildcards can only be used when a district is specified.</p>
+</div>
+<p>1. <strong>* </strong>: matches any number of characters. Must be preceded by two letters.&#160; e.g. Jo* Doe finds&#160; <strong>Jon Doe</strong>, John Doe, <strong>Joseph Doe </strong>and <strong>Josephine Doe</strong>
+</p>
+<p><strong><em>Exception</em>
+</strong>: An * can be used as first character in FirstName but not as wildcard instead as a flag to specify search is based on Second GivenName.<br />Example:<strong> *doe </strong>will find <strong>John Doe</strong> and<strong> Jane Doe </strong>but not <strong>John Jane Doe</strong>
+</p>
+<p>Example: <strong>*jane doe</strong> will find <strong>John Jane Doe</strong>, but not <strong>Jane Doe</strong> or <strong>Jane John Doe</strong>
+</p>
+<p>If **(double asterisks) precede FirstName FreeBMD will search for one or two names anywhere from the<br />second GivenName.<br />Example: <strong>**doe</strong> will find <strong>John Doe</strong>, <strong>Jane Doe</strong> and <strong>John Jane Doe</strong>
+</p>
+<p>2<strong>. # </strong>: If a field is preceded by # the search is done on the characters exactly as they follow the #( wildcard function is overlooked). Example: #? on LastName will return all results where LastName is ?</p>
+<p>3. <strong>? </strong>: Matches exactly one character. Example: Vin? will find <strong>Vino</strong>, <strong>Vini</strong> but not <strong>Vinodhini</strong>
+</p>
