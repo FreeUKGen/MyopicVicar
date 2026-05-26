@@ -15,17 +15,18 @@
 <% end %>
 <% if @user_roles.count > 1 %>
   <% secondary_roles = @user.secondary_role.compact.reject(&:blank?) %>
+  
+  <%= form_tag({}, method: :get) do %>
   <div class="push-half--bottom">
     <p>Hi <%= @user.userid %>,</p>
     <p>You have multiple roles.</p>
-    <p><strong>Primary role:</strong> <%= @user.person_role.to_s.humanize %></p>
+    <strong>Primary role:</strong> <%= @user.person_role.to_s.humanize %>
     <% if secondary_roles.any? %>
-      <p><strong>Secondary role<%= 's' if secondary_roles.many? %>:</strong>
-        <%= secondary_roles.map { |role| role.to_s.humanize }.join(', ') %></p>
+      <strong>Secondary role<%= 's' if secondary_roles.many? %>:</strong>
+        <%= secondary_roles.map { |role| role.to_s.humanize }.join(', ') %>
     <% end %>
-    <p>You can switch role below:</p>
+    You can switch role below:
   </div>
-  <%= form_tag({}, method: :get) do %>
     <fieldset class="inputs">
       <legend>Change Role</legend>
       <%= label_tag 'user_role', 'Role' %>
