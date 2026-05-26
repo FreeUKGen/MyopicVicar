@@ -76,12 +76,7 @@ class ManageResourcesController < ApplicationController
 
   def logout
     @message = flash[:notice]
-    sign_out(:user) if respond_to?(:sign_out)
-    cookies.delete :userid
-    cookies.delete :Administrator
-    cookies.delete :remember_authentication_devise_user_token
-    cookies.delete :remember_user_token
-    reset_session
+    force_global_sign_out
   end
 
   def new

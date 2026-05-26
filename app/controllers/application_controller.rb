@@ -15,8 +15,12 @@
 #
 
 class ApplicationController < ActionController::Base
+  # Bump when deploying auth changes to sign out all existing sessions and remember-me cookies.
+  SESSION_AUTH_VERSION = 1
+
   rescue_from ActionController::UnknownFormat, with: :missing_template
   protect_from_forgery :with => :reset_session, prepend: true
+  before_action :invalidate_stale_auth_session, prepend: true, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :require_login
   before_action :load_last_stat
@@ -108,8 +112,26 @@ class ApplicationController < ActionController::Base
     cookies.signed[:userid] = current_user.userid_detail_id
     session[:userid_detail_id] = current_user.userid_detail_id
     session[:devise] = current_user.id
+    session[:auth_version] = SESSION_AUTH_VERSION
     logger.warn "#{appname_upcase}::USER current  #{current_user.username}"
     main_app.new_manage_resource_path
+  end
+
+  def force_global_sign_out
+    sign_out(:user) if respond_to?(:sign_out) && user_signed_in?
+    cookies.delete :userid
+    cookies.delete :Administrator
+    cookies.delete :remember_authentication_devise_user_token
+    cookies.delete :remember_user_token
+    reset_session
+  end
+
+  def invalidate_stale_auth_session
+    return if session[:auth_version].to_i == SESSION_AUTH_VERSION
+    return unless user_signed_in? || session[:userid_detail_id].present?
+
+    force_global_sign_out
+    flash[:notice] = 'Please sign in again after a system update.'
   end
 
   def check_for_mobile
@@ -268,7 +290,7 @@ class ApplicationController < ActionController::Base
     return if request.path.start_with?('/assets/')
 
     unless user_signed_in?
-      flash[:notice] = "You must be logged in to access that action"
+      flash[:notice] = "You must be logged in to access that action" if flash[:notice].blank?
       redirect_to(new_search_query_path) && return
     end
 

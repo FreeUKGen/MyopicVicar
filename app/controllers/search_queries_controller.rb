@@ -135,9 +135,8 @@ class SearchQueriesController < ApplicationController
 
   def new
     url = request.original_url
-    url.include?('beta') ? page = beta_page : page= test_page
-    @page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
-
+    #url.include?('beta') ? page = beta_page : page= test_page
+    @page = ''
     @search_query = SearchQuery.new
     session.delete(:query)
     old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?

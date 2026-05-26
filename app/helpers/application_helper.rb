@@ -434,6 +434,7 @@ module ApplicationHelper
   end
 
   def title(title = nil)
+    page_title = ''
     if title.present?
       content_for :title, title
     elsif content_for?(:title)
