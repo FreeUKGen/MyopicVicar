@@ -97,12 +97,28 @@ class ApplicationController < ActionController::Base
   end
 
   def get_user_roles
-    user = get_user
+    member_roles_for(get_user)
+  end
+
+  # Roles this member may act as (primary + secondary). Used to validate session[:role] and URL params.
+  def member_roles_for(user)
     return [] if user.blank?
 
-    all_roles = user.secondary_role.dup
-    all_roles << user.person_role
-    all_roles.uniq
+    roles = user.secondary_role.dup
+    roles << user.person_role
+    roles.compact.uniq
+  end
+
+  # Pick the first preferred role the member is allowed to use; otherwise their person_role.
+  def authorized_member_role(user, *preferred_roles)
+    allowed = member_roles_for(user)
+    return user.person_role if allowed.empty?
+
+    preferred_roles.flatten.compact.each do |role|
+      role = role.to_s
+      return role if allowed.include?(role)
+    end
+    user.person_role
   end
 
   private
@@ -307,6 +323,15 @@ class ApplicationController < ActionController::Base
       session[:devise] = current_user.id.to_s
       cookies.signed[:userid] = uid.to_s
     end
+
+    enforce_valid_session_role
+  end
+
+  def enforce_valid_session_role
+    user = get_user
+    return if user.blank? || session[:role].blank?
+
+    session.delete(:role) unless member_roles_for(user).include?(session[:role])
   end
 
   def scotland_county?(chapman)

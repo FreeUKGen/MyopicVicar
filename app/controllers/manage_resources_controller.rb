@@ -30,15 +30,10 @@ class ManageResourcesController < ApplicationController
   def is_ok_to_render_actions?
     continue = true
     @user = get_user
-    @user_roles = get_user_roles
-    @session_role = if params[:current_role].present?
-                      params[:current_role]
-                    elsif session[:role].present? && @user_roles.include?(session[:role])
-                      session[:role]
-                    else
-                      @user.person_role
-                    end
-    @current_role = params[:user_role].present? ? params[:user_role] : @session_role
+    @user_roles = member_roles_for(@user)
+    requested_role = params[:user_role].presence || params[:current_role].presence
+    @current_role = authorized_member_role(@user, requested_role, session[:role])
+    @session_role = @current_role
     if @user.present?
       if @user.blank?
         logger.warn "FREEREG::USER userid not found in session #{session[:userid_detail_id]}" if appname_downcase == 'freereg'
