@@ -140,13 +140,25 @@ class SearchQueriesController < ApplicationController
     url.include?('beta') ? page = beta_page : page= test_page
     @page = session[:message] == 'load' && page.present? && page.parts.first.present? ? page.parts.first.body.html_safe : nil
 
-    @search_query = SearchQuery.new
     session.delete(:query)
-    old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?
-    @result_count = params[:result_count] if params[:result_count].present?
-    old_query.search_result.records = {} if old_query.present? && old_query.search_result.present?
-    @search_query = SearchQuery.new(old_query.attributes) if old_query.present?
     @chapman_codes = ChapmanCode::CODES
+    @fresh_search = fresh_search_request?
+
+    if @fresh_search
+      @search_query = SearchQuery.new
+      @result_count = nil
+      return
+    end
+
+    old_query = SearchQuery.search_id(params[:search_id]).first if params[:search_id].present?
+    @search_query = SearchQuery.new
+    @result_count = params[:result_count] if params[:result_count].present?
+
+    return unless old_query.present?
+
+    old_query.search_result.records = {} if old_query.search_result.present?
+    revise_attrs = old_query.attributes.except('_id', 'id', 'created_at', 'updated_at', 'c_at', 'u_at', 'search_result')
+    @search_query = SearchQuery.new(revise_attrs)
   end
 
   def remember
@@ -281,6 +293,7 @@ class SearchQueriesController < ApplicationController
         @page = assign_value(params[:page],SearchQuery::DEFAULT_PAGE)
         @bmd_search_results = @search_results if MyopicVicar::Application.config.template_set == 'freebmd'
         @paginatable_array = @search_query.paginate_results(@search_results, @page, @results_per_page)
+        preload_freebmd_show_associations if MyopicVicar::Application.config.template_set == 'freebmd'
         if !response || @search_results.nil? || @search_query.result_count.nil?
           logger.warn("#{appname_upcase}:SEARCH_ERROR:search results no longer present for #{@search_query.id}")
           flash[:notice] = 'Your search results are not available. Please repeat your search'
@@ -474,6 +487,8 @@ class SearchQueriesController < ApplicationController
     if RecordType::BMD_RECORD_TYPE_ID.include?(filter_cond)
       records = filter(@search_results)
     elsif filter_cond == 4
+      return nil unless @search_query.search_result&.records.is_a?(Hash)
+
       select_hash = @search_query.search_result.records.keys - @saved_search_result_hash
       result = @search_query.search_result.records.select{|k,v| select_hash.include?(k)}
       records = result.values.map{|h| BestGuess.new(h)}
@@ -490,6 +505,8 @@ class SearchQueriesController < ApplicationController
     elsif filter_cond == 4
       records = nil
     else filter_cond == 5
+      return nil unless @search_query.search_result&.records.is_a?(Hash)
+
       select_hash = @saved_search_result_hash - @search_query.search_result.records.keys
       result = @saved_search.saved_search_result.records.select{|k,v| select_hash.include?(k)}
       records = result.values.map{|h| BestGuess.new(h)}#BestGuess.get_best_guess_records(select_hash)
@@ -531,6 +548,19 @@ class SearchQueriesController < ApplicationController
 
   def filter(results)
     results.select{|r| r["RecordTypeID"] == @filter_condition.to_i }
+  end
+
+  def preload_freebmd_show_associations
+    rows = @paginatable_array
+    return if rows.blank?
+
+    district_numbers = rows.map { |r| r.read_attribute(:DistrictNumber) }.compact.uniq
+    @districts_by_number = District.where(DistrictNumber: district_numbers).index_by(&:DistrictNumber)
+  end
+
+  # Nav "Search" (?clear=1) and /search_queries/new without search_id start a blank form.
+  def fresh_search_request?
+    params[:clear].present? || params[:search_id].blank?
   end
 
 end
