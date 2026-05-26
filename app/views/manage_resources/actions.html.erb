@@ -1,10 +1,8 @@
 <% breadcrumb :root %>
 <% title "Action Page" %>
-<% if ['https://www.freecen.org.uk', 'https://www.freereg.org.uk', 'https://www.freebmd.org.uk'].include?(MyopicVicar::Application.config.website) %>
-  <% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
-    <b><%= @user.person_forename %></b><br>
-    <%= @acceptance %>
-  <% end%>
+<% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
+  <b><%= @user.person_forename %></b><br>
+  <%= @acceptance %>
 <% end%>
 <%# raise @current_user.inspect %>
 <% if flash[:notice] %>
@@ -16,11 +14,22 @@
   <%= link_to 'Instructional Videos', '/cms/instructional-videos', target: '_blank' %>, ( opens in new tab)<br>
 <% end %>
 <% if @user_roles.count > 1 %>
+  <% secondary_roles = @user.secondary_role.compact.reject(&:blank?) %>
+  <div class="push-half--bottom">
+    <p>Hi <%= @user.userid %>,</p>
+    <p>You have multiple roles.</p>
+    <p><strong>Primary role:</strong> <%= @user.person_role.to_s.humanize %></p>
+    <% if secondary_roles.any? %>
+      <p><strong>Secondary role<%= 's' if secondary_roles.many? %>:</strong>
+        <%= secondary_roles.map { |role| role.to_s.humanize }.join(', ') %></p>
+    <% end %>
+    <p>You can switch role below:</p>
+  </div>
   <%= form_tag({}, method: :get) do %>
     <fieldset class="inputs">
       <legend>Change Role</legend>
-      <%= label_tag 'user_role', 'Change Role' %>
-      <%= select_tag :user_role, options_for_select(@user_roles, @current_role), onchange: 'this.form.submit()' %>
+      <%= label_tag 'user_role', 'Role' %>
+      <%= select_tag :user_role, options_for_select(@user_roles.map { |r| [r.to_s.humanize, r] }, @current_role), onchange: 'this.form.submit()' %>
     </fieldset>
   <% end %>
 <% end %>
