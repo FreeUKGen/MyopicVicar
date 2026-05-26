@@ -17,7 +17,7 @@
     <fieldset class="inputs">
       <div class="push-half--bottom">
         <p>Hi <%= @user.userid %>,<br>
-        You have multiple roles.
+        You have multiple roles.<br>
         <strong>Primary role:</strong> <%= @user.person_role.to_s.humanize %><br>
         <% if secondary_roles.any? %>
           <strong>Secondary role<%= 's' if secondary_roles.many? %>:</strong>
