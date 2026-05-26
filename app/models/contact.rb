@@ -1,6 +1,7 @@
 class Contact
   include Mongoid::Document
   include Mongoid::Timestamps
+  include GithubIssueClosable
   field :body, type: String
   field :contact_time, type: DateTime
   field :name, type: String
@@ -409,7 +410,7 @@ class Contact
     when 'Genealogical Question'
       role = 'genealogy_coordinator'
     when 'Enhancement Suggestion'
-      role = 'project_manager'
+      role = 'website_coordinator'
     else
       role = 'general_communication_coordinator'
     end

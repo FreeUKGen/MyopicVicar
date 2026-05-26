@@ -38,15 +38,16 @@ module DistrictsHelper
     
     if district.valid?
       link_to(
-        titleize_string(search_record[:District]), 
+        titleize_string(search_record[:District]),
         district_friendly_url_path(
-          district.district_friendly_url, 
-          id: district.DistrictNumber, 
+          id: district.DistrictNumber,
+          friendly: district.district_friendly_url,
           search_id: search_query.id
         )
       )
     else
-      district.DistrictName
+      label = search_record[:District].presence || district.DistrictName
+      label.present? ? titleize_string(label.to_s) : 'Registration district'
     end
   end
 
@@ -55,16 +56,17 @@ module DistrictsHelper
     
     if district.valid?
       link_to(
-        titleize_string(search_record[:District]), 
+        titleize_string(search_record[:District]),
         district_friendly_url_path(
-          district.district_friendly_url, 
           id: district.DistrictNumber,
+          friendly: district.district_friendly_url,
           entry_id: search_record.RecordNumber,
           search_id: search_id
         )
       )
     else
-      district.DistrictName
+      label = search_record[:District].presence || district.DistrictName
+      label.present? ? titleize_string(label.to_s) : 'Registration district'
     end
   end
 end

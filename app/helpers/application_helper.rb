@@ -272,6 +272,21 @@ module ApplicationHelper
      }
   end
 
+  def contact_url
+    # construct url parameters for contact reports
+    problem_time = Time.now.utc
+    session_id = request.session['session_id']
+    problem_page_url=request.env['REQUEST_URI']
+    previous_page_url=request.env['HTTP_REFERER']
+    user_id = session[:userid]
+    url = main_app.new_contact_path({  :feedback_time => problem_time,
+                                       :session_id => session_id,
+                                       :user_id => user_id,
+                                       :problem_page_url => problem_page_url,
+                                       :previous_page_url => previous_page_url})
+    url
+  end
+
   #Do not believe the following is used anywhere
   def freereg1_csv_file_for_display(freereg1_csv_file)
     display_map = {}
@@ -851,6 +866,8 @@ module ApplicationHelper
     when "freereg"
       path = '/cms/help/frequently-asked-questions-researchers?'
     when "freecen"
+      path = '/contacts/new'
+    when "freebmd"
       path = '/contacts/new'
     end
     path
