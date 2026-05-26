@@ -1,9 +1,6 @@
 <% breadcrumb :root %>
 <% title "Action Page" %>
-<% if  @user.new_transcription_agreement.blank? || @user.new_transcription_agreement == 'Unknown' || @user.new_transcription_agreement == 'Pending' %>
-  <b><%= @user.person_forename %></b><br>
-  <%= @acceptance %>
-<% end%>
+
 <%# raise @current_user.inspect %>
 <% if flash[:notice] %>
   <div class="push-half--bottom" id="notice" style="color:blue;">
@@ -19,13 +16,13 @@
   <%= form_tag({}, method: :get) do %>
   <div class="push-half--bottom">
     <p>Hi <%= @user.userid %>,</p>
-    <p>You have multiple roles.</p>
-    <strong>Primary role:</strong> <%= @user.person_role.to_s.humanize %>
+    You have multiple roles.
+    <strong>Primary role:</strong> <%= @user.person_role.to_s.humanize %><br>
     <% if secondary_roles.any? %>
       <strong>Secondary role<%= 's' if secondary_roles.many? %>:</strong>
         <%= secondary_roles.map { |role| role.to_s.humanize }.join(', ') %>
-    <% end %>
-    You can switch role below:
+    <% end %><br>
+    You can switch role below:<br>
   </div>
     <fieldset class="inputs">
       <legend>Change Role</legend>
