@@ -10,30 +10,74 @@ class BestGuessController < ApplicationController
     @search = search_id.present?
     @search_entry = params[:search_entry]
     @saved_entry_number = params[:saved_entry]
-    prepare_for_show_search_entry if @search
-    return if @search && @search_query.blank?
+    rh = params[:record_hash].presence
+    @record_hash_param = rh
+
+    if @search
+      @search_query = SearchQuery.where(id: search_id).first
+      redirect_back(fallback_location: new_search_query_path) && return if @search_query.blank?
+
+      assign_resolved_record_hash
+      prepare_for_show_search_entry
+      return if performed?
+    else
+      assign_resolved_record_hash
+    end
     get_user_info_from_userid if cookies.signed[:userid].present?
     prepare_to_show_saved_entry if show_saved_record == 'true'
-    @original_record = get_original_record(search_id, show_saved_record)
     @page_number = params[:page_number].to_i
-    record_id = params[:id]
-    @current_record = BestGuess.find_by(RecordNumber: record_id)
+
+    @current_record = resolve_best_guess_for_show
     unless @current_record
       flash[:notice] = 'The record you requested does not exist.'
       redirect_back(fallback_location: root_path) && return
     end
 
+    # FreeBMD: when a record_hash is supplied we resolve via BestGuessHash. If that hash collides
+    # (non-unique across multiple rows), the resolved RecordNumber can differ from the path :id.
+    # Redirect so the URL reflects the record actually being displayed.
+    if record_hash_freebmd_request? && params[:id].present? && @current_record.RecordNumber.to_s != params[:id].to_s
+      common_params = {
+        locale: params[:locale],
+        record_hash: @resolved_record_hash,
+        search_entry: params[:search_entry]
+      }.compact
+
+      if @search && params[:search_id].present?
+        redirect_to(
+          friendly_bmd_record_details_path(params[:search_id], @current_record.RecordNumber, @current_record.friendly_url, common_params),
+          status: :moved_permanently
+        ) && return
+      else
+        redirect_to(
+          friendly_bmd_record_details_non_search_path(@current_record.RecordNumber, @current_record.friendly_url, common_params),
+          status: :moved_permanently
+        ) && return
+      end
+    end
+
+    if @search && @search_record.blank? && record_hash_freebmd_request?
+      @search_record = @current_record
+    end
+
+    @original_record = get_original_record(search_id, show_saved_record)
+
+    @anchor_entry = (@resolved_record_hash.presence || @current_record.RecordNumber).to_s if @search
+
     @record_hash_value = @current_record.record_hash
     @postems_count = Postem.where(Hash: @record_hash_value).count
     page_entries = @current_record.entries_in_the_page
-    @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(record_id, page_entries)
+    @next_record_of_page, @previous_record_of_page = next_and_previous_entries_of_page(@current_record.RecordNumber, page_entries)
     @display_date = false
     list_postems
     @url = generate_url
     if @search_query.present?
       @search_result = @search_query.search_result
       @viewed_records = @search_result.viewed_records
-      @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
+      rec_hash = @current_record.record_hash
+      @viewed_records << rec_hash if rec_hash.present? && !@viewed_records.include?(rec_hash)
+      rn = @current_record.RecordNumber.to_s
+      @viewed_records << rn unless @viewed_records.include?(rn)
       @search_result.update(viewed_records: @viewed_records)
     end
   end
@@ -60,14 +104,40 @@ class BestGuessController < ApplicationController
   end
 
   def show_marriage
-    @search = params[:search_id].present? ? true : false
-    record_number = params[:entry_id]
+    @search = params[:search_id].present?
+    entry_id = params[:entry_id]
     @search_id = params[:search_id] if @search
-    @current_record = BestGuess.where(RecordNumber: record_number).first
-    @spouse_record =  @current_record.get_spouse_record
-    #show_scans
+
+    if @search
+      @search_query = SearchQuery.where(id: @search_id).first
+      if @search_query.blank?
+        flash[:notice] = 'The marriage record you requested no longer exists or could not be found. Please try a new search.'
+        redirect_back(fallback_location: new_search_query_path) && return
+      end
+    else
+      @search_query = nil
+    end
+
+    explicit_hash = params[:record_hash].to_s.presence
+    effective_hash = explicit_hash
+    if effective_hash.blank? && @search_query.present? && @search_query.freebmd_app?
+      snap = @search_query.bmd_record_hash_for_snapshot_record_number(entry_id)
+      effective_hash = snap.to_s.presence
+    end
+
+    @current_record = resolve_marriage_best_guess(entry_id, effective_hash)
+
+    if @current_record.blank?
+      flash[:notice] = 'The marriage record you requested no longer exists or could not be found. Please try a new search.'
+      redirect_to(marriage_details_fallback_path) && return
+    end
+
+    if effective_hash.present? && entry_id.present? && entry_id.to_s != @current_record.RecordNumber.to_s
+      redirect_to(marriage_details_canonical_path, status: :moved_permanently) && return
+    end
+
+    @spouse_record = @current_record.get_spouse_record
     @url = generate_url
-    #@spouse_record = BestGuess.where(Surname: spouse_surname, Volume: volume, Page: page, QuarterNumber: quarter, DistrictNumber: district_number, RecordTypeID: record_type).where.not(RecordNumber: record_number).first
   end
 
   def show_reference_entry
@@ -160,7 +230,7 @@ class BestGuessController < ApplicationController
     user.save
     flash[:notice] = user.save ? "The entry is saved. Use 'View Saved Entries' action in Your Actions list to view your saved searches list." : 'unsuccessful'
     if params[:search_id].present?
-      redirect_to friendly_bmd_record_details_url(params[:search_id],entry_id, @entry.friendly_url)
+      redirect_to friendly_bmd_record_details_url(params[:search_id], entry_id, @entry.friendly_url, search_entry: entry_id, record_hash: @entry.record_hash)
       return
     else
       redirect_to best_guess_path(@entry.RecordNumber) && return
@@ -176,7 +246,7 @@ class BestGuessController < ApplicationController
     user.save
     flash[:notice] = user.save ? "The record is unsaved" : 'unsuccessful'
     if params[:search_id].present?
-      redirect_to friendly_bmd_record_details_path(params[:search_id],entry_id, @entry.friendly_url)
+      redirect_to friendly_bmd_record_details_path(params[:search_id], entry_id, @entry.friendly_url, search_entry: entry_id, record_hash: @entry.record_hash)
       return
     else
        redirect_to best_guess_path(@entry.RecordNumber)
@@ -255,14 +325,71 @@ class BestGuessController < ApplicationController
     helpers.entry_information_path_for(@current_record)
   end
 
+  def record_hash_freebmd_request?
+    @resolved_record_hash.present? && SearchQuery.app_template.to_s.casecmp('freebmd').zero?
+  end
+
+  def resolve_best_guess_for_show
+    unless record_hash_freebmd_request?
+      return BestGuess.find_by(RecordNumber: params[:id])
+    end
+
+    # Prefer the path RecordNumber when it agrees with the provided hash.
+    # This protects against RecordNumber reuse after DB reloads (hash mismatch),
+    # while allowing disambiguation when record_hash collides across multiple rows.
+    rec = BestGuess.find_by(RecordNumber: params[:id]) if params[:id].present?
+    if rec.present? && @resolved_record_hash.present?
+      normalized = normalize_marriage_hash_param(@resolved_record_hash)
+      return rec if normalized.present? && normalize_marriage_hash_param(rec.record_hash) == normalized
+    end
+
+    BestGuessHash.find_by(Hash: @resolved_record_hash.to_s)&.best_guess
+  end
+
+  # record_hash query param, or (FreeBMD + saved search only) derived from snapshot RecordNumber in URL.
+  def assign_resolved_record_hash
+    @resolved_record_hash = @record_hash_param
+    return if @resolved_record_hash.present?
+    return unless SearchQuery.app_template.to_s.casecmp('freebmd').zero?
+    return unless @search && @search_query.present?
+
+    @resolved_record_hash = @search_query.bmd_record_hash_for_snapshot_record_number(params[:id])
+    if @resolved_record_hash.blank? && params[:search_entry].present?
+      @resolved_record_hash = @search_query.bmd_record_hash_for_snapshot_record_number(params[:search_entry])
+    end
+    @resolved_record_hash = @resolved_record_hash.presence
+  end
+
   def prepare_for_show_search_entry
     session[:search_entry_number] = @search_entry if @search_entry.present?
     clean_session_for_search
     @search_record_number = session[:search_entry_number]
     @anchor_entry = @search_record_number
-    redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
-    @search_record = BestGuess.find(@search_record_number)
+    if record_hash_freebmd_request?
+      missing = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
+      # Spouse / same-register-page links use a valid record_hash but that row is often *not* a key in
+      # this search's snapshot (only matching hits are stored). Reject only when the hash does not resolve.
+      hkey = normalize_marriage_hash_param(@resolved_record_hash)
+      bg_from_hash = BestGuessHash.find_by(Hash: hkey)&.best_guess if hkey.present?
+      bg_from_hash ||= BestGuessHash.find_by(Hash: @resolved_record_hash.to_s.strip)&.best_guess
+      unless bg_from_hash
+        flash[:notice] = missing
+        flash.keep
+        redirect_back(fallback_location: new_search_query_path) && return
+      end
+      if @search_query.bmd_snapshot_contains_record_hash?(@resolved_record_hash)
+        ok, @next_record, @previous_record = @search_query.bmd_next_and_previous_by_record_hash(@resolved_record_hash)
+        @next_record = @previous_record = nil unless ok
+      else
+        @next_record = @previous_record = nil
+      end
+      @search_record = nil
+    else
+      redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
+
+      @search_record = BestGuess.find(@search_record_number)
+    end
   end
 
   def prepare_to_show_saved_entry
@@ -279,6 +406,57 @@ class BestGuessController < ApplicationController
 
   def clean_session_for_saved_entry
     session.delete(:search_entry_number)
+  end
+
+  # Marriage URLs use RecordNumber in the path. After a DB reload that *reuses* the same number for a
+  # different row, RecordNumber alone is wrong. Stable identity comes from (in order): an explicit
+  # record_hash query param, or for FreeBMD in-search requests the hash key from SearchQuery#search_result
+  # for that RecordNumber (see bmd_record_hash_for_snapshot_record_number). We only trust the
+  # RecordNumber lookup if its hash matches; otherwise we resolve via BestGuessHash. Non-search URLs
+  # without record_hash still rely on path id only (same limitation as plain bookmarks).
+  def resolve_marriage_best_guess(entry_id, hash_param)
+    normalized_hash = normalize_marriage_hash_param(hash_param)
+
+    rec = BestGuess.find_by(RecordNumber: entry_id) if entry_id.present?
+
+    if rec.present? && normalized_hash.present?
+      rec = nil unless marriage_record_matches_hash?(rec, normalized_hash)
+    end
+
+    if rec.blank? && normalized_hash.present?
+      rec = BestGuessHash.find_by(Hash: normalized_hash)&.best_guess
+      rec ||= BestGuessHash.find_by(Hash: hash_param.to_s.strip)&.best_guess if hash_param.present?
+    end
+
+    rec
+  end
+
+  def normalize_marriage_hash_param(hash_param)
+    return nil if hash_param.blank?
+
+    hash_param.to_s.strip.sub(/==\z/, '')
+  end
+
+  def marriage_record_matches_hash?(record, normalized_hash_param)
+    return false if record.blank? || normalized_hash_param.blank?
+
+    normalize_marriage_hash_param(record.record_hash) == normalized_hash_param
+  end
+
+  def marriage_details_fallback_path
+    if @search && @search_id.present?
+      search_query_path(@search_id)
+    else
+      new_search_query_path
+    end
+  end
+
+  def marriage_details_canonical_path
+    if @search && @search_id.present?
+      show_marriage_details_path(search_id: @search_id, entry_id: @current_record.RecordNumber)
+    else
+      show_marriage_details_non_search_path(entry_id: @current_record.RecordNumber, record_hash: @current_record.record_hash)
+    end
   end
 
 end

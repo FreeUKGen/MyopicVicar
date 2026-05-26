@@ -23,7 +23,7 @@
           <tr>
             <td id="go_to_district">
               <% if @my_district.present? %>
-                <%= link_to(@my_district.DistrictName, district_friendly_url_path(@my_district.district_friendly_url, id: @my_district.DistrictNumber)) %>
+                <%= link_to(@my_district.DistrictName, district_friendly_url_path(id: @my_district.DistrictNumber, friendly: @my_district.district_friendly_url)) %>
               <% end %>
             </td>
             <td><%= "From #{QuarterDetails.quarter_human(district_scope.StartQN)}" %></td>

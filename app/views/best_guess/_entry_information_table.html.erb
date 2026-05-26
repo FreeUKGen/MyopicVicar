@@ -160,7 +160,12 @@
                 given = spouse.GivenName.to_s
                 surname = spouse.Surname.present? ? spouse.Surname.upcase : ''
                 name = [given, surname].reject(&:blank?).join(' ')
-                name.present? ? name : record.AssociateName.to_s
+                name = record.AssociateName.to_s if name.blank?
+                if record.AssociateName.present? && spouse.Surname.present? && !spouse.Surname.to_s.casecmp?(record.AssociateName.to_s)
+                  "#{name} (#{record.AssociateName.to_s.upcase})"
+                else
+                  name
+                end
               else
                 record.AssociateName.to_s
               end %>
@@ -170,7 +175,7 @@
                 <% elsif type == "marriages" %>
                   <%= spouse_display %><br>
                 <% else %>
-                  <%= link_to spouse_display, show_marriage_details_non_search_path(entry_id: record.RecordNumber) %><br>
+                  <%= link_to spouse_display, show_marriage_details_non_search_path(entry_id: record.RecordNumber, record_hash: record.record_hash) %><br>
                 <% end %>
               <% else %>
                 <%= spouse_display %><br>
@@ -199,7 +204,11 @@
           <% if @search %>
             <%= district_link_or_name_id(district, record, search_id) %>
           <% else%>
-            <%= link_to "#{record[:District]}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber)%>
+            <% if district.valid? %>
+              <%= link_to "#{record[:District]}", district_friendly_url_path(id: district.DistrictNumber, friendly: district.district_friendly_url) %>
+            <% else %>
+              <%= record[:District] %>
+            <% end %>
           <% end %>
         <% else %>
           <%= record.display_district_name %>
@@ -208,7 +217,7 @@
           <%= 'No data' %>
           <span class="accessibility"><%= "(#{ApplicationText::NO_INFORMATION})" %></span>
         <% end %>
-        <% if record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase %>
+        <% if district.present? && (record.district_misspelt or record.district_invented or record.bad_date_for_district or record[:District].strip.downcase != district.DistrictName.strip.downcase) %>
           <a class="footnote-link" id="link-to-district-query" href="#district-query">
             [district query] <span class="accessibility">potential issue with this District name</span>
           </a>
@@ -400,8 +409,8 @@
     <% if params[:search_id].present? %>
       <div class="grid">
         <div class='grid__item text--center'>
-          <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber ), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
-          <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
+          <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber, record_hash: @previous_record.record_hash), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
+          <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber, record_hash: @next_record.record_hash), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
         </div>
       </div>
     <% end %>

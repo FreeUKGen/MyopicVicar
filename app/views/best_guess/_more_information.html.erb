@@ -2,7 +2,7 @@
   	<div class="postem grid__item one-third lap-one-third palm-one-whole">
   		<% postem_count_text = @postems_count.zero? ? 'Add Postems' : pluralize(@postems_count, 'Postem') %>
     	<% if @search  %>
-	      	<%= link_to  "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '2', anchor: "display_postems")}" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
+	      	<%= link_to  "#{friendly_bmd_record_details_path(params[:search_id], @search_record.RecordNumber, @search_record.friendly_url, search_entry: @search_record.RecordNumber, record_hash: @search_record.record_hash, filter_option: '2', anchor: "display_postems")}" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Postems' do %>
 	      		<%= "#{app_icons[:postem]} #{postem_count_text}".html_safe %>
 	      		<span class="accessibility">Postems</span>
 	      	<% end %>
@@ -16,7 +16,7 @@
     <div class="scan_d grid__item one-third lap-one-third palm-one-whole">
     	<% if @search  %>
     		<div class="">
-	      	<%= link_to "#{friendly_bmd_record_details_path(params[:search_id], @search_record, @search_record.friendly_url, filter_option: '1')}#display_scans" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
+	      	<%= link_to "#{friendly_bmd_record_details_path(params[:search_id], @search_record.RecordNumber, @search_record.friendly_url, search_entry: @search_record.RecordNumber, record_hash: @search_record.record_hash, filter_option: '1')}#display_scans" , class: "push-half--top", onclick: "loadSpinner(this)", alt: 'View Scans' do%>
 	      		<%= "#{app_icons[:camera]}Scans".html_safe %>
 	      		<span class="accessibility">Scans</span>
 	      	<% end %>
