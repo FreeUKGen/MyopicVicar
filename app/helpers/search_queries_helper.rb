@@ -292,13 +292,14 @@ module SearchQueriesHelper
   def set_district_value county_codes=nil, value=nil
     return value if value.blank?
     districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
-    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
-    numbers = values.collect(&:strip).reject{|c| c.empty? }
+    county_hash = ChapmanCode::FREEBMD_CODES
+    numbers = value.collect(&:strip).reject{|c| c.empty? }
     @districts = Hash.new
-    selected_districts = districts_names.where(DisctritNumber: numbers)
+    selected_districts = districts_names.where(DistrictNumber: numbers)
     selected_districts.each{|district|
-      @districts[district.County] = [district.DistrictName, district.DistrictNumber]
+      @districts[district.County] = [district.District.DistrictName, district.DistrictNumber]
      }
+    #raise @districts.inspect
     @districts
   end
 

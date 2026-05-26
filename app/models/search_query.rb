@@ -27,6 +27,7 @@
     BMD_DATE = 'QuarterNumber'
     BMD_ASSOCIATE_NAME = 'AssociateName'
     BMD_AGE_AT_DEATH = 'AgeAtDeath'
+    BMD_RECORD_NUMBER = 'RecordNumber'
     BIRTH_PLACE = 'birth_place'
 
     ALL_ORDERS = [
@@ -43,7 +44,8 @@
       BMD_RECORD_TYPE,
       BMD_DATE,
       BMD_ASSOCIATE_NAME,
-      BMD_AGE_AT_DEATH
+      BMD_AGE_AT_DEATH,
+      BMD_RECORD_NUMBER
     ]
   end
 
@@ -105,6 +107,7 @@
   SPOUSE_SURNAME_START_QUARTER = 301
   EVENT_YEAR_ONLY = 589
   DEFAULT_RESULTS_PER_PAGE = 50
+  EXACT_DOB_IN_MEMORY_WARN_THRESHOLD = 10_000
 
   field :first_name, type: String# , :required => false
   field :last_name, type: String# , :required => false
@@ -948,7 +951,70 @@
     nil
   end
 
+  # Legacy FreeBMD (Perl SearchDB) orders hits by ascending RecordNumber; mirror that for MySQL-backed search.
+  def freebmd_record_number_sort_key(rec)
+    return 0 if rec.nil?
+
+    # Snapshot values can be an array of duplicate-hash rows; Array#[] only accepts Integer keys.
+    if rec.is_a?(Array)
+      return rec.map { |x| freebmd_record_number_sort_key(x) }.min.to_i
+    end
+
+    val = nil
+    if rec.respond_to?(:read_attribute)
+      val = rec.read_attribute(:RecordNumber)
+    end
+    if val.nil? && rec.is_a?(Hash)
+      val = rec[:RecordNumber] || rec['RecordNumber']
+    end
+    if val.nil? && rec.respond_to?(:RecordNumber)
+      val = rec.RecordNumber rescue nil
+    end
+    # Some types implement [] but only for Integer (e.g. Relation); never pass a Symbol without rescue.
+    if val.nil? && rec.respond_to?(:[])
+      val = (rec['RecordNumber'] rescue nil)
+      val = (rec[:RecordNumber] rescue nil) if val.nil?
+    end
+    val.to_i
+  end
+
+  # For snapshot rows keyed by record_hash; pair[1] is a single attr hash (flatten already splits arrays of rows).
+  # Do not use Array(attrs) on a Hash — that becomes [[k,v],…] and breaks RecordNumber extraction.
+  def freebmd_pair_min_record_number(pair)
+    _hkey, attrs = pair
+    return 0 if attrs.nil?
+
+    if attrs.is_a?(Array)
+      attrs.map { |entry| freebmd_record_number_sort_key(entry) }.min.to_i
+    else
+      freebmd_record_number_sort_key(attrs)
+    end
+  end
+
+  def sort_bmd_hit_rows_by_record_number!(rows)
+    return rows if rows.blank?
+
+    rows.sort_by! { |r| freebmd_record_number_sort_key(r) }
+    rows
+  end
+
+  def finalize_freebmd_mysql_search_order(records)
+    return records unless freebmd_app?
+
+    if records.is_a?(Array)
+      sort_bmd_hit_rows_by_record_number!(records)
+    elsif records.respond_to?(:reorder)
+      records.reorder(:RecordNumber)
+    else
+      records
+    end
+  end
+
   def sort_freebmd_hash_key_pairs!(pairs)
+    if freebmd_app? && order_field.blank?
+      pairs.sort! { |a, b| freebmd_pair_min_record_number(a) <=> freebmd_pair_min_record_number(b) }
+      return pairs
+    end
     return pairs if order_field.blank? || pairs.blank?
 
     pairs.sort! do |a, b|
@@ -1020,6 +1086,12 @@
           compare_name_bmd(xa, ya, 'AgeAtDeath', ['Surname', 'GivenName', 'QuarterNumber'])
         else
           compare_name_bmd(ya, xa, 'AgeAtDeath', ['Surname', 'GivenName', 'QuarterNumber'])
+        end
+      when SearchOrder::BMD_RECORD_NUMBER
+        if order_asc
+          freebmd_pair_min_record_number(a) <=> freebmd_pair_min_record_number(b)
+        else
+          freebmd_pair_min_record_number(b) <=> freebmd_pair_min_record_number(a)
         end
       else
         0
@@ -1311,6 +1383,12 @@
   end
 
   def sort_results(results)
+    # Legacy FreeBMD default: ORDER BY RecordNumber (no column sort selected).
+    if freebmd_app? && order_field.blank?
+      sort_bmd_hit_rows_by_record_number!(results) if results.present?
+      return results
+    end
+
     # next reorder in memory
    # raise SearchOrder::SURNAME.inspect
     return results if order_field.blank?
@@ -1439,6 +1517,12 @@
           results.sort! do |x, y|
             compare_name_bmd(y, x, 'AgeAtDeath',['Surname', 'GivenName', 'QuarterNumber'])
           end
+        end
+      when SearchOrder::BMD_RECORD_NUMBER
+        if self.order_asc
+          results.sort! { |x, y| freebmd_record_number_sort_key(x) <=> freebmd_record_number_sort_key(y) }
+        else
+          results.sort! { |x, y| freebmd_record_number_sort_key(y) <=> freebmd_record_number_sort_key(x) }
         end
       end
     end
@@ -1573,10 +1657,30 @@
 
   def mother_surname_search
     params = {}
-    if self.mother_last_name.present?
-      params[:AssociateName] = self.mother_last_name  unless has_wildcard?self.mother_last_name || mother_name_partial?
-    end
+    # NOTE: In FreeBMD, AssociateName is overloaded:
+    # - Birth: Mother's maiden name
+    # - Marriage: spouse surname (handled separately via marriage_surname_filteration)
+    # - Death: not a reliable mother/spouse field
+    #
+    # Therefore we do NOT constrain the base query by AssociateName here (it would filter out
+    # Death records when multiple record types are selected).
     params
+  end
+
+  # Apply mother surname only to Birth records while leaving non-birth rows unaffected.
+  def apply_mother_surname_filter(records)
+    return records unless records.is_a?(ActiveRecord::Relation)
+    return records unless mother_last_name.present?
+    return records unless birth_in_bmd_search?
+    return records if has_wildcard?(mother_last_name) || mother_name_partial?
+
+    t = SearchQuery.get_search_table.table_name
+    value = sanitize_search_input(mother_last_name)
+    return records if value.blank?
+
+    # Use a single WHERE so we don't hit ActiveRecord #or structural compatibility issues
+    # once other filters add JOINs/DISTINCT.
+    records.where("(#{t}.RecordTypeID != ? OR #{t}.AssociateName = ?)", RecordType::BIRTHS, value)
   end
 
   def start_year_quarter
@@ -1633,6 +1737,8 @@
           records = records.where(conditions)
         end
 
+        records = apply_mother_surname_filter(records)
+
         # Log SQL once
         logger.warn("SQL: #{records.to_sql}")
 
@@ -1641,8 +1747,8 @@
                   age_at_death.present? || check_age_range?
 
         # Apply filters that return Relations
-        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && bmd_record_type == ['3']
-        records = spouse_given_name_filter(records) if spouse_first_name.present?
+        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
+        records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
 
         # Get count early if we don't need array methods (more efficient)
         record_count = 0
@@ -1651,9 +1757,17 @@
         if !needs_array_result && records.respond_to?(:count)
           record_count = records.count
         else
-          # Apply array-returning methods (these may convert Relation to Array)
-          records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
+          # Apply array-returning methods (these may convert Relation to Array).
+          # Year-of-Birth modes (3 exact, 4 range) must bypass UNION-based combined_results
+          # because that path can raise StatementInvalid on some MySQL plans when date bounds
+          # are wide.
+          if (death_at_age.to_s == '3' && dob_at_death.present?) || (death_at_age.to_s == '4' && date_of_birth_range?)
+            records = combined_results_exact_dob(records)
+          elsif date_of_birth_range? || dob_at_death.present?
+            records = combined_results(records)
+          end
           records = combined_age_results(records) if age_at_death.present? || check_age_range?
+          records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
 
           # Handle both Relation and Array results AFTER combined methods
           if records.is_a?(Array)
@@ -1715,8 +1829,8 @@
         records = SearchQuery.get_search_table.includes(:CountyCombos).where(bmd_params_hash)
         records = records.where(wildcard_search_conditions) if wildcard_search_conditions.present?
         records = records.where(search_conditions) if search_conditions.present?
-        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? and self.bmd_record_type == ['3']
-        records = spouse_given_name_filter(records) if self.spouse_first_name.present?
+        records = marriage_surname_filteration(records) if self.spouses_mother_surname.present? && marriage_in_bmd_search?
+        records = spouse_given_name_filter(records) if self.spouse_first_name.present? && marriage_in_bmd_search?
         records = combined_results records if date_of_birth_range? || self.dob_at_death.present?
         records = combined_age_results records if self.age_at_death.present? || check_age_range?
         records.count
@@ -1789,6 +1903,8 @@
           records = records.where(conditions)
         end
 
+        records = apply_mother_surname_filter(records)
+
         # Log SQL once
         logger.warn("SQL: #{records.to_sql}")
 
@@ -1797,8 +1913,8 @@
                   age_at_death.present? || check_age_range?
 
         # Apply filters that return Relations
-        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && bmd_record_type == ['3']
-        records = spouse_given_name_filter(records) if spouse_first_name.present?
+        records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
+        records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
 
         # Get count early if we don't need array methods (more efficient)
         record_count = 0
@@ -1809,9 +1925,17 @@
           logger.warn("Record count before limit: #{record_count}")
           records = records.limit(max_limit) if record_count > max_limit
         else
-          # Apply array-returning methods (these may convert Relation to Array)
-          records = combined_results(records) if date_of_birth_range? || dob_at_death.present?
+          # Apply array-returning methods (these may convert Relation to Array).
+          # Year-of-Birth modes (3 exact, 4 range) must bypass UNION-based combined_results
+          # because that path can raise StatementInvalid on some MySQL plans when date bounds
+          # are wide.
+          if (death_at_age.to_s == '3' && dob_at_death.present?) || (death_at_age.to_s == '4' && date_of_birth_range?)
+            records = combined_results_exact_dob(records)
+          elsif date_of_birth_range? || dob_at_death.present?
+            records = combined_results(records)
+          end
           records = combined_age_results(records) if age_at_death.present? || check_age_range?
+          records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
 
           # Handle both Relation and Array results AFTER combined methods
           if records.is_a?(Array)
@@ -1826,6 +1950,7 @@
           end
         end
 
+        records = finalize_freebmd_mysql_search_order(records)
         persist_results(records)
         [records, record_count, true, 0]
       end
@@ -1874,6 +1999,21 @@
     params
   end
 
+  # Marriage record type id in FreeBMD is 3 (may be stored as string or integer).
+  def marriage_in_bmd_search?
+    Array(bmd_record_type).any? { |t| t.to_s == '3' }
+  end
+
+  # Birth record type id in FreeBMD is 1 (see RecordType::BIRTHS).
+  def birth_in_bmd_search?
+    Array(bmd_record_type).any? { |t| t.to_s == '1' }
+  end
+
+  # Death record type id in FreeBMD is 2 (see RecordType::DEATHS).
+  def death_in_bmd_search?
+    Array(bmd_record_type).any? { |t| t.to_s == '2' }
+  end
+
   def bmd_county_params
     params = {}
     params[:chapman_codes] = {County: chapman_codes} if self.chapman_codes.present?
@@ -1918,9 +2058,10 @@
     min_age = validate_age(self.min_age_at_death)
     max_age = validate_age(self.max_age_at_death)
     return records if min_age.nil? || max_age.nil? || min_age > max_age
+    t = SearchQuery.get_search_table.table_name
     records.where(
-      "CAST(BestGuess.AgeAtDeath AS UNSIGNED) BETWEEN ? AND ? AND " \
-      "BestGuess.AgeAtDeath REGEXP '^[0-9]+$'",
+      "CAST(#{t}.AgeAtDeath AS UNSIGNED) BETWEEN ? AND ? AND " \
+      "#{t}.AgeAtDeath REGEXP '^[0-9]+$'",
       min_age, max_age
     )
     #records.where("AgeAtDeath BETWEEN ? AND ?", min_age, max_age)
@@ -2135,7 +2276,11 @@
     # Mother surname wildcard
     if mn_cond = build_mother_surname_wildcard_condition
       conditions << mn_cond[:sql]
-      values << mn_cond[:value]
+      if mn_cond[:values].is_a?(Array)
+        values.concat(mn_cond[:values])
+      else
+        values << mn_cond[:value]
+      end
     end
   
     return nil if conditions.empty?
@@ -2379,7 +2524,7 @@
     month_patterns = month.values.map { |v| "UPPER(#{best_guess_table}.AgeAtDeath) LIKE ?" }.join(' OR ')
     month_like_patterns = month.values.map { |v| "%#{v}%" }
     
-    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+    records.where("#{best_guess_table}.QuarterNumber >= ?", DOB_START_QUARTER)
       .where.not(month_patterns, *month_like_patterns)
   end
 
@@ -2399,7 +2544,7 @@
     month_patterns = month.values.map { |v| "UPPER(#{best_guess_table}.AgeAtDeath) LIKE ?" }.join(' OR ')
     month_like_patterns = month.values.map { |v| "%#{v}%" }
     
-    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+    records.where("#{best_guess_table}.QuarterNumber >= ?", DOB_START_QUARTER)
       .where(month_patterns, *month_like_patterns)
   end
 
@@ -2493,34 +2638,48 @@
   end
 
   def dob_recordss records
-    records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+    t = SearchQuery.get_search_table.table_name
+    records.where("#{t}.QuarterNumber >= ?", DOB_START_QUARTER)
   end
 
   def non_dob_records records
-    records.where('QuarterNumber < ?', DOB_START_QUARTER)
+    t = SearchQuery.get_search_table.table_name
+    records.where("#{t}.QuarterNumber < ?", DOB_START_QUARTER)
   end
 
   def combined_results records
     return records if records.blank?
     return records unless records.is_a?(ActiveRecord::Relation)
+
+    # Year-of-birth modes are more reliable using mixed Relation/Array filters directly.
+    # The SQL UNION path below can fail on some MySQL plans when date bounds are widened
+    # (e.g. start year 1900), resulting in ActiveRecord::StatementInvalid and zero rows.
+    if (death_at_age.to_s == '3' && dob_at_death.present?) || (death_at_age.to_s == '4' && date_of_birth_range?)
+      return combined_results_exact_dob(records)
+    end
     
     # MySQL 5.7 compatible: Use UNION to combine queries at database level
     # Security: Validate input parameters
     return records if DOB_START_QUARTER.nil?
+
+    best_guess_tbl = SearchQuery.get_search_table.table_name
     
-    # Check if the query has JOINs (e.g., includes(:CountyCombos))
+    # Check if the query has JOINs (e.g., includes(:CountyCombos) or our spouse/mother filters).
+    # IMPORTANT: Not all JOINs cause ActiveRecord to alias columns as t0_r0/t0_r1/...
+    # The t0_r* aliases typically appear when AR builds a wide select list for eager loading.
     has_joins = records.to_sql.include?('JOIN')
-    
-    # If there are JOINs, we need to map ActiveRecord aliases to column names
-    # ActiveRecord uses t0_r0, t0_r1, etc. for BestGuess columns when JOINs are present
-    best_guess_column_aliases = if has_joins
-      # Map of alias index to column name (t0_r0 = RecordNumber, t0_r1 = ChunkNumber, etc.)
-      column_names = SearchQuery.get_search_table.column_names
-      column_names.map.with_index { |col, idx| "t0_r#{idx} AS #{col}" }.join(', ')
-    else
-      # No JOINs, use column names directly
-      SearchQuery.get_search_table.column_names.join(', ')
-    end
+    expects_arel_aliases = has_joins && records.to_sql.include?('t0_r0')
+
+    # Column projection to use in UNION wrapping.
+    # - If AR produced t0_r* aliases, map them back to real column names.
+    # - Otherwise, select real column names directly (works for queries selecting BestGuess.*).
+    best_guess_column_projection =
+      if expects_arel_aliases
+        column_names = SearchQuery.get_search_table.column_names
+        column_names.map.with_index { |col, idx| "t0_r#{idx} AS #{col}" }.join(', ')
+      else
+        SearchQuery.get_search_table.column_names.join(', ')
+      end
     
     # Collect subquery SQLs for UNION
     subqueries = []
@@ -2533,10 +2692,9 @@
       # Skip if SQL is empty or invalid
       return nil if sql.blank? || sql.strip.empty?
       
-      # If there are JOINs, we need to extract only BestGuess columns using aliases
+      # If there are JOINs, wrap and project a stable column set for UNION.
       if has_joins
-        # Wrap to select only BestGuess table columns using aliases
-        "SELECT #{best_guess_column_aliases} FROM (#{sql}) AS temp"
+        "SELECT #{best_guess_column_projection} FROM (#{sql}) AS temp"
       else
         # No JOINs, use SQL as-is
         sql
@@ -2544,18 +2702,22 @@
     end
     
     # 1. Old records (QuarterNumber < 530): Calculate DOB from age
-    non_dob_results = records.where('QuarterNumber < ?', DOB_START_QUARTER)
+    non_dob_results = records.where("#{best_guess_tbl}.QuarterNumber < ?", DOB_START_QUARTER)
     old_records_query = date_of_birth_search_range_a(non_dob_results)
     sql = get_sql.call(old_records_query)
     subqueries << sql if sql.present?
     
     # 2. Modern records (QuarterNumber >= 530): Multiple search strategies
-    dob_results = records.where('QuarterNumber >= ?', DOB_START_QUARTER)
+    dob_results = records.where("#{best_guess_tbl}.QuarterNumber >= ?", DOB_START_QUARTER)
     
-    # 2a. Exact DOB match
-    exact_dob_query = dob_exact_search(dob_results)
-    sql = get_sql.call(exact_dob_query)
-    subqueries << sql if sql.present?
+    # 2a. Exact DOB match (only when an exact DOB value was entered).
+    # For DOB-range searches, dob_at_death is blank; calling dob_exact_search in that case
+    # returns dob_results unchanged and unintentionally admits out-of-range rows.
+    if dob_at_death.present?
+      exact_dob_query = dob_exact_search(dob_results)
+      sql = get_sql.call(exact_dob_query)
+      subqueries << sql if sql.present?
+    end
     
     # 2b. Invalid age records (no month indicators)
     invalid_age_records = invalid_age_records_sql(dob_results)
@@ -2573,6 +2735,12 @@
     # 2c. Records with DOB (has month indicators)
     date_of_birth_records = records_with_dob_sql(dob_results)
     year_query = age_at_death_with_year(date_of_birth_records)
+    # age_at_death_with_year intentionally falls back to Array for wide DOB ranges (>50 years).
+    # For UNION construction we need a Relation/SQL, so convert array rows back to an indexed Relation.
+    if year_query.is_a?(Array)
+      record_numbers = year_query.map { |r| r[:RecordNumber] || r.try(:RecordNumber) }.compact.uniq
+      year_query = records.where(RecordNumber: record_numbers) if record_numbers.any?
+    end
     sql = get_sql.call(year_query)
     subqueries << sql if sql.present?
     
@@ -2593,6 +2761,46 @@
   rescue ActiveRecord::StatementInvalid => e
     # Security: Log error but don't expose details to user
     logger.error("Combined results query error: #{e.class}")
+    records.none
+  end
+
+  # Fallback path for exact Year-of-Birth searches (death_at_age option 3).
+  # Keeps the intended behavior:
+  # - includes inferred YOB from numeric ages in older records
+  # - includes encoded month/year forms (e.g. 19MY1883) via exact/uncertain matching
+  # - keeps "no age/DOB" rows unless match_recorded_ages_or_dates is enabled
+  # Returns an Array of BestGuess rows, deduplicated by record hash.
+  def combined_results_exact_dob(records)
+    started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    # Use an in-memory path to avoid DB planner/statement issues seen with certain
+    # date spans in MySQL while preserving the existing inclusion semantics.
+    all_rows = records.to_a
+    if all_rows.size > EXACT_DOB_IN_MEMORY_WARN_THRESHOLD
+      logger.warn("#{App.name_upcase}: YOB in-memory fallback loaded #{all_rows.size} rows (threshold #{EXACT_DOB_IN_MEMORY_WARN_THRESHOLD})")
+    end
+    results = []
+
+    non_dob_results = all_rows.select { |r| r.QuarterNumber.to_i < DOB_START_QUARTER }
+    results.concat(Array(date_of_birth_search_range_a(non_dob_results)))
+
+    dob_results = all_rows.select { |r| r.QuarterNumber.to_i >= DOB_START_QUARTER }
+    if dob_at_death.present?
+      date_value = date_array(dob_at_death)[0].to_s
+      results.concat(dob_results.select { |r| r.AgeAtDeath.to_s.include?(date_value) })
+    end
+
+    invalid_rows = invalid_age_records(dob_results)
+    results.concat(Array(date_of_birth_search_range_a(invalid_rows)))
+    results.concat(Array(date_of_birth_uncertain_aad(invalid_rows)))
+
+    results.concat(Array(no_aad_or_dob(all_rows)))
+
+    normalized = normalize_freebmd_combined_result_rows(results)
+    elapsed_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).round
+    logger.warn("#{App.name_upcase}: YOB in-memory fallback elapsed=#{elapsed_ms}ms input_rows=#{all_rows.size} output_rows=#{normalized.size}")
+    normalized
+  rescue ActiveRecord::StatementInvalid => e
+    logger.error("Combined exact DOB fallback query error: #{e.class}")
     records.none
   end
   
@@ -2633,19 +2841,73 @@
     end
   end
 
+  # Deaths-only rows with no age recorded (still returned when an age range is used).
+  def blank_age_death_records(death_records)
+    t = SearchQuery.get_search_table.table_name
+    death_records.where("#{t}.AgeAtDeath IS NULL OR #{t}.AgeAtDeath = ?", '')
+  end
+
+  # combined_age_results returns an Array of Relations and/or in-memory rows. Count/persist must
+  # see concrete BestGuess rows, not Relation objects (otherwise "array size" is meaningless and
+  # persist_results breaks).
+  def normalize_freebmd_combined_result_rows(mixed)
+    return mixed unless mixed.is_a?(Array)
+
+    rows = []
+    mixed.each do |entry|
+      case entry
+      when ActiveRecord::Relation
+        rows.concat(entry.to_a)
+      when Array
+        rows.concat(entry)
+      else
+        rows << entry if entry.respond_to?(:read_attribute)
+      end
+    end
+
+    rows.index_by do |r|
+      next r.object_id unless r.respond_to?(:record_hash)
+
+      r.record_hash
+    rescue StandardError
+      "#{r.read_attribute(:RecordNumber)}-#{r.read_attribute(:RecordTypeID)}-#{r.read_attribute(:QuarterNumber)}"
+    end.values
+  end
+
   def combined_age_results records
     records = records
     results = []
-    results.concat(records.where(AgeAtDeath: [""])) unless self.match_recorded_ages_or_dates
+    # Age-at-death range applies to death index rows only. Previously we OR'd every row with a
+    # blank AgeAtDeath (almost all births/marriages), which made the range filter ineffective when
+    # several record types were selected together.
+    if check_age_range? && death_in_bmd_search?
+      death_records = records.where(RecordTypeID: RecordType::DEATHS)
+      results.concat(age_range_search(death_records))
+      results.concat(blank_age_death_records(death_records)) unless self.match_recorded_ages_or_dates
+      non_death_ids = Array(bmd_record_type).map(&:to_i) - [RecordType::DEATHS]
+      results.concat(records.where(RecordTypeID: non_death_ids)) if non_death_ids.any?
+    else
+      unless self.match_recorded_ages_or_dates
+        t = SearchQuery.get_search_table.table_name
+        results.concat(records.where("#{t}.AgeAtDeath IS NULL OR #{t}.AgeAtDeath = ?", ''))
+      end
+    end
     results.concat(aad_search(records)) unless self.age_at_death.blank?
     #raise results.count.inspect
-    results.concat(age_range_search(records)) if check_age_range?
-    #raise results.count.inspect
-    invalid_age_records = invalid_age_records(records)
-    results.concat(date_of_birth_uncertain_aad(invalid_age_records))
-    dob_records = records_with_dob(records)
-    results.concat(calculate_age_range_for_dob(dob_records)) if check_age_range?
-    results.concat(calculate_age_for_dob(dob_records)) if age_at_death.present?
+    # death_at_age "2" = numeric Age Range (DEATH_AGE_OPTIONS): min/max apply only via
+    # age_range_search on deaths. The branches below reuse min/max for DOB / uncertain-age
+    # semantics and would pull births and non-matching rows back into the result set.
+    dob_records = nil
+    unless death_at_age.to_s == '2'
+      invalid_age_records = invalid_age_records(records)
+      results.concat(date_of_birth_uncertain_aad(invalid_age_records))
+      dob_records = records_with_dob(records)
+      results.concat(calculate_age_range_for_dob(dob_records)) if check_age_range?
+    end
+    if age_at_death.present? && death_at_age.to_s != '2'
+      dob_records ||= records_with_dob(records)
+      results.concat(calculate_age_for_dob(dob_records))
+    end
     results.uniq
   end
 
@@ -2763,11 +3025,12 @@
 
   def marriage_surname_filteration(records)
     return records unless spouses_mother_surname.present?
+    return records unless records.is_a?(ActiveRecord::Relation)
     
     # Security: Validate and sanitize spouse surname input
     sanitized_surname = sanitize_search_input(spouses_mother_surname)
     return records if sanitized_surname.blank?
-    
+
     best_guess_table = SearchQuery.get_search_table.table_name
     marriage_table = BestGuessMarriage.table_name
     quarter_threshold = SPOUSE_SURNAME_START_QUARTER
@@ -2777,7 +3040,8 @@
     quoted_best_guess = connection.quote_table_name(best_guess_table)
     quoted_marriage = connection.quote_table_name(marriage_table)
     
-    # String JOIN with properly quoted table names
+    # Spouse surname is a marriage concept. We still LEFT JOIN for all rows, but apply the spouse
+    # filter only when RecordTypeID == MARRIAGES. Non-marriage rows pass through unchanged.
     records_with_join = records.joins(
       "LEFT JOIN #{quoted_marriage} AS b ON " \
       "b.Volume = #{quoted_best_guess}.Volume AND " \
@@ -2798,9 +3062,11 @@
     
     # Parameterized WHERE (safe from SQL injection)
     records_with_join.where(
-      "(#{quoted_best_guess}.QuarterNumber >= ? AND #{quoted_best_guess}.AssociateName #{operator} ?) OR " \
-      "(#{quoted_best_guess}.QuarterNumber < ? AND b.Surname #{operator} ?)",
-      quarter_threshold, value, quarter_threshold, value
+      "(#{quoted_best_guess}.RecordTypeID != ? OR (" \
+        "(#{quoted_best_guess}.QuarterNumber >= ? AND #{quoted_best_guess}.AssociateName #{operator} ?) OR " \
+        "(#{quoted_best_guess}.QuarterNumber < ? AND b.Surname #{operator} ?)" \
+      "))",
+      RecordType::MARRIAGES, quarter_threshold, value, quarter_threshold, value
     ).distinct
   end
 
@@ -2902,15 +3168,15 @@
     search_term = sanitize_sql_like(self.spouse_first_name&.strip)
     return records if search_term.blank?
     
-    # Use INNER JOIN to only get records that have matching marriage records
-    # Join condition: same Volume, Page, QuarterNumber, but different RecordNumber
-    records_with_join = records.joins("INNER JOIN #{marriage_table} as m ON m.Volume = #{best_guess_table}.Volume AND m.Page = #{best_guess_table}.Page AND m.QuarterNumber = #{best_guess_table}.QuarterNumber AND m.RecordNumber != #{best_guess_table}.RecordNumber")
+    # Spouse first name is a marriage concept. LEFT JOIN for all rows, but only apply the
+    # filter when RecordTypeID == MARRIAGES. Non-marriage rows pass through unchanged.
+    records_with_join = records.joins("LEFT JOIN #{marriage_table} as m ON m.Volume = #{best_guess_table}.Volume AND m.Page = #{best_guess_table}.Page AND m.QuarterNumber = #{best_guess_table}.QuarterNumber AND m.RecordNumber != #{best_guess_table}.RecordNumber")
     
     # Use SQL LIKE for case-insensitive partial matching (equivalent to Ruby's include?)
     # LOWER() on column for case-insensitive comparison, %search_term% for substring match
     # Lowercase the pattern in Ruby before passing to SQL
     pattern = "%#{search_term.downcase}%"
-    records_with_join.where("LOWER(m.GivenName) LIKE ?", pattern).distinct
+    records_with_join.where("(#{best_guess_table}.RecordTypeID != ? OR LOWER(m.GivenName) LIKE ?)", RecordType::MARRIAGES, pattern).distinct
   end
   
   def spouse_first_name_filteration_array(records)
@@ -3029,7 +3295,10 @@
   end
 
   def search_pre_spouse_surname records
-    pre_spouse_surname_join = records.joins(spouse_join_condition)
+    join_sql = spouse_join_condition
+    return records if join_sql.blank?
+
+    pre_spouse_surname_join = records.joins(join_sql)
     records = pre_spouse_surname_join.where("b.Surname = ?", spouses_mother_surname)
     records = pre_spouse_surname_join.where("b.Surname like ?", "#{name_wildcard_search(spouses_mother_surname)}#{conditional_percentage_wildcard(spouses_mother_surname)}") if do_wildcard_seach?spouses_mother_surname
     records
@@ -3101,7 +3370,9 @@
   end
 
   def spouse_join_condition
-    if self.spouses_mother_surname.present? || self.spouse_first_name.present?#&& start_year_quarter < 301
+    return '' unless marriage_in_bmd_search?
+
+    if self.spouses_mother_surname.present? || self.spouse_first_name.present?
       spouse_surname_join_condition
     else
       ''
@@ -3120,7 +3391,12 @@
   end
 
   def searched_records
-    search_result.records.values
+    vals = search_result.records.values
+    # FreeBMD: persist_results stores duplicate record_hash keys as [attrs_a, attrs_b] (Array).
+    # sort_results indexes each row with x[order_sym]; Arrays raise TypeError. Match bmd_search_results.
+    return vals.flatten if freebmd_app?
+
+    vals
   end
 
   def sorted_and_paged_searched_records
@@ -3148,7 +3424,7 @@
       qn = saved_record[:QuarterNumber]
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = this_record_atts["Surname"]
-      given_names = this_record_atts["GivenName"].split(' ')
+      given_names = this_record_atts["GivenName"].to_s.split(' ')
       #given_name = given_names[0]
       #given_names.shift()
       #other_given_names = given_names.join(' ') if given_names.present?
@@ -3156,8 +3432,8 @@
       f = f+1 if saved_record[:RecordTypeID] == 3
       #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
-      gedcom << '2 SURN '+surname.capitalize
+      gedcom << '1 NAME '+this_record_atts['GivenName'].to_s+' /'+surname.to_s.capitalize+'/'
+      gedcom << '2 SURN '+surname.to_s.capitalize
       given_names.each do |name|
         gedcom << '2 GIVN '+name
       end
@@ -3165,8 +3441,8 @@
       gedcom << '1 BIRT' if saved_record[:RecordTypeID] == 1
       gedcom << '1 DEAT' if saved_record[:RecordTypeID] == 2
       gedcom << '1 MARR' if saved_record[:RecordTypeID] == 3
-      gedcom << '2 DATE '+quarter
-      gedcom << '2 PLAC '+this_record_atts['District']
+      gedcom << '2 DATE '+quarter.to_s
+      gedcom << '2 PLAC '+this_record_atts['District'].to_s
       gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+saved_record.record_hash+'/'+saved_record.friendly_url
     end
     gedcom << ''
@@ -3183,7 +3459,7 @@
       qn = rec[:QuarterNumber]
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
       surname = rec[:Surname]
-      given_names = rec[:GivenName].split(' ')
+      given_names = rec[:GivenName].to_s.split(' ')
       #given_name = given_names[0]
       #given_names.shift()
       #other_given_names = given_names.join(' ') if given_names.present?
@@ -3192,18 +3468,19 @@
       entry = BestGuess.where(RecordNumber: rec[:RecordNumber]).first
       #gedcom << ''
       gedcom << '0 @'+i.to_s+'@ INDI'
-      gedcom << '1 NAME '+rec[:GivenName]+' /'+surname.capitalize+'/'
-      gedcom << '2 SURN '+surname.capitalize
+      gedcom << '1 NAME '+rec[:GivenName].to_s+' /'+surname.to_s.capitalize+'/'
+      gedcom << '2 SURN '+surname.to_s.capitalize
       given_names.each do |name|
         gedcom << '2 GIVN '+name
       end
-      #   gedcom << '1 SEX '+saved_record[:sex]
       gedcom << '1 BIRT' if rec[:RecordTypeID] == 1
       gedcom << '1 DEAT' if rec[:RecordTypeID] == 2
       gedcom << '1 MARR' if rec[:RecordTypeID] == 3
-      gedcom << '2 DATE '+quarter
-      gedcom << '2 PLAC '+rec[:District]
-      gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
+      gedcom << '2 DATE '+quarter.to_s
+      gedcom << '2 PLAC '+rec[:District].to_s
+      if entry.present?
+        gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash.to_s+'/'+entry.friendly_url.to_s
+      end
     end
     gedcom << '0 TRLR'
     gedcom
@@ -3347,8 +3624,9 @@
 
 	def build_mother_surname_wildcard_condition
 	  return nil unless mother_last_name.present? && do_wildcard_seach?(mother_last_name)
+    return nil unless birth_in_bmd_search?
 
 	  pattern = "#{name_wildcard_search(mother_last_name)}#{conditional_percentage_wildcard(mother_last_name)}"
-	  { sql: "BestGuess.AssociateName LIKE ?", value: pattern }
+	  { sql: "(BestGuess.RecordTypeID != ? OR BestGuess.AssociateName LIKE ?)", values: [RecordType::BIRTHS, pattern] }
 	end
 end

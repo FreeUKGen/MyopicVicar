@@ -545,6 +545,7 @@ class SearchRecord
     friendly.gsub!(/\W/, '-')
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
+    friendly
   end
 
   def gender_from_role(role)
