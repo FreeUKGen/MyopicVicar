@@ -10,6 +10,21 @@ namespace :github do
   task notify_yesterday_closed_issues: :environment do
     GithubClosedYesterdayNotifier.run!(date: ENV['DATE'].presence)
   end
+
+  desc 'Archive Feedback rows whose linked GitHub issue is closed. Set DRY_RUN=1 to list without archiving.'
+  task archive_closed_feedbacks: :environment do
+    dry_run = ENV['DRY_RUN'].present?
+    if dry_run
+      puts 'DRY RUN — no feedback will be archived'
+    elsif !Feedback.github_enabled
+      puts 'GitHub issues integration is not enabled (github_issues_password blank).'
+      exit 1
+    end
+
+    puts 'Checking Feedback rows with linked GitHub issues...'
+    stats = Feedback.archive_with_closed_github_issues(dry_run: dry_run)
+    puts "Examined #{stats[:examined]}; #{dry_run ? 'would archive' : 'archived'} #{stats[:archived]}; skipped #{stats[:skipped]}; errors #{stats[:errors]}"
+  end
 end
 
 # Uses GitHub issue search (closed:DAY..DAY) then matches Contact/Feedback by github_number.
