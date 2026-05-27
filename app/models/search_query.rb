@@ -1768,13 +1768,26 @@
     [] << hash.select{|key, value| value.present?}
   end
 
-  # "John Patrick" also matches index rows recorded as "John P"; "John Dan Pat" matches "John D P".
-  def self.given_name_initials_like_pattern(name)
+  # Index rows often use forename initials (e.g. "Arthur H") when the user searched "Arthur Harold".
+  # Use word boundaries: "Arthur H%" wrongly matches Arthur Henry / Harry / Hambleton.
+  def self.given_name_initials_arel_constraints(table, name)
     parts = name.to_s.strip.split(/\s+/)
-    return nil unless parts.length >= 2
-    return nil if parts[1..].any?(&:blank?)
+    return [] unless parts.length >= 2
+    return [] if parts[1..].any?(&:blank?)
 
-    "#{parts[0]} #{parts[1..].map { |part| part[0] }.join(' ')}%"
+    first = parts[0]
+    constraints = []
+
+    if parts.length == 2
+      initial = parts[1][0]
+      constraints << table[:GivenName].eq("#{first} #{initial}")
+      constraints << table[:GivenName].matches("#{first} #{initial} %")
+    else
+      initials = parts[1..].map { |part| part[0] }.join(' ')
+      constraints << table[:GivenName].matches("#{first} #{initials}%")
+    end
+
+    constraints
   end
 
   def given_name_initials_fallback?
@@ -1796,8 +1809,8 @@
       else
         stripped = first_name.strip
         given_name_matches = [table[:GivenName].matches("#{stripped}%")]
-        if given_name_initials_fallback? && (initials_pattern = SearchQuery.given_name_initials_like_pattern(stripped))
-          given_name_matches << table[:GivenName].matches(initials_pattern) unless initials_pattern == "#{stripped}%"
+        if given_name_initials_fallback?
+          given_name_matches.concat(SearchQuery.given_name_initials_arel_constraints(table, stripped))
         end
         conditions << given_name_matches.reduce(:or)
       end

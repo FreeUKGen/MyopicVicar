@@ -170,14 +170,28 @@ describe SearchQuery do
     # result.to_a.should_not include(r)
   # end 
 
-  describe '.given_name_initials_like_pattern' do
-    it 'builds a prefix pattern from forename initials' do
-      expect(SearchQuery.given_name_initials_like_pattern('john patrick')).to eq('john p%')
-      expect(SearchQuery.given_name_initials_like_pattern('john dan pat')).to eq('john d p%')
+  describe '.given_name_initials_arel_constraints' do
+    let(:table) { double('arel_table', GivenName: double('GivenName')) }
+
+    before do
+      allow(table[:GivenName]).to receive(:eq).and_return(:exact)
+      allow(table[:GivenName]).to receive(:matches).and_return(:prefix)
     end
 
-    it 'returns nil for a single forename' do
-      expect(SearchQuery.given_name_initials_like_pattern('john')).to be_nil
+    it 'uses exact and spaced patterns for two forenames (not Arthur H% style prefix)' do
+      constraints = SearchQuery.given_name_initials_arel_constraints(table, 'Arthur Harold')
+      expect(table[:GivenName]).to have_received(:eq).with('Arthur H')
+      expect(table[:GivenName]).to have_received(:matches).with('Arthur H %')
+      expect(constraints).to eq([:exact, :prefix])
+    end
+
+    it 'uses a multi-initial prefix for three or more forenames' do
+      SearchQuery.given_name_initials_arel_constraints(table, 'john dan pat')
+      expect(table[:GivenName]).to have_received(:matches).with('john d p%')
+    end
+
+    it 'returns no constraints for a single forename' do
+      expect(SearchQuery.given_name_initials_arel_constraints(table, 'john')).to eq([])
     end
   end
 
