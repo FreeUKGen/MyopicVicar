@@ -107,6 +107,8 @@ class SearchQuery
   field :radius_factor, type: Integer, default: 101
   field :search_nearby_places, type: Boolean
   field :result_count, type: Integer
+  # True when Mongo returned a full limit batch; more matches may exist beyond what was stored.
+  field :results_fetch_capped, type: Boolean, default: false
   field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
   field :ucf_filtered_count, type: Integer
   field :session_id, type: String
@@ -423,13 +425,18 @@ class SearchQuery
 
   def date_search_params
     params = {}
-    if start_year || end_year
-      date_params = {}
-      date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
-      date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
-      params[:search_date] = date_params
-    end
+    range = date_range_params
+    params[:search_date] = range if range
     params
+  end
+
+  def date_range_params
+    return nil unless start_year || end_year
+
+    date_params = {}
+    date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
+    date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
+    date_params
   end
 
   def explain_plan
@@ -661,13 +668,11 @@ class SearchQuery
     search_results = self.search_result.records.values.compact
     # Rails.logger.info { "[GetSortDisplay] ---Step 1: Extracted raw results (search records) (#{search_results.size})\n#{search_results}" }
 
-    # Step 2: Filter name types
-    search_results = filter_name_types(search_results)
-    # Rails.logger.info { "[GetSortDisplay] ---Step 2: After filter_name_types (search records) (#{search_results.size})\n#{search_results}" }
-
-    # Step 3: Filter embargoed
-    search_results = filter_embargoed(search_results)
-    # Rails.logger.info { "[GetSortDisplay] ---Step 3: After filter_embargoed (search records) (#{search_results.size})\n#{search_results}" }
+    # FreeREG: name role + embargo are applied in Mongo (search_params). Other apps: filter in memory.
+    unless App.name == 'FreeREG'
+      search_results = filter_name_types(search_results)
+      search_results = filter_embargoed(search_results)
+    end
 
     # Step 4: Census additional fields (only for FreeCEN)
     if MyopicVicar::Application.config.template_set == 'freecen'
@@ -850,19 +855,53 @@ class SearchQuery
     params
   end
 
+  def search_name_types_for_query
+    types = [SearchRecord::PersonType::PRIMARY]
+    types << SearchRecord::PersonType::FAMILY if inclusive
+    types << SearchRecord::PersonType::WITNESS if witness
+    types
+  end
+
+  def apply_search_name_role_to_elem_match!(name_params)
+    return if name_params.blank?
+
+    name_params['type'] = { '$in' => search_name_types_for_query }
+  end
+
+  def finalize_search_names_elem_match!(name_params, params, use_soundex:)
+    if App.name == 'FreeREG'
+      if name_params.present?
+        apply_search_name_role_to_elem_match!(name_params)
+      else
+        name_params = { 'type' => { '$in' => search_name_types_for_query } }
+      end
+    end
+    elem = { '$elemMatch' => name_params }
+    if use_soundex
+      params['search_soundex'] = elem
+    else
+      params['search_names'] = elem
+    end
+  end
+
+  def embargo_nor_conditions
+    [{ embargoed: true, release_year: { '$gt' => DateTime.now.year } }]
+  end
+
   def name_search_params
     params = {}
     name_params = {}
     if query_contains_wildcard?
       name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name.present?
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name.present?
-      params['search_names'] = { '$elemMatch' => name_params }
+      finalize_search_names_elem_match!(name_params, params, use_soundex: false)
     else
       if fuzzy
         name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name.present?
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
-        if name_params.key?('first_name') && name_params.key?('last_name')
-          # Keep name pairs bound to the same embedded document when both are present.
+        if App.name == 'FreeREG'
+          finalize_search_names_elem_match!(name_params, params, use_soundex: true)
+        elsif name_params.key?('first_name') && name_params.key?('last_name')
           params['search_soundex'] = { '$elemMatch' => name_params }
         elsif name_params.key?('last_name')
           params['search_soundex.last_name'] = name_params['last_name']
@@ -873,7 +912,7 @@ class SearchQuery
         name_params['first_name'] = first_name.downcase if first_name.present?
         name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
         name_params['last_name'] = nil if self.no_surname
-        params['search_names'] = { '$elemMatch': name_params }
+        finalize_search_names_elem_match!(name_params, params, use_soundex: false)
       end
     end
     params
@@ -882,7 +921,10 @@ class SearchQuery
   def next_and_previous_records(current)
     if search_result.records.respond_to?(:values)
       search_results = search_result.records.values
-      search_results = filter_name_types(search_results)
+      unless App.name == 'FreeREG'
+        search_results = filter_name_types(search_results)
+        search_results = filter_embargoed(search_results)
+      end
       search_results = filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
@@ -1097,24 +1139,63 @@ class SearchQuery
     @search_index_winning_plan = SearchRecord.winning_plan_index_name(@search_parameters, @search_index)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     logger.warn("#{App.name_upcase}:WINNING_PLAN_INDEX: #{@search_index_winning_plan}")
-    logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
+    logger.debug { "#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}" }
     update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
-    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
-    persist_results(records)
-    persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
-    records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
+    self.results_fetch_capped = false
+    max_results = FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
+    fetched = fetch_search_records(max_results)
+    self.results_fetch_capped = fetched.size >= max_results
+    persist_results(fetched)
+    records = search_ucf if can_query_ucf? && result_count < max_results
     records
   end
 
-  def secondary_date_results
-    @secondary_search_params = @search_parameters
-    @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete_if { |key, value| key == :search_date }
-    # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
-    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    secondary_records
+  def fetch_search_records(max_results)
+    if App.name == 'FreeREG' && date_range_params.present?
+      fetch_freereg_with_alternate_dates(max_results)
+    else
+      collection_find_with_hint(@search_parameters, @search_index, max_results)
+    end
+  end
+
+  def fetch_freereg_with_alternate_dates(max_results)
+    records = collection_find_with_hint(@search_parameters, @search_index, max_results)
+    return records if records.size >= max_results
+
+    exclude_ids = records.map { |r| r['_id'] }
+    remaining = max_results - records.size
+
+    loop do
+      break if remaining <= 0
+
+      secondary_params = secondary_date_search_params(@search_parameters, exclude_ids)
+      secondary_index = SearchRecord.index_hint(secondary_params.except(:_id))
+      logger.warn("#{App.name_upcase}:SECONDARY_DATE_SEARCH_HINT: #{secondary_index}")
+
+      batch = collection_find_with_hint(secondary_params, secondary_index, remaining)
+      break if batch.empty?
+
+      records.concat(batch)
+      exclude_ids.concat(batch.map { |r| r['_id'] })
+      remaining = max_results - records.size
+    end
+
+    records
+  end
+
+  def secondary_date_search_params(primary_params, exclude_ids)
+    params = primary_params.dup
+    params[:secondary_search_date] = params.delete(:search_date) if params[:search_date]
+    params[:_id] = { '$nin' => exclude_ids } if exclude_ids.present?
+    params
+  end
+
+  def collection_find_with_hint(params, index_hint, limit)
+    SearchRecord.collection.find(params)
+                .hint(index_hint.to_s)
+                .max_time_ms(Rails.application.config.max_search_time)
+                .limit(limit)
+                .to_a
   end
 
   def search_params
@@ -1125,6 +1206,10 @@ class SearchQuery
     params.merge!(record_type_params)
     # params.merge!(possible_last_names_params)
     params.merge!(date_search_params)
+    if App.name == 'FreeREG'
+      nor_embargo = embargo_nor_conditions
+      params['$nor'] = params['$nor'].present? ? Array(params['$nor']) + nor_embargo : nor_embargo
+    end
     params
   end
 
