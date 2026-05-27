@@ -781,11 +781,7 @@ class Freereg1CsvFile
   end
 
   def all_embargoed_entries
-    freereg1_csv_entries = []
-    self.freereg1_csv_entries.each do |entry|
-      freereg1_csv_entries << entry if entry.embargo_records.present?
-    end
-    freereg1_csv_entries
+    freereg1_csv_entries.select(&:currently_under_embargo?)
   end
 
   def force_unlock
