@@ -118,6 +118,7 @@ class SearchQuery
   field :order_asc, type: Boolean, default: true
   field :region, type: String # bot honeypot
   field :search_index, type: String
+  field :search_index_winning_plan, type: String
   field :day, type: String
   field :use_decomposed_dates, type: Boolean, default: false
   field :all_radius_place_ids, type: Array, default: []
@@ -432,11 +433,15 @@ class SearchQuery
   end
 
   def explain_plan
-    SearchRecord.where(search_params).asc(:search_date).all.explain
+    SearchRecord.explain_find(search_params, hint: search_index_hint_for_explain)
   end
 
   def explain_plan_no_sort
-    SearchRecord.where(search_params).all.explain
+    SearchRecord.explain_find(search_params, hint: search_index_hint_for_explain)
+  end
+
+  def search_index_hint_for_explain
+    search_index.presence || SearchRecord.index_hint(search_params)
   end
 
   def extract_stub(my_name)
@@ -1089,9 +1094,11 @@ class SearchQuery
   def search
     @search_parameters = search_params
     @search_index = SearchRecord.index_hint(@search_parameters)
+    @search_index_winning_plan = SearchRecord.winning_plan_index_name(@search_parameters, @search_index)
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    logger.warn("#{App.name_upcase}:WINNING_PLAN_INDEX: #{@search_index_winning_plan}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
-    update_attribute(:search_index, @search_index)
+    update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
