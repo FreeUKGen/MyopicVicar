@@ -14,77 +14,66 @@
 #
 class PagesController < ApplicationController
   skip_before_action :require_login
+
+  # Browsers request these at the site root; when Apache forwards to Rails (file missing
+  # or not served), avoid RoutingError noise in Errbit.
+  BROWSER_ROOT_STATIC_FILES = %w[
+    favicon.ico
+    apple-touch-icon.png
+    apple-touch-icon-precomposed.png
+    favicon-16x16.png
+    favicon-32x32.png
+    safari-pinned-tab.svg
+    site.webmanifest
+    browserconfig.xml
+  ].freeze
+
   def donate
   end
 
   def volunteer
   end
 
-   # Catch-all action to render pages dynamically based on path
-   def show
-    # Skip asset requests - they should be served by web server
-    if request.path.start_with?('/assets/')
-      head :not_found
-      return
-    end
-    
-    # Get the page path from params (everything after the route)
-    page_path = params[:path] || params[:id]
-    
-    # Convert path to view file name
-    # Handle both "about" and "help/getting-started" style paths
-    view_name = page_path.to_s
-    
-    # Get current site (template_set)
-    current_site = MyopicVicar::Application.config.template_set
-    
-    # Check if the view file exists in site-specific directory first
-    site_view_file = Rails.root.join('app', 'views', 'pages', current_site, "#{view_name}.html.erb")
-    
-    if File.exist?(site_view_file)
-      # Render from site-specific directory
-      render template: "pages/#{current_site}/#{view_name}", layout: 'application'
-    else
-      # Fallback to shared pages directory (for backward compatibility)
-      shared_view_file = Rails.root.join('app', 'views', 'pages', "#{view_name}.html.erb")
-      if File.exist?(shared_view_file)
-        render template: "pages/#{view_name}", layout: 'application'
-      else
-        raise ActionController::RoutingError, "Page not found: #{page_path}"
-      end
-    end
-  end # Catch-all action to render pages dynamically based on path
+  # Catch-all action to render pages dynamically based on path
   def show
-    # Skip asset requests - they should be served by web server
     if request.path.start_with?('/assets/')
       head :not_found
       return
     end
-    
-    # Get the page path from params (everything after the route)
+
     page_path = params[:path] || params[:id]
-    
-    # Convert path to view file name
-    # Handle both "about" and "help/getting-started" style paths
+    if (static_response = serve_browser_root_static(page_path))
+      static_response
+      return
+    end
+
     view_name = page_path.to_s
-    
-    # Get current site (template_set)
     current_site = MyopicVicar::Application.config.template_set
-    
-    # Check if the view file exists in site-specific directory first
     site_view_file = Rails.root.join('app', 'views', 'pages', current_site, "#{view_name}.html.erb")
-    
+
     if File.exist?(site_view_file)
-      # Render from site-specific directory
       render template: "pages/#{current_site}/#{view_name}", layout: 'application'
     else
-      # Fallback to shared pages directory (for backward compatibility)
       shared_view_file = Rails.root.join('app', 'views', 'pages', "#{view_name}.html.erb")
       if File.exist?(shared_view_file)
         render template: "pages/#{view_name}", layout: 'application'
       else
         raise ActionController::RoutingError, "Page not found: #{page_path}"
       end
+    end
+  end
+
+  private
+
+  def serve_browser_root_static(page_path)
+    basename = File.basename(page_path.to_s)
+    return unless BROWSER_ROOT_STATIC_FILES.include?(basename)
+
+    public_file = Rails.root.join('public', basename)
+    if File.exist?(public_file)
+      send_file public_file, disposition: 'inline'
+    else
+      head :not_found
     end
   end
 end
