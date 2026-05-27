@@ -427,10 +427,22 @@ class SearchQuery
 
   def date_search_params
     params = {}
-    if start_year || end_year
-      date_params = {}
-      date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
-      date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
+    return params unless start_year || end_year
+
+    date_params = {}
+    date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
+    date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
+
+    # FreeREG baptisms/burials/marriages store an alternate date in secondary_search_date
+    # (e.g. birth when baptism is search_date). A single $or query applies one result limit
+    # to the union; the old primary-then-secondary passes could drop records when the
+    # secondary pass hit MAXIMUM_NUMBER_OF_RESULTS on a wide date range.
+    if App.name == 'FreeREG'
+      params['$or'] = [
+        { search_date: date_params },
+        { secondary_search_date: date_params }
+      ]
+    else
       params[:search_date] = date_params
     end
     params
@@ -1073,20 +1085,8 @@ class SearchQuery
     fetched = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
     self.results_fetch_capped = fetched.size >= max_results
     persist_results(fetched)
-    persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < max_results)
     records = search_ucf if can_query_ucf? && result_count < max_results
     records
-  end
-
-  def secondary_date_results
-    @secondary_search_params = @search_parameters
-    @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete_if { |key, value| key == :search_date }
-    # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
-    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    secondary_records
   end
 
   def search_params

@@ -306,7 +306,11 @@ class SearchRecord
     def fields_from_params(search_params)
       fields = []
       search_params.each_pair do |key, value|
-        extract_fields(fields, value, key.to_s)
+        if key.to_s == '$or' && value.is_a?(Array)
+          value.each { |clause| extract_fields(fields, clause, '') }
+        else
+          extract_fields(fields, value, key.to_s)
+        end
       end
       fields.uniq
       fields
