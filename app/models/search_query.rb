@@ -427,25 +427,18 @@ class SearchQuery
 
   def date_search_params
     params = {}
-    return params unless start_year || end_year
+    range = date_range_params
+    params[:search_date] = range if range
+    params
+  end
+
+  def date_range_params
+    return nil unless start_year || end_year
 
     date_params = {}
     date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
     date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
-
-    # FreeREG baptisms/burials/marriages store an alternate date in secondary_search_date
-    # (e.g. birth when baptism is search_date). A single $or query applies one result limit
-    # to the union; the old primary-then-secondary passes could drop records when the
-    # secondary pass hit MAXIMUM_NUMBER_OF_RESULTS on a wide date range.
-    if App.name == 'FreeREG'
-      params['$or'] = [
-        { search_date: date_params },
-        { secondary_search_date: date_params }
-      ]
-    else
-      params[:search_date] = date_params
-    end
-    params
+    date_params
   end
 
   def explain_plan
@@ -1082,11 +1075,59 @@ class SearchQuery
     update_attribute(:search_index, @search_index)
     self.results_fetch_capped = false
     max_results = FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
-    fetched = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
+    fetched = fetch_search_records(max_results)
     self.results_fetch_capped = fetched.size >= max_results
     persist_results(fetched)
     records = search_ucf if can_query_ucf? && result_count < max_results
     records
+  end
+
+  def fetch_search_records(max_results)
+    if App.name == 'FreeREG' && date_range_params.present?
+      fetch_freereg_with_alternate_dates(max_results)
+    else
+      collection_find_with_hint(@search_parameters, @search_index, max_results)
+    end
+  end
+
+  def fetch_freereg_with_alternate_dates(max_results)
+    records = collection_find_with_hint(@search_parameters, @search_index, max_results)
+    return records if records.size >= max_results
+
+    exclude_ids = records.map { |r| r['_id'] }
+    remaining = max_results - records.size
+
+    loop do
+      break if remaining <= 0
+
+      secondary_params = secondary_date_search_params(@search_parameters, exclude_ids)
+      secondary_index = SearchRecord.index_hint(secondary_params.except(:_id))
+      logger.warn("#{App.name_upcase}:SECONDARY_DATE_SEARCH_HINT: #{secondary_index}")
+
+      batch = collection_find_with_hint(secondary_params, secondary_index, remaining)
+      break if batch.empty?
+
+      records.concat(batch)
+      exclude_ids.concat(batch.map { |r| r['_id'] })
+      remaining = max_results - records.size
+    end
+
+    records
+  end
+
+  def secondary_date_search_params(primary_params, exclude_ids)
+    params = primary_params.dup
+    params[:secondary_search_date] = params.delete(:search_date) if params[:search_date]
+    params[:_id] = { '$nin' => exclude_ids } if exclude_ids.present?
+    params
+  end
+
+  def collection_find_with_hint(params, index_hint, limit)
+    SearchRecord.collection.find(params)
+                .hint(index_hint.to_s)
+                .max_time_ms(Rails.application.config.max_search_time)
+                .limit(limit)
+                .to_a
   end
 
   def search_params
