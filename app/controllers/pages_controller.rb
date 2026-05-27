@@ -48,6 +48,11 @@ class PagesController < ApplicationController
       return
     end
 
+    if sensitive_path_request?(page_path, request.path)
+      head :not_found
+      return
+    end
+
     if (static_response = serve_browser_root_static(page_path))
       static_response
       return
@@ -64,12 +69,21 @@ class PagesController < ApplicationController
       if File.exist?(shared_view_file)
         render template: "pages/#{view_name}", layout: 'application'
       else
-        raise ActionController::RoutingError, "Page not found: #{page_path}"
+        Rails.logger.info("FREEBMD:PAGES: Page not found: #{page_path}")
+        head :not_found
       end
     end
   end
 
   private
+
+  # CMS slugs are not dot-paths (.git, .env, etc.). .well-known is handled above.
+  def sensitive_path_request?(page_path, full_path)
+    [page_path, full_path].compact.any? do |p|
+      path = p.to_s.delete_prefix('/')
+      path.include?('..') || path.split('/').any? { |segment| segment.start_with?('.') }
+    end
+  end
 
   def serve_browser_root_static(page_path)
     basename = File.basename(page_path.to_s)
