@@ -31,13 +31,13 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
-    refinery_user = User.where(username: @userid.userid).first
-    if refinery_user.blank?
+    devise_user = @userid.ensure_devise_user
+    if devise_user.blank?
       flash[:notice] = 'There was an issue with your request please consult your coordinator.' if session[:my_own]
       flash[:notice] = 'There was an issue with the userid please consult with system administration.' if !session[:my_own]
-      logger.warn("FREEBMD:USERID: The refinery entry for #{@userid.userid} does not exist. Run the Fix Refinery User Table utilty")
+      logger.warn("FREEBMD:USERID: No Devise User for #{@userid.userid}; password reset email not sent")
     else
-      refinery_user.send_reset_password_instructions
+      devise_user.send_reset_password_instructions
       flash[:notice] = 'An email has been sent with instructions.'
     end
     if session[:my_own]
@@ -60,11 +60,15 @@ class UseridDetailsController < ApplicationController
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
       @userid.add_fields(params[:commit], session[:syndicate])
-      @userid.save
       if @userid.save
-        refinery_user = User.where(username: @userid.userid).first
-        refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        devise_user = @userid.ensure_devise_user
+        if devise_user.present?
+          devise_user.send_reset_password_instructions
+          flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        else
+          logger.warn("FREEBMD:USERID: No Devise User for #{@userid.userid} after registration; password email not sent")
+          flash[:notice] = 'Registration was successful but we could not send the password email. Please use Forgot password on the sign-in page or contact support.'
+        end
         @userid.write_userid_file
         next_place_to_go_successful_create
       else

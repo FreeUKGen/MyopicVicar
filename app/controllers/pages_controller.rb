@@ -42,6 +42,12 @@ class PagesController < ApplicationController
     end
 
     page_path = params[:path] || params[:id]
+
+    if well_known_request?(page_path)
+      serve_well_known(page_path)
+      return
+    end
+
     if (static_response = serve_browser_root_static(page_path))
       static_response
       return
@@ -70,6 +76,20 @@ class PagesController < ApplicationController
     return unless BROWSER_ROOT_STATIC_FILES.include?(basename)
 
     public_file = Rails.root.join('public', basename)
+    if File.exist?(public_file)
+      send_file public_file, disposition: 'inline'
+    else
+      head :not_found
+    end
+  end
+
+  # Google (Android App Links), Apple, etc. probe /.well-known/* — not CMS pages.
+  def well_known_request?(page_path)
+    page_path.to_s.start_with?('.well-known/') || page_path.to_s == '.well-known'
+  end
+
+  def serve_well_known(page_path)
+    public_file = Rails.root.join('public', page_path.to_s)
     if File.exist?(public_file)
       send_file public_file, disposition: 'inline'
     else

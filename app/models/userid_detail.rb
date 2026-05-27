@@ -583,22 +583,30 @@ class UseridDetail
     FileUtils.mv(renamed_file,newdir)
   end
 
+  def ensure_devise_user
+    User.where(username: userid).first || save_to_refinery
+  end
+
   def save_to_refinery
-    #avoid looping on password changes
-    u = User.where(:username => self.userid).first
-    if u.nil?
-      u = User.new
-    end
+    # Avoid looping on password changes; creates/updates the Devise User row for sign-in.
+    u = User.where(username: userid).first || User.new
     _raw, hashed = Devise.token_generator.generate(User, :reset_password_token)
-    u.username = self.userid
-    u.email = self.email_address
-    u.password = 'Password' # no-op
-    u.password_confirmation = 'Password' # no-op
-    u.encrypted_password = self.password # actual encrypted password
+    u.username = userid
+    u.email = email_address
+    u.password = 'Password' # no-op for validatable; encrypted_password is the real secret
+    u.password_confirmation = 'Password'
+    u.encrypted_password = password
     u.reset_password_token = hashed
     u.reset_password_sent_at = Time.now
-    u.userid_detail_id = self.id.to_s
-    u.save
+    u.userid_detail_id = id.to_s
+    if u.save
+      u
+    else
+      Rails.logger.warn(
+        "FREEBMD:USERID: Failed to save Devise User for #{userid.inspect}: #{u.errors.full_messages.join(', ')}"
+      )
+      nil
+    end
   end
 
   def update_refinery
