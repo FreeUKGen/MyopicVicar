@@ -170,4 +170,15 @@ describe SearchQuery do
     # result.to_a.should_not include(r)
   # end 
 
+  describe '.given_name_initials_like_pattern' do
+    it 'builds a prefix pattern from forename initials' do
+      expect(SearchQuery.given_name_initials_like_pattern('john patrick')).to eq('john p%')
+      expect(SearchQuery.given_name_initials_like_pattern('john dan pat')).to eq('john d p%')
+    end
+
+    it 'returns nil for a single forename' do
+      expect(SearchQuery.given_name_initials_like_pattern('john')).to be_nil
+    end
+  end
+
 end

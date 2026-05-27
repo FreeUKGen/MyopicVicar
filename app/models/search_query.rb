@@ -1768,14 +1768,39 @@
     [] << hash.select{|key, value| value.present?}
   end
 
+  # "John Patrick" also matches index rows recorded as "John P"; "John Dan Pat" matches "John D P".
+  def self.given_name_initials_like_pattern(name)
+    parts = name.to_s.strip.split(/\s+/)
+    return nil unless parts.length >= 2
+    return nil if parts[1..].any?(&:blank?)
+
+    "#{parts[0]} #{parts[1..].map { |part| part[0] }.join(' ')}%"
+  end
+
+  def given_name_initials_fallback?
+    first_name.present? &&
+      !first_name_exact_match &&
+      !skip_first_name? &&
+      !first_name.start_with?('+') &&
+      first_name.strip.split(/\s+/).length >= 2
+  end
+
   def search_conditions_arel
 	  table = BestGuess.arel_table
 	  conditions = []
 
 	  # First name with LIKE
 	  if first_name.present? && !first_name_exact_match && !skip_first_name?
-		pattern = first_name.start_with?('+') ? "%#{first_name.delete_prefix('+').strip}%" : "#{first_name.strip}%"
-		conditions << table[:GivenName].matches(pattern)
+      if first_name.start_with?('+')
+        conditions << table[:GivenName].matches("%#{first_name.delete_prefix('+').strip}%")
+      else
+        stripped = first_name.strip
+        given_name_matches = [table[:GivenName].matches("#{stripped}%")]
+        if given_name_initials_fallback? && (initials_pattern = SearchQuery.given_name_initials_like_pattern(stripped))
+          given_name_matches << table[:GivenName].matches(initials_pattern) unless initials_pattern == "#{stripped}%"
+        end
+        conditions << given_name_matches.reduce(:or)
+      end
 	  end
 
 	  # Second name
