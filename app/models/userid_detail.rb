@@ -588,21 +588,22 @@ class UseridDetail
 
   def find_devise_user
     # Avoid replica lag issues: registration must see the latest User row.
-    scope = User.with(read: { mode: :primary })
+    # In this Mongoid version, `with(read: ...)` must be used with a block.
+    User.with(read: { mode: :primary }) do
+      if id.present?
+        linked = User.where(userid_detail_id: id.to_s).first
+        return linked if linked.present?
+      end
+      if userid.present?
+        stripped = userid.to_s.strip
+        # Some legacy rows have leading/trailing whitespace; uniqueness is case-insensitive.
+        by_username = User.where(username: /\A\s*#{::Regexp.escape(stripped)}\s*\z/i).first
+        return by_username if by_username.present?
+      end
+      return nil if email_address.blank?
 
-    if id.present?
-      linked = scope.where(userid_detail_id: id.to_s).first
-      return linked if linked.present?
+      User.where(email: /\A\s*#{::Regexp.escape(email_address.to_s.strip)}\s*\z/i).first
     end
-    if userid.present?
-      stripped = userid.to_s.strip
-      # Some legacy rows have leading/trailing whitespace; uniqueness is case-insensitive.
-      by_username = scope.where(username: /\A\s*#{::Regexp.escape(stripped)}\s*\z/i).first
-      return by_username if by_username.present?
-    end
-    return nil if email_address.blank?
-
-    scope.where(email: /\A\s*#{::Regexp.escape(email_address.to_s.strip)}\s*\z/i).first
   end
 
   def save_to_refinery
@@ -623,12 +624,13 @@ class UseridDetail
     # Re-fetch from primary and treat "already taken" as success by returning the existing row.
     stripped_userid = userid.to_s.strip
     stripped_email = email_address.to_s.strip
-    scope = User.with(read: { mode: :primary })
-    existing = find_devise_user ||
-               scope.or(
-                 { username: /\A\s*#{::Regexp.escape(stripped_userid)}\s*\z/i },
-                 { email: /\A\s*#{::Regexp.escape(stripped_email)}\s*\z/i }
-               ).first
+    existing = User.with(read: { mode: :primary }) do
+      find_devise_user ||
+        User.or(
+          { username: /\A\s*#{::Regexp.escape(stripped_userid)}\s*\z/i },
+          { email: /\A\s*#{::Regexp.escape(stripped_email)}\s*\z/i }
+        ).first
+    end
 
     if existing.present?
       # Only (re)link when safe; avoid stealing a Devise account from another profile.
