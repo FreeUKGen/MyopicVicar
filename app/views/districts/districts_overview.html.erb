@@ -7,7 +7,7 @@
   crossorigin="anonymous">
 </script>
 
-<div class="grid">
+<div class="grid districts_overview_grid">
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
     <nav aria-labelledby="contentsMenu">
       <div class="islet islet--bordered">
@@ -43,12 +43,12 @@
       has started is <%= format_quarter_year(active_quarter_events.last.quarter_number_event_to_quarter) %>.</p>
     </div>
 
-    <div class="island island--bordered no_print db_vrec_sticky push--top" aria-label="Advertisement">
+    <div class="island no_print db_vrec_sticky push--top" aria-label="Advertisement">
       <div style="height: 25px; line-height: 25px;">
         <p style="text-align: center;">Advertisement</p>
       </div>
       <!-- GAM / FREEBMD freebmd_vrec_1 -->
-      <div data-fuse="Vrec_Sticky"></div>
+      <div data-fuse="Vrec_Sticky" style="height: 600px;"></div>
     </div>
   </div>
 
