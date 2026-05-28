@@ -39,8 +39,11 @@ You MUST select an option even if there is only one.
       <%= f.input :county,
         :label => "Select county from following list",
         :required => true,
-        :collection => @counties,
-        :selected => @selected_county,
+        :collection => options_for_select(
+          @counties,
+          @selected_county
+        ),
+        # :selected => @selected_county,
         :input_html => {
           :class => "simple_form_bgcolour simple_form_position overide_selection_field_width",
           'onchange' => @update_places_location,
