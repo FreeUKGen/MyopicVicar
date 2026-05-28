@@ -43,12 +43,14 @@
       has started is <%= format_quarter_year(active_quarter_events.last.quarter_number_event_to_quarter) %>.</p>
     </div>
 
-    <div class="island no_print push--top" style="display:flex;position:sticky;top:12px;align-self:start;" aria-label="Advertisement">
+    <div class="island no_print push--top" aria-label="Advertisement">
       <div style="height: 25px; line-height: 25px;">
         <p style="text-align: center;">Advertisement</p>
       </div>
       <!-- GAM / FREEBMD freebmd_vrec_1 -->
-      <div data-fuse="Vrec_Sticky" style="height: 600px;"></div>
+       <div style="display:flex;position:sticky;top:12px;align-self:start;">
+        <div data-fuse="Vrec_Sticky"></div>
+      </div>
     </div>
   </div>
 
