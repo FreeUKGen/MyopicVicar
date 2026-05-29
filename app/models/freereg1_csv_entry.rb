@@ -347,13 +347,14 @@ class Freereg1CsvEntry
     false
   end
 
-  # Matches search visibility: embargoed with a release year still in the future.
   def currently_under_embargo?
-    last = embargo_records.last
-    return false if last.blank?
-    return false unless last.embargoed
+    return false if embargo_records.blank?
 
-    last.release_year.blank? || last.release_year.to_i > DateTime.now.year.to_i
+    last = embargo_records.last
+    return false unless last.embargoed
+    return false if last.release_year.present? && DateTime.now.year.to_i >= last.release_year.to_i
+
+    true
   end
 
   def cal_digest
