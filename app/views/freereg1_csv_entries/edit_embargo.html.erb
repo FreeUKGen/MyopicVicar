@@ -47,11 +47,12 @@
     </p>
     <%= f.simple_fields_for :embargo_records, @embargo_change do |m| %>
       <%= m.input :embargoed,
-            as: :radio_buttons,
+            as: :select,
             collection: [
               ['Embargo this record (hide from search)', true],
               ['Release this record (show in search)', false]
             ],
+            include_blank: 'Choose…',
             label: 'New status after you submit',
             required: true,
             input_html: { class: 'simple_form_bgcolour' } %>
