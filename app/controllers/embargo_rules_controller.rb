@@ -118,6 +118,6 @@ class EmbargoRulesController < ApplicationController
   end
 
   def end_year_embargo_rule?(rule_text)
-    rule_text.to_s == EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS[0]
+    EmbargoRule.until_beginning_of_year_rule_text?(rule_text)
   end
 end
