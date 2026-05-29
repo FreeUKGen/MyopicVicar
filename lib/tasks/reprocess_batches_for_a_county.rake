@@ -1,7 +1,9 @@
 namespace :freereg do
   BATCH_SIZE = 100000
   PROGRESS_INTERVAL = 10
-  desc "Reprocess batches for a specific county chapman code (e.g. 'rake batches:reprocess_county[YKS]')"
+  PROGRESS_FILE_MARRIAGE_REPROCESS = File.join(Rails.root, 'tmp', 'reprocess_marriage_batches_for_a_county_done.txt')
+  PROGRESS_FILE_MARRIAGE_CLEANUP = File.join(Rails.root, 'tmp', 'cleanup_marriage_batches_for_a_county_done.txt')
+  desc "Reprocess batches for a specific county chapman code (e.g. 'rake freereg:reprocess_batches_for_a_county[YKS]')"
   task :reprocess_batches_for_a_county, [:chapman_code] => :environment do |t, args|
     validate_chapman_code(args[:chapman_code])
     chapman_code = args[:chapman_code].upcase
@@ -9,10 +11,29 @@ namespace :freereg do
     puts "Starting batch reprocessing for #{ChapmanCode.name_from_code(chapman_code)} (#{chapman_code})"
     
     begin
-      process_batches_for_county(chapman_code)
+      process_batches_for_county(chapman_code, nil)
     rescue => e
       handle_fatal_error(e)
     end
+  end
+
+  desc "Reprocess marriage batches for a county chapman code, or for ALL counties if none given (e.g. 'rake freereg:reprocess_marriage_batches_for_a_county[YKS]' or 'rake freereg:reprocess_marriage_batches_for_a_county')"
+  task :reprocess_marriage_batches_for_a_county, [:chapman_code] => :environment do |t, args|
+    reset_progress_if_requested!(PROGRESS_FILE_MARRIAGE_REPROCESS)
+    done = load_done_counties(PROGRESS_FILE_MARRIAGE_REPROCESS)
+
+    each_target_county(args[:chapman_code]) do |chapman_code|
+      if args[:chapman_code].blank? && done.include?(chapman_code)
+        puts "Skipping #{chapman_code} (already completed)"
+        next
+      end
+
+      puts "Starting marriage batch reprocessing for #{ChapmanCode.name_from_code(chapman_code)} (#{chapman_code})"
+      process_batches_for_county(chapman_code, 'ma')
+      mark_county_done(PROGRESS_FILE_MARRIAGE_REPROCESS, chapman_code) if args[:chapman_code].blank?
+    end
+  rescue => e
+    handle_fatal_error(e)
   end
 
   desc "clean up"
@@ -25,7 +46,7 @@ namespace :freereg do
       puts "Starting batch clean up for #{ChapmanCode.name_from_code(chapman_code)} (#{chapman_code})"
       begin
         lock_file = File.new(rake_lock_file, 'w')
-        clean_up_processed_batch(chapman_code)
+        clean_up_processed_batch(chapman_code, nil)
       rescue => e
         handle_fatal_error(e)
         FileUtils.rm_f(rake_lock_file)
@@ -33,6 +54,36 @@ namespace :freereg do
       FileUtils.rm_f(rake_lock_file)
     else
       p 'clean up process is running'
+    end
+  end
+
+  desc "Clean up processed marriage batches for a county chapman code, or for ALL counties if none given (e.g. 'rake freereg:clean_up_processed_marriage_batch[YKS]' or 'rake freereg:clean_up_processed_marriage_batch')"
+  task :clean_up_processed_marriage_batch, [:chapman_code] => :environment do |t, args|
+    rake_lock_file = File.join(Rails.root, 'tmp', 'cleanup_lock_file.txt')
+    if File.exist?(rake_lock_file)
+      p 'clean up process is running'
+      next
+    end
+
+    begin
+      reset_progress_if_requested!(PROGRESS_FILE_MARRIAGE_CLEANUP)
+      done = load_done_counties(PROGRESS_FILE_MARRIAGE_CLEANUP)
+
+      File.new(rake_lock_file, 'w')
+      each_target_county(args[:chapman_code]) do |chapman_code|
+        if args[:chapman_code].blank? && done.include?(chapman_code)
+          puts "Skipping #{chapman_code} (already completed)"
+          next
+        end
+
+        puts "Starting marriage batch clean up for #{ChapmanCode.name_from_code(chapman_code)} (#{chapman_code})"
+        clean_up_processed_batch(chapman_code, 'ma')
+        mark_county_done(PROGRESS_FILE_MARRIAGE_CLEANUP, chapman_code) if args[:chapman_code].blank?
+      end
+    rescue => e
+      handle_fatal_error(e)
+    ensure
+      FileUtils.rm_f(rake_lock_file)
     end
   end
 
@@ -53,6 +104,15 @@ namespace :freereg do
     end
   end
 
+  desc "Number of marriage files to be processed for a county chapman code, or ALL counties if none given"
+  task :count_marriage_batches_to_be_processed_for_the_county, [:chapman_code] => :environment do |t, args|
+    each_target_county(args[:chapman_code]) do |chapman_code|
+      count_batches_for_county(chapman_code, record_type: 'ma')
+    end
+  rescue => e
+    handle_fatal_error(e)
+  end
+
   private
 
   def validate_chapman_code(chapman_code)
@@ -67,8 +127,41 @@ namespace :freereg do
     end
   end
 
-  def clean_up_processed_batch(chapman_code)
-    batches = Freereg1CsvFile.where(county: chapman_code).order_by(file_name: 1).skip(2832)
+  def each_target_county(chapman_code_arg)
+    if chapman_code_arg.present?
+      validate_chapman_code(chapman_code_arg)
+      yield chapman_code_arg.upcase
+      return
+    end
+
+    ChapmanCode.values.sort.each do |code|
+      next unless ChapmanCode.value?(code)
+      yield code
+    end
+  end
+
+  def reset_progress_if_requested!(progress_file)
+    return unless ENV['RESET_PROGRESS'].present?
+
+    FileUtils.rm_f(progress_file)
+  end
+
+  def load_done_counties(progress_file)
+    return Set.new unless File.exist?(progress_file)
+
+    require 'set'
+    Set.new(File.read(progress_file).lines.map { |l| l.strip.upcase }.reject(&:empty?))
+  end
+
+  def mark_county_done(progress_file, chapman_code)
+    FileUtils.mkdir_p(File.dirname(progress_file))
+    File.open(progress_file, 'a') { |f| f.puts(chapman_code.to_s.upcase) }
+  end
+
+  def clean_up_processed_batch(chapman_code, record_type = nil)
+    batches = Freereg1CsvFile.where(county: chapman_code)
+    batches = batches.where(record_type: record_type) if record_type.present?
+    batches = batches.order_by(file_name: 1).skip(2832)
     total_batches = batches.count
     if total_batches.zero?
       puts "No batches found for #{chapman_code}"
@@ -94,8 +187,10 @@ namespace :freereg do
     end
   end
 
-  def process_batches_for_county(chapman_code)
-    batches = Freereg1CsvFile.where(county: chapman_code).order_by(file_name: 1)#.skip(195)
+  def process_batches_for_county(chapman_code, record_type = nil)
+    batches = Freereg1CsvFile.where(county: chapman_code)
+    batches = batches.where(record_type: record_type) if record_type.present?
+    batches = batches.order_by(file_name: 1)#.skip(195)
     total_batches = batches.count
     
     if total_batches.zero?
@@ -134,11 +229,8 @@ namespace :freereg do
     batch.freereg1_csv_entries.no_timeout.each_slice(BATCH_SIZE) do |entry_group|
       entry_group.each do |entry|
         search_version = ''
-        #puts software_version
         search_version = software_version.last_search_record_version if software_version.present?
-       # puts search_version
-        #place = Place.where(chapman_code: chapman_code, place_name: entry.place).first
-        place =  entry.freereg1_csv_file.register.church.place
+        place = entry.freereg1_csv_file.register.church.place
         SearchRecord.no_timeout.update_create_search_record(entry, search_version, place)
       end
     end
@@ -187,16 +279,25 @@ namespace :freereg do
     end
   end
 
-  def count_batches_for_county(chapman_code)
+  def count_batches_for_county(chapman_code, record_type: nil)
     puts "Counting batches to be processed for #{ChapmanCode.name_from_code(chapman_code)} (#{chapman_code})"
-    
-    total_batches = Freereg1CsvFile.where(county: chapman_code).count
-    ba_batches = Freereg1CsvFile.where(county: chapman_code, record_type: 'ba').count
-    ma_batches = Freereg1CsvFile.where(county: chapman_code, record_type: 'ma').count
-    bu_batches = Freereg1CsvFile.where(county: chapman_code, record_type: 'bu').count
+
+    scope = Freereg1CsvFile.where(county: chapman_code)
+    scope = scope.where(record_type: record_type) if record_type.present?
+
+    total_batches = scope.count
     if total_batches.zero?
       puts "No batches found for #{chapman_code}"
+      return
+    end
+
+    if record_type.present?
+      puts "Found #{total_batches} #{RecordType.display_name(record_type)} batches to process"
     else
+      ba_batches = Freereg1CsvFile.where(county: chapman_code, record_type: 'ba').count
+      ma_batches = Freereg1CsvFile.where(county: chapman_code, record_type: 'ma').count
+      bu_batches = Freereg1CsvFile.where(county: chapman_code, record_type: 'bu').count
+
       puts "Found #{total_batches} batches to process"
       puts "Found #{ba_batches} baptism batches to process"
       puts "Found #{bu_batches} burial batches to process"
