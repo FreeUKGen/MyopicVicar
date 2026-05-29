@@ -347,6 +347,16 @@ class Freereg1CsvEntry
     false
   end
 
+  def currently_under_embargo?
+    return false if embargo_records.blank?
+
+    last = embargo_records.last
+    return false unless last.embargoed
+    return false if last.release_year.present? && DateTime.now.year.to_i >= last.release_year.to_i
+
+    true
+  end
+
   def cal_digest
     case self.record_type
     when RecordType::BAPTISM
@@ -845,14 +855,14 @@ class Freereg1CsvEntry
       return [false, '']
     elsif embargo_records.blank?
       embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
+    elsif embargo_records.present? && embargo_records.last.embargoed == true && DateTime.now.year.to_i >= end_year
+      embargo_record = EmbargoRecord.new(embargoed: false, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
     elsif embargo_records.present? && already_has_this_embargo?(rule)
       return [false, '']
     elsif embargo_records.present? && embargo_records.last.embargoed == false && DateTime.now.year.to_i >= end_year
       return [false, '']
     elsif embargo_records.present? && embargo_records.last.embargoed == false
       embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
-    elsif embargo_records.present? && embargo_records.last.embargoed == true && DateTime.now.year.to_i >= end_year
-      embargo_record = EmbargoRecord.new(embargoed: false, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
     else
       embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
     end
