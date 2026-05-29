@@ -374,8 +374,7 @@ class Freereg1CsvEntriesController < ApplicationController
     @embargo_history = @freereg1_csv_entry.embargo_records.order_by(updated_at: -1).to_a
     @embargo_change = @freereg1_csv_entry.embargo_records.build(
       who: @user.userid,
-      when: @date,
-      embargoed: !@freereg1_csv_entry.currently_under_embargo?
+      when: @date
     )
   end
 end

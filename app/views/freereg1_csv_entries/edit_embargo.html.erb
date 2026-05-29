@@ -5,7 +5,7 @@
 <% if @embargo_history.present? %>
   <section class="island">
     <h3 class="text--center">History of embargo changes</h3>
-    <p class="text--center">Read only. Submit the form below to add a new change (for example release with Embargoed = false).</p>
+    <p class="text--center">Read only — previous changes on this record.</p>
     <table class="table--bordered table--data">
       <thead>
         <tr>
@@ -35,22 +35,36 @@
 <%= simple_form_for @freereg1_csv_entry, html: { class: 'grid' } do |f| %>
   <%= f.hidden_field :year, value: @freereg1_csv_entry.year %>
   <section class="island">
-    <h3 class="text--center">Add embargo change</h3>
+    <h3 class="text--center">Add a new embargo change</h3>
+    <p class="text--center"><%= @freereg1_csv_entry.embargo_current_status_summary %></p>
     <p class="text--center">
-      Currently <%= @freereg1_csv_entry.currently_under_embargo? ? 'under embargo' : 'not under embargo' %>.
+      The form below adds <b>one new line</b> to the history. It does not edit the rows above.
       <% if @freereg1_csv_entry.currently_under_embargo? %>
-        Set <b>Embargoed</b> to <b>false</b> below to release this record.
+        To <b>release</b> this record, choose <b>Release this record</b>.
+      <% else %>
+        To <b>embargo</b> this record, choose <b>Embargo this record</b>.
       <% end %>
     </p>
     <%= f.simple_fields_for :embargo_records, @embargo_change do |m| %>
-      <%= m.input :embargoed, collection: [true, false], input_html: { class: 'simple_form_bgcolour simple_form_position overide_selection_field_width', size: 2 } %>
-      <%= m.input :why, input_html: { class: 'simple_form_bgcolour', size: 30 } %>
-      <%= m.input :release_date, input_html: { class: 'simple_form_bgcolour', size: 5 } %>
+      <%= m.input :embargoed,
+            as: :radio_buttons,
+            collection: [
+              ['Embargo this record (hide from search)', true],
+              ['Release this record (show in search)', false]
+            ],
+            label: 'New status after you submit',
+            required: true,
+            input_html: { class: 'simple_form_bgcolour' } %>
+      <%= m.input :why, label: 'Reason for this change', input_html: { class: 'simple_form_bgcolour', size: 30 } %>
+      <%= m.input :release_date,
+            label: 'Release year (optional — for manual embargoes)',
+            hint: 'Year when this manual embargo should end, if applicable.',
+            input_html: { class: 'simple_form_bgcolour', size: 5 } %>
       <%= m.hidden_field :when, value: @date %>
       <%= m.hidden_field :who, value: @user.userid %>
     <% end %>
     <div class="text--center">
-      <%= f.button :submit, 'Submit' %>
+      <%= f.button :submit, 'Submit new change' %>
     </div>
   </section>
 <% end %>
