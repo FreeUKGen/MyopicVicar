@@ -350,7 +350,7 @@ class Freereg1CsvEntry
   def embargo_current_status_summary
     return 'No embargo history on this record.' if embargo_records.blank?
 
-    last = embargo_records.last
+    last = embargo_records.order_by(updated_at: -1).first
     release = last.release_year.presence || last.release_date.presence
     active = currently_under_embargo?
 
@@ -375,12 +375,12 @@ class Freereg1CsvEntry
     release_year = effective_embargo_release_year
     return false if release_year.present? && DateTime.now.year.to_i >= release_year.to_i
 
-    last = embargo_records.last
+    last = embargo_records.order_by(updated_at: -1).first
     last.present? && last.embargoed == true
   end
 
   def effective_embargo_release_year
-    last = embargo_records.last
+    last = embargo_records.order_by(updated_at: -1).first
     return nil if last.blank?
 
     if last.who == 'register_rule'
