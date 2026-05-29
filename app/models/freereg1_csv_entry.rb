@@ -347,14 +347,39 @@ class Freereg1CsvEntry
     false
   end
 
+  # Matches search visibility and listing: still embargoed only if not yet at release year.
+  # Uses register rule when release_year is missing on stale embedded records.
   def currently_under_embargo?
     return false if embargo_records.blank?
 
-    last = embargo_records.last
-    return false unless last.embargoed
-    return false if last.release_year.present? && DateTime.now.year.to_i >= last.release_year.to_i
+    release_year = effective_embargo_release_year
+    return false if release_year.present? && DateTime.now.year.to_i >= release_year.to_i
 
-    true
+    last = embargo_records.last
+    last.present? && last.embargoed == true
+  end
+
+  def effective_embargo_release_year
+    last = embargo_records.last
+    return nil if last.blank?
+
+    stored = last.release_year.presence || last.release_date.presence
+    return stored.to_i if stored.present?
+
+    computed_release_year_from_register_rule
+  end
+
+  def computed_release_year_from_register_rule
+    last = embargo_records.last
+    return nil if last.blank? || last.who != 'register_rule'
+
+    register = freereg1_csv_file&.register
+    return nil if register.blank? || register.embargo_rules.blank?
+
+    rule = register.embargo_rules.find_by(record_type: record_type)
+    return nil if rule.blank?
+
+    EmbargoRecord.process_embargo_year(rule, year)
   end
 
   def cal_digest
