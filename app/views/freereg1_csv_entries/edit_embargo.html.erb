@@ -2,70 +2,84 @@
 <p style="text-align: center">Editing record <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b></p>
 <%= render 'flash_notice' %>
 
-<% if @embargo_history.present? %>
-  <section class="island">
-    <h3 class="text--center">History of embargo changes</h3>
-    <p class="text--center">Read only — previous changes on this record.</p>
-    <table class="table--bordered table--data">
-      <thead>
-        <tr>
-          <th>Embargoed</th>
-          <th>Who</th>
-          <th>When</th>
-          <th>Why</th>
-          <th>Release year</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @embargo_history.each do |record| %>
+<div class="grid">
+  <% if @embargo_history.present? %>
+    <section class="island push--bottom">
+      <h3 class="text--center">History of embargo changes</h3>
+      <p class="text--center">Read only — previous changes on this record.</p>
+      <table class="table--bordered table--data">
+        <thead>
           <tr>
-            <td><%= record.embargoed %></td>
-            <td><%= record.who %></td>
-            <td><%= record.when&.strftime('%e %b %Y') %></td>
-            <td><%= record.why %></td>
-            <td><%= record.release_year.presence || record.release_date %></td>
+            <th>Embargoed</th>
+            <th>Who</th>
+            <th>When</th>
+            <th>Why</th>
+            <th>Release year</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </section>
-  <br>
-<% end %>
+        </thead>
+        <tbody>
+          <% @embargo_history.each do |record| %>
+            <tr>
+              <td><%= record.embargoed %></td>
+              <td><%= record.who %></td>
+              <td><%= record.when&.strftime('%e %b %Y') %></td>
+              <td><%= record.why %></td>
+              <td><%= record.release_year.presence || record.release_date %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
 
-<%= simple_form_for @freereg1_csv_entry, html: { class: 'grid' } do |f| %>
-  <%= f.hidden_field :year, value: @freereg1_csv_entry.year %>
   <section class="island">
     <h3 class="text--center">Add a new embargo change</h3>
     <p class="text--center"><%= @freereg1_csv_entry.embargo_current_status_summary %></p>
     <p class="text--center">
-      The form below adds <b>one new line</b> to the history. It does not edit the rows above.
+      This form adds <b>one new line</b> to the history above. It does not edit old rows.
       <% if @freereg1_csv_entry.currently_under_embargo? %>
-        To <b>release</b> this record, choose <b>Release this record</b>.
+        To release this record, pick <b>Release this record</b> below.
       <% else %>
-        To <b>embargo</b> this record, choose <b>Embargo this record</b>.
+        To embargo this record again, pick <b>Embargo this record</b> below.
       <% end %>
     </p>
-    <%= f.simple_fields_for :embargo_records, @embargo_change do |m| %>
-      <%= m.input :embargoed,
-            as: :select,
-            collection: [
-              ['Embargo this record (hide from search)', true],
-              ['Release this record (show in search)', false]
-            ],
-            include_blank: 'Choose…',
-            label: 'New status after you submit',
-            required: true,
-            input_html: { class: 'simple_form_bgcolour' } %>
-      <%= m.input :why, label: 'Reason for this change', input_html: { class: 'simple_form_bgcolour', size: 30 } %>
-      <%= m.input :release_date,
-            label: 'Release year (optional — for manual embargoes)',
-            hint: 'Year when this manual embargo should end, if applicable.',
-            input_html: { class: 'simple_form_bgcolour', size: 5 } %>
-      <%= m.hidden_field :when, value: @date %>
-      <%= m.hidden_field :who, value: @user.userid %>
+
+    <%= form_for @freereg1_csv_entry do |f| %>
+      <%= f.hidden_field :year, value: @freereg1_csv_entry.year %>
+      <%= f.fields_for :embargo_records, @embargo_change do |m| %>
+        <%= m.hidden_field :when, value: @date %>
+        <%= m.hidden_field :who, value: @user.userid %>
+        <table class="table--bordered table--data push--bottom">
+          <tbody>
+            <tr>
+              <td style="width: 35%"><label for="<%= m.field_id(:embargoed) %>">New status after you submit</label></td>
+              <td>
+                <%= m.select :embargoed,
+                      [
+                        ['Embargo this record (hide from search)', true],
+                        ['Release this record (show in search)', false]
+                      ],
+                      { prompt: 'Choose…' },
+                      { class: 'select', required: true, id: m.field_id(:embargoed) } %>
+              </td>
+            </tr>
+            <tr>
+              <td><label for="<%= m.field_id(:why) %>">Reason for this change</label></td>
+              <td><%= m.text_field :why, class: 'input', size: 40, required: true, id: m.field_id(:why) %></td>
+            </tr>
+            <tr>
+              <td>
+                <label for="<%= m.field_id(:release_date) %>">Release year</label>
+                <br><small>Optional — for manual embargoes only</small>
+              </td>
+              <td><%= m.text_field :release_date, class: 'input', size: 6, id: m.field_id(:release_date) %></td>
+            </tr>
+          </tbody>
+        </table>
+      <% end %>
+      <p class="text--center">
+        <%= f.submit 'Submit new change', class: 'btn btn--primary' %>
+      </p>
     <% end %>
-    <div class="text--center">
-      <%= f.button :submit, 'Submit new change' %>
-    </div>
   </section>
-<% end %>
+</div>
