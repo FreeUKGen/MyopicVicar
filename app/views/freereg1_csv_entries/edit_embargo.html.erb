@@ -52,7 +52,7 @@
         <table class="table--bordered table--data push--bottom">
           <tbody>
             <tr>
-              <td style="width: 35%"><label for="<%= m.field_id(:embargoed) %>">New status after you submit</label></td>
+              <td style="width: 35%"><%= m.label :embargoed, 'New status after you submit' %></td>
               <td>
                 <%= m.select :embargoed,
                       [
@@ -60,19 +60,19 @@
                         ['Release this record (show in search)', false]
                       ],
                       { prompt: 'Choose…' },
-                      { class: 'select', required: true, id: m.field_id(:embargoed) } %>
+                      { class: 'select', required: true } %>
               </td>
             </tr>
             <tr>
-              <td><label for="<%= m.field_id(:why) %>">Reason for this change</label></td>
-              <td><%= m.text_field :why, class: 'input', size: 40, required: true, id: m.field_id(:why) %></td>
+              <td><%= m.label :why, 'Reason for this change' %></td>
+              <td><%= m.text_field :why, class: 'input', size: 40, required: true %></td>
             </tr>
             <tr>
               <td>
-                <label for="<%= m.field_id(:release_date) %>">Release year</label>
+                <%= m.label :release_date, 'Release year' %>
                 <br><small>Optional — for manual embargoes only</small>
               </td>
-              <td><%= m.text_field :release_date, class: 'input', size: 6, id: m.field_id(:release_date) %></td>
+              <td><%= m.text_field :release_date, class: 'input', size: 6 %></td>
             </tr>
           </tbody>
         </table>
