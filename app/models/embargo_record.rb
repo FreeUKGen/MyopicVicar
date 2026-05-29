@@ -16,7 +16,8 @@ class EmbargoRecord
   embedded_in :freereg1_csv_entry
 
   def self.process_embargo_year(rule, year)
-    if rule.respond_to?(:until_beginning_of_year_rule?) && rule.until_beginning_of_year_rule?
+    if (rule.respond_to?(:until_beginning_of_year_rule?) && rule.until_beginning_of_year_rule?) ||
+       EmbargoRule.until_beginning_of_year_rule_text?(rule.rule)
       return rule.period.to_i
     end
 
