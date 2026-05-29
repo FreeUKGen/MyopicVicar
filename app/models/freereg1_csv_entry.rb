@@ -363,10 +363,13 @@ class Freereg1CsvEntry
     last = embargo_records.last
     return nil if last.blank?
 
-    stored = last.release_year.presence || last.release_date.presence
-    return stored.to_i if stored.present?
+    if last.who == 'register_rule'
+      computed = computed_release_year_from_register_rule
+      return computed if computed.present?
+    end
 
-    computed_release_year_from_register_rule
+    stored = last.release_year.presence || last.release_date.presence
+    stored.to_i if stored.present?
   end
 
   def computed_release_year_from_register_rule
