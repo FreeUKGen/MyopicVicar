@@ -376,5 +376,6 @@ class Freereg1CsvEntriesController < ApplicationController
       who: @user.userid,
       when: @date
     )
+    @embargo_change.write_attribute(:embargoed, nil)
   end
 end

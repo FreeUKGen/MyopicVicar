@@ -13,7 +13,14 @@ class EmbargoRecord
   field :release_year, type: Integer # This is the computed release year
   field :release_date, type: Integer # This is the manual entry of a release year
   validate :release
+  validate :embargo_status_required, on: :create
   embedded_in :freereg1_csv_entry
+
+  def embargo_status_required
+    return if [true, false].include?(embargoed)
+
+    errors.add(:embargoed, 'Please choose embargo or release')
+  end
 
   def self.process_embargo_year(rule, year)
     if (rule.respond_to?(:until_beginning_of_year_rule?) && rule.until_beginning_of_year_rule?) ||
