@@ -347,6 +347,26 @@ class Freereg1CsvEntry
     false
   end
 
+  def embargo_current_status_summary
+    return 'No embargo history on this record.' if embargo_records.blank?
+
+    last = embargo_records.last
+    release = last.release_year.presence || last.release_date.presence
+    active = currently_under_embargo?
+
+    summary = if active
+                'This record is currently embargoed (hidden from search).'
+              else
+                'This record is not currently embargoed (visible in search).'
+              end
+
+    last_change = "Last change: #{last.embargoed ? 'embargoed' : 'released'}" \
+                  " by #{last.who} on #{last.when&.strftime('%e %b %Y')} — #{last.why}"
+    last_change += " (release year #{release})" if release.present?
+
+    "#{summary} #{last_change}"
+  end
+
   # Matches search visibility and listing: still embargoed only if not yet at release year.
   # Uses register rule when release_year is missing on stale embedded records.
   def currently_under_embargo?
