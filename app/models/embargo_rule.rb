@@ -20,6 +20,7 @@ class EmbargoRule
   validate :only_one_rule_per_record_type, on: :create
   validate :valid_period
 
+  before_validation :assign_period_type_from_rule
 
   after_create  :add_to_rake_register_embargo_list
   after_update  :add_to_rake_register_embargo_list
@@ -32,7 +33,17 @@ class EmbargoRule
   end
 
   def add_period_type
-    self.period_type = period <= 125 ? 'period' : 'end'
+    assign_period_type_from_rule
+  end
+
+  def assign_period_type_from_rule
+    return if rule.blank?
+
+    self.period_type = until_beginning_of_year_rule? ? 'end' : 'period'
+  end
+
+  def until_beginning_of_year_rule?
+    rule == EmbargoRuleOptions::ALL_OPTIONS[0]
   end
 
   def only_one_rule_per_record_type
