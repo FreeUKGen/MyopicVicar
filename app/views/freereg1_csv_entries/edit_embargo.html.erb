@@ -1,15 +1,56 @@
 <% breadcrumb :edit_embargo_record,  @freereg1_csv_entry,@freereg1_csv_file%>
 <p style="text-align: center">Editing record <b><%= @freereg1_csv_entry.file_line_number %></b> for batch: <b><%= @freereg1_csv_file_name %></b> (<%= @file_owner %>) in <b><%= @register_name %></b> of <b> <%= @church_name%></b> in <b><%= @place_name %></b> of <b><%= @county %></b></p>
 <%= render 'flash_notice' %>
-<%= simple_form_for @freereg1_csv_entry, :html => { :class => "grid"}  do |f| %>
-  <%= f.hidden_field :year, :value => @freereg1_csv_entry.year %>
-  <div  style="text-align: center"><b> Embargo status</b></div >
-  <%= f.simple_fields_for :embargo_records do |m| %>
-    <%= m.input :embargoed , collection: [true,false],:input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width", :size => 2} %>
-    <%= m.input :why, :input_html => {:class => " simple_form_bgcolour  ",  :size => 30 } %>
-    <%= m.input :release_date, :input_html => {:class => " simple_form_bgcolour  ", :size => 5} %>
-    <%= m.hidden_field :when, :value => @date %>
-    <%= m.hidden_field :who, :value => @user.userid %>
-  <% end %>
-  <%= f.button :submit, 'Submit'   %>
+
+<% if @embargo_history.present? %>
+  <section class="island">
+    <h3 class="text--center">History of embargo changes</h3>
+    <p class="text--center">Read only. Submit the form below to add a new change (for example release with Embargoed = false).</p>
+    <table class="table--bordered table--data">
+      <thead>
+        <tr>
+          <th>Embargoed</th>
+          <th>Who</th>
+          <th>When</th>
+          <th>Why</th>
+          <th>Release year</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @embargo_history.each do |record| %>
+          <tr>
+            <td><%= record.embargoed %></td>
+            <td><%= record.who %></td>
+            <td><%= record.when&.strftime('%e %b %Y') %></td>
+            <td><%= record.why %></td>
+            <td><%= record.release_year.presence || record.release_date %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </section>
+  <br>
+<% end %>
+
+<%= simple_form_for @freereg1_csv_entry, html: { class: 'grid' } do |f| %>
+  <%= f.hidden_field :year, value: @freereg1_csv_entry.year %>
+  <section class="island">
+    <h3 class="text--center">Add embargo change</h3>
+    <p class="text--center">
+      Currently <%= @freereg1_csv_entry.currently_under_embargo? ? 'under embargo' : 'not under embargo' %>.
+      <% if @freereg1_csv_entry.currently_under_embargo? %>
+        Set <b>Embargoed</b> to <b>false</b> below to release this record.
+      <% end %>
+    </p>
+    <%= f.simple_fields_for :embargo_records, @embargo_change do |m| %>
+      <%= m.input :embargoed, collection: [true, false], input_html: { class: 'simple_form_bgcolour simple_form_position overide_selection_field_width', size: 2 } %>
+      <%= m.input :why, input_html: { class: 'simple_form_bgcolour', size: 30 } %>
+      <%= m.input :release_date, input_html: { class: 'simple_form_bgcolour', size: 5 } %>
+      <%= m.hidden_field :when, value: @date %>
+      <%= m.hidden_field :who, value: @user.userid %>
+    <% end %>
+    <div class="text--center">
+      <%= f.button :submit, 'Submit' %>
+    </div>
+  </section>
 <% end %>
