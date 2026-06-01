@@ -368,6 +368,13 @@ class ContactsController < ApplicationController
     @answer = file.css("div.answer_#{question_v}").to_html
   end
 
+  def view_only_my_role
+    get_user_info_from_userid
+    @contacts = Contact.contacts_of_role(@current_role, session[:archived_contacts], order, @user)
+    @archived = session[:archived_contacts]
+    render :index
+  end
+
   private
 
   def assign_record_url_and_save
