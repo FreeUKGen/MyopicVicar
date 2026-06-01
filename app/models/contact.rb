@@ -124,6 +124,8 @@ class Contact
       case role
       when 'volunteer_coordinator'
         c = contacts.get_contacts('Volunteering Question')
+      when 'data_manager'
+        c = contacts.get_contacts('Data Problem')
       when 'website_coordinator'
         c = if App.name_downcase == 'freecen'
               contacts.any_of({ contact_type: 'Website Problem' }, { contact_type: 'Enhancement Suggestion' })
