@@ -213,6 +213,7 @@ MyopicVicar::Application.routes.draw do
   resources :feedbacks
 
   get 'contacts/list_by_type',  :to => 'contacts#list_by_type', :as => :list_by_type_contacts
+  get 'contacts/view_only_my_role',  :to => 'contacts#view_only_my_role', :as => :view_only_my_role_contacts
   get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts
   get 'contacts/list_by_date',  :to => 'contacts#list_by_date', :as => :list_by_date_contacts
   get 'contacts/list_by_most_recent',  :to => 'contacts#list_by_most_recent', :as => :list_by_most_recent_contacts
