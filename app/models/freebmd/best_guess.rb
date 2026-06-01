@@ -16,9 +16,18 @@ class BestGuess < FreebmdDbBase
   extend SharedSearchMethods
   require 'security_hash'
 
+  # Set on in-memory rows built from SearchQuery#search_result snapshot so #record_hash matches
+  # the persisted Mongo key (see persist_results / bmd_flatten_records_with_hash_keys).
+  attr_accessor :snapshot_record_hash
+
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
   ENTRY_REFERENCE = 512
+  ENTRY_CONFIRMED = 1
+  ENTRY_COMMENT = 2
+  ENTRY_POSTEM = 4
+  ENTRY_SCAN_AVAILABLE = 32
+  ENTRY_NEW = 128
   DISTRICT_ALIAS = 1
   DISTRICT_MISSPELT = 2
   DISTRICT_UNKNOWN = 4
@@ -268,6 +277,7 @@ class BestGuess < FreebmdDbBase
     friendly.gsub!(/\W/, '-')
     friendly.gsub!(/-+/, '-')
     friendly.downcase!
+    friendly
   end
 
   def get_comments
@@ -318,14 +328,36 @@ class BestGuess < FreebmdDbBase
   end
 
   def get_spouse_record
-    BestGuess.where(
-      Surname: self.AssociateName,
-      Volume: self.Volume,
-      Page: self.Page,
-      QuarterNumber: self.QuarterNumber,
-      DistrictNumber: self.DistrictNumber,
-      RecordTypeID: self.RecordTypeID
-    ).where.not(RecordNumber: self.RecordNumber).first
+    return nil if self.AssociateName.blank?
+
+    base = spouse_lookup_base_relation
+    return nil if base.empty?
+
+    # Same surname on both parties (e.g. Morris–Morris): index lines show AssociateName = that
+    # surname. Other rows may share Surname (e.g. a second "Barbara Morris" married to Marin with
+    # AssociateName MARIN); narrow to lines whose AssociateName matches this marriage's pair surname.
+    if spouse_surnames_match?
+      pair_scope = base.where(AssociateName: self.Surname)
+      return nil if pair_scope.empty?
+
+      spouse = first_spouse_matching_registration(pair_scope)
+      return spouse if spouse.present?
+
+      return unique_pairing_match(pair_scope)
+    end
+
+    reciprocal = base.where(AssociateName: self.Surname)
+    spouse = first_spouse_matching_registration(reciprocal)
+    return spouse if spouse.present?
+
+    return unique_pairing_match(reciprocal) if reciprocal.one?
+
+    spouse = first_spouse_matching_registration(base)
+    return spouse if spouse.present?
+
+    return unique_pairing_match(base) if base.one?
+
+    nil
   end
 
   def image_fileds
@@ -389,13 +421,16 @@ class BestGuess < FreebmdDbBase
 
   def possible_alternate_names
     preferred_records = possible_alternate_names_by_vol_page_registration_number
-    return preferred_records if preferred_records.present? && preferred_records.any?
-    
+    return preferred_records if preferred_records.any?
+
     possible_alternate_names_by_accession_number_and_sequence_number
   end
 
   def possible_alternate_names_by_accession_number_and_sequence_number
     record_submission = self.get_submission
+    return BestGuess.none if record_submission.blank?
+    return BestGuess.none unless submission_accession_registration_lookup_safe?(record_submission)
+
     submissions = Submission.where(AccessionNumber: record_submission.AccessionNumber,  RegistrationNumber: record_submission.RegistrationNumber)
     get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumber: submissions.pluck(:SequenceNumber))
     records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber))
@@ -404,6 +439,9 @@ class BestGuess < FreebmdDbBase
 
   def possible_alternate_names_by_vol_page_registration_number
     record_submission = self.get_submission
+    return BestGuess.none if record_submission.blank?
+    return BestGuess.none unless submission_roman_vol_entry_registration_lookup_safe?(record_submission)
+
     submissions = Submission.where(RomanVolume: record_submission.RomanVolume, EntryNumber: record_submission.EntryNumber, RegistrationNumber: record_submission.RegistrationNumber)
     get_record_links = BestGuessLink.where(AccessionNumber: submissions.pluck(:AccessionNumber), SequenceNumber: submissions.pluck(:SequenceNumber))
     records = BestGuess.where(RecordNumber: get_record_links.pluck(:RecordNumber), DistrictNumber: self.DistrictNumber, RecordTypeID: self.RecordTypeID)
@@ -411,8 +449,9 @@ class BestGuess < FreebmdDbBase
   end
 
   def postems_list
-    if get_rec_hash.present?
-      get_hash = get_rec_hash.Hash
+    hash = self.get_rec_hash
+    if hash.present?
+      get_hash = hash.Hash
       Postem.where(Hash: get_hash).all
     end
   end
@@ -435,7 +474,29 @@ class BestGuess < FreebmdDbBase
     # }
   end
 
+  def record_flag
+    flag = 0
+    entry_flags = self.Confirmed
+    record_type = self.RecordTypeID
+    marriage_record = record_type == 3
+    spouse_surname_blank = marriage_record && self.AssociateName.blank?
+    spouse_record_not_found = get_spouse_record.blank? && !spouse_surname_blank
+    spouse_not_found = spouse_record_not_found || spouse_surname_blank
+    spouse_flag = spouse_not_found ? 1 : 0
+    flag |= Constant::DOUBLE if (entry_flags & ENTRY_CONFIRMED) != 0
+    flag |= Constant::COMMENT if (entry_flags & ENTRY_COMMENT) != 0
+    flag |= Constant::POSTEM if (entry_flags & ENTRY_POSTEM) != 0
+    flag |= Constant::SCAN if (entry_flags & ENTRY_SCAN_AVAILABLE) != 0
+    flag |= Constant::ADDITION if (entry_flags & ENTRY_NEW) != 0
+    flag |= Constant::SYSTEMENTRY if (entry_flags & ENTRY_SYSTEM) != 0
+    flag |= Constant::SYSTEMLINK if (entry_flags & ENTRY_LINK) != 0
+    flag |= Constant::NOIDSPOUSE if spouse_flag
+    flag
+  end
+
   def record_hash
+    return snapshot_record_hash.to_s if snapshot_record_hash.present?
+
     surname = self.Surname.encode('ISO-8859-1').upcase
     given_name = self.GivenName.encode('ISO-8859-1').upcase
     Rails.env.development? ? district_name = self.District.upcase : district_name = self.district.DistrictName.upcase
@@ -446,6 +507,10 @@ class BestGuess < FreebmdDbBase
     record_type = self.RecordTypeID
     record_hash = Digest::MD5.base64digest("#{surname}/#{given_name}/#{district_name}/#{volume}/#{page}/#{year}/#{quarter}/#{record_type}")
     record_hash.strip.chomp('==')
+  end
+
+  def record_flag_hex
+    record_flag.to_s(16)
   end
 
   def record_sequence_number
@@ -483,6 +548,8 @@ class BestGuess < FreebmdDbBase
 
   def get_submission
     bg_link = BestGuessLink.where(RecordNumber: self.RecordNumber, PrimaryEntry: 1).first
+    return nil if bg_link.blank?
+
     #Submission.find_by(Surname: self.Surname, GivenName: self.GivenName, District: self.District, Volume: self.Volume, Page: page)
     Submission.find_by(AccessionNumber: bg_link.AccessionNumber, SequenceNumber: bg_link.SequenceNumber)
   end
@@ -575,6 +642,86 @@ class BestGuess < FreebmdDbBase
   end
 
   private
+
+  # Submission rows matching RomanVolume with blank EntryNumber/RegistrationNumber are enormous;
+  # querying them hits MySQL max_statement_time on Submissions.
+  def submission_roman_vol_entry_registration_lookup_safe?(submission)
+    submission.RomanVolume.present? &&
+      submission.EntryNumber.present? &&
+      submission.RegistrationNumber.present?
+  end
+
+  def submission_accession_registration_lookup_safe?(submission)
+    submission.AccessionNumber.present? &&
+      submission.RegistrationNumber.present?
+  end
+
+  def spouse_lookup_base_relation
+    BestGuess.where(
+      Surname: self.AssociateName,
+      Volume: self.Volume,
+      Page: self.Page,
+      QuarterNumber: self.QuarterNumber,
+      DistrictNumber: self.DistrictNumber,
+      RecordTypeID: self.RecordTypeID
+    ).where.not(RecordNumber: self.RecordNumber)
+  end
+
+  def spouse_surnames_match?
+    self.AssociateName.present? && self.Surname.present? &&
+      self.AssociateName.casecmp?(self.Surname.to_s)
+  end
+
+  # GRO marriage index: each party line lists the other party's surname in AssociateName.
+  # The spouse row must agree both ways, or we can pick the wrong person when several couples
+  # share a page (e.g. two "Barbara J Morris" with different husbands).
+  def marriage_index_pairing_matches?(candidate)
+    return false if candidate.blank?
+
+    candidate.Surname.to_s.casecmp?(self.AssociateName.to_s) &&
+      candidate.AssociateName.to_s.casecmp?(self.Surname.to_s)
+  end
+
+  def unique_pairing_match(scope)
+    matches = scope.to_a.select { |row| marriage_index_pairing_matches?(row) }
+    return matches.first if matches.one?
+
+    nil
+  end
+
+  def first_spouse_matching_registration(scope)
+    numbers = linked_record_numbers_same_registration_event
+    return nil if numbers.blank?
+
+    numbers.sort.each do |record_number|
+      cand = scope.where(RecordNumber: record_number).first
+      next if cand.blank?
+
+      return cand if marriage_index_pairing_matches?(cand)
+    end
+    nil
+  end
+
+  def linked_record_numbers_same_registration_event
+    bg_link = BestGuessLink.where(RecordNumber: self.RecordNumber, PrimaryEntry: 1).first
+    return nil if bg_link.blank?
+
+    record_submission = Submission.find_by(AccessionNumber: bg_link.AccessionNumber, SequenceNumber: bg_link.SequenceNumber)
+    return nil if record_submission.blank?
+    return nil unless submission_roman_vol_entry_registration_lookup_safe?(record_submission)
+
+    submissions = Submission.where(
+      RomanVolume: record_submission.RomanVolume,
+      EntryNumber: record_submission.EntryNumber,
+      RegistrationNumber: record_submission.RegistrationNumber
+    )
+    links = BestGuessLink.where(
+      AccessionNumber: submissions.pluck(:AccessionNumber),
+      SequenceNumber: submissions.pluck(:SequenceNumber)
+    )
+    links.pluck(:RecordNumber).uniq - [self.RecordNumber]
+  end
+
   def record_year_and_event_type
     [
       QuarterDetails.quarter_year(self[:QuarterNumber]),

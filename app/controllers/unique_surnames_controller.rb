@@ -3,7 +3,13 @@ class UniqueSurnamesController < ApplicationController
 
   def index
     require 'unique_surnames'
-    @term_in_context = "^"+params[:term]
+    term = params[:term].to_s.strip
+    if term.blank?
+      render json: []
+      return
+    end
+
+    @term_in_context = "^#{Regexp.escape(term)}"
     @surnames = UniqueSurname.where({"Name": {"$regex": @term_in_context, "$options": "i"}}).limit(10)
     render :json => get_search_names_hash(@surnames)
   end

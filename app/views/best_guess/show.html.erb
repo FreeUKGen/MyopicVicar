@@ -19,7 +19,11 @@
 <section>
   <%= render 'nav_header_freebmd' %>
 </section>
-<div class="grid">
+<% if device_type == :desktop %>
+  <div class="grid" style="display:flex; overflow:unset; padding-right: 28px;">
+<% else %>
+  <div class="grid">
+<% end %>
   <% unless device_type == :desktop %>
     <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
     <%= horz_advert('freebmd_hrec_1') %>
@@ -29,7 +33,7 @@
     <h1 class="beta push-half--top flush--bottom"><%= "#{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}'s #{record_type.downcase} record" %></h1>
     <hr>
     <section>
-      <div class="table-wrapper">
+      <div class="table-container">
         <% if params[:search_id].present? %>
           <%= render partial: 'entry_information_table', locals: {record: @current_record, search: @search, entry_type: record_type.downcase, query: @search_query, search_id: params[:search_id], original_record: @original_record, type: "general"} %>
         <% else %>
@@ -39,7 +43,6 @@
     </section>
     <%= render partial: 'display_scans', locals: { record: @current_record } %>
     <p class="push-half--bottom"><%= raw ERB.new(ApplicationText::SCAN_HELP_TEXT).result(binding) %></p>
-    <% if @option == '2' %>
       <div id="postems">
         <div>
           <h4 class="push-half--bottom">Postems</h4>
@@ -56,7 +59,7 @@
               <%= hidden_field_tag('search_query', @search_query.id) if @search %>
               <ol class="grid">
                 <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole push-half--bottom">
-                  <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%'%>
+                  <%= text_area_tag 'postem[Information]', nil, rows: 7, style: 'width: 100%', maxlength: 250 %>
                 </li>
                 <li class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
                   <%= button_tag 'Submit Postem', type: :submit, class: 'btn btn--small' , id: 'postem_form_submit', data: {style: "contract" , color: appname.downcase, size: "s", "spinner-color" => "#ffffff"}%>
@@ -66,7 +69,6 @@
           </div>
         </div>
       </div>
-    <% end %>
     <h3 class="push-half--top push-half--bottom">Need help?</h3>
     <p class="push-half--bottom">
       You can find information about the Entry Information page in our <%= link_to 'Help', '/help/entry_help'%> section.
@@ -81,18 +83,18 @@
   </div>
   <% unless print_friendly %>
     <% if device_type == :desktop %>
-      <div class="grid__item three-tenths text--right"  id='results_table_ad'>
+      <div class="grid__item one-half text--right"  id='results_table_ad' style="position:sticky;top:0;align-self:start;">
         <div>
-          <h2 class="text--center" style="font-size:12pt;">Advertisement</h2>
+          <h2 class="" style="font-size:12pt;">Advertisement</h2>
           <!-- GAM 71161633/FRBMD_freebmd2orguk/Vrec_Sticky -->
           <div data-fuse="Vrec_Sticky" class="float--right"></div>
         </div>
       </div>
     <% end %>
   <% end %>
-  <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
-  <%= horz_advert('freebmd_hrec_1') %>   
 </div>
+<!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
+<%= horz_advert('freebmd_hrec_1') %>
 
 <script type="text/javascript">
   function more_options(){

@@ -1,6 +1,7 @@
 class Contact
   include Mongoid::Document
   include Mongoid::Timestamps
+  include GithubIssueClosable
   field :body, type: String
   field :contact_time, type: DateTime
   field :name, type: String
@@ -18,6 +19,8 @@ class Contact
   field :screenshot, type: String
   field :record_id, type: String
   field :entry_id, type: String
+  field :hash_id, type: String
+  field :record_url, type: String
   field :line_id, type: String
   field :contact_name, type: String, default: nil  # this field is used as a span trap
   field :query, type: String
@@ -407,7 +410,7 @@ class Contact
     when 'Genealogical Question'
       role = 'genealogy_coordinator'
     when 'Enhancement Suggestion'
-      role = 'project_manager'
+      role = 'website_coordinator'
     else
       role = 'general_communication_coordinator'
     end

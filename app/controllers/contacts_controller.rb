@@ -14,6 +14,7 @@
 class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
+  require 'freebmd_constants'
 
   skip_before_action :require_login, only: [:new, :report_error, :create, :show, :question_answer_finder]
 
@@ -56,6 +57,9 @@ class ContactsController < ApplicationController
       @contact.previous_page_url = request.env['HTTP_REFERER']
       if @contact.selected_county == 'nil'
         @contact.selected_county = nil # string 'nil' to nil
+      end
+      if @contact.contact_type == 'Data Problem'
+        assign_record_url_and_save
       end
       @contact.save
       if @contact.errors.any?
@@ -172,9 +176,19 @@ class ContactsController < ApplicationController
 
   def new
     @contact = Contact.new
-    @options = FreeregOptionsConstants::ISSUES
+    case appname_downcase
+    when 'freereg'
+      @options = FreeregOptionsConstants::ISSUES
+    when 'freebmd'
+      @options = FreebmdConstants::ISSUES
+    end
     @contact.contact_time = Time.now
-    @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+    case appname_downcase
+    when 'freereg'
+      @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+    when 'freebmd'
+      @contact.contact_type = FreebmdConstants::ISSUES[0]
+    end
     #flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?
   end
 
@@ -352,6 +366,18 @@ class ContactsController < ApplicationController
   end
 
   private
+
+  def assign_record_url_and_save
+    return unless @contact.record_id.present?
+
+    record = BestGuess.find_by(RecordNumber: @contact.record_id)
+    @contact.record_url = build_record_url(record) if record.present?
+    @contact.save
+  end
+
+  def build_record_url(record)
+    helpers.full_entry_information_url_for(record)
+  end
 
   def contact_params
     params.require(:contact).permit!

@@ -20,7 +20,7 @@
             <% n = n +1 %>
             <tr data-num="<%= district.DistrictNumber %>" data-name= "<%= district.DistrictName %>">
               <td id="show_district_detail">
-                <%= link_to("View #{n}", district_friendly_url_path(district.district_friendly_url, id: district.DistrictNumber))%>
+                <%= link_to("View #{n}", district_friendly_url_path(id: district.DistrictNumber, friendly: district.district_friendly_url)) %>
               </td>
               <td>
                 <dl>

@@ -7,7 +7,9 @@ module BestGuessHelper
     field = ''
     #raise viewed_records.inspect
     if viewed_records.present?
-      field = '(Seen)' if viewed_records.include?("#{search_record[:RecordNumber]}")
+      seen_rn = viewed_records.include?("#{search_record[:RecordNumber]}") || viewed_records.include?(search_record[:RecordNumber].to_s)
+      seen_hash = search_record.respond_to?(:record_hash) && viewed_records.include?(search_record.record_hash)
+      field = '(Seen)' if seen_rn || seen_hash
     end
     field
   end
@@ -124,7 +126,7 @@ module BestGuessHelper
       result
     end
   end
-  
+
   def id_to_event_type event_type
     case event_type
       when 1
@@ -317,7 +319,7 @@ private
     when '.gif'
       'GIF'
     when '.tif', '.tiff'
-      'TIFF'
+      'JPG'
     when '.pdf'
       'PDF'
     else

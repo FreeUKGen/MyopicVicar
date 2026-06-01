@@ -7,5 +7,6 @@
 <% end %>
 <%= simple_form_for  @contact   do |f| %>
   <%= f.input :body, :label => "Comments ",as: :text, :input_html => { :rows => 5, :cols =>40 , :placeholder => @contact.body} %>
+  <%= f.input :record_url, :label => "Record URL", as: :url, :input_html => { :placeholder => @contact.record_url} %>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

@@ -1,5 +1,5 @@
-<div class="table-wrapper">
-  <% @search_results.each do |search_record| %>
+<div class="table-container">
+  <% @search_results.each_with_index do |search_record, index| %>
     <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
     <% included_record_types = @search_query.bmd_record_type %>
     <table  >
@@ -10,14 +10,14 @@
           <th >Field</th>
           <th class="caps">Value</th>
         </tr>
-        <tr id="<%=search_record.id%>">
+        <tr id="<%=search_record.record_hash%>">
           <td>
             <%= link_to('First Name', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::FIRSTNAME)) %>
             <%= link_to('Surname', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::SURNAME)) %>
           </td>
 
           <td>
-              <%= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id,search_record.id, search_record.friendly_url, search_entry: search_record.RecordNumber), :rel => "nofollow", :title => "")%>
+              <%= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, search_entry: search_record.RecordNumber, record_hash: search_record.record_hash), :rel => "nofollow", :title => "")%>
               <i><%= seen(@search_query,search_record) %></i>
           </td>
         </tr>
@@ -86,6 +86,9 @@
         <% end %>
       </tbody>
     </table>
+    <% if (index + 1) % 5 == 0 %>
+      <%= horz_advert('freebmd_hrec_1') %>
+    <% end %>
   <% end%>
 </div>
 
