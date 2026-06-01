@@ -6,11 +6,12 @@
   <h2 class=" text--center"> <% if @archived %>List of archived contacts<% else%>List of active contacts<% end%> </h2>
 <%end%>
 <% all_roles = @user.get_user_roles %>
-<% if all_roles.count > 1 %>
+<% current_role = session[:role].presence || @user.person_role %>
+<% if all_roles.count > 1 && action_name != 'view_only_my_role' %>
   <p>You have multiple roles. You are seeing contacts for the following roles: <%= all_roles.join(', ') %></p>
-  <p>You can select a role to see contacts for that role only. If you want to see only the contacts for your current role, select 'View only my role'.</p>
-
-
+  <p>If you want to see only the contacts for your current role (<%= current_role %>), select 'View only my role'.</p>
+<% elsif all_roles.count > 1 && action_name == 'view_only_my_role' %>
+  <p>Showing contacts for your current role only: <%= current_role %>.</p>
 <% end %>
 <% if flash[:notice] %>
   <div id="notice" style="color:blue"><br>
@@ -20,7 +21,13 @@
 
 <p style="text-align: center">
   <%= link_to 'List by Name', list_by_name_contacts_path, method: :get , :class => "btn btn--small" %>
-  <%= link_to 'View only my role' , view_only_my_role_contacts_path, method: :get , :class => "btn btn--small" %>
+  <% if all_roles.count > 1 %>
+    <% if action_name == 'view_only_my_role' %>
+      <%= link_to 'Show all my roles', contacts_path, method: :get, class: 'btn btn--small' %>
+    <% else %>
+      <%= link_to 'View only my role', view_only_my_role_contacts_path, method: :get, class: 'btn btn--small' %>
+    <% end %>
+  <% end %>
   <%= link_to 'Most Recent Date' , list_by_most_recent_contacts_path, method: :get , :class => "btn btn--small"%>
   <%= link_to 'Earliest Date' , list_by_date_contacts_path, method: :get , :class => "btn btn--small"%>
   <%= link_to 'List by Contact Type' , list_by_type_contacts_path, method: :get , :class => "btn btn--small" %>
@@ -38,7 +45,7 @@
 <% end %>
 <% if @secondary_contact_present %>
   <%= render partial: 'list_contacts', locals: {contacts: @secondary_contacts, text: 'secondary' } %>
-<% else %>
+<% elsif action_name != 'view_only_my_role' %>
   <%= render partial: 'no_contacts', locals: {text: 'secondary' }  %>
 <% end %>
 <br />
