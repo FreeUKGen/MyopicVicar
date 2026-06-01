@@ -370,8 +370,14 @@ class ContactsController < ApplicationController
 
   def view_only_my_role
     get_user_info_from_userid
-    @contacts = Contact.contacts_of_role(@current_role, session[:archived_contacts], order, @user)
-    @archived = session[:archived_contacts]
+    order = 'contact_time DESC'
+    role = session[:role].presence || @user.person_role
+    archived = session[:archived_contacts] || false
+    @primary_contacts = Contact.contacts_of_role(role, archived, order, @user)
+    @secondary_contacts = []
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = false
+    @archived = archived
     render :index
   end
 
