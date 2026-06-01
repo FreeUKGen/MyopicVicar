@@ -117,7 +117,10 @@ class ContactsController < ApplicationController
     params[:source] = 'original'
     get_user_info_from_userid
     order = 'contact_time DESC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     @archived = session[:archived_contacts]
   end
 
