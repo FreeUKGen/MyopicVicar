@@ -161,7 +161,11 @@ class Contact
       ordered_contact = c.present? ? c.order_by(order) : c
       ordered_contact
     end
-    
+
+    def get_contacts(contact_type)
+      where(contact_type: contact_type)
+    end
+
   end
 
   ##########################################################################################
@@ -575,9 +579,5 @@ class Contact
     @sent_message = SentMessage.new(message_id: @message.id, sender: sender_userid, recipients: contact_recipients, other_recipients: other_recipients, sent_time: Time.now)
     @message.sent_messages << [@sent_message]
     @sent_message.save
-  end
-
-  def get_contacts(contact_type)
-    where(contact_type: contact_type)
   end
 end
