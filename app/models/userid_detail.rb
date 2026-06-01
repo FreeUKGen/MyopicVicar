@@ -510,6 +510,12 @@ class UseridDetail
     end
   end
 
+  def get_user_roles
+    all_roles = secondary_role
+    all_roles << person_role
+    all_roles.uniq
+  end
+
   def active_with_inactive_reason
     errors.add(:active, 'box must be unchecked if Reason for making inactive specified') if active && disabled_reason_standard.present?
   end
