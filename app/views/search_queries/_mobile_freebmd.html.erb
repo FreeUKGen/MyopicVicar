@@ -42,7 +42,7 @@
             <%= link_to('Registration District', reorder_search_query_path(@search_query, :order_field => SearchQuery::SearchOrder::DISTRICT)) %>
           </td>
           <td>
-            <% district = District.where(DistrictNumber: search_record[:DistrictNumber]).first %>
+            <% district = @districts_by_number&.[](search_record[:DistrictNumber]) %>
             <%= district_link_or_name(district, search_record, @search_query) %>
             <% if search_record.register_entry_number_format %>
               <% event_register_number = search_record.event_registration_number %>

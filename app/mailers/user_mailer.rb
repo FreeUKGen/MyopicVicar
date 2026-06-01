@@ -495,6 +495,30 @@ class UserMailer < ActionMailer::Base
     mail(:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCEN update processing report")
   end
 
+  def reset_password_instructions(record, token, _opts = {})
+    @resource = record
+    @token = token
+    @coordinator = nil
+    if record.respond_to?(:userid_detail_id) && record.userid_detail_id.present?
+      detail = UseridDetail.id(record.userid_detail_id).first
+      if detail.present?
+        syndicate = Syndicate.where(syndicate_code: detail.syndicate).first
+        if syndicate.present?
+          cid = syndicate.syndicate_coordinator
+          if cid.present?
+            @coordinator = UseridDetail.where(userid: cid, email_address_valid: true).first
+          end
+        end
+      end
+    end
+    mail(
+      to: record.email,
+      subject: I18n.t('devise.mailer.reset_password_instructions.subject', default: 'Reset password instructions')
+    ) do |format|
+      format.html { render template: 'devise/mailer/reset_password_instructions' }
+    end
+  end
+
   private
 
   def adjust_email_recipients(message)

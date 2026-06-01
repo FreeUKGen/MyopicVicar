@@ -19,6 +19,8 @@ class BestGuess < FreebmdDbBase
   # Set on in-memory rows built from SearchQuery#search_result snapshot so #record_hash matches
   # the persisted Mongo key (see persist_results / bmd_flatten_records_with_hash_keys).
   attr_accessor :snapshot_record_hash
+  # County code from CountyCombos, stored on search snapshots (not a BestGuess column).
+  attr_accessor :county_combo_county
 
   ENTRY_SYSTEM = 8
   ENTRY_LINK = 256
@@ -266,6 +268,7 @@ class BestGuess < FreebmdDbBase
     particles << RecordType.display_name(self.RecordTypeID)
     # then county name
     county_code = self.CountyCombos.County if self.CountyCombos.present?
+    county_code ||= county_combo_county if county_combo_county.present?
     particles << ChapmanCode.name_from_code(county_code) if county_code.present?
     # then location
     particles << self.District if self.District

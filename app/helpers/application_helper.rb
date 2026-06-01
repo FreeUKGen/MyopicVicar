@@ -38,9 +38,12 @@ module ApplicationHelper
       "freereg" => '5004',
     }
   def nav_search_form_link
-    #check_current_page(main_app.new_search_query_path)
     path = 'search_queries/new'
-    link_to('Search', main_app.new_search_query_path, class: check_current_page(path)) #unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
+    link_to(
+      'Search',
+      main_app.new_search_query_path(clear: 1),
+      class: check_current_page(path)
+    )
   end
 
   def nav_actions_page_link
@@ -131,7 +134,7 @@ module ApplicationHelper
     if session[:userid_detail_id].present?
       link_to 'Logout', main_app.logout_manage_resources_path
     else
-      link_to 'Member', refinery.login_path, class: check_current_page("cms/refinery/login")
+      link_to 'Member', new_user_session_path, class: check_current_page("cms/refinery/login")
     end
   end
 
@@ -449,6 +452,7 @@ module ApplicationHelper
   end
 
   def title(title = nil)
+    page_title = ''
     if title.present?
       content_for :title, title
     elsif content_for?(:title)
@@ -836,11 +840,11 @@ module ApplicationHelper
 
   def helpful_links
     {
-      cookiePolicy: '/cms/about/cookie-policy',
+      cookiePolicy: '/about/cookie-policy',
       privacyNotice: Constant::PRIVACY_POLICY_LINK,
-      termAndConditions: '/cms/terms-and-conditions',
+      termAndConditions: '/terms-and-conditions',
       contactUs: contact_us_path,
-      accessibility: "#{Rails.application.config.website}/cms/about/accessibility-statement",
+      accessibility: "/about/accessibility-statement",
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',

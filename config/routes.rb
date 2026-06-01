@@ -24,6 +24,9 @@ MyopicVicar::Application.routes.draw do
 
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
+
+  devise_for :users, controllers: { sessions: 'users/sessions', passwords: 'users/passwords' }
+
   get '/up', to: proc { [200, {}, ['success']] }
   get 'open', :to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
@@ -663,7 +666,8 @@ MyopicVicar::Application.routes.draw do
   #
   # We ask that you don't use the :as option here, as Refinery relies on it being the default of "refinery"
 
-  mount Refinery::Core::Engine, :at => '/cms'
+  #mount Refinery::Core::Engine, :at => '/cms'
+  get '*path', to: 'pages#show', as: :page, format: false
 
   #ActiveAdmin.routes(self)
 

@@ -15,8 +15,12 @@
 #
 
 class ApplicationController < ActionController::Base
+  # Bump when deploying auth changes to sign out all existing sessions and remember-me cookies.
+  SESSION_AUTH_VERSION = 1
+
   rescue_from ActionController::UnknownFormat, with: :missing_template
   protect_from_forgery :with => :reset_session, prepend: true
+  before_action :invalidate_stale_auth_session, prepend: true, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :require_login
   before_action :load_last_stat
@@ -31,7 +35,7 @@ class ApplicationController < ActionController::Base
   require 'constant'
   require 'gdpr_countries'
   require 'application_text'
-  helper_method :appname, :appname_upcase, :appname_downcase, :mobile_device?, :device_type
+  helper_method :appname, :appname_upcase, :appname_downcase, :mobile_device?, :device_type, :current_authentication_devise_user
   def appname
     MyopicVicar::Application.config.freexxx_display_name
   end
@@ -85,20 +89,65 @@ class ApplicationController < ActionController::Base
   def load_message_flag
     # This tells system there is a message to display
       session[:message] = 'no' if session[:message].blank?
-      session[:message] = 'load' if Refinery::Page.present? && Refinery::Page.where(slug: 'message').exists?
+  end
+
+  # Legacy name from Refinery::Authentication::Devise; views still call this helper.
+  def current_authentication_devise_user
+    user_signed_in? ? current_user : nil
+  end
+
+  def get_user_roles
+    member_roles_for(get_user)
+  end
+
+  # Roles this member may act as (primary + secondary). Used to validate session[:role] and URL params.
+  def member_roles_for(user)
+    return [] if user.blank?
+
+    roles = user.secondary_role.dup
+    roles << user.person_role
+    roles.compact.uniq
+  end
+
+  # Pick the first preferred role the member is allowed to use; otherwise their person_role.
+  def authorized_member_role(user, *preferred_roles)
+    allowed = member_roles_for(user)
+    return user.person_role if allowed.empty?
+
+    preferred_roles.flatten.compact.each do |role|
+      role = role.to_s
+      return role if allowed.include?(role)
+    end
+    user.person_role
   end
 
   private
 
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    cookies.signed[:userid] = current_authentication_devise_user.userid_detail_id
-    session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
-    session[:devise] = current_authentication_devise_user.id
-    logger.warn "#{appname_upcase}::USER current  #{current_authentication_devise_user.username}"
-    scope = Devise::Mapping.find_scope!(resource_or_scope)
-    home_path = "#{scope}_root_path"
-    respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
+    cookies.signed[:userid] = current_user.userid_detail_id
+    session[:userid_detail_id] = current_user.userid_detail_id
+    session[:devise] = current_user.id
+    session[:auth_version] = SESSION_AUTH_VERSION
+    logger.warn "#{appname_upcase}::USER current  #{current_user.username}"
+    main_app.new_manage_resource_path
+  end
+
+  def force_global_sign_out
+    sign_out(:user) if respond_to?(:sign_out) && user_signed_in?
+    cookies.delete :userid
+    cookies.delete :Administrator
+    cookies.delete :remember_authentication_devise_user_token
+    cookies.delete :remember_user_token
+    reset_session
+  end
+
+  def invalidate_stale_auth_session
+    return if session[:auth_version].to_i == SESSION_AUTH_VERSION
+    return unless user_signed_in? || session[:userid_detail_id].present?
+
+    force_global_sign_out
+    flash[:notice] = 'Please sign in again after a system update.'
   end
 
   def check_for_mobile
@@ -107,13 +156,13 @@ class ApplicationController < ActionController::Base
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_in) do |user_params|
-      user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email)
+      user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email, :remember_me)
     end
     devise_parameter_sanitizer.permit(:account_update) do |user_params|
-      user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email)
+      user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email, :remember_me)
     end
     devise_parameter_sanitizer.permit(:sign_up) do |user_params|
-      user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email)
+      user_params.permit(:login, :userid_detail_id, :reset_password_token, :reset_password_sent_at, :username, :password, :email, :remember_me)
     end
   end
 
@@ -253,10 +302,36 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
-    if session[:userid_detail_id].nil?
-      flash[:notice] = "You must be logged in to access that action"
-      redirect_to(new_search_query_path) && return  # halts request cycle
+    # Skip authentication for asset requests (should be served by web server, but fallback for Rails)
+    return if request.path.start_with?('/assets/')
+
+    unless user_signed_in?
+      flash[:notice] = "You must be logged in to access that action" if flash[:notice].blank?
+      redirect_to(new_search_query_path) && return
     end
+
+    uid = current_user.userid_detail_id
+    if uid.blank?
+      flash[:notice] = 'Your account is not linked to a member profile. Please contact support.'
+      sign_out(:user)
+      redirect_to(new_search_query_path) && return
+    end
+
+    # Legacy code paths use session[:userid_detail_id] and cookies.signed[:userid]; keep them aligned with Warden.
+    if session[:userid_detail_id].to_s != uid.to_s || session[:devise].to_s != current_user.id.to_s
+      session[:userid_detail_id] = uid.to_s
+      session[:devise] = current_user.id.to_s
+      cookies.signed[:userid] = uid.to_s
+    end
+
+    enforce_valid_session_role
+  end
+
+  def enforce_valid_session_role
+    user = get_user
+    return if user.blank? || session[:role].blank?
+
+    session.delete(:role) unless member_roles_for(user).include?(session[:role])
   end
 
   def scotland_county?(chapman)
