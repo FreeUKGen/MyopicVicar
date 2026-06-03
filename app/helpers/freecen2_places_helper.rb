@@ -57,4 +57,37 @@ module Freecen2PlacesHelper
   def search_names_clear_form
     link_to 'Clear Form', search_names_freecen2_place_path(clear_form: true), class: 'btn btn--small'
   end
+
+  # Prefilled Contact (Data Question) for the county coordinator; opened from Gazetteer place page.
+  def contact_county_coordinator_gazetteer_path(place)
+    return '#' if place.blank?
+    new_contact_path(from_gazetteer: '1', freecen2_place_id: place.id.to_s)
+  end
+
+  # Prefilled Contact (Data Question) from Gazetteer search results (including the "no results" case).
+  def communicate_county_coordinator_gazetteer_path(search:, county_name:)
+    new_contact_path(
+      from_gazetteer: '1',
+      gazetteer_search: search.to_s,
+      gazetteer_county_name: county_name.to_s
+    )
+  end
+
+  # Prefilled Contact (Data Question) from Gazetteer search results, using chapman code directly.
+  def communicate_county_coordinator_gazetteer_chapman_path(search:, chapman_code:)
+    new_contact_path(
+      from_gazetteer: '1',
+      gazetteer_search: search.to_s,
+      gazetteer_chapman: chapman_code.to_s
+    )
+  end
+
+  # Start the internal Communicate Action flow (Message) to a county coordinator from Gazetteer.
+  def communicate_action_county_coordinator_gazetteer_path(search:, chapman_code:, allowed_chapmans:)
+    gazetteer_county_coordinator_message_path(
+      search: search.to_s,
+      chapman: chapman_code.to_s,
+      allowed_chapmans: allowed_chapmans.to_s
+    )
+  end
 end
