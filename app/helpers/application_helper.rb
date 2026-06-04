@@ -17,7 +17,10 @@ module ApplicationHelper
   def entry_information_path_for(record)
     return nil if record.blank?
 
-    cleaned_hash = URI.encode_www_form_component(record.record_hash)
+    hash = record.record_hash
+    return nil if hash.blank?
+
+    cleaned_hash = URI.encode_www_form_component(hash.to_s)
     hash_url_path(id: cleaned_hash)
   end
 

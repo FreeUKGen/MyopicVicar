@@ -127,16 +127,12 @@ module BestGuessHelper
     end
   end
 
-  def id_to_event_type event_type
+  def id_to_event_type(event_type)
     case event_type
-      when 1
-        result = "Births"
-      when 2
-        result = "Deaths"
-      when 3
-        result = "Marriages"
+    when 1 then 'Births'
+    when 2 then 'Deaths'
+    when 3 then 'Marriages'
     end
-    result
   end
 
   def value_or_no_data(field_value)
@@ -178,34 +174,38 @@ module BestGuessHelper
       case field_name
         when "RecordType"
           content = id_to_event_type(field_value)
-          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+          result = meta_tag(field_name, content) if content.present?
         when "Quarter"
           content = format_quarter_year(field_value)
-          result = "<meta name='freebmd.#{field_name}' content='" + content.to_s + "' />"
+          result = meta_tag(field_name, content) if content.present?
         when "OfficialDistrict"
           district = District.where(DistrictNumber: field_value).first
-          content = district[:DistrictName]
-          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+          content = district&.DistrictName
+          result = meta_tag(field_name, content) if content.present?
         when "AgeAtDeath"
           if field_value.to_i.to_s == field_value
-            result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
+            result = meta_tag(field_name, field_value)
           else
             content = tidy_date_of_birth(field_value)
-            result = "<meta name='freebmd.DateOfBirth' content='" + content + "' />"
+            result = meta_tag('DateOfBirth', content) if content.present?
           end
       when "Registered"
         event_registered = @current_record.event_registration
         if event_registered.present?
           content = format_registered(event_registered, field_value)
-          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+          result = meta_tag(field_name, content) if content.present?
         end
       when "PersistentURL"
+        next if field_value.blank?
+
         protocol = URI.parse(request.original_url).scheme
         domain = URI.parse(request.original_url).host
         port = URI.parse(request.original_url).port
-        domain = domain + ':' + port.to_s if port.present?
-        content = protocol+"://"+domain+field_value
-        result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+        domain = "#{domain}:#{port}" if domain.present? && port.present?
+        next if protocol.blank? || domain.blank?
+
+        content = "#{protocol}://#{domain}#{field_value}"
+        result = meta_tag(field_name, content)
       when "OtherNamesOnPage"
         content = ''
         i = 0
@@ -216,15 +216,21 @@ module BestGuessHelper
               content = content + '; '
             end
             i = i + 1
-            content = content + page_record[:Surname]+', ' + page_record[:GivenName]
+            content = content + "#{page_record[:Surname]}, #{page_record[:GivenName]}"
           end
         end
-        result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+        result = meta_tag(field_name, content) if content.present?
       else
-          result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
+          result = meta_tag(field_name, field_value)
       end
     end
     result.html_safe
+  end
+
+  def meta_tag(field_name, content)
+    return '' if content.blank?
+
+    "<meta name='freebmd.#{field_name}' content='#{ERB::Util.html_escape(content.to_s)}' />"
   end
 
   def value_or_refer_to_page(field_value, record)
