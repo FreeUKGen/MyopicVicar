@@ -189,40 +189,36 @@ module BestGuessHelper
             content = tidy_date_of_birth(field_value)
             result = meta_tag('DateOfBirth', content) if content.present?
           end
-      when "Registered"
-        event_registered = @current_record.event_registration
-        if event_registered.present?
-          content = format_registered(event_registered, field_value)
-          result = meta_tag(field_name, content) if content.present?
-        end
-      when "PersistentURL"
-        next if field_value.blank?
-
-        protocol = URI.parse(request.original_url).scheme
-        domain = URI.parse(request.original_url).host
-        port = URI.parse(request.original_url).port
-        domain = "#{domain}:#{port}" if domain.present? && port.present?
-        next if protocol.blank? || domain.blank?
-
-        content = "#{protocol}://#{domain}#{field_value}"
-        result = meta_tag(field_name, content)
-      when "OtherNamesOnPage"
-        content = ''
-        i = 0
-        @current_record.entries_in_the_page.each do |entry|
-          page_record = BestGuess.find(entry)
-          if (@current_record[:RecordNumber] != page_record[:RecordNumber])
-            if i > 0
-              content = content + '; '
-            end
-            i = i + 1
-            content = content + "#{page_record[:Surname]}, #{page_record[:GivenName]}"
+        when "Registered"
+          event_registered = @current_record.event_registration
+          if event_registered.present?
+            content = format_registered(event_registered, field_value)
+            result = meta_tag(field_name, content) if content.present?
           end
-        end
-        result = meta_tag(field_name, content) if content.present?
-      else
+        when "PersistentURL"
+          protocol = URI.parse(request.original_url).scheme
+          domain = URI.parse(request.original_url).host
+          port = URI.parse(request.original_url).port
+          domain = "#{domain}:#{port}" if domain.present? && port.present?
+          if protocol.present? && domain.present?
+            content = "#{protocol}://#{domain}#{field_value}"
+            result = meta_tag(field_name, content)
+          end
+        when "OtherNamesOnPage"
+          content = ''
+          i = 0
+          @current_record.entries_in_the_page.each do |entry|
+            page_record = BestGuess.find(entry)
+            if (@current_record[:RecordNumber] != page_record[:RecordNumber])
+              content = "#{content}; " if i.positive?
+              i += 1
+              content = "#{content}#{page_record[:Surname]}, #{page_record[:GivenName]}"
+            end
+          end
+          result = meta_tag(field_name, content) if content.present?
+        else
           result = meta_tag(field_name, field_value)
-      end
+        end
     end
     result.html_safe
   end
