@@ -197,9 +197,17 @@ class Contact
   end
 
   def action_recipient_copies_userids(action_person)
-    if freecen_routed_volunteering_question? || freecen_routed_data_question?
+    if freecen_routed_volunteering_question?
       update_attribute(:copies_of_contact_action_sent_to_userids, [])
       return []
+    end
+
+    if freecen_routed_data_question?
+      all = freecen_all_county_coordinator_userids_for_chapman(selected_county)
+      copies = all - [action_person]
+      copies = copies.compact.uniq
+      update_attribute(:copies_of_contact_action_sent_to_userids, copies)
+      return copies
     end
 
     action_recipient_copies_userids = []
@@ -632,6 +640,25 @@ class Contact
     return freecen_ops_fallback_coordinator_userid if cc.blank?
 
     cc
+  end
+
+  # Returns all active county coordinators associated with a chapman code.
+  # - Primary is the County record's `county_coordinator` (or fallback).
+  # - Additional coordinators are any active UseridDetails with role county_coordinator
+  #   whose `county_groups` includes the chapman code.
+  def freecen_all_county_coordinator_userids_for_chapman(chapman)
+    primary = freecen_county_coordinator_userid_for_chapman(chapman)
+    candidates = [primary]
+
+    begin
+      UseridDetail.role('county_coordinator').active(true).where(:county_groups.in => [chapman]).only(:userid).each do |ud|
+        candidates << ud.userid
+      end
+    rescue StandardError
+      # Defensive: if Mongoid query fails for any reason, we still route to primary.
+    end
+
+    candidates.compact.uniq
   end
 
   def freecen_syndicate_coordinator_userid_for_chapman(chapman)

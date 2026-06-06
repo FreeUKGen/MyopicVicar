@@ -25,6 +25,14 @@
           <td >The explanation was:</td>
           <td class="weight--semibold"><%= @contact.body %></td>
         </tr>
+        <% if @contact.session_data.present? %>
+          <tr>
+            <td>Session data:</td>
+            <td class="weight--semibold">
+              <pre style="white-space: pre-wrap;"><%= JSON.pretty_generate(@contact.session_data) rescue @contact.session_data.inspect %></pre>
+            </td>
+          </tr>
+        <% end %>
         <% if @contact.github_issue_url %>
           <tr>
             <td>Github Issue:</td>

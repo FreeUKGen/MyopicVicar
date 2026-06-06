@@ -217,6 +217,7 @@ MyopicVicar::Application.routes.draw do
   get 'messages/:id/force_destroy', :to => 'messages#force_destroy', :as => :force_destroy_messages
   get 'messages/:id/select_role', to: 'messages#select_role', as: :select_role_message
   get 'messages/select_individual', to: 'messages#select_individual', as: :select_individual_messages
+  get 'messages/gazetteer_county_coordinator', to: 'messages#gazetteer_county_coordinator', as: :gazetteer_county_coordinator_message
   resources :messages
 
   get 'attic_files/select_userid', :to =>'attic_files#select_userid', :as => :select_userid_attic_files
@@ -581,7 +582,11 @@ MyopicVicar::Application.routes.draw do
 
   resources :emendation_types
 
-  resources :emendation_rules
+  resources :emendation_rules do
+    collection do
+      get :forename_abbreviations
+    end
+  end
 
   resources :search_names
 

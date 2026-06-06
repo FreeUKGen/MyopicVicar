@@ -8,8 +8,7 @@
 <div class="grid">
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
     <p class="lead">We have recently <em>extended</em> the number of fields in the database and made the order of the fields <em>flexible</em>. This lets us include information from (for example) Nonconformist and Catholic registers as well as additional information found in more typical parish registers.</p>
-    <p>Please note that you need to be a spreadsheet user in order to take advantage of this flexibility — the new fields and format are <em>not</em> available currently for WinREG (or WinFreeREG).</p>
-    <p>The <a href="#generalGuidance">General guidance</a> has been updated for the new fields — please read and note the changes.</p>
+    <p>Please note that you need to use a spreadsheet in order to take advantage of this flexibility — the new fields and format are <em>not</em> available in WinREG.</p>
   </div>
 
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
@@ -67,51 +66,10 @@
     </ul>
     
     <h3>The record layout</h3>
-    <p class="island island--bordered">This description assumes that you are creating your whole file, including the Header rows, in your spreadsheet app. If you are using  a text editor at any stage, see <a href="#textEditors">Text editors</a> in General guidance.</p>
-    <p>FreeREG will know that you are going to use the new flexible and extended format if you put the new header as the fifth row of your spreadsheet (replacing the +LDS header): put # (the hash or pound symbol) in cell 5A and DEF in cell 5B.</p>
+    <p class="island island--bordered">This description assumes that you are creating your whole file, including the Header rows, in your spreadsheet app.</p>
+    <p>FreeREG will know that you are going to use the new flexible and extended format if you put # (the hash or pound symbol) in cell 5A and DEF in cell 5B.</p>
     <p>This tells the system that the next record (row) is the names of the fields that you have used, <em>in the order</em> in which they appear. These are your column headers. There is really just one rule: you <em>must</em> use the column or field names that the system uses. Variations are currently not allowed. The <strong>flexibility</strong> comes from being able to include <em>only</em> the fields for which your register has data and also that you can put them in <em>any order</em>.</p>
-    <p class="push-half--bottom newField">For example, this is the complete set of fields now available for a burial record — new fields are marked with a <span> *</span>:</p>      
-    <ul aria-label="location">          
-      <li>chapman_code</li>
-      <li>place_name</li>
-      <li>church_name</li>
-      <li class="newField">register_type <span> *</span> </li>
-      <li>register_entry_number</li>
-    </ul>
-    <ul aria-label="dates">
-      <li>burial_date</li>
-      <li class="newField">death_date <span> *</span> </li>
-    </ul>
-    <ul aria-label="details of deceased">
-      <li>burial_person_forename</li>
-      <li class="newField">burial_person_surname <span> *</span> </li>
-      <li class="newField">burial_person_title <span> *</span> </li>
-      <li>person_age</li>
-      <li>burial_person_abode</li>
-    </ul>
-    <ul aria-label="details of death and burial">
-      <li class="newField">cause_of_death <span> *</span> </li>
-      <li class="newField">burial_location_information <span> *</span> </li>
-      <li class="newField">place_of_death <span> *</span> </li>
-      <li class="newField">memorial_information <span> *</span> </li>
-    </ul>
-    <ul aria-label="details of relatives">
-      <li>relationship</li>
-      <li>male_relative_forename</li>
-      <li>relative_surname</li>
-      <li class="newField">male_relative_title <span> *</span> </li>
-      <li>female_relative_forename</li>
-      <li class="newField">female_relative_surname <span> *</span> </li>
-      <li class="newField">female_relative_title <span> *</span> </li>
-    </ul>
-    <ul aria-label="notes and image details">
-      <li>notes</li>
-      <li class="newField">notes_from_transcriber <span> *</span> </li>
-      <li>film</li>
-      <li>film_number</li>
-      <li class="newField">image_file_name <span> *</span> </li>
-    </ul>
-    <p>Do not be put off by the number of fields now available — you will never need to use all of them together, only those fields that are in your register.</p>
+    
     <p>See the <a href="#fieldDetails">Fields in detail</a> menu for links to full descriptions of all the flexible baptism, marriage and burial fields.</p>
     <hr class="rule" />
 
@@ -132,8 +90,8 @@
 <div class="grid">  
   <section class="grid__item three-fifths lap-two-thirds palm-one-whole">
     <h3>The mandatory fields</h3>
-    <p>The County, Place, Church and Register Type fields must have entries that are recognised by the database. Using a separate field for the Register Type is a change in practice. Contact your Coordinator if you are not sure what to enter here or if your entries are rejected.</p>
-    <p><strong>The Register Type</strong> is a two-letter code that now has its own field, register_type. It indicates the source of your transcription. See the Info Box for a <a href="#regCodes">list of the codes</a>; for a description of each Type, see the <a href="/information-for-transcribers/register-types">Register types</a> article.</p>
+    <p>The County, Place, Church and Register Type fields must have entries that are recognised by the database.</p>
+    <p><strong>The Register Type</strong> is a two-letter code that has its own field, <strong>register_type</strong>. It indicates the source of your transcription. See the Info Box at right for a <a href="#regCodes">list of the codes</a>; for a description of each Type, see the <a href="/information-for-transcribers/register-types">Register types</a> article.</p>
   </section>
 
   <aside aria-labelledby="regTypes" id="regCodes" class="grid__item one-third palm-one-whole float--right">
@@ -146,17 +104,16 @@
       <ul class="nav nav--stacked">
         <li>Archdeacon’s Transcript — AT</li>
         <li>Bishop’s Transcript — BT</li>
-        <li>Phillimore’s Transcript — PT (PH)</li>
-        <li>Dwelly’s Transcript — DT (DW)</li>
-        <li>Other Transcript — OT (TR)</li>
+        <li>Phillimore’s Transcript — PH</li>
+        <li>Dwelly’s Transcript — DW</li>
+        <li>Other Transcript — TR</li>
       </ul>
       <ul class="nav nav--stacked">
         <li>Extract of a Register — EX</li>
         <li>Memorial Inscription — MI</li>
         <li>Unknown — UK</li>
-        <li>Unspecified — (blank)</li>
       </ul>
-      <p>Unspecified should not be used for new transcriptions.<br /> Please do not change the older codes (TR, DW, PH) for existing batches, but do use the updated codes (OT, DT, PT) for new transcriptions.</p>
+      <p>Make every effort to ascertain the register type, and avoid using Unknown (UK).</p>
     </div>
   </aside>
 
@@ -206,17 +163,9 @@
     <p>We record the names of everyone described as a witness. You may record up to eight witnesses for each Baptism and for each Marriage.</p>
 
     <h3>Notes vs Transcriber notes</h3>
-    <p>The Notes field is for any additional information contained in the register that does not belong in another field.</p>
-    <p>Transcriber notes is a new field which will be for your comments rather than actual data. For example, ‘Date unreadable so year entered by assumption from position in the register’.</p>
+    <p>There are two types of Notes field, one with the field name <strong>notes</strong> and the other with the field name <strong>notes_from_transcriber</strong>.  The former is for notes written in the register by the minister that are of genealogical significance, and any additional information that does not belong in another field.</p>
+    <p>The latter field is for notes that you, as transcriber, wish to add to the record. For example, ‘Date unreadable so year entered by assumption from position in the register’.</p>
 
-    <h3 id="textEditors">Text editors</h3>
-    <p class="push-half--bottom">Using the flexible format, line 5 of your file will be: <code>#,DEF</code> <br />Line 6 could be something like this, depending on which fields you need and what order works for you (the line will scroll horizontally):  </p> 
-    <p class="table-wrapper"> <code>register_entry_number,<wbr />burial_date,<wbr />death_date,<wbr />burial_person_forename,<wbr />burial_person_surname,<wbr />burial_person_title,<wbr />person_age,<wbr />burial_person_abode,<wbr />relationship,<wbr />male_relative_forename,<wbr />relative_surname,<wbr />male_relative_title,<wbr />female_relative_forename,<wbr />female_relative_surname,<wbr />female_relative_title,<wbr />notes,<wbr />notes_from_transcriber,<wbr />chapman_code,<wbr />place_name,<wbr />church_name,<wbr />register_type,<wbr />image_file_name</code> </p>
-    <p>(The first four lines of the Header are unchanged.)</p>
-
-    <p>If entering data using a text editor be especially careful to surround a field that includes commas or speech marks with quotation (speech) marks. For example: 23, High St. would be entered as "23, High St." And a surname of Smith that could be Smithe, would be "SMITHE{0,1}".</p>
-    <p>In addition, literal quotation marks should be doubled, so that 5, “Home Farm” cottages would be entered as "5, ""Home Farm"" cottages" in the appropriate abode field.</p>
-    <p>Modern versions of MS Excel and OpenOffice Calc will deal with these situations for you (as will WinREG).</p>
   </section>
 
 </div>

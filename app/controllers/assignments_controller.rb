@@ -92,12 +92,12 @@ class AssignmentsController < ApplicationController
       session[:place_name] = @place.place_name
       session[:county] = @county = @place.county
       @user = get_user
-      @group = ImageServerGroup.find(id: image_server_group_id)
+      @group = ImageServerGroup.find(image_server_group_id)
     end
   end
 
   def heading_info_for_sc_request
-    @register = Register.find(id: session[:register_id])
+    @register = Register.find(session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)
     @church = Church.find(session[:church_id])
     @church_name = session[:church_name]
@@ -108,8 +108,8 @@ class AssignmentsController < ApplicationController
     @place_name = @place.place_name
     @syndicate = @place.chapman_code
     @user = get_user
-    @source = Source.find(id: session[:source_id])
-    @group = ImageServerGroup.find(id: session[:image_server_group_id])
+    @source = Source.find(session[:source_id])
+    @group = ImageServerGroup.find(session[:image_server_group_id])
   end
 
   def edit
