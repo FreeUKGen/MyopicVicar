@@ -24,19 +24,19 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   def self.output_to_log(message)
     p message
     dline = ''
-    dline << message
+    dline << "#{message}\n"
     dline
   end
 
   def self.output_to_txt(message)
     dline = ''
-    dline << message
+    dline << "#{message}\n"
     dline
   end
 
   def self.output_to_csv(message)
     dline = ''
-    dline << message
+    dline << "#{message}\n"
     dline
   end
 
@@ -421,6 +421,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   log_file += output_to_log(run_info)
 
   p "Sending email to user #{email_userid}"
-  email_files(email_userid, file_year, log_file, txt_file, message_file)
+  email_files(email_userid, file_year, log_file, txt_file, message_file).deliver_now
 
 end
