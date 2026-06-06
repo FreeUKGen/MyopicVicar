@@ -87,6 +87,12 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
 
   input_file = Rails.root.join('tmp', "#{input_file_name}.csv")
 
+  unless File.exists?(input_file)
+    run_info = "Input file does not exist #{input_file_name}"
+    log_file += output_to_log(run_info)
+    abort run_info
+  end
+
   CSV.foreach((input_file), headers: true, col_sep: ';') do |row|
 
     # header = Chapman;Name;District;Parishes;Piece
