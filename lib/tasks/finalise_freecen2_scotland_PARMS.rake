@@ -1,4 +1,4 @@
-task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment do |t, args|
+task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment do |t, args|
 
   require 'chapman_code'
   require 'extract_freecen2_piece_information'
@@ -6,11 +6,12 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
 
   run_mode = args.mode
   input_file = args.file
-  lim = args.limit.to_i
   input_file_name = args.file.to_s     # file name excluding extension
 
   filename_info = input_file.split('_') # get year from filename
   file_year = filename_info[0]
+  file_name = filename_info[1] + '_' + filename_info[2]
+
 
   file_for_output = Rails.root.join('log', "#{input_file_name}_finalise.log")
   FileUtils.mkdir_p(File.dirname(file_for_output))
@@ -28,9 +29,16 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
   # Print the time etc before start the process
 
   start_time = Time.now
-  run_info = "Started finialise Scotland PARMS at #{start_time} in run mode = #{run_mode} limit = #{lim} input file = #{input_file_name}.csv year = #{file_year}"
+  run_info = "Started finialise Scotland PARMS at #{start_time} in run mode = #{run_mode} input file = #{input_file_name}.csv year = #{file_year}"
   p run_info
   output_file.puts run_info
+
+  unless file_name == 'Scotland_PARMS'
+    run_info = "Invalid input file name #{input_file_name}"
+    p run_info
+    output_file.puts run_info
+    abort run_info
+  end
 
   rec_count = 0
 
@@ -49,7 +57,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
     end
 
     row_has_issue = false
-    break if rec_count > lim
 
     # Does the Freecen2 Piece already exist
 
@@ -342,7 +349,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :limit, :file] => :environment d
     rec_count += 1
     @this_row = "#{row['Chapman']};#{row['Name']};#{row['District']};#{row['Parishes']};#{row['Piece']}"
 
-    break if rec_count > lim
   end
 
   log_info = "Last data row processed:   #{@this_row}"
