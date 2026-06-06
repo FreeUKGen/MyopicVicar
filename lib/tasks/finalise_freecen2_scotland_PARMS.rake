@@ -62,17 +62,8 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   user_email = UseridDetail.where(userid: email_userid).first
   abort 'Invalid user for userid argument. User not found' unless user_email
 
-  # file_for_output = Rails.root.join('log', "#{input_file_name}_finalise.log")
-  # FileUtils.mkdir_p(File.dirname(file_for_output))
-  # output_file = File.new(file_for_output, 'w')
   log_file = ''
-  #file_for_messages = Rails.root.join('log', "#{input_file_name}_finalise_messages.csv")
-  # FileUtils.mkdir_p(File.dirname(file_for_messages))
-  # message_file = File.new(file_for_messages, 'w')
   message_file = ''
-  # file_for_missing_place_names = Rails.root.join('log', "#{input_file_name}_missing_place_names.txt")
-  # FileUtils.mkdir_p(File.dirname(file_for_missing_place_names))
-  # missing_places = File.new(file_for_missing_place_names, 'w')
   txt_file = ''
 
   header = 'Row;Chapman;Piece;Message;Action Required'
