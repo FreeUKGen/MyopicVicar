@@ -6,7 +6,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   require 'user_mailer'
 
 
-  def self.email_files(user_email, year, log_file, txt_file, csv_file)
+  def self.email_files(userid, year, log_file, txt_file, csv_file)
     user_rec = UseridDetail.userid(userid).first
     email_to = user_rec.email_address
 
@@ -16,10 +16,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
     log_name = "#{year}_Scottish_PARMS_finalise.log"
     txt_name = "#{year}_Scottish_PARMS_missing_place_names.txt"
     csv_name = "#{year}_Scottish_PARMS_finalise_messages.csv"
-
-
-    message = "Sending email to #{userid} - list of VLD files with invalid pob attached"
-    output_to_log(log_file, message)
 
     UserMailer.freecen_sct_parms_report(email_subject, email_body, log_file, log_name, txt_file, txt_name, csv_file, csv_name, email_to)
   end
@@ -77,10 +73,10 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   # file_for_missing_place_names = Rails.root.join('log', "#{input_file_name}_missing_place_names.txt")
   # FileUtils.mkdir_p(File.dirname(file_for_missing_place_names))
   # missing_places = File.new(file_for_missing_place_names, 'w')
-  missing_places = ''
+  txt_file = ''
 
   header = 'Row;Chapman;Piece;Message;Action Required'
-  message_fie += output_to_csv(header)
+  message_file += output_to_csv(header)
   @missing_place_names = []
 
   # Print the time etc before start the process
@@ -424,7 +420,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   run_info = "Running time #{running_time}s for #{rec_count} input file records"
   log_file += output_to_log(run_info)
 
-  p "Sending eamil to user #{userid} #{user_email}"
-  email_files(user_email, year, log_file, txt_file, csv_file)
+  p "Sending email to user #{email_userid}"
+  email_files(email_userid, file_year, log_file, txt_file, message_file)
 
 end
