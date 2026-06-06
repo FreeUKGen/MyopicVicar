@@ -3,6 +3,50 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   require 'chapman_code'
   require 'extract_freecen2_piece_information'
   require 'csv'
+  require 'user_mailer'
+
+
+  def self.email_files(user_email, year, log_file, txt_file, csv_file)
+    user_rec = UseridDetail.userid(userid).first
+    email_to = user_rec.email_address
+
+    email_subject = "FreeCEN: Finalise Scottish PARMS for #{year}"
+    email_body = 'See attached files.'
+    email_body += "\n"
+    log_name = "#{year}_Scottish_PARMS_finalise.log"
+    txt_name = "#{year}_Scottish_PARMS_missing_place_names.txt"
+    csv_name = "#{year}_Scottish_PARMS_finalise_messages.csv"
+
+
+    message = "Sending email to #{userid} - list of VLD files with invalid pob attached"
+    output_to_log(log_file, message)
+
+    UserMailer.freecen_sct_parms_report(email_subject, email_body, log_file, log_name, txt_file, txt_name, csv_file, csv_name, email_to)
+  end
+
+
+  def self.output_to_log(message)
+    p message
+    dline = ''
+    dline << message
+    dline
+  end
+
+  def self.output_to_txt(message)
+    dline = ''
+    dline << message
+    dline
+  end
+
+  def self.output_to_csv(message)
+    dline = ''
+    dline << message
+    dline
+  end
+
+  #
+  # START
+  #
 
   run_mode = args.mode
   input_file = args.file
@@ -12,31 +56,43 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   file_year = filename_info[0]
   file_name = filename_info[1] + '_' + filename_info[2]
 
+  unless file_name == 'Scottish_PARMS'
+    run_info = "Invalid input file name #{input_file_name}"
+    p run_info
+    abort run_info
+  end
 
-  file_for_output = Rails.root.join('log', "#{input_file_name}_finalise.log")
-  FileUtils.mkdir_p(File.dirname(file_for_output))
-  output_file = File.new(file_for_output, 'w')
-  file_for_messages = Rails.root.join('log', "#{input_file_name}_finalise_messages.csv")
-  FileUtils.mkdir_p(File.dirname(file_for_messages))
-  message_file = File.new(file_for_messages, 'w')
-  file_for_missing_place_names = Rails.root.join('log', "#{input_file_name}_missing_place_names.txt")
-  FileUtils.mkdir_p(File.dirname(file_for_missing_place_names))
-  missing_places = File.new(file_for_missing_place_names, 'w')
+  email_userid = args.userid
+  user_email = UseridDetail.where(userid: email_userid).first
+  abort 'Invalid user for userid argument. User not found' unless user_email
 
-  message_file.puts 'Row;Chapman;Piece;Message;Action Required'
+  # file_for_output = Rails.root.join('log', "#{input_file_name}_finalise.log")
+  # FileUtils.mkdir_p(File.dirname(file_for_output))
+  # output_file = File.new(file_for_output, 'w')
+  log_file = ''
+  #file_for_messages = Rails.root.join('log', "#{input_file_name}_finalise_messages.csv")
+  # FileUtils.mkdir_p(File.dirname(file_for_messages))
+  # message_file = File.new(file_for_messages, 'w')
+  message_file = ''
+  # file_for_missing_place_names = Rails.root.join('log', "#{input_file_name}_missing_place_names.txt")
+  # FileUtils.mkdir_p(File.dirname(file_for_missing_place_names))
+  # missing_places = File.new(file_for_missing_place_names, 'w')
+  missing_places = ''
+
+  header = 'Row;Chapman;Piece;Message;Action Required'
+  message_fie += output_to_csv(header)
   @missing_place_names = []
 
   # Print the time etc before start the process
 
   start_time = Time.now
-  run_info = "Started finialise Scotland PARMS at #{start_time} in run mode = #{run_mode} input file = #{input_file_name}.csv year = #{file_year}"
-  p run_info
-  output_file.puts run_info
+  run_info = "Started finialise Scottish PARMS at #{start_time} in run mode = #{run_mode} input file = #{input_file_name}.csv year = #{file_year}"
+  log_file += output_to_log(run_info)
 
-  unless file_name == 'Scotland_PARMS'
+
+  unless file_name == 'Scottish_PARMS'
     run_info = "Invalid input file name #{input_file_name}"
-    p run_info
-    output_file.puts run_info
+    log_file += output_to_log(run_info)
     abort run_info
   end
 
@@ -51,8 +107,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
     unless rec_count.positive?
 
       log_info = "First data row processed:  #{row['Chapman']};#{row['Name']};#{row['District']};#{row['Parishes']};#{row['Piece']}"
-      p log_info
-      output_file.puts log_info
+      log_file += output_to_log(log_info)
 
     end
 
@@ -73,7 +128,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
       unless fc2_piece.year == file_year
 
         row_has_issue = true
-        message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{year}] does not match existing fc2 Piece record year [#{fc2_ piece.year}];#{row_has_issue}"
+        message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{year}] does not match existing fc2 Piece record year [#{fc2_ piece.year}];#{row_has_issue}")
 
       end
 
@@ -82,7 +137,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
       unless fc2_piece.chapman_code == row['Chapman']
 
         row_has_issue = true
-        message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Chapman']}] does not match existing fc2 Piece record chapman_code [#{fc2_piece.chapman_code}];#{row_has_issue}"
+        message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Chapman']}] does not match existing fc2 Piece record chapman_code [#{fc2_piece.chapman_code}];#{row_has_issue}")
       end
 
       # check piece name
@@ -90,7 +145,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
       unless fc2_piece.name.downcase == row['Name'].downcase
 
         row_has_issue = true
-        message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Name']}] does not match existing fc2 Piece record name [#{fc2_piece.name}];#{row_has_issue}"
+        message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Name']}] does not match existing fc2 Piece record name [#{fc2_piece.name}];#{row_has_issue}")
       end
 
 
@@ -115,21 +170,21 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
 
             input_dst = "[#{row['District']}]"
             row_has_issue = true
-            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};" + input_dst + " does not match district record linked to existing fc2 Piece [#{@district.name}];#{row_has_issue}"
+            message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};" + input_dst + " does not match district record linked to existing fc2 Piece [#{@district.name}];#{row_has_issue}")
 
           end
 
         else
 
           row_has_issue = true
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record;#{row_has_issue}"
+          message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record;#{row_has_issue}")
 
         end
 
       else
 
         row_has_issue = true
-        message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record;#{row_has_issue}"
+        message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record;#{row_has_issue}")
 
       end
 
@@ -147,7 +202,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
       unless civil_parish_names_string_for_match.downcase == input_parishes_for_match.downcase
 
         row_has_issue = true
-        message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Parishes']}] do not match existing fc2 Piece record civil parishes [#{civil_parish_names_string}];#{row_has_issue}"
+        message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['Parishes']}] do not match existing fc2 Piece record civil parishes [#{civil_parish_names_string}];#{row_has_issue}")
 
       end
 
@@ -156,9 +211,9 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
       # Report on has VLD files or has CSV files unless row has issues
 
       if row_has_issue
-        message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};Existing Piece has #{ vld_file_count} linked VLD files and #{fc2_csv_files} linked CSV files;#{row_has_issue}"
+        message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};Existing Piece has #{ vld_file_count} linked VLD files and #{fc2_csv_files} linked CSV files;#{row_has_issue}")
       else
-        message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};Matches existing fc2 piece - seems ok and has #{ vld_file_count} linked VLD files and #{fc2_csv_files} linked CSV files;#{row_has_issue}"
+        message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};Matches existing fc2 piece - seems ok and has #{ vld_file_count} linked VLD files and #{fc2_csv_files} linked CSV files;#{row_has_issue}")
       end
 
     else
@@ -175,7 +230,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
           row_has_issue = true
           vld_file_count = fc2_piece_base.vld_files.count
           fc2_csv_files = FreecenCsvFile.where(freecen2_piece_id: fc2_piece_base.id).count
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};fc2 Piece does not exist but piece #{base_piece_number} for #{fc2_piece_base.name} does (linked VLD files=#{vld_file_count}, CSV files=#{fc2_csv_files}), please review;#{row_has_issue}"
+          message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};fc2 Piece does not exist but piece #{base_piece_number} for #{fc2_piece_base.name} does (linked VLD files=#{vld_file_count}, CSV files=#{fc2_csv_files}), please review;#{row_has_issue}")
         end
 
       end
@@ -194,7 +249,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
           row_has_issue = true
           vld_file_count = fc2_piece_base.vld_files.count
           fc2_csv_files = FreecenCsvFile.where(freecen2_piece_id: fc2_piece_base.id).count
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};fc2 Piece does not exist but piece #{base_piece_number} for #{fc2_piece_base.name} does (linked VLD files=#{vld_file_count}, CSV files=#{fc2_csv_files}), please review;#{row_has_issue}"
+          message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};fc2 Piece does not exist but piece #{base_piece_number} for #{fc2_piece_base.name} does (linked VLD files=#{vld_file_count}, CSV files=#{fc2_csv_files}), please review;#{row_has_issue}")
         end
 
         # is it a Piece ending with a non-numeric?
@@ -208,7 +263,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
             row_has_issue = true
             vld_file_count = fc2_piece_base.vld_files.count
             fc2_csv_files = FreecenCsvFile.where(freecen2_piece_id: fc2_piece_base.id).count
-            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};fc2 Piece does not exist but piece #{new_base_piece_number} for #{fc2_piece_base.name} does (linked VLD files=#{vld_file_count}, CSV files=#{fc2_csv_files}), please review;#{row_has_issue}"
+            message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};fc2 Piece does not exist but piece #{new_base_piece_number} for #{fc2_piece_base.name} does (linked VLD files=#{vld_file_count}, CSV files=#{fc2_csv_files}), please review;#{row_has_issue}")
           end
 
         end
@@ -219,7 +274,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
 
       action = run_mode == 'UPDATE' ? 'so creating' : 'can create'
 
-      message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};fc2 Piece does not exist #{action} new fc2 Piece;#{row_has_issue}" unless row_has_issue
+      message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};fc2 Piece does not exist #{action} new fc2 Piece;#{row_has_issue}") unless row_has_issue
 
       # does the District exist?
 
@@ -235,7 +290,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
 
           action = run_mode == 'UPDATE' ? 'so creating' : 'can create'
 
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record, #{action} new fc2 District record;#{row_has_issue}"
+          message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record, #{action} new fc2 District record;#{row_has_issue}")
 
           county_id = County.find_by(chapman_code: row['Chapman']).id if County.find_by(chapman_code: row['Chapman']).present?
 
@@ -245,9 +300,11 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
           result = @district_object.save if run_mode == 'UPDATE'
           unless result
             row_has_issue = true
-            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record, error crerating fc2 District record;#{row_has_issue}"
-            output_file.puts "District #{row['Chapman']} #{row['Piece']} #{@district_object} - create error"
-            output_file.puts @district_object.errors.full_messages
+            message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record, error crerating fc2 District record;#{row_has_issue}")
+            log_info = "District #{row['Chapman']} #{row['Piece']} #{@district_object} - create error"
+            log_file += output_to_log(log_info)
+            log_info = @district_object.errors.full_messages
+            log_file += output_to_log(log_info)
             crash
           end
 
@@ -256,7 +313,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
           myname = Freecen2Place.standard_place(row['District'])
           @missing_place_names << "#{myname} a District in | #{row['Chapman']}"
           row_has_issue = true
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record and no fc2_place record (Gaz) for District name ;#{row_has_issue}"
+          message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{row['District']}] does not exist as fc2 District record and no fc2_place record (Gaz) for District name ;#{row_has_issue}")
 
         end
       end
@@ -289,14 +346,14 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
 
           if cp_place.present?
 
-            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record;#{row_has_issue}"
+            message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record;#{row_has_issue}")
 
           else
 
             myname = Freecen2Place.standard_place(cp)
             @missing_place_names << "#{myname} a Civil Parish in | #{row['Chapman']}"
             row_has_issue = true
-            message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record and no fc2_place record (Gaz) for Civil Parish Place name ;#{row_has_issue}"
+            message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record and no fc2_place record (Gaz) for Civil Parish Place name ;#{row_has_issue}")
 
           end
         end
@@ -320,9 +377,11 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
         result = true
         result = @fc2piece_object.save if run_mode == 'UPDATE' && proceed
         unless result
-          message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record, error creating fc2 Piece record;#{row_has_issue}"
-          output_file.puts "Piece #{row['Chapman']} #{row['Piece']} #{fc2piece_object} - create error"
-          output_file.puts @fc2piece_object.errors.full_messages
+          message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] does not exist as fc2 Civil Parish record, error creating fc2 Piece record;#{row_has_issue}")
+          log_info = "Piece #{row['Chapman']} #{row['Piece']} #{fc2piece_object} - create error"
+          log_file += output_to_log(log_info)
+          log_info = @fc2piece_object.errors.full_messages
+          log_file += output_to_log(log_info)
         end
 
         # update civil parish records for the piece to have the piece id
@@ -336,7 +395,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
             if fc2_cp.present?
               fc2_cp.update_attribute(:freecen2_piece_id, piece_id)
             else
-              message_file.puts "#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] error finding Civil Parish record for updating of fc2 Piece id ;#{row_has_issue}"
+              message_file += output_to_csv("#{rec_count + 2};#{row['Chapman']};#{row['Piece']};[#{cp}] error finding Civil Parish record for updating of fc2 Piece id ;#{row_has_issue}")
             end
           end
 
@@ -352,15 +411,20 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   end
 
   log_info = "Last data row processed:   #{@this_row}"
-  p log_info
-  output_file.puts log_info
-  output_file.puts"Data rows processed: #{rec_count - 1} at #{Time.now}" unless rec_count.zero?
+  log_file += output_to_log(log_info)
+
+  run_info = rec_count.zero? ? "No records processed" : "Data rows processed: #{rec_count - 1} at #{Time.now}"
+  log_file += output_to_log(run_info)
   run_info = "Process finished - #{@missing_place_names.count} missing place names"
-  p run_info
-  output_file.puts run_info
-  missing_places.puts @missing_place_names
+  log_file += output_to_log(run_info)
+  @missing_place_names.each do |place|
+    txt_file += output_to_txt(place)
+  end
   running_time = Time.now - start_time
   run_info = "Running time #{running_time}s for #{rec_count} input file records"
-  p run_info
-  output_file.puts run_info
+  log_file += output_to_log(run_info)
+
+  p "Sending eamil to user #{userid} #{user_email}"
+  email_files(user_email, year, log_file, txt_file, csv_file)
+
 end
