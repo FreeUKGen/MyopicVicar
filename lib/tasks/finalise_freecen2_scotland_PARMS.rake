@@ -6,11 +6,11 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   require 'user_mailer'
 
 
-  def self.email_files(userid, year, log_file, txt_file, csv_file)
+  def self.email_files(userid, year, run_mode, log_file, txt_file, csv_file)
     user_rec = UseridDetail.userid(userid).first
     email_to = user_rec.email_address
 
-    email_subject = "FreeCEN: Finalise Scottish PARMS for #{year}"
+    email_subject = "FreeCEN: Finalise Scottish PARMS for year: #{year}, run mode: #{run_mode}"
     email_body = 'See attached files.'
     email_body += "\n"
     log_name = "#{year}_Scottish_PARMS_finalise.log"
@@ -82,7 +82,7 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   # Print the time etc before start the process
 
   start_time = Time.now
-  run_info = "Started finialise Scottish PARMS at #{start_time} in run mode = #{run_mode} input file = #{input_file_name}.csv year = #{file_year}"
+  run_info = "Started finialise Scottish PARMS at #{start_time} in run mode = #{run_mode}, year = #{file_year}, input file = #{input_file_name}.csv"
   log_file += output_to_log(run_info)
 
 
@@ -421,6 +421,6 @@ task :finalise_freecen2_scotland_PARMS, [:mode, :file, :userid] => :environment 
   log_file += output_to_log(run_info)
 
   p "Sending email to user #{email_userid}"
-  email_files(email_userid, file_year, log_file, txt_file, message_file).deliver_now
+  email_files(email_userid, file_year, run_mode, log_file, txt_file, message_file).deliver_now
 
 end
