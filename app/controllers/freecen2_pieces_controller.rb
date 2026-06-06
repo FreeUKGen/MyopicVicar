@@ -139,6 +139,54 @@ class Freecen2PiecesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path)
   end
 
+  def finalise_sct_parms
+    get_user_info_from_userid
+    @years = Freecen::CENSUS_YEARS_ARRAY
+    @processing_modes = ['REVIEW', 'UPDATE']
+
+    p "AEV01 #{@years}"
+
+    p "AEV02 #{@user.userid}"
+
+    p "AEV03 #{params.inspect}"
+
+    # @parmsfile = Csvfile.new(csvfile_params)
+
+    # @parmsfile.file_name = @parmsfile.csvfile.identifier
+    # redirect_back(fallback_location: new_csvfile_path, notice: 'The file had an incorrect extension') && return if @parmsfile.csvfile.identifier.blank?
+
+    # @parmsfile.file_name = @csvfile.downcase_extension
+    # redirect_back(fallback_location: new_csvfile_path, notice: 'A csv file with that name does not exist on your computer (You likely tried to upload a file with a different extension') && return if @csvfile.file_name.blank?
+
+    return unless params[:commit] == 'Process'
+
+    mode =  params[:finalise_sct_parms][:processing_mode]
+    year =  params[:finalise_sct_parms][:year]
+    message = "Submitted for processing: Year = #{year}, Mode = #{mode}. You will receive an email on completion."
+
+
+    flash[:notice] = message
+    flash.keep
+
+    return
+
+    return unless params[:commit] == 'Move Place Linkages'
+
+    userid = @user.userid
+    logger.warn("FREECEN:MOVE_FREECEN2_PLACE_LINKAGES: Starting rake task for #{userid} county #{county_from} place #{place_from}")
+    if params[:review_move_fc2_place][:mode] == 'Update'
+      pid1 = spawn("bundle exec rake freecen:move_freecen2_place_linkages[#{userid},#{@place_from_rec.id},#{@place_to_rec.id},Y]")
+    else
+      pid1 = spawn("bundle exec rake freecen:move_freecen2_place_linkages[#{userid},#{@place_from_rec.id},#{@place_to_rec.id},N]")
+    end
+    logger.warn("FREECEN:MOVE_FREECEN2_PLACE_LINKAGES: rake task for #{pid1}")
+    flash[:notice] = "The background task (with Run Mode = #{params[:review_move_fc2_place][:mode]}) for move of linkages for #{place_from} in #{ChapmanCode.name_from_code(county_from)} (#{county_from}) to #{place_to} in #{ChapmanCode.name_from_code(county_to)} (#{county_to}) has been initiated. You will be notified by email when the task has completed."
+    return unless params[:review_move_fc2_place][:mode] == 'Update'
+
+    redirect_to freecen2_places_path
+
+  end
+
   def full_index
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No Chapman code') && return if session[:chapman_code].blank?
 
