@@ -141,21 +141,32 @@ class Freecen2PiecesController < ApplicationController
 
   def finalise_sct_parms
     get_user_info_from_userid
+    userid = @user.userid
     @years = Freecen::CENSUS_YEARS_ARRAY
     @processing_modes = ['REVIEW', 'UPDATE']
 
-    return unless params[:commit] == 'Process'
+
+    return unless ['Process','Download Master PARMS File for selected Census Year'].include?(params[:commit])
 
     mode =  params[:finalise_sct_parms][:processing_mode]
     year =  params[:finalise_sct_parms][:year]
-    file = "#{year}_Scottish_PARMS"
+    file_name = "#{year}_Scottish_PARMS"
 
-    logger.warn("FREECEN:FINIALISE_SCT_PARMS: Starting rake task for #{userid} year #{year} mode #{mode}")
-    pid1 = spawn("bundle exec rake finalise_freecen2_scotland_PARMS[#{mode},#{file},#{@user.userid}]")
-    logger.warn("FREECEN:FINIALISE_SCT_PARMS: rake task for #{pid1}")
+    case params[:commit]
+    when 'Download Master PARMS File for selected Census Year'
+      file_location = Rails.root.join('tmp', "#{file_name}.csv")
+      if File.exists?(file_location)
+        send_file(file_location, filename: "#{file_name}.csv", x_sendfile: true)
+      else
+        message = "Master Scottish PARMS File for #{year} does not exist. Please contact System Adminsitrator."
+      end
+    when 'Process'
+      logger.warn("FREECEN:FINIALISE_SCT_PARMS: Starting rake task for #{userid} year #{year} mode #{mode}")
+      pid1 = spawn("bundle exec rake finalise_freecen2_scotland_PARMS[#{mode},#{file_name},#{userid}]")
+      logger.warn("FREECEN:FINIALISE_SCT_PARMS: rake task for #{pid1}")
 
-    message = "Submitted for processing: Year = #{year}, Mode = #{mode}. You will receive an email on completion."
-
+      message = "Submitted for processing: Year = #{year}, Mode = #{mode}. You will receive an email on completion."
+    end
     flash[:notice] = message
     flash.keep
 

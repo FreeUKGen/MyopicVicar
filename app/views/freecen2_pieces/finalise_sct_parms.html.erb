@@ -2,16 +2,17 @@
 <%= render 'flash_notice' %>
 <div class="text--center" >
   <%= simple_form_for  :finalise_sct_parms, method: :get do |f| %>
-    <p class="text--center">  <b> Important Info:</b> If you need the Master Scottish PARMS csv file to be updated/replaced please contact the System Administrator.</p>
-    <%= f.input :year, :collection => @years, :required => true , :label => "Year:",
-      :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 4},:selected => '1841' %>
+    <p class="text--center">  <b> Important:</b> If you need the Master Scottish PARMS csv file for a census year to be replaced with an updated version, please contact the System Administrator.</p>
+    <%= f.input :year, :collection => @years, :required => true , :label => "Census Year:",
+      :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 4},:selected => '1841'%>
     <%= f.input :processing_mode, :collection => @processing_modes, :required => true , :label => "Processing Mode:",
-      :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 4},:selected => 'REVIEW' %>
+      :input_html => {  :class => " simple_form_bgcolour simple_form_position overide_selection_field_width ", :size => 2},:selected => 'REVIEW' %>
     <p class="text--center text--negative push-half--bottom"> <b>
         Click the Process button and it will be submitted for processing. You will be notified by email when it has completed.</b>
       <div class="form-actions">
-        <%= f.submit 'Process',  :class => "btn   btn--small" %> </p>
-      <%= link_to 'Cancel', main_app.new_manage_resource_path(current_role: session[:role]), class: 'btn   btn--small', method: :get, title: 'Cancel' %>
+        <%= f.submit 'Process',  :class => "btn   btn--small" %>
+        <%= f.submit 'Download Master PARMS File for selected Census Year',  :class => "btn   btn--small" %>
+        <%= link_to 'Cancel', main_app.new_manage_resource_path(current_role: session[:role]), class: 'btn   btn--small', method: :get, title: 'Cancel' %></p>
     </div>
   <% end %>
 </div>
