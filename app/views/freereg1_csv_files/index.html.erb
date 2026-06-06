@@ -20,7 +20,7 @@
               <% unless session[:my_own]%>
                 <th class='sticky-header'>User ID</th>
               <% end%>
-              <th class='sticky-header' >Processed</th>
+              <th class='sticky-header' >Last Modified</th>
               <th colspan = "2" class='sticky-header'>Locked<br>
                 TR SC</th>
               <th colspan="7" class='sticky-header'>Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>SH: Show header; ED: Edit header; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>
@@ -42,7 +42,7 @@
                 <% unless session[:my_own]%>
                   <td><%= freereg1_csv_file.userid %></td>
                 <% end %>
-                <td><%= look_up_processed_date(freereg1_csv_file)%></td>
+                <td><%= freereg1_csv_file.modification_date %></td>
                 <td><%= locked_by_transcriber(freereg1_csv_file)%></td>
                 <td><%= locked_by_coordinator(freereg1_csv_file)%></td>
                 <td><%= link_to 'SH', freereg1_csv_file, method: :get  %></td>
