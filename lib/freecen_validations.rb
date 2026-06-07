@@ -16,6 +16,7 @@ module FreecenValidations
   TIGHT_VALID_TEXT = /\A[\w\s,'\.]*\z/.freeze
   NARROW_VALID_TEXT_PLUS = /\A[-\w\s,'\.]*\z/.freeze
   BROAD_VALID_TEXT = /\A[-\w\s()\.,&'":;]*\z/.freeze
+  BROAD_DIACRITICS_VALID_TEXT = /\A[-\w\s()\.,&'":;\p{Latin}]*\z/u.freeze
   BROAD_VALID_TEXT_PLUS = /\A[-\w\s()\/\.,&'":;?!]*\z/.freeze
   VALID_PIECE = /\A(R|H)(G|O|S)/i.freeze
   VALID_AGE_MAXIMUM = { 'd' => 100, 'w' => 100, 'm' => 100, 'y' => 120, 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100,
@@ -238,8 +239,8 @@ module FreecenValidations
     def surname?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? BROAD_VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
+      unless field.match? BROAD_DIACRITICS_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_DIACRITICS_VALID_TEXT)
           return [false, '?']
         else
           return [false, 'invalid text']
@@ -252,8 +253,8 @@ module FreecenValidations
     def forenames?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? BROAD_VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
+      unless field.match? BROAD_DIACRITICS_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_DIACRITICS_VALID_TEXT)
           return [false, '?']
         else
           return [false, 'invalid text']
