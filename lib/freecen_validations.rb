@@ -574,8 +574,8 @@ module FreecenValidations
     def verbatim_birth_place?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? BROAD_VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
+      unless field.match? BROAD_DIACRITICS_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_DIACRITICS_VALID_TEXT)
           return [false, '?']
         else
           return [false, 'invalid text']
@@ -588,8 +588,8 @@ module FreecenValidations
     def birth_place?(field)
       return [false, 'blank'] if field.blank?
 
-      unless field.match? BROAD_VALID_TEXT
-        if field[-1] == '?' && (field.chomp('?').match? BROAD_VALID_TEXT)
+      unless field.match? BROAD_DIACRITICS_VALID_TEXT
+        if field[-1] == '?' && (field.chomp('?').match? BROAD_DIACRITICS_VALID_TEXT)
           return [false, '?']
         else
           return [false, 'invalid text']
