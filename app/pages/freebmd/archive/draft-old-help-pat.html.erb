@@ -1,0 +1,169 @@
+<h1>DRAFT Old HELP (Pat)</h1>
+
+<style scoped="scoped">
+figcaption {
+  font-style: italic;
+  color: #737373; /* 4.74:1 */
+  margin-top: 0.3em;
+}
+  figure.site img {
+    border: 2px solid #00a099;
+    padding: 0.3em;
+  }
+  figure.site--wide img {
+    width: 100%;
+    height: auto;
+  }
+
+.sub-nav > li.open > a {
+  color: #517481; /* as per other projects (overriding magenta)*/
+}
+</style>
+
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <p class="lead">Struggling to use FreeBMD? Not finding someone you expected to find?  Not sure what to do next?  This page contains answers to common problems, and has links to more detailed information.</p>
+    <p>Civil (Government) Registration of births, marriages and deaths in England and Wales has been a legal obligation since 1837.  The government department responsible is the General Register Office (the GRO). The GRO is responsible for preparing an index of the registrations, and FreeBMD is a charity project to provide free access to that index.</p>
+    <p>As a minimum, the index gives the information that will help you identify the person you are looking for — or at least a small group of people which might include the person you are looking for. You will need this information, to order a certified copy of the register entry (commonly known as a certificate) from the GRO. The certificate contains a lot more information than the index.</p>
+    <p>For example, this is the information in a FreeBMD search result:</p>
+    <figure class="site site--wide" style="max-width: 707px;">
+      <%= image_tag 'entry-information.png?sha=f8c97e7e64a5bc25', alt: 'Entry Information', width: 574, height: 360 %>
+      <figcaption>The information available in the index for a death registered in 1907</figcaption>
+    </figure>
+
+    <p>And this is the certificate:</p>
+    <figure class="site site--wide">
+      <%= image_tag 'death-cert.png?sha=6da809cc966ee522', alt: 'Death certificate', width: 1122, height: 341 %>
+      <figcaption>Part of the death certificate with all the details</figcaption>
+    </figure>
+    <hr class="rule" />
+  </div>
+  <aside class="grid__item two-fifths lap-one-half palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block">On this page</h2>
+      <ul class="sub-nav">
+        <li class="open"><a href="#gettingStarted">Getting started</a>
+          <ul class="push--left">
+            <li><a href="#howToSearch">How to search</a> </li>
+            <li><a href="#gtkSearching">Good to know — about searching</a> </li>
+            <li><a href="#gtkResults">Good to know — about the results page</a> </li>
+            <li><a href="#whatNext">What to do if you cannot find what you expect to find</a> </li>
+          </ul>
+        </li>
+        <li><a href="#findSpouse">How do I find a spouse?</a> </li>
+        <li><a href="#findChildren">How to find more children</a> </li>
+        <li><a href="#orderCertificate">Ordering a certificate</a> </li>
+        <li><a href="#share">Sharing what you find</a> </li>
+        <li><a href="#fhHelp">Further help with Family History</a> </li>
+        <li><a href="#accuracy">Is FreeBMD accurate?</a> </li>
+        <li><a href="#usingSite">Using this site</a> </li>
+      </ul>
+    </div>
+  </aside>
+  
+  <div class="grid__item three-fifths lap-three-quarters palm-one-whole">
+    <h2 id="gettingStarted">Getting started</h2>
+    <h3 id="howToSearch">How to search</h3>
+    <p>On the search page there are a lot of boxes (fields) where you can enter information you already know … but would you want to?</p> 
+    <p>All the fields are optional. The more information you add, the fewer results you will get. For instance, look for John Jones who married a Davies and you will get almost 4000 results — more than the maximum of 3000 that we can show you! But look for John Jones who married a Davies in 1910, in Monmouthshire and you will get just four results.</p> 
+    <p>If you ask for a very large number of results, the search will take too long, and you will be timed out. But if you add everything you know at the start, you might not get any results.</p>
+    <p>Why might you get no results? Maybe what you know is not quite right. Perhaps John was actually Jonathan? Or, although he lived in Monmouthshire all his life, as did his wife, perhaps they got married somewhere else? Was that death registered by someone who did not know the person well, and so guessed how their name was spelled, or their age? Perhaps what you remember as a Golden Wedding celebration was really a Ruby? Removing some of the information you entered might give you a result that is worth exploring.</p>  
+    <p>You <em>can</em> start with as much information as you have, but it’s usually better to start with just a few fields, adding more if you need to — the more common the name, the more information you’ll need to add.</p>
+
+    <h3 id="gtkSearching">Good to know — about searching</h3>
+    <ul>
+      <li class="push-half--bottom">you do not have to choose a date range. You could choose just a start date, or just an end date.  See also, <a href="/cms/help/more-about-searching#dateRange">using a date range</a> </li>
+      <li class="push-half--bottom">you can choose to search by all types of record, or limit to one or two of births, marriages and deaths. The fields change if you select just one type of record. We will soon have more advice on how to search for births, how to search for marriages and how to search for deaths</li>
+      <li class="push-half--bottom">do not use full stops (periods in US English) after initials — the full stops are removed from the FreeBMD database, so if you ask for one, you will not get a result.<br />
+     For almost 20 years, the GRO index listed a full set of first names for each entry. From 1865 onwards, the indexes started abbreviating the second and subsequent first names, using only the initial letter of each. We advise you, therefore, to search using only the first first name, adding the initial letter of a second or subsequent first name to limit or refine your search, where necessary. You can read more details in <a href="/cms/help/more-about-names">more about names</a> </li>
+      <li class="push-half--bottom">take particular care with specifying the district or county because it may not be what you expect. In particular, there can be considerable confusion with London and other very large cities. In general, only restrict the search by county, if necessary — for example when searching for a common name — and only further restrict by district if necessary — for example when searching for a very common name</li>
+      <li class="push-half--bottom">
+        <p class="push-half--bottom">information present in the records varies with the year because the GRO added extra fields to later editions of the index. Searching for information that is not present will not return any results for that year. For example, specifying the mother’s maiden name in a search of births will not return any records before September 1911. Here is a summary of the changes:</p>
+        <dl>
+          <dt><strong>Mother’s maiden name</strong> </dt>
+          <dd>— added to Births from 01 Jul 1911 (the September quarter)</dd>
+          <dt><strong>Spouse’s surname</strong> </dt>
+          <dd>— added to Marriages from 01 Jan 1912 (the March quarter)</dd>
+          <dt><strong>Age at death</strong> </dt>
+          <dd>— added to Deaths from 01 Jan 1866 (the March quarter)</dd>
+          <dt><strong>Date of birth</strong> </dt>
+          <dd>— replaced age at death from 01 Apr 1969 (the June quarter)</dd>
+          <dt><strong>Month of registration</strong> </dt>
+          <dd>— replaced the quarter from 01 Jan 1984 (for all events)</dd>
+        </dl>        
+      </li>
+      <li>there are errors and omissions in both the index itself and in FreeBMD’s transcription of it as well as situations where the original is unreadable — you can find out more about how to search to find <a href="/cms/help/more-about-searching#unreadable">unreadable characters</a> </li>
+    </ul>
+
+    <h3 id="gtkResults">Good to know — about the the results page</h3>
+    <p class="push-half--bottom">Up to the end of 1983, registrations were not by day, or month, but by quarter. The quarters are named for the last month in the quarter:</p>
+    <ul>
+      <li>the <strong>March quarter</strong> contains registrations made in January, February and March</li>
+      <li>the <strong>June quarter</strong> contains registrations made in April, May and June</li>
+      <li>the <strong>September quarter</strong> contains registrations made in July, August and September</li>
+      <li>the <strong>December quarter</strong> contains registrations made in October, November and December</li>
+    </ul>  
+    <p>Marriages were usually registered in the “right” quarter — someone who got married in August would have a September quarter registration.</p>
+    <p>Births could sometimes be registered in a later quarter. There was, and still is, a grace period of a few weeks, so a birth in late August could have a December quarter registration.</p>  
+    <p>Deaths could be registered even later after the event: this is particularly the case where someone dies away from home, and it takes some time to establish their identity.</p>
+
+    <h3 id="whatNext">What to do if you cannot find what you expect to find</h3>
+    <p>Many names were wrongly spelt, either because the person making the registration or the  Registrar made an error, or because a mistake was made during the indexing process. The name used by the person earlier or later in their life could have changed slightly.</p>
+    <p>Use the <a href="/cms/help/more-about-searching#wildcardSearch">wildcard search</a> feature: type a few letters and use a star (an asterisk) for the others. For example, looking for Lucie, or maybe Lucy?  Type Luc* and you will find both.  Looking for Stephen or maybe Steven?  Type Ste*en and you will find both.</p>  
+    <p>A search for Ann will find Ann, Anne, Annie, Ann M, Annie E and so on.  Ticking the “Exact match on first names” box will mean that the search will only find Ann.  Similarly, un-tick the box to see if the person you knew as Juliette was recorded as Juliet.</p>
+    <p>Selecting the <a href="/cms/help/more-about-searching#soundexSearch">phonetic search</a> on surnames option will mean that FreeBMD will look at surnames that sound similar. Try any variants of the surname you know.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="findSpouse">How to find the name of a spouse</h2>
+    <p>From 1912 the GRO marriage indexes have the spouse’s surname. When you go to the Entry Information page for a marriage, you can see the partner’s surname, and you can select that to go to a page which shows you the Entry Information for both partners.</p>
+    <p>Before 1912, the index does not contain this information, but there is a work-around: note down the quarter and year, the district, volume and page from the Entry Information page of one partner, and start a new search. Leave most of the boxes blank, but restrict the date to the correct quarter and year, tick marriages, and enter the district, volume and page (to do this you will first have to select the county — where a District straddles more than one county, any of the counties can be selected). See <a href="/cms/help/more-about-searching#countyDistrict">help with Counties</a> if you do not know which county a district is in.</p>
+    <hr class="rule" />
+
+    <h2 id="findChildren">How to find more children </h2>
+    <p>Once you have identified one child, if that gives you the mother’s maiden name, you can search by the mother’s married name in the “Surname” field and her maiden name in the “Mother’s Surname” field.</p> 
+    <hr class="rule rule--ornament" />
+
+    <h2 id="orderCertificate">Ordering a certificate</h2>
+    <p>If you want to order a certificate, use the View button on the Results page to go to the Entry Information page. Make a note of the name, the quarter and year, the District, the Volume and the Page. If there is a symbol of a camera, you can click that to see an image of the original index, if we have one, which could be helpful if you are not certain that you have the right person. It is also worth clicking on the envelope before buying a certificate: other FreeBMD users might have left a note (we call them <em>postems</em>) which might mean you do not need to buy a certificate.</p>
+    <figure class="site site--wide">
+      <%= image_tag 'entry-information-2.png?sha=b64926c07079f83a', alt: 'Entry Information 2', width: 798, height: 759 %>
+      <figcaption>The entry information for a birth showing the link icons for a postem (an envelope) and for the image of the index page (a camera)</figcaption>
+    </figure>
+    <p>When you’re ready to order, visit the <a target="_blank" href="https://www.gov.uk/order-copy-birth-death-marriage-certificate">GRO ordering page (opens in new tab)</a>.</p> 
+    <hr class="rule rule--ornament" />
+
+    <h2 id="share">Sharing what you find —  snippets and citing FreeBMD</h2>
+    <p>You are welcome to capture a snippet of what you have found, and share that on social media or privately. Please do let others know that it comes from www.freebmd.org.uk — we want more people to know that we exist!</p>
+    <p>If you are going to share the information you find in a family tree or biography, in a way that lets you or other researchers check your work, you can cite your finding with the information you send to the GRO for the certificate, the place you found it (www.freebmd.org.uk) and the date you made the search.  We are going to make this easier for you by having a button that generates the text for you to copy-and-paste. </p>
+    <p>You can find more information about using citations in family history and academia in the <a href="/cms/about#cite">citations section of our About page</a>.</p>
+    <hr class="rule rule--ornament" />
+    
+    <h2 id="fhHelp">Further Help with Family History</h2>
+    <p>You can download the booklet: <a href="https://test3.freebmd.org.uk/system/resources/W1siZiIsIjIwMjAvMDIvMTYvd2VwM2hvYWp3X0Rpc2NvdmVyX3lvdXJfZmFtaWx5X2hpc3RvcnkucGRmIl1d/Discover%20your%20family%20history.pdf?sha=3bbea559f1d85455">“Discover Your Family History”, a PDF from the GRO</a> .</p>
+    <p>If the person you were looking for was alive and in the UK any time between 1841 and 1911, their census records might be available on our sister project, <a target="_blank" href="https://www.freecen.org.uk">FreeCEN (opens in new tab)</a>.</p>
+
+    <p>There is a lot more information available on the website of our parent charity, <a target="_blank" href=" https://www.freeukgenealogy.org.uk/about/genealogy-research/">FreeUK Genealogy (genealogy research, opens in new tab)</a>.</p>
+    <hr class="rule rule--ornament" />
+
+
+    <h2 id="accuracy">Accuracy of FreeBMD</h2>
+    <p>Whilst FreeBMD makes every effort to ensure accurate transcription, errors exist in both the original index and the transcription. You are advised to verify the reference given from an image of the index before ordering a certificate.  If there is a symbol of a camera on the Entry Information page, you can select that to see the image, if we have one.</p>
+    <p>If you have problems viewing an image you may prefer to confirm your search at the <a href="https://www.gro.gov.uk/gro/content/certificates/indexes_search.asp" target="_blank">GRO website (opens in new tab)</a> (available only for births up to 1918 and deaths to 1957).</p>
+    <p>If you are sure that our transcription differs from the GRO index, you can submit a correction request from the Entry Information page by using the “Report an Error in this Data” button which takes you to a Data Problem Report page.</p>
+
+    <p class="islet islet--bordered"><strong>In the pipeline:</strong> we are preparing some Frequently Asked Questions and answers.</p>
+    <hr class="rule rule--ornament" />
+    
+    <h2 id="usingSite">Using this site</h2>
+    <div class="island island--neutral">
+      <p class="banner__title">If you keep getting the cookie notice…</p>
+      <p>…see the advice on our <a href="/cms/about/cookie-policy">Cookie policy page</a>.</p>
+    </div>
+    <div class="island island--light">
+      <h4 class="push-half--bottom">Supported browsers</h4>
+      <p>FreeBMD has been tested on most common browsers. We recommend using the latest version of any browser. If you are using a version older than Chrome (v 25), Firefox (v 4.0), Internet Explorer (v 9), Edge, Safari (v 5.1), or Opera (v 15) then you might experience some issues. If you do, we suggest you update to a more recent version.</p>
+    </div>
+
+  </div>
+</div>

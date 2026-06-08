@@ -1,0 +1,14 @@
+<% title "Cookie Policy" %>
+<section id="body_content">
+  <% if MyopicVicar::Application.config.template_set.to_s == 'freebmd' %>
+    <%= render template: 'pages/freebmd/about/cookie-policy' %>
+  <% else %>
+    <h1 id="body_content_title">Cookie Policy</h1>
+    <div class="grid">
+      <div class="grid__item three-fifths lap-three-quarters palm-one-whole">
+        <p>For how we use cookies, see
+          <a href="https://www.freeukgenealogy.org.uk/about/cookies/">Free UK Genealogy — cookies</a>.</p>
+      </div>
+    </div>
+  <% end %>
+</section>

@@ -370,6 +370,19 @@ th.sticky-header {
     box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 }
 
+/* Sticky vrec advert on districts overview (desktop/tablet). */
+.db_vrec_sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 12px;
+  align-self: flex-start;
+}
+
+/* Allow sticky children on districts overview (grid sets overflow:hidden by default). */
+.grid.districts_overview_grid {
+  overflow: visible !important;
+}
+
 .table--striped {
 
     tbody tr:nth-of-type(odd) {

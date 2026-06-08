@@ -1,0 +1,191 @@
+<h1>Authoring Refinery pages in XML</h1>
+
+<div id="top">
+   <style scoped="">code, pre, kbd { font-family: monospace, serif;  font-size: 80%;  padding: 2px 4px;  color: #000;  background-color: #e0f5f5;  border-radius: 4px; }   kbd { background-color: #222; color: white; }  figcaption { font-style: italic;     color: #737373; margin-top: 0.3em; }   figure.site img { border: 2px solid #00a099; padding: 0.3em; } figure.image-wide img { width: 100%; height: auto; } figure img.narrow { max-width: 291px; height: auto; }</style>
+   
+   <div class="grid">
+      <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+         <p class="lead">This page describes an authoring framework for Refinery which is based on XML (eXtensible
+            Markup Language).</p>
+         <p>We have developed this new framework to help authors produce correctly-formatted pages.
+            Our goal is to offer web pages which are both <strong>responsive</strong> and <strong>accessible</strong>. Responsive pages will display sensibly on any device, from a full-sized monitor
+            down to a mobile phone. Accessible pages must be accessible to <em>all</em> users, including those who use screen readers, those with motor issues who cannot
+            use a pointing device reliably, those with cognitive issues who need clear, concise
+            content and a whole raft of other users who need special consideration. In order to
+            achieve these design goals, we have a set of conventions for our HTML and CSS. Our
+            XML application offers you a simple set of layout options, and then converts your
+            marked-up document to correctly-formatted HTML and CSS. This is intended to make life
+            easier both for you, the author, and for the proofreader who checks and approves your
+            work.</p>
+         <p>See <a href="#xml-software">XML-aware software</a> for guidance on which software to use to create your XML pages. We show you a <a href="#simple-example">simple example of a page authored in XML</a>. </p>
+      </div>
+      <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+         <nav aria-labelledby="thisPage">
+            <div class="islet islet--bordered">
+               <h2 class="title-block" id="thisPage">On this page</h2>
+               <ul class="sub-nav">
+                  <li><a href="#xml-software">XML-aware software</a>
+</li>
+                  <li><a href="#simple-example">A simple example page</a>
+</li>
+                  <li><a href="#using-the-system">Creating a Refinery page with XML support</a>
+</li>
+                  <li><a href="#markup-rules">XML markup rules</a>
+</li>
+               </ul>
+            </div>
+         </nav>
+      </div>
+      <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="xml-software">
+         <h2>XML-aware software</h2>
+         <p>There are two types of editor which you can use to work with XML documents: <strong>WYSIWYG</strong> (“What You See Is What You Get”) and <strong>text editors</strong>. A WYSIWYG editor looks just like a word processor, in that the result is laid out
+            nicely on the page — much as it is in Refinery’s default view of a page. With some
+            WYSIWYG editors you can choose whether or not you see the actual XML markup: start-tags,
+            end-tags and attributes. A text editor will show you the source XML, markup and all,
+            but will attempt to make your life easier by using different colours (“syntax highlighting”)
+            for tags, attribute values, and text. Which XML editors are available to you on your
+            own machine will depend on the operating system it runs. WYSIWYG editors for XML are
+            relatively rare, and can be pricey.</p>
+         <p class="push-half--bottom">For our purposes, the features we require in an XML-aware editor are:</p>
+         <ul>
+            <li>checking that the XML is “well-formed”, i.e. that the XML syntax is correct, and telling
+               you when it’s not</li>
+            <li>helping you to ensure that the structure of the XML conforms to our rules for the
+               allowed content of each page, i.e. that the XML is “valid”</li>
+            <li>providing support for XSLT transforms. We use XSLT to convert your XML into the final
+               HTML which will be pasted into Refinery</li>
+         </ul>
+         <p class="push-half--bottom">Here are some suggestions:</p>
+         <ul>
+            <li><strong>Notepad++</strong>: this is a free text editor, which supports XML authoring, validation against XML
+               Schema, and XSLT transforms. Notepad++ is a Windows-only program. <a href="https://notepad-plus-plus.org/downloads/">Download Notepad++</a>
+</li>
+            <li><strong>XmlBlueprint</strong>: another text editor, not free, but with a strong XML pedigree. XmlBlueprint is a
+               Windows-only program. <a href="https://www.xmlblueprint.com/download-xml-editor.htm">Download XmlBlueprint</a>
+</li>
+            <li><strong>xmplify</strong>: a text editor with support for DTD/Schema and XSLT. Xmplify runs on macOS systems.
+               <a href="http://xmplifyapp.com/">Download Xmplify</a>
+</li>
+            <li><strong>xmlcopyeditor</strong>: a text editor with support for DTD/Schema and XSLT. XML Copy Editor runs on Linux
+               — it installs happily on a Linux Mint machine. <a href="https://community.linuxmint.com/software/view/xmlcopyeditor">Download xmlcopyeditor</a>
+</li>
+            <li><strong>Oxygen</strong>: a premium WYSIWYG XML editor. Oxygen is multi-platform, and will run on Windows,
+               macOS and Linux. Mentioned only for completeness (i.e. an example of WYSIWYG support)
+               — it is very expensive and has a host of features which we will never need. <a href="https://www.oxygenxml.com/xml_editor/download_oxygenxml_editor.html">Download Oxygen</a>
+</li>
+         </ul>
+      </div>
+      <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="simple-example">
+         <h2>A simple example page</h2>
+         <p>This is what a basic page looks like when marked up in XML:
+            			
+            </p>
+<figure class="site image-wide float--left push--right "><%= image_tag 'page-example.png?sha=08f1e767ca15f657', alt: 'screenshot of a page marked up in XML' %><figcaption>Fig. 1: A basic page marked up in XML, as displayed in the XmlBlueprint editing program</figcaption>
+            </figure>
+         
+      </div>
+      <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="using-the-system">
+         <div id="d0e67" class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+            <nav aria-labelledby="thisSection">
+               <div class="islet islet--bordered">
+                  <h2 class="title-block">In the Creating a Refinery page with XML support section</h2>
+                  <ul class="sub-nav">
+                     <li><a href="#including-images">Including images in your page</a>
+</li>
+                     <li><a href="#including-page-links">Links within the current page, and links to other pages</a>
+</li>
+                  </ul>
+               </div>
+            </nav>
+         </div>
+         <h2>Creating a Refinery page with XML support</h2>
+         <p>You create your new Refinery page in the usual manner from the main Refinery menu.
+            Decide which existing page your new page will be a ‘child’ of, and give it a page
+            title. You can save your page now, and come back to it in Refinery later, once you
+            have created the page content using the XML system.</p>
+         <p>Now open your chosen XML editing program and create a new XML document for your page.
+            Associate it with the DTD or XML Schema we have created for Refinery documents. Your
+            XML editor may fill in the basic structure for you: this is what XmlBlueprint does:</p>
+         <figure class="site image-wide float--left push--right "><%= image_tag 'new-page-xmlblueprint.png?sha=ca27474a3ad4d08e', alt: 'screenshot showing a new document dialogue in XmlBlueprint' %><figcaption>Fig. 2: New record dialogue in XmlBlueprint, with the basic structure of the document
+               already filled in</figcaption>
+         </figure>
+         <p>Author your page in the XML editor. It should help you by offering a list of valid
+            elements when you start a new element, and by inserting end-tags to match each start-tag.</p>
+         <p>Save the XML page, then run the XSLT transform <code>refinery-html.xsl</code> on it. Go to the transformed page, highlight the whole thing, and copy it (Ctrl-C
+            on Windows).</p>
+         <p>Go back to Refinery and ask to edit the page you created earlier. Open the HTML text
+            box by pressing the ‘HTML’ button. If the page contains any HTML content, delete it
+            all. Now paste (Ctrl-V on Windows) the HTML you just generated into the Refinery page.
+            The rendered view will instantly update. Save the updated Refinery page. To see the
+            page as it will appear on our web site, go to the main Refinery menu and press the
+            ‘eye’ icon to the right of your page filename.</p>
+         <h3 id="including-images">Including images in your page</h3>
+         <p>Refinery has its own method of dealing with images. Before you can include images
+            in your page, you have to upload them to Refinery. There is a separate menu for images:</p>
+         <figure class="site image-wide float--left push--right "><%= image_tag 'refinery-image-menu.png?sha=7e5fe706907e8bb9', alt: 'refinery image menu' %><figcaption>Fig. 3: Refinery's image menu</figcaption>
+         </figure>
+         <p>Click on the “Add new image” button and complete the dialogue. When your image has
+            been uploaded, it will appear in the images menu page. Below each image there is a
+            row of buttons, similar to those provided for pages. Click on the right-hand button
+            (which looks like an eye) to bring up the image in a separate browser tab. </p>
+         <figure class="site image-wide float--left push--right "><%= image_tag 'view-image-button.png?sha=b09353a3ada97d45', alt: 'view image button' %><figcaption>Fig. 4: View image button</figcaption>
+         </figure>
+         <p>The address (URL) of the image will appear in the browser address bar. Copy this URL
+            and paste it into the <span style="font-family: Courier, sans-serif;">image</span> src attribute. Delete the start of the URL so it begins ‘/system/images/’. The image
+            should now appear both in Refinery’s preview and in the finished web page.</p>
+         <h3 id="including-page-links">Links within the current page, and links to other pages</h3>
+         <p>You can make a link to any part of the current page, using the pattern ‘#’ followed
+            by the ID of the section you want to link to: <span style="font-family: Courier, sans-serif;"> &lt;a href="#mySection"&gt;My section&lt;/a&gt; </span>
+</p>
+         <p>To link to other pages generated by Refinery, you can use the “eye” button in Refinery’s
+            Pages menu to see the page you want to link to. Its URL will be in the browser address
+            bar. Copy this URL and paste it into the <em>href</em> attribute of your link. Delete the first part of the URL, so that it begins ‘/cms/’.
+            (This is similar to the technique you use to include image URLs in your XML page.)</p>
+      </div>
+   </div>
+   <div class="grid">
+      <div class="grid__item three-fifths lap-two-thirds palm-one-whole" id="markup-rules">
+         <div id="d0e98" class="grid__item two-fifths lap-one-third palm-one-whole float--right">
+            <nav aria-labelledby="thisSection">
+               <div class="islet islet--bordered">
+                  <h2 class="title-block">In the XML markup rules section</h2>
+                  <ul class="sub-nav">
+                     <li><a href="#xml-page">Page</a>
+</li>
+                     <li><a href="#xml-title">Title</a>
+</li>
+                     <li><a href="#xml-section">Section</a>
+</li>
+                     <li><a href="#xml-p">Paragraph</a>
+</li>
+                     <li><a href="#xml-image">Image</a>
+</li>
+                  </ul>
+               </div>
+            </nav>
+         </div>
+         <h2>XML markup rules</h2>
+         <p>The XML elements provided should allow you to mark up your pages so that they look
+            right on our web site. This section explains the role of each XML element type in
+            our application.</p>
+         <h3 id="xml-page">Page</h3>
+         <p>The <code>page</code> element surrounds the whole page. It must be the ‘root element’ of each page’s XML
+            document, and must occur exactly once.</p>
+         <h3 id="xml-title">Title</h3>
+         <p>The <code>title</code> element contains the page title. This title is also entered in Refinery, but it is
+            included here for your convenience (so you know which XML source relates to each Refinery
+            page).</p>
+         <h3 id="xml-section">Section</h3>
+         <p>The <code>section</code> element contains a single section of your page. It must have an ID attribute, so
+            that it can be linked to from the ‘table of contents’ which is generated by the XSLT
+            transform.</p>
+         <h3 id="xml-p">Paragraph</h3>
+         <p>The <code>p</code> element contains a single paragraph.</p>
+         <h3 id="xml-image">Image</h3>
+         <p>The <code>image</code> element contains all the information required to display an image, together with
+            alt text for screen readers and a caption to appear on the page. As described <a href="#including-images">above</a>, you have to upload each image to Refinery before you can include it in your page.
+            Paste the URL assigned to the image by Refinery into the <em>src</em> attribute, removing the initial part of the URL so that it begins ‘/system/images/’.
+            Now provide an <em>alt</em> text for screen readers, and a <em>caption</em> to appear beneath the image.</p>
+      </div>
+   </div>
+</div>

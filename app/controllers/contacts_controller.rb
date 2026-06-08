@@ -15,6 +15,7 @@ class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
   require 'freebmd_contact_field_report'
+  require 'freebmd_constants'
 
   skip_before_action :require_login, only: [:new, :report_error, :create, :show, :question_answer_finder]
 
@@ -123,7 +124,10 @@ class ContactsController < ApplicationController
     params[:source] = 'original'
     get_user_info_from_userid
     order = 'contact_time DESC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     @archived = session[:archived_contacts]
   end
 
@@ -182,9 +186,19 @@ class ContactsController < ApplicationController
 
   def new
     @contact = Contact.new
-    @options = FreeregOptionsConstants::ISSUES
+    case appname_downcase
+    when 'freereg'
+      @options = FreeregOptionsConstants::ISSUES
+    when 'freebmd'
+      @options = FreebmdConstants::ISSUES
+    end
     @contact.contact_time = Time.now
-    @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+    case appname_downcase
+    when 'freereg'
+      @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+    when 'freebmd'
+      @contact.contact_type = FreebmdConstants::ISSUES[0]
+    end
     #flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?
   end
 
@@ -361,6 +375,19 @@ class ContactsController < ApplicationController
     read_file = file.read
     file = Nokogiri::HTML(read_file)
     @answer = file.css("div.answer_#{question_v}").to_html
+  end
+
+  def view_only_my_role
+    get_user_info_from_userid
+    order = 'contact_time DESC'
+    role = session[:role].presence || @user.person_role
+    archived = session[:archived_contacts] || false
+    @primary_contacts = Contact.contacts_of_role(role, archived, order, @user)
+    @secondary_contacts = []
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = false
+    @archived = archived
+    render :index
   end
 
   private

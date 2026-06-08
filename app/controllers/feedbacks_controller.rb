@@ -52,7 +52,7 @@ class FeedbacksController < ApplicationController
     @feedback.session_data.delete('warden.user.authentication_devise_user.session') if @feedback.session_data['warden.user.authentication_devise_user.session'].present?
     @feedback.session_id = session.to_hash['session_id']
     if @feedback.save
-      @feedback.github_issue
+      @feedback.github_issue if Contact.github_enabled
     end
     redirect_back(fallback_location: new_feedback_path, notice: 'There was a problem creating your feedback!') && return if @feedback.errors.any?
 
