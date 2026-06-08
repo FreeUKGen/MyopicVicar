@@ -25,15 +25,15 @@ class ImportUsersFromCsv
   private
 
   def send_password_reset_mail userid
-    fetch_refinery(userid).send_reset_password_instructions
+    fetch_auth_user(userid).send_reset_password_instructions
   end
 
-  def fetch_refinery userid
-    Refinery::Authentication::Devise::User.where(:username => userid).first
+  def fetch_auth_user userid
+    User.where(:username => userid).first
   end
 
   def user_existance userid
-    UseridDetail.where(userid: userid).present? && Refinery::Authentication::Devise::User.where(:username => userid).present?
+    UseridDetail.where(userid: userid).present? && User.where(:username => userid).present?
   end
 
   def write_log_file(category, user_array)

@@ -20,7 +20,7 @@
     </script>
       <!-- End Google Tag Manager -->
     <% if appname_downcase == 'freereg' %>
-      <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login') %>
+      <% unless current_page?('/users/sign_in') || current_page?('/cms/home/page-not-found') %>
         <div class="reg_adsense reg_unit reg_page_level_ads">
           <%#= banner_header_freereg %>
         </div>
@@ -126,7 +126,7 @@
         <div class="container" id='top'>
           <%#= breadcrumbs  :class => "delta  text--magenta" if appname_downcase="freebmd"%>
           <% if session[:userid_detail_id].present?%>
-            <%= breadcrumbs  :class => "delta  project-text-color"  unless controller_name == "refinery" ||
+            <%= breadcrumbs  :class => "delta  project-text-color"  unless controller_name == "pages" ||
              controller_name == "pages"%>
           <% end%>
           <% if content_for? :sidebar %>
