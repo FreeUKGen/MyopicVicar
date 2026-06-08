@@ -34,7 +34,7 @@ You MUST select an option even if there is only one.
       :input_html => {
         :class => "simple_form_bgcolour simple_form_position overide_selection_field_width",
         'onchange' => @update_counties_location,
-        :size => 3
+        :size => 5
       } %>
     <% if @counties.present? %>
       <%= f.input :county,
@@ -49,7 +49,7 @@ You MUST select an option even if there is only one.
         :input_html => {
           :class => "simple_form_bgcolour simple_form_position overide_selection_field_width",
           'onchange' => @update_places_location,
-          :size => 3
+          :size => 5
         } %>
     <% end %>
   <% end %>
@@ -64,7 +64,7 @@ You MUST select an option even if there is only one.
     :input_html => {
       :class => "simple_form_bgcolour simple_form_position overide_selection_field_width",
       'onchange' => @update_churches_location,
-      :size => 3
+      :size => 10
     } %>
   <%= f.input :church_name,
     :label => "Select church name from the following list",
@@ -77,7 +77,7 @@ You MUST select an option even if there is only one.
     :input_html => {
       :class => "simple_form_bgcolour simple_form_position overide_selection_field_width",
       'onchange' => @update_registers_location,
-      :size => 3
+      :size => 5
     } %>
   <%= f.input :register_type,
     :label => "Select Type of Register :",
@@ -89,7 +89,7 @@ You MUST select an option even if there is only one.
     ),
     :input_html => {
       :class => "simple_form_bgcolour simple_form_position overide_selection_field_width",
-      :size => 3
+      :size => 5
     } %>
   <div style="text-align: center">
     <%= f.action :submit,
