@@ -658,8 +658,8 @@ class SearchRecord
 
   def downcase_all
     search_names.each do |name|
-      name[:first_name].downcase! if name[:first_name]
-      name[:last_name].downcase! if name[:last_name]
+      name.first_name = name.first_name.downcase if name.first_name
+      name.last_name = name.last_name.downcase if name.last_name
     end
   end
 
@@ -1063,11 +1063,13 @@ ry_search_date
   end
 
   def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
+    first_name = copy_name(first_name)&.downcase
+    last_name = copy_name(last_name)&.downcase
     name = nil
     unless last_name.blank?
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => first_name, :last_name => last_name, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     else
-      name = SearchName.new({ :first_name => copy_name(first_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => first_name, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
     name
   end
