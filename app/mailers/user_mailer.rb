@@ -300,6 +300,16 @@ class UserMailer < Devise::Mailer
     mail(:to => email_addresses, :subject => email_subject, :body => email_body)
   end
 
+  def freecen_sct_parms_report(email_subject, email_body, log, log_name, txt, txt_name, csv, csv_name, email_to)
+    email_addresses = []
+    email_addresses << email_to
+    attachments[log_name] = { :mime_type => 'text/csv', :content => log} unless log.empty?
+    attachments[txt_name] = { :mime_type => 'text/csv', :content => txt} unless txt.empty?
+    attachments[csv_name] = { :mime_type => 'text/csv', :content => csv} unless csv.empty?
+
+    mail(:to => email_addresses, :subject => email_subject, :body => email_body)
+  end
+
   def freecen_vld_invalid_pob_report(email_subject, email_body, report, report_name, email_to, cc_to)
     email_addresses = []
     email_addresses << email_to
