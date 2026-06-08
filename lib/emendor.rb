@@ -19,6 +19,22 @@ module Emendor
   def self.emend(name_array)
     load_emendations unless @@emendations
 
+    if MyopicVicar::Application.config.template_set == 'freecen'
+      ascii_names = []
+      name_array.each do |name|
+        ascii_first_name = name[:first_name].present? ? I18n.transliterate(name[:first_name]) : ''
+        ascii_last_name = name[:last_name].present? ? I18n.transliterate(name[:last_name]) : ''
+        next if ascii_first_name == name[:first_name] && ascii_last_name == name[:last_name]
+
+        emended_name = SearchName.new(name.attributes)
+        emended_name[:first_name] = ascii_first_name
+        emended_name[:last_name] = ascii_last_name
+        emended_name.origin = 'e'
+        ascii_names << emended_name
+      end
+      name_array = name_array + ascii_names
+    end
+
     emended_names = []
     name_array.each do |name|
       rules = @@emendations[name[:first_name]] # currently hard-wired
@@ -26,7 +42,7 @@ module Emendor
       if rules
         rules.each do |rule|
           if rule[:gender].present? #ignore gender-based rule unless same gender
-            case 
+            case
             when (name[:gender].nil? && name[:role] == "bu")
               #p "no sex on burial"
             when (name[:gender].nil? && name[:role] == "wt")
