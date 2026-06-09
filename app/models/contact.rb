@@ -294,7 +294,7 @@ class Contact
       update_attribute(:screenshot, filename) unless read_attribute(:screenshot) == filename
     end
 
-    update_columns(screenshot_location: storage_location) if screenshot_location != storage_location
+    set(screenshot_location: storage_location) if screenshot_location != storage_location
     true
   end
 
@@ -302,7 +302,7 @@ class Contact
     location = computed_screenshot_location
     return if location.blank? || screenshot_location == location
 
-    update_columns(screenshot_location: location)
+    set(screenshot_location: location)
   end
 
   def computed_screenshot_location
