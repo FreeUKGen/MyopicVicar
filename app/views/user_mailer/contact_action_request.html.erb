@@ -24,7 +24,7 @@
   <% end %>
 <% end %>
 <p>
-  <% if @contact.screenshot_url.present? || (@contact.respond_to?(:screenshots) && @contact.screenshots.present?) %>
+  <% if @contact.attachments_present? %>
     <p>An image/attachment is provided</p>
   <% end %>
 </p>

@@ -19,7 +19,6 @@ class Contact
   field :github_number, type: String
   field :session_data, type: Hash
   field :screenshot, type: String
-  field :screenshots, type: Array, default: []
   field :record_id, type: String
   field :entry_id, type: String
   field :line_id, type: String
@@ -56,7 +55,8 @@ class Contact
   mount_uploaders :screenshots, ScreenshotUploader
 
   before_validation :normalize_freecen_contact_fields
-  before_create :url_check, :add_identifier, :add_screenshot_location
+  before_create :url_check, :add_identifier
+  after_save :sync_screenshot_location
 
   before_destroy :delete_replies
 
@@ -251,16 +251,73 @@ class Contact
     self.update_attribute(:body, body)
   end
 
-  def add_screenshot_location
-    if screenshot&.filename.present?
-      self.screenshot_location = "uploads/contact/screenshot/#{screenshot.model._id}/#{screenshot.filename}"
-      return
+  def attachments_present?
+    attachment_urls.present?
+  end
+
+  def attachment_urls
+    urls = []
+    if screenshots.present?
+      screenshots.each do |img|
+        next if img.blank? || img.url.blank?
+        urls << img.url
+      end
     end
+    if screenshot_url.present?
+      urls << screenshot_url unless urls.include?(screenshot_url)
+    end
+    if urls.empty? && screenshot_location.present?
+      urls << "/#{screenshot_location}"
+    end
+    urls
+  end
 
-    first = screenshots&.first
-    return if first.blank? || first.filename.blank?
+  def attachment_file_paths
+    paths = []
+    if screenshot&.path.present?
+      paths << screenshot.path
+    end
+    if screenshots.present?
+      screenshots.each do |img|
+        next if img.blank? || img.path.blank?
+        paths << img.path
+      end
+    end
+    if paths.empty? && screenshot_location.present?
+      full_path = Rails.root.join(screenshot_location)
+      paths << full_path.to_s if File.file?(full_path)
+    end
+    paths
+  end
 
-    self.screenshot_location = "uploads/contact/screenshots/#{id}/#{first.filename}"
+  def repair_screenshot_identifiers!
+    return if screenshots.present? || screenshot_location.blank?
+
+    filename = File.basename(screenshot_location)
+    return if filename.blank?
+
+    full_path = Rails.root.join(screenshot_location)
+    return unless File.file?(full_path)
+
+    update_attribute(:screenshots, [filename])
+  end
+
+  def sync_screenshot_location
+    location = computed_screenshot_location
+    return if location.blank? || screenshot_location == location
+
+    update_columns(screenshot_location: location)
+  end
+
+  def computed_screenshot_location
+    if screenshot&.filename.present?
+      "uploads/contact/screenshot/#{id}/#{screenshot.filename}"
+    elsif screenshots.present?
+      first = screenshots.first
+      return if first.blank? || first.filename.blank?
+
+      "uploads/contact/screenshots/#{id}/#{first.filename}"
+    end
   end
 
   def add_message_to_userid_messages_for_contact(message)

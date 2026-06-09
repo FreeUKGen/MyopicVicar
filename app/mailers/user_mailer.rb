@@ -190,17 +190,9 @@ class UserMailer < Devise::Mailer
   end
 
   def get_attachment(contact)
-    if contact.respond_to?(:screenshot) && contact.screenshot&.path.present?
-      file_name = File.basename(contact.screenshot.path)
-      attachments[file_name] = File.binread(contact.screenshot.path)
-    end
-
-    if contact.respond_to?(:screenshots) && contact.screenshots.present?
-      contact.screenshots.each do |img|
-        next if img.blank? || img.path.blank?
-        file_name = File.basename(img.path)
-        attachments[file_name] = File.binread(img.path)
-      end
+    contact.attachment_file_paths.each do |path|
+      file_name = File.basename(path)
+      attachments[file_name] = File.binread(path)
     end
   end
 
