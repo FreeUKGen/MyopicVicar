@@ -164,6 +164,7 @@
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %>
+    <script src="https://kit.fontawesome.com/820a86d666.js" crossorigin="anonymous"></script>
     <%= javascript_include_tag "#{appname.downcase}_advert_control.js" %>
     <% if DonationCampaign.active? && %w[freereg freecen freebmd].include?(appname.downcase) %>
       <%= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>

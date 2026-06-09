@@ -3,14 +3,14 @@
  	<div class="grid">
 	  <nav class="grid__item one-whole lap-one-whole palm-one-whole push-half--bottom flush--left hard--left" role="navigation" aria-label="Search menu">
 	  	<ul class='nav' style="<%= device_style %>" >
-				<li><%= link_to '<i class="fas fa-eye" style="padding-right:5px;"></i>View Search Criteria'.html_safe, '#search_criteria_container', id: "view_search_criteria"%></li>
-		    <li><%= link_to '<i class="far fa-edit" style="padding-right:5px;"></i>Revise Search'.html_safe, new_search_query_path(:search_id => @search_query, :result_count => @result_count) %></li>
-		    <li><%= link_to '<i class="fas fa-search" style="padding-right:5px;"></i>New Search'.html_safe, new_search_query_path(clear: 1) %></li>
+				<li><%= link_to '<i class="fa-solid fa-eye"></i>" style="padding-right:5px;"></i>View Search Criteria'.html_safe, '#search_criteria_container', id: "view_search_criteria"%></li>
+		    <li><%= link_to '<i class="fa-solid fa-pen-to-square"></i>" style="padding-right:5px;"></i>Revise Search'.html_safe, new_search_query_path(:search_id => @search_query, :result_count => @result_count) %></li>
+		    <li><%= link_to '<i class="fa-solid fa-magnifying-glass"></i>" style="padding-right:5px;"></i>New Search'.html_safe, new_search_query_path(clear: 1) %></li>
 		    <% if @results_per_page.to_i <= 50 %>
-					<li><%= link_to( '<i class="fas fa-print" style="padding-right:5px"></i>Print'.html_safe, "#", :onclick => 'window.print();return false;') %></li>
-					<li><%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as TSV'.html_safe, search_results_download_as_tsv_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
-					<li><%= link_to '<i class="fas fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
-					<li><%= link_to '<i class="fas fa-download" style="padding-right:5px"></i>Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
+					<li><%= link_to( '<i class="fa-solid fa-print"></i>" style="padding-right:5px"></i>Print'.html_safe, "#", :onclick => 'window.print();return false;') %></li>
+					<li><%= link_to '<i class="fa-solid fa-download"></i>&nbsp;&nbsp; Download as TSV'.html_safe, search_results_download_as_tsv_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
+					<li><%= link_to '<i class="fa-solid fa-download"></i>&nbsp;&nbsp; Download as CSV'.html_safe, search_results_download_as_csv_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
+					<li><%= link_to '<i class="fa-solid fa-download" style="padding-right:5px"></i>Download as GEDCOM'.html_safe, search_results_download_as_gedcom_path(@search_query, {page: @page, results_per_page: @results_per_page}) %></li>
 			  <% end %>
 				<% if cookies.signed[:userid].present? %>
 			      <li><%= link_to "Save this search", save_search_path(@search_query.id), method: "post" %></li>
