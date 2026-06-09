@@ -62,7 +62,7 @@
         <% elsif @contact.screenshot_location.present? %>
           <tr>
             <td>Attachment</td>
-            <td class="weight--semibold">An attachment was submitted but the file is not available on this server (<%= @contact.screenshot_location %>).</td>
+            <td class="weight--semibold">An attachment was recorded but the file is not available on this server. Put the file at <code>public/<%= @contact.screenshot_location %></code> or in <code>public/uploads/contact/screenshots/<%= @contact.id %>/</code> then reload this page.</td>
           </tr>
         <% end %>
       </table>
