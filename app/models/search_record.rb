@@ -222,7 +222,8 @@ class SearchRecord
         logger.warn " #{param[:id]} no longer exists"
         return [false, search_query, search_record, messagea]
       end
-      search_query = search.present? ? SearchQuery.search_id(search).first : ''
+      query_id = search.presence || param[:search_id]
+      search_query = query_id.present? ? SearchQuery.search_id(query_id).first : ''
       search_record = SearchRecord.record_id(param[:id]).first
       if search_record.blank?
         logger.warn(warning)
