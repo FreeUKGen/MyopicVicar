@@ -77,6 +77,7 @@ class ContactsController < ApplicationController
         end
       else
         flash[:notice] = 'Thank you for contacting us!'
+        record_freebmd1_correction_handoff(@contact) if @contact.contact_type == 'Data Problem'
         @contact.communicate_initial_contact
         if @contact.contact_type == 'Data Problem'
           redirect_to(data_problem_redirect_target(@contact)) && return
@@ -404,6 +405,11 @@ class ContactsController < ApplicationController
   def merge_contact_body_for_data_problem
     attach_freebmd_field_report_snapshot!
     extra_comments = @contact.body.to_s.strip
+    if extra_comments.present?
+      sd = normalize_session_data_hash(@contact.session_data)
+      sd['reporter_comments'] = extra_comments
+      @contact.session_data = sd
+    end
     auto = auto_body_from_report_error_session_data
     if auto.present? && extra_comments.present?
       @contact.body = "#{auto}\n\n--- Additional comments ---\n#{extra_comments}"
@@ -533,6 +539,44 @@ class ContactsController < ApplicationController
       REPORT_ERROR_BODY_SECTION_RULE,
       field_lines.join("\n")
     ].join("\n")
+  end
+
+  def record_freebmd1_correction_handoff(contact)
+    return unless appname_downcase == 'freebmd'
+    return if contact.record_id.blank?
+
+    require 'freebmd_correction_payload'
+    service = FreebmdCorrectionService.new
+    result = service.submit(contact: contact)
+    if result[:skipped]
+      store_freebmd1_correction_failure(contact, result[:message], skipped: true)
+      return
+    end
+
+    sd = normalize_session_data_hash(contact.session_data)
+    sd['freebmd1_correction'] = {
+      'success' => true,
+      'message' => result[:message],
+      'submitted_at' => Time.current.iso8601
+    }
+    contact.update_attributes(session_data: sd)
+  rescue FreebmdCorrectionService::ValidationError => e
+    Rails.logger.warn("FreeBMD1 correction skipped for contact #{contact.id}: #{e.message}")
+    store_freebmd1_correction_failure(contact, e.message, skipped: true)
+  rescue StandardError => e
+    Rails.logger.error("FreeBMD1 correction handoff failed for contact #{contact.id}: #{e.message}")
+    store_freebmd1_correction_failure(contact, e.message)
+  end
+
+  def store_freebmd1_correction_failure(contact, message, skipped: false)
+    sd = normalize_session_data_hash(contact.session_data)
+    sd['freebmd1_correction'] = {
+      'success' => false,
+      'skipped' => skipped,
+      'error' => message,
+      'submitted_at' => Time.current.iso8601
+    }
+    contact.update_attributes(session_data: sd)
   end
 
   def normalize_session_data_hash(sd)
