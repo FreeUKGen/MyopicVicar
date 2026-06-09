@@ -117,7 +117,7 @@
             <label for="name2">Please add your name again:</label>
             <input type="text" name="contact[contact_name]" id="name2">
           </li>
-          <%= f.action :submit, :as => :input,  :label => 'Submit' , :button_html => { :class => "btn", :style => "padding-top: 0 !important; padding-bottom: 0 !important; float: right;" }, :wrapper_html => { :class => "grid__item one-whole float--right push--bottom" }  %>
+          <%= f.action :submit, :as => :input,  :label => 'Submit' , :button_html => { :class => "btn btn--small", :style => "padding-top:4px !important; line-height:inherit; font-size:18px; font-weight:normal; margin:0; padding-bottom:4px !important;" }, :wrapper_html => { :class => "grid__item one-whole float--right push--bottom" , :style => "text-align: center;" }  %>
         </ul>
       <% end %>
     </section>
