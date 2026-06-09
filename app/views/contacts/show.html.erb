@@ -47,10 +47,25 @@
             <td class="weight--semibold"> <%= link_to @contact.github_comment_url, @contact.github_comment_url  %></td>
           </tr>
         <% end %>
+        <% if @contact.attachments_present? %>
+          <tr>
+            <td>Attachment</td>
+            <td class="weight--semibold">
+              <% @contact.attachment_urls.each do |url| %>
+                <div class="push--bottom">
+                  <%= link_to url, url, target: '_blank', rel: 'noopener' %>
+                  <div class="push--top"><%= image_tag url, alt: 'Contact attachment' %></div>
+                </div>
+              <% end %>
+            </td>
+          </tr>
+        <% elsif @contact.screenshot_location.present? %>
+          <tr>
+            <td>Attachment</td>
+            <td class="weight--semibold">An attachment was submitted but the file is not available on this server (<%= @contact.screenshot_location %>).</td>
+          </tr>
+        <% end %>
       </table>
-      <% @contact.attachment_urls.each do |url| %>
-        <%= image_tag url %>
-      <% end %>
     </div>
   </section>
 </div>

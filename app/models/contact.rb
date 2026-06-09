@@ -257,49 +257,44 @@ class Contact
 
   def attachment_urls
     urls = []
+    append_uploader_url(urls, screenshot)
     if screenshots.present?
-      screenshots.each do |img|
-        next if img.blank? || img.url.blank?
-        urls << img.url
-      end
-    end
-    if screenshot_url.present?
-      urls << screenshot_url unless urls.include?(screenshot_url)
+      screenshots.each { |img| append_uploader_url(urls, img) }
     end
     if urls.empty? && screenshot_location.present?
-      urls << "/#{screenshot_location}"
+      public_path = screenshot_public_path
+      urls << "/#{screenshot_location}" if public_path.present? && File.file?(public_path)
     end
     urls
   end
 
   def attachment_file_paths
     paths = []
-    if screenshot&.path.present?
-      paths << screenshot.path
-    end
+    append_uploader_path(paths, screenshot)
     if screenshots.present?
-      screenshots.each do |img|
-        next if img.blank? || img.path.blank?
-        paths << img.path
-      end
+      screenshots.each { |img| append_uploader_path(paths, img) }
     end
     if paths.empty? && screenshot_location.present?
-      full_path = Rails.root.join(screenshot_location)
-      paths << full_path.to_s if File.file?(full_path)
+      public_path = screenshot_public_path
+      paths << public_path.to_s if public_path.present? && File.file?(public_path)
     end
     paths
   end
 
   def repair_screenshot_identifiers!
-    return if screenshots.present? || screenshot_location.blank?
+    return if screenshot_location.blank?
 
     filename = File.basename(screenshot_location)
     return if filename.blank?
 
-    full_path = Rails.root.join(screenshot_location)
-    return unless File.file?(full_path)
+    public_path = screenshot_public_path
+    return unless public_path.present? && File.file?(public_path)
 
-    update_attribute(:screenshots, [filename])
+    if screenshot_location.include?('/contact/screenshot/')
+      update_attribute(:screenshot, filename) if read_attribute(:screenshot).blank?
+    elsif read_attribute(:screenshots).blank?
+      update_attribute(:screenshots, [filename])
+    end
   end
 
   def sync_screenshot_location
@@ -750,6 +745,30 @@ class Contact
   end
 
   private
+
+  def screenshot_public_path(location = screenshot_location)
+    return if location.blank?
+
+    Rails.public_path.join(location)
+  end
+
+  def append_uploader_url(urls, uploader)
+    return if uploader.blank?
+
+    path = uploader.path
+    url = uploader.url
+    return if url.blank?
+    return unless path.blank? || File.file?(path)
+
+    urls << url unless urls.include?(url)
+  end
+
+  def append_uploader_path(paths, uploader)
+    return if uploader.blank? || uploader.path.blank?
+    return unless File.file?(uploader.path)
+
+    paths << uploader.path unless paths.include?(uploader.path)
+  end
 
   def reply_sent_messages(message, sender_userid, contact_recipients, other_recipients)
     @message = message
