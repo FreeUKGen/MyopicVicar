@@ -33,6 +33,7 @@ gem 'gretel'
 gem 'geocoder', '1.3.7' #appears to be a regression in 1.4
 gem 'bourbon'
 gem 'mail-logger'
+gem 'mail', '~> 2.7.1'
 gem 'devise'
 gem 'devise-encryptable'
 gem 'nokogiri', ">= 1.13.6"
