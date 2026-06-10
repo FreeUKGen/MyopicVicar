@@ -770,7 +770,7 @@ class Contact
       next unless candidate.directory?
 
       image = Dir.glob(candidate.join('*')).find { |path| path =~ /\.(jpe?g|gif|png)\z/i }
-      return image if image.present?
+      return Pathname.new(image) if image.present?
     end
     nil
   end

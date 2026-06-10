@@ -350,8 +350,10 @@ class ContactsController < ApplicationController
     @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
 
-    @contact.repair_screenshot_identifiers!
-    @contact.reload
+    if @contact.screenshot_location.present? && !@contact.attachments_present?
+      @contact.repair_screenshot_identifiers!
+      @contact.reload
+    end
 
     if @contact.entry_id.present? && Freereg1CsvEntry.id(@contact.entry_id).present?
       file = Freereg1CsvEntry.id(@contact.entry_id).first.freereg1_csv_file
