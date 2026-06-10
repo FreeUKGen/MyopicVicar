@@ -53,7 +53,6 @@
             <td class="weight--semibold">
               <% @contact.attachment_urls.each do |url| %>
                 <div class="push--bottom">
-                  <%= link_to url, url, target: '_blank', rel: 'noopener' %>
                   <div class="push--top"><%= image_tag url, alt: 'Contact attachment' %></div>
                 </div>
               <% end %>
