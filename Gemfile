@@ -58,4 +58,3 @@ gem 'browser'
 gem "mongo_session_store", "~> 3.2"
 gem 'mimemagic', '~> 0.4.3'
 gem 'mime-types', '~> 3.5.0'
-gem 'logger', '~> 1.3.0'
