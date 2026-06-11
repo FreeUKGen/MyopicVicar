@@ -10,7 +10,7 @@
     <%elsif record_type(@entry).downcase == "burial"%>
       <%=entitle(@entry['burial_person_forename'])%> <%=entitle(@entry['burial_person_surname'])%> <%=entitle(@entry['burial_date'])%>
     <%elsif record_type(@entry).downcase == "marriage"%>
-      <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%> <%=entitle(@entry['marriage_date'].presence || @entry['contract_date'])%>
+      <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%> <%=entitle(marriage_date_for_citation(@entry))%>
     <%end%>
     <br>
     Web address:<%=search_record_link(@search_record[:_id])%>  viewed <%=Date.today.strftime("%e %b %Y")%>
