@@ -755,6 +755,9 @@ class Freereg1CsvEntry
       order = order + FreeregOptionsConstants::ORIGINAL_MARRIAGE_LAYOUT
       order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
     end
+    if contract_date.present? && !order.include?('contract_date')
+      order.insert(order.index('marriage_date') + 1, 'contract_date')
+    end
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq
     order
