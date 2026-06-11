@@ -5,9 +5,9 @@ class UserMailer < Devise::Mailer
   reg_website = MyopicVicar::Application.config.website == 'https://www.freereg.org.uk' ? '' : 'Test'
   cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: "#{reg_website} FreeREG Servant <no-reply@freereg.org.uk>"
+    default from: "#{reg_website} FreeREG <no-reply@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{cen_website} FreeCEN Servant <no-reply@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN <no-reply@freecen.org.uk>"
   end
 
   helper EmailHelper
