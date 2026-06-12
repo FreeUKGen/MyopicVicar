@@ -157,7 +157,6 @@ class ManageSyndicatesController < ApplicationController
       when 'freecen'
         logger.warn "FREECEN::USER #{@user.userid} has no syndicates and attempting to manage one"
       end
-      redirect_back(fallback_location: new_manage_syndicate_path, notice: 'You do not have any syndicates') && return
     end
   end
 
@@ -231,7 +230,7 @@ class ManageSyndicatesController < ApplicationController
     syndicates_for_selection
     @syndicates.blank? ? number_of_syndicates = 0 : number_of_syndicates = @syndicates.length
 
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'You do not have any syndicates to manage') && return if number_of_syndicates.zero?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No counties/syndicates to manage.') && return if number_of_syndicates.zero?
 
     if number_of_syndicates == 1
       @syndicate = @syndicates[0]
