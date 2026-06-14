@@ -114,7 +114,7 @@ class DistrictsController < ApplicationController
   end
 
   def get_entry(entry_id=nil)
-    BestGuess.find(entry_id) if entry_id.present?
+    BestGuess.find_by(RecordNumber: entry_id) if entry_id.present?
   end
 
   def fetch_unique_name_counts(district_number, record_type)
