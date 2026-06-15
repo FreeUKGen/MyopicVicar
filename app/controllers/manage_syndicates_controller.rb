@@ -148,7 +148,7 @@ class ManageSyndicatesController < ApplicationController
         synd << syn unless all
         synd << syn.syndicate_code if all
       end
-      @syndicates = synd
+      @syndicates = synd.reject(&:blank?)
       @syndicates.sort! if @syndicates.present?
     else
       case appname_downcase

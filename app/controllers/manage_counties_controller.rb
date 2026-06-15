@@ -189,7 +189,7 @@ class ManageCountiesController < ApplicationController
         @counties << county unless @counties.include?(county)
       end
     end
-    @counties = @counties.compact if @counties.present?
+    @counties = @counties.reject(&:blank?) if @counties.present?
     @counties.sort! if @counties.present?
   end
 
