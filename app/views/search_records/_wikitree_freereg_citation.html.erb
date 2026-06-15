@@ -12,7 +12,7 @@
       <%=entitle(@entry['burial_date'])%>
     <% elsif record_type(@entry).downcase == "marriage"%>
       <%=entitle(@entry['groom_forename'])%> <%=entitle(@entry['groom_surname'])%> to <%=entitle(@entry['bride_forename'])%> <%=entitle(@entry['bride_surname'])%>
-      <%=entitle(@entry['marriage_date'])%>
+      <%=entitle(marriage_date_for_citation(@entry))%>
     <% end%>
   </p>
 </section>
