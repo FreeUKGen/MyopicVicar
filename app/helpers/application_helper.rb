@@ -110,11 +110,11 @@ module ApplicationHelper
   def donate_nav
     content_tag :div do
       safe_join([
-        content_tag(:i, '',class: donate_page? ? 'fas fa-hand-holding-heart' :  'fas fa-heart heart-icon', style: 'margin-right: 5px'),
-        content_tag(:i, '', class: donate_page? ? '' : 'fas fa-hand-holding-heart hand-heart-icon', style: donate_page? ? '' : 'margin-right: 5px;'),
+        content_tag(:i, '',class: donate_page? ? 'fa-solid fa-hand-holding-heart' :  'fa-solid fa-heart', style: 'margin-right: 5px'),
+        content_tag(:i, '', class: donate_page? ? '' : 'fa-solid fa-hand-holding-heart hand-heart-icon', style: donate_page? ? '' : 'margin-right: 5px;'),
         content_tag(:span, "Donate"),
-        content_tag(:i, '',class: donate_page? ? 'fas fa-hand-holding-heart' : 'fas fa-heart heart-icon', style: 'margin-left: 5px'),
-        content_tag(:i, '', class: donate_page? ? '' : 'fas fa-hand-holding-heart hand-heart-icon', style: donate_page? ? '' : 'margin-left:5px;')
+        content_tag(:i, '',class: donate_page? ? 'fa-solid fa-hand-holding-heart' : 'fa-solid fa-heart', style: 'margin-left: 5px'),
+        content_tag(:i, '', class: donate_page? ? '' : 'fa-solid fa-hand-holding-heart hand-heart-icon', style: donate_page? ? '' : 'margin-left:5px;')
       ])
     end
   end
