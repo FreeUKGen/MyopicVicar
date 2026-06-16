@@ -367,6 +367,8 @@
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
     birth_chapman_codes.delete_if { |x| x.blank? }
+    self.first_name = first_name.tr("’", "'") if first_name.present?
+    self.last_name = last_name.tr("’", "'") if last_name.present?
   end
 
   def compare_location(x, y)
