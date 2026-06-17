@@ -519,8 +519,16 @@ class UseridDetailsController < ApplicationController
     @current_user = get_user
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Sorry, You are not authorized for this action') && return unless stats_permitted_users?
 
-    @from_date = params[:from_date].present? ? Date.parse(params[:from_date]) rescue 3.months.ago.to_date : 3.months.ago.to_date
-    @to_date   = params[:to_date].present?   ? Date.parse(params[:to_date])   rescue Date.today               : Date.today
+    @from_date = begin
+                   params[:from_date].present? ? Date.parse(params[:from_date]) : 3.months.ago.to_date
+                 rescue ArgumentError
+                   3.months.ago.to_date
+                 end
+    @to_date   = begin
+                   params[:to_date].present? ? Date.parse(params[:to_date]) : Date.today
+                 rescue ArgumentError
+                   Date.today
+                 end
 
     @total_users = UseridDetail.count
     @total_transcribers = UseridDetail.where(person_role: 'transcriber').count
