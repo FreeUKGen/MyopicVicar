@@ -307,7 +307,8 @@ module UseridRole
     SYNDICATE_MANAGEMENT_OPTIONS = ['Review Active Members', 'Review All Members', 'Transcription Agreement Accepted',
                                     'Transcription Agreement Not Accepted', 'Select Specific Member by Userid',
                                     'Select Specific Member by Email Address', 'Select Specific Member by Surname/Forename',
-                                    'Incomplete Registrations', 'Syndicate Messages', 'Change Recruiting Status']
+                                    'Incomplete Registrations', 'Syndicate Messages', 'Change Recruiting Status',
+                                    'Active Volunteer Upload Report']
   when 'freebmd'
   end
 
@@ -333,7 +334,8 @@ module UseridRole
     'List files waiting to be processed' => '/manage_syndicates/display_files_waiting_to_be_processed',
     'List files NOT processed' => '/manage_syndicates/display_files_not_processed',
     'Change Recruiting Status' => '/manage_syndicates/selection?option=Change Recruiting Status',
-    'Manage Images' => '/manage_syndicates/selection?option=Manage Images'
+    'Manage Images' => '/manage_syndicates/selection?option=Manage Images',
+    'Active Volunteer Upload Report' => '/manage_syndicates/active_volunteer_report'
   }
   PHYSICAL_FILES_OPTIONS = ['Waiting to be processed', 'Files not processed', 'Processed but no file', 'Browse files', 'Files for specific userid']
 

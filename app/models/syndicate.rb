@@ -140,6 +140,20 @@ class Syndicate
     userids
   end
 
+  def self.active_volunteer_upload_stats(syndicate_codes, cutoff)
+    result = {}
+    syndicate_codes.each do |code|
+      volunteers = UseridDetail.where(active: true, syndicate: code).order_by(userid_lower_case: 1)
+      result[code] = volunteers.map do |user|
+        files   = FreecenCsvFile.where(userid: user.userid, :uploaded_date.gte => cutoff)
+        pieces  = files.count
+        entries = files.sum(:total_records).to_i
+        { userid: user.userid, pieces: pieces, entries: entries }
+      end
+    end
+    result
+  end
+
   def self.productive_volunteers(syndicate, start_date, end_date)
     stats = {}
     UseridDetail.syndicate(syndicate).each do |u|

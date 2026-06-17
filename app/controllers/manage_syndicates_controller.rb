@@ -13,6 +13,8 @@
 #
 class ManageSyndicatesController < ApplicationController
 
+  require 'csv'
+
   def batches_with_errors
     get_user_info_from_userid
     @county = session[:syndicate]
@@ -314,6 +316,61 @@ class ManageSyndicatesController < ApplicationController
 
   def upload_batch
     redirect_to(new_csvfile_path) && return
+  end
+
+  def active_volunteer_report
+    get_user_info_from_userid
+    all_access_roles = %w[system_administrator executive_director project_manager]
+
+    if all_access_roles.include?(@user.person_role)
+      syndicate_codes = Syndicate.all.order_by(syndicate_code: 1).pluck(:syndicate_code)
+    elsif @user.person_role == 'syndicate_coordinator'
+      syndicate_codes = session[:syndicate].present? ? [session[:syndicate]] : (@user.syndicate_groups || []).sort
+    else
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'You are not authorised to access this report') && return
+    end
+
+    if syndicate_codes.blank?
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'No syndicates found') && return
+    end
+
+    cutoff = 12.months.ago
+    stats  = Syndicate.active_volunteer_upload_stats(syndicate_codes, cutoff)
+
+    file_date     = Time.current.strftime('%Y%m%d%H%M')
+    file_name     = "FreeCEN_Active_Volunteer_Report_#{file_date}.csv"
+    file_location = Rails.root.join('tmp', file_name)
+
+    project_with_uploads = 0
+    zero_rows = []
+
+    CSV.open(file_location, 'wb', row_sep: "\r\n") do |csv|
+      csv << ["FreeCEN Active Volunteer Upload Report - Rolling 12 Months from #{cutoff.strftime('%d/%m/%Y')}"]
+      csv << []
+      csv << ['Main Report: Active Volunteers with Uploads']
+      csv << %w[Syndicate UserId Pieces_Uploaded Entries_Uploaded]
+
+      syndicate_codes.each do |code|
+        rows         = stats[code] || []
+        with_uploads = rows.select { |r| r[:pieces] > 0 }
+        zeros        = rows.select { |r| r[:pieces] == 0 && r[:entries] == 0 }
+
+        with_uploads.each { |r| csv << [code, r[:userid], r[:pieces], r[:entries]] }
+        csv << [code, '', 'Volunteers with uploads:', with_uploads.size]
+
+        project_with_uploads += with_uploads.size
+        zeros.each { |r| zero_rows << [code, r[:userid], r[:pieces], r[:entries]] }
+      end
+
+      csv << []
+      csv << ['', '', 'Project Total - Volunteers with uploads:', project_with_uploads]
+      csv << []
+      csv << ['Sub-Report: Active Volunteers with Zero Uploads']
+      csv << %w[Syndicate UserId Pieces_Uploaded Entries_Uploaded]
+      zero_rows.each { |row| csv << row }
+    end
+
+    send_file(file_location, filename: file_name, x_sendfile: true)
   end
 
   def display_no_syndicate_message
