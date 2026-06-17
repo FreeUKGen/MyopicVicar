@@ -517,8 +517,10 @@ class UseridDetailsController < ApplicationController
 
   def transcriber_statistics
     @current_user = get_user
-    @timeline = params[:timeline].present? ? params[:timeline].to_i : 3
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Sorry, You are not authorized for this action') && return unless stats_permitted_users?
+
+    @from_date = params[:from_date].present? ? Date.parse(params[:from_date]) rescue 3.months.ago.to_date : 3.months.ago.to_date
+    @to_date   = params[:to_date].present?   ? Date.parse(params[:to_date])   rescue Date.today               : Date.today
 
     @total_users = UseridDetail.count
     @total_transcribers = UseridDetail.where(person_role: 'transcriber').count
@@ -546,9 +548,8 @@ class UseridDetailsController < ApplicationController
     @percentage_all_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_users_accepted_transcriber_agreement
     @percentage_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_users_accepted_transcriber_agreement
     @percentage_active_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_active_users_accepted_transcriber_agreement
-    @new_users = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - @timeline.months }).count
-    #@new_users_last_90_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 90.days }).count
-    @number_of_transcribers_recently_uploaded_file = UseridDetail.number_of_transcribers_uploaded_file_recently(@timeline)
+    @new_users = UseridDetail.where(sign_up_date: { '$gte': @from_date.beginning_of_day, '$lte': @to_date.end_of_day }).count
+    @number_of_transcribers_recently_uploaded_file = UseridDetail.number_of_transcribers_uploaded_file_in_period(@from_date, @to_date)
     @images_groups_unallocated = ImageServerGroup.unallocated_groups_count
   end
 
