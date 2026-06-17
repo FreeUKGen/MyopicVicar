@@ -45,6 +45,7 @@ end
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
   # Required by Devise 4.7+ when routes load; must stay in sync with Rails session signing.
+  config.secret_key = '59346084c3d448d64d3c0a42d70bf2ee47f1f14572c471e41617049caa7d72a773911e6ab75d853daca622c0777dd797904323de3e51dfd3c6b1ebbe411af446'
   #config.secret_key = Rails.application.secret_key_base
 
   # ==> Controller configuration
