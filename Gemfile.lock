@@ -372,7 +372,6 @@ DEPENDENCIES
   json
   kaminari
   kaminari-mongoid
-  mail (~> 2.7.1)
   mail-logger
   mime-types (~> 3.5.0)
   mimemagic (~> 0.4.3)
