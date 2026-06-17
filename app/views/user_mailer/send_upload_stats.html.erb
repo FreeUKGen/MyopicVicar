@@ -33,6 +33,43 @@
       </tr>
     </table>
   </div>
+  <% if @trend_data.present? %>
+    <strong>Upload Trends (Rolling 12 Months)</strong>
+
+    <p style="margin:8px 0 4px;"><strong>Records Added Per Month</strong></p>
+    <% max_records = @trend_data.map { |d| d[:records_added] }.max.to_f %>
+    <table style="border-collapse:collapse; font-size:12px; font-family:Arial,sans-serif;">
+      <% @trend_data.each do |row| %>
+        <% bar_px = max_records > 0 ? (row[:records_added] / max_records * 300).round : 0 %>
+        <tr>
+          <td style="text-align:right; padding:2px 6px 2px 0; width:50px; color:#555;"><%= row[:label] %></td>
+          <td style="padding:2px 0;">
+            <table style="border-collapse:collapse;"><tr>
+              <td style="background-color:#4472C4; width:<%= bar_px %>px; height:14px;">&nbsp;</td>
+            </tr></table>
+          </td>
+          <td style="padding:2px 0 2px 6px; color:#333;"><%= number_with_delimiter(row[:records_added]) %></td>
+        </tr>
+      <% end %>
+    </table>
+
+    <p style="margin:12px 0 4px;"><strong>Uploaders Per Month</strong></p>
+    <% max_uploaders = @trend_data.map { |d| d[:uploaders] }.max.to_f %>
+    <table style="border-collapse:collapse; font-size:12px; font-family:Arial,sans-serif;">
+      <% @trend_data.each do |row| %>
+        <% bar_px = max_uploaders > 0 ? (row[:uploaders] / max_uploaders * 300).round : 0 %>
+        <tr>
+          <td style="text-align:right; padding:2px 6px 2px 0; width:50px; color:#555;"><%= row[:label] %></td>
+          <td style="padding:2px 0;">
+            <table style="border-collapse:collapse;"><tr>
+              <td style="background-color:#70AD47; width:<%= bar_px %>px; height:14px;">&nbsp;</td>
+            </tr></table>
+          </td>
+          <td style="padding:2px 0 2px 6px; color:#333;"><%= row[:uploaders] %></td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
   <strong>Syndicate Statistics</strong>
   <div class="scrollable">
     <table style="border: 1px solid black;">

@@ -566,6 +566,9 @@ class UserMailer < Devise::Mailer
     @closed_syndicates = Syndicate.where(accepting_transcribers: false)
     from_email = "no-reply@#{appname.downcase}.org.uk"
     to_email, cc_email = app_specific_email_upload_stats
+
+    @trend_data = gather_trend_data(start_date) if appname.downcase == 'freecen'
+
     mail(from: from_email, to: to_email, cc: cc_email, subject: "Upload report stats")
   end
 
@@ -623,6 +626,34 @@ class UserMailer < Devise::Mailer
       cc_email = "vinodhini.subbu@freeukgenealogy.org.uk"
     end
     [to_email, cc_email]
+  end
+
+  def gather_trend_data(reference_date)
+    months = 13.downto(1).map { |n| reference_date - n.months }
+    stats_by_key = months.each_with_object({}) do |d, h|
+      h["#{d.year}-#{d.month}"] = Freecen2SiteStatistic.where(year: d.year, month: d.month).last
+    end
+
+    months.each_cons(2).map do |prev_d, curr_d|
+      prev_stat = stats_by_key["#{prev_d.year}-#{prev_d.month}"]
+      curr_stat = stats_by_key["#{curr_d.year}-#{curr_d.month}"]
+
+      records_added = 0
+      if curr_stat.present? && prev_stat.present?
+        curr_total = (curr_stat.records.dig(:total, :total, :csv_entries) || 0) +
+                     (curr_stat.records.dig(:total, :total, :vld_entries) || 0)
+        prev_total = (prev_stat.records.dig(:total, :total, :csv_entries) || 0) +
+                     (prev_stat.records.dig(:total, :total, :vld_entries) || 0)
+        records_added = [curr_total - prev_total, 0].max
+      end
+
+      month_start = Date.new(curr_d.year, curr_d.month, 1)
+      uploaders = FreecenCsvFile.where(:created_at.gte => month_start,
+                                       :created_at.lte => month_start.end_of_month)
+                                .distinct(:userid).count
+
+      { label: month_start.strftime('%b %y'), records_added: records_added, uploaders: uploaders }
+    end
   end
 
   def get_email_address_array_from_array_of_userids(userids)
