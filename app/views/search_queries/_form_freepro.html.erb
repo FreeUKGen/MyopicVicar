@@ -39,7 +39,7 @@
           <label class="ttip" for="start_year" tabindex="0">
             First year
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional, YYYY. The first year you want to search</span>
+            <span class="ttip__text">Optional, YYYY. The earliest year you want to search</span>
           </label>
           <% if @search_query.start_year.nil? %>
             <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
@@ -51,7 +51,7 @@
           <label class="ttip" for="end_year" tabindex="0">
             Last year
             <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional, YYYY. The last year you want to search</span>
+            <span class="ttip__text">Optional, YYYY. The latest year you want to search</span>
           </label>
           <% if @search_query.end_year.nil? %>
             <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">

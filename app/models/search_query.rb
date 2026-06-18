@@ -1069,6 +1069,7 @@ class SearchQuery
 
   def freepro_search_records
     search_fields = pro_adjust_field_names
+    #@search_parameters = search_params
     text_search = self.attributes.symbolize_keys[:text]
     if text_search.present?
       search_fields_with_text_search = {}
@@ -1081,10 +1082,11 @@ class SearchQuery
     else
       records = SearchQuery.get_search_table.where(search_fields)
     end
-    recordCount = SearchQuery.get_search_table.count
     #records = SearchQuery.get_search_table.where("$text" => { "$search" => "Surrey" } ).and("Death.LastName" => "SMITH")
     #records = SearchQuery.get_search_table.where("Death.Address" => "the Lower Bourne Farnham Rural Surrey")
     #records = SearchQuery.get_search_table.where({"Death.LastName" => "EARWAKER"})
+    #records = SearchQuery.get_search_table.where({"Death.Year": "1898"}).and({"Death.GivenName": "William"})
+    recordCount = SearchQuery.get_search_table.count
     persist_results(records)
     records
   end
@@ -1094,6 +1096,7 @@ class SearchQuery
       first_name: 'Death.GivenName',
       last_name: 'Death.LastName',
       start_year: 'Death.Year',
+      end_year: 'Death.Year',
       session_id: 'RecordId'
     }
   end
