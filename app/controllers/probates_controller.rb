@@ -19,8 +19,10 @@ class ProbatesController < ApplicationController
     @person_id = params[:person_id]
     @search_query = params[:search_query]
     @search_record = Probate.where('PersonId': @person_id).first
-    @death = Death.where('PersonId': @person_id).first
-    @event = Event.where('PersonId': @person_id).first
+    @death = @search_record.Death
+    @death = Death.where('PersonId': @person_id).first if @death.nil?
+    @event = @search_record.Event
+    @event = Event.where('PersonId': @person_id).first if @event.nil?
     respond_to do |format|
       format.html
       format.pdf
