@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 module Emendor
 
   @@emendations = nil
@@ -19,20 +20,20 @@ module Emendor
   def self.emend(name_array)
     load_emendations unless @@emendations
 
-    if MyopicVicar::Application.config.template_set == 'freecen'
-      ascii_names = []
+    if App.name.downcase == 'freecen'
+      normalized_names = []
       name_array.each do |name|
-        ascii_first_name = name[:first_name].present? ? I18n.transliterate(name[:first_name]) : ''
-        ascii_last_name = name[:last_name].present? ? I18n.transliterate(name[:last_name]) : ''
-        next if ascii_first_name == name[:first_name] && ascii_last_name == name[:last_name]
+        normalized_first_name = normalize_name(name[:first_name])
+        normalized_last_name = normalize_name(name[:last_name])
+        next if normalized_first_name == name[:first_name] && normalized_last_name == name[:last_name]
 
         emended_name = SearchName.new(name.attributes)
-        emended_name[:first_name] = ascii_first_name
-        emended_name[:last_name] = ascii_last_name
+        emended_name[:first_name] = normalized_first_name
+        emended_name[:last_name] = normalized_last_name
         emended_name.origin = 'e'
-        ascii_names << emended_name
+        normalized_names << emended_name
       end
-      name_array = name_array + ascii_names
+      name_array = name_array + normalized_names
     end
 
     emended_names = []
@@ -71,6 +72,12 @@ module Emendor
       @@emendations[rule.original] = [] unless @@emendations[rule.original]
       @@emendations[rule.original] << rule
     end
+  end
+
+  def self.normalize_name(name)
+    return '' if name.blank?
+
+    I18n.transliterate(name).downcase
   end
 
 
@@ -123,6 +130,6 @@ module Emendor
         end
       end
     end
-
   end
+
 end

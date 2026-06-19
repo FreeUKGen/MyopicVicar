@@ -89,6 +89,7 @@ class SearchQuery
   UCF        = /[\[\{}_\*\?]/.freeze
   VALID_YEAR = /\b\d{4}\b/.freeze
 
+
   field :first_name, type: String # , :required => false
   field :last_name, type: String # , :required => false
   field :fuzzy, type: Boolean
@@ -542,20 +543,20 @@ class SearchQuery
                 filtered_records << record
               end
 
-            # CASE 2: Only first name provided
+              # CASE 2: Only first name provided
             elsif last_name.blank? && first_name.present? && name.first_name.present?
               regex = UcfTransformer.ucf_to_regex(name.first_name.downcase)
 
               Rails.logger.info "[filter_ucf_records] first_name_regex: #{regex}"
-              
+
               if first_name.downcase.match(regex)
                 Rails.logger.info "[filter_ucf_records] Matched first name wildcard"
                 filtered_records << record
               end
 
-            # CASE 3: Both names provided
+              # CASE 3: Both names provided
             elsif last_name.present? && first_name.present? &&
-                  name.last_name.present? && name.first_name.present?
+                name.last_name.present? && name.first_name.present?
 
               last_regex  = UcfTransformer.ucf_to_regex(name.last_name.downcase)
               first_regex = UcfTransformer.ucf_to_regex(name.first_name.downcase)
@@ -563,7 +564,7 @@ class SearchQuery
               Rails.logger.info "[filter_ucf_records] last_regex: #{last_regex} , first_regex: #{first_regex}"
 
               if last_name.downcase.match(last_regex) &&
-                first_name.downcase.match(first_regex)
+                  first_name.downcase.match(first_regex)
                 Rails.logger.info "[filter_ucf_records] Matched both first and last name wildcards"
                 filtered_records << record
               end
@@ -619,12 +620,49 @@ class SearchQuery
           include_record = include_record_for_wildcard_search(search_name)
         else
           include_record = include_record_for_standard_search(search_name)
-          end
+        end
         filtered_records << search_result if include_record
         break filtered_records if include_record
       end
     end
     filtered_records
+  end
+
+  def freecen_and_name_includes_diacritics(params)
+
+    name_includes_diacritics = false
+    if App.name == 'FreeCEN'
+
+      first_name_exists = params.dig("search_names", :$elemMatch, "first_name")
+      if first_name_exists
+        input_first_name = params["search_names"][:$elemMatch]["first_name"]
+        name_includes_diacritics = true if input_first_name != normalize_input_name(input_first_name)
+
+      end
+
+      last_name_exists = params.dig("search_names", :$elemMatch, "last_name")
+      if last_name_exists
+        input_last_name = params["search_names"][:$elemMatch]["last_name"]
+        name_includes_diacritics = true if input_last_name != normalize_input_name(input_last_name)
+
+      end
+    end
+    name_includes_diacritics
+  end
+
+  def remove_diacritics_from_name(params)
+    modified_parameters = params
+    first_name_exists = params.dig("search_names", :$elemMatch, "first_name")
+    if first_name_exists
+      first_name = params["search_names"][:$elemMatch]["first_name"]
+      modified_parameters["search_names"][:$elemMatch]["first_name"] = normalize_input_name(first_name)
+    end
+    last_name_exists = search_params.dig("search_names", :$elemMatch, "last_name")
+    if last_name_exists
+      last_name = params["search_names"][:$elemMatch]["last_name"]
+      modified_parameters["search_names"][:$elemMatch]["last_name"] = normalize_input_name(last_name)
+    end
+    modified_parameters
   end
 
   # def get_and_sort_results_for_display
@@ -677,6 +715,7 @@ class SearchQuery
 
     # Step 6: Sort results safely
     search_results = sort_results(search_results) if search_results.present?
+
     # Rails.logger.info { "[GetSortDisplay] ---Step 6: After sort_results (#{search_results.size})\n#{search_results}" }
 
     # Step 7: Handle UCF results safely
@@ -720,11 +759,17 @@ class SearchQuery
     include_record = false
     search_name_first_name = search_name[:first_name].present? ? search_name[:first_name].downcase : ''
     search_name_last_name = search_name[:last_name].present? ? search_name[:last_name].downcase : ''
-    if last_name.present? && first_name.blank? && search_name_last_name == last_name.downcase
+    if first_name.present?
+      input_first_name = App.name.downcase == 'freecen' ? normalize_input_name(first_name) : first_name.downcase
+    end
+    if last_name.present?
+      input_last_name = App.name.downcase == 'freecen' ? normalize_input_name(last_name) : last_name.downcase
+    end
+    if last_name.present? && first_name.blank? && search_name_last_name == input_last_name
       include_record = include_record_for_type(search_name)
-    elsif last_name.present? && first_name.present? && search_name_last_name == last_name.downcase && first_name.downcase == search_name_first_name
+    elsif last_name.present? && first_name.present? && search_name_last_name == input_last_name && input_first_name == search_name_first_name
       include_record = include_record_for_type(search_name)
-    elsif last_name.blank? && first_name.present? && first_name.downcase == search_name_first_name
+    elsif last_name.blank? && first_name.present? && input_first_name == search_name_first_name
       include_record = include_record_for_type(search_name)
       #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
       # include_record = include_record_for_type(search_name)
@@ -737,14 +782,20 @@ class SearchQuery
     first_name_stub = extract_stub(first_name)
     last_name_stub = last_name if last_name_stub.blank?
     first_name_stub = first_name if first_name_stub.blank?
+    if first_name_stub.present?
+      input_first_name_stub = App.name.downcase == 'freecen' ? normalize_input_name(first_name_stub) : first_name_stub.downcase
+    end
+    if last_name_stub.present?
+      input_last_name_stub = App.name.downcase == 'freecen' ? normalize_input_name(last_name_stub) : last_name_stub.downcase
+    end
     include_record = false
     search_name_first_name = search_name[:first_name].present? ? search_name[:first_name].downcase : ''
     search_name_last_name = search_name[:last_name].present? ? search_name[:last_name].downcase : ''
-    if last_name.present? && first_name.blank? && search_name_last_name.start_with?(last_name_stub)
+    if last_name.present? && first_name.blank? && search_name_last_name.start_with?(input_last_name_stub)
       include_record = include_record_for_type(search_name)
-    elsif last_name.present? && first_name.present? && search_name_last_name.start_with?(last_name_stub) && search_name_first_name.start_with?(first_name_stub)
+    elsif last_name.present? && first_name.present? && search_name_last_name.start_with?(input_last_name_stub) && search_name_first_name.start_with?(input_first_name_stub)
       include_record = include_record_for_type(search_name)
-    elsif last_name.blank? && first_name.present? && search_name_first_name.start_with?(first_name_stub)
+    elsif last_name.blank? && first_name.present? && search_name_first_name.start_with?(input_first_name_stub)
       include_record = include_record_for_type(search_name)
     end
     include_record
@@ -1092,7 +1143,8 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attribute(:search_index, @search_index)
-    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
+    query_parameters = freecen_and_name_includes_diacritics(@search_parameters) ? remove_diacritics_from_name(@search_parameters) : @search_parameters
+    records = SearchRecord.collection.find(query_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
     persist_results(records)
     persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
     records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
@@ -1177,7 +1229,7 @@ class SearchQuery
 
     log_ucf(:info, "UCF search complete")
     true
-  end  
+  end
 
   def sort_results(results)
     # next reorder in memory
@@ -1323,6 +1375,12 @@ class SearchQuery
     elsif first_name && begins_with_wildcard(first_name) && places.count == 0
       errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
     end
+  end
+
+  def normalize_input_name(value)
+    return nil if value.blank?
+
+    I18n.transliterate(value).downcase
   end
 
   private
