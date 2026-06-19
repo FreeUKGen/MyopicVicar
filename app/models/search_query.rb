@@ -364,6 +364,16 @@ class SearchQuery
     end
     params
   end
+  def pro_date_search_params
+    params = {}
+    if start_year || end_year
+      date_params = {}
+      date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
+      date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
+      params["Death.Year"] = date_params
+    end
+    params
+  end
 
   def explain_plan
     SearchRecord.where(search_params).asc(:search_date).all.explain
@@ -1068,15 +1078,15 @@ class SearchQuery
   end
 
   def freepro_search_records
+    search_fields = pro_search_params
     search_fields = pro_adjust_field_names
-    #@search_parameters = search_params
     text_search = self.attributes.symbolize_keys[:text]
     if text_search.present?
       search_fields_with_text_search = {}
       text_search_criterion = {"$search" => text_search}
       search_fields_with_text_search["$text".to_sym] = text_search_criterion
       search_fields.each do |key, value|
-        search_fields_with_text_search[key] = value.to_s
+        search_fields_with_text_search[key] = value.to_s unless key.to_s == 'Death.Year'
       end
       records = SearchQuery.get_search_table.where(search_fields_with_text_search)
     else
@@ -1085,7 +1095,7 @@ class SearchQuery
     #records = SearchQuery.get_search_table.where("$text" => { "$search" => "Surrey" } ).and("Death.LastName" => "SMITH")
     #records = SearchQuery.get_search_table.where("Death.Address" => "the Lower Bourne Farnham Rural Surrey")
     #records = SearchQuery.get_search_table.where({"Death.LastName" => "EARWAKER"})
-    #records = SearchQuery.get_search_table.where({"Death.Year": "1898"}).and({"Death.GivenName": "William"})
+    #records = SearchQuery.get_search_table.where("Death.Year": '1892'..'1895').and({"Death.GivenName": "William"})
     recordCount = SearchQuery.get_search_table.count
     persist_results(records)
     records
@@ -1095,14 +1105,13 @@ class SearchQuery
     {
       first_name: 'Death.GivenName',
       last_name: 'Death.LastName',
-      start_year: 'Death.Year',
-      end_year: 'Death.Year',
+      date_search: 'Death.Year',
       session_id: 'RecordId'
     }
   end
 
   def name_fields
-    [:first_name, :last_name, :start_year, :end_year, :fuzzy]
+    [:first_name, :last_name, :fuzzy]
   end
 
   def has_wildcard? name
@@ -1132,6 +1141,7 @@ class SearchQuery
   def pro_search_params
     params = {}
     params.merge!(pro_search_names_criteria)
+    params.merge!(pro_date_search_params)
     params
   end
 
