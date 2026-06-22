@@ -427,18 +427,18 @@ class SearchQuery
 
   def date_search_params
     params = {}
-    range = date_range_params
-    params[:search_date] = range if range
-    params
-  end
-
-  def date_range_params
-    return nil unless start_year || end_year
+    return params unless start_year || end_year
 
     date_params = {}
     date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
-    date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
-    date_params
+    date_params['$lt']  = DateParser::end_search_date(end_year)     if end_year
+
+    if App.name == 'FreeREG'
+      params['$or'] = [{ search_date: date_params }, { secondary_search_date: date_params }]
+    else
+      params[:search_date] = date_params
+    end
+    params
   end
 
   def explain_plan
@@ -1083,43 +1083,7 @@ class SearchQuery
   end
 
   def fetch_search_records(max_results)
-    if App.name == 'FreeREG' && date_range_params.present?
-      fetch_freereg_with_alternate_dates(max_results)
-    else
-      collection_find_with_hint(@search_parameters, @search_index, max_results)
-    end
-  end
-
-  def fetch_freereg_with_alternate_dates(max_results)
-    records = collection_find_with_hint(@search_parameters, @search_index, max_results)
-    return records if records.size >= max_results
-
-    exclude_ids = records.map { |r| r['_id'] }
-    remaining = max_results - records.size
-
-    loop do
-      break if remaining <= 0
-
-      secondary_params = secondary_date_search_params(@search_parameters, exclude_ids)
-      secondary_index = SearchRecord.index_hint(secondary_params.except(:_id))
-      logger.warn("#{App.name_upcase}:SECONDARY_DATE_SEARCH_HINT: #{secondary_index}")
-
-      batch = collection_find_with_hint(secondary_params, secondary_index, remaining)
-      break if batch.empty?
-
-      records.concat(batch)
-      exclude_ids.concat(batch.map { |r| r['_id'] })
-      remaining = max_results - records.size
-    end
-
-    records
-  end
-
-  def secondary_date_search_params(primary_params, exclude_ids)
-    params = primary_params.dup
-    params[:secondary_search_date] = params.delete(:search_date) if params[:search_date]
-    params[:_id] = { '$nin' => exclude_ids } if exclude_ids.present?
-    params
+    collection_find_with_hint(@search_parameters, @search_index, max_results)
   end
 
   def collection_find_with_hint(params, index_hint, limit)

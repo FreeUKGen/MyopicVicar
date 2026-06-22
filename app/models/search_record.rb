@@ -308,13 +308,12 @@ class SearchRecord
       fields = []
       search_params.each_pair do |key, value|
         if key.to_s == '$or' && value.is_a?(Array)
-          value.each { |clause| extract_fields(fields, clause, '') }
+          value.each { |clause| clause.each_pair { |k, v| extract_fields(fields, v, k.to_s) } }
         else
           extract_fields(fields, value, key.to_s)
         end
       end
       fields.uniq
-      fields
     end
 
     def from_annotation(annotation)
