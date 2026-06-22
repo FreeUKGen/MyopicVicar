@@ -79,7 +79,7 @@
               <% grouped_options = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::CODES)) %>
               <select name="contact[selected_county]" id="selected_county" class="select" size="5" aria-describedby="selected_county_hint">
                 <option value="nil">Select a county…</option>
-                <%= grouped_options_for_select(grouped_options) %>
+                <%= grouped_options_for_select(grouped_options, @contact.selected_county.presence) %>
               </select>
               <p id="selected_county_hint" class="push--top" style="margin-bottom:0;"><small>Nature of contact <strong>Data Question</strong> or <strong>Volunteering Question</strong>: you must choose a county above.</small></p>
             </li>

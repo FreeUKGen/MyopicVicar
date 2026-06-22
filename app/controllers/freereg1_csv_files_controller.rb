@@ -346,32 +346,49 @@ class Freereg1CsvFilesController < ApplicationController
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
     session[:initial_page] = @return_location
-    session[:selectcountry] = nil
-    session[:selectcounty] = nil
+    
+    place  = @freereg1_csv_file.register.church.place
+    church = @freereg1_csv_file.register.church
+
+    session[:selectcountry] = place.country
+    session[:selectcounty]  = place.chapman_code
+    session[:selectplace]   = place.id
+    session[:selectchurch]  = church.id
+
     @records = @freereg1_csv_file.freereg1_csv_entries.count
     max_records = get_max_records(@user)
     redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'There are too many records for an on-line relocation') && return if @records.present? && @records.to_i >= max_records
 
     session[:records] = @records
     if session[:role] == 'system_administrator' || session[:role] == 'data_manager'
+      place = @freereg1_csv_file.register.church.place
       @county = session[:county]
       locations
       # setting these means that we are a DM
-      session[:selectcountry] = nil
-      session[:selectcounty] = nil
-      session[:selectplace] = session[:selectchurch] = nil
-      @countries = ['Select Country', 'England', 'Islands', 'Scotland', 'Wales']
-      @counties = []
-      @placenames = []
-      @churches = []
-      @register_types = []
-      @selected_place = @selected_church = @selected_register = ''
+      @selected_country = session[:selectcountry]
+      @selected_county = session[:selectcounty]
+      @selected_place   = session[:selectplace]
+      @selected_church  = session[:selectchurch]
+      @countries = ['England', 'Islands', 'Scotland', 'Wales']
+      @counties = ChapmanCode::CODES[session[:selectcountry]].to_a.drop(1)
+      places = Place.chapman_code(session[:selectcounty])
+                  .not_disabled
+                  .all
+                  .order_by(place_name: 1)
+      @placenames = places.map { |p| [p.place_name, p.id] }
+      @churches = place.churches.map { |c| [c.church_name, c.id] }
+      @register_types = RegisterType::APPROVED_OPTIONS.reject { |name, _| name == 'Unspecified' }
+      @selected_register = ''
     else
-      # only senior managers can move between counties and countries; coordinators could loose files
-      place = @freereg1_csv_file.register.church.place
+      # Coordinators may only relocate within their county (no country/county pickers).
+      church = @freereg1_csv_file.register.church
+      place = church.place
       session[:selectcountry] = place.country
       session[:selectcounty] = place.chapman_code
-      redirect_to(action: 'update_places') && return
+      session[:selectplace] = place.id
+      session[:selectchurch] = church.id
+      locations
+      setup_relocate_place_form
     end
   end
 
@@ -431,17 +448,24 @@ class Freereg1CsvFilesController < ApplicationController
       get_user_info_from_userid
       locations
       @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-      @countries = [session[:selectcountry]]
-      @counties = [session[:selectcounty]]
+      @countries = ['England', 'Islands', 'Scotland', 'Wales']
+      @selected_country = session[:selectcountry]
+      @counties = ChapmanCode::CODES[session[:selectcountry]].to_a.drop(1)
+      @selected_county = session[:selectcounty]
       place = Place.id(params[:place]).first
       session[:selectplace] = params[:place]
-      @placenames = []
-      @placenames << place.place_name
-      @churches = place.churches.map{ |a| [a.church_name, a.id] }.insert(0, 'Select Church')
+      places = Place.chapman_code(session[:selectcounty])
+                  .not_disabled
+                  .all
+                  .order_by(place_name: 1)
+      @placenames = places.map { |p| [p.place_name, p.id] }
+      @selected_place = session[:selectplace]
+      @churches = place.churches.map { |a| [a.church_name, a.id] }
+      
       @churches[1] = 'Has no churches' if place.churches.blank?
       @freereg1_csv_file.county == session[:selectcounty] && session[:selectplace] == @freereg1_csv_file.place ? @selected_church = @freereg1_csv_file.church_name : @selected_place = ''
       @selected_place = session[:selectplace]
-      @register_types = RegisterType::APPROVED_OPTIONS
+      @register_types = RegisterType::APPROVED_OPTIONS.reject { |name, _| name == 'Unspecified' }
       @selected_register = ''
     end
   end
@@ -460,13 +484,14 @@ class Freereg1CsvFilesController < ApplicationController
       get_user_info_from_userid
       locations
       @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-      @countries = [params[:country]]
+      @countries = ['England', 'Islands', 'Scotland', 'Wales']
       session[:selectcountry] = params[:country]
-      @counties = ChapmanCode::CODES[params[:country]].keys.insert(0, 'Select County')
+      @selected_country = session[:selectcountry]
+      @counties = ChapmanCode::CODES[params[:country]].to_a.drop(1)
+      @selected_county = @freereg1_csv_file.county
       @placenames = []
       @churches = []
-      @register_types = RegisterType::APPROVED_OPTIONS
-      @selected_county = @freereg1_csv_file.county
+      @register_types = RegisterType::APPROVED_OPTIONS.reject { |name, _| name == 'Unspecified' }
       @selected_place = @selected_church = @selected_register = ''
     end
   end
@@ -487,32 +512,8 @@ class Freereg1CsvFilesController < ApplicationController
     end
     locations
     @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-    @countries = [session[:selectcountry]]
-    if session[:selectcounty].blank?
-      #means we are a DM selecting the county
-      session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]]
-      places = Place.chapman_code(session[:selectcounty]).not_disabled.all.order_by(place_name: 1)
-    else
-      #we are a CC
-      places = Place.chapman_code(session[:selectcounty]).not_disabled.all.order_by(place_name: 1)
-    end
-    @counties = []
-    if @freereg1_csv_file.county == session[:selectcounty]
-      @selected_place = @freereg1_csv_file.place
-      @selected_church = @freereg1_csv_file.church_name
-    else
-      @selected_place = @selected_church = ''
-    end
-    @counties << session[:selectcounty]
-    @placenames = places.map { |a| [a.place_name, a.id] }.insert(0, 'Select Place')
-    @placechurches = Place.chapman_code(session[:selectcounty]).place(@freereg1_csv_file.place).not_disabled.first
-    if @placechurches.present?
-      @churches = @placechurches.churches.map { |a| [a.church_name, a.id] }
-    else
-      @churches = []
-    end
-    @register_types = RegisterType::APPROVED_OPTIONS
-    @selected_register = ''
+    apply_selectcounty_from_params
+    setup_relocate_place_form
   end
 
   def update_places_not_ok?(param)
@@ -529,18 +530,22 @@ class Freereg1CsvFilesController < ApplicationController
       get_user_info_from_userid
       locations
       @freereg1_csv_file = Freereg1CsvFile.find(session[:freereg1_csv_file_id])
-      @countries = [session[:selectcountry]]
-      @counties = [session[:selectcounty]]
+      @countries = ['England', 'Islands', 'Scotland', 'Wales']
+      @selected_country = session[:selectcountry]
+      @counties = ChapmanCode::CODES[session[:selectcountry]].to_a.drop(1)
+      @selected_county = session[:selectcounty]
       church = Church.id(params[:church]).first
       session[:selectchurch] = params[:church]
       place = church.place
-      @placenames = []
-      @placenames << place.place_name
-      @churches = []
-      @churches << church.church_name
-      @register_types = RegisterType::APPROVED_OPTIONS
+      places = Place.chapman_code(session[:selectcounty])
+                  .not_disabled
+                  .all
+                  .order_by(place_name: 1)
+      @placenames = places.map { |a| [a.place_name, a.id] }
       @selected_place = session[:selectplace]
+      @churches = place.churches.map { |a| [a.church_name, a.id] }
       @selected_church = session[:selectchurch]
+      @register_types = RegisterType::APPROVED_OPTIONS.reject { |name, _| name == 'Unspecified' }
       @selected_register = ''
     end
   end
@@ -642,6 +647,42 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   private
+
+  def apply_selectcounty_from_params
+    if session[:selectcounty].blank?
+      session[:selectcounty] = ChapmanCode::CODES[session[:selectcountry]][params[:county]]
+    elsif params[:county].present?
+      session[:selectcounty] = params[:county]
+    end
+  end
+
+  def setup_relocate_place_form
+    @freereg1_csv_file ||= Freereg1CsvFile.find(session[:freereg1_csv_file_id])
+    @countries = ['England', 'Islands', 'Scotland', 'Wales']
+    @selected_country = session[:selectcountry]
+    @counties = ChapmanCode::CODES[session[:selectcountry]].to_a.drop(1)
+    @selected_county = session[:selectcounty]
+    places = Place.chapman_code(session[:selectcounty]).not_disabled.all.order_by(place_name: 1)
+    if @freereg1_csv_file.county == session[:selectcounty]
+      @selected_place = session[:selectplace]
+      @selected_church = session[:selectchurch]
+    else
+      @selected_place = @selected_church = ''
+    end
+    @placenames = places.map { |a| [a.place_name, a.id] }
+    if @freereg1_csv_file.county == session[:selectcounty]
+      @placechurches = Place.chapman_code(session[:selectcounty]).place(@freereg1_csv_file.place).not_disabled.first
+      if @placechurches.present?
+        @churches = @placechurches.churches.map { |a| [a.church_name, a.id] }
+      else
+        @churches = [['Select Church', '']]
+      end
+    else
+      @churches = [['Select Place first', '']]
+    end
+    @register_types = RegisterType::APPROVED_OPTIONS.reject { |name, _| name == 'Unspecified' }
+    @selected_register = ''
+  end
 
   def freereg1_csv_file_params
     params.require(:freereg1_csv_file).permit!

@@ -17,6 +17,55 @@ class MessagesController < ApplicationController
   require 'userid_role'
   require 'reply_userid_role'
 
+  # Shortcut entrypoint for FreeCEN Gazetteer: start a Communicate Action thread to a county coordinator
+  # for a specific chapman code.
+  def gazetteer_county_coordinator
+    get_user_info_from_userid
+    redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'You need to be logged in to communicate') && return if @user.blank?
+
+    session[:message_base] = 'communication'
+    session[:host] = request.host if session[:host].blank?
+
+    chapman = params[:chapman].to_s.strip
+    search = params[:search].to_s.strip
+    allowed_chapmans = params[:allowed_chapmans].to_s.strip
+    county_name = chapman.present? ? ChapmanCode.name_from_code(chapman) : ''
+
+    @message = Message.new(
+      nature: 'communication',
+      userid: @user.userid,
+      message_time: Time.now,
+      subject: 'Gazetteer enquiry (county coordinator)',
+      body: "[Gazetteer enquiry — add your message below]\n\n" \
+            "Search: #{search.presence || '(not provided)'}\n" \
+            "County: #{county_name.presence || '(not selected)'} (#{chapman.presence || '---'})\n"
+    )
+    @message.path = request.fullpath
+    @message.session_data = {
+      'previous_page_url' => request.referer,
+      'current_page_url' => request.original_url,
+      'gazetteer_chapman' => chapman,
+      'gazetteer_county_name' => county_name,
+      'role' => session[:role],
+      'userid' => session[:userid],
+      'userid_detail_id' => session[:userid_detail_id],
+      'search_names' => session[:search_names]
+    }
+
+    if @message.save
+      # Let the user add/adjust the message body first, then proceed to recipient selection.
+      redirect_to(edit_message_path(@message.id,
+        next: 'select_individual',
+        role: 'county_coordinator',
+        default_chapman: chapman,
+        allowed_chapmans: allowed_chapmans,
+        source: 'gazetteer'
+      )) && return
+    end
+
+    redirect_back(fallback_location: search_names_freecen2_place_path, notice: "Unable to start communication: #{@message.errors.full_messages.join(', ')}")
+  end
+
   def archive
     @message = Message.find(params[:id])
     redirect_back(fallback_location: new_manage_resource_path, notice: 'The message was not found') && return if @message.blank?
@@ -560,6 +609,26 @@ class MessagesController < ApplicationController
 
     session[:com_role] = params[:role]
     @people = @message.select_the_list_of_individuals(params[:role])
+    if params[:default_chapman].present? && params[:role] == 'county_coordinator' && @people.present?
+      county_name = ChapmanCode.name_from_code(params[:default_chapman].to_s.strip).to_s
+      if county_name.present?
+        match_idx = @people.index { |p| p.to_s.start_with?("#{county_name} (") }
+        if match_idx.present? && match_idx > 0
+          match = @people.delete_at(match_idx)
+          @people.unshift(match)
+        end
+      end
+    end
+
+    # Gazetteer: restrict the list to only counties present in the search results list.
+    if params[:source].to_s == 'gazetteer' && params[:role] == 'county_coordinator' && params[:allowed_chapmans].present? && @people.present?
+      chapmans = params[:allowed_chapmans].to_s.split(',').map { |c| c.to_s.strip }.reject(&:blank?).uniq
+      allowed_names = chapmans.map { |c| ChapmanCode.name_from_code(c).to_s }.reject(&:blank?).uniq
+      if allowed_names.present?
+        @people = @people.select { |p| allowed_names.any? { |n| p.to_s.start_with?("#{n} (") } }
+      end
+    end
+
     redirect_to(select_role_message_path(@message.id, source: params[:action]), notice: 'There is no one associated with that role') && return if @people.blank?
   end
 
@@ -601,13 +670,46 @@ class MessagesController < ApplicationController
 
   def send_communication
     get_user_info_from_userid
+    session[:host] = request.host if session[:host].blank?
+    if params[:recipients].blank?
+      flash[:notice] = 'You did not select any recipients'
+      redirect_back(fallback_location: select_individual_messages_path(id: @message.id, role: session[:com_role], source: 'gazetteer')) && return
+    end
+
+    # Persist the actual selection (user may have changed from the default).
+    begin
+      recipients_raw = Array(params[:recipients]).map(&:to_s).reject(&:blank?)
+      if recipients_raw.present?
+        sd = @message.session_data.is_a?(Hash) ? @message.session_data : {}
+        sd['selected_recipients'] = recipients_raw
+        # For county coordinators, the value is like "Bedfordshire (USERID) [Name]".
+        # We capture the county name prefix so the UI can show the chosen county.
+        if session[:com_role].to_s == 'county_coordinator'
+          chosen_county_name = recipients_raw.first.to_s.split(' (').first.to_s.strip
+          chap = ChapmanCode.values_at(chosen_county_name) rescue nil
+          sd['selected_gazetteer_county_name'] = chosen_county_name if chosen_county_name.present?
+          sd['selected_gazetteer_chapman'] = chap if chap.present?
+        end
+        @message.update_attributes(session_data: sd)
+      end
+    rescue StandardError => e
+      logger.warn("MESSAGES:SEND_COMMUNICATION: unable to persist recipient selection for #{@message.id}: #{e.class} #{e.message}")
+    end
+
     acutal_recipients = @message.extract_actual_recipients(params[:recipients], session[:com_role])
     session.delete(:com_role)
     @sent_message = SentMessage.new(message_id: @message.id, sender: @user_userid, recipients: acutal_recipients)
     @message.sent_messages << [@sent_message]
     @sent_message.save
-    UserMailer.send_message(@message, acutal_recipients, @user_userid, session[:host]).deliver_now
+    begin
+      UserMailer.send_message(@message, acutal_recipients, @user_userid, session[:host]).deliver_now
+    rescue StandardError => e
+      logger.warn("MESSAGES:SEND_COMMUNICATION: mail failure for #{@message.id}: #{e.class} #{e.message}")
+      flash[:notice] = "Communication saved, but email delivery failed: #{e.message}"
+      return
+    end
     @sent_message.update_attributes(sent_time: Time.now)
+    @message.update_attributes(message_sent_time: Time.now)
     @message.add_message_to_userid_messages(UseridDetail.look_up_id(@user_userid)) unless @user_userid.blank?
     acutal_recipients.each do |recipient|
       @message.add_message_to_userid_messages(UseridDetail.look_up_id(recipient))
@@ -730,6 +832,15 @@ class MessagesController < ApplicationController
     case params[:commit]
     when 'Save'
       @message.update_attributes(message_params)
+      if params[:next].to_s == 'select_individual'
+        redirect_to(select_individual_messages_path(
+                      id: @message.id,
+                      role: params[:role],
+                      default_chapman: params[:default_chapman],
+                      allowed_chapmans: params[:allowed_chapmans],
+                      source: params[:source]
+                    )) && return
+      end
     when 'Select Role'
       redirect_to action: 'select_individual', id: params[:id], role: params[:message][:action]
       return
@@ -738,7 +849,7 @@ class MessagesController < ApplicationController
     else
       send_message
     end
-    redirect_to message_path(@message.id, source: 'original') unless @problem_with_syndicate.present? && @problem_with_syndicate = true
+    redirect_to(message_path(@message.id, source: 'original')) unless @problem_with_syndicate.present? && @problem_with_syndicate == true
   end
 
   private

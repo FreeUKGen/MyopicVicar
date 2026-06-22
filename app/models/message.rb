@@ -13,6 +13,7 @@ class Message
   field :attachment, type: String
   field :identifier, type: String
   field :path, type: String
+  field :session_data, type: Hash
   field :file_name, type: String
   field :images, type: String
   field :recipients, type: Array
@@ -378,9 +379,13 @@ class Message
         person = secondary_people.first.userid
       end
       coord = UseridDetail.find_by(userid: person)
-      forename = coord.person_forename
-      surname = coord.person_surname
-      people << "#{person} (#{forename} #{surname})"
+      if coord.present?
+        forename = coord.person_forename
+        surname = coord.person_surname
+        people << "#{person} (#{forename} #{surname})"
+      else
+        people << person.to_s
+      end
     else
       case role
       when 'county_coordinator'
@@ -388,27 +393,47 @@ class Message
           chapman_code = single.chapman_code
           coordinator = single.county_coordinator
           coord = UseridDetail.find_by(userid: coordinator)
-          forename = coord.person_forename
-          surname = coord.person_surname
-          people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator}) [#{forename} #{surname}]" unless ChapmanCode.name_from_code(chapman_code).blank?
+          next if ChapmanCode.name_from_code(chapman_code).blank?
+          next if coordinator.blank?
+
+          if coord.present?
+            forename = coord.person_forename
+            surname = coord.person_surname
+            people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator}) [#{forename} #{surname}]"
+          else
+            people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator})"
+          end
         end
       when 'syndicate_coordinator'
         Syndicate.all.order_by(syndicate_code: 1).each do |single|
           syndicate = single.syndicate_code
           coordinator = single.syndicate_coordinator
           coord = UseridDetail.find_by(userid: coordinator)
-          forename = coord.person_forename
-          surname = coord.person_surname
-          people << "#{syndicate} (#{coordinator}) [#{forename} #{surname}]"
+          next if coordinator.blank?
+
+          if coord.present?
+            forename = coord.person_forename
+            surname = coord.person_surname
+            people << "#{syndicate} (#{coordinator}) [#{forename} #{surname}]"
+          else
+            people << "#{syndicate} (#{coordinator})"
+          end
         end
       when 'country_coordinator'
         Country.all.order_by(country_code: 1).each do |single|
           chapman_code = single.country_code
           coordinator = single.country_coordinator
           coord = UseridDetail.find_by(userid: coordinator)
-          forename = coord.person_forename
-          surname = coord.person_surname
-          people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator}) [#{forename} #{surname}]" unless ChapmanCode.name_from_code(chapman_code).blank?
+          next if ChapmanCode.name_from_code(chapman_code).blank?
+          next if coordinator.blank?
+
+          if coord.present?
+            forename = coord.person_forename
+            surname = coord.person_surname
+            people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator}) [#{forename} #{surname}]"
+          else
+            people << "#{ChapmanCode.name_from_code(chapman_code)} (#{coordinator})"
+          end
         end
       else
         primary_people.each do |user|
