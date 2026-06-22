@@ -432,13 +432,17 @@ class SearchQuery
     date_params = {}
     date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
     date_params['$lt']  = DateParser::end_search_date(end_year)     if end_year
-
-    if App.name == 'FreeREG'
-      params['$or'] = [{ search_date: date_params }, { secondary_search_date: date_params }]
-    else
-      params[:search_date] = date_params
-    end
+    params[:search_date] = date_params
     params
+  end
+
+  def secondary_date_search_params
+    return {} unless App.name == 'FreeREG' && (start_year || end_year)
+
+    date_params = {}
+    date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
+    date_params['$lt']  = DateParser::end_search_date(end_year)     if end_year
+    { secondary_search_date: date_params }
   end
 
   def explain_plan
@@ -1083,7 +1087,21 @@ class SearchQuery
   end
 
   def fetch_search_records(max_results)
-    collection_find_with_hint(@search_parameters, @search_index, max_results)
+    primary = collection_find_with_hint(@search_parameters, @search_index, max_results)
+    ssd_params = secondary_date_search_params
+    return primary if ssd_params.blank?
+
+    # Build secondary-date query: same params but search by secondary_search_date instead of search_date
+    secondary_params = @search_parameters.dup
+    secondary_params.delete(:search_date)
+    secondary_params.merge!(ssd_params)
+    secondary_index = SearchRecord.index_hint(secondary_params)
+    secondary = collection_find_with_hint(secondary_params, secondary_index, max_results)
+
+    # Merge without $nin: deduplicate by _id in Ruby
+    primary_ids = primary.map { |r| r['_id'] }.to_set
+    additional  = secondary.reject { |r| primary_ids.include?(r['_id']) }
+    (primary + additional).first(max_results)
   end
 
   def collection_find_with_hint(params, index_hint, limit)
