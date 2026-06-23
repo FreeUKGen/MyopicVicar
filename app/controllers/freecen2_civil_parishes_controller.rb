@@ -69,8 +69,10 @@ class Freecen2CivilParishesController < ApplicationController
 
     success = @freecen2_civil_parish.destroy
     flash[:notice] = success ? 'Civil Parish deleted' : 'Civil Parish deletion failed'
-    civil_parish_names = @freecen2_piece.add_update_civil_parish_list
-    @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
+    if @freecen2_piece.present?
+      civil_parish_names = @freecen2_piece.add_update_civil_parish_list
+      @freecen2_piece.update(civil_parish_names: civil_parish_names) unless civil_parish_names == @freecen2_piece.civil_parish_names
+    end
 
     redirect_to freecen2_civil_parishes_path
   end
@@ -97,7 +99,11 @@ class Freecen2CivilParishesController < ApplicationController
     @chapman_code = @freecen2_civil_parish.chapman_code
     @freecen2_piece = @freecen2_civil_parish.piece_name
     @freecen2_civil_parishes = @freecen2_civil_parish.civil_parish_names
-    @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
+    if @records
+      @places = [@freecen2_place]
+    else
+      @places = Freecen2Place.place_names_plus_alternates(@chapman_code)
+    end
     session[:freecen2_civil_parish] = @freecen2_civil_parish.name
 
     @freecen2_civil_parish.freecen2_hamlets.build
@@ -204,7 +210,11 @@ class Freecen2CivilParishesController < ApplicationController
     @freecen2_civil_parish = Freecen2CivilParish.new
     @options = {}
     Freecen2CivilParish.chapman_code(@chapman_code).order_by(name: 1, year: 1).each do |civil_parish|
-      @options["#{civil_parish.name} (#{civil_parish.year}) (#{civil_parish.freecen2_piece.number})"] = civil_parish._id
+      if civil_parish.freecen2_piece.present?
+        @options["#{civil_parish.name} (#{civil_parish.year}) (#{civil_parish.freecen2_piece.number})"] = civil_parish._id
+      else
+        @options["#{civil_parish.name} (#{civil_parish.year}) (Piece missing)"] = civil_parish._id
+      end
     end
     @location = 'location.href= "/freecen2_civil_parishes/" + this.value'
     @prompt = 'Select Civil Parish)'
@@ -292,7 +302,7 @@ class Freecen2CivilParishesController < ApplicationController
         @freecen2_civil_parish.save
       end
       if @freecen2_civil_parish.errors.any?
-        flash[:notice] = "The update of the civil parish failed #{@freecen_csv_entry.errors.full_messages}."
+        flash[:notice] = "The update of the civil parish failed #{@freecen2_civil_parish.errors.full_messages}."
         redirect_back(fallback_location: edit_freecen2_civil_parish_path(@freecen2_civil_parish, type: @type)) && return
       else
         flash[:notice] = 'Update was successful'
