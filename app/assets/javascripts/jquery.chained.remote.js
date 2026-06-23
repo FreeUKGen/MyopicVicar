@@ -40,14 +40,13 @@
 
                     /* Build data array from parents values. */
                     var data = {};
+                    var multipleSelected = false;
                     $(settings.parents).each(function() {
                         var id = $(this).attr(settings.attribute);
                         var countSelected = $(":selected", this).length;
                         var value = $(":selected", this).val();
                         data[id] = value;
 
-                        /* disable on mult-select */
-                        
                         /* Optionally also depend on values from these inputs. */
                         if (settings.depends) {
                             $(settings.depends).each(function() {
@@ -60,8 +59,7 @@
                             });
                         }
                         if(countSelected > 1) {
-                        	// obliterate selection
-                        	data[id] = "MULTIPLECOUNTYSELECTION";                        
+                            multipleSelected = true;
                         }
                     });
 
@@ -70,6 +68,13 @@
                     if (request && $.isFunction(request.abort)) {
                         request.abort();
                         request = false;
+                    }
+
+                    /* Multiple counties selected: clear places list immediately, skip AJAX. */
+                    if (multipleSelected) {
+                        build.call(self, {"" : "Select a single county to see places"});
+                        $(self).trigger("change");
+                        return;
                     }
 
                     if (settings.clear) {
@@ -144,7 +149,7 @@
                 });
 
                 /* If we have only the default value disable select. */
-                if (1 === $("option", self).size() && $(self).val() === "") {
+                if (1 === $("option", self).length && $(self).val() === "") {
                     $(self).prop("disabled", true);
                 } else {
                     $(self).prop("disabled", false);

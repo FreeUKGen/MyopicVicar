@@ -99,43 +99,17 @@ class Freecen1VldFilesController < ApplicationController
 
   def destroy
     vldfile = Freecen1VldFile.find(params[:id])
-    if vldfile.present? && vldfile.dir_name.present? && vldfile.file_name.present?
-      file_name = vldfile.file_name
-      dir_name = vldfile.dir_name
-      if vldfile.action.present?
-        loaded_date = vldfile.u_at
-      else
-        loaded_date = ''
-      end
-      Freecen1VldFile.delete_freecen1_vld_entries(dir_name, file_name)
-      Freecen1VldFile.delete_dwellings(dir_name, file_name)
-      Freecen1VldFile.delete_individuals(dir_name, file_name)  # has callback to delete search records too
-      Freecen1VldFile.save_to_attic(dir_name, file_name)
-      piece = vldfile.freecen_piece
-      if piece.present?
-        piece.update_attributes(num_dwellings: 0, num_individuals: 0, num_entries: 0, freecen1_filename: '', status: '', status_date: '')
-        piece.freecen1_vld_files.delete(vldfile)
-        freecen2_piece = piece.freecen2_piece
-        freecen2_piece_id = freecen2_piece.id
-        freecen2_piece.freecen1_vld_files.delete(vldfile) if freecen2_piece.present?
-        freecen2_piece.update_parts_status_on_file_deletion(vldfile, piece)
-        freecen2_place = vldfile.freecen2_place
-        if freecen2_place.present?
-          freecen2_place.freecen1_vld_files.delete(vldfile)
-          freecen2_district = vldfile.freecen2_district
-          freecen2_district.freecen1_vld_files.delete(vldfile) if freecen2_district.present?
-          freecen2_place.update_data_present_after_vld_delete(freecen2_piece)
-          Freecen2PlaceCache.refresh(freecen2_place.chapman_code)
-        end
-      end
+    unless vldfile.present?
+      redirect_to(freecen1_vld_files_path, notice: 'The VLD file was not found.') && return
     end
-    if vldfile.present?
-      get_user_info_from_userid
-      who = @user.userid
-      Freecen1VldFile.create_audit_record(vldfile, who, loaded_date, freecen2_piece_id)
-      vldfile.delete
-    end
-    redirect_to freecen1_vld_files_path, notice: "The vld file #{file_name} has been deleted."
+
+    get_user_info_from_userid
+    file_name = vldfile.file_name
+    logger.warn("FREECEN:VLD_DELETE: Starting background delete rake for #{file_name} (id #{vldfile.id})")
+    pid = spawn("bundle exec rake freecen:delete_freecen1_vld_file[#{vldfile.id},#{@user.userid}]")
+    logger.warn("FREECEN:VLD_DELETE: rake task pid #{pid}")
+    redirect_to freecen1_vld_files_path,
+                notice: "Deletion of #{file_name} has started. You will receive an email when it has completed."
   end
 
   def edit

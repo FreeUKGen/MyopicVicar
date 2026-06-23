@@ -781,6 +781,10 @@ class UseridDetail
     user_role_transcriber.where(last_upload: {'$gt': month.months.ago}).count
   end
 
+  def self.number_of_transcribers_uploaded_file_in_period(from_date, to_date)
+    user_role_transcriber.where(last_upload: { '$gte': from_date.beginning_of_day, '$lte': to_date.end_of_day }).count
+  end
+
   def self.return_percentage_all_users_accepted_transcriber_agreement
     total_users = @users_count.to_f
     total_users_accepted = users_accepted_new_transcription_agreement.count.to_f
