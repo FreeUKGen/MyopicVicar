@@ -234,7 +234,7 @@ class SearchQuery
     if MyopicVicar::Application.config.template_set == 'freecen'
       first_name.present? && chapman_codes.length.positive? && freecen2_place_ids.present?
     elsif MyopicVicar::Application.config.template_set == 'freepro'
-      first_name.present? || text.present?
+      first_name.present? || text.present? || occupation.present?
     else
       first_name.present? && chapman_codes.length.positive? && place_ids.present?
     end
@@ -371,6 +371,14 @@ class SearchQuery
       date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
       date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
       params["Death.Year"] = date_params
+    end
+    params
+  end
+
+  def pro_occupation_search_params
+    params = {}
+    if occupation
+      params["occupation"] = occupation
     end
     params
   end
@@ -1096,7 +1104,8 @@ class SearchQuery
     #records = SearchQuery.get_search_table.where("Death.Address" => "the Lower Bourne Farnham Rural Surrey")
     #records = SearchQuery.get_search_table.where({"Death.LastName" => "EARWAKER"})
     #records = SearchQuery.get_search_table.where("Death.Year": '1892'..'1895').and({"Death.GivenName": "William"})
-    recordCount = SearchQuery.get_search_table.count
+    #records = SearchQuery.get_search_table.where({"Death.Occupation" => "widow"})
+    recordCount = records.count
     persist_results(records)
     records
   end
@@ -1106,6 +1115,7 @@ class SearchQuery
       first_name: 'Death.GivenName',
       last_name: 'Death.LastName',
       date_search: 'Death.Year',
+      occupation: 'Death.Occupation',
       session_id: 'RecordId'
     }
   end
@@ -1142,6 +1152,7 @@ class SearchQuery
     params = {}
     params.merge!(pro_search_names_criteria)
     params.merge!(pro_date_search_params)
+    params.merge!(pro_occupation_search_params)
     params
   end
 

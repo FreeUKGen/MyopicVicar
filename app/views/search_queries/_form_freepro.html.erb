@@ -60,6 +60,14 @@
           <% end %>
         </li>
         <li class="grid__item one-third lap-one-half palm-one-whole">
+          <label class="ttip" for="occupation" tabindex="0">Occupation or Role</label>
+          <% if @search_query.occupation.nil? %>
+            <input id="occupation" name="search_query[occupation]" type="text" class="text-input" placeholder="Optional">
+          <% else %>
+            <input id="occupation" name="search_query[occupation]" type="text" class="text-input" value="<%=@search_query.occupation%>">
+          <% end %>
+        </li>
+        <li class="grid__item one-third lap-one-half palm-one-whole">
           <label class="ttip" for="address" tabindex="0">Text search</label>
           <% if @search_query.text.nil? %>
             <input id="text" name="search_query[text]" type="text" class="text-input" placeholder="Optional">
