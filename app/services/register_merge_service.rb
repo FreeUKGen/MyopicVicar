@@ -340,7 +340,7 @@ class RegisterMergeService
         yield
       end
     end
-  rescue Mongo::Error::OperationFailure => e
+  rescue Mongo::Error => e
     Rails.logger.warn("FREEREG:REGISTER_MERGE: transaction unavailable, fallback: #{e.message}")
     yield
   end
