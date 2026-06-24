@@ -325,6 +325,18 @@ class Message
     end
   end
 
+
+  def record_contact_forward_delivery(sender_userid, recipient_userids)
+    sent_message = SentMessage.new(
+      message_id: id,
+      sender: sender_userid,
+      recipients: recipient_userids,
+      sent_time: Time.now
+    )
+    sent_messages << [sent_message]
+    sent_message.save
+  end
+
   def restore
     update_attribute(:archived, false)
     Message.message_replies(id).each do |message_rl1|

@@ -276,6 +276,8 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts
   get 'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
   get 'contacts/:source_contact_id/reply',  :to => 'contacts#reply_contact', :as => :reply_contact
+  get 'contacts/:source_contact_id/forward',  :to => 'contacts#forward_contact', :as => :forward_contact
+  post 'contacts/:source_contact_id/forward',  :to => 'contacts#send_forward_contact', :as => :send_forward_contact
   get 'contacts/:id/contact_reply_messages', to: 'contacts#contact_reply_messages', as: :contact_reply_messages
   get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
   get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact

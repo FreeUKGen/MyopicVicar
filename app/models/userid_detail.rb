@@ -170,6 +170,20 @@ class UseridDetail
     end
 
 
+
+    def internal_contact_recipient_options
+      roles = FreeregOptionsConstants::COMMUNICATION_ROLES
+      users = UseridDetail.active(true).email_address_valid.where(:email_address.nin => [nil, '']).any_of(
+        { :person_role.in => roles },
+        { :secondary_role.in => roles }
+      ).order_by(person_surname: 1, person_forename: 1, userid_lower_case: 1)
+
+      users.map do |user|
+        role_label = ([user.person_role] + Array(user.secondary_role)).compact.uniq.select { |role| roles.include?(role) }.join(', ')
+        ["#{user.person_forename} #{user.person_surname} (#{user.userid}) — #{role_label}", user.userid]
+      end
+    end
+
     def uploaded_freecen_file(users, transcribers)
       uploaded = []
       FreecenCsvFile.where(:userid.exists => true).each do |file|

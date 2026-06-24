@@ -1,0 +1,16 @@
+<p>Dear <%= @appname %> team member,</p>
+
+<p><%= @forwarder_name %> forwarded contact reference <%= @contact.identifier %> for your attention.</p>
+
+<p><b>Subject:</b> <%= @message.subject %></p>
+<p><b>Contact link:</b> <a href="<%= @contact_url %>"><%= @contact_url %></a></p>
+
+<% if @message.body.present? %>
+  <p><b>Forwarding note:</b></p>
+  <p><%= @message.body %></p>
+<% end %>
+
+<p><b>Original contact from <%= @contact.name %> &lt;<%= @contact.email_address %>&gt;:</b></p>
+<p><%= @contact.body %></p>
+
+<p>The <%= @appname %> Team</p>

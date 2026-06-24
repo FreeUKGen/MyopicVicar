@@ -1,0 +1,45 @@
+<% breadcrumb :create_contact_reply,  @respond_to_contact%>
+<% if flash[:notice] %>
+  <div id="notice" style="color:blue"><br>
+    <%= flash[:notice] %>  <% flash[:notice] = nil%><br>
+  </div>
+<% end %>
+<h4 style="text-align: center">Forward Contact Reference <%= @respond_to_contact.identifier %></h4>
+<div class= "grid">
+  <section class="island  island--light ">
+    <div class="scrollable" >
+      <div class="grid__item  one-whole  palm-one-whole push--bottom">
+        <%= content_tag :p, class: "strong" do %>
+          On <%= @respond_to_contact.contact_time.to_formatted_s(:long)%> <%= @respond_to_contact.name%> (<%= @respond_to_contact.email_address %>) submitted a <%= @respond_to_contact.contact_type %>.<br>
+          The contact information was:<br>
+        <% end %>
+        <%= @respond_to_contact.body %>
+      </div>
+    </div>
+  </section>
+</div>
+<div class= "grid">
+  <section class="island  island--light ">
+    <%= semantic_form_for(@message, url: send_forward_contact_path(source_contact_id: @respond_to_contact.id), html: { multipart: true }) do |f| %>
+      <%= f.hidden_field :message_time %>
+      <%= f.hidden_field :userid %>
+      <%= f.hidden_field :source_contact_id, value: @respond_to_contact.id %>
+      <%= f.hidden_field :sub_nature, value: 'forward' %>
+      <ul>
+        <li class="grid__item one-whole palm-one-whole push--bottom">
+          <label class="label" for="message_recipients">Forward to</label>
+          <%= select_tag 'message[recipients]', options_for_select(@recipient_options), multiple: true, class: 'select', size: 8, required: true %>
+        </li>
+        <li class="grid__item one-whole palm-one-whole push--bottom" id="subject_input" >
+          <label class="label" for="subject">Subject </label>
+          <%= text_field_tag 'message[subject]', @message.subject, class: 'text-input flush--bottom', readonly: true, title: @message.subject %>
+        </li>
+        <li class="grid__item one-whole palm-one-whole push--bottom">
+          <label>Forwarding note<span class="weight--normal"> (optional)</span></label>
+          <textarea name="message[body]" style="width: 100%;" rows="8"><%= @message.body %></textarea>
+        </li>
+      </ul>
+      <%= f.action :submit, as: :input, label: 'Forward Contact', button_html: {class: 'btn'}, wrapper_html: { class: 'grid__item one-whole text--center' } %>
+    <% end %>
+  </section>
+</div>
