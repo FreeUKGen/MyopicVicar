@@ -128,6 +128,12 @@ class Feedback
     self.name = reporter.person_forename unless reporter.nil?
   end
 
+  def attachment_file_paths
+    return [] if screenshot.blank? || screenshot.path.blank?
+
+    [screenshot.path]
+  end
+
   def add_link_to_attachment
     return if self.screenshot_location.blank?
     website = Rails.application.config.website
