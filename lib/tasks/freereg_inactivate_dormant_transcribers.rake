@@ -44,7 +44,7 @@ namespace :freereg do
 
       email_subject = "FREEREG:: Inactivation of dormant transcribers in #{@syndicate} (run mode: #{@mode})."
       email_body = "We have reviewed transcribers in #{@syndicate} who have not uploaded a file in the last " \
-                   "#{CUTOFF_MONTHS} months and have not yet set up their FreeREG password.\n\n" \
+                   "#{CUTOFF_MONTHS} months and have never signed in to the system.\n\n" \
                    "#{list_status}\n\n" \
                    "The attached file lists the affected transcribers. Please review this list and reactivate " \
                    "anyone who should remain active.\n"
@@ -112,9 +112,9 @@ namespace :freereg do
         last_file = Freereg1CsvFile.where(userid: user.userid).desc(:uploaded_date).limit(1).first
         next if last_file.present? && last_file.uploaded_date.to_date >= @cutoff_date
 
-        # Condition 2: password has never been set (reset_password_token still present from invitation)
+        # Condition 2: has never signed in since tracking was enabled
         devise_user = User.where(username: user.userid).first
-        next unless devise_user.present? && devise_user.reset_password_token.present?
+        next unless devise_user.present? && devise_user.last_sign_in_at.nil?
 
         user_full_name = "#{user.person_forename} #{user.person_surname}"
         joined = user.sign_up_date.present? ? user.sign_up_date.strftime('%d/%m/%Y') : 'Unknown'
