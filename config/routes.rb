@@ -24,6 +24,9 @@ MyopicVicar::Application.routes.draw do
 
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
+
+  devise_for :users, controllers: { sessions: 'users/sessions', passwords: 'users/passwords' }
+
   get '/up', to: proc { [200, {}, ['success']] }
   get 'open', :to => 'open#index'
   get 'open/:county/places', :to => 'open#places_for_county', :as => :open_places_for_county
@@ -210,6 +213,7 @@ MyopicVicar::Application.routes.draw do
   resources :feedbacks
 
   get 'contacts/list_by_type',  :to => 'contacts#list_by_type', :as => :list_by_type_contacts
+  get 'contacts/view_only_my_role',  :to => 'contacts#view_only_my_role', :as => :view_only_my_role_contacts
   get 'contacts/list_by_name',  :to => 'contacts#list_by_name', :as => :list_by_name_contacts
   get 'contacts/list_by_date',  :to => 'contacts#list_by_date', :as => :list_by_date_contacts
   get 'contacts/list_by_most_recent',  :to => 'contacts#list_by_most_recent', :as => :list_by_most_recent_contacts
@@ -663,7 +667,8 @@ MyopicVicar::Application.routes.draw do
   #
   # We ask that you don't use the :as option here, as Refinery relies on it being the default of "refinery"
 
-  mount Refinery::Core::Engine, :at => '/cms'
+  #mount Refinery::Core::Engine, :at => '/cms'
+  get '*path', to: 'pages#show', as: :page, format: false
 
   #ActiveAdmin.routes(self)
 

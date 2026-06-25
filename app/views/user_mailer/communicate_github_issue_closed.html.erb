@@ -1,8 +1,20 @@
-<p>Dear <%= @feedback.userid%></p>
-<p>You had submitted some feedback to <%= @appname %> reference
-  <a href="<%=Rails.application.config.website%>/feedbacks/<%=@feedback.id%>"><%= @feedback.identifier %></a>
-  to us with the title <b><%= @feedback.title%></b> at <%= @feedback.feedback_time.strftime("%H:%M on %F") unless @feedback.feedback_time.nil?%></p>
-<p>This email is to notify you that we have closed the github issue and you can view the complete discussion here: <%= link_to "link to github issue", @feedback.github_issue_url %></p>
+<% base = Rails.application.config.website.to_s.chomp('/') %>
+<% ref_url = @is_contact ? "#{base}/contacts/#{@communication.id}" : "#{base}/feedbacks/#{@communication.id}" %>
+<% salutation_name = @is_contact ? @communication.name : (@communication.user_name.presence || @communication.name) %>
+<% submitted_at = @is_contact ? @communication.contact_time : @communication.feedback_time %>
+<% summary = @is_contact ? @communication.contact_type : @communication.title %>
 
-Thank you,
-FreeBMD2 team
+<p>Hi,</p>
+
+<p>You had submitted <%= @is_contact ? 'a message' : 'a feedback' %> to FreeBMD2, reference
+  <%= @communication.identifier %>
+  <% if summary.present? %>
+    concerning <b><%= summary %></b>
+  <% end %>
+  at <%= submitted_at.strftime('%H:%M on %F') unless submitted_at.nil? %>.</p>
+
+<p>This email is to notify you that we have closed the GitHub issue. You can view the discussion here:
+  <%= link_to 'link to GitHub issue', @communication.github_issue_url %>.</p>
+
+<p>Thank you,<br>
+FreeBMD2 team</p>

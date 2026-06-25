@@ -1,5 +1,5 @@
 <% if @current_record.present? %>
-  <% title "Record details for #{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}" %>
+  <% title "Record details for #{@current_record[:GivenName].to_s.camelize} #{@current_record[:Surname].to_s.upcase}" %>
 <% else %>
   <% title "Record Details" %>
 <% end %>

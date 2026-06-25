@@ -1,0 +1,165 @@
+<h1>More about searching</h1>
+
+<style scoped="scoped">
+figcaption {
+  font-style: italic;
+  color: #737373; /* 4.74:1 */
+  margin-top: 0.3em;
+}
+figure.site img {
+  border: 2px solid #00a099;
+  padding: 0.3em;
+}
+</style>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-three-quarters palm-one-whole">
+    <p class="lead">This page has some more information on searching for names where you are not sure how those names would have been spelled in the G.R.O. Index. It also includes more help on searching in general.</p>
+  </div>  
+  
+  <div class="grid__item two-fifths lap-one-quarter palm-one-whole float--right">
+    <nav aria-labelledby="thisPage">
+      <div class="islet islet--bordered">
+        <h2 class="title-block" id="thisPage">On this page</h2>
+        <ul class="sub-nav">
+          <li><a href="#fuzzySearch">Fuzzy searching — Soundex &amp; wild cards</a> </li>
+          <li><a href="#motherSurname">Using a mother’s surname</a> </li>
+          <li><a href="#deathSearch">How to search for deaths</a> </li>
+          <li><a href="#dateRange">Using a date range</a> </li>
+          <li><a href="#countyDistrict">Help with Counties and Districts</a> </li>
+          <li><a href="#volumePage">Searching by Volume or Page</a> </li>
+          <li><a href="#moreIdeas">I cannot find the person I’m looking for</a> </li>
+          <li><a href="#unreadable">Unreadable characters</a> </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="grid__item three-fifths lap-three-quarters palm-one-whole">
+    <h2 id="fuzzySearch">Fuzzy searching</h2>
+    <p>A fuzzy search is one where you look for records that <em>could be</em> a match for the person you are trying to find, but might not be. These include the records that are difficult to read and those where someone has made a mistake — not spelling a name correctly, for example.</p>
+
+    <h3 id="soundexSearch">Soundex search</h3>
+    <p>If you check the ‘Phonetic search surnames’ box, FreeBMD will attempt to match surnames using the Soundex code appropriate to the surname you enter. In other words, the search will look for similar sounding names, as pronounced in English.</p>
+    <p>Soundex is the most widely known phonetic algorithm. It is a set of rules that together decide which groups of letters might sound alike. It is important to remember that the Soundex algorithm assumes that the first letter of the name is correct. So, consider additional searches for similar sounding surnames but using different first letters.</p>
+    <p>If using Soundex, enter the surname as you might expect it to be spelled. In particular, do not enter the Soundex Code itself.</p>
+    <p>Please note that Soundex is not compatible with a wild card search — Soundex needs actual letters.</p>
+
+    <aside aria-label="Soundex in Wikipedia" class="island island--navy">
+      <h4 class="banner__title">Want to know more about Soundex?</h4>
+      <p>For an explanation of the principles behind the original algorithm and a discussion of some of its variations, see the <a href="https://en.wikipedia.org/wiki/Soundex">Wikipedia article on Soundex</a>.</p>
+    </aside>    
+
+    <h3 id="wildcardSearch">Wild card search</h3>
+    <p>Wild cards make it easier to find variant spellings of a name. You can use a wild card in any of the name fields. We explain below how some of the behaviour for First Names is different from the behaviour for Surnames.</p>
+    <p class="push-half--bottom">You can search using the wild card * (an asterisk or star symbol) which stands for zero or more characters. Using a wild card increases the number of possible matches, so be prepared to constrain (or limit) your search: put something in both name boxes and/or choose one record type. In addition, there are some limits on how a wild card search can be used:</p>
+    <ul>
+      <li>we suggest that you select a County and perhaps a District to cut down the number of potential matches</li>
+      <li>if you put <em>only</em> a wild card in the First Names box, you will get only those records with a single forename, which is probably not what you want</li>
+    </ul>
+    
+    <h4>First Name examples</h4>
+    <p>Remember that even a search <em>without</em> a wild card will find a number of variations of a first name. For example a search for ‘ann’ will find Ann, Anna, Anne, Annie, Annette, Annie Blanche, Ann Elizabeth J, and so on.</p>
+    <p class="push-half--bottom">If you want to look for variations in the spelling of a first name, use a wild card for the part that varies. For example:</p>
+    <ul>
+      <li class="push-half--bottom"><em>ste*n</em> finds Stephen, Steven and Stefan</li>
+      <li class="push-half--bottom"><em>luc*</em> finds Lucie and Lucy; it also finds Lucien, Lucinda, etc.</li>
+    </ul>
+    <p>If you are searching for an <em>uncommon surname</em>, then you might have success putting a wild card as the first character of the first name. For example <em>*fred</em> finds Fred, Frederick, Frederic George, Alfred, Henry Alfred, etc. Notice that the search works just as if you had typed <em>*fred*</em>.</p>
+    
+
+    <h4>Surname examples</h4>
+    <p class="push-half--bottom">However, if you search for a Surname, no additional wild card is added to what you type. For example:</p>
+    <ul>
+      <li class="push-half--bottom"><em>davi*s</em> finds: Davis, Davies and Davids</li>  
+      <li class="push-half--bottom"><em>dav*s*</em> finds all the above plus: Davidson and Davison</li>
+      <li class="push-half--bottom"><em>sm*th</em> finds: Smith, Smyth, Smeeth, Smarth, etc.
+      </li>
+<li class="push-half--bottom"><em>sm*th*</em> finds all the above plus: Smithe, Smythe, Smithers, Smethurst, Smithson, Smurthwaite, etc.</li>
+    </ul>
+    <p>You could even search with <em>*smith</em>, for example to find: Smith, Athersmith, Holloway-Smith, Sixsmith, etc. <strong>But</strong>, you would have to narrow down your search, by giving more information. Even so, it might still produce too many results or time out.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="motherSurname">Birth searches using a mother’s surname</h2>
+    <p>When searching for a birth, entering a mother’s surname will return only those births that match the mother’s maiden name — the Surname she had before she married her husband. The G.R.O. Birth Index records the mother’s maiden name from the September quarter of 1911, so entering a value in this field will return only records from the September quarter of 1911 and onwards.</p>
+    <p>A search using a mother’s maiden name can be combined with a search on the mother's married name to greatly limit the number of results when searching for possible children.</p>
+    <p>You can use a wild card in a mother’s surname.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="deathSearch">How to search for deaths</h2>
+    <h3>Entering the age at death</h3>
+    <p>The ‘Age at Death’ form field is available when you select only the ‘Death’ Record Type. The Index contains the age at death from 1st January 1866 and the date of birth from 1st April 1969. However, you can search the FreeBMD database for either an age at death or year of birth from January 1866 onwards.</p>
+    <p class="push-half--bottom">To restrict a search for a death registration to only entries with a particular age at death or year of birth, you can select one of the following from the drop-down:</p>
+    <ul>
+      <li><strong>age</strong> — takes a number, for example, 25</li>
+      <li><strong>age range</strong> — takes a number range. Enter a minimum age in the left field and a maximum age in the right field. The minimum age should be less than the maximum age. For example, a minimum age of 25 and a maximum age of 30</li>
+      <li><strong>year of birth</strong> — takes a 4-digit year. For example, 1990</li>
+      <li><strong>year of birth range</strong> — takes a year range. Type the earliest year in the left year field and the latest year in the right year field</li>
+    </ul>
+    <p>Searches using age at death or year of birth will return all those entries where an age at death or date of birth is <em>not</em> present (for example, those before January 1866) <em>unless</em> you select the ‘Match only recorded’ ages checkbox.</p>
+
+    <h3>Match only recorded ages</h3>
+    <p>If this box is checked, when an Age at Death search is made, FreeBMD will only return results where there is a recorded Age at Death or Date of Birth in the index.</p>
+    <p>Remember that the G.R.O. Index does not record the age of death before the March quarter of 1866, so checking this box will exclude deaths that were registered before the March quarter of 1866.</p>
+    <p>Please note that there might be a short delay before a death is registered. So, consider two unrelated but otherwise comparable deaths that occurred in the last week of December 1865: one death was registered in the fourth quarter of 1865 and the other in the first quarter of 1866. If this box was checked, only one of these deaths — the one registered in 1866 — would appear on the Results page, whereas they would both appear if this box was not checked.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="dateRange">Using a date range</h2>
+    <p>FreeBMD has two sets of drop-down boxes, each set consisting of a pair of drop-down boxes — one drop-down to set the Quarter and one drop-down to set the Year. The first set can be used — if you choose to — to select a Date to search from; and the second set — if you choose to — to select a Date to search to. You can use just one of these dates, without using the other one. Again, you might not wish to enter any limits, in which case the default settings will be used — in effect, this is from the September quarter of 1837 to the March quarter of 1992, because the G.R.O. Index started in the September quarter of 1837 (not in the March quarter of that year).</p>
+    <p>Please note that the default Quarter is March for both the start date and the end date. In the case of the Year — the Date range <em>from</em> drop-down starts at 1837 and you scroll downwards to increase the year; on the other hand, the Date range <em>to</em> drop-down starts at 1992 and you scroll downwards to decrease the year. From 1984 onward, the G.R.O. index is organised by year, so the quarter is ignored.</p>
+    <p>You can search using default date settings but if, for example, you are searching for someone who did National Service during or just after the Second World War, you would not need to start your search from September 1837. You could set a suitable start date to limit the number of results.</p>
+    <p>However, if you are searching for a man, you might find one or more people of the same name, from the same location, as far back as the 1840s — they could be a parent or grandparent of the man you are looking for.</p>
+    <p>In order for the date search to work, the Date Range From must be earlier than the Date Range To.</p> 
+    <hr class="rule rule--ornament" />
+
+    <h2 id="countyDistrict">Help with Counties and Districts</h2>
+    <h3>Good to know</h3>
+    <p>The default setting is ‘All Counties’. Before you choose a district, you have to choose at least one county. If you do not know what county a district is in, you can visit <a href="https://www.ukbmd.org.uk/reg/districts/index.html">UKBMD (an external site)</a> to find out. See Choosing Counties, next, for how to select a county. Some districts cover parts of more than one county — you can choose either county on FreeBMD and the district will appear in the choice list.</p>
+
+ 
+    <h3>Choosing Counties</h3>
+    <p>If you know which County or Counties you want to search, use the Counties selection box. Select multiple entries by holding down the Ctrl key (the Cmd key on a Mac) before clicking on individual entries, or by holding down the Shift key to select a block of entries. Once you have selected one or more Counties the District selection box will display only the districts in those counties.</p>
+    <p>If you select a single County, the Districts selection box — to the right of the Counties selection box — will display the three-letter Chapman Code for that county, followed by a list of all the districts in that county. If, however, you have selected more than one County, the District selection box will display the Chapman Code for the first county (in alphabetical order) followed by the districts for that county. Below this, will be the Chapman Code for the next county, followed by its districts. This will continue for all the counties that you have selected.</p>
+    <p>You can view the <a href="https://www.genuki.org.uk/big/Regions/Codes">Chapman Codes for the British Isles at the GenUKI website</a>.</p>
+    <p>Please note that some Districts, whilst largely within one County, also cover small areas of adjacent Counties. For example, the District of Ashton-under-Lyne is in Lancashire, but it includes small areas of Cheshire. In such cases, it is impossible to determine from the G.R.O. index which County the event occurred in, so a search in a County will include Districts from any adjoining Counties which extend into it.</p>
+
+    <h3>Choosing Districts</h3>
+    <p>You have to select one or more Counties before you can select one or more Districts. (See the ‘Good to know’ above for more details).</p>
+    <p>If you know with reasonable certainty which District an event occurred in, you can select the District from the District selection box. Select multiple entries by holding down the Ctrl key (Cmd on a Mac) before clicking on individual entries, or by holding down the Shift key to select a block of entries.</p>
+    <p>Take care when searching using a district because each district appears in the G.R.O. Index under a variety of spellings (and misspellings) and the district may not be what you expect. The standard spelling is what appears in this list.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="volumePage">Searching by Volume or Page</h2>
+    <h3>Specifying a Volume</h3>
+    <p>If you are searching for a common name, it might help if you narrow down your search to a particular part of the country. Please note that in areas of high population density, such as large cities — and especially London — a County could have one or more Volumes associated with it. In contrast, in rural parts of England and Wales, a single Volume could cover several Counties. So, depending on where you are searching, a Volume might cover a larger or smaller area than its associated County or Counties.</p>
+
+    <h3>Specifying a Page</h3>
+    <p>This option is useful in researching marriages where you are searching for an unknown spouse: their Marriage index reference — Volume and Page — will be the same as for their spouse.</p>
+    <hr class="rule rule--ornament /" />
+ 
+    <h2 id="moreIdeas">I cannot find the person I’m looking for</h2>
+    <h3>Perhaps there was no civil registration</h3>
+    <p>Particularly in the early years, people often thought that having a Church of England baptism, marriage or burial meant you did not need to get a civil registration. Try our sister project <a href="https://www.freereg.org.uk/">FreeREG</a> and also <a href="https://www.familysearch.org">Family Search (external site)</a> — both are free, and sometimes records are in one but not the other.</p>
+
+    <h3>Have you ignored a result because it’s not a likely place?</h3>
+    <p>A district will include many places — you can find out which by selecting the name of the district in the Results listing on the Entry Information page. These links take you to a website where there is a comprehensive list of which places were in a district at any given time.</p>
+    <p>District names (shown in the results below the person’s name) are sometimes false friends. You might ignore the following entry because you know that your great-aunt Ruby was born in Liverpool, not Derbyshire! But West Derby is a district that is today part of Liverpool.</p>
+    <figure class="site">
+            <%= image_tag 'unexpected-district.png?sha=1a05f0ea69c0e5da', alt: 'Unexpected District', width: 210, height: 106 %>    
+      <figcaption>The birth of Ruby Avilene Smith, registered in the District of West Derby</figcaption> 
+    </figure>
+
+    <h3>Could the registration have been in Scotland or Ireland?</h3>
+    <p>For Scottish Registrations, please visit the <a href="https://www.nrscotland.gov.uk/about-us/service-status#ordering-certificate">National Records of Scotland website, ordering a certificate</a>.</p>
+    <p>For Northern Irish Registrations (1921 onwards), please visit <a href="https://www.nidirect.gov.uk/articles/ordering-life-event-certificates">Northern Ireland Direct, ordering life event certificates</a>.</p>
+    <p>For Ireland (the whole island, to 1922, and the Republic of Ireland from 1921), please visit <a href="https://civilrecords.irishgenealogy.ie/">Irish Genealogy, Civil Records</a>.</p>
+
+    <h3>Search smart</h3>
+    <p>In general, the more search fields you use, the more precise the results will be, but the greater the chance that you will miss the entry you are looking for. You might need to adjust what you put in the search fields and repeat the search to get the best results. Start with fewer search fields and add more as necessary.</p>
+    <p>If you enter a second first name (for example, James Ian), you would miss an entry that was spelt differently (for example, James Iain). A search for just the first first name (in this example, James) or the first name and an initial (James I) would give you many more results but you would not miss the alternative spelling.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="unreadable">Unreadable characters and how we handle them</h2>
+    <p>Sometimes an original G.R.O. Index page is unreadable in parts. Our transcribers make a best guess at what they think is written in the entry, using special characters that describe their uncertainty — this is our Uncertain Character Format (or UCF). If you do a <a href="#wildcardSearch">wild card search, as described above</a>, and find a record that includes an asterisk (a *), an underscore (a _) or square or curly brackets, we encourage you to view the image (the scan) of the G.R.O. Index page and try to assess whether the entry could be the one you are looking for.</p>
+  </div>
+</div>

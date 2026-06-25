@@ -292,13 +292,14 @@ module SearchQueriesHelper
   def set_district_value county_codes=nil, value=nil
     return value if value.blank?
     districts_names = DistrictToCounty.joins(:District).distinct.order( 'DistrictName ASC' )
-    county_hash = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
-    numbers = values.collect(&:strip).reject{|c| c.empty? }
+    county_hash = ChapmanCode::FREEBMD_CODES
+    numbers = value.collect(&:strip).reject{|c| c.empty? }
     @districts = Hash.new
-    selected_districts = districts_names.where(DisctritNumber: numbers)
+    selected_districts = districts_names.where(DistrictNumber: numbers)
     selected_districts.each{|district|
-      @districts[district.County] = [district.DistrictName, district.DistrictNumber]
+      @districts[district.County] = [district.District.DistrictName, district.DistrictNumber]
      }
+    #raise @districts.inspect
     @districts
   end
 
@@ -309,14 +310,28 @@ module SearchQueriesHelper
     end
   end
 
+  def bmd_display_quarter_name(quarter)
+    return nil unless quarter.present?
+
+    name = QuarterDetails.quarters.key(quarter.to_i)
+    name&.to_s&.upcase
+  end
+
+  def bmd_display_quarter_year(quarter, year)
+    return 'Not specified' if year.blank?
+
+    quarter_label = bmd_display_quarter_name(quarter)
+    quarter_label.present? ? "#{quarter_label} #{year}" : year.to_s
+  end
+
   def bmd_search_criteria search_query
     display_map = {}
     display_map["First Name"] = search_query.first_name.present? ? search_query.first_name.upcase : "Not Specified" 
     display_map["Last Name"] = search_query.last_name.present? ? search_query.last_name.upcase : "Not Specified"
     display_map["First Name Exact Match?"] = search_query.first_name_exact_match ? 'Yes' : 'No'
     display_map["Phonetic Surnames"] = search_query.fuzzy ? 'Yes' : 'No'
-    display_map["Search Start Date"] = "#{QuarterDetails.quarters.key(search_query.start_quarter).upcase} #{search_query.start_year}"
-    display_map["Search End Date"] = "#{QuarterDetails.quarters.key(search_query.end_quarter).upcase} #{search_query.end_year}"
+    display_map["Search Start Date"] = bmd_display_quarter_year(search_query.start_quarter, search_query.start_year)
+    display_map["Search End Date"] = bmd_display_quarter_year(search_query.end_quarter, search_query.end_year)
     if search_query.bmd_record_type.present?
       display_map["Record Type"] = bmd_record_type_name(search_query.bmd_record_type).compact.to_sentence
     end
@@ -328,7 +343,7 @@ module SearchQueriesHelper
     display_map["Page"] = search_query.page if search_query.page
     counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(" or ")
     display_map["Counties"] = counties if search_query.chapman_codes.size >= 1
-    display_map["Districts"] = search_query.get_district_name if search_query.districts.compact.size >= 1
+    display_map["Districts"] = search_query.get_district_name if search_query.districts.to_a.compact.size >= 1
     display_map["Age At Death"] = "#{search_query.age_at_death}#{search_query.dob_at_death}" if search_query.age_at_death.present? || search_query.dob_at_death.present?
     display_map["Age At Death Range"] = "#{search_query.min_age_at_death}-#{search_query.max_age_at_death}" if search_query.min_age_at_death.present?
     display_map["Date of Birth Range"] = "(#{search_query.min_dob_at_death}) - (#{search_query.max_dob_at_death})" if search_query.max_dob_at_death.present?
