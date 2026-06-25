@@ -6,6 +6,7 @@ class UseridDetail
   require 'freereg_options_constants'
 
   field :userid, type: String
+  field :api_token, type: String
   field :userid_lower_case, type: String
   field :syndicate, type: String
   field :syndicate_coordinator, type: String
@@ -74,7 +75,7 @@ class UseridDetail
   validate :active_with_inactive_reason, on: :update
   validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
-  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
+  before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change, :generate_api_token
   after_create :save_to_refinery
   before_save :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries
   #after_update :update_refinery
@@ -635,6 +636,10 @@ class UseridDetail
     renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
     File.rename(details_file,renamed_file)
     FileUtils.mv(renamed_file,newdir)
+  end
+
+  def generate_api_token
+    self.api_token = SecureRandom.hex(20)
   end
 
   def save_to_refinery

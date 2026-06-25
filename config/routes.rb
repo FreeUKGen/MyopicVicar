@@ -14,6 +14,20 @@
 #
 MyopicVicar::Application.routes.draw do
 
+  namespace :api do
+    namespace :v1 do
+      post   'auth/login',              to: 'auth#login'
+      get    'batches',                 to: 'batches#index'
+      get    'assignments',             to: 'assignments#index'
+      post   'csvfiles/upload',         to: 'csvfiles#upload'
+      post   'csvfiles/replace',        to: 'csvfiles#replace'
+      delete 'csvfiles/:id',            to: 'csvfiles#destroy'
+      get    'counties',                to: 'counties#index'
+      get    'counties/register_types', to: 'counties#register_types'
+      get    'churches',                to: 'churches#index'
+      get    'places',                  to: 'places#index'
+    end
+  end
 
 
   root :to => 'search_queries#new'
