@@ -288,9 +288,9 @@
           <% if event_entry_number.present? %>
             <% if alternate_names.present? && alternate_names.length > 1  %>
               <% if @search %>
-                <%= link_to "#{event_entry_number}", same_page_entries_path(search_id: search_id, hash_id: record.record_hash) %><br>
+                <%= link_to "#{event_entry_number}", same_page_entries_path(search_id: search_id, hash_id: record.url_safe_record_hash) %><br>
               <% else %>
-                <%= link_to "#{event_entry_number}", same_page_entries_non_search_path(hash_id: record.record_hash) %><br>
+                <%= link_to "#{event_entry_number}", same_page_entries_non_search_path(hash_id: record.url_safe_record_hash) %><br>
               <% end %>
               <span class="weight--normal"><%= "(#{ApplicationText::ALTERNATE_NAMES_TEXT})" %></span>
             <% else %>

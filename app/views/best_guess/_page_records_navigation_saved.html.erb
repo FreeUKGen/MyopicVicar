@@ -6,7 +6,7 @@
       </div>
     <% end %>
     <div class='grid__item one-third lap-one-half palm-one-half push-half--bottom'>
-      <%= link_to "#{record.Page}", same_page_entries_non_search_path(hash_id: record.record_hash) %>
+      <%= link_to "#{record.Page}", same_page_entries_non_search_path(hash_id: record.url_safe_record_hash) %>
     </div>
     <% if @next_record_of_page.present?%>
       <div class='grid__item one-third lap-one-half palm-one-half push-half--bottom text--left'>

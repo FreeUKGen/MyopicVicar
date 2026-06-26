@@ -169,7 +169,7 @@ class BestGuessController < ApplicationController
     @search = params[:search_id].present?
     @search_id = params[:search_id] if @search
     @search_query = SearchQuery.find(@search_id) if @search && @search_id.present?
-    @record = BestGuessHash.find_by(Hash: params[:hash_id])&.best_guess
+    @record = BestGuessHash.find_by(Hash: decode_hash_id(params[:hash_id]))&.best_guess
     unless @record
       flash[:notice] = 'The record you requested does not exist.'
       redirect_back(fallback_location: root_path) && return
@@ -272,6 +272,10 @@ class BestGuessController < ApplicationController
   end
 
   private
+
+  def decode_hash_id(hash_id)
+    URI.decode_www_form_component(hash_id.to_s)
+  end
 
   def forenames_as_array(records)
     arr = []

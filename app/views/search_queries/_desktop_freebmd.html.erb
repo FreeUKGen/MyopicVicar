@@ -121,7 +121,7 @@
                         <%= "#{key} #{value}" unless key == "Page" %>
                       <% end %>
                       Page
-                      <%= link_to "#{search_record[:Page]}", same_page_entries_path(search_id: @search_query.id, hash_id: search_record.record_hash) %>
+                      <%= link_to "#{search_record[:Page]}", same_page_entries_path(search_id: @search_query.id, hash_id: search_record.url_safe_record_hash) %>
                     <% end %>
               </td>
               <% if blank_record_types or included_record_types.include? "1" %>
