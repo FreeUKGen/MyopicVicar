@@ -169,13 +169,12 @@ class BestGuessController < ApplicationController
     @search = params[:search_id].present?
     @search_id = params[:search_id] if @search
     @search_query = SearchQuery.find(@search_id) if @search && @search_id.present?
-    record_number = params[:entry_id]
-    @record = BestGuess.find(record_number)
-    @volume = @record.Volume #params[:volume]
-    @page = @record.Page #params[:page]
-    @district = @record.District #params[:district]
-    @quarter = params[:quarter]
-    @page_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
+    @record = BestGuessHash.find_by(Hash: params[:hash_id])&.best_guess
+    @volume = @record.Volume
+    @page = @record.Page
+    @district = @record.District
+    @quarter = @record.QuarterNumber
+    @page_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: @quarter, RecordTypeID: @record.RecordTypeID)
     @page_records = @record.possible_alternate_names if from_quarter_to_year(@record.QuarterNumber) >= 1993 && @record.RecordTypeID != 3
   end
 
