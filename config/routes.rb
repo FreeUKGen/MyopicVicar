@@ -17,6 +17,10 @@ MyopicVicar::Application.routes.draw do
 
 
   root :to => 'search_queries#new'
+  match '/404', to: 'errors#not_found', via: :all
+  match '/422', to: 'errors#unprocessable_entity', via: :all
+  match '/500', to: 'errors#internal_server_error', via: :all
+
   resources :reminder_to_donate
   resources :donate_cta_feedback
 
@@ -561,6 +565,9 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/update_registers', :to => 'freereg1_csv_files#update_registers', :as => :update_registers
   get 'freereg1_csv_files/:id/merge', :to => 'freereg1_csv_files#merge', :as => :merge_freereg1_csv_file
   get 'freereg1_csv_files/:id/remove', :to => 'freereg1_csv_files#remove', :as => :remove_freereg1_csv_file
+  post 'freereg1_csv_files/:id/refresh_file_information',
+    to: 'freereg1_csv_files#refresh_file_information',
+    as: :refresh_file_information_freereg1_csv_file
   get 'freereg1_csv_files/:id/relocate(.:format)', :to => 'freereg1_csv_files#relocate', :as => :relocate_freereg1_csv_file
   get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file
   get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
