@@ -1055,6 +1055,10 @@ class Freereg1CsvFile
     end
   end
 
+  def refresh_file_information_after_online_edit
+    calculate_distribution && update(error: batch_errors.count)
+  end
+
   def update_number_of_files
     # this code although here and works produces values in fields that are no longer being used
     userid = UseridDetail.where(:userid => self.userid).first
