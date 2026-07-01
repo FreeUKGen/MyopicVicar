@@ -2,20 +2,16 @@
 <% title "Action Page" %>
 <br>
 <div class="ttip t100" style="display: block; text-align: center;">
-
   <% if flash[:notice] %>
     <div class="simple_form_position_left" id="notice" style="color: blue; position: absolute; left: 0;">
       <%= flash[:notice] %><% flash[:notice] = nil %>
     </div>
   <% end %>
-
   <div class="simple_form_position" style="color: blue; display: inline-block; margin: 0;">
     Hi <%= @user.userid %>!
   </div>
-
 </div>
 <div style="clear: both; margin-bottom: 1em;"></div>
-
 <% if MyopicVicar::Application.config.server_upgrade %>
   <% appname_downcase == 'freereg' ? app ='FreeREG' : app = 'FreeCEN' %>
   <div class='islet islet--bordered push--bottom project_border_color'>
