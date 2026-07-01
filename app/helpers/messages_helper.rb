@@ -450,7 +450,7 @@ module MessagesHelper
 
   def recipients_list
     if @message.nature == 'communication'
-      options_for_select(@people, @people[0])
+      options_for_select(@people, @no_default_recipient ? nil : @people[0])
     elsif @syndicate
       options_for_select(['Members of Syndicate'])
     else
