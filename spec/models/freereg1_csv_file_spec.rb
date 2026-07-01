@@ -43,6 +43,18 @@ describe Freereg1CsvFile do
     process_test_file(CHANGELESS_FILE)
   end
 
+  it "should include bride mother's surnames in the unique names list" do
+    file = Freereg1CsvFile.new(record_type: "ma")
+    all_entries = double("all entries")
+
+    allow(all_entries).to receive(:distinct).and_return([])
+    allow(all_entries).to receive(:distinct).with(:bride_mother_surname).and_return([nil, "Smith"])
+    expect(all_entries).not_to receive(:distinct).with(:bride_motherr_surname)
+    allow(Freereg1CsvEntry).to receive(:where).with(:freereg1_csv_file_id => file.id).and_return(all_entries)
+
+    file.get_unique_names["Bride's Mother's Surname"].should eq(["Smith"])
+  end
+
 
   # apparently FreeregCsvProcessor no longer returns files
   # it "should load the same file twice, correctly" do
