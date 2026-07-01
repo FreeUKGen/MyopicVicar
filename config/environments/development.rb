@@ -22,7 +22,8 @@ MyopicVicar::Application.configure do
   # (e.g. reverse proxy / shared dev URL).
   begin
     website_host = URI.parse(MyopicVicar::MongoConfig['website'].to_s).host
-    config.hosts << website_host if website_host.present?
+    # config.hosts << website_host if website_host.present?
+    config.hosts << "fictional-sniffle-9r7wqw49q4g2rg9-3000.app.github.dev"
   rescue URI::InvalidURIError
     # ignore invalid website config
   end
@@ -58,7 +59,7 @@ MyopicVicar::Application.configure do
 
   # Enable live sprockets assets pipeline compilation
   # config.assets.compile = true    # for assets pipeline debugging
-  config.assets.compile = false
+  config.assets.compile = true
 
   # Turning Digests (fingerprinting) On
   # config.assets.digest = false    # for assets pipeline debugging
