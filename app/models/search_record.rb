@@ -1065,7 +1065,7 @@ ry_search_date
           freecen_individual&.sex&.downcase
         elsif MyopicVicar::Application.config.template_set == 'freecen' && freecen_csv_entry_id.present?
           entry = FreecenCsvEntry.find_by(_id: freecen_csv_entry_id)
-          entry.present? ? entry.sex : gender_from_role(person_role)
+          entry.present? ? entry.sex&.downcase : gender_from_role(person_role)
         else
           gender_from_role(person_role)
         end
