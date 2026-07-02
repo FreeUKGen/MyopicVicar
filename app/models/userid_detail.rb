@@ -5,8 +5,11 @@ class UseridDetail
 
   require 'freereg_options_constants'
 
+  API_TOKEN_LIFETIME = 24.hours
+
   field :userid, type: String
   field :api_token, type: String
+  field :api_token_expires_at, type: DateTime
   field :userid_lower_case, type: String
   field :syndicate, type: String
   field :syndicate_coordinator, type: String
@@ -640,6 +643,17 @@ class UseridDetail
 
   def generate_api_token
     self.api_token = SecureRandom.hex(20)
+    self.api_token_expires_at = UseridDetail::API_TOKEN_LIFETIME.from_now
+  end
+
+  def issue_api_token!
+    generate_api_token
+    save!(validate: false)
+    api_token
+  end
+
+  def api_token_expired?
+    api_token_expires_at.nil? || api_token_expires_at < Time.now
   end
 
   def save_to_refinery

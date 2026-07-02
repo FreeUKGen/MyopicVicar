@@ -17,6 +17,7 @@ MyopicVicar::Application.routes.draw do
   namespace :api do
     namespace :v1 do
       post   'auth/login',              to: 'auth#login'
+      post   'auth/refresh',            to: 'auth#refresh'
       get    'batches',                 to: 'batches#index'
       get    'assignments',             to: 'assignments#index'
       post   'csvfiles/upload',         to: 'csvfiles#upload'
