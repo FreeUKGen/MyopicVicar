@@ -282,6 +282,11 @@ class ApplicationController < ActionController::Base
     return if request.path.start_with?('/assets/')
 
     unless user_signed_in?
+      # Legacy code paths (nav bar, get_user) trust session[:userid_detail_id]/cookies.signed[:userid]
+      # independently of Warden; clear them so they don't disagree with the real auth state.
+      session.delete(:userid_detail_id)
+      session.delete(:devise)
+      cookies.delete(:userid)
       flash[:notice] = "You must be logged in to access that action"
       redirect_to(new_search_query_path) && return
     end
