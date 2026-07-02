@@ -675,7 +675,7 @@ class Freereg1CsvFile
         # Only write if something actually changed
         if cleaned_list != place_list
           Rails.logger.info("[Freereg1CsvFile##{id}] Removing entry from Place##{place.id} ucf_list")
-          
+
           # Atomic update with counters
           place.update(
             ucf_list: cleaned_list,
@@ -713,9 +713,9 @@ class Freereg1CsvFile
 
     proceed, place, _church, _register = location_from_file
     return unless proceed && place.present?
-    
+
     file_id_str = id.to_s
-    
+
     # Fetch fresh place instance (no .reload)
     fresh_place = Place.where(id: place.id).first
     return unless fresh_place
@@ -742,7 +742,7 @@ class Freereg1CsvFile
 
     # Update only fields that exist on Freereg1CsvFile
     update(ucf_list: [])
-    
+
     Rails.logger.info(
       "[Freereg1CsvFile##{id}] Atomic cleanup complete: " \
       "removed #{record_count} records from Place##{place.id}"
@@ -959,7 +959,7 @@ class Freereg1CsvFile
 
   def remove_batch
     case
-    when self.records.to_i > 5000
+    when self.records.to_i > FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
       UserMailer.report_to_data_manger_of_large_file( self.file_name,self.userid).deliver_now
       return false,'There are too many records for a simple removal. Please discuss with your coordinator or the data managers how best to deal with its restructuring'
     when self.locked_by_transcriber || self.locked_by_coordinator
@@ -969,7 +969,7 @@ class Freereg1CsvFile
       add_to_rake_delete_list
       save_to_attic
       # clean_up_place_ucf_list
-      clean_up_place_ucf_list_atomic  
+      clean_up_place_ucf_list_atomic
       delete
       # deal with the Physical Files collection
       PhysicalFile.delete_document(self.userid, self.file_name)
