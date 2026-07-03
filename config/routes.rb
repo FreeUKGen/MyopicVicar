@@ -20,6 +20,10 @@ MyopicVicar::Application.routes.draw do
   resources :reminder_to_donate
   resources :donate_cta_feedback
 
+  # Temporary diagnostic route: deliberately raises an unhandled error so we can
+  # verify 500 rendering and Errbit/Airbrake reporting. Remove once verified.
+  get 'diagnostics/trigger_500', to: 'diagnostics#trigger_500'
+
   # Catch-all route for dynamic pages copied from Refinery
   # This must come after specific page routes (donate, volunteer)
   # Matches paths like /about, /help/getting-started, etc.
