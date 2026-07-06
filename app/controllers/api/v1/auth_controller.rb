@@ -7,11 +7,13 @@ class Api::V1::AuthController < ActionController::API
     user = UseridDetail.where(userid: params[:userid]).first
     password = Devise::Encryptable::Encryptors::Freereg.digest(params[:password], nil, nil, nil)
 
-    if user&.password == password
+    if user&.password != password
+      render json: { error: 'Invalid userid or password' }, status: :unauthorized
+    elsif !user.active
+      render json: { error: 'Account is not active' }, status: :unauthorized
+    else
       user.issue_api_token!
       render json: token_response(user)
-    else
-      render json: { error: 'Invalid userid or password' }, status: :unauthorized
     end
   end
 

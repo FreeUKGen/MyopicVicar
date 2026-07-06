@@ -7,7 +7,7 @@ module Api::V1::TokenAuthenticatable
     token = request.headers['Authorization']&.split(' ')&.last
     user = UseridDetail.find_by(api_token: token) if token.present?
 
-    if user.nil? || user.api_token_expired?
+    if user.nil? || user.api_token_expired? || !user.active
       render json: { error: 'Unauthorized' }, status: :unauthorized
       return
     end
