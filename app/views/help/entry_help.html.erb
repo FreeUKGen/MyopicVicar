@@ -2,45 +2,76 @@
 <title>Entry Help</title>
 <section id="entry_help">
   <h1 class="title body_content_title">Help</h1>
-  <div class="grid">
-    <%= render partial: "help_header" %>
-    <div id="help_search" class="grid__item two-thirds lap-three-fifths  palm-one-whole">
+  <div class="help-page-layout">
+    <div id="help_search" class="grid__item two-thirds lap-three-fifths palm-one-whole">
       <h2>Entry information</h2>
 
       <p>Once you’ve found a record in the search results, you can view its detailed Entry Information by clicking on the name in the first column. Here’s how to navigate and use the Entry Information page:</p>
 
-      <h3>Viewing the detailed record</h3>
+      <h3 id="viewing_the_detailed_record">Viewing the detailed record</h3>
       <p>Clicking the name will take you to the Entry Information page, where you can see all available details for that record.</p>
 
-      <h3>Record details</h3>
+      <h3 id="record_details">Record details</h3>
       <p>In records from 1984 onwards, the Registration Date is the year within which the event took place. The month and year in which the event was actually registered is recorded separately (under 'Registered').</p>
 
-      <h3>Searching for spouses</h3>
+      <h3 id="searching_for_spouses">Searching for spouses</h3>
       <p>You can search for spouses even in records which occur before this information was systematically recorded (i.e. before 1912). Although the two
         parties to a marriage are recorded separately in the GRO index, their names should both appear on the same page of the Register.
         If you know the name of the spouse, we can use this feature to match them. If you don't know their name, you can see all the
         index records which relate to the Register page, and so get a shortlist of possible spouses. (Typically, only two or three marriages are
         recorded on each Register page.) There is a link to the Register page on the Entry Information page.</p>
 
-      <h3>Printing, citations, and record link</h3>
+      <h3 id="printing_persistent_url_and_citation">Printing, persistent URL, and citation</h3>
       <ul><li><b>Print</b>: you can print the entry information directly from the page by clicking Print.</li>
         <li><b>Generate citation</b>: click Generate Citation to create a citation for the record in one of a number of citation formats.</li>
         <li><b>Record link for entry</b>: one particular citation format is 'Record link'. This is a URL representing the current record which can be saved as a bookmark. It will take you back to this entry (so long as the data in this record hasn't been changed). Click 'Copy' to save or share the link to the record.</li></ul>
 
-      <h3>Viewing scans</h3>
-      <p>To view scans of the original index page from which our transcription was made, click on the camera icon in the ‘More information’ table row. </p>
+      <h3 id="viewing_scans">Viewing scans</h3>
+      <p>To view scans of the original index page from which our transcription was made, use the links in the <strong>Scans</strong> section on the Entry Information page. The available scan links are listed there directly.</p>
 
       <h3>Suggest a correction</h3>
       <p>If you notice an error or discrepancy in the record, you can suggest a correction. This option is located at the bottom of the Entry Information page. You can find out more about <%= link_to "accuracy in FreeBMD", "/help/accuracy_help.html.erb" %>.</p>
 
-      <h3 id="postems_help">Additional information (Postems)</h3>
-      <p>You can add a note to the record by selecting "Add postem" in the "More Information" table row. This allows you to create a 'Postem', which is a message or note associated with the record, and to read any existing postems which have been left for this record.</p>
+      <h3 id="postems_help">Additional Information (Postems)</h3>
+      <p>This section lets you add notes you want to share with other researchers. Use the <strong>Submit a postem</strong> form to add that information.</p>
+      <p>If the entry already has postems, they are also shown in this section (with date and postem text), so you can review previous notes.</p>
 
-      <h3>Navigating between records</h3>
+      <h3 id="saving_records">Saving records</h3>
+      <p>If you are logged in, you can save the record to your personal list of saved entries for future reference. This allows you to view these saved records separately at any time.</p>
+
+      <h3 id="navigating_between_records">Navigating between records</h3>
       <p>Use the Next and Previous Result buttons to navigate directly to the next or previous record in your search results. Alternatively, you can return to the Search Results page and choose other records to view.</p>
 
       <h3>Saving records</h3>
       <p>If you are logged in, you can save the record to your personal list of saved entries for future reference. This allows you to view these saved records separately at any time.</p>
     </div>
+    <aside class="grid__item one-third lap-two-fifths palm-one-whole help-page-sidebar" aria-label="Help navigation and advertisement">
+      <div class="help-page-sidebar__inner">
+        <%= render partial: "help_header", locals: { sidebar: true } %>
+        <div class="help-page-ad push-half--top" aria-label="Advertisement">
+          <h2 class="title-block help-page-ad__title">Advertisement</h2>
+          <!-- GAM 71161633/FRBMD_freebmd2orguk/Vrec_Sticky -->
+          <div data-fuse="Vrec_Sticky"></div>
+        </div>
+      </div>
+    </aside>
   </div>
+  <style>
+    .help-page-layout {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      overflow: visible;
+    }
+    .help-page-layout > .grid__item { float: none !important; }
+    .help-page-layout > .grid__item.two-thirds { flex: 1 1 66.666%; min-width: 0; }
+    .help-page-layout > .help-page-sidebar { flex: 0 0 33.333%; position: sticky; top: 0; align-self: flex-start; }
+    .help-page-ad__title { text-align: center; }
+    .help-page-sidebar .grid__item,
+    .help-page-sidebar .float--right { float: none !important; width: auto !important; max-width: none !important; }
+    @media (max-width: 720px) {
+      .help-page-layout { display: block; }
+      .help-page-sidebar { position: static; top: auto; }
+    }
+  </style>
 </section>

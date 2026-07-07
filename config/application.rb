@@ -16,6 +16,7 @@ require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
 require 'csv'
+require File.expand_path('../lib/gro_abbrev', __dir__)
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -59,7 +60,14 @@ module MyopicVicar
     config.search_table = app['search_table']
     config.advert_key = app['advert_key']
     config.gtm_key = app['gtm_key']
+    config.master = app['master'].presence || ENV['MASTER'].presence
+    config.freebmd_master_url = app['freebmd_master_url'].presence || ENV['FREEBMD_MASTER_URL'].presence
+    api_url = app['freebmd_postem_api_url'].presence || app['FREEBMD_POSTEM_API_URL'].presence
+    api_key = app['freebmd_api_key'].presence || app['FREEBMD_API_KEY'].presence
+    ENV['FREEBMD_POSTEM_API_URL'] ||= api_url
+    ENV['FREEBMD_API_KEY'] ||= api_key
     config.district_data_csv = app['district_data_csv']
+    config.postem_blocked_hashes = app['postem_blocked_hashes'].presence || []
     # Custom directories with classes and modules you want to be autoloadable.
      config.autoload_paths += %W(#{config.root}/app/models/freebmd/)
 

@@ -1,6 +1,7 @@
 class Feedback
   include Mongoid::Document
   include Mongoid::Timestamps
+  include GithubIssueClosable
   field :title, type: String
   field :body, type: String
   field :user_name, type: String
@@ -249,18 +250,6 @@ class Feedback
     else
       logger.error("#{appname}:Tried to create an issue, but Github integration is not enabled!")
     end
-  end
-
-  def self.github_issue_status_closed
-    self.each {|feedback|
-      next unless feedback.github_issue_url.present?
-      issue = Octokit.issue(Rails.application.config.github_issues_repo, feedback.github_number)
-      issue_state = issue.state if issue.present?
-      if issue_state != feedback.github_issue_state && issue_state == 'closed'
-        UserMailer.communicate_github_issue_closed(feedback).deliver_now
-        feedback.update_attributes(github_issue_state: issue_state, notified_issue_closed: true)
-      end
-    }
   end
 
   def has_replies?(feedback_id)

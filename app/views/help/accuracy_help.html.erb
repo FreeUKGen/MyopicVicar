@@ -2,9 +2,8 @@
 <title>Accuracy Help</title>
 <section id="database">
   <h1 class="title body_content_title">Help</h1>
-  <div class="grid">
-    <%= render partial: "help_header" %>
-    <div id="help_search" class="grid__item two-thirds lap-three-fifths  palm-one-whole">
+  <div class="help-page-layout">
+    <div id="help_search" class="grid__item two-thirds lap-three-fifths palm-one-whole">
       <h2>Is FreeBMD accurate?</h2>
       <p>The data in the FreeBMD website is transcribed by our volunteers from scans of pages in the General Register Office indexes. These indexes were created by copying selected information from certificates, pooling it centrally, and creating an index by hand. The format of these indexes has changed over time, from handwritten pages, to typed pages, then to computer printout. The quality of the scans we have been given access to (often a scan of fiche or microfilm, which is itself a copy of the source page) has also varied - some are very hard to read.</p>
       <p>In the course of all this copying of data, it is inevitable that mistakes and omissions will occur. Our goal is to ensure that, as far as possible, our data is a faithful transcription of what is actually present in the GRO index. We recognize, and accept, that the index itself may be wrong. We do provide a mechanism for recording additional information about an index entry (a "postem"), but you should be aware that anything recorded in a postem will not be searchable on this site, and will only be seen by others if they happen to find the entry by other means. (There is a postem search facility on <%= link_to "the Original FreeBMD site", "https://www.freebmd.org.uk/cgi/ShowPostems.pl" %>.)</p>
@@ -13,5 +12,34 @@
       <p>If you are sure that our transcription differs from the G<span class="accessibility">.</span>R<span class="accessibility">.</span>O<span class="accessibility">.</span> Index, you can submit a correction request from the Entry Information page by using the “Suggest a Correction” button which takes you to a Data Problem Report page.</p>
       <p>If you wish to get the G<span class="accessibility">.</span>R<span class="accessibility">.</span>O<span class="accessibility">.</span> Index corrected you should apply to the G<span class="accessibility">.</span>R<span class="accessibility">.</span>O<span class="accessibility">.</span>. <a href="https://www.gro.gov.uk/gro/content/certificates/contact_us.asp">Contact the G<span class="accessibility">.</span>R<span class="accessibility">.</span>O<span class="accessibility">.</span></a> with the appropriate information. When they agree to the correction let us know and we will annotate FreeBMD appropriately.</p>
     </div>
+    <aside class="grid__item one-third lap-two-fifths palm-one-whole help-page-sidebar" aria-label="Help navigation and advertisement">
+      <div class="help-page-sidebar__inner">
+        <%= render partial: "help_header", locals: { sidebar: true } %>
+        <div class="help-page-ad push-half--top" aria-label="Advertisement">
+          <h2 class="title-block help-page-ad__title">Advertisement</h2>
+          <!-- GAM 71161633/FRBMD_freebmd2orguk/Vrec_Sticky -->
+          <div data-fuse="Vrec_Sticky"></div>
+        </div>
+      </div>
+    </aside>
   </div>
+  <style>
+    .help-page-layout {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      overflow: visible;
+    }
+    .help-page-layout > .grid__item { float: none !important; }
+    .help-page-layout > .grid__item.two-thirds { flex: 1 1 66.666%; min-width: 0; }
+    .help-page-layout > .help-page-sidebar { flex: 0 0 33.333%; position: sticky; top: 0; align-self: flex-start; }
+    .help-page-ad__title { text-align: center; }
+    /* help_header includes floated grid items; neutralize inside sidebar */
+    .help-page-sidebar .grid__item,
+    .help-page-sidebar .float--right { float: none !important; width: auto !important; max-width: none !important; }
+    @media (max-width: 720px) {
+      .help-page-layout { display: block; }
+      .help-page-sidebar { position: static; top: auto; }
+    }
+  </style>
   </section>

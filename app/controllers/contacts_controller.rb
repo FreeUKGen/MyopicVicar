@@ -14,6 +14,8 @@
 class ContactsController < ApplicationController
 
   require 'freereg_options_constants'
+  require 'freebmd_contact_field_report'
+  require 'freebmd_constants'
 
   skip_before_action :require_login, only: [:new, :report_error, :create, :show, :question_answer_finder]
 
@@ -58,11 +60,15 @@ class ContactsController < ApplicationController
         @contact.selected_county = nil # string 'nil' to nil
       end
       if @contact.contact_type == 'Data Problem'
+        merge_contact_body_for_data_problem
         assign_record_url_and_save
       end
       @contact.save
       if @contact.errors.any?
-        flash[:notice] = 'There was a problem with your submission please review'
+        flash[:notice] = [
+          'There was a problem with your submission please review.',
+          @contact.errors.full_messages.join(' ')
+        ].join(' ')
         if @contact.contact_type == 'Data Problem'
           redirect_to(@contact.previous_page_url) && return
         else
@@ -72,7 +78,9 @@ class ContactsController < ApplicationController
       else
         flash[:notice] = 'Thank you for contacting us!'
         @contact.communicate_initial_contact
-        if @contact.query
+        if @contact.contact_type == 'Data Problem'
+          redirect_to(data_problem_redirect_target(@contact)) && return
+        elsif @contact.query
           redirect_to(search_query_path(@contact.query)) && return
         else
           redirect_to(new_search_query_path) && return
@@ -116,7 +124,10 @@ class ContactsController < ApplicationController
     params[:source] = 'original'
     get_user_info_from_userid
     order = 'contact_time DESC'
-    @contacts = Contact.results(session[:archived_contacts], order, @user)
+    @primary_contacts = Contact.primary_results(session[:archived_contacts], order, @user)
+    @secondary_contacts = Contact.secondary_results(session[:archived_contacts], order, @user)
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = @secondary_contacts.present?
     @archived = session[:archived_contacts]
   end
 
@@ -175,9 +186,19 @@ class ContactsController < ApplicationController
 
   def new
     @contact = Contact.new
-    @options = FreeregOptionsConstants::ISSUES
+    case appname_downcase
+    when 'freereg'
+      @options = FreeregOptionsConstants::ISSUES
+    when 'freebmd'
+      @options = FreebmdConstants::ISSUES
+    end
     @contact.contact_time = Time.now
-    @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+    case appname_downcase
+    when 'freereg'
+      @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
+    when 'freebmd'
+      @contact.contact_type = FreebmdConstants::ISSUES[0]
+    end
     #flash.notice = 'Please use Communicate Action to contact your Syndicate Coordinator first.' if session[:userid].present?
   end
 
@@ -214,7 +235,9 @@ class ContactsController < ApplicationController
           end # @contact.entry_id.present?
         end # fc_ind.present
       end # unless rec.nil?
-    end # case
+    when 'freebmd'
+      @freebmd_record = BestGuess.find_by(RecordNumber: @contact.record_id) if @contact.record_id.present?
+    end
   end
 
   def restore
@@ -354,6 +377,19 @@ class ContactsController < ApplicationController
     @answer = file.css("div.answer_#{question_v}").to_html
   end
 
+  def view_only_my_role
+    get_user_info_from_userid
+    order = 'contact_time DESC'
+    role = session[:role].presence || @user.person_role
+    archived = session[:archived_contacts] || false
+    @primary_contacts = Contact.contacts_of_role(role, archived, order, @user)
+    @secondary_contacts = []
+    @primary_contact_present = @primary_contacts.present?
+    @secondary_contact_present = false
+    @archived = archived
+    render :index
+  end
+
   private
 
   def assign_record_url_and_save
@@ -361,11 +397,160 @@ class ContactsController < ApplicationController
 
     record = BestGuess.find_by(RecordNumber: @contact.record_id)
     @contact.record_url = build_record_url(record) if record.present?
-    @contact.save
+  end
+
+  # report_error does not submit contact[body]; the model requires :body. Build it from
+  # session_data (FreeBMD corrections, section 3 missing-entry fields) or a minimal fallback.
+  def merge_contact_body_for_data_problem
+    attach_freebmd_field_report_snapshot!
+    extra_comments = @contact.body.to_s.strip
+    auto = auto_body_from_report_error_session_data
+    if auto.present? && extra_comments.present?
+      @contact.body = "#{auto}\n\n--- Additional comments ---\n#{extra_comments}"
+    elsif extra_comments.present?
+      @contact.body = extra_comments
+    elsif auto.present?
+      @contact.body = auto
+    else
+      parts = []
+      parts << "Subsection: #{@contact.query}" if @contact.query.present?
+      parts << "Record: #{@contact.record_id}" if @contact.record_id.present?
+      @contact.body = parts.any? ? "Data problem report. #{parts.join('. ')}." : 'Data problem report.'
+    end
+  end
+
+  def attach_freebmd_field_report_snapshot!
+    return unless appname_downcase == 'freebmd'
+    return if @contact.record_id.blank?
+
+    record = BestGuess.find_by(RecordNumber: @contact.record_id)
+    return unless record
+
+    sd = normalize_session_data_hash(@contact.session_data)
+    corrections = sd['corrections']
+    corrections = {} unless corrections.is_a?(Hash)
+    sd['freebmd_field_report'] = FreebmdContactFieldReport.build_rows(record, corrections)
+    @contact.session_data = sd
+  end
+
+  REPORT_ERROR_BODY_SECTION_RULE = '------------------------------------------------------------'
+
+  def auto_body_from_report_error_session_data
+    sd = normalize_session_data_hash(@contact.session_data)
+    return nil if sd.blank?
+
+    chunks = []
+    if sd['freebmd_field_report'].present?
+      inner = FreebmdContactFieldReport.to_plain_text(sd['freebmd_field_report'])
+      chunks << [
+        'CURRENT INDEX ENTRY (FreeBMD — values as shown on the report page)',
+        REPORT_ERROR_BODY_SECTION_RULE,
+        inner
+      ].join("\n")
+    else
+      co = corrections_only_plain_text_chunk(sd['corrections'])
+      chunks << co if co.present?
+    end
+
+    s3 = section3_plain_text_chunk(sd['section3'])
+    chunks << s3 if s3.present?
+
+    chunks.any? ? chunks.compact.join("\n\n#{REPORT_ERROR_BODY_SECTION_RULE}\n\n") : nil
+  end
+
+  def corrections_only_plain_text_chunk(corrections)
+    return nil unless corrections.is_a?(Hash)
+
+    lines = []
+    correction_labels = {
+      'surname' => 'Surname',
+      'given_name' => 'Given name',
+      'registration_date' => 'Registration date',
+      'mothers_maiden_name' => "Mother's maiden name",
+      'age_or_dob' => 'Age at death / date of birth',
+      'spouse_name' => 'Spouse name',
+      'district' => 'District',
+      'volume' => 'Volume',
+      'register_number' => 'Register number',
+      'entry_number' => 'Entry number',
+      'page' => 'Page',
+      'registered' => 'Registered',
+      'marriage_submission_entry_number' => 'Entry number (marriage submission)',
+      'marriage_submission_source_code' => 'SourceCode (marriage submission)',
+      'marriage_submission_registered' => 'Registered (marriage submission)',
+      'multiple_entries' => 'Multiple entries'
+    }
+    corrections.each do |key, val|
+      next if val.blank?
+
+      key_s = key.to_s
+      next if key_s == 'multiple_entries' && val.to_s != '1'
+
+      label = correction_labels[key_s] || key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
+      display_val = key_s == 'multiple_entries' ? 'Yes' : val.to_s
+      lines << "#{label}: #{display_val}"
+    end
+    lines.any? ? lines.join("\n") : nil
+  end
+
+  def section3_plain_text_chunk(section3)
+    return nil unless section3.is_a?(Hash) && section3.values.any? { |v| v.present? }
+
+    s3 = section3.stringify_keys
+    field_lines = []
+    seen = []
+
+    ContactsHelper::FREEBMD_SECTION3_DISPLAY_ORDER.each do |key|
+      val = s3[key]
+      seen << key
+      next if val.blank?
+
+      next if key == 'multiple_entries' && val.to_s != '1'
+
+      label =
+        ContactsHelper::FREEBMD_SECTION3_LABELS[key] ||
+        key.tr('_', ' ').split.map(&:capitalize).join(' ')
+      display_val = key == 'multiple_entries' ? 'Yes' : val.to_s.strip
+      field_lines << "#{label}: #{display_val}"
+    end
+
+    (s3.keys - seen).sort.each do |key|
+      val = s3[key]
+      next if val.blank?
+
+      key_s = key.to_s
+      next if key_s == 'multiple_entries' && val.to_s != '1'
+
+      label = key_s.tr('_', ' ').split.map(&:capitalize).join(' ')
+      display_val = key_s == 'multiple_entries' ? 'Yes' : val.to_s.strip
+      field_lines << "#{label}: #{display_val}"
+    end
+
+    return nil if field_lines.empty?
+
+    [
+      'MISSING OR ADDITIONAL ENTRY (details supplied by reporter — may not relate to the line above)',
+      REPORT_ERROR_BODY_SECTION_RULE,
+      field_lines.join("\n")
+    ].join("\n")
+  end
+
+  def normalize_session_data_hash(sd)
+    return {} if sd.blank?
+
+    h = sd.respond_to?(:to_unsafe_h) ? sd.to_unsafe_h : sd
+    h = h.to_hash if h.respond_to?(:to_hash) && !h.is_a?(Hash)
+    h.stringify_keys
+  rescue StandardError
+    {}
   end
 
   def build_record_url(record)
     helpers.full_entry_information_url_for(record)
+  end
+
+  def data_problem_redirect_target(contact)
+    contact.problem_page_url.presence || contact.record_url.presence || contact_path(contact.id)
   end
 
   def contact_params

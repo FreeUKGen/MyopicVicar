@@ -13,6 +13,9 @@ module DownloadAsCsv
       csv << ['You can only download 50 results.']
       csv << FIELDS
       array.flatten.each do |record|
+        next unless record.is_a?(Hash)
+
+        record = record.stringify_keys if record.respond_to?(:stringify_keys)
         format_csv_data(record)
         record = record.except!('AssociateName', 'AgeAtDeath')
         search_results_attr =  SEARCH_RESULTS_ATTRIBUTES - ['AssociateName', 'AgeAtDeath']
@@ -24,7 +27,10 @@ module DownloadAsCsv
   def search_results_tsv(array)
     CSV.generate(headers: true, col_sep: "\t") do |tsv|
       tsv << TSV_FIELDS
-      array.each do |record|
+      array.flatten.each do |record|
+        next unless record.is_a?(Hash)
+
+        record = record.stringify_keys if record.respond_to?(:stringify_keys)
         format_tsv_data(record)
         search_results_attr =  TSV_ATTRIBUTES - ['AgeAtDeath', 'AssociateName']
         tsv << search_results_attr.map{ |attr| record[attr] }
@@ -56,9 +62,9 @@ module DownloadAsCsv
       unless record.nil?
       qn = record[:QuarterNumber]
       quarter = qn >= EVENT_YEAR_ONLY ? QuarterDetails.quarter_year(qn) : QuarterDetails.quarter_human(qn)
-      surname = record[:Surname]
-      given_names = record[:GivenName].split(' ')
-      given_name = given_names[0]
+      surname = record[:Surname].to_s
+      given_names = record[:GivenName].to_s.split(' ')
+      given_name = given_names[0].to_s
       given_names.shift()
       other_given_names = given_names.join(' ') if given_names.present?
       entry = BestGuess.where(RecordNumber: record[:RecordNumber]).first
@@ -73,9 +79,11 @@ module DownloadAsCsv
       gedcom << '1 BIRT' if record[:RecordTypeID] == 1
       gedcom << '1 DEAT' if record[:RecordTypeID] == 2
       gedcom << '1 MARR' if record[:RecordTypeID] == 3
-      gedcom << '2 DATE '+quarter
-      gedcom << '2 PLAC '+record[:District]
-      gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash+'/'+entry.friendly_url
+      gedcom << '2 DATE '+quarter.to_s
+      gedcom << '2 PLAC '+record[:District].to_s
+      if entry.present?
+        gedcom << '1 WWW '+'https://www.freebmd.org.uk/search_records/'+entry.record_hash.to_s+'/'+entry.friendly_url.to_s
+      end
       end
     end
     gedcom
@@ -87,7 +95,7 @@ module DownloadAsCsv
     qn = record['QuarterNumber']
     record['Quarter'] = format_quarter(qn)[0]
     record['Year'] = format_quarter(qn)[1]
-    record['RecordType'] = format_record_type(record[:RecordTypeID])
+    record['RecordType'] = format_record_type(record['RecordTypeID'])
 
     case record['RecordType']
     when 'BIRTHS'
@@ -109,7 +117,7 @@ module DownloadAsCsv
     qn = record['QuarterNumber']
     record['Quarter'] = QuarterDetails.quarter_month(qn)[0..2].capitalize
     record['Year'] = QuarterDetails.quarter_year(qn)
-    record['RecordType'] = format_record_type(record[:RecordTypeID])
+    record['RecordType'] = format_record_type(record['RecordTypeID'])
 
     case record['RecordType']
     when 'BIRTHS'

@@ -7,7 +7,9 @@ module BestGuessHelper
     field = ''
     #raise viewed_records.inspect
     if viewed_records.present?
-      field = '(Seen)' if viewed_records.include?("#{search_record[:RecordNumber]}")
+      seen_rn = viewed_records.include?("#{search_record[:RecordNumber]}") || viewed_records.include?(search_record[:RecordNumber].to_s)
+      seen_hash = search_record.respond_to?(:record_hash) && viewed_records.include?(search_record.record_hash)
+      field = '(Seen)' if seen_rn || seen_hash
     end
     field
   end
@@ -124,17 +126,13 @@ module BestGuessHelper
       result
     end
   end
-  
-  def id_to_event_type event_type
+
+  def id_to_event_type(event_type)
     case event_type
-      when 1
-        result = "Births"
-      when 2
-        result = "Deaths"
-      when 3
-        result = "Marriages"
+    when 1 then 'Births'
+    when 2 then 'Deaths'
+    when 3 then 'Marriages'
     end
-    result
   end
 
   def value_or_no_data(field_value)
@@ -145,8 +143,19 @@ module BestGuessHelper
   end
 
   def same_page_as_record(record, surname)
-    same_page_records = BestGuess.where(DistrictNumber: record[:DistrictNumber], Volume: record[:Volume], Page: record[:Page], QuarterNumber: record[:QuarterNumber], RecordTypeID: record[:RecordTypeID], Surname: surname)
-    same_page_records
+    @same_page_bmd_cache ||= {}
+    cache_key = [
+      record[:DistrictNumber], record[:Volume], record[:Page],
+      record[:QuarterNumber], record[:RecordTypeID], surname.to_s
+    ]
+    @same_page_bmd_cache[cache_key] ||= BestGuess.where(
+      DistrictNumber: record[:DistrictNumber],
+      Volume: record[:Volume],
+      Page: record[:Page],
+      QuarterNumber: record[:QuarterNumber],
+      RecordTypeID: record[:RecordTypeID],
+      Surname: surname
+    ).to_a
   end
 
   def tidy_date_of_birth(field_value)
@@ -165,53 +174,59 @@ module BestGuessHelper
       case field_name
         when "RecordType"
           content = id_to_event_type(field_value)
-          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+          result = meta_tag(field_name, content) if content.present?
         when "Quarter"
           content = format_quarter_year(field_value)
-          result = "<meta name='freebmd.#{field_name}' content='" + content.to_s + "' />"
+          result = meta_tag(field_name, content) if content.present?
         when "OfficialDistrict"
           district = District.where(DistrictNumber: field_value).first
-          content = district[:DistrictName]
-          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
+          content = district&.DistrictName
+          result = meta_tag(field_name, content) if content.present?
         when "AgeAtDeath"
           if field_value.to_i.to_s == field_value
-            result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
+            result = meta_tag(field_name, field_value)
           else
             content = tidy_date_of_birth(field_value)
-            result = "<meta name='freebmd.DateOfBirth' content='" + content + "' />"
+            result = meta_tag('DateOfBirth', content) if content.present?
           end
-      when "Registered"
-        event_registered = @current_record.event_registration
-        if event_registered.present?
-          content = format_registered(event_registered, field_value)
-          result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
-        end
-      when "PersistentURL"
-        protocol = URI.parse(request.original_url).scheme
-        domain = URI.parse(request.original_url).host
-        port = URI.parse(request.original_url).port
-        domain = domain + ':' + port.to_s if port.present?
-        content = protocol+"://"+domain+field_value
-        result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
-      when "OtherNamesOnPage"
-        content = ''
-        i = 0
-        @current_record.entries_in_the_page.each do |entry|
-          page_record = BestGuess.find(entry)
-          if (@current_record[:RecordNumber] != page_record[:RecordNumber])
-            if i > 0
-              content = content + '; '
+        when "Registered"
+          event_registered = @current_record.event_registration
+          if event_registered.present?
+            content = format_registered(event_registered, field_value)
+            result = meta_tag(field_name, content) if content.present?
+          end
+        when "PersistentURL"
+          protocol = URI.parse(request.original_url).scheme
+          domain = URI.parse(request.original_url).host
+          port = URI.parse(request.original_url).port
+          domain = "#{domain}:#{port}" if domain.present? && port.present?
+          if protocol.present? && domain.present?
+            content = "#{protocol}://#{domain}#{field_value}"
+            result = meta_tag(field_name, content)
+          end
+        when "OtherNamesOnPage"
+          content = ''
+          i = 0
+          @current_record.entries_in_the_page.each do |entry|
+            page_record = BestGuess.find(entry)
+            if (@current_record[:RecordNumber] != page_record[:RecordNumber])
+              content = "#{content}; " if i.positive?
+              i += 1
+              content = "#{content}#{page_record[:Surname]}, #{page_record[:GivenName]}"
             end
-            i = i + 1
-            content = content + page_record[:Surname]+', ' + page_record[:GivenName]
           end
+          result = meta_tag(field_name, content) if content.present?
+        else
+          result = meta_tag(field_name, field_value)
         end
-        result = "<meta name='freebmd.#{field_name}' content='" + content + "' />"
-      else
-          result = "<meta name='freebmd.#{field_name}' content='#{field_value}' />"
-      end
     end
     result.html_safe
+  end
+
+  def meta_tag(field_name, content)
+    return '' if content.blank?
+
+    "<meta name='freebmd.#{field_name}' content='#{ERB::Util.html_escape(content.to_s)}' />"
   end
 
   def value_or_refer_to_page(field_value, record)
@@ -317,7 +332,7 @@ private
     when '.gif'
       'GIF'
     when '.tif', '.tiff'
-      'TIFF'
+      'JPG'
     when '.pdf'
       'PDF'
     else

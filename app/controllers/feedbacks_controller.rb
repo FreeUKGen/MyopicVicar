@@ -52,7 +52,7 @@ class FeedbacksController < ApplicationController
     @feedback.session_data.delete('warden.user.authentication_devise_user.session') if @feedback.session_data['warden.user.authentication_devise_user.session'].present?
     @feedback.session_id = session.to_hash['session_id']
     if @feedback.save
-      @feedback.github_issue
+      @feedback.github_issue if Contact.github_enabled
     end
     redirect_back(fallback_location: new_feedback_path, notice: 'There was a problem creating your feedback!') && return if @feedback.errors.any?
 
@@ -178,8 +178,7 @@ class FeedbacksController < ApplicationController
   def new
     session[:return_to] ||= request.referer
     get_user_info_if_present
-    non_type_params = new_params.except(:type)
-    @feedback = Feedback.new(non_type_params) if params[:source_feedback_id].blank?
+    @feedback = Feedback.new(feedback_new_prefill_params) if params[:source_feedback_id].blank?
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid if @user.present?
@@ -304,15 +303,35 @@ class FeedbacksController < ApplicationController
 
   private
 
+  # GET /feedbacks/new may include many unrelated query keys (locale, search_id, etc.). Mongoid rejects
+  # assigning undeclared fields, so only prefill declared Feedback attributes.
+  FEEDBACK_FORM_PARAM_KEYS = %i[
+    title body user_name feedback_time feedback_nature user_id name email_address
+    session_id problem_page_url previous_page_url feedback_type screenshot
+  ].freeze
+
   def feedback_params
-    params.require(:feedback).permit!
+    params.require(:feedback).permit(*FEEDBACK_FORM_PARAM_KEYS)
   end
 
-  def new_params
-    params.delete('utf8')
-    params.delete('controller')
-    params.delete('action')
-    params.permit!
+  # Plain Hash of only whitelisted keys — never pass unfiltered params into Mongoid.
+  def feedback_new_prefill_params
+    attrs = {}
+    assign_feedback_prefill_from_param_source!(attrs, params)
+    if params[:feedback].present?
+      assign_feedback_prefill_from_param_source!(attrs, params[:feedback])
+    end
+    attrs
+  end
+
+  def assign_feedback_prefill_from_param_source!(attrs, source)
+    return if source.blank?
+
+    FEEDBACK_FORM_PARAM_KEYS.each do |key|
+      val = source[key] if source.respond_to?(:key?) && source.key?(key)
+      val = source[key.to_s] if val.nil? && source.respond_to?(:key?) && source.key?(key.to_s)
+      attrs[key] = val unless val.nil?
+    end
   end
 
   def delete_reply_messages(feedback_id)
