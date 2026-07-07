@@ -1,5 +1,8 @@
 # frozen_string_literal: true
  class SearchQuery
+
+  class QueryTooExpensive < StandardError; end
+
   include Mongoid::Document
   include Mongoid::Timestamps::Created::Short
   include Mongoid::Timestamps::Updated::Short
@@ -197,6 +200,7 @@
   validate :wildcard_field_validation
   validate :wildcard_field_value_validation
   validate :other_partial_option_validation
+  validate :contains_search_length_is_valid
   validates_absence_of :fuzzy, if: Proc.new{|u| has_wildcard?(u.last_name) if u.last_name.present?}, message: "You cannot use both Phonetic search surnames and surname wildcards in a search."
   validates_numericality_of :start_year, less_than_or_equal_to: :end_year,  :allow_blank => true, message: "From Quarter/Year must precede To Quarter/Year."
   validates_inclusion_of :min_age_at_death, in: 0..199, if: Proc.new{|u| u.min_age_at_death.present?}, message: "Invalid Min Age. Please provide a value between 0 to 199"
@@ -1618,6 +1622,22 @@
     end
   end
 
+  # The '+' (contains) and '>>' (search all other names) prefixes build unanchored
+  # "LIKE '%term%'" queries against BestGuess/BestGuessMarriages (up to 300M/100M rows).
+  # Unlike the '*'/'?' wildcard path (see wildcard_is_appropriate), these never went through
+  # a minimum-length check, so e.g. "+A" forced an unindexable full table scan.
+  def contains_search_length_is_valid
+    return unless freebmd_app? && first_name.present? && !first_name_exact_match
+
+    if first_name.start_with?('+')
+      term = first_name.delete_prefix('+').strip
+      errors.add(:first_name, 'At least two characters are required for a "contains" search.') if term.length < 2
+    elsif first_name.start_with?('>>')
+      term = first_name.delete_prefix('>>').strip
+      errors.add(:first_name, 'At least two characters are required to search all other names.') if term.length < 2
+    end
+  end
+
   def county_is_valid
     if MyopicVicar::Application.config.template_set == 'freereg'
       if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
@@ -1803,10 +1823,13 @@
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
 
     begin
+      # max_search_time is in milliseconds (it also feeds Mongo's max_time_ms elsewhere);
+      # Timeout.timeout takes seconds, so convert - otherwise this outer safety net effectively
+      # never fires (50000 treated as 50000 seconds, ~13.9 hours, instead of 50 seconds).
       max_time = Rails.application.config.max_search_time
       logger.warn(max_time)
 
-      Timeout::timeout(max_time) do
+      Timeout::timeout(max_time / 1000.0) do
         records, record_count = build_freebmd_query_result
         unless for_count
           records = freebmd_apply_display_limit(records)
@@ -1818,6 +1841,9 @@
     rescue Timeout::Error
       logger.warn("#{App.name_upcase}: Timeout")
       [[], 0, false, 1]
+    rescue QueryTooExpensive
+      logger.warn("#{App.name_upcase}: Search rejected - estimated cost exceeded freebmd_search_max_cost")
+      [[], 0, false, 4]
     rescue ActiveRecord::StatementInvalid => e
       freebmd_handle_statement_invalid(e)
     rescue StandardError => e
@@ -1841,6 +1867,8 @@
 
     logger.warn("SQL: #{records.to_sql}")
 
+    raise QueryTooExpensive if freebmd_query_too_expensive?(records)
+
     records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
     records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
 
@@ -1852,6 +1880,37 @@
     record_count = freebmd_record_count(records)
 
     [records, record_count]
+  end
+
+  # Pre-search cost gate, similar in spirit to FreeBMD1's SearchDB::ExcessCost (lib/SearchDB.pm):
+  # runs EXPLAIN on the built relation before executing it, and rejects searches whose estimated
+  # cost is too high, rather than relying solely on MySQL's max_execution_time to cut them off
+  # after they've already tied up a Passenger worker and a MySQL thread for up to 25s.
+  def freebmd_query_too_expensive?(relation)
+    max_cost = Rails.application.config.freebmd_search_max_cost.to_i
+    return false unless max_cost.positive?
+    return false unless relation.is_a?(ActiveRecord::Relation)
+
+    freebmd_estimated_query_cost(relation) > max_cost
+  rescue StandardError => e
+    # If EXPLAIN itself fails for any reason, don't block the search on account of the cost
+    # check - fall through to the existing max_execution_time / Timeout safety nets.
+    logger.warn("#{App.name_upcase}: freebmd_query_too_expensive? check failed: #{e.inspect}")
+    false
+  end
+
+  def freebmd_estimated_query_cost(relation)
+    sql = relation.to_sql
+    return 0 if sql.blank?
+
+    plan = relation.klass.connection.select_all("EXPLAIN #{sql}")
+    plan.to_a.reduce(1.0) do |cost, row|
+      rows = row['rows'].to_i
+      rows = 1 if rows <= 0
+      filtered = row['filtered'].to_f
+      ratio = filtered.positive? ? filtered / 100.0 : 1.0
+      cost * rows * ratio
+    end.round
   end
 
   def freebmd_needs_array_pipeline?

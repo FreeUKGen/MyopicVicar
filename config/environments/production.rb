@@ -113,6 +113,7 @@ MyopicVicar::Application.configure do
   config.ucf_support = MyopicVicar::MongoConfig['ucf_support']
   config.witness_support = MyopicVicar::MongoConfig['witness_support']
   config.max_search_time = MyopicVicar::MongoConfig['max_search_time']
+  config.freebmd_search_max_cost = MyopicVicar::MongoConfig['freebmd_search_max_cost']
   config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
   config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
   config.sendgrid_api_key = MyopicVicar::MongoConfig['sendgrid_api_key']
