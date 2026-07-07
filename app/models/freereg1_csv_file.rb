@@ -1056,7 +1056,9 @@ class Freereg1CsvFile
   end
 
   def refresh_file_information_after_online_edit
-    calculate_distribution && update(error: batch_errors.count)
+    calculate_distribution &&
+      update(error: batch_errors.count) &&
+      update_freereg_contents_after_processing
   end
 
   def update_number_of_files
