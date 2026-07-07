@@ -146,6 +146,7 @@ class UserMailer < Devise::Mailer
     @contact_url = "#{Rails.application.config.website}/contacts/#{@contact.id}"
     sender_email_address = get_email_address_from_userid(sender_userid)
     recipient_email_addresses = get_email_address_array_from_array_of_userids(recipient_userids)
+    get_attachment(@contact)
     mail(from: sender_email_address, to: recipient_email_addresses, subject: "Forwarded contact: #{@message.subject}")
   end
 

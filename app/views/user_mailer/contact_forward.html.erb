@@ -4,6 +4,9 @@
 
 <p><b>Subject:</b> <%= @message.subject %></p>
 <p><b>Contact link:</b> <a href="<%= @contact_url %>"><%= @contact_url %></a></p>
+<% if @contact.contact_time.present? %>
+  <p><b>Original enquiry received:</b> <%= @contact.contact_time.strftime('%d %b %Y') %></p>
+<% end %>
 
 <% if @message.body.present? %>
   <p><b>Forwarding note:</b></p>

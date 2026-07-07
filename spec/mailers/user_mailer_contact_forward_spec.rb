@@ -52,6 +52,17 @@ RSpec.describe UserMailer, type: :mailer do
       expect(mail.body.encoded).to include('Original contact body')
       expect(mail.body.encoded).to include('Please handle this')
       expect(mail.body.encoded).to include('12345')
+      expect(mail.body.encoded).to include(contact.contact_time.strftime('%d %b %Y'))
+    end
+
+    it 'includes the original contact attachments' do
+      allow(contact).to receive(:attachment_file_paths).and_return(['/tmp/first.png', '/tmp/second.pdf'])
+      allow(File).to receive(:binread).with('/tmp/first.png').and_return('first attachment')
+      allow(File).to receive(:binread).with('/tmp/second.pdf').and_return('second attachment')
+
+      mail = described_class.contact_forward(contact, message, ['coord1'], 'sender1')
+
+      expect(mail.attachments.map(&:filename)).to contain_exactly('first.png', 'second.pdf')
     end
   end
 end
