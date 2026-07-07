@@ -23,8 +23,8 @@
               <%= render(partial: "freebmd_too_many_results") %>
             <% end %>
           <% if @search_query.given_name_initials_fallback? %>
-            <p class="additional" style="font-size: 13px;">
-              Where second forenames are not included in the index, only the initial of the second forename has been matched, so these results should be treated with caution. Where possible, check results against the <%= link_to 'GRO searchable index', 'https://www.gro.gov.uk/gro/content/certificates/', target: '_blank', rel: 'noopener' %>.
+            <p class="additional">
+              <strong>Where second forenames are not included in the index</strong>, only the initial of the second forename has been matched, so these results should be treated with caution. Where possible, check results against the <%= link_to 'GRO searchable index', 'https://www.gro.gov.uk/gro/content/certificates/', rel: 'noopener' %>.
             </p>
           <% end %>
           <hr/>
