@@ -315,10 +315,9 @@ class RegisterMergeService
       before_count = model.where(register_id: source.id).count
       next if before_count.zero?
 
-      moved = model.where(register_id: source.id).update_all(register_id: @target.id)
+      model.where(register_id: source.id).update_all(register_id: @target.id)
       remaining = model.where(register_id: source.id).count
       raise "Could not move all #{model.name} records from #{source.id}" unless remaining.zero?
-      raise "Unexpected moved count for #{model.name} on #{source.id}" if moved.to_i < before_count
     end
 
     source.destroy
