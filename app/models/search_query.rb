@@ -1137,13 +1137,21 @@ class SearchQuery
       SearchRecord.collection.find(secondary_params).hint(secondary_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
     end
 
-    primary = primary_thread.value
-    secondary = begin
-      secondary_thread.value
-    rescue StandardError => e
-      logger.warn("#{App.name_upcase}:SECONDARY_DATE_SEARCH_FAILED: #{e.class}: #{e.message}")
-      []
-    end
+    primary = nil
+    secondary = nil
+    primary_ms = Benchmark.realtime { primary = primary_thread.value } * 1000
+    secondary_ms = Benchmark.realtime do
+      secondary = begin
+        secondary_thread.value
+      rescue StandardError => e
+        logger.warn("#{App.name_upcase}:SECONDARY_DATE_SEARCH_FAILED: #{e.class}: #{e.message}")
+        []
+      end
+    end * 1000
+    # If this is genuinely running in parallel, the request's overall MongoDB time
+    # (Rails' own "Completed ... (MongoDB: Xms)" log line) should be close to
+    # max(primary_ms, secondary_ms), not their sum -- worth checking if it ever isn't.
+    logger.warn("#{App.name_upcase}:DATE_SEARCH_TIMING: primary=#{primary_ms.round}ms secondary=#{secondary_ms.round}ms")
     primary_ids = primary.map { |r| r['_id'] }.to_set
     additional = secondary.reject { |r| primary_ids.include?(r['_id']) }
     (primary + additional).first(max_results)
