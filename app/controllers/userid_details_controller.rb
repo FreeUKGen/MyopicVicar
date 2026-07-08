@@ -645,7 +645,7 @@ class UseridDetailsController < ApplicationController
 
     if honeypot_error || diff <= 5
       error_file = 'log/spam_check_error_messages.log'
-      f = File.exists?(error_file) ? File.open(error_file, 'a+') : File.new(error_file, 'w')
+      f = File.exist?(error_file) ? File.open(error_file, 'a+') : File.new(error_file, 'w')
       error_text = " ===========SPAM caught at " + Time.now.to_s
       error_text = error_text + ' honeypot error detected'  if honeypot_error
       error_text = error_text + ' submission time is ' + diff.to_s + ' seconds'  if diff <= 5

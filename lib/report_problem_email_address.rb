@@ -54,7 +54,7 @@ class ReportProblemEmailAddress
       p "unknown range style"
     end
     file_for_warning_messages = "log/report_problem_email_address.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
     @@message_file = File.new(file_for_warning_messages, "w")
     number = 0
     p filenames.length

@@ -131,7 +131,7 @@ class Upload
 
     # Create the associated derivation directory
     derived_dir = dir.sub(ORIGINALS_DIR, DERIVATION_DIR)
-    Dir.mkdir(derived_dir) unless File.exists?(derived_dir)
+    Dir.mkdir(derived_dir) unless File.exist?(derived_dir)
     
     # get the beginning state of this dir
     ls = Dir.glob(File.join(entry.path,"*")).sort.map do |fn| 
@@ -216,7 +216,7 @@ class Upload
     path = self[:upload_path]
     if path
       
-      unless File.exists?(path) 
+      unless File.exist?(path) 
         errors.add(:upload_path, "Path #{path} must be a directory on the server.  It appears not to exist.")   
         return
       end

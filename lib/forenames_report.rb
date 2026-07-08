@@ -18,7 +18,7 @@ include Mongoid::Document
   def self.process(limit)
 
   	file_for_messages = "log/forenames_report.log" 
-    File.delete(file_for_messages) if File.exists?(file_for_messages)
+    File.delete(file_for_messages) if File.exist?(file_for_messages)
     FileUtils.mkdir_p(File.dirname(file_for_messages) )
     message_file = File.new(file_for_messages, "w")
   	limit = limit.to_i

@@ -23,7 +23,7 @@ gem 'airbrake'
 gem 'bcrypt'
 gem 'text'
 gem 'json'
-gem 'pry'
+gem "pry", ">= 0.14.2"
 gem 'pry-byebug'
 gem 'email_veracity'
 gem 'unicode'
@@ -58,3 +58,7 @@ gem 'browser'
 gem "mongo_session_store", "~> 3.2"
 gem 'mimemagic', '~> 0.4.3'
 gem 'mime-types', '~> 3.5.0'
+gem "logger", "~> 1.6"
+gem "net-smtp"
+gem "net-pop"
+gem "net-imap"
