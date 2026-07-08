@@ -104,6 +104,7 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.3.6)
     crass (1.0.6)
+    date (3.5.1)
     devise (4.9.4)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -158,7 +159,7 @@ GEM
     kaminari-mongoid (1.0.2)
       kaminari-core (~> 1.0)
       mongoid
-    logger (1.3.0)
+    logger (1.7.0)
     loofah (2.25.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -198,6 +199,15 @@ GEM
       mongoid (>= 3.0, < 10.0)
     mysql2 (0.5.7)
       bigdecimal
+    net-imap (0.6.4.1)
+      date
+      net-protocol
+    net-pop (0.1.2)
+      net-protocol
+    net-protocol (0.2.2)
+      timeout
+    net-smtp (0.5.1)
+      net-protocol
     newrelic_rpm (10.5.0)
       logger
     nio4r (2.7.5)
@@ -214,12 +224,12 @@ GEM
     parser (3.3.11.1)
       ast (~> 2.4.1)
       racc
-    pry (0.13.1)
+    pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.9.0)
+    pry-byebug (3.10.1)
       byebug (~> 11.0)
-      pry (~> 0.13.0)
+      pry (>= 0.13, < 0.15)
     public_suffix (5.1.1)
     racc (1.8.1)
     rack (2.2.23)
@@ -328,6 +338,7 @@ GEM
     text (1.3.1)
     thor (1.5.0)
     tilt (2.7.0)
+    timeout (0.6.1)
     traceroute (0.8.1)
       rails (>= 3.0.0)
     tzinfo (2.0.6)
@@ -372,6 +383,7 @@ DEPENDENCIES
   json
   kaminari
   kaminari-mongoid
+  logger (~> 1.6)
   mail-logger
   mime-types (~> 3.5.0)
   mimemagic (~> 0.4.3)
@@ -380,11 +392,14 @@ DEPENDENCIES
   mongo_session_store (~> 3.2)
   mongoid
   mysql2
+  net-imap
+  net-pop
+  net-smtp
   newrelic_rpm
   nokogiri (>= 1.13.6)
   octokit
   osgb!
-  pry
+  pry (>= 0.14.2)
   pry-byebug
   rails (~> 6.1.7)
   rspec-rails
