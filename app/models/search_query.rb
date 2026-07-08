@@ -850,29 +850,41 @@ class SearchQuery
     params
   end
 
+  # Which search_names/search_soundex "type" (p = primary, f = family, w = witness)
+  # a match is allowed to come from -- mirrors include_record_for_type, but applied in
+  # the Mongo query itself instead of after the fetch, so the max_results cap (applied
+  # at the DB level) narrows an already role-correct candidate set instead of an
+  # any-role one. See issue 1403 / Vino-S's 2026-01-21 comment: "Max Count restriction
+  # is applied before filters like (family, witness, embargo) are applied."
+  def allowed_name_types
+    types = ['p']
+    types << 'f' if inclusive
+    types << 'w' if witness
+    types
+  end
+
   def name_search_params
     params = {}
     name_params = {}
     if query_contains_wildcard?
       name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name.present?
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name.present?
+      name_params['type'] = { '$in' => allowed_name_types }
       params['search_names'] = { '$elemMatch' => name_params }
     else
       if fuzzy
         name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name.present?
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
-        if name_params.key?('first_name') && name_params.key?('last_name')
-          # Keep name pairs bound to the same embedded document when both are present.
+        if name_params.present?
+          # Keep name fields (and type) bound to the same embedded document.
+          name_params['type'] = { '$in' => allowed_name_types }
           params['search_soundex'] = { '$elemMatch' => name_params }
-        elsif name_params.key?('last_name')
-          params['search_soundex.last_name'] = name_params['last_name']
-        elsif name_params.key?('first_name')
-          params['search_soundex.first_name'] = name_params['first_name']
         end
       else
         name_params['first_name'] = first_name.downcase if first_name.present?
         name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
         name_params['last_name'] = nil if self.no_surname
+        name_params['type'] = { '$in' => allowed_name_types }
         params['search_names'] = { '$elemMatch': name_params }
       end
     end
@@ -1145,6 +1157,10 @@ class SearchQuery
     params.merge!(record_type_params)
     # params.merge!(possible_last_names_params)
     params.merge!(date_search_params)
+    # Mirrors filter_embargoed -- excluded here too so max_results caps an
+    # already-embargo-correct candidate set, not one that still includes embargoed
+    # records that would just get dropped after the fetch.
+    params['$nor'] = [{ embargoed: true, release_year: { '$gt' => DateTime.now.year } }]
     params
   end
 
