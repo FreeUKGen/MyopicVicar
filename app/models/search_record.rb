@@ -65,6 +65,10 @@ class SearchRecord
 
   field :search_date, type: String
   field :secondary_search_date, type: String
+  # Derived from search_date/secondary_search_date (see #derive_date_bounds) so a
+  # date-range search can match either date in a single interval-overlap query.
+  field :search_date_min, type: String
+  field :search_date_max, type: String
   field :embargoed, type: Boolean, default: false
   field :release_year, type: Integer
   field :possible_last_names, type: Array, default: []
@@ -114,26 +118,26 @@ class SearchRecord
   }.freeze
 
   REG_CHAPMAN_INDEXES = {
-    'county_ln_rt_sd_ssd' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'county_fn_ln_rt_sd_ssd' => ['chapman_code', 'search_names.first_name', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'county_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'county_fnsdx_lnsdx_rt_sd_ssd' => ['chapman_code', 'search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
+    'county_ln_rt_sdmm' => ['chapman_code', 'search_names.last_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'county_fn_ln_rt_sdmm' => ['chapman_code', 'search_names.first_name', 'search_names.last_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'county_lnsdx_rt_sdmm' => ['chapman_code', 'search_soundex.last_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'county_fnsdx_lnsdx_rt_sdmm' => ['chapman_code', 'search_soundex.first_name', 'search_soundex.last_name', 'record_type', 'search_date_min', 'search_date_max']
   }.freeze
 
   REG_PLACE_INDEXES = {
-    'place_fn_rt_sd_ssd' => ['place_id', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'place_ln_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'place_ln_fn_rt_sd_ssd' => ['place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'place_fnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'place_lnsdx_fnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'place_lnsdx_rt_sd_ssd' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
+    'place_fn_rt_sdmm' => ['place_id', 'search_names.first_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'place_ln_rt_sdmm' => ['place_id', 'search_names.last_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'place_ln_fn_rt_sdmm' => ['place_id', 'search_names.last_name', 'search_names.first_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'place_fnsdx_rt_sdmm' => ['place_id', 'search_soundex.first_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'place_lnsdx_fnsdx_rt_sdmm' => ['place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'place_lnsdx_rt_sdmm' => ['place_id', 'search_soundex.last_name', 'record_type', 'search_date_min', 'search_date_max']
   }.freeze
 
   REG_BASIC_INDEXES = {
-    'ln_fn_rt_sd_ssd' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_fnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'ln_rt_sd_ssd' => ['search_names.last_name', 'record_type', 'search_date', 'secondary_search_date'],
-    'lnsdx_rt_sd_ssd' => ['search_soundex.last_name', 'record_type', 'search_date', 'secondary_search_date']
+    'ln_fn_rt_sdmm' => ['search_names.last_name', 'search_names.first_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'lnsdx_fnsdx_rt_sdmm' => ['search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'ln_rt_sdmm' => ['search_names.last_name', 'record_type', 'search_date_min', 'search_date_max'],
+    'lnsdx_rt_sdmm' => ['search_soundex.last_name', 'record_type', 'search_date_min', 'search_date_max']
   }.freeze
 
 
@@ -1260,6 +1264,12 @@ ry_search_date
       # freecen-specific transformations
       self.search_date = search_dates[0]
     end
+    self.search_date_min, self.search_date_max = derive_date_bounds
+  end
+
+  def derive_date_bounds
+    candidates = [search_date, secondary_search_date].compact.reject { |d| d.blank? || d == ' ' }
+    candidates.empty? ? [nil, nil] : candidates.minmax
   end
 
   def transform_ucf
