@@ -1099,22 +1099,42 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:WINNING_PLAN_INDEX: #{@search_index_winning_plan}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
-    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
+    max_results = FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
+    records = fetch_records_with_secondary_date(max_results)
     persist_results(records)
-    persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
-    records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
+    records = search_ucf if can_query_ucf? && result_count < max_results
     records
   end
 
-  def secondary_date_results
-    @secondary_search_params = @search_parameters
-    @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete_if { |key, value| key == :search_date }
-    # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
-    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    secondary_records
+  # A FreeREG record may carry a second, independent date (secondary_search_date --
+  # e.g. an estimated birth year alongside a baptism date). A date-range search has to
+  # match on EITHER date, so this runs both queries -- concurrently, not sequentially,
+  # to avoid doubling wall-clock latency -- and merges/dedupes the results by _id.
+  def fetch_records_with_secondary_date(max_results)
+    primary_thread = Thread.new do
+      SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
+    end
+
+    return primary_thread.value unless App.name == 'FreeREG' && @search_parameters[:search_date].present?
+
+    secondary_params = @search_parameters.dup
+    secondary_params[:secondary_search_date] = secondary_params.delete(:search_date)
+    secondary_index = SearchRecord.index_hint(secondary_params)
+    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{secondary_index}")
+    secondary_thread = Thread.new do
+      SearchRecord.collection.find(secondary_params).hint(secondary_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
+    end
+
+    primary = primary_thread.value
+    secondary = begin
+      secondary_thread.value
+    rescue StandardError => e
+      logger.warn("#{App.name_upcase}:SECONDARY_DATE_SEARCH_FAILED: #{e.class}: #{e.message}")
+      []
+    end
+    primary_ids = primary.map { |r| r['_id'] }.to_set
+    additional = secondary.reject { |r| primary_ids.include?(r['_id']) }
+    (primary + additional).first(max_results)
   end
 
   def search_params
