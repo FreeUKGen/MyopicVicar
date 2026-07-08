@@ -423,7 +423,15 @@ class SearchQuery
 
   def date_search_params
     params = {}
-    if start_year || end_year
+    return params unless start_year || end_year
+
+    if App.name == 'FreeREG'
+      # search_date_min/search_date_max bound the record's earliest/latest known date
+      # (see SearchRecord#derive_date_bounds), so a range match is a single interval
+      # overlap test instead of two separate field queries merged in Ruby.
+      params[:search_date_min] = { '$lt' => DateParser::end_search_date(end_year) } if end_year
+      params[:search_date_max] = { '$gte' => DateParser::start_search_date(start_year) } if start_year
+    else
       date_params = {}
       date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
       date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
@@ -1101,20 +1109,8 @@ class SearchQuery
     update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
     records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
     persist_results(records)
-    persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
     records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
     records
-  end
-
-  def secondary_date_results
-    @secondary_search_params = @search_parameters
-    @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete_if { |key, value| key == :search_date }
-    # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
-    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    secondary_records
   end
 
   def search_params
