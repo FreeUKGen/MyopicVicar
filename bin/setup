@@ -20,31 +20,43 @@ end
 def patch_mongo_config_secrets(path)
   return unless File.exist?(path)
 
-  content = File.read(path)
+  lines = File.readlines(path)
+  dev_start = lines.index { |l| l.match?(/^development:\s*$/) }
+  return unless dev_start
+
+  rest = lines[(dev_start + 1)..] || []
+  offset = rest.find_index { |l| l.match?(/^\S/) }
+  dev_end = offset ? dev_start + 1 + offset : lines.length
+
+  # Only fill placeholder values (blank or "# comment") within the
+  # development: section - test:/production: are left untouched.
+  replacements = {
+    'secret_key_base' => -> { SecureRandom.hex(64) },
+    'our_secret_key' => -> { SecureRandom.hex(32) },
+    'website' => -> { "'localhost:3000'" },
+    'datafiles' => lambda {
+      datafiles = File.join(APP_ROOT, 'tmp', 'datafiles')
+      FileUtils.mkdir_p(datafiles)
+      "'#{datafiles}'"
+    },
+    'member_open' => -> { 'true' }
+  }
+
   changed = false
-  if content.include?('secret_key_base: #') || content.match?(/secret_key_base:\s*$/)
-    content = content.gsub(/secret_key_base:.*/, "secret_key_base: #{SecureRandom.hex(64)}")
+  (dev_start...dev_end).each do |i|
+    line = lines[i]
+    key = line[/^\s*(\w+):/, 1]
+    next unless key && replacements.key?(key)
+
+    value = line.split(':', 2)[1].to_s.strip
+    next unless value.empty? || value.start_with?('#')
+
+    indent = line[/^\s*/]
+    lines[i] = "#{indent}#{key}: #{replacements[key].call}\n"
     changed = true
   end
-  if content.include?('our_secret_key: #') || content.match?(/our_secret_key:\s*$/)
-    content = content.gsub(/our_secret_key:.*/, "our_secret_key: #{SecureRandom.hex(32)}")
-    changed = true
-  end
-  if content.include?("website: #") || content.match?(/^\s*website:\s*$/)
-    content = content.gsub(/website:.*/, "website: 'localhost:3000'")
-    changed = true
-  end
-  if content.include?("datafiles: #") || content.match?(/^\s*datafiles:\s*$/)
-    datafiles = File.join(APP_ROOT, 'tmp', 'datafiles')
-    FileUtils.mkdir_p(datafiles)
-    content = content.gsub(/datafiles:.*/, "datafiles: '#{datafiles}'")
-    changed = true
-  end
-  if content.include?('member_open: #')
-    content = content.gsub(/member_open:.*/, 'member_open: true')
-    changed = true
-  end
-  File.write(path, content) if changed
+
+  File.write(path, lines.join) if changed
 end
 
 FileUtils.chdir APP_ROOT do
@@ -70,6 +82,11 @@ FileUtils.chdir APP_ROOT do
   copy_if_missing 'config/application.example.yml', 'config/application.yml', 'config/application.yml'
   copy_if_missing 'config/secrets.example.yml', 'config/secrets.yml', 'config/secrets.yml'
   copy_if_missing 'config/errbit.example.yml', 'config/errbit.yml', 'config/errbit.yml'
+  # Required for boot, not just Refinery/MySQL work: config/application.rb loads
+  # `rails/all`, which loads ActiveRecord::Railtie - the app crashes on startup
+  # without a parseable config/database.yml, even though no real MySQL server
+  # is needed unless you actually use legacy Refinery features.
+  copy_if_missing 'config/database.example.yml', 'config/database.yml', 'config/database.yml'
 
   patch_mongo_config_secrets 'config/mongo_config.yml'
 
@@ -87,30 +104,59 @@ FileUtils.chdir APP_ROOT do
     puts "  #{dir}/"
   end
 
-  puts "\n== MySQL / Refinery (optional) =="
-  if File.exist?('config/database.yml')
-    puts '  config/database.yml exists — MySQL only needed for legacy Refinery CMS tasks.'
-    puts '  Refinery gems are commented out in the Gemfile; skip db:migrate unless your mentor says otherwise.'
+  puts "\n== Precompiling assets =="
+  # config.assets.compile is false in development (see config/environments/development.rb),
+  # so unlike a stock Rails app there is no on-the-fly Sprockets fallback - without this,
+  # rails s boots fine but every page is served with no CSS/JS at all.
+  if system('bundle exec rake assets:precompile')
+    puts '  Assets precompiled.'
   else
-    puts '  Skipped: no config/database.yml (normal for Mongoid-only development).'
-    puts '  Copy config/database.example.yml only if you need legacy Refinery work.'
+    puts '  WARNING: assets:precompile failed (see output above, often missing Node.js).'
+    puts '  Pages will have no CSS/JS until you fix this and rerun: bundle exec rake assets:precompile'
   end
 
+  puts "\n== MySQL / Refinery =="
+  puts '  config/database.yml is required for the app to boot (ActiveRecord::Railtie), but the'
+  puts '  example placeholder values are enough - no real MySQL server needed unless you use'
+  puts '  legacy Refinery CMS features. Refinery gems are commented out in the Gemfile; skip'
+  puts '  db:migrate unless your mentor says otherwise.'
+
   puts "\n== MongoDB =="
-  if system('pgrep -x mongod >/dev/null') || system('pgrep -x mongodb >/dev/null')
+  mongod_running = system('pgrep -x mongod >/dev/null') || system('pgrep -x mongodb >/dev/null')
+  if mongod_running
     puts '  mongod appears to be running.'
-  else
-    puts '  WARNING: mongod does not appear to be running. Start MongoDB before rails s.'
+  elsif system('command -v mongod >/dev/null 2>&1')
+    puts '  WARNING: mongod is installed but does not appear to be running.'
     puts '  Ubuntu example: sudo systemctl start mongod'
+  else
+    puts '  WARNING: mongod was not found on PATH — MongoDB does not appear to be installed.'
+    puts '  See doc/DEVELOPMENT_SETUP.md prerequisites for install instructions (or run it via Docker).'
+  end
+
+  puts "\n== Test login (testuser4 / testuser4) =="
+  # our_secret_key above was freshly generated on this machine, so any
+  # imported UseridDetail/User password digests (e.g. from a mentor's
+  # collections.zip) won't verify here - this seeds one account whose
+  # digest is computed with THIS machine's own key, so it always works.
+  if mongod_running
+    if system('bundle exec rake "dev:seed_test_login[testuser4,testuser4]"')
+      puts '  Ready: log in with userid testuser4 / password testuser4.'
+    else
+      puts '  WARNING: could not seed the test login (see output above). Run it manually later:'
+      puts '    bundle exec rake "dev:seed_test_login[testuser4,testuser4]"'
+    end
+  else
+    puts '  Skipped (mongod not running yet). Once MongoDB is up, run:'
+    puts '    bundle exec rake "dev:seed_test_login[testuser4,testuser4]"'
   end
 
   puts "\n== Next steps =="
-  puts '  1. Register on https://test3.freereg.org.uk/ (technical syndicate).'
+  puts '  1. Register on https://test.freereg.org.uk/ (use the test3 syndicate).'
   puts '  2. Edit config/mongo_config.yml (datafiles path, website, secrets if needed).'
   puts '  3. Set template_set in config/freeukgen_application.yml (freereg | freecen | freebmd).'
   puts '  4. Import reference collections: bin/dev-import-collections tmp/'
   puts '  5. Ask mentor for users.zip / sample CSVs if you need local search data.'
-  puts '  6. bin/rails s  →  http://localhost:3000'
+  puts '  6. bin/rails s  →  http://localhost:3000  (log in as testuser4 / testuser4)'
   puts
   puts '  Full guide: doc/DEVELOPMENT_SETUP.md'
 
