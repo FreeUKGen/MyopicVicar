@@ -1055,6 +1055,12 @@ class Freereg1CsvFile
     end
   end
 
+  def refresh_file_information_after_online_edit
+    calculate_distribution &&
+      update(error: batch_errors.count) &&
+      update_freereg_contents_after_processing
+  end
+
   def update_number_of_files
     # this code although here and works produces values in fields that are no longer being used
     userid = UseridDetail.where(:userid => self.userid).first
@@ -1341,7 +1347,7 @@ class Freereg1CsvFile
       entries["Bride's Father's Forename"] = all_entries.distinct(:bride_father_forename).delete_if{|x| x == nil}.sort
       entries["Groom's Mother's Surname"] = all_entries.distinct(:groom_mother_surname).delete_if{|x| x == nil}.sort
       entries["Groom's Mother's Forename"] = all_entries.distinct(:groom_mother_forename).delete_if{|x| x == nil}.sort
-      entries["Bride's Mother's Surname"] = all_entries.distinct(:bride_motherr_surname).delete_if{|x| x == nil}.sort
+      entries["Bride's Mother's Surname"] = all_entries.distinct(:bride_mother_surname).delete_if{|x| x == nil}.sort
       entries["Bride's Mother's Forename"] = all_entries.distinct(:bride_mother_forename).delete_if{|x| x == nil}.sort
       entries["Witness Surname"] = all_entries.distinct('multiple_witnesses.witness_surname').delete_if{|x| x == nil}.sort
       entries["Witness Forename"] = all_entries.distinct('multiple_witnesses.witness_forename').delete_if{|x| x == nil}.sort
