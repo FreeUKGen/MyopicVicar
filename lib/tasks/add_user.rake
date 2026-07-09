@@ -12,15 +12,18 @@ namespace :freeuk do
         skipped_existing += 1
         next
       end
-      # Note: do not also set `password:` here - Devise's password= setter re-hashes
-      # whatever it's given via the Freereg encryptor and overwrites encrypted_password,
-      # which would double-hash `detail.password` (already a digest, not plaintext).
       u = User.new(
         username: detail.userid,
         email: detail.email_address,
-        encrypted_password: detail.password,
         userid_detail_id: detail.id.to_s
       )
+      # Devise's :validatable requires `password` present on a new record (password_required?
+      # is true while !persisted?), so set a throwaway value first to satisfy that - then set
+      # encrypted_password LAST so it isn't clobbered by password='s own re-hashing side effect.
+      # Same order save_to_refinery (app/models/userid_detail.rb) already uses successfully.
+      u.password = SecureRandom.hex(16)
+      u.password_confirmation = u.password
+      u.encrypted_password = detail.password
       if u.save
         added += 1
       else
