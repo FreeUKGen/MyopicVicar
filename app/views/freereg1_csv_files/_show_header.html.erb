@@ -18,6 +18,7 @@
          'data_manager'].include?(session[:role]) %>
     <%= relocate_batch  %>
     <%= merge_batches %>
+    <%= refresh_file_information %>
     <%= reprocess_batch %>
   <% end%>
   <% if ['system_administrator','data_manager'].include?(session[:role]) %>

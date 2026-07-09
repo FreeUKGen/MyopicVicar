@@ -81,3 +81,17 @@ describe Freereg1CsvFile do
 #         
   # end
 end
+
+describe Freereg1CsvFile, '#refresh_file_information_after_online_edit' do
+  let(:file) { Freereg1CsvFile.new }
+
+  it 'propagates recalculated file statistics to the register, church, and place' do
+    allow(file).to receive(:calculate_distribution).and_return(true)
+    allow(file).to receive(:batch_errors).and_return([])
+    allow(file).to receive(:update).with(error: 0).and_return(true)
+
+    expect(file).to receive(:update_freereg_contents_after_processing).and_return(true)
+
+    expect(file.refresh_file_information_after_online_edit).to eq(true)
+  end
+end
