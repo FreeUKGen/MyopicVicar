@@ -222,7 +222,8 @@ class SearchRecord
         logger.warn " #{param[:id]} no longer exists"
         return [false, search_query, search_record, messagea]
       end
-      search_query = search.present? ? SearchQuery.search_id(search).first : ''
+      query_id = search.presence || param[:search_id]
+      search_query = query_id.present? ? SearchQuery.search_id(query_id).first : ''
       search_record = SearchRecord.record_id(param[:id]).first
       if search_record.blank?
         logger.warn(warning)
@@ -432,8 +433,63 @@ class SearchRecord
       end
       scores = {}
       candidates.each { |name| scores[name] = index_score(name, search_fields, index_component) }
-      best = scores.max_by { |_k, v| v}
-      best[0]
+      best = scores.max_by { |_k, v| v }
+      hint = best[0]
+      Rails.logger.debug do
+        "[SearchRecord.index_hint] app=#{App.name_downcase} fields=#{search_fields.inspect} hint=#{hint} score=#{best[1]}"
+      end
+      hint
+    end
+
+    def explain_find(params, hint: nil)
+      view = collection.find(params)
+      view = view.hint(hint.to_s) if hint.present?
+      view.explain
+    end
+
+    def winning_plan_index_name(params, hint = nil)
+      index_name_from_explain(explain_find(params, hint: hint))
+    rescue StandardError => e
+      Rails.logger.warn("[SearchRecord.winning_plan_index_name] #{e.class}: #{e.message}")
+      nil
+    end
+
+    def index_name_from_explain(explain_result)
+      doc = normalize_explain_document(explain_result)
+      name = doc.dig('queryPlanner', 'winningPlan', 'indexName')
+      return name if name.present? && name != '_id_'
+
+      find_index_name_in_tree(doc)
+    end
+
+    def normalize_explain_document(explain_result)
+      case explain_result
+      when Hash
+        explain_result.deep_stringify_keys
+      when BSON::Document
+        explain_result.to_hash.deep_stringify_keys
+      else
+        explain_result.respond_to?(:to_h) ? explain_result.to_h.deep_stringify_keys : {}
+      end
+    end
+
+    def find_index_name_in_tree(obj)
+      case obj
+      when Hash
+        name = obj['indexName']
+        return name if name.present? && name != '_id_'
+
+        obj.each_value do |value|
+          found = find_index_name_in_tree(value)
+          return found if found.present?
+        end
+      when Array
+        obj.each do |item|
+          found = find_index_name_in_tree(item)
+          return found if found.present?
+        end
+      end
+      nil
     end
 
     def index_score(index_name, search_fields, index_component)
@@ -487,7 +543,6 @@ class SearchRecord
     end
 
     def update_create_search_record(entry, search_version, place)
-      #create a temporary search record with the new information
       change, embargo_record = entry.process_embargo
       if change
         entry.embargo_records << embargo_record
@@ -495,27 +550,27 @@ class SearchRecord
         entry.reload
       end
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
-      search_record = entry.search_record
-      new_search_record = SearchRecord.new(search_record_parameters)
-      new_search_record[:freereg1_csv_entry_id] = entry.id
-      new_search_record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
-      new_search_record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
-      new_search_record.transform
-      new_search_record.digest = new_search_record.cal_digest
-      if search_record.present?
-        if new_search_record.digest == search_record.digest
-          return 'no update'
-        end
+      existing = entry.search_record
+      previous_digest = existing&.digest
+
+      record = existing || SearchRecord.new
+      record.assign_attributes(search_record_parameters)
+      record[:freereg1_csv_entry_id] = entry.id
+      record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
+      record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
+      record.transform
+      record.digest = record.cal_digest
+      if existing.present? && record.digest == previous_digest
+        existing.reload
+        return 'no update'
       end
-      new_search_record.search_record_version = search_version
-      new_search_record.search_date = ' ' if new_search_record.search_date.nil?
-      new_search_record.place_id = place.id
-      new_search_record.chapman_code = place.chapman_code
-      new_search_record.possible_last_names = new_search_record.transcript_names.map{|n| n[:last_name].downcase if n[:last_name].present?}.uniq.compact
-      new_search_record.save
-      #search_record.update_attributes(location_names: nil, record_type: nil) if search_record.present?
-      search_record.destroy if search_record.present?
-      return 'created'
+      record.search_record_version = search_version
+      record.search_date = ' ' if record.search_date.nil?
+      record.place_id = place.id
+      record.chapman_code = place.chapman_code
+      record.possible_last_names = record.transcript_names.map { |n| n[:last_name].downcase if n[:last_name].present? }.uniq.compact
+      record.save
+      existing.present? ? 'updated' : 'created'
     end
   end
 
@@ -659,8 +714,8 @@ class SearchRecord
 
   def downcase_all
     search_names.each do |name|
-      name[:first_name].downcase! if name[:first_name]
-      name[:last_name].downcase! if name[:last_name]
+      name.first_name = name.first_name.downcase if name.first_name
+      name.last_name = name.last_name.downcase if name.last_name
     end
   end
 
@@ -1064,11 +1119,13 @@ ry_search_date
   end
 
   def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
+    first_name = copy_name(first_name)&.downcase
+    last_name = copy_name(last_name)&.downcase
     name = nil
     unless last_name.blank?
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => first_name, :last_name => last_name, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     else
-      name = SearchName.new({ :first_name => copy_name(first_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => first_name, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
     name
   end

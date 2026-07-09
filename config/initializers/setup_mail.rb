@@ -39,4 +39,5 @@ else
   ActionMailer::Base.perform_deliveries = true
   ActionMailer::Base.raise_delivery_errors = true
 end
+ActionMailer::Base.sendmail_settings = { location: '/usr/sbin/sendmail', arguments: '-i' }
 ActionMailer::Base.default_url_options[:host] = Rails.application.config.website

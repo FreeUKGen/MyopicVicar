@@ -72,24 +72,11 @@ class ImageServerGroupsController < ApplicationController
   end
 
   def display_info
-    group_id = session[:image_server_group_id].presence || params[:id]
-    if group_id.present?
-      image_server_group = ImageServerGroup.id(group_id).first
-      unless image_server_group
-        flash[:notice] = 'can not locate image group'
-        redirect_to(main_app.new_manage_resource_path) && return
-      end
-      @source = Source.id(image_server_group.source_id).first
-      unless @source
-        flash[:notice] = 'can not locate source for image group'
-        redirect_to(main_app.new_manage_resource_path) && return
-      end
+    if session[:image_server_group_id].present?
+      image_server_group = ImageServerGroup.find_by(id: session[:image_server_group_id])
+      @source = Source.find_by(id: image_server_group.source_id)
     elsif session[:source_id].present?
-      @source = Source.id(session[:source_id]).first
-      unless @source
-        flash[:notice] = 'can not locate source'
-        redirect_to(main_app.new_manage_resource_path) && return
-      end
+      @source = Source.find_by(id: session[:source_id])
     else
       flash[:notice] = 'can not locate image group'
       redirect_to(main_app.new_manage_resource_path) && return
@@ -97,10 +84,10 @@ class ImageServerGroupsController < ApplicationController
 
     session[:source_id] = @source.id
     session[:register_id] = @source.register_id
-    @register = Register.find(session[:register_id])
+    @register = Register.find_by(id: session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)
     session[:church_id] = @register.church_id
-    @church = Church.find(session[:church_id])
+    @church = Church.find_by(id: session[:church_id])
     @church_name = @church.church_name
     session[:church_name] = @church_name
     @church_name = session[:church_name]
@@ -217,7 +204,7 @@ class ImageServerGroupsController < ApplicationController
     ImageServerImage.update_image_status(image_server_group, 'ar')
 
     #ImageServerGroup.find(:id=>ig.id).update_attributes(:syndicate_code=>sc.syndicate)
-     ImageServerGroup.id(ig.id).first&.update_attributes(allocation_requested_by: sc.userid, allocation_requested_through_syndicate: current_syndicate)
+     ImageServerGroup.find_by(id: ig.id).update_attributes(allocation_requested_by: sc.userid, allocation_requested_through_syndicate: current_syndicate)
     UserMailer.request_cc_image_server_group(sc, cc.email_address, ig.group_name).deliver_now
 
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'Email send to County Coordinator')

@@ -30,9 +30,9 @@ class ImageServerImagesController < ApplicationController
   end
 
   def display_info
-    @register = Register.find(:id=>session[:register_id])
+    @register = Register.find_by(id: session[:register_id])
     @register_type = RegisterType.display_name(@register.register_type)
-    @church = Church.find(session[:church_id])
+    @church = Church.find_by(id: session[:church_id])
     @church_name = session[:church_name]
     @county =  session[:county]
     @place_name = session[:place_name]
@@ -41,8 +41,8 @@ class ImageServerImagesController < ApplicationController
     @place_name = @place.place_name
     @chapman_code = @place.chapman_code
     @user = get_user
-    @source = Source.id(session[:source_id]).first
-    @group = ImageServerGroup.id(session[:image_server_group_id]).first
+    @source = Source.find_by(id: session[:source_id])
+    @group = ImageServerGroup.find_by(id: session[:image_server_group_id])
   end
 
   def download

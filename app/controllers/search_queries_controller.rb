@@ -57,12 +57,14 @@ class SearchQueriesController < ApplicationController
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
+    @search_index_hint = @search_query.search_index_hint_for_explain
     begin
       @plan = @search_query.explain_plan
     rescue => ex
       @plan_error = ex.message
       @plan = @search_query.explain_plan_no_sort
     end
+    @search_index_winning_plan = SearchRecord.index_name_from_explain(@plan)
   end
 
   def broaden

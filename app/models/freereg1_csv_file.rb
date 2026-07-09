@@ -781,11 +781,7 @@ class Freereg1CsvFile
   end
 
   def all_embargoed_entries
-    freereg1_csv_entries = []
-    self.freereg1_csv_entries.each do |entry|
-      freereg1_csv_entries << entry if entry.embargo_records.present?
-    end
-    freereg1_csv_entries
+    freereg1_csv_entries.select(&:currently_under_embargo?)
   end
 
   def force_unlock
@@ -1057,6 +1053,12 @@ class Freereg1CsvFile
       church.calculate_church_numbers
       place.calculate_place_numbers
     end
+  end
+
+  def refresh_file_information_after_online_edit
+    calculate_distribution &&
+      update(error: batch_errors.count) &&
+      update_freereg_contents_after_processing
   end
 
   def update_number_of_files
@@ -1345,7 +1347,7 @@ class Freereg1CsvFile
       entries["Bride's Father's Forename"] = all_entries.distinct(:bride_father_forename).delete_if{|x| x == nil}.sort
       entries["Groom's Mother's Surname"] = all_entries.distinct(:groom_mother_surname).delete_if{|x| x == nil}.sort
       entries["Groom's Mother's Forename"] = all_entries.distinct(:groom_mother_forename).delete_if{|x| x == nil}.sort
-      entries["Bride's Mother's Surname"] = all_entries.distinct(:bride_motherr_surname).delete_if{|x| x == nil}.sort
+      entries["Bride's Mother's Surname"] = all_entries.distinct(:bride_mother_surname).delete_if{|x| x == nil}.sort
       entries["Bride's Mother's Forename"] = all_entries.distinct(:bride_mother_forename).delete_if{|x| x == nil}.sort
       entries["Witness Surname"] = all_entries.distinct('multiple_witnesses.witness_surname').delete_if{|x| x == nil}.sort
       entries["Witness Forename"] = all_entries.distinct('multiple_witnesses.witness_forename').delete_if{|x| x == nil}.sort

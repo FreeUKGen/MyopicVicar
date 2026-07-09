@@ -565,7 +565,7 @@ class UseridDetail
       errors.add(:email_address, "Userid email already exists on change")
     end
 
-    refinery_user = User.where(username: self.userid).first
+    refinery_user = User.where(username: self.userid_lower_case).first
     other = User.where(email: /\A#{::Regexp.escape(new_email)}\z/i).first
     if other.present? && (refinery_user.nil? || other.id != refinery_user.id)
       errors.add(:email_address, "Refinery email already exists on change")
@@ -779,6 +779,10 @@ class UseridDetail
 
   def self.number_of_transcribers_uploaded_file_recently(month)
     user_role_transcriber.where(last_upload: {'$gt': month.months.ago}).count
+  end
+
+  def self.number_of_transcribers_uploaded_file_in_period(from_date, to_date)
+    user_role_transcriber.where(last_upload: { '$gte': from_date.beginning_of_day, '$lte': to_date.end_of_day }).count
   end
 
   def self.return_percentage_all_users_accepted_transcriber_agreement
