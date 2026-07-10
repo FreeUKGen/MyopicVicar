@@ -27,7 +27,7 @@ Most developers can work in **Tier A** and verify on **https://test.freereg.org.
 |-----------|-----------------|
 | **Ruby** | **2.7.8** (see `.ruby-version`). Use [rbenv](https://github.com/rbenv/rbenv) or [rvm](https://rvm.io/). |
 | **Bundler** | Latest compatible with Ruby 2.7 |
-| **MongoDB** | 4.4+ (local install or Docker). Server must be running for `rails s`. |
+| **MongoDB** | 4.4+ (local install or Docker). Server must be running for `rails s`. Download link: https://www.mongodb.com/try/download/community|
 | **Git** | Clone [MyopicVicar](https://github.com/FreeUKGen/MyopicVicar) and [osgb](https://github.com/FreeUKGen/osgb) (osgb is a Gemfile dependency). |
 | **MySQL** | Not needed — `bin/setup` handles the one placeholder file the app requires. See [MySQL / Refinery](#mysql--refinery-you-can-ignore-this-section) below. |
 | **Node.js** | Needed for `bin/setup` to precompile assets (`config.assets.compile` is off in development here, unlike a stock Rails app — see Troubleshooting). Only likely to be missing on some Linux setups. |
