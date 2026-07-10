@@ -235,7 +235,7 @@ Open a PR on GitHub.
 
 | Required for all devs | Optional |
 |-----------------------|----------|
-| Ruby 2.7.8, bundle, MongoDB | A real MySQL server + Refinery |
+| Ruby 2.7.8, bundle, MongoDB, MySQL | Refinery |
 | Config files from examples (`bin/setup` handles this, including the placeholder `database.yml` the app needs just to boot) | Full `users.zip` rebuild |
 | test registration + technical role | Production-sized data |
 | `bin/setup` | |
