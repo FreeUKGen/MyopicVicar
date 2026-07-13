@@ -946,28 +946,38 @@ class SearchQuery
     return unless results
 
     recs = results.to_a
-    valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
+    valid_entry_ids = nil
+    valid_ids_ms = Benchmark.realtime do
+      valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
+    end * 1000
 
     records = {}
+    backfill_count = 0
+    backfill_ms = 0
     recs.each do |rec|
       rec_id = rec['_id'].to_s
       record = rec # should be a SearchRecord despite Mongoid bug
       proceed = SearchQuery.does_the_entry_exist?(rec, valid_freereg_entry_ids: valid_entry_ids)
       if proceed
         record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
-        record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
+        if record[:search_date].blank?
+          backfill_ms += Benchmark.realtime { record = SearchQuery.add_search_date_when_absent(record) } * 1000
+          backfill_count += 1
+        end
         records[rec_id] = record
       else
         search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
         search_record.delete if search_record.present?
       end
     end
+    logger.warn("#{App.name_upcase}:PERSIST_RESULTS_TIMING: record_count=#{recs.size} valid_ids_ms=#{valid_ids_ms.round} backfill_count=#{backfill_count} backfill_ms=#{backfill_ms.round}")
     self.search_result = SearchResult.new
     self.search_result.records = records
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime('%F')
-    self.save
+    save_ms = Benchmark.realtime { self.save }* 1000
+    logger.warn("#{App.name_upcase}:PERSIST_RESULTS_SAVE_MS: #{save_ms.round}")
   end
 
   def place_search?
