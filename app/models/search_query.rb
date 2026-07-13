@@ -1115,11 +1115,12 @@ class SearchQuery
 
   def search
     @search_parameters = search_params
-    @search_index = SearchRecord.index_hint(@search_parameters)
-    @search_index_winning_plan = SearchRecord.winning_plan_index_name(@search_parameters, @search_index)
+    index_hint_ms = Benchmark.realtime { @search_index = SearchRecord.index_hint(@search_parameters) } * 1000
+    winning_plan_ms = Benchmark.realtime { @search_index_winning_plan = SearchRecord.winning_plan_index_name(@search_parameters, @search_index) } * 1000
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     logger.warn("#{App.name_upcase}:WINNING_PLAN_INDEX: #{@search_index_winning_plan}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
+    logger.warn("#{App.name_upcase}:INDEX_HINT_TIMING: index_hint_ms=#{index_hint_ms.round} winning_plan_ms=#{winning_plan_ms.round}")
     update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
     max_results = FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
     primary_records, secondary_date_records = fetch_records_with_secondary_date(max_results)
