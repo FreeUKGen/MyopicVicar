@@ -1112,8 +1112,13 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
     max_results = FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
-    records = fetch_records_with_secondary_date(max_results)
-    persist_results(records)
+    primary_records, secondary_date_records = fetch_records_with_secondary_date(max_results)
+    persist_results(primary_records)
+    # secondary_date_records only matched via secondary_search_date, so search_date is
+    # expected to be blank for all of them -- persist_additional_results (unlike
+    # persist_results) does not run add_search_date_when_absent, so it doesn't pay a
+    # per-record find+write for every one of them.
+    persist_additional_results(secondary_date_records) if secondary_date_records.present?
     records = search_ucf if can_query_ucf? && result_count < max_results
     records
   end
@@ -1121,13 +1126,16 @@ class SearchQuery
   # A FreeREG record may carry a second, independent date (secondary_search_date --
   # e.g. an estimated birth year alongside a baptism date). A date-range search has to
   # match on EITHER date, so this runs both queries -- concurrently, not sequentially,
-  # to avoid doubling wall-clock latency -- and merges/dedupes the results by _id.
+  # to avoid doubling wall-clock latency. Returns [primary_records, secondary_date_records]
+  # -- kept separate (not merged) so callers can persist them through different paths;
+  # secondary_date_records is deduped against primary and capped so the combined total
+  # never exceeds max_results.
   def fetch_records_with_secondary_date(max_results)
     primary_thread = Thread.new do
       SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
     end
 
-    return primary_thread.value unless App.name == 'FreeREG' && @search_parameters[:search_date].present?
+    return [primary_thread.value, []] unless App.name == 'FreeREG' && @search_parameters[:search_date].present?
 
     secondary_params = @search_parameters.dup
     secondary_params[:secondary_search_date] = secondary_params.delete(:search_date)
@@ -1153,8 +1161,8 @@ class SearchQuery
     # max(primary_ms, secondary_ms), not their sum -- worth checking if it ever isn't.
     logger.warn("#{App.name_upcase}:DATE_SEARCH_TIMING: primary=#{primary_ms.round}ms secondary=#{secondary_ms.round}ms")
     primary_ids = primary.map { |r| r['_id'] }.to_set
-    additional = secondary.reject { |r| primary_ids.include?(r['_id']) }
-    (primary + additional).first(max_results)
+    additional = secondary.reject { |r| primary_ids.include?(r['_id']) }.first([max_results - primary.size, 0].max)
+    [primary, additional]
   end
 
   def search_params
