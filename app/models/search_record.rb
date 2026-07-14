@@ -444,10 +444,7 @@ class SearchRecord
     def explain_find(params, hint: nil)
       view = collection.find(params)
       view = view.hint(hint.to_s) if hint.present?
-      # queryPlanner is the only verbosity that never executes the query --
-      # this is only used to log which index won, not to gather execution stats,
-      # so anything more expensive (executionStats/allPlansExecution) is unnecessary cost.
-      view.explain(verbosity: :query_planner)
+      view.explain
     end
 
     def winning_plan_index_name(params, hint = nil)
