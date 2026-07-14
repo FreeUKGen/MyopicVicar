@@ -62,15 +62,11 @@ class UseridDetailsController < ApplicationController
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
       @userid.add_fields(params[:commit], session[:syndicate])
+      @userid.save
       if @userid.save
         refinery_user = User.where(username: @userid.userid_lower_case).first
-        if refinery_user.present?
-          refinery_user.send_reset_password_instructions
-          flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
-        else
-          logger.warn("FREEREG:USERID: The refinery entry for #{@userid.userid} does not exist after registration. Run the Fix Refinery User Table utility.")
-          flash[:notice] = 'The initial registration was successful, but there was a problem sending your confirmation email. Please contact your coordinator.'
-        end
+        refinery_user.send_reset_password_instructions
+        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
         @userid.write_userid_file
         next_place_to_go_successful_create
       else
