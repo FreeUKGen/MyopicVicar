@@ -655,7 +655,7 @@ class UseridDetail
     #u.add_role('Refinery')
     #u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
     #u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
-    u.save
+    Rails.logger.warn("FREEREG:USERID: save_to_refinery failed for #{self.userid}: #{u.errors.full_messages.join(', ')}") unless u.save
   end
 
   def update_refinery
