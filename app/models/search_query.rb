@@ -850,29 +850,41 @@ class SearchQuery
     params
   end
 
+  # Which search_names/search_soundex "type" (p = primary, f = family, w = witness)
+  # a match is allowed to come from -- mirrors include_record_for_type, but applied in
+  # the Mongo query itself instead of after the fetch, so the max_results cap (applied
+  # at the DB level) narrows an already role-correct candidate set instead of an
+  # any-role one. See issue 1403 / Vino-S's 2026-01-21 comment: "Max Count restriction
+  # is applied before filters like (family, witness, embargo) are applied."
+  def allowed_name_types
+    types = ['p']
+    types << 'f' if inclusive
+    types << 'w' if witness
+    types
+  end
+
   def name_search_params
     params = {}
     name_params = {}
     if query_contains_wildcard?
       name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name.present?
       name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name.present?
+      name_params['type'] = { '$in' => allowed_name_types }
       params['search_names'] = { '$elemMatch' => name_params }
     else
       if fuzzy
         name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name.present?
         name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
-        if name_params.key?('first_name') && name_params.key?('last_name')
-          # Keep name pairs bound to the same embedded document when both are present.
+        if name_params.present?
+          # Keep name fields (and type) bound to the same embedded document.
+          name_params['type'] = { '$in' => allowed_name_types }
           params['search_soundex'] = { '$elemMatch' => name_params }
-        elsif name_params.key?('last_name')
-          params['search_soundex.last_name'] = name_params['last_name']
-        elsif name_params.key?('first_name')
-          params['search_soundex.first_name'] = name_params['first_name']
         end
       else
         name_params['first_name'] = first_name.downcase if first_name.present?
         name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
         name_params['last_name'] = nil if self.no_surname
+        name_params['type'] = { '$in' => allowed_name_types }
         params['search_names'] = { '$elemMatch': name_params }
       end
     end
@@ -934,28 +946,38 @@ class SearchQuery
     return unless results
 
     recs = results.to_a
-    valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
+    valid_entry_ids = nil
+    valid_ids_ms = Benchmark.realtime do
+      valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
+    end * 1000
 
     records = {}
+    backfill_count = 0
+    backfill_ms = 0
     recs.each do |rec|
       rec_id = rec['_id'].to_s
       record = rec # should be a SearchRecord despite Mongoid bug
       proceed = SearchQuery.does_the_entry_exist?(rec, valid_freereg_entry_ids: valid_entry_ids)
       if proceed
         record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
-        record = SearchQuery.add_search_date_when_absent(record) if record[:search_date].blank?
+        if record[:search_date].blank?
+          backfill_ms += Benchmark.realtime { record = SearchQuery.add_search_date_when_absent(record) } * 1000
+          backfill_count += 1
+        end
         records[rec_id] = record
       else
         search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
         search_record.delete if search_record.present?
       end
     end
+    logger.warn("#{App.name_upcase}:PERSIST_RESULTS_TIMING: record_count=#{recs.size} valid_ids_ms=#{valid_ids_ms.round} backfill_count=#{backfill_count} backfill_ms=#{backfill_ms.round}")
     self.search_result = SearchResult.new
     self.search_result.records = records
     self.result_count = records.length
     self.runtime = (Time.now.utc - self.updated_at) * 1000
     self.day = Time.now.strftime('%F')
-    self.save
+    save_ms = Benchmark.realtime { self.save }* 1000
+    logger.warn("#{App.name_upcase}:PERSIST_RESULTS_SAVE_MS: #{save_ms.round}")
   end
 
   def place_search?
@@ -1093,28 +1115,65 @@ class SearchQuery
 
   def search
     @search_parameters = search_params
-    @search_index = SearchRecord.index_hint(@search_parameters)
-    @search_index_winning_plan = SearchRecord.winning_plan_index_name(@search_parameters, @search_index)
+    index_hint_ms = Benchmark.realtime { @search_index = SearchRecord.index_hint(@search_parameters) } * 1000
+    winning_plan_ms = Benchmark.realtime { @search_index_winning_plan = SearchRecord.winning_plan_index_name(@search_parameters, @search_index) } * 1000
     logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
     logger.warn("#{App.name_upcase}:WINNING_PLAN_INDEX: #{@search_index_winning_plan}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
+    logger.warn("#{App.name_upcase}:INDEX_HINT_TIMING: index_hint_ms=#{index_hint_ms.round} winning_plan_ms=#{winning_plan_ms.round}")
     update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
-    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
-    persist_results(records)
-    persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
-    records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
+    max_results = FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
+    primary_records, secondary_date_records = fetch_records_with_secondary_date(max_results)
+    persist_results(primary_records)
+    # secondary_date_records only matched via secondary_search_date, so search_date is
+    # expected to be blank for all of them -- persist_additional_results (unlike
+    # persist_results) does not run add_search_date_when_absent, so it doesn't pay a
+    # per-record find+write for every one of them.
+    persist_additional_results(secondary_date_records) if secondary_date_records.present?
+    records = search_ucf if can_query_ucf? && result_count < max_results
     records
   end
 
-  def secondary_date_results
-    @secondary_search_params = @search_parameters
-    @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete_if { |key, value| key == :search_date }
-    # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
-    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    secondary_records
+  # A FreeREG record may carry a second, independent date (secondary_search_date --
+  # e.g. an estimated birth year alongside a baptism date). A date-range search has to
+  # match on EITHER date, so this runs both queries -- concurrently, not sequentially,
+  # to avoid doubling wall-clock latency. Returns [primary_records, secondary_date_records]
+  # -- kept separate (not merged) so callers can persist them through different paths;
+  # secondary_date_records is deduped against primary and capped so the combined total
+  # never exceeds max_results.
+  def fetch_records_with_secondary_date(max_results)
+    primary_thread = Thread.new do
+      SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
+    end
+
+    return [primary_thread.value, []] unless App.name == 'FreeREG' && @search_parameters[:search_date].present?
+
+    secondary_params = @search_parameters.dup
+    secondary_params[:secondary_search_date] = secondary_params.delete(:search_date)
+    secondary_index = SearchRecord.index_hint(secondary_params)
+    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{secondary_index}")
+    secondary_thread = Thread.new do
+      SearchRecord.collection.find(secondary_params).hint(secondary_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
+    end
+
+    primary = nil
+    secondary = nil
+    primary_ms = Benchmark.realtime { primary = primary_thread.value } * 1000
+    secondary_ms = Benchmark.realtime do
+      secondary = begin
+        secondary_thread.value
+      rescue StandardError => e
+        logger.warn("#{App.name_upcase}:SECONDARY_DATE_SEARCH_FAILED: #{e.class}: #{e.message}")
+        []
+      end
+    end * 1000
+    # If this is genuinely running in parallel, the request's overall MongoDB time
+    # (Rails' own "Completed ... (MongoDB: Xms)" log line) should be close to
+    # max(primary_ms, secondary_ms), not their sum -- worth checking if it ever isn't.
+    logger.warn("#{App.name_upcase}:DATE_SEARCH_TIMING: primary=#{primary_ms.round}ms secondary=#{secondary_ms.round}ms")
+    primary_ids = primary.map { |r| r['_id'] }.to_set
+    additional = secondary.reject { |r| primary_ids.include?(r['_id']) }.first([max_results - primary.size, 0].max)
+    [primary, additional]
   end
 
   def search_params
@@ -1125,6 +1184,10 @@ class SearchQuery
     params.merge!(record_type_params)
     # params.merge!(possible_last_names_params)
     params.merge!(date_search_params)
+    # Mirrors filter_embargoed -- excluded here too so max_results caps an
+    # already-embargo-correct candidate set, not one that still includes embargoed
+    # records that would just get dropped after the fetch.
+    params['$nor'] = [{ embargoed: true, release_year: { '$gt' => DateTime.now.year } }]
     params
   end
 
