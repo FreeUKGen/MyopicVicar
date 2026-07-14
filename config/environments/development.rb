@@ -27,10 +27,6 @@ MyopicVicar::Application.configure do
     # ignore invalid website config
   end
 
-  # GitHub Codespaces forwards ports as https://<random-name>-<port>.app.github.dev,
-  # a different host per codespace -- allow the whole domain instead of one fixed host.
-  config.hosts << /.*\.app\.github\.dev/ if ENV['CODESPACES'].present?
-
   # In the development environment your application's code is reloaded on
   # every request.  This slows down response time but is perfect for development
   # since you don't have to restart the webserver when you make code changes.
