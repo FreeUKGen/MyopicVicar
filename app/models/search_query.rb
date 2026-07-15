@@ -3611,6 +3611,7 @@
   end
 
   def register_entry_details(result_hash, record)
+    result_hash['Volume'] = record[:Volume]
     result_hash['Register No.'] = record.event_registration_number
     result_hash['Entry No.'] = record.event_entry_number
   end
