@@ -14,6 +14,18 @@
           The contact information was:<br>
         <% end %>
         <%= @respond_to_contact.body %>
+        <% attachment_file_paths = @respond_to_contact.attachment_file_paths %>
+        <% if attachment_file_paths.present? %>
+          <div class="push--top">
+            <p class="strong">Attachments will be forwarded with this contact.</p>
+            <p>This contact has <%= pluralize(attachment_file_paths.count, 'attachment') %>:</p>
+            <ul>
+              <% attachment_file_paths.each do |attachment_file_path| %>
+                <li><%= File.basename(attachment_file_path) %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
       </div>
     </div>
   </section>
