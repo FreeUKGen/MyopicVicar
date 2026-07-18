@@ -470,8 +470,8 @@ class UseridDetail
   end
 
   def userid_and_email_address_does_not_exist
-    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exists") if User.where(:username => self[:userid]).exists?
+    errors.add(:userid, "Userid Already exists") if UseridDetail.where(userid: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
+    errors.add(:userid, "Refinery User Already exists") if User.where(username: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
     errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
     errors.add(:email_address, "Refinery email already exists") if User.where(:email => self[:email_address]).exists?
   end
@@ -531,7 +531,7 @@ class UseridDetail
   end
 
   def check_exists_in_refinery
-    refinery_user = User.where(:username => self.userid).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     if refinery_user.nil?
       return[false,"There is no refinery entry"]
     else
@@ -548,7 +548,7 @@ class UseridDetail
   end
 
   def delete_refinery_user_and_userid_folder
-    refinery_user = User.where(:username => self.userid).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
     return if MyopicVicar::Application.config.template_set == 'freecen'
@@ -565,7 +565,7 @@ class UseridDetail
       errors.add(:email_address, "Userid email already exists on change")
     end
 
-    refinery_user = User.where(username: self.userid).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     other = User.where(email: /\A#{::Regexp.escape(new_email)}\z/i).first
     if other.present? && (refinery_user.nil? || other.id != refinery_user.id)
       errors.add(:email_address, "Refinery email already exists on change")
@@ -639,7 +639,7 @@ class UseridDetail
 
   def save_to_refinery
     #avoid looping on password changes
-    u = User.where(:username => self.userid).first
+    u = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     if u.nil?
       u = User.new
     end
@@ -659,7 +659,7 @@ class UseridDetail
   end
 
   def update_refinery
-    u = User.where(:username => self.userid).first
+    u = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     unless u.nil?
       u.email = self.email_address
       u.userid_detail_id = self.id.to_s
