@@ -33,7 +33,7 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
-    refinery_user = User.where(username: @userid.userid_lower_case ).first
+    refinery_user = User.where(username: @userid.userid).first
     if refinery_user.blank?
       flash[:notice] = 'There was an issue with your request please consult your coordinator.' if session[:my_own]
       flash[:notice] = 'There was an issue with the userid please consult with system administration.' if !session[:my_own]
@@ -63,7 +63,7 @@ class UseridDetailsController < ApplicationController
       @userid = UseridDetail.new(userid_details_params)
       @userid.add_fields(params[:commit], session[:syndicate])
       if @userid.save
-        refinery_user = User.where(username: @userid.userid_lower_case).first
+        refinery_user = User.where(username: @userid.userid).first
         if refinery_user.present?
           refinery_user.send_reset_password_instructions
           flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
