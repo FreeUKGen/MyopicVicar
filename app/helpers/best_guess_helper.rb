@@ -32,9 +32,22 @@ module BestGuessHelper
     if quarter <  Constant::EVENT_QUARTER_TO_YEAR
       date = "#{(format_quarter_name quarter).camelize} #{formatted_year quarter}"
     else
-      #date = formatted_year quarter
+      date = formatted_year quarter
     end
     date
+  end
+
+  # For whole-year indexes (1984 onwards) this also includes the Month of
+  # Registration when it is available, matching the level of detail shown
+  # for quarterly indexes (quarter + year).
+  def compact_text_date entry
+    quarter = entry['QuarterNumber']
+    if quarter < Constant::EVENT_QUARTER_TO_YEAR
+      format_quarter(quarter)
+    else
+      registered = entry.respond_to?(:event_registration) ? entry.event_registration : nil
+      registered.present? ? format_registered(registered, quarter) : format_quarter(quarter)
+    end
   end
 
   def format_quarter_year quarter
