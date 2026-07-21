@@ -205,9 +205,10 @@
             <%= district_link_or_name_id(district, record, search_id) %>
           <% else%>
             <% if district.valid? %>
-              <%= link_to "#{record[:District]}", district_friendly_url_path(id: district.DistrictNumber, friendly: district.district_friendly_url) %>
+              <%= link_to titleize_string(record[:District]), district_friendly_url_path(id: district.DistrictNumber, friendly: district.district_friendly_url) %>
             <% else %>
-              <%= record[:District] %>
+              <% district_label = record[:District].presence || district.DistrictName %>
+              <%= district_label.present? ? titleize_string(district_label.to_s) : 'Registration district' %>
             <% end %>
           <% end %>
         <% else %>
@@ -247,11 +248,9 @@
             <% if @search %>
               <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: search_id, original_record: original_record} %>
               <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
-            <% elsif params[:saved_record] %>
+            <% else %>
               <%= render partial: 'page_records_navigation_saved', locals: {record: @current_record, original_record: @original_record} %>
               <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
-            <% else %>
-              <%= record.Page %>
             <% end %>
           <% else %>
             <%= record.Page %>
@@ -302,20 +301,18 @@
     <% else %>     
     <% end %>
     <% unless record.post_1994_marriage? %>
-      <% if search %>
-        <% event_registered = record.event_registration %>
-        <% if event_registered.present?%>
-          <tr>
-            <th scope="row">
-              Registered
-            </th>
-            <td >
-              <%= format_registered(event_registered, record.QuarterNumber) %>
-            </td>
-          </tr>
-        <% end %>
+      <% event_registered = record.event_registration %>
+      <% if event_registered.present?%>
+        <tr>
+          <th scope="row">
+            Registered
+          </th>
+          <td >
+            <%= format_registered(event_registered, record.QuarterNumber) %>
+          </td>
+        </tr>
       <% end %>
-    <% end %> 
+    <% end %>
     <% if entry_type == "marriage" %>
       <% if record.post_1994_marriage? %>
         <% sub = record.get_submission %>
@@ -359,17 +356,19 @@
         <% end %>
       </td>
     </tr>
-    <% if search == true %>
-      <% unless (record.Confirmed & 512).zero? %>
-        <tr>
-          <th scope="row">
-            Linked records
-          </th>
-          <td>
-             <%= link_to "View linked record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
-          </td>
-        </tr>
-      <% end %>
+    <% unless (record.Confirmed & 512).zero? %>
+      <tr>
+        <th scope="row">
+          Linked records
+        </th>
+        <td>
+          <% if search %>
+            <%= link_to "View linked record", show_reference_entry_path(entry_id: record.RecordNumber, search_id: search_id) %><br>
+          <% else %>
+            <%= link_to "View linked record", show_reference_entry_non_search_path(entry_id: record.RecordNumber) %><br>
+          <% end %>
+        </td>
+      </tr>
     <% end %>
     <% if record.get_comments.present? %>
       <tr>
@@ -383,22 +382,20 @@
         <% end %>
       </tr>
     <% end %>
-    <% unless search %>
-      <% if type == "reference" %>
-        <tr>
-          <th scope="row">
-            Help Text
-          </th>
-          <td>
-            <% case %>
-            <% when record.reference_entry_description_text_display? %>
-              <%= ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE %>
-            <% when !original_record.late_entry_description_text_display?%>
-              <%= ApplicationText::REFERENCE_ENTRY_TEXT %>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
+    <% if type == "reference" %>
+      <tr>
+        <th scope="row">
+          Help Text
+        </th>
+        <td>
+          <% case %>
+          <% when record.reference_entry_description_text_display? %>
+            <%= ApplicationText::LATE_ENTRY_TEXT_WITH_REFERENCE %>
+          <% when !original_record.late_entry_description_text_display?%>
+            <%= ApplicationText::REFERENCE_ENTRY_TEXT %>
+          <% end %>
+        </td>
+      </tr>
     <% end %>
   </tbody>
 </table>
