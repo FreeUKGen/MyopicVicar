@@ -101,7 +101,7 @@ module UseridRole
                                'Feedback', 'Profile', 'Manage Userids', 'Message System', 'RefineryCMS', 'Roadmap',
                                'Site Statistics', 'Search Performance', 'Syndicate Coordinators', 'System Documentation'],
       'genealogy_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Profile', 'Roadmap', 'System Documentation'],
-      'general_communication_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
+      'general_communication_coordinator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Display Userids', 'Contacts', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation'],
 
       'project_manager' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Contacts', 'Manage Userids', 'Feedback', 'Profile', 'RefineryCMS', 'Roadmap', 'Search Performance', 'Site Statistics',
                             'System Documentation'],
@@ -118,7 +118,7 @@ module UseridRole
       'transcriber' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Profile', 'Roadmap'],
       'validator' => ["Saved Entries", "View Saved Searches", 'Communicate', 'Profile', 'Roadmap'],
       'volunteer_coordinator' => ["Saved Entries", "Saved Searches", 'Communicate', 'Contacts', 'Manage Syndicates', 'Manage Userids', 'Profile', 'Roadmap'],
-      'website_coordinator' => ["Saved Entries", "Saved Searches", 'Communicate', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
+      'website_coordinator' => ["Saved Entries", "Saved Searches", 'Communicate',  'Contacts', 'Display Userids', 'Feedback', 'Message System', 'Profile', 'RefineryCMS', 'Roadmap', 'System Documentation']
 
     }
   end

@@ -75,7 +75,6 @@ class UseridDetail
   validates :volunteer_induction_handbook, :code_of_conduct, :volunteer_policy, acceptance: true
 
   before_create :add_lower_case_userid,:capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries, :transcription_agreement_value_change
-  after_create :save_to_refinery
   before_save :capitalize_forename, :captilaize_surname, :remove_secondary_role_blank_entries
   #after_update :update_refinery
   before_destroy :delete_refinery_user_and_userid_folder
@@ -518,6 +517,12 @@ class UseridDetail
     end
   end
 
+  def get_user_roles
+    all_roles = secondary_role
+    all_roles << person_role
+    all_roles.uniq
+  end
+
   def active_with_inactive_reason
     errors.add(:active, 'box must be unchecked if Reason for making inactive specified') if active && disabled_reason_standard.present?
   end
@@ -584,14 +589,34 @@ class UseridDetail
   end
 
   def ensure_devise_user
-    User.where(username: userid).first || save_to_refinery
+    find_devise_user || save_to_refinery
+  end
+
+  def find_devise_user
+    # Avoid replica lag issues: registration must see the latest User row.
+    # In this Mongoid version, `with(read: ...)` must be used with a block.
+    User.with(read: { mode: :primary }) do
+      if id.present?
+        linked = User.where(userid_detail_id: id.to_s).first
+        return linked if linked.present?
+      end
+      if userid.present?
+        stripped = userid.to_s.strip
+        # Some legacy rows have leading/trailing whitespace; uniqueness is case-insensitive.
+        by_username = User.where(username: /\A\s*#{::Regexp.escape(stripped)}\s*\z/i).first
+        return by_username if by_username.present?
+      end
+      return nil if email_address.blank?
+
+      User.where(email: /\A\s*#{::Regexp.escape(email_address.to_s.strip)}\s*\z/i).first
+    end
   end
 
   def save_to_refinery
-    # Avoid looping on password changes; creates/updates the Devise User row for sign-in.
-    u = User.where(username: userid).first || User.new
+    # Creates/updates the Devise User row for sign-in (called from ensure_devise_user, not after_create).
+    u = find_devise_user || User.new
     _raw, hashed = Devise.token_generator.generate(User, :reset_password_token)
-    u.username = userid
+    u.username = userid.to_s.strip
     u.email = email_address
     u.password = 'Password' # no-op for validatable; encrypted_password is the real secret
     u.password_confirmation = 'Password'
@@ -599,14 +624,37 @@ class UseridDetail
     u.reset_password_token = hashed
     u.reset_password_sent_at = Time.now
     u.userid_detail_id = id.to_s
-    if u.save
-      u
-    else
-      Rails.logger.warn(
-        "FREEBMD:USERID: Failed to save Devise User for #{userid.inspect}: #{u.errors.full_messages.join(', ')}"
-      )
-      nil
+    return u if u.save
+
+    # Another request may have created the User between our initial lookup and save.
+    # Re-fetch from primary and treat "already taken" as success by returning the existing row.
+    stripped_userid = userid.to_s.strip
+    stripped_email = email_address.to_s.strip
+    existing = User.with(read: { mode: :primary }) do
+      find_devise_user ||
+        User.or(
+          { username: /\A\s*#{::Regexp.escape(stripped_userid)}\s*\z/i },
+          { email: /\A\s*#{::Regexp.escape(stripped_email)}\s*\z/i }
+        ).first
     end
+
+    if existing.present?
+      # Only (re)link when safe; avoid stealing a Devise account from another profile.
+      if existing.userid_detail_id.blank? || existing.userid_detail_id.to_s == id.to_s
+        existing.userid_detail_id = id.to_s
+      end
+      existing.email = email_address if stripped_email.present?
+      existing.encrypted_password = password if password.present?
+      return existing if existing.save
+
+      # Even if update fails, returning the existing row avoids "No Devise User" after a duplicate create.
+      return existing
+    end
+
+    Rails.logger.warn(
+      "FREEBMD:USERID: Failed to save Devise User for #{userid.inspect}: #{u.errors.full_messages.join(', ')}"
+    )
+    nil
   end
 
   def update_refinery
@@ -620,9 +668,13 @@ class UseridDetail
 
   def userid_and_email_address_does_not_exist
     errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists? || Submitter.where(UserID: self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exists") if User.where(:username => self[:userid]).exists?
+    if self[:userid].present?
+      errors.add(:userid, "Refinery User Already exists") if User.where(username: /\A#{::Regexp.escape(self[:userid].to_s.strip)}\z/i).exists?
+    end
     errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    errors.add(:email_address, "Refinery email already exists") if User.where(:email => self[:email_address]).exists?
+    if self[:email_address].present?
+      errors.add(:email_address, "Refinery email already exists") if User.where(email: /\A#{::Regexp.escape(self[:email_address].to_s.strip)}\z/i).exists?
+    end
   end
 
   def write_userid_file

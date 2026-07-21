@@ -6,11 +6,11 @@ class UserMailer < ActionMailer::Base
   cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
   @website = ['https://test3.freereg.org.uk', 'https://test3.freecen.org.uk', 'https://test3.freebmd.org.uk'].include?(MyopicVicar::Application.config.website) ? 'Test' : ''
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: "#{@website} FreeREG Servant <freereg-processing@freereg.org.uk>"
+    default from: "#{@website} FreeREG <freereg-processing@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freebmd'
-    default from: "#{@website} FreeBMD Servant <freebmd-contacts@freebmd.org.uk>"
+    default from: "#{@website} FreeBMD <freebmd-contacts@freebmd.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{cen_website} FreeCEN Servant <freecen-processing@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN <freecen-processing@freecen.org.uk>"
   end
 
   def appname
@@ -38,6 +38,7 @@ class UserMailer < ActionMailer::Base
     mail(:to => to_email, :subject => subj, :body => report, :content_type => "text/plain")
   end
   add_template_helper(EmailHelper)
+  add_template_helper(ContactsHelper)
 
   def acknowledge_communication(original)
     @appname = appname

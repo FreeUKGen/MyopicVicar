@@ -36,7 +36,7 @@ class DistrictsController < ApplicationController
     end
     if params[:filter].present?
       @filter = params[:filter].downcase
-      pattern = ::Regexp.new(/#{@filter}/)
+      pattern = ::Regexp.new(Regexp.escape(@filter))
       @unique_names_filtered = []
       @unique_names_0.each do |name|
         @unique_names_filtered << name if pattern.match(name.downcase)
@@ -71,13 +71,15 @@ class DistrictsController < ApplicationController
   end
 
   def districts_list
-    @character = params[:params].downcase
-    @all_districts = District.not_invented.all
-    @districts = []
-    @all_districts.each do |district|
-      @districts << district if district.DistrictName.downcase =~ ::Regexp.new(/#{@character}/)
+    raw = params[:params].to_s.downcase
+    unless raw.match?(/\A[a-z](-[a-z])?\z/)
+      redirect_to districts_overview_path, alert: 'Invalid selection.'
+      return
     end
-    @districts = @districts.sort_by { |district| [district.DistrictName] }
+    @character = raw
+    @all_districts = District.not_invented.all
+    @districts = @all_districts.select { |d| d.DistrictName.downcase =~ /#{@character}/ }
+    @districts.sort_by! { |d| d.DistrictName }
     render :index
   end
 
@@ -112,7 +114,7 @@ class DistrictsController < ApplicationController
   end
 
   def get_entry(entry_id=nil)
-    BestGuess.find(entry_id) if entry_id.present?
+    BestGuess.find_by(RecordNumber: entry_id) if entry_id.present?
   end
 
   def fetch_unique_name_counts(district_number, record_type)
