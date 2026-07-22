@@ -129,8 +129,7 @@ class Feedback
   end
 
   def attachment_file_paths
-    return [] if screenshot.blank? || screenshot.path.blank?
-
+    return [] unless screenshot.present? && screenshot.path.present? && File.file?(screenshot.path)
     [screenshot.path]
   end
 

@@ -45,7 +45,7 @@ end
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
   # Required by Devise 4.7+ when routes load; must stay in sync with Rails session signing.
-  #config.secret_key = Rails.application.secret_key_base
+  config.secret_key = Rails.application.secret_key_base
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.

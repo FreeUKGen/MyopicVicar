@@ -2,8 +2,8 @@ class User
   include Mongoid::Document
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :trackable
+  devise :database_authenticatable, :registerable, :trackable,
+         :recoverable, :rememberable, :validatable
   devise  :encryptable, :encryptor => :freereg
   #alias devise_will_save_change_to_email? will_save_change_to_email?
   attr_writer :login
