@@ -813,6 +813,9 @@ class Freereg1CsvEntry
       order = order + FreeregOptionsConstants::ORIGINAL_MARRIAGE_LAYOUT
       order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
     end
+    if contract_date.present? && !order.include?('contract_date')
+      order.insert(order.index('marriage_date') + 1, 'contract_date')
+    end
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq
     order
@@ -904,6 +907,8 @@ class Freereg1CsvEntry
     elsif embargo_records.blank?
       embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
     elsif embargo_records.present? && embargo_records.last.embargoed == true && DateTime.now.year.to_i >= end_year
+      # Release before already_has_this_embargo? — otherwise reprocessing never flips
+      # embargoed to false when the calendar passes but the rule document is unchanged.
       embargo_record = EmbargoRecord.new(embargoed: false, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
     elsif embargo_records.present? && already_has_this_embargo?(rule)
       return [false, '']

@@ -45,6 +45,7 @@ class SearchRecordsController < ApplicationController
   end
 
   def show
+    session[:query] = params[:search_id] if params[:search_id].present?
     proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
     redirect_back_or_new_search_query(notice: message) && return unless proceed
     @show_navigation = @search_query.present? && (params[:friendly].present? || params[:dwel].present?) ? true : false

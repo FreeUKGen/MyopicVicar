@@ -222,7 +222,8 @@ class SearchRecord
         logger.warn " #{param[:id]} no longer exists"
         return [false, search_query, search_record, messagea]
       end
-      search_query = search.present? ? SearchQuery.search_id(search).first : ''
+      query_id = search.presence || param[:search_id]
+      search_query = query_id.present? ? SearchQuery.search_id(query_id).first : ''
       search_record = SearchRecord.record_id(param[:id]).first
       if search_record.blank?
         logger.warn(warning)
@@ -432,8 +433,63 @@ class SearchRecord
       end
       scores = {}
       candidates.each { |name| scores[name] = index_score(name, search_fields, index_component) }
-      best = scores.max_by { |_k, v| v}
-      best[0]
+      best = scores.max_by { |_k, v| v }
+      hint = best[0]
+      Rails.logger.debug do
+        "[SearchRecord.index_hint] app=#{App.name_downcase} fields=#{search_fields.inspect} hint=#{hint} score=#{best[1]}"
+      end
+      hint
+    end
+
+    def explain_find(params, hint: nil)
+      view = collection.find(params)
+      view = view.hint(hint.to_s) if hint.present?
+      view.explain
+    end
+
+    def winning_plan_index_name(params, hint = nil)
+      index_name_from_explain(explain_find(params, hint: hint))
+    rescue StandardError => e
+      Rails.logger.warn("[SearchRecord.winning_plan_index_name] #{e.class}: #{e.message}")
+      nil
+    end
+
+    def index_name_from_explain(explain_result)
+      doc = normalize_explain_document(explain_result)
+      name = doc.dig('queryPlanner', 'winningPlan', 'indexName')
+      return name if name.present? && name != '_id_'
+
+      find_index_name_in_tree(doc)
+    end
+
+    def normalize_explain_document(explain_result)
+      case explain_result
+      when Hash
+        explain_result.deep_stringify_keys
+      when BSON::Document
+        explain_result.to_hash.deep_stringify_keys
+      else
+        explain_result.respond_to?(:to_h) ? explain_result.to_h.deep_stringify_keys : {}
+      end
+    end
+
+    def find_index_name_in_tree(obj)
+      case obj
+      when Hash
+        name = obj['indexName']
+        return name if name.present? && name != '_id_'
+
+        obj.each_value do |value|
+          found = find_index_name_in_tree(value)
+          return found if found.present?
+        end
+      when Array
+        obj.each do |item|
+          found = find_index_name_in_tree(item)
+          return found if found.present?
+        end
+      end
+      nil
     end
 
     def index_score(index_name, search_fields, index_component)
@@ -660,8 +716,8 @@ class SearchRecord
 
   def downcase_all
     search_names.each do |name|
-      name[:first_name].downcase! if name[:first_name]
-      name[:last_name].downcase! if name[:last_name]
+      name.first_name = name.first_name.downcase if name.first_name
+      name.last_name = name.last_name.downcase if name.last_name
     end
   end
 
@@ -1065,11 +1121,13 @@ ry_search_date
   end
 
   def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
+    first_name = copy_name(first_name)&.downcase
+    last_name = copy_name(last_name)&.downcase
     name = nil
     unless last_name.blank?
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => first_name, :last_name => last_name, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     else
-      name = SearchName.new({ :first_name => copy_name(first_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => first_name, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
     name
   end

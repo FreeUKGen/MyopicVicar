@@ -217,6 +217,7 @@ MyopicVicar::Application.routes.draw do
   get 'messages/:id/force_destroy', :to => 'messages#force_destroy', :as => :force_destroy_messages
   get 'messages/:id/select_role', to: 'messages#select_role', as: :select_role_message
   get 'messages/select_individual', to: 'messages#select_individual', as: :select_individual_messages
+  get 'messages/gazetteer_county_coordinator', to: 'messages#gazetteer_county_coordinator', as: :gazetteer_county_coordinator_message
   resources :messages
 
   get 'attic_files/select_userid', :to =>'attic_files#select_userid', :as => :select_userid_attic_files
@@ -560,6 +561,9 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/update_registers', :to => 'freereg1_csv_files#update_registers', :as => :update_registers
   get 'freereg1_csv_files/:id/merge', :to => 'freereg1_csv_files#merge', :as => :merge_freereg1_csv_file
   get 'freereg1_csv_files/:id/remove', :to => 'freereg1_csv_files#remove', :as => :remove_freereg1_csv_file
+  post 'freereg1_csv_files/:id/refresh_file_information',
+    to: 'freereg1_csv_files#refresh_file_information',
+    as: :refresh_file_information_freereg1_csv_file
   get 'freereg1_csv_files/:id/relocate(.:format)', :to => 'freereg1_csv_files#relocate', :as => :relocate_freereg1_csv_file
   get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file
   get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file

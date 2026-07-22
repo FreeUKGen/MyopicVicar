@@ -470,8 +470,8 @@ class UseridDetail
   end
 
   def userid_and_email_address_does_not_exist
-    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exists") if User.where(:username => self[:userid]).exists?
+    errors.add(:userid, "Userid Already exists") if UseridDetail.where(userid: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
+    errors.add(:userid, "Refinery User Already exists") if User.where(username: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
     errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
     errors.add(:email_address, "Refinery email already exists") if User.where(:email => self[:email_address]).exists?
   end
@@ -531,7 +531,7 @@ class UseridDetail
   end
 
   def check_exists_in_refinery
-    refinery_user = User.where(:username => self.userid).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     if refinery_user.nil?
       return[false,"There is no refinery entry"]
     else
@@ -548,7 +548,7 @@ class UseridDetail
   end
 
   def delete_refinery_user_and_userid_folder
-    refinery_user = User.where(:username => self.userid).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
     return if MyopicVicar::Application.config.template_set == 'freecen'
@@ -565,7 +565,7 @@ class UseridDetail
       errors.add(:email_address, "Userid email already exists on change")
     end
 
-    refinery_user = User.where(username: self.userid_lower_case).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     other = User.where(email: /\A#{::Regexp.escape(new_email)}\z/i).first
     if other.present? && (refinery_user.nil? || other.id != refinery_user.id)
       errors.add(:email_address, "Refinery email already exists on change")
@@ -639,7 +639,7 @@ class UseridDetail
 
   def save_to_refinery
     #avoid looping on password changes
-    u = User.where(:username => self.userid).first
+    u = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     if u.nil?
       u = User.new
     end
@@ -655,11 +655,11 @@ class UseridDetail
     #u.add_role('Refinery')
     #u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
     #u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
-    u.save
+    Rails.logger.warn("FREEREG:USERID: save_to_refinery failed for #{self.userid}: #{u.errors.full_messages.join(', ')}") unless u.save
   end
 
   def update_refinery
-    u = User.where(:username => self.userid).first
+    u = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     unless u.nil?
       u.email = self.email_address
       u.userid_detail_id = self.id.to_s
@@ -779,6 +779,10 @@ class UseridDetail
 
   def self.number_of_transcribers_uploaded_file_recently(month)
     user_role_transcriber.where(last_upload: {'$gt': month.months.ago}).count
+  end
+
+  def self.number_of_transcribers_uploaded_file_in_period(from_date, to_date)
+    user_role_transcriber.where(last_upload: { '$gte': from_date.beginning_of_day, '$lte': to_date.end_of_day }).count
   end
 
   def self.return_percentage_all_users_accepted_transcriber_agreement

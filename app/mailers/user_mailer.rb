@@ -5,9 +5,9 @@ class UserMailer < Devise::Mailer
   reg_website = MyopicVicar::Application.config.website == 'https://www.freereg.org.uk' ? '' : 'Test'
   cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: "#{reg_website} FreeREG Servant <no-reply@freereg.org.uk>"
+    default from: "#{reg_website} FreeREG <no-reply@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{cen_website} FreeCEN Servant <no-reply@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN <no-reply@freecen.org.uk>"
   end
 
   helper EmailHelper
@@ -190,17 +190,9 @@ class UserMailer < Devise::Mailer
   end
 
   def get_attachment(contact)
-    if contact.respond_to?(:screenshot) && contact.screenshot&.path.present?
-      file_name = File.basename(contact.screenshot.path)
-      attachments[file_name] = File.binread(contact.screenshot.path)
-    end
-
-    if contact.respond_to?(:screenshots) && contact.screenshots.present?
-      contact.screenshots.each do |img|
-        next if img.blank? || img.path.blank?
-        file_name = File.basename(img.path)
-        attachments[file_name] = File.binread(img.path)
-      end
+    contact.attachment_file_paths.each do |path|
+      file_name = File.basename(path)
+      attachments[file_name] = File.binread(path)
     end
   end
 
