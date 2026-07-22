@@ -136,6 +136,20 @@ class UserMailer < Devise::Mailer
     mail(from: sender_email_address, cc: copies_to_userids_emails,to: "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
+
+  def contact_forward(contact, message, recipient_userids, sender_userid)
+    @appname = appname
+    @contact = contact
+    @message = message
+    @forwarder = UseridDetail.userid(sender_userid).first
+    @forwarder_name = @forwarder.present? ? "#{@forwarder.person_forename} #{@forwarder.person_surname}" : sender_userid
+    @contact_url = "#{Rails.application.config.website}/contacts/#{@contact.id}"
+    sender_email_address = get_email_address_from_userid(sender_userid)
+    recipient_email_addresses = get_email_address_array_from_array_of_userids(recipient_userids)
+    get_attachment(@contact)
+    mail(from: sender_email_address, to: recipient_email_addresses, subject: "Forwarded contact: #{@message.subject}")
+  end
+
   def coordinator_feedback_reply(feedback, ccs_userids, message, sender_userid)
     @appname = appname
     @feedback = feedback
