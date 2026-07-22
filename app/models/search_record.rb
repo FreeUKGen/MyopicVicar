@@ -556,8 +556,10 @@ class SearchRecord
       record = existing || SearchRecord.new
       record.assign_attributes(search_record_parameters)
       record[:freereg1_csv_entry_id] = entry.id
-      record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
-      record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
+      if entry.embargo_records.present?
+        record[:embargoed] = entry.currently_under_embargo?
+        record[:release_year] = entry.embargo_records.last.release_year
+      end
       record.transform
       record.digest = record.cal_digest
       if existing.present? && record.digest == previous_digest

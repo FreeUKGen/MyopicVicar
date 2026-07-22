@@ -347,13 +347,62 @@ class Freereg1CsvEntry
     false
   end
 
-  # Matches search visibility: embargoed with a release year still in the future.
-  def currently_under_embargo?
-    last = embargo_records.last
-    return false if last.blank?
-    return false unless last.embargoed
+  def embargo_current_status_summary
+    return 'No embargo history on this record.' if embargo_records.blank?
 
-    last.release_year.blank? || last.release_year.to_i > DateTime.now.year.to_i
+    last = embargo_records.order_by(updated_at: -1).first
+    release = last.release_year.presence || last.release_date.presence
+    active = currently_under_embargo?
+
+    summary = if active
+                'This record is currently embargoed (hidden from search).'
+              else
+                'This record is not currently embargoed (visible in search).'
+              end
+
+    last_change = "Last change: #{last.embargoed ? 'embargoed' : 'released'}" \
+                  " by #{last.who} on #{last.when&.strftime('%e %b %Y')} — #{last.why}"
+    last_change += " (release year #{release})" if release.present?
+
+    "#{summary} #{last_change}"
+  end
+
+  # Matches search visibility and listing: still embargoed only if not yet at release year.
+  # Uses register rule when release_year is missing on stale embedded records.
+  def currently_under_embargo?
+    return false if embargo_records.blank?
+
+    release_year = effective_embargo_release_year
+    return false if release_year.present? && DateTime.now.year.to_i >= release_year.to_i
+
+    last = embargo_records.order_by(updated_at: -1).first
+    last.present? && last.embargoed == true
+  end
+
+  def effective_embargo_release_year
+    last = embargo_records.order_by(updated_at: -1).first
+    return nil if last.blank?
+
+    if last.who == 'register_rule'
+      computed = computed_release_year_from_register_rule
+      return computed if computed.present?
+    end
+
+    stored = last.release_year.presence || last.release_date.presence
+    stored.to_i if stored.present?
+  end
+
+  def computed_release_year_from_register_rule
+    last = embargo_records.last
+    return nil if last.blank? || last.who != 'register_rule'
+
+    register = freereg1_csv_file&.register
+    return nil if register.blank? || register.embargo_rules.blank?
+
+    rule = register.embargo_rules.find_by(record_type: record_type)
+    return nil if rule.blank?
+
+    EmbargoRecord.process_embargo_year(rule, year)
   end
 
   def cal_digest
