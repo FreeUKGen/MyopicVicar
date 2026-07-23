@@ -1,0 +1,32 @@
+<% if @all_ok %>
+  <p><strong>Donation CTA confirmed live</strong> — checked <%= @checked_at.strftime('%Y-%m-%d %H:%M %Z') %>.</p>
+<% else %>
+  <p style="color:#b00020;"><strong>Donation CTA ALERT</strong> — checked <%= @checked_at.strftime('%Y-%m-%d %H:%M %Z') %>. One or more sites did not match what was expected. See details below and the attached screenshots.</p>
+<% end %>
+
+<table cellpadding="6" cellspacing="0" border="1" style="border-collapse:collapse;">
+  <thead>
+    <tr>
+      <th>Site</th>
+      <th>URL</th>
+      <th>Expected active</th>
+      <th>Popup opened</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @results.each do |result| %>
+      <tr>
+        <td><%= result.site %></td>
+        <td><%= link_to result.url, result.url %></td>
+        <td><%= result.expected_active ? 'Yes' : 'No' %></td>
+        <td><%= result.expected_active ? (result.popup_open ? 'Yes' : 'No') : 'n/a' %></td>
+        <td style="<%= result.ok? ? 'color:#0a7a2f;' : 'color:#b00020;font-weight:bold;' %>">
+          <%= result.error.presence || (result.ok? ? 'OK' : 'NOT SHOWING AS EXPECTED') %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<p>Screenshots of each homepage are attached.</p>

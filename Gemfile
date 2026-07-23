@@ -58,3 +58,6 @@ gem 'browser'
 gem "mongo_session_store", "~> 3.2"
 gem 'mimemagic', '~> 0.4.3'
 gem 'mime-types', '~> 3.5.0'
+# headless Chrome screenshots for the donation CTA monitor (lib/donation_cta_monitor.rb).
+# Selenium 4.6+ auto-manages the chromedriver binary; Chrome/Chromium itself must still be installed on the host.
+gem 'selenium-webdriver', '~> 4.24'
