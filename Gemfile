@@ -59,5 +59,9 @@ gem "mongo_session_store", "~> 3.2"
 gem 'mimemagic', '~> 0.4.3'
 gem 'mime-types', '~> 3.5.0'
 # headless Chrome screenshots for the donation CTA monitor (lib/donation_cta_monitor.rb).
-# Selenium 4.6+ auto-manages the chromedriver binary; Chrome/Chromium itself must still be installed on the host.
-gem 'selenium-webdriver', '~> 4.24'
+# Pinned to 4.1.0: per RubyGems' published version metadata, this is the last
+# selenium-webdriver release requiring Ruby >= 2.6 (4.2.0 bumped the requirement to
+# >= 2.7 in May 2022) - production here runs Ruby 2.6.0.
+# This predates Selenium Manager (added in 4.6, Oct 2022), so chromedriver is NOT
+# auto-fetched - it must be installed on the host and version-matched to its Chrome/Chromium.
+gem 'selenium-webdriver', '4.1.0'
