@@ -441,14 +441,19 @@ class SearchRecord
       hint
     end
 
-    def explain_find(params, hint: nil)
+    def explain_find(params, hint: nil, verbosity: nil)
       view = collection.find(params)
       view = view.hint(hint.to_s) if hint.present?
-      view.explain
+      verbosity.present? ? view.explain(verbosity: verbosity) : view.explain
     end
 
+    # queryPlanner verbosity only asks the optimizer which plan it would pick
+    # and does not execute the query, unlike the driver's default explain
+    # command verbosity (allPlansExecution), which runs the winning plan to
+    # completion. All we need here is winningPlan.indexName, so queryPlanner
+    # gets it for free.
     def winning_plan_index_name(params, hint = nil)
-      index_name_from_explain(explain_find(params, hint: hint))
+      index_name_from_explain(explain_find(params, hint: hint, verbosity: :query_planner))
     rescue StandardError => e
       Rails.logger.warn("[SearchRecord.winning_plan_index_name] #{e.class}: #{e.message}")
       nil

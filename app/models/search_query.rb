@@ -905,31 +905,6 @@ class SearchQuery
     result
   end
 
-  def persist_additional_results(results)
-    return unless results
-
-    recs = results.to_a
-    valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
-
-    # finally extract the records IDs and persist them
-    records = {}
-    recs.each do |rec|
-      rec_id = rec['_id'].to_s
-      proceed = SearchQuery.does_the_entry_exist?(rec, valid_freereg_entry_ids: valid_entry_ids)
-      if proceed
-        record = rec
-        records[rec_id] = record
-      else
-        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
-        search_record.delete if search_record.present?
-      end
-    end
-    self.search_result.records = self.search_result.records.merge(records)
-    self.result_count = self.search_result.records.length
-    self.runtime_additional = (Time.now.utc - self.updated_at) * 1000
-    self.save
-  end
-
   def persist_results(results)
     return unless results
 
@@ -1099,22 +1074,23 @@ class SearchQuery
     logger.warn("#{App.name_upcase}:WINNING_PLAN_INDEX: #{@search_index_winning_plan}")
     logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
     update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
-    records = SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
+    records = SearchRecord.collection.find(query_parameters_with_secondary_date).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
     persist_results(records)
-    persist_additional_results(secondary_date_results) if App.name == 'FreeREG' && (result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}"))
     records = search_ucf if can_query_ucf? && result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
     records
   end
 
-  def secondary_date_results
-    @secondary_search_params = @search_parameters
-    @secondary_search_params[:secondary_search_date] = @secondary_search_params[:search_date]
-    @secondary_search_params.delete_if { |key, value| key == :search_date }
-    # @secondary_search_params[:record_type] = { '$in' => [RecordType::BAPTISM] }
-    @search_index = SearchRecord.index_hint(@search_parameters)
-    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{@search_index}")
-    secondary_records = SearchRecord.collection.find(@secondary_search_params).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS)
-    secondary_records
+  # FreeREG records may carry their date in either `search_date` or
+  # `secondary_search_date`. Previously this was two full queries (one per
+  # field) merged in Ruby; folding it into a single `$or` returns the same
+  # documents in one pass instead of two.
+  def query_parameters_with_secondary_date
+    return @search_parameters unless App.name == 'FreeREG' && @search_parameters[:search_date]
+
+    params = @search_parameters.dup
+    date_range = params.delete(:search_date)
+    params['$or'] = [{ search_date: date_range }, { secondary_search_date: date_range }]
+    params
   end
 
   def search_params
