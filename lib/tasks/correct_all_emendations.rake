@@ -18,12 +18,17 @@ task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
       original = rule.original
       replacement = rule.replacement
       #code for originals to replacement
+      base_query = SearchRecord.where("search_names.first_name": original)
+      num_emendations = base_query.count
+      # push the limit down to Mongo instead of loading every matching record first.
+      # +1 preserves the existing off-by-one break semantics below (stopping+1 == num);
+      # remaining is the GLOBAL budget left across all rules, same as before, just fetched efficiently
+      fetch_limit = stopping > 0 ? [(stopping - num) + 1, 1].max : 1
       search_records = Hash.new
-      SearchRecord.where("search_names.first_name": original).all.each do |record|
+      base_query.limit(fetch_limit).each do |record|
           rec = record.id.to_s
           search_records[rec] = record unless search_records.has_key?(rec)
       end
-      num_emendations = search_records.length  
       search_records.each_value do |record|   
         a_match = false
         record.search_names.each do |names|
