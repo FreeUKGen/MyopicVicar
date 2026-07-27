@@ -1,13 +1,11 @@
-task :correct_all_emendations,[:limit,:fix,:since] => [:environment] do |t, args|
+task :correct_all_emendations,[:limit,:fix] => [:environment] do |t, args|
   file_for_warning_messages = "#{Rails.root}/log/correct_all_emendation.txt"
   FileUtils.mkdir_p(File.dirname(file_for_warning_messages))
   output_file = File.new(file_for_warning_messages, "w")
   #type true for original and false for replacement
   args.fix == "true" ? fix = true : fix = false
-  # optional :since arg (e.g. '2026-05-10') scopes the fix to records created/updated on or after that date
-  since_time = args.since.present? ? Time.zone.parse(args.since) : nil
-  output_file.puts "Starting correction of original emendations  at #{Time.now}#{since_time ? " (scoped to records updated since #{since_time})" : ""}"
-
+  output_file.puts "Starting correction of original emendations  at #{Time.now}" 
+  
   stopping = args.limit.to_i
   total_num_emended = 0
   total_num_unemended = 0
@@ -21,9 +19,7 @@ task :correct_all_emendations,[:limit,:fix,:since] => [:environment] do |t, args
       replacement = rule.replacement
       #code for originals to replacement
       search_records = Hash.new
-      query = SearchRecord.where("search_names.first_name": original)
-      query = query.where(:updated_at.gte => since_time) if since_time
-      query.all.each do |record|
+      SearchRecord.where("search_names.first_name": original).all.each do |record|
           rec = record.id.to_s
           search_records[rec] = record unless search_records.has_key?(rec)
       end
