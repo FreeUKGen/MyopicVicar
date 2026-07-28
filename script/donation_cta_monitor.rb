@@ -109,7 +109,7 @@ def send_email(results)
     end
 
   rows = results.map do |r|
-    status = r.error.presence || (r.ok? ? 'OK' : 'NOT SHOWING AS EXPECTED')
+    status = (r.error && !r.error.empty?) ? r.error : (r.ok? ? 'OK' : 'NOT SHOWING AS EXPECTED')
     "<tr><td>#{r.site}</td><td>#{r.url}</td><td>#{r.popup_open ? 'Yes' : 'No'}</td><td>#{status}</td></tr>"
   end.join
 
