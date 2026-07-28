@@ -1066,9 +1066,9 @@
         end
       when SearchOrder::BMD_RECORD_TYPE
         if order_asc
-          (xa[:RecordTypeID] || '') <=> (ya[:RecordTypeID] || '')
+          compare_name_bmd(xa, ya, 'RecordTypeID', ['Surname', 'GivenName', 'QuarterNumber'])
         else
-          (ya[:RecordTypeID] || '') <=> (xa[:RecordTypeID] || '')
+          compare_name_bmd(ya, xa, 'RecordTypeID', ['Surname', 'GivenName', 'QuarterNumber'])
         end
       when SearchOrder::BMD_DATE
         if order_asc
@@ -1481,19 +1481,14 @@
            # results.sort! { |x, y| (y[:GivenName] || '') <=> (x[:GivenName] || '') }
           #end
         when SearchOrder::BMD_RECORD_TYPE
-          #if self.order_asc
-           # results.sort! do |x, y|
-            #  compare_name_bmd(y, x, 'RecordTypeID')
-           # end
-          #else
-           # results.sort! do |x, y|
-            #   compare_name_bmd(x,y, 'RecordTypeID')
-            #end
-          #end
           if self.order_asc
-            results.sort! { |x, y| (x[:RecordTypeID] || '') <=> (y[:RecordTypeID] || '') }
+            results.sort! do |x, y|
+              compare_name_bmd(x, y, 'RecordTypeID', ['Surname', 'GivenName', 'QuarterNumber'])
+            end
           else
-            results.sort! { |x, y| (y[:RecordTypeID] || '') <=> (x[:RecordTypeID] || '') }
+            results.sort! do |x, y|
+              compare_name_bmd(y, x, 'RecordTypeID', ['Surname', 'GivenName', 'QuarterNumber'])
+            end
           end
       when SearchOrder::BMD_DATE
         if self.order_asc
