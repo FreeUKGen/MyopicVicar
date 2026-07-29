@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'outside_link_checker'
+
 module ApplicationHelper
   DONATE_ID = {
     #field: id
@@ -19,6 +21,18 @@ module ApplicationHelper
     "freecen" => '5005',
     "freereg" => '5004',
   }
+  # Renders url as a link only if it currently returns a successful HTTP response;
+  # otherwise shows the url as plain (unlinked) text. See FreeCENMigration issue #1936.
+  def outside_link(url, link_text: nil, **html_options)
+    return '' if url.blank?
+
+    if OutsideLinkChecker.reachable?(url)
+      link_to(link_text.presence || url, url, { target: :_blank, rel: 'noopener' }.merge(html_options))
+    else
+      url
+    end
+  end
+
   def nav_search_form_link
     link_to('Search', main_app.new_search_query_path) unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
   end

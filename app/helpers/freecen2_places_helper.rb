@@ -11,12 +11,9 @@ module Freecen2PlacesHelper
   end
 
   def official_source(url)
-    if url =~ /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/ix
-      #    link_to 'Location', "https://www.google.com/maps/@?api=1&map_action=map&center=#{latitude},#{longitude}&zoom=13", target: :_blank, title: 'Shows the location on a Google map'
-      link_to 'Link to Official Source', "#{url}", target: :_blank, class: 'btn   btn--small', title: 'Links to an official source of the information'
-    else
-      'No official link'
-    end
+    return 'No official link' if url.blank?
+
+    outside_link(url, link_text: 'Link to Official Source', class: 'btn   btn--small', title: 'Links to an official source of the information')
   end
 
   def link_edits(place)

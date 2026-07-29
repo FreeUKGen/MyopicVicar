@@ -20,7 +20,7 @@ Details of the <b>Place name:</b><%= @place.place_name %> </p>
 <p><b>County:</b><%= @place.county %></p>
 <p><b>Country:</b><%= @place.country %></p>
 <p><b>Genuki url:</b><%= @place.genuki_url %><br> 
-<b>Test link:</b> <%= link_to('Genuki', @place.genuki_url) unless (@place.genuki_url.nil? || @place.genuki_url == "no url")%></p>
+<b>Test link:</b> <%= outside_link(@place.genuki_url, link_text: 'Genuki') unless (@place.genuki_url.nil? || @place.genuki_url == "no url")%></p>
 <p><b>Grid Reference:</b><%= @place.grid_reference %></p>
 <p><b>Latitude:</b><%= @place.latitude%></p>
 <p><b>Longitude:</b><%= @place.longitude%></p>
