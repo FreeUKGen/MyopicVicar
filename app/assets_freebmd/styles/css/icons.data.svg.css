@@ -519,3 +519,9 @@ a:focus .icon__twitter,.icon__twitter:hover, .icon__twitter:active,.icon__twitte
  *display: inline;
   zoom: 1;
 }
+
+.icon__freebmd:hover,
+.icon__freecen:hover,
+.icon__freereg:hover {
+  background-image: inherit;
+}
