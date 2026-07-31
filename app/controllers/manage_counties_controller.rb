@@ -189,7 +189,7 @@ class ManageCountiesController < ApplicationController
         @counties << county unless @counties.include?(county)
       end
     end
-    @counties = @counties.compact if @counties.present?
+    @counties = @counties.reject(&:blank?) if @counties.present?
     @counties.sort! if @counties.present?
   end
 
@@ -300,7 +300,7 @@ class ManageCountiesController < ApplicationController
     get_counties_for_selection
     number_of_counties = 0
     number_of_counties = @counties.length if @counties.present?
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'You do not have any counties to manage') && return if number_of_counties.zero?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No counties/syndicates to manage.') && return if number_of_counties.zero?
 
     if number_of_counties == 1
       session[:chapman_code] = @counties[0]

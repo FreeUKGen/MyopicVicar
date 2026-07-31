@@ -81,6 +81,14 @@ module Freereg1CsvFilesHelper
       data: { confirm:  'Are you sure you want to reprocess this file?' }
   end
 
+  def refresh_file_information
+    return unless @freereg1_csv_file.can_we_edit?
+
+    link_to 'Refresh file status', refresh_file_information_freereg1_csv_file_path(@freereg1_csv_file),
+      class: 'btn   btn--small', method: :post,
+      data: { confirm: 'Recalculate the batch information from the current entries?' }
+  end
+
   def delete_file
     link_to 'Delete original file and all associated batch entries', freereg1_csv_file_path(@freereg1_csv_file),
       data: { confirm: 'Are you sure you want to remove this file and batch entries' }, class: 'btn   btn--small', method: :delete

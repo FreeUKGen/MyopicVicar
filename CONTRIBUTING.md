@@ -33,11 +33,7 @@ blocked issues, and schedule work for the next sprint.  Attendance at
 these meetings is not mandatory, but an email update from developers 
 unable to attend is appreciated.
 
-All development is tracked in Github issues, and organized and 
-prioritized using Waffle.io, which provides a kanban-style interface.
-
-* The [FreeREG Waffle Board](https://waffle.io/freeukgen/myopicvicar)
-* The [FreeCEN Waffle Board](https://waffle.io/freeukgen/freecenmigration)
+All development is tracked in [Github issues](https://github.com/FreeUKGen/MyopicVicar/issues).
 
 
 
@@ -74,7 +70,7 @@ suggestions of correct behavior.  Attempting to reproduce, document, and
 define these issues is a valuable contribution to the project and also a 
 great way to learn about the details of the tools and their users.
 
-One way to find these bugs is to go to the waffle boards listed above and look for the "Good First Issue" label.
+One way to find these bugs is to go to the [Github issues](https://github.com/FreeUKGen/MyopicVicar/issues) and look for the "Good First Issue" label.
 
 ### Code
 
@@ -85,20 +81,18 @@ _We highly recommend that volunteer developers contact our volunteer coordinator
 partnered with a mentor.  This mentor can help answer questions and 
 smooth over difficulties faced by people new to the codebase._
 
-While some developers install a full Ruby on Rails/MongoDB/MySQL stack 
-on their development machines, the easiest way to get up and running is 
-to develop code in a virtual workspace provided by Cloud9.
-
-[See instructions for getting set up on Cloud9](https://docs.google.com/document/d/1OWbya7erLmyyFstMwuBJwkquJZG4i4YrMWIHHI4Jvjk/edit#heading=h.r8mtsch418p2)
+Set up a local Ruby on Rails/MongoDB development environment by following
+[doc/DEVELOPMENT_SETUP.md](doc/DEVELOPMENT_SETUP.md), which walks through
+`bin/setup` and gets most contributors running in an hour or two.
 
 
 ## Contributing A Patch
 
 1. Ask your mentor (or another member of the technical team) to add you as a contributor to the repository.
-1. Create a branch for your change off of `master` or (for FreeCEN-specific features) `freecen_parsing`
+1. Create a branch for your change off of `master`.
 1. Develop and test your changes locally.
 1. Push your changes to Github.
-1. Create a pull request to merge your branch into `master` (or `freecen_parsing`).
+1. Create a pull request to merge your branch into `master`.
 1. Assign the pull request to your mentor to review and merge.
 
 

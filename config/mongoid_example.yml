@@ -4,12 +4,12 @@ development:
     # Defines the default client. (required)
     default:
       # Mongoid can connect to a URI accepted by the driver:
-      # uri: mongodb://user:password@mongodb.domain.com:27017/<%= database_name || app_name %>_development
+      # uri: mongodb://user:password@mongodb.domain.com:27017/myopic_vicar_development
 
       # Otherwise define the parameters separately.
       # This defines the name of the default database that Mongoid can connect to.
       # (required).
-      database: <%= database_name || app_name %>_development
+      database: myopic_vicar_development
       # Provides the hosts the default client can connect to. Must be an array
       # of host:port pairs. (required)
       hosts:
@@ -161,7 +161,7 @@ development:
 test:
   clients:
     default:
-      database: <%= database_name || app_name %>_test
+      database: myopic_vicar_test
       hosts:
         - localhost:27017
       options:

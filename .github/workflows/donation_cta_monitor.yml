@@ -1,0 +1,44 @@
+name: Donation CTA Monitor
+
+on:
+  schedule:
+    # Runs every Saturday 10:00 UTC. Cron can't express "every 2 weeks" directly,
+    # so this fires weekly and script/donation_cta_monitor.rb decides internally
+    # (via the same biweekly date math as lib/donation_campaign.rb) whether today
+    # is actually an active campaign weekend, exiting quietly if not.
+    - cron: '0 10 * * 6'
+  workflow_dispatch:
+    inputs:
+      force_check:
+        description: 'Run even if today is not an expected active weekend (for testing)'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install dependencies
+        run: gem install selenium-webdriver mail
+
+      - name: Run donation CTA monitor
+        env:
+          GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
+          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+          FORCE_CHECK: ${{ inputs.force_check }}
+        run: ruby script/donation_cta_monitor.rb
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: donation-cta-screenshots-${{ github.run_id }}
+          path: donation_cta_*.png
+          if-no-files-found: ignore

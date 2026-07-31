@@ -43,6 +43,18 @@ describe Freereg1CsvFile do
     process_test_file(CHANGELESS_FILE)
   end
 
+  it "should include bride mother's surnames in the unique names list" do
+    file = Freereg1CsvFile.new(record_type: "ma")
+    all_entries = double("all entries")
+
+    allow(all_entries).to receive(:distinct).and_return([])
+    allow(all_entries).to receive(:distinct).with(:bride_mother_surname).and_return([nil, "Smith"])
+    expect(all_entries).not_to receive(:distinct).with(:bride_motherr_surname)
+    allow(Freereg1CsvEntry).to receive(:where).with(:freereg1_csv_file_id => file.id).and_return(all_entries)
+
+    file.get_unique_names["Bride's Mother's Surname"].should eq(["Smith"])
+  end
+
 
   # apparently FreeregCsvProcessor no longer returns files
   # it "should load the same file twice, correctly" do
@@ -80,4 +92,18 @@ describe Freereg1CsvFile do
     # old_record.should eq(nil)
 #         
   # end
+end
+
+describe Freereg1CsvFile, '#refresh_file_information_after_online_edit' do
+  let(:file) { Freereg1CsvFile.new }
+
+  it 'propagates recalculated file statistics to the register, church, and place' do
+    allow(file).to receive(:calculate_distribution).and_return(true)
+    allow(file).to receive(:batch_errors).and_return([])
+    allow(file).to receive(:update).with(error: 0).and_return(true)
+
+    expect(file).to receive(:update_freereg_contents_after_processing).and_return(true)
+
+    expect(file.refresh_file_information_after_online_edit).to eq(true)
+  end
 end

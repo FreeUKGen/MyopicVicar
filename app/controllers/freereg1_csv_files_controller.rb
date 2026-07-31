@@ -392,6 +392,25 @@ class Freereg1CsvFilesController < ApplicationController
     end
   end
 
+  def refresh_file_information
+    @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
+    unless Freereg1CsvFile.valid_freereg1_csv_file?(params[:id])
+      message = 'The file was not correctly linked. Have your coordinator contact the web master'
+      redirect_back(fallback_location: new_manage_resource_path, notice: message) && return
+    end
+    unless @freereg1_csv_file.can_we_edit?
+      redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'File is currently awaiting processing and should not be edited')
+      return
+    end
+
+    if @freereg1_csv_file.refresh_file_information_after_online_edit
+      flash[:notice] = 'The batch information has been recalculated'
+    else
+      flash[:notice] = "The batch information recalculation was unsuccessful: #{@freereg1_csv_file.errors.full_messages}"
+    end
+    redirect_to freereg1_csv_file_path(@freereg1_csv_file)
+  end
+
   def remove
     # this just removes a batch of records it leaves the entries and search records there to be removed by a rake task
     @freereg1_csv_file = Freereg1CsvFile.find(params[:id])
