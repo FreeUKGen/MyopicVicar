@@ -109,6 +109,22 @@ class ContactsController < ApplicationController
     redirect_to(action: 'index') && return
   end
 
+  def forward_contact
+    @respond_to_contact = Contact.find(params[:source_contact_id]) if params[:source_contact_id].present?
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @respond_to_contact.blank?
+
+    get_user_info_from_userid
+    @message = Message.new(
+      message_time: Time.now,
+      userid: @user.userid,
+      source_contact_id: @respond_to_contact.id.to_s,
+      nature: 'contact',
+      sub_nature: 'forward',
+      subject: helpers.contact_subject(@respond_to_contact)
+    )
+    @recipient_options = UseridDetail.internal_contact_recipient_options
+  end
+
   def index
     session[:archived_contacts] = false
     session[:message_base] = 'contact'
@@ -262,7 +278,41 @@ class ContactsController < ApplicationController
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
-    @userids = array_of_userids
+    @recipient_options = UseridDetail.internal_contact_recipient_options
+  end
+
+  def send_forward_contact
+    @respond_to_contact = Contact.find(params[:source_contact_id]) if params[:source_contact_id].present?
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @respond_to_contact.blank?
+
+    get_user_info_from_userid
+    @recipient_options = UseridDetail.internal_contact_recipient_options
+    selected_recipients = permitted_forward_recipients(params[:message] && params[:message][:recipients])
+    if selected_recipients.blank?
+      flash.now[:notice] = 'Please select at least one internal recipient'
+      @message = forward_message_from_params
+      render :forward_contact
+      return
+    end
+
+    @message = forward_message_from_params
+    @message.recipients = selected_recipients
+    @message.save
+    if @message.errors.any?
+      flash.now[:notice] = "The forward was not created #{@message.errors.full_messages}"
+      render :forward_contact
+      return
+    end
+
+    UserMailer.contact_forward(@respond_to_contact, @message, selected_recipients, @user.userid).deliver_now
+    @message.record_contact_forward_delivery(@user.userid, selected_recipients)
+    @message.add_message_to_userid_messages(@user)
+    selected_recipients.each do |recipient|
+      @message.add_message_to_userid_messages(UseridDetail.look_up_id(recipient))
+    end
+
+    flash[:notice] = 'Contact was forwarded'
+    redirect_to(contact_path(@respond_to_contact)) && return
   end
 
   def return_after_archive(source, id)
@@ -437,6 +487,25 @@ class ContactsController < ApplicationController
 
   def delete_reply_messages(contact_id)
     Message.where(source_contact_id: contact_id).destroy
+  end
+
+  def forward_message_from_params
+    message_params = params[:message].present? ? params.require(:message).permit(:subject, :body) : {}
+    Message.new(
+      subject: message_params[:subject].presence || helpers.contact_subject(@respond_to_contact),
+      body: message_params[:body],
+      message_time: Time.now,
+      userid: @user.userid,
+      source_contact_id: @respond_to_contact.id.to_s,
+      nature: 'contact',
+      sub_nature: 'forward'
+    )
+  end
+
+  def permitted_forward_recipients(raw_recipients)
+    selected = Array(raw_recipients).map(&:to_s).reject(&:blank?)
+    allowed = UseridDetail.internal_contact_recipient_options.map(&:last)
+    selected & allowed
   end
 
   # We store a small, non-sensitive subset of session/request context to help coordinators
