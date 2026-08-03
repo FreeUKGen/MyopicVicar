@@ -222,7 +222,7 @@ class ManageCountiesController < ApplicationController
     session.delete(:from_source)
     session[:image_group_filter] = 'completion_submitted'
     @source, @group_ids, @group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'completion_submitted')            # not sort by place, unallocated groups
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Allocate Request Image Groups exists') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
+    redirect_back(fallback_location: new_manage_resource_path, notice: "No image groups found with status of 'Completion Submitted'") && return if @source.blank? || @group_ids.blank? || @group_id.blank?
 
     @county = session[:county]
     # for 'Accept All Groups As Completed'
