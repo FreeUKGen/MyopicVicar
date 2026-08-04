@@ -278,10 +278,9 @@ module FreeregOptionsConstants
 
   MAXIMUM_WINESSES = 8;
 
+  # max amount of record a specific role can delete
   MAX_RECORDS_COORDINATOR = 4000;
-
   MAX_RECORDS_DATA_MANAGER = 15000;
-
   MAX_RECORDS_SYSTEM_ADMINISTRATOR = 100000;
 
   MESSAGE_RECIPIENTS = ['Myself to Review', 'Active Transcribers', 'Inactive Transcribers', 'Coordinators', 'Researchers', 'Managers', 'Coordinators and Managers'];

@@ -94,6 +94,7 @@ def create_stub_userid(file)
   username = file[:user]
   userid = UseridDetail.userid(username).first
   unless userid
+    # u = User.where(:username => username).first
     u = Refinery::Authentication::Devise::User.where(:username => username).first
     u.delete unless u.nil?
     userid = UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com", :person_surname => username, :person_forename => username, :syndicate => 'test')
@@ -104,6 +105,7 @@ end
 def create_new_user(username)
   userid = UseridDetail.userid(username).first
   unless userid
+    # u = User.where(:username => username).first
     u = Refinery::Authentication::Devise::User.where(:username => username).first
     u.delete unless u.nil?
     userid = UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com", :person_surname => username, :person_forename => username, :syndicate => 'test')

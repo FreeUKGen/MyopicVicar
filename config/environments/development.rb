@@ -22,8 +22,7 @@ MyopicVicar::Application.configure do
   # (e.g. reverse proxy / shared dev URL).
   begin
     website_host = URI.parse(MyopicVicar::MongoConfig['website'].to_s).host
-    # config.hosts << website_host if website_host.present?
-    config.hosts << 'fictional-sniffle-9r7wqw49q4g2rg9-3000.app.github.dev'
+    config.hosts << website_host if website_host.present?
   rescue URI::InvalidURIError
     # ignore invalid website config
   end
