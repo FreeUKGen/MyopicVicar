@@ -42,14 +42,14 @@ class Api::V1::CsvfilesController < Api::V1::BaseController
   private
 
   def build_csvfile
-    if params[:csvfile].blank?
+    if params[:csvfile].blank? || params[:csvfile][:csvfile].blank?
       render_result(false, 'You must select a file', status: :bad_request)
       return nil
     end
 
     csvfile = Csvfile.new
     csvfile.userid = @current_user.userid
-    csvfile.csvfile = params[:csvfile]
+    csvfile.csvfile = params[:csvfile][:csvfile]
     csvfile.file_name = csvfile.csvfile.identifier
 
     if csvfile.file_name.blank?
