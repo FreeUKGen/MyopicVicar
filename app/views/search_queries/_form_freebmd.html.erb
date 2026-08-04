@@ -975,6 +975,7 @@
 
         $('.clear_forms').click(function () {
             resetBmdSearchForm();
+            location.reload(); // Issue 1438: rbl 28.7.2026
         });
 
         <% if @fresh_search %>
