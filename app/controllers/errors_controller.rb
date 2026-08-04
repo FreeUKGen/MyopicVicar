@@ -28,7 +28,8 @@ class ErrorsController < ActionController::Base
   def internal_server_error
     @error_url = error_url
     @userid = userid
-    @server_hostname = Socket.gethostname
+    @client_ip = client_ip
+    @server_hostname = server_hostname
 
     log_error_details
 
@@ -51,37 +52,59 @@ class ErrorsController < ActionController::Base
     else
       "#{request.protocol}#{request.host_with_port}#{fullpath}"
     end
+  rescue StandardError
+    'Unavailable'
   end
 
   def original_path_with_query(original_path)
-    return original_path if request.query_string.blank?
+    return original_path if request.query_string.blank? || original_path.include?('?')
 
     "#{original_path}?#{request.query_string}"
   end
 
   def userid
     userid_detail_id = session[:userid_detail_id].presence || cookies.signed[:userid].presence
-    return if userid_detail_id.blank?
+    return 'Not logged in' if userid_detail_id.blank?
 
     userid_detail = UseridDetail.id(userid_detail_id).first
-    userid_detail.present? ? userid_detail.userid : userid_detail_id
+    userid_detail&.userid.presence || 'Unavailable'
   rescue StandardError
-    userid_detail_id
+    'Unavailable'
   end
 
   def log_error_details
-    exception = request.env['action_dispatch.exception']
-    exception_class = exception.present? ? exception.class.name : 'Unavailable'
-    exception_message = exception.present? ? exception.message : 'Unavailable'
+    details = {
+      URL: @error_url,
+      USERID: @userid,
+      CLIENT_IP: @client_ip,
+      SERVER_HOSTNAME: @server_hostname,
+      REQUEST_ID: request_id
+    }
 
-    Rails.logger.error(
-      "500 ERROR: URL=#{@error_url} USERID=#{@userid || 'Unavailable'} " \
-      "CLIENT_IP=#{client_ip} SERVER_HOSTNAME=#{@server_hostname} " \
-      "EXCEPTION_CLASS=#{exception_class} EXCEPTION_MESSAGE=#{exception_message}"
-    )
+    Rails.logger.error("500 ERROR: #{details.map { |key, value| "#{key}=#{log_value(value)}" }.join(' ')}")
+  rescue StandardError
+    nil
+  end
+
+  def log_value(value)
+    value.to_s.gsub(/[\r\n]+/, ' ')
+  end
+
+  def request_id
+    request.request_id.presence || 'Unavailable'
+  rescue StandardError
+    'Unavailable'
   end
 
   def client_ip
     request.remote_ip.presence || request.remote_addr.presence || 'Unavailable'
+  rescue StandardError
+    'Unavailable'
+  end
+
+  def server_hostname
+    Socket.gethostname.presence || 'Unavailable'
+  rescue StandardError
+    'Unavailable'
   end
 end
