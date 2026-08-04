@@ -176,7 +176,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # ===
   def get_user
     user = cookies.signed[:userid]
     user = UseridDetail.id(user).first

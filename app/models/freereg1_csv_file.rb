@@ -959,7 +959,7 @@ class Freereg1CsvFile
 
   def remove_batch
     case
-    when self.records.to_i > FreeregOptionsConstants::MAX_RECORDS_COORDINATOR
+    when self.records.to_i > 4000
       UserMailer.report_to_data_manger_of_large_file( self.file_name,self.userid).deliver_now
       return false,'There are too many records for a simple removal. Please discuss with your coordinator or the data managers how best to deal with its restructuring'
     when self.locked_by_transcriber || self.locked_by_coordinator
