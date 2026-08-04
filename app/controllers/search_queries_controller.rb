@@ -81,8 +81,9 @@ class SearchQueriesController < ApplicationController
         @search_results, @result_count, success, error_type = @search_query.freebmd_count_records.to_a
         redirect_to new_search_query_path(:search_id => @search_query, :result_count => @result_count) and return if success
         redirect_to new_search_query_path(:search_id => @search_query, :timeout => true) and return if error_type == 1
-        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
-        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'It takes too long to execute the query. Please consider adding more filter.') and return if error_type == 3        
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'There was a problem with this search. Please check your search terms and try again.') and return if error_type == 2
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'It takes too long to execute the query. Please consider adding more filter.') and return if error_type == 3
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: "We're having a temporary problem with our systems. Please try again in a few minutes.") and return if error_type == 4
       else
         #raise @search_query.search_records.to_a.inspect
         @search_results, @result_count, success, error_type = @search_query.search_records.to_a
@@ -91,8 +92,9 @@ class SearchQueriesController < ApplicationController
         error = error_type.to_i if error_type.present?
         redirect_to search_query_path(@search_query) and return if success
         redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
-        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
-        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'It takes too long to execute the query. Please consider adding more filter.') and return if error == 3  
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'There was a problem with this search. Please check your search terms and try again.') and return if error == 2
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'It takes too long to execute the query. Please consider adding more filter.') and return if error == 3
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: "We're having a temporary problem with our systems. Please try again in a few minutes.") and return if error == 4
       end
     else
       render :new

@@ -1860,6 +1860,10 @@
       [[], 0, false, 1]
     rescue ActiveRecord::StatementInvalid => e
       freebmd_handle_statement_invalid(e)
+    rescue ActiveRecord::ConnectionNotEstablished, ActiveRecord::ConnectionTimeoutError,
+           Mysql2::Error::ConnectionError, Errno::ECONNREFUSED, Errno::ETIMEDOUT => e
+      logger.warn("#{App.name_upcase}: Database connection error: #{e.inspect}")
+      [[], 0, false, 4]
     rescue StandardError => e
       logger.warn("#{App.name_upcase}:error: #{e.inspect}")
       [[], 0, false, 2]
