@@ -20,6 +20,7 @@ class Church
   field :contributors, type: Hash
   field :unique_surnames, type: Array
   field :unique_forenames, type: Array
+  field :location_of_source_documents, type: String
   has_many :registers, dependent: :restrict_with_error
   has_many :image_server_groups
   embeds_many :alternatechurchnames
