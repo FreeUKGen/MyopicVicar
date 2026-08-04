@@ -21,14 +21,14 @@
 
 <body>
   <div class="dialog">
-    <h1>We're sorry, but something went wrong with processing your request. A report has been produced and sent to the webmaster. Please return to your prior activity but try to avoid doing the exact same action again.</h1>
+    <h1>We're sorry, but something went wrong while processing your request. Please return to your previous activity but try to avoid doing the exact same action again. If you wish to send in an error report, please copy or take a screenshot of the following information:</h1>
     <dl>
       <dt>URL</dt>
       <dd><%= @error_url %></dd>
-      <% if @userid.present? %>
-        <dt>Userid</dt>
-        <dd><%= @userid %></dd>
-      <% end %>
+      <dt>Userid</dt>
+      <dd><%= @userid %></dd>
+      <dt>Client IP address</dt>
+      <dd><%= @client_ip %></dd>
       <dt>Server hostname</dt>
       <dd><%= @server_hostname %></dd>
     </dl>
