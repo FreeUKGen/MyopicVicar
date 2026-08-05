@@ -7,9 +7,18 @@ class Freecen2CountyContentsController < ApplicationController
     redirect_back(fallback_location: freecen2_county_contents_path, notice: 'County not found') && return if set_county_vars == false
 
     records_places = @freecen2_county_contents.records[:total][:places]
-    @places_for_county = {}
-    @places_for_county =  { '' => "Select a Place in #{@county_description} ..." }
-    records_places.each { |place| @places_for_county[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: @chapman_code, place_name: remove_dates_place(place)).present? }
+    place_names_to_check = records_places.map { |place| remove_dates_place(place) }
+    existing_place_names = Freecen2Place
+    .where(chapman_code: @freecen2_county_contents.county, :place_name.in => place_names_to_check)
+    .pluck(:place_name)
+    .to_set
+
+    @places_for_county = { '' => "Select a Place in #{@county_description} ..." }
+    records_places.each do |place|
+      clean = remove_dates_place(place)
+      @places_for_county[clean] = place.gsub('=', ' ') if existing_place_names.include?(clean)
+    end
+
     return unless params[:commit] == 'View Place Records'
 
     if params[:place_description].blank? || params[:place_description] == ''
@@ -224,8 +233,17 @@ class Freecen2CountyContentsController < ApplicationController
 
     @freecen2_county_contents = Freecen2CountyContent.find_by(interval_end: @interval_end, county: chapman_code)
     county_places = @freecen2_county_contents.records[:total][:places]
+    place_names_to_check = county_places.map { |place| remove_dates_place(place) }
+    existing_place_names = Freecen2Place
+    .where(chapman_code: chapman_code, :place_name.in => place_names_to_check)
+    .pluck(:place_name)
+    .to_set
+
     county_places_hash = { '' => "Select a Place in #{county_description} ..." }
-    county_places.each { |place| county_places_hash[remove_dates_place(place)] = place.gsub('=', ' ') if Freecen2Place.find_by(chapman_code: chapman_code, place_name: remove_dates_place(place)).present? }
+    county_places.each do |place|
+      clean = remove_dates_place(place)
+      county_places_hash[clean] = place.gsub('=', ' ') if existing_place_names.include?(clean)
+    end
     if county_places_hash.present?
       respond_to do |format|
         format.json do
