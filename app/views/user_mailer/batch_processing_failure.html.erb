@@ -1,9 +1,14 @@
-<p><%= @userid.person_forename %>:</p>
-<p>We are sorry but the file and its records were not processed. The processing log follows and should contain a reason.</p>
-<%= @message.html_safe%>
+<p>Hello <%= @person_forename %></p>
+<p>Sorry, the file was not processed. The processing log is below and should contain the reason(s).</p>
 <% if @appname.downcase == 'freereg' %>
-  <p>
-    If the reasons are header errors you must correct the original file and upload the corrected version into the system</p>
-<% end%>
-<p> If you do not understand the reason please ask your coordinator for assistance.</p>
+  <p>If a column is entirely empty, then it must be deleted from your file.  
+    If it contains valid transcription data, then it must have a title.  
+    Valid titles can be found on the FreeREG Help page for 
+    <%= link_to "Flexible CSV fields.",
+                "https://www.freereg.org.uk/cms/information-for-transcribers/flexible-csv-format#fieldDetails" %></p>
+  <p>If the reason is header errors you must correct the original file and upload the corrected version.</p>
+<% end %>
+<p>If you don't understand the reason please ask your coordinator for help.</p>
 <p>The <%= @appname %> Team</p>
+<br><br>
+<%= @message.html_safe %>
