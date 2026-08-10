@@ -5,6 +5,8 @@ class User
   devise :database_authenticatable, :registerable, :trackable,
          :recoverable, :rememberable, :validatable
   devise  :encryptable, :encryptor => :freereg
+
+  before_update :inform_coordinator_of_completion_and_update_userid
   #alias devise_will_save_change_to_email? will_save_change_to_email?
   attr_writer :login
   ## Database authenticatable
