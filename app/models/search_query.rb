@@ -190,6 +190,7 @@
   embeds_one :search_result
 
   validate :name_not_blank unless MyopicVicar::Application.config.template_set == 'freebmd'
+  validate :search_not_blank if MyopicVicar::Application.config.template_set == 'freebmd'
   #validate :date_range_is_valid
   validate :radius_is_valid
   validate :county_is_valid
@@ -852,6 +853,11 @@
   def name_not_blank
     message = 'A forename, county and place must be part of your search if you have not entered a surname.'
     errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
+  end
+
+  def search_not_blank
+    message = 'You must specify at least one search criterion.'
+    errors.add(:last_name, message) if last_name.blank? && first_name.blank? && (bmd_record_type.blank? || bmd_record_type == ['0']) && chapman_codes.blank? && districts.blank? && volume.blank? && page.blank?
   end
 
   def name_search_params
