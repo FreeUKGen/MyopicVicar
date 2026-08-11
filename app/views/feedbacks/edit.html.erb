@@ -7,6 +7,6 @@
 <% end %>
 <%= simple_form_for  @feedback   do |f| %>
   <%= f.input :title,  :label => "Title ", :input_html => { :class => " simple_form_bgcolour  ",:size => 30, :placeholder => @feedback.title} %>
-  <%= f.input :body, :label => "Comments ",as: :text, :input_html => {:class => "simple_form_bgcolour overide_selection_field_width", :rows => 5, :cols =>50 , :placeholder => @feedback.body} %>
+  <%= f.input :body, :label => "Comments ",as: :text, :input_html => {:class => "simple_form_bgcolour overide_selection_field_width", :rows => 5, :cols =>50 , wrap: "hard", :placeholder => @feedback.body} %>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

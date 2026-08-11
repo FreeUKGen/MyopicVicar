@@ -14,7 +14,7 @@
           We sent the communication to <%= @respond_to_contact.contact_action_sent_to_userid%> for action.
           The contact information was:<br>
         <% end %>
-        <%= @respond_to_contact.body %>
+        <%= simple_format(@respond_to_contact.body) %>
       </div>
     </div>
   </section>
@@ -38,7 +38,7 @@
                 </strong>
               <% end%>
             <% end %>
-            <%= reply.body %>
+            <%= simple_format(reply.body) %>
             <% if reply.attachment.present?%>
               <br/>
               <span>Attachment: </span>
