@@ -17,9 +17,11 @@ class SearchQueriesController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :check_for_mobile, only: :show
   before_action :require_login, only: :compare_search
+  before_action :sanitize_autocomplete_term, only: [:autocomplete_BestGuess_Surname, :autocomplete_BestGuess_GivenName]
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
   rescue_from Timeout::Error, with: :search_taking_too_long
+  rescue_from Mysql2::Error, with: :autocomplete_query_failed
   autocomplete :BestGuess, :Surname, full: false,  limit: 5
   autocomplete :BestGuess, :GivenName, full: false, limit: 10
   include DownloadAsCsv
@@ -232,6 +234,17 @@ class SearchQueriesController < ApplicationController
       flash[:notice] = 'Your search encountered a problem please contact us with this message '
     end
     redirect_to new_search_query_path(search_id: @search_query)
+  end
+
+  def sanitize_autocomplete_term
+    return if params[:term].blank?
+
+    params[:term] = params[:term].gsub(/[^a-zA-Z\s'-]/, '').strip[0, 50]
+  end
+
+  def autocomplete_query_failed(exception)
+    logger.warn("#{appname_upcase}:SEARCH: Autocomplete query failed #{exception.message}")
+    render json: [], root: false
   end
 
   def selection
