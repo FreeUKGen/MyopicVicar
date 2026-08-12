@@ -1,20 +1,26 @@
+<% if @contact.line_id.present? %>
 <tr >
   <td>Record :</td>
   <td class="weight--semibold"> <%= @contact.line_id %> </td>
 </tr>
+<% end %>
 <%case appname_downcase %>
 <%when 'freecen' %>
+<% if @contact.record_id.present? %>
 <tr>
   <td>Data Record :</td>
   <td class="weight--semibold">
     <%= link_to ' Record in question', search_record_path(@contact.record_id), method: :get, :class => "btn btn--small"%></td>
 </tr>
+<% end %>
 <%when 'freereg' %>
+<% if @contact.entry_id.present? %>
 <tr>
   <td>Data Record :</td>
   <td class="weight--semibold">
     <%= link_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get, :class => "btn btn--small"%></td>
 </tr>
+<% end %>
 <% end %>
 <tr>
   <td>County :</td>

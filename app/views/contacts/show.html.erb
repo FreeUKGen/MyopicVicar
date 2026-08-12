@@ -19,7 +19,7 @@
           <th class="caps">Field</th>
           <th  class="caps">Value</th>
         </tr>
-        <%= render 'show_data_problem' if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
+        <%= render 'show_data_problem' if @contact.contact_type == 'Data Problem' && (@contact.entry_id.present? || @contact.record_id.present?)%>
         <%= render 'show_actor' %>
         <tr >
           <td >The explanation was:</td>

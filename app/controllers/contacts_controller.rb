@@ -253,6 +253,14 @@ class ContactsController < ApplicationController
               @contact.line_id = '' + (vldfname unless vldfname.nil?) + ':dwelling#' + (ent.dwelling_number.to_s unless  ent.dwelling_number.nil?) + ',individual#'+ (ent.sequence_in_household.to_s unless ent.sequence_in_household.nil?)
             end #ent.present
           end # @contact.entry_id.present?
+        elsif @rec.freecen_csv_entry_id.present?
+          csv_ent = FreecenCsvEntry.where("id" => @rec.freecen_csv_entry_id).first
+          if csv_ent.present?
+            if csv_ent.freecen_csv_file.present?
+              csvfname = csv_ent.freecen_csv_file.file_name
+            end
+            @contact.line_id = '' + (csvfname unless csvfname.nil?) + ':piece#' + (csv_ent.piece_number.to_s unless csv_ent.piece_number.nil?) + ',dwelling#' + (csv_ent.dwelling_number.to_s unless csv_ent.dwelling_number.nil?) + ',individual#'+ (csv_ent.sequence_in_household.to_s unless csv_ent.sequence_in_household.nil?)
+          end #csv_ent.present
         end # fc_ind.present
       end # unless rec.nil?
     end # case
