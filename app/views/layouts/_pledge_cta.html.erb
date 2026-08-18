@@ -1,0 +1,230 @@
+<div class="donation_dialog" id="donate_cta_pops">
+    <div class="grid">
+        <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
+            <div class="donate_cta__header__nav text--center">
+                <p class="top_banner_text">Support the work of Free UK Genealogy</p>
+            </div>
+        </div>
+    </div>
+    <div class="grid top_padding">
+        <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole" id="thank_you">
+            <%=button_tag "<i class='fa fa-times push-half--right close_cta'></i> Close".html_safe , id:"close_donate_cta_pop_up", class: "", type: "button"%>
+            <div class="grid__item desk-one-whole lap-one-whole palm-one-whole logo_div text--center" style="">
+              <h3>Can you help us improve support for our 1,000+ volunteers?</h3>
+            </div>
+            <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+                <p class="push-half--bottom">Our charity is run almost 100% by volunteers: we only have 2 full-time members of staff to support our 1,000+ volunteers who are based all around the world. Without them, we would not have the millions of records such as those you're currently seeking!</p>
+                <p class="push-half--bottom">Our dedicated community of volunteers:</p>
+                <ul class="push-half--bottom">
+                    <li>Coordinates access to images and the transcription projects.</li>
+                    <li>Has transcribed millions of records over almost 30 years.</li>
+                    <li>Manages communities of other volunteers.</li>
+                    <li>Develops the search engines and software behind all of our databases.</li>
+                    <li>Supports the background running of the organisation.</li>
+                </ul>
+                <p class="push-half--bottom" style="padding-right: 28px;">Our volunteers do so much for family history, we're raising £5,000 in pledges in this year's Big Give Christmas Challenge to unlock the match funding, enabling us to improve their volunteering experience.</p>
+                <p class="push-half--bottom">Don't worry if you'd like to support us with a smaller amount: you can do so easily during the Christmas Challenge campaign later this year.</p>
+            </div>
+        </div>
+        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole push--bottom">
+            <div class="" id="request_box">
+                <div class="grid__item desk-one-whole lap-one-whole palm-one-whole hard--left">
+                    <div class="grid__item desk-one-half lap-one-half palm-one-whole text--center hard--left" id="read_more_div">
+                        <a href="https://www.freeukgenealogy.org.uk/big-give-pledges" class="text--center btn btn--small" target="_blank" tabindex="0" id="read_more" autofocus="false" style="padding:10px">More about pledging</a>
+                    </div>
+                    <div class="grid__item desk-one-half lap-one-half palm-one-whole" id="donate_div" style="display:flex; justify-content:center;">
+                        <% pledge_link = "https://community.biggive.org/s/pledge?campaignId=a05WS00000GapE6YAJ" %>
+                        <%= link_to "PLEDGE NOW", pledge_link, class: "freeREG btn btn--small weight--semibold", id:"donate_now_button", target:"_blank", tabindex: "0", style: 'padding:10px;' %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+            <div class="grid__item desk-wide-one-third desk-one-third lap-one-third palm-one-whole " id="">
+                <%= image_tag("png/fr_badge.png", alt: "Fundraising", class: "", id:"", style: 'width: 70%;')%>
+            </div>
+            <div class="grid__item desk-wide-one-third desk-one-third lap-one-third palm-one-whole " id="">
+                <%= image_tag("png/big_gift.png", alt: "Big Give", class: "", id:"", style: 'width: 70%;')%>
+            </div>
+            <div class="grid__item desk-wide-one-third desk-one-third lap-one-third palm-one-whole " id="">
+                <%= image_tag("png/FreePRO no hex.png", alt: "FreePRO", class: "", id:"", style: 'width: 70%;')%>
+            </div>
+        </div>
+        <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
+            <small class="float--right push--right">Send any feedback to <span style="color:blue">feedback@freeukgenealogy.org.uk</span></small>
+        </div>
+    </div>
+</div>
+
+<style>
+    #overlay {
+        display: none;
+    }
+
+    #read_more {
+        width: 55%;
+        color: #222222;
+        background-color: white;
+        font-weight: bold;
+        border-color: grey;
+        padding: 5px;
+    }
+
+    #read_more:hover, #read_more:focus {
+        border: 2px dashed grey;
+        font-weight: 600;
+    }
+
+    #donate_now_button {
+        background-color: <%= Rails.application.config.donate_color %>;
+        border-color: <%= Rails.application.config.donate_color %>;
+        padding: 5px;
+    }
+
+    #donate_now_button:hover, #donate_now_button:focus {
+        background-color: white;
+        color: <%= Rails.application.config.donate_color %>;
+    }
+
+    .donation_dialog {
+        border-radius: 6px;
+    }
+
+    #reminder_form_controller, #close_donate_cta_pop_up, #donate_cta_feedback {
+        border: none;
+        background-color: white;
+        font-size: 14px;
+        color: #505050;
+        float: right;
+    }
+
+    #reminder_form_controller, #close_donate_cta_pop_up {
+        color: #505050;
+        cursor: pointer;
+    }
+    #reminder_form_controller:hover, #close_donate_cta_pop_up:hover {
+        border: 2px dashed;
+        padding: 2px;
+    }
+
+    #donate_cta_pop_up {
+        display: none;
+    }
+
+    #overlay {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 2000;
+      cursor: pointer;
+    }
+
+    .donate_cta__header__nav {
+        overflow: hidden;
+        height: 46px;
+        position: absolute;
+        right: 0;
+        left: 0;
+        top: 0%;
+        z-index: 30000;
+        border-radius: 1.2%;
+        background-color: #00857e;
+        color: #fff;
+    }
+
+    .top_banner_text {
+        padding: 10px;
+    }
+    #thank_you {
+        padding-top: 45px;
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    #myDialog::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    #myDialog {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    #myDialog {
+        background-color: white;
+        border-radius: 6px;
+        z-index: 10000;
+        height: 75%;
+        max-height: 620px;
+        margin: 110px auto auto auto;
+        border: none;
+    }
+
+    @media only screen and (min-width: 1300px) {
+        #myDialog {
+            width: 70%;
+            max-width: 800px;
+            margin-top: 110px;
+            height: 80%;
+            max-height: 650px;
+        }
+    }
+
+    @media only screen and (max-width: 1024px) {
+        #myDialog {
+            max-height: 700px;
+        }
+    }
+
+    @media only screen and (max-width: 570px) {
+        #myDialog {
+            width: 80% !important;
+            margin-top: 150px;
+            max-height: 780px;
+        }
+    }
+
+    @media only screen and (min-width: 570px) {
+        #myDialog {
+            width: 70% !important;
+        }
+    }
+
+    @media only screen and (min-width: 1024px) {
+        #donate_now_button {
+            width: 50%;
+        }
+        #read_more {
+            width: 50%;
+        }
+    }
+
+    @media only screen and (min-width: 570px) {
+        #donate_now_button {
+            width: 80%;
+        }
+        #read_more {
+            width: 65%;
+        }
+    }
+
+    @media only screen and (max-width: 570px) {
+        #donate_now_button {
+            width: 70%;
+            margin-top: 14px;
+        }
+        #read_more {
+            width: 70%;
+        }
+        .donate_cta__header__nav {
+            height: 76px;
+        }
+        .top_padding {
+            padding-top: 28px;
+        }
+    }
+</style>
