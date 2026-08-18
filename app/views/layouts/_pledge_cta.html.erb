@@ -2,16 +2,13 @@
     <div class="grid">
         <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole">
             <div class="donate_cta__header__nav text--center">
-                <p class="top_banner_text">Support the work of Free UK Genealogy</p>
+                <p class="top_banner_text">Can you help us improve support for our 1,000+ volunteers?</p>
+                <%=button_tag "<i class='fa fa-times push-half--right close_cta'></i> Close".html_safe , id:"close_donate_cta_pop_up", class: "", type: "button"%>
             </div>
         </div>
     </div>
     <div class="grid top_padding">
         <div class="grid__item desk-wide-one-whole desk-one-whole lap-one-whole palm-one-whole" id="thank_you">
-            <%=button_tag "<i class='fa fa-times push-half--right close_cta'></i> Close".html_safe , id:"close_donate_cta_pop_up", class: "", type: "button"%>
-            <div class="grid__item desk-one-whole lap-one-whole palm-one-whole logo_div text--center" style="">
-              <h3>Can you help us improve support for our 1,000+ volunteers?</h3>
-            </div>
             <div class="grid__item desk-one-whole lap-one-whole palm-one-whole">
                 <p class="push-half--bottom">Our charity is run almost 100% by volunteers: we only have 2 full-time members of staff to support our 1,000+ volunteers who are based all around the world. Without them, we would not have the millions of records such as those you're currently seeking!</p>
                 <p class="push-half--bottom">Our dedicated community of volunteers:</p>
@@ -160,7 +157,7 @@
         z-index: 10000;
         height: 75%;
         max-height: 720px;
-        margin: 0 auto auto auto;
+        margin: auto;
         border: none;
     }
 
@@ -168,7 +165,7 @@
         #myDialog {
             width: 70%;
             max-width: 900px;
-            margin-top: 0;
+            margin-top: auto;
             height: 80%;
             max-height: 750px;
         }
