@@ -1093,7 +1093,7 @@ class Freereg1CsvFile
     # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     chapman_code, place_name, church_name, register_type, proceed = file.write_csv_get_location
     fields = file.field_order_of_csv
-    CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
+    CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
       file.write_csv_headers(csv,fields)
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
       records = file.freereg1_csv_entries
