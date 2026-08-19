@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd /app
+
+pid_file="tmp/pids/server.pid"
+if [ -f "$pid_file" ]; then
+  server_pid="$(cat "$pid_file")"
+  if ! kill -0 "$server_pid" 2>/dev/null; then
+    echo "Removing stale Rails server PID file: $pid_file"
+    rm -f "$pid_file"
+  fi
+fi
+
+exec rails server -b 0.0.0.0 "$@"
