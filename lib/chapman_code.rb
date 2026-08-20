@@ -30,12 +30,6 @@ module ChapmanCode
       hsh
     end
 
-    # def add_parenthetical_codes(hash)
-    #   hash.transform_values do |counties|
-    #     counties.transform_keys { |name, code| "#{name} (#{code})" }
-    #   end
-    # end
-
     def code_from_name(name)
       codes = merge_countries
       codes[name]
@@ -370,27 +364,6 @@ module ChapmanCode
     }.freeze,
     'Wales' => {
       'Wales' => 'WLS',
-      # 'Anglesey' => 'AGY',
-      # 'Brecknockshire' => 'BRE',
-      # 'Caernarfonshire' => 'CAE',
-      # 'Cardiganshire' => 'CGN',
-      # 'Carmarthenshire' => 'CMN',
-      # 'Clwyd' => 'CWD',
-      # 'Denbighshire' => 'DEN',
-      # 'Dyfed' => 'DFD',
-      # 'Flintshire' => 'FLN',
-      # 'Glamorgan' => 'GLA',
-      # 'Mid Glamorgan' => 'MGM',
-      # 'South Glamorgan' => 'SGM',
-      # 'West Glamorgan' => 'WGM',
-      # 'Gwent' => 'GNT',
-      # 'Gwynedd' => 'GWN',
-      # 'Merionethshire' => 'MER',
-      # 'Monmouthshire' => 'MON',
-      # 'Montgomeryshire' => 'MGY',
-      # 'Pembrokeshire' => 'PEM',
-      # 'Powys' => 'POW',
-      # 'Radnorshire' => 'RAD'
       'Anglesey/Ynys Môn' => 'AGY',
       'Brecknockshire/Sir Frycheiniog' => 'BRE',
       'Caernarfonshire/Sir Gaernarfon' => 'CAE',
