@@ -12,6 +12,8 @@
   </ul>
   <% @search_query.errors.clear %>
 <% end %>
+<div class="grid">
+  <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
 <div class='text--left push-half--bottom'>
   <small><strong>Tip: Double-tab to move between fields</strong></small>
 </div>
@@ -221,6 +223,17 @@
         </fieldset>
       <% end %>
     </div>
+  </div>
+  <% unless device_type == :mobile %>
+    <div class="grid__item desk-one-fifth lap-one-third palm-one-whole text--center push--bottom">
+      <span>Advertisement</span><br>
+      <div class="grid__item one-whole push--top" style="position: sticky; top:0; align-self: start;">
+        <!-- GAM 71161633/FRBMD_freecenorguk/freecen_vrec_1 -->
+        <div data-fuse="22946534660"></div>
+      </div>
+    </div>
+  <% end %>
+</div>
     <!-- GAM 71161633/FRBMD_freecenorguk/freecen_hrec_3 -->
     <%= horz_advert('22946534648') %>
     <script type="text/javascript">
