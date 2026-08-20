@@ -30,6 +30,12 @@ module ChapmanCode
       hsh
     end
 
+    # def add_parenthetical_codes(hash)
+    #   hash.transform_values do |counties|
+    #     counties.transform_keys { |name, code| "#{name} (#{code})" }
+    #   end
+    # end
+
     def code_from_name(name)
       codes = merge_countries
       codes[name]
@@ -75,8 +81,8 @@ module ChapmanCode
         ctryval.each_pair do |kk, vv|
           if Rails.application.config.freecen2_place_cache
             place_cache = Freecen2PlaceCache.find_by(chapman_code: vv.to_s)
-            #check if the place cache is present 
-            has_no_places = place_cache.present? && 
+            #check if the place cache is present
+            has_no_places = place_cache.present? &&
                            JSON.parse(place_cache.places_json).with_indifferent_access.blank?
             ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s) ||
               (has_no_places && !%w[ENG IRL SCT WLS].include?(vv.to_s))
@@ -364,27 +370,43 @@ module ChapmanCode
     }.freeze,
     'Wales' => {
       'Wales' => 'WLS',
-      'Anglesey' => 'AGY',
-      'Brecknockshire' => 'BRE',
-      'Caernarfonshire' => 'CAE',
-      'Cardiganshire' => 'CGN',
-      'Carmarthenshire' => 'CMN',
-      'Clwyd' => 'CWD',
-      'Denbighshire' => 'DEN',
-      'Dyfed' => 'DFD',
-      'Flintshire' => 'FLN',
-      'Glamorgan' => 'GLA',
-      'Mid Glamorgan' => 'MGM',
-      'South Glamorgan' => 'SGM',
-      'West Glamorgan' => 'WGM',
-      'Gwent' => 'GNT',
-      'Gwynedd' => 'GWN',
-      'Merionethshire' => 'MER',
-      'Monmouthshire' => 'MON',
-      'Montgomeryshire' => 'MGY',
-      'Pembrokeshire' => 'PEM',
-      'Powys' => 'POW',
-      'Radnorshire' => 'RAD'
+      # 'Anglesey' => 'AGY',
+      # 'Brecknockshire' => 'BRE',
+      # 'Caernarfonshire' => 'CAE',
+      # 'Cardiganshire' => 'CGN',
+      # 'Carmarthenshire' => 'CMN',
+      # 'Clwyd' => 'CWD',
+      # 'Denbighshire' => 'DEN',
+      # 'Dyfed' => 'DFD',
+      # 'Flintshire' => 'FLN',
+      # 'Glamorgan' => 'GLA',
+      # 'Mid Glamorgan' => 'MGM',
+      # 'South Glamorgan' => 'SGM',
+      # 'West Glamorgan' => 'WGM',
+      # 'Gwent' => 'GNT',
+      # 'Gwynedd' => 'GWN',
+      # 'Merionethshire' => 'MER',
+      # 'Monmouthshire' => 'MON',
+      # 'Montgomeryshire' => 'MGY',
+      # 'Pembrokeshire' => 'PEM',
+      # 'Powys' => 'POW',
+      # 'Radnorshire' => 'RAD'
+      'Anglesey/Ynys Môn' => 'AGY',
+      'Brecknockshire/Sir Frycheiniog' => 'BRE',
+      'Caernarfonshire/Sir Gaernarfon' => 'CAE',
+      'Cardiganshire/Ceredigion' => 'CGN',
+      'Carmarthenshire/Sir Gaerfyrddin' => 'CMN',
+      'Denbighshire/Sir Ddinbych' => 'DEN',
+      'Flintshire/Sir y Fflint' => 'FLN',
+      'Glamorgan/Morgannwg' => 'GLA',
+      'Mid Glamorgan/Morgannwg Ganol' => 'MGM',
+      'South Glamorgan/De Morgannwg' => 'SGM',
+      'West Glamorgan/Gorllewin Morgannwg' => 'WGM',
+      'Merionethshire/Meirionnydd' => 'MER',
+      'Monmouthshire/Sir Fynwy' => 'MON',
+      'Montgomeryshire/Sir Drefaldwyn' => 'MGY',
+      'Pembrokeshire/Sir Benfro' => 'PEM',
+      'Radnorshire/Sir Faesyfed' => 'RAD'
     }.freeze,
     'Special' => {
       'Unknown' => 'UNK',
