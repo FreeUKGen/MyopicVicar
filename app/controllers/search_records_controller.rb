@@ -44,6 +44,11 @@ class SearchRecordsController < ApplicationController
     redirect_back_or_new_search_query && return
   end
 
+  def new
+    flash[:notice] = 'That action does not exist'
+    redirect_back_or_new_search_query && return
+  end
+
   def show
     session[:query] = params[:search_id] if params[:search_id].present?
     proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
@@ -374,7 +379,7 @@ class SearchRecordsController < ApplicationController
   def viewed
     session[:viewed] ||= []
   end
-  
+
   private
 
   # Citation links are often opened from other sites; redirect_back would send users to the Referer (that site)
