@@ -182,18 +182,6 @@ module ChapmanCode
       reduced_hash
     end
 
-    def remove_codes(original_hash)
-      elimination_codes = case App.name_downcase
-                          when 'freereg' then FreeregOptionsConstants::CHAPMAN_CODE_ELIMINATIONS
-                          when 'freecen' then Freecen::CHAPMAN_CODE_ELIMINATIONS
-                          else []
-                          end
-
-      original_hash.transform_values do |nested_hash|
-        nested_hash.except(*elimination_codes)
-      end
-    end
-
     def remove_codes_cen_keep_country(original_hash)
       reduced_hash = {}
       original_hash.each_pair do |key, value|

@@ -75,7 +75,7 @@ module Freecen
   end
 
   CENSUS_YEARS_ARRAY = ['1841', '1851', '1861', '1871', '1881', '1891', '1901', '1911'].freeze
-  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan/Morgannwg Ganol',
+  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan/Morgannwg Ganol', 
                                'South Glamorgan/De Morgannwg', 'West Glamorgan/Gorllewin Morgannwg', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
                                'Orkney', 'Shetland', 'Strathclyde', 'Tayside', 'Western'].freeze
 
