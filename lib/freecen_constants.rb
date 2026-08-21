@@ -75,8 +75,8 @@ module Freecen
   end
 
   CENSUS_YEARS_ARRAY = ['1841', '1851', '1861', '1871', '1881', '1891', '1901', '1911'].freeze
-  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
-                               'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
+  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan/Morgannwg Ganol',
+                               'South Glamorgan/De Morgannwg', 'West Glamorgan/Gorllewin Morgannwg', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
                                'Orkney', 'Shetland', 'Strathclyde', 'Tayside', 'Western'].freeze
 
   # Public contact form: counties with no county coordinator in ops are routed to CONTACT_FALLBACK_COORDINATOR_USERID (confirm with ops).
@@ -216,8 +216,7 @@ module Freecen
 
   UNNEEDED_COUNTIES = [
     'Central', 'Clwyd', 'Dumfries and Galloway', 'Dyfed', 'Grampian', 'Gwent', 'Gwynedd', 'Highland', 'London (City)',
-    'Lothian', 'Mid Glamorgan', 'Military', 'Orkney', 'Other Locations', 'Out of County', 'Powys',
-    'Shetland', 'South Glamorgan', 'Strathclyde', 'Tayside', 'Unknown', 'West Glamorgan', 'Western Isles', 'Yorkshire', 'England', 'Scotland',
+    'Lothian', 'Mid Glamorgan/Morgannwg Ganol','South Glamorgan/De Morgannwg', 'West Glamorgan/Gorllewin Morgannwg', 'Military', 'Orkney', 'Other Locations', 'Out of County', 'Powys','Shetland', 'Strathclyde', 'Tayside', 'Unknown', 'Western Isles', 'Yorkshire', 'England', 'Scotland',
     'Ireland', 'Wales'
   ].freeze
 
