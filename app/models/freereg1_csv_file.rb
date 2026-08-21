@@ -443,7 +443,7 @@ class Freereg1CsvFile
     file_folder = File.join(Rails.application.config.datafiles,self.userid)
     file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
     success = false
-    if File.exists?(file_folder)
+    if File.exist?(file_folder)
       self.write_csv_file(file_location)
       success = true
     end
@@ -942,7 +942,7 @@ class Freereg1CsvFile
     file_location = File.join(Rails.application.config.datafiles,self.userid,file)
     if File.file?(file_location)
       newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
-      Dir.mkdir(newdir) unless Dir.exists?(newdir)
+      Dir.mkdir(newdir) unless Dir.exist?(newdir)
       time = Time.now.to_i.to_s
       renamed_file = (file_location + "." + time).to_s
       File.rename(file_location,renamed_file)
@@ -1099,7 +1099,7 @@ class Freereg1CsvFile
     # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     chapman_code, place_name, church_name, register_type, proceed = file.write_csv_get_location
     fields = file.field_order_of_csv
-    CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
+    CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
       file.write_csv_headers(csv,fields)
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
       records = file.freereg1_csv_entries

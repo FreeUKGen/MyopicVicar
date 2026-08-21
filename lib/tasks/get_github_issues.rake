@@ -1,7 +1,7 @@
 task :get_github_issues,[:repo]  => :environment do |t, args|
   #This task gets the issues for a repository
   file_for_warning_messages = "log/issues_#{args.repo}.log"
-  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
   message_file = File.new(file_for_warning_messages, "w")
  
   client = Octokit::Client.new(:login => Rails.application.config.github_issues_login, :password => Rails.application.config.github_issues_password)

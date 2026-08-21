@@ -50,7 +50,7 @@ namespace :build_ssl do
     require 'emendation_type'
     puts "Start Setup"
     file_for_warning_messages = "log/freereg_messages.log"
-    File.delete(file_for_warning_messages) if File.exists?(file_for_warning_messages)
+    File.delete(file_for_warning_messages) if File.exist?(file_for_warning_messages)
     @@message_file = File.new(file_for_warning_messages, "a")
     @@message_file.chmod( 0664 )
     puts "Freereg messages log deleted."
@@ -213,7 +213,7 @@ namespace :build_ssl do
   # exit(true)
   # else
   # file = File.join(Rails.application.config.datafiles,args.user,args.file)
-  # if File.exists?(file)
+  # if File.exist?(file)
   # p file
   # File.delete(file)
   # end

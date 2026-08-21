@@ -9,7 +9,7 @@ Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     puts "starting a #{type_of_build} with a limit of #{lim} files"
 
     file_for_warning_messages = "log/place_creation_messages.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
     @@message_file = File.new(file_for_warning_messages, "w")
   
     
