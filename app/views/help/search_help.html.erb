@@ -11,7 +11,7 @@
       <li>Marriage Records: from 1912, the spouse's surname is shown.</li>
       <li>Death Records: age at death is included from 1866, and date of birth is included from June 1969.</li></ul>
     <h3>Dynamic Search Menu</h3>
-    <p>To keep the search menu simple, we don't display search criteria which are specific to a particular event type. You need to select an event type
+    <p>To keep the initial search menu simple, we don't display search criteria which are specific to a particular event type. You need to select an event type
     in order to see these search fields. For example, if you select 'Births', the search field 'Mother's Maiden Name' will appear. If you select
     'Marriages', you can then search on 'Spouse's First Name' and 'Spouse's Surname'. For 'Deaths', you can specify 'Age at Death'/'Birth year'.</p>
     <h3 id="firstname_surname">First name &amp; Surname</h3>
@@ -28,7 +28,10 @@
         start of your search string, for example '#_A*LLISH' (try it!). Conversely, if you want to broaden a surname search you can
         check the ‘Phonetic search surnames’ box to match similar-sounding surnames.</p>
     <h3 id="date_range">Date Range</h3>
-    <p>Limit the search by start or end date. The search defaults to a range from March 1837 to December 1999, but you can adjust it for more focused results. The data is not complete after 1992.  Each year was divided into quarters until 1984:</p>
+    <p>Limit the search by start or end date. The search defaults to a range from March 1837 to December 1999, but you can adjust it for
+      more focused results. As of summer 2026, the data is not complete for Deaths after 1990, Births after 1993 and Marriages after 1994.
+      See <%= link_to 'Coverage Charts', 'https://www.freebmd.org.uk/progress.shtml' %> on the original FreeBMD web site for up-to-date,
+      detailed information on our progress with transcription. Each year was divided into quarters until 1984:</p>
     <ul><li>Mar (January, February, March)</li>
       <li>Jun (April, May, June)</li>
       <li>Sep (July, August, September)</li>
@@ -43,7 +46,7 @@
     <p>If you know the district or county, you can narrow the search, but note that larger districts may contain multiple locations.</p>
     <h3 id="volume_and_page">Volume and Page</h3>
     <p><b>Volume</b> and <b>Page</b> are optional fields. Each record includes a Volume and Page number to help you locate the record in the General Register Office index.</p>
-    <p>For more detailed information and other advanced search tips see the Further Help below.</p>
+    <p>For more detailed information and other advanced search tips see the Help Topics on the right.</p>
   </div>
   <aside class="grid__item one-third lap-two-fifths palm-one-whole help-page-sidebar" aria-label="Help navigation and advertisement">
     <div class="help-page-sidebar__inner">
