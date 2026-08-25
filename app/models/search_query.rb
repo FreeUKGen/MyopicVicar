@@ -190,6 +190,7 @@
   embeds_one :search_result
 
   validate :name_not_blank unless MyopicVicar::Application.config.template_set == 'freebmd'
+  validate :search_not_blank if MyopicVicar::Application.config.template_set == 'freebmd'
   #validate :date_range_is_valid
   validate :radius_is_valid
   validate :county_is_valid
@@ -367,6 +368,8 @@
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
     birth_chapman_codes.delete_if { |x| x.blank? }
+    self.first_name = first_name.tr("’", "'") if first_name.present?
+    self.last_name = last_name.tr("’", "'") if last_name.present?
   end
 
   def compare_location(x, y)
@@ -852,6 +855,11 @@
     errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
   end
 
+  def search_not_blank
+    message = 'You must specify at least one search criterion.'
+    errors.add(:last_name, message) if last_name.blank? && first_name.blank? && (bmd_record_type.blank? || bmd_record_type == ['0']) && chapman_codes.blank? && districts.blank? && volume.blank? && page.blank?
+  end
+
   def name_search_params
     params = {}
     name_params = {}
@@ -1064,9 +1072,9 @@
         end
       when SearchOrder::BMD_RECORD_TYPE
         if order_asc
-          (xa[:RecordTypeID] || '') <=> (ya[:RecordTypeID] || '')
+          compare_name_bmd(xa, ya, 'RecordTypeID', ['QuarterNumber', 'Surname', 'GivenName', 'District'])
         else
-          (ya[:RecordTypeID] || '') <=> (xa[:RecordTypeID] || '')
+          compare_name_bmd(ya, xa, 'RecordTypeID', ['QuarterNumber', 'Surname', 'GivenName', 'District'])
         end
       when SearchOrder::BMD_DATE
         if order_asc
@@ -1479,19 +1487,14 @@
            # results.sort! { |x, y| (y[:GivenName] || '') <=> (x[:GivenName] || '') }
           #end
         when SearchOrder::BMD_RECORD_TYPE
-          #if self.order_asc
-           # results.sort! do |x, y|
-            #  compare_name_bmd(y, x, 'RecordTypeID')
-           # end
-          #else
-           # results.sort! do |x, y|
-            #   compare_name_bmd(x,y, 'RecordTypeID')
-            #end
-          #end
           if self.order_asc
-            results.sort! { |x, y| (x[:RecordTypeID] || '') <=> (y[:RecordTypeID] || '') }
+            results.sort! do |x, y|
+              compare_name_bmd(x, y, 'RecordTypeID', ['QuarterNumber', 'Surname', 'GivenName', 'District'])
+            end
           else
-            results.sort! { |x, y| (y[:RecordTypeID] || '') <=> (x[:RecordTypeID] || '') }
+            results.sort! do |x, y|
+              compare_name_bmd(y, x, 'RecordTypeID', ['QuarterNumber', 'Surname', 'GivenName', 'District'])
+            end
           end
       when SearchOrder::BMD_DATE
         if self.order_asc
@@ -1768,14 +1771,52 @@
     [] << hash.select{|key, value| value.present?}
   end
 
+  # Index rows often use forename initials (e.g. "Arthur H") when the user searched "Arthur Harold".
+  # Use word boundaries: "Arthur H%" wrongly matches Arthur Henry / Harry / Hambleton.
+  def self.given_name_initials_arel_constraints(table, name)
+    parts = name.to_s.strip.split(/\s+/)
+    return [] unless parts.length >= 2
+    return [] if parts[1..].any?(&:blank?)
+
+    first = parts[0]
+    constraints = []
+
+    if parts.length == 2
+      initial = parts[1][0]
+      constraints << table[:GivenName].eq("#{first} #{initial}")
+      constraints << table[:GivenName].matches("#{first} #{initial} %")
+    else
+      initials = parts[1..].map { |part| part[0] }.join(' ')
+      constraints << table[:GivenName].matches("#{first} #{initials}%")
+    end
+
+    constraints
+  end
+
+  def given_name_initials_fallback?
+    first_name.present? &&
+      !first_name_exact_match &&
+      !skip_first_name? &&
+      !first_name.start_with?('+') &&
+      first_name.strip.split(/\s+/).length >= 2
+  end
+
   def search_conditions_arel
 	  table = BestGuess.arel_table
 	  conditions = []
 
 	  # First name with LIKE
 	  if first_name.present? && !first_name_exact_match && !skip_first_name?
-		pattern = first_name.start_with?('+') ? "%#{first_name.delete_prefix('+').strip}%" : "#{first_name.strip}%"
-		conditions << table[:GivenName].matches(pattern)
+      if first_name.start_with?('+')
+        conditions << table[:GivenName].matches("%#{first_name.delete_prefix('+').strip}%")
+      else
+        stripped = first_name.strip
+        given_name_matches = [table[:GivenName].matches("#{stripped}%")]
+        if given_name_initials_fallback?
+          given_name_matches.concat(SearchQuery.given_name_initials_arel_constraints(table, stripped))
+        end
+        conditions << given_name_matches.reduce(:or)
+      end
 	  end
 
 	  # Second name

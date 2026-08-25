@@ -2,6 +2,6 @@
 <p>We have received correspondence for our <%=@appname%> donate CTA <%= @communication.identifier %> from <%= @communication.name %> email <%= @communication.email_address %>. </p>
 
 Following is the information submitted.</p>
-<p>  <%= @communication.body %></p>
+<%= simple_format(@communication.body) %>
 <p>The <%= @appname %> Team</p>
 </p>
