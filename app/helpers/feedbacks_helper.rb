@@ -31,7 +31,7 @@ module FeedbacksHelper
   def show_feedback_title_line_two(feedback)
     show_title = "We assigned reference number #{feedback.identifier} and it is "
     feedback.archived? ? show_title = show_title + 'archived ' : show_title = show_title + 'active '
-    feedback.screenshot_url.present? ?  show_title = show_title + 'and a screenshot was provided' : show_title = show_title + ' and no screenshot is available'
+    feedback.attachments_present? ?  show_title = show_title + 'and a screenshot was provided' : show_title = show_title + ' and no screenshot is available'
   end
 
   def show_feedback_add_comment_link(message, action)
