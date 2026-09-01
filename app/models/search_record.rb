@@ -161,6 +161,7 @@ class SearchRecord
 
 
   index({ place_id: 1, locations_names: 1 }, { name: 'place_location' })
+  index({ chapman_code: 1, record_type: 1 }, { name: 'chapman_record_type' })
 
   # This speeds up the lookup of SearchRecords by their Entry ID
   index({ freereg1_csv_entry_id: 1 })
