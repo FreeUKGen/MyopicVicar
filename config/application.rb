@@ -14,7 +14,26 @@
 #
 require File.expand_path('../boot', __FILE__)
 
-require 'rails/all'
+require 'rails'
+# Load the same frameworks as rails/all, minus active_storage/engine.
+# This app doesn't use ActiveStorage (no has_one_attached/has_many_attached
+# anywhere), and its auto-mounted /rails/active_storage/* routes were
+# being probed in production, erroring because the tables were never migrated.
+%w(
+  active_record/railtie
+  action_controller/railtie
+  action_view/railtie
+  action_mailer/railtie
+  active_job/railtie
+  action_cable/engine
+  rails/test_unit/railtie
+  sprockets/railtie
+).each do |railtie|
+  begin
+    require railtie
+  rescue LoadError
+  end
+end
 require 'csv'
 require File.expand_path('../lib/gro_abbrev', __dir__)
 

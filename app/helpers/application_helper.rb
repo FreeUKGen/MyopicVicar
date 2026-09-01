@@ -863,8 +863,8 @@ module ApplicationHelper
     }
   end
 
-  def footer_records_stats(stat,type)
-    stat.where(record_type: type).first.total_records if stat.where(record_type: type).first.present?
+  def footer_records_stats(stat, type)
+    stat.where(record_type: type).first&.total_records || 0
   end
 
   def contact_us_path

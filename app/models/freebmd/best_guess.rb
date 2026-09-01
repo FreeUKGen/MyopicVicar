@@ -512,6 +512,10 @@ class BestGuess < FreebmdDbBase
     record_hash.strip.chomp('==')
   end
 
+  def url_safe_record_hash
+    URI.encode_www_form_component(record_hash)
+  end
+
   def record_flag_hex
     record_flag.to_s(16)
   end

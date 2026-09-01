@@ -32,9 +32,29 @@ module BestGuessHelper
     if quarter <  Constant::EVENT_QUARTER_TO_YEAR
       date = "#{(format_quarter_name quarter).camelize} #{formatted_year quarter}"
     else
-      #date = formatted_year quarter
+      date = formatted_year quarter
     end
     date
+  end
+
+  # For whole-year indexes (1984 onwards) this also includes the Month of
+  # Registration when it is available, matching the level of detail shown
+  # for quarterly indexes (quarter + year). Marriages from 1994 onwards store
+  # Registered as a bare month code on the Submission (not entry.event_registration's
+  # "MM.YY" string), so they're formatted the same way _entry_information_table does.
+  def compact_text_date entry
+    quarter = entry['QuarterNumber']
+    if entry.respond_to?(:post_1994_marriage?) && entry.post_1994_marriage?
+      registered = entry.get_submission&.Registered
+      return registered.present? ? "#{QuarterDetails.month_hash_abbreviated[registered]} #{format_quarter_year(quarter)}" : format_quarter_year(quarter)
+    end
+
+    if quarter < Constant::EVENT_QUARTER_TO_YEAR
+      format_quarter(quarter)
+    else
+      registered = entry.respond_to?(:event_registration) ? entry.event_registration : nil
+      registered.present? ? format_registered(registered, quarter) : format_quarter(quarter)
+    end
   end
 
   def format_quarter_year quarter

@@ -7,5 +7,5 @@ Dear Colleague:
 <p>On the initial landing page after the log in; select the "Messages" button and on the list of messages select the "Show" for specific message identification <%=@message.identifier%>.</p>
 <p>In many cases you will be able reply to the originator of the message by selecting the "Reply" button at the top of the message being displayed.</p>
 <p>The following is the message content:</p>
-<p>  <%= @message.body %></p>
+<%= simple_format(@message.body) %>
 <p>The <%= @appname %> Team.</p>
