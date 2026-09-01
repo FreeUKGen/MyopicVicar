@@ -207,6 +207,7 @@ class FreeregContentsController < ApplicationController
   end
 
   def unique_church_names
+    # This derived summary can outlive its Church, so check that both still exist.
     @church = ChurchUniqueName.find_by(church_id: params[:id])
     actual_church = Church.find_by(_id: params[:id])
     redirect_back(fallback_location: { action: 'new' }, notice: 'That place does not exist') && return if @church.blank? || actual_church.blank?
