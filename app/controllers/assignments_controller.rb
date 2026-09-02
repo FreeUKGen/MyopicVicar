@@ -238,10 +238,16 @@ class AssignmentsController < ApplicationController
   end
 
   def update
+    # Derive my_own from the request rather than trusting the sticky session flag.
+    # A coordinator who previously visited their own assignments would otherwise
+    # carry session[:my_own] == true into the syndicate accept flow, which routes
+    # 'complete' actions down the transcriber branch (ts => rs instead of ts => t).
+    my_own = params.key?(:my_own) ? params[:my_own].to_s == 'true' : session[:my_own]
+
     case params[:_method]
     when 'put'
-      update_result = Assignment.update_assignment_from_put_request(session[:my_own], params)
-      flash[:notice] = Assignment.get_flash_message(params[:type], session[:my_own])
+      update_result = Assignment.update_assignment_from_put_request(my_own, params)
+      flash[:notice] = Assignment.get_flash_message(params[:type], my_own)
     else                                    # re_assign
       update_result = Assignment.update_assignment_from_reassign(params)
       flash[:notice] = 'Re_assignment was successful'
@@ -249,7 +255,7 @@ class AssignmentsController < ApplicationController
 
     flash[:notice] = 'Assignment information was changed, please try again' if update_result == false
 
-    if session[:my_own]
+    if my_own
       redirect_to list_assignments_of_myself_assignment_path
     else
       if params[:assignment].blank?
