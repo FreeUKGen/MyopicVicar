@@ -174,6 +174,17 @@ class NewFreeregCsvUpdateProcessor
     write_member_message_file(message) if no_member_message
   end
 
+  # Warn (once per church) that a batch arrived without a register type and was
+  # recorded as Unknown. Keeps a new upload from silently storing a blank type.
+  def report_unspecified_register_type(church_name, line)
+    @reported_unspecified_register_types ||= []
+    return if @reported_unspecified_register_types.include?(church_name)
+
+    @reported_unspecified_register_types << church_name
+    write_messages_to_all("The register type was not specified for #{church_name} (line #{line}); " \
+      "it has been recorded as Unknown. Please add the register type after the church name, e.g. 'St Mary PR'. <br>", true)
+  end
+
   def write_log_file(message)
     message_file.puts message
   end
@@ -1430,7 +1441,7 @@ class CsvRecord < CsvRecords
 
     success
   end
-  def validate_and_set_register_type(possible_register_type)
+  def validate_and_set_register_type(possible_register_type, church_name, project, line)
     if possible_register_type =~ FreeregOptionsConstants::VALID_REGISTER_TYPES
       # deal with possible register type; clean up variations before we check
       possible_register_type = possible_register_type.gsub(/\(?\)?'?"?[Ss]?/, '')
@@ -1441,10 +1452,12 @@ class CsvRecord < CsvRecords
         register_type = "PH" if register_type == "PT"
         register_type = "TR" if register_type == "OT"
       else
-        register_type = " "
+        project.report_unspecified_register_type(church_name, line)
+        register_type = "UK"
       end
     else
-      register_type = " "
+      project.report_unspecified_register_type(church_name, line)
+      register_type = "UK"
     end
     register_type
   end
@@ -1469,16 +1482,21 @@ class CsvRecord < CsvRecords
             register_type = "TR" if register_type == "OT"
             church_name = register_words.shift(n).join(" ")
           else
-            register_type = " "
+            #last word looked like a register type but isn't one; treat the whole field as the church name
+            church_name = @data_line[csvrecords.data_entry_order[:church_name]]
+            project.report_unspecified_register_type(church_name, line)
+            register_type = "UK"
           end
         else
           #straight church name and no register type
-          register_type = " "
           church_name = @data_line[csvrecords.data_entry_order[:church_name]]
+          project.report_unspecified_register_type(church_name, line)
+          register_type = "UK"
         end
       else
-        register_type = " "
         church_name = @data_line[csvrecords.data_entry_order[:church_name]]
+        project.report_unspecified_register_type(church_name, line)
+        register_type = "UK"
       end
       success = true
       message = "OK"
@@ -1512,7 +1530,7 @@ class CsvRecord < CsvRecords
       success4 = true
       church_name = @data_line[csvrecords.data_entry_order[:church_name]]
       possible_register_type = @data_line[csvrecords.data_entry_order[:register_type]]
-      register_type = validate_and_set_register_type(possible_register_type)
+      register_type = validate_and_set_register_type(possible_register_type, church_name, project, line)
       success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1
     else
       #part of church name
