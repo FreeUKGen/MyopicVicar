@@ -65,9 +65,9 @@
                       <% assignment_list_type = params[:assignment][:assignment_list_type] %>
                     <% end %>
                     <% if ['ts','rs'].include? x[:status] %>
-                      <%= link_to 'AC', assignment_path(x[:id], :status=>x[:status], :type=>'complete', :assignment_list_type=>assignment_list_type), :title=>'accept assignment', data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
+                      <%= link_to 'AC', assignment_path(x[:id], :status=>x[:status], :type=>'complete', :assignment_list_type=>assignment_list_type, :my_own=>false), :title=>'accept assignment', data: { confirm: 'Click OK if the assignment has been Completed' }, method: :put %>
                     <% end %>
-                    <%= link_to 'UN', assignment_path(x[:id], :status=>x[:status], :type=>'unassign', :assignment_list_type=>assignment_list_type), :title=>'un_assign assignment', data: { confirm: 'Click OK to un-assign the assignment'}, method: :put %>
+                    <%= link_to 'UN', assignment_path(x[:id], :status=>x[:status], :type=>'unassign', :assignment_list_type=>assignment_list_type, :my_own=>false), :title=>'un_assign assignment', data: { confirm: 'Click OK to un-assign the assignment'}, method: :put %>
                     <%= link_to 'RA', re_assign_assignment_path(x[:id], :image_server_group_id=>x[:group_id], :assign_type=>assignment_type, :assignment_list_type=>assignment_list_type), :title=>'re_assign assignment', data: { confirm: 'Do you want to re-assign images in this assignment?'} %>
                   <% end %>
                 </td>

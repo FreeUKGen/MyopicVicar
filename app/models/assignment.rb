@@ -59,7 +59,7 @@ class Assignment
           @update_result = bulk_update_assignment(my_own,x,action_type,orig_status,new_status)
 
           if @update_result == true
-            UserMailer.notify_sc_assignment_complete(assignment_id).deliver_now if my_own # from transcriber
+            UserMailer.notify_sc_assignment_complete(x).deliver_now if my_own # notify SC that transcriber finished
           end
         end
 
@@ -68,7 +68,7 @@ class Assignment
         update_result = bulk_update_assignment(my_own,assignment_ids,action_type,orig_status,new_status)
 
         if update_result == true
-          UserMailer.notify_sc_assignment_complete(assignment_ids).deliver_now if my_own # from transcriber
+          UserMailer.notify_sc_assignment_complete(assignment_ids).deliver_now if my_own # notify SC that transcriber finished
         end
 
         update_result == true ? (return true) : (return false)
@@ -162,8 +162,8 @@ class Assignment
     def get_flash_message(type,my_own)
       case type
       when 'complete'
-          if my_own then flash_message = 'email is sent to syndicate coordinator'  # from SC
-                    else flash_message = 'Accept assignment was successful'        # from transcriber
+          if my_own then flash_message = 'email is sent to syndicate coordinator'  # transcriber/reviewer submitted their work
+                    else flash_message = 'Accept assignment was successful'        # SC accepted the submitted work
           end
       when 'unassign'
           flash_message = 'UN_ASSIGN assignment was successful'
@@ -216,8 +216,8 @@ class Assignment
     def get_update_assignment_new_status(type,my_own,orig_status)
       case type
       when 'complete'
-          if my_own then new_status = orig_status == 'bt' ? 'ts' : 'rs' # from SC
-                    else new_status = orig_status == 'ts' ? 't' : 'r'   # from transcriber
+          if my_own then new_status = orig_status == 'bt' ? 'ts' : 'rs' # transcriber/reviewer submits their own work
+                    else new_status = orig_status == 'ts' ? 't' : 'r'   # SC accepts the submitted work
           end
       when 'unassign'
           new_status = orig_status == 'bt' ? 'a' : 't'
