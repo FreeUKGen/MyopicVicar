@@ -54,7 +54,7 @@ namespace :build_ssl do
     @@message_file = File.new(file_for_warning_messages, "a")
     @@message_file.chmod( 0664 )
     puts "Freereg messages log deleted."
-    x = system("rake load_emendations")
+    x = system(RbConfig.ruby, Rails.root.join('bin', 'rake').to_s, "load_emendations")
     puts "Emendations loaded" if x
     EmendationRule.create_indexes()
     EmendationType.create_indexes()
@@ -135,9 +135,10 @@ namespace :build_ssl do
 
     search_records = args.search_records
     time_start = Time.now
-    pid1 = Kernel.spawn("rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.range1}]")
-    pid2 = Kernel.spawn("rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.range2}]") unless args.range2.nil?
-    pid3 = Kernel.spawn("rake build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.range3}]") unless args.range3.nil?
+    rake = [RbConfig.ruby, Rails.root.join('bin', 'rake').to_s]
+    pid1 = Kernel.spawn(*rake, "build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.range1}]")
+    pid2 = Kernel.spawn(*rake, "build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.range2}]") unless args.range2.nil?
+    pid3 = Kernel.spawn(*rake, "build:process_freereg1_csv[#{args.type},#{args.search_records},#{args.range3}]") unless args.range3.nil?
     p "#{pid1} #{pid2}  #{pid3}  started at #{time_start}"
     p Process.waitall
     time_end = Time.now
@@ -153,9 +154,10 @@ namespace :build_ssl do
     if args.search_records == 'create_search_records_parallel'  then
       time_start = Time.now
       puts "Processing entries to search records with #{args.search_records}"
-      pid1 = Kernel.spawn("rake build:create_search_records[#{args.type},#{args.search_records},#{args.range1}]")
-      pid2 = Kernel.spawn("rake build:create_search_records[#{args.type},#{args.search_records},#{args.range2}]")  unless args.range2.nil?
-      pid3 = Kernel.spawn("rake build:create_search_records[#{args.type},#{args.search_records},#{args.range3}]")  unless args.range3.nil?
+      rake = [RbConfig.ruby, Rails.root.join('bin', 'rake').to_s]
+      pid1 = Kernel.spawn(*rake, "build:create_search_records[#{args.type},#{args.search_records},#{args.range1}]")
+      pid2 = Kernel.spawn(*rake, "build:create_search_records[#{args.type},#{args.search_records},#{args.range2}]")  unless args.range2.nil?
+      pid3 = Kernel.spawn(*rake, "build:create_search_records[#{args.type},#{args.search_records},#{args.range3}]")  unless args.range3.nil?
       p Process.waitall
       time_end = Time.now
       process_time = time_end - time_start

@@ -106,7 +106,7 @@ class Freecen1VldFilesController < ApplicationController
     get_user_info_from_userid
     file_name = vldfile.file_name
     logger.warn("FREECEN:VLD_DELETE: Starting background delete rake for #{file_name} (id #{vldfile.id})")
-    pid = spawn("bundle exec rake freecen:delete_freecen1_vld_file[#{vldfile.id},#{@user.userid}]")
+    pid = RakeSpawn.run("freecen:delete_freecen1_vld_file[#{vldfile.id},#{@user.userid}]")
     logger.warn("FREECEN:VLD_DELETE: rake task pid #{pid}")
     redirect_to freecen1_vld_files_path,
                 notice: "Deletion of #{file_name} has started. You will receive an email when it has completed."
@@ -218,7 +218,7 @@ class Freecen1VldFilesController < ApplicationController
     chapman_code = session[:chapman_code]
 
     logger.warn("FREECEN:VLD_INVALID_CIVIL_PARISH_LISTING: Starting rake task for #{userid} county #{chapman_code}")
-    pid1 = spawn("bundle exec rake list_vld_files_with_invalid_civil_parish[#{chapman_code},,#{userid}]")
+    pid1 = RakeSpawn.run("list_vld_files_with_invalid_civil_parish[#{chapman_code},,#{userid}]")
     logger.warn("FREECEN:VLD_INVALID_CIVIL_PARISH_LISTING: rake task for #{pid1}")
     flash[:notice] = "The list of VLD files with invalid Civil Parish names for #{chapman_code} is being generated. You will receive an email when it has finished."
     redirect_to freecen1_vld_files_path

@@ -66,7 +66,7 @@ class EmbargoRule
       return OpenStruct.new(success?: false, error: "The embargo records are being processed")
     else
       logger.warn("FREEREG:EMBARGO_PROCESSING: Starting embargo processing rake task for #{self.register} for record type #{self.record_type}")
-      pid1 = spawn("rake foo:process_embargo_records[\"#{self.id}\",\"#{email}\"]")
+      pid1 = RakeSpawn.run("foo:process_embargo_records[#{self.id},#{email}]")
       return OpenStruct.new(success?: true, message: "The embargo records are being processed. You will recieve an email when completed ")
     end
   end
