@@ -1,17 +1,25 @@
 # MyopicVicar Local Docker Environment
 
-A quick guide to get [MyopicVicar](https://github.com/FreeUKGen/MyopicVicar) up and running locally.
+- A quick guide to get [MyopicVicar](https://github.com/FreeUKGen/MyopicVicar) up and running locally.
+- Time Required: ~1 hour
 
-## Prerequisites
+This guide is for local development only. Do not add production credentials, private data, or production configuration to the `dev` directory.
 
-- macOS (tested) or Linux (untested)
-- Docker with Docker Compose v2
-- A local MyopicVicar fork:
+## Tested on:
+
+Use either of the following OS setups:
+
+- macOS, Docker with Docker Compose v2
+- Windows 11, Docker Desktop, WSL2
+
+However due to containerisation, this guide will likely also work with native Linux + Docker.
+
+## Repository
+
+You will need a local MyopicVicar fork, do the following:
+  
   - Fork [MyopicVicar](https://github.com/FreeUKGen/MyopicVicar)
   - Clone fork locally
-
-This setup is for local development only. Do not add production credentials,
-private data, or production configuration to this directory.
 
 ## Download Seed Data
 
