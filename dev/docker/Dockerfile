@@ -23,7 +23,7 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-RUN gem install bundler -v 2.2.16
+RUN gem install bundler -v 2.4.22
 
 WORKDIR /app
 
