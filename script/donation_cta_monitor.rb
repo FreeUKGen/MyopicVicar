@@ -70,6 +70,7 @@ def build_driver
   options.add_argument('--window-size=1400,1000')
   # Fresh profile per run so the popup's dismissal cookie is never set.
   options.add_argument("--user-data-dir=#{Dir.mktmpdir('donation_cta_check')}")
+  options.add_argument("--user-agent=#{ENV['MONITOR_USER_AGENT']}") if ENV['MONITOR_USER_AGENT']
   Selenium::WebDriver.for(:chrome, options: options)
 end
 
@@ -158,5 +159,9 @@ end
 results = SITES.map { |site, url| check_site(site, url) }
 results.each { |r| puts "#{r.site}: popup_open=#{r.popup_open} error=#{r.error.inspect}" }
 
-send_email(results)
-puts results.all?(&:ok?) ? 'Confirmation email sent.' : 'ALERT email sent - see results above.'
+if ENV['GMAIL_USERNAME']
+  send_email(results)
+  puts results.all?(&:ok?) ? 'Confirmation email sent.' : 'ALERT email sent - see results above.'
+else
+  puts results.join("\n")
+end
