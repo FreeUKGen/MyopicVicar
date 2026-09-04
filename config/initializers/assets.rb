@@ -26,7 +26,6 @@ Rails.application.configure do
   config.assets.precompile += %w[styles/css/freereg_content.css]
   config.assets.precompile += %w[prebid_ads.js]
   config.assets.precompile += %w( javascripts/freecen_gdpr.js )
-  config.assets.precompile += %w[jquery.min.js]
   config.assets.precompile += %w[jquery.chained.remote.js]
   config.assets.precompile += %w[jquery.cookiesDirective.js]
   config.assets.precompile += %w[html5shiv.js]
