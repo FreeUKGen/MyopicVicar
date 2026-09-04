@@ -124,6 +124,7 @@ package-lock.json
 .env.*.local
 
 data/*
+dev/docker/seed-data/
 
 .robocop.yml
 
