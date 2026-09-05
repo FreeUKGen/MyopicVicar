@@ -41,4 +41,5 @@ Rails.application.configure do
   config.assets.precompile += %w[advert_control.js]
   config.assets.precompile += %w[freecen_fuse_tag.js]
   config.assets.precompile += %w[freereg_fuse_tag.js]
+  config.assets.precompile += %w[multi_file_upload.js]
 end
