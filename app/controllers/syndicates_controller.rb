@@ -65,7 +65,7 @@ class SyndicatesController < ApplicationController
       @userids = UseridDetail.where(syndicate: @user.syndicate).all.order_by(userid_lower_case: 1) # need to add ability for more than one county
     when  session[:role] == 'county_coordinator'
       @userids = UseridDetail.where(syndicate: @user.syndicate).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
-    when  session[:role] == 'sydicate_coordinator'
+    when  session[:role] == 'syndicate_coordinator'
       @userids = UseridDetail.where(syndicate: @user.syndicate).all.order_by(userid_lower_case: 1) # need to add ability for more than one syndicate
     else
       @userids = @user
