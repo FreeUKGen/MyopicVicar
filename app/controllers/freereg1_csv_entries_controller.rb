@@ -202,9 +202,11 @@ class Freereg1CsvEntriesController < ApplicationController
 
     display_info
 
-    @embargo_permitted = (session[:role] == 'system_administrator' || session[:role] == 'executive_director') ? true : false
-    @freereg1_csv_entry.embargo_records.build if @embargo_permitted
-    @date = DateTime.now
+    prepare_embargo_edit_form
+    unless @embargo_permitted
+      redirect_back(fallback_location: freereg1_csv_entry_path(@freereg1_csv_entry), notice: 'You are not permitted to edit embargoes') && return
+    end
+
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
     session[:zero_listing] = true if params[:zero_listing].present?
   end
@@ -362,5 +364,18 @@ class Freereg1CsvEntriesController < ApplicationController
 
   def freereg1_csv_entry_params
     params.require(:freereg1_csv_entry).permit!
+  end
+
+  def prepare_embargo_edit_form
+    @embargo_permitted = (session[:role] == 'system_administrator' || session[:role] == 'executive_director')
+    return unless @embargo_permitted
+
+    @date = DateTime.now
+    @embargo_history = @freereg1_csv_entry.embargo_records.order_by(updated_at: -1).to_a
+    @embargo_change = @freereg1_csv_entry.embargo_records.build(
+      who: @user.userid,
+      when: @date
+    )
+    @embargo_change.write_attribute(:embargoed, nil)
   end
 end

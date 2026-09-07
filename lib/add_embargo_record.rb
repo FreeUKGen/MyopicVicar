@@ -126,7 +126,7 @@ class AddEmbargoRecord
       message_file.puts " Processing of embargo records is complete"
       message_file.close
     else
-      message_file.puts "We do not have any files for record tye: #{record_type}"
+      message_file.puts "We do not have any files for record type: #{rule.record_type}"
       message_file.close
     end
     userids = []
