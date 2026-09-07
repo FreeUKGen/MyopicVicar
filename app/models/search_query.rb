@@ -1697,7 +1697,12 @@
 
   def start_year_quarter
     start_year = year_with_default(year:self.start_year, default: 1837)
-    st_quarter = quarter_number(year: start_year, quarter: start_quarter)
+    # From 1984 the GRO indexes are annual; year-only records are all stored at
+    # quarter position 1 (QuarterNumber >= EVENT_YEAR_ONLY). A start quarter of
+    # Jun/Sep/Dec in such a year would exclude every record for it, so ignore the
+    # start quarter there (matches FreeBMD1 behaviour).
+    effective_start_quarter = start_year.to_i >= QuarterDetails.quarter_year(EVENT_YEAR_ONLY) ? 1 : start_quarter
+    st_quarter = quarter_number(year: start_year, quarter: effective_start_quarter)
     [st_quarter,min_dob_range_quarter].map(&:to_i).max
   end
 
