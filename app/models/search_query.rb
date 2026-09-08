@@ -110,6 +110,14 @@
   FREEBMD_IN_MEMORY_INPUT_CAP = 10_000
   # Max rows persisted and shown; result_count may be higher (full MySQL match count).
   FREEBMD_DISPLAY_LIMIT = 1000
+  # Leading/embedded wildcard surname searches ("*son", "sm*th") resolve the pattern
+  # against the surname dictionary and query BestGuess with `Surname IN (...)` (uses the
+  # Surname index) instead of `Surname LIKE '%x%'` (scans the whole ~300M-row table).
+  # This limit is a query-size guard only - so a near-empty pattern does not build an
+  # enormous IN clause or pull the whole dictionary. It is NOT a "too broad" judgement:
+  # that belongs to the EXPLAIN cost check and the result display limit, the same way
+  # FreeBMD1 uses SearchMaxCost + MaxResults. Over the limit we keep LIKE.
+  WILDCARD_SURNAME_IN_LIST_LIMIT = 2000
   # Columns stored on SearchQuery#search_result for FreeBMD (not full BestGuess rows).
   BMD_SNAPSHOT_ATTRIBUTE_KEYS = %w[
     RecordNumber RecordTypeID GivenName Surname OtherNames AssociateName AgeAtDeath
@@ -1876,8 +1884,11 @@
     records = SearchQuery.get_search_table.where(bmd_params_hash)
     records = apply_bmd_chapman_code_filter(records)
 
-    if wildcard_search_conditions.present?
-      sql, *values = wildcard_search_conditions
+    # Build once: wildcard_search_conditions now runs a dictionary lookup for
+    # leading/embedded surname wildcards, so it must not be recomputed per reference.
+    wildcard_conditions = wildcard_search_conditions
+    if wildcard_conditions.present?
+      sql, *values = wildcard_conditions
       records = records.where(sql, *values)
     end
 
@@ -1890,6 +1901,8 @@
     records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
     records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
 
+    log_freebmd_wildcard_query_cost(records) if wildcard_conditions.present? && records.respond_to?(:to_sql)
+
     if freebmd_needs_array_pipeline?
       records = run_freebmd_array_pipeline(records)
       records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
@@ -1898,6 +1911,24 @@
     record_count = freebmd_record_count(records)
 
     [records, record_count]
+  end
+
+  # Observability only (see FreeBMD1 lib/SearchDB.pm ExcessCost, which this informs).
+  # Runs EXPLAIN on the wildcard search SQL and logs the optimiser's estimated row cost
+  # and the index it chose, so we can size a real pre-flight cost gate from production
+  # data. The FreeBMD/MySQL search issues no USE INDEX (the index_hint / @search_index
+  # machinery is FreeREG/FreeCEN Mongo residue on this shared path), so this reflects
+  # what the optimiser does unaided. Must never raise: logging cannot break a search.
+  def log_freebmd_wildcard_query_cost(relation)
+    sql = relation.to_sql
+    plan = SearchQuery.get_search_table.connection.exec_query("EXPLAIN #{sql}").to_a
+    est_rows = plan.map { |r| r['rows'].to_i }.reject(&:zero?).inject(1, :*)
+    chosen_keys = plan.map { |r| r['key'] || '(none)' }.join(',')
+    scan_types = plan.map { |r| r['type'] }.join(',')
+    logger.warn("#{App.name_upcase}:SEARCH_COST: est_rows=#{est_rows} optimiser_keys=#{chosen_keys} scan_types=#{scan_types} " \
+                "last_name=#{last_name.inspect} first_name=#{first_name.inspect}")
+  rescue StandardError => e
+    logger.warn("#{App.name_upcase}:SEARCH_COST: EXPLAIN failed: #{e.class}: #{e.message}")
   end
 
   def freebmd_needs_array_pipeline?
@@ -3678,8 +3709,23 @@
 	def build_surname_wildcard_condition
 	  return nil unless last_name.present? && do_wildcard_seach?(last_name.strip)
 
+	  resolved = resolve_wildcard_surnames(last_name) if surname_wildcard_leading_or_embedded?(last_name)
+	  return { sql: "BestGuess.Surname IN (?)", value: resolved } if resolved.present?
+
 	  { sql: "BestGuess.Surname LIKE ?", value: name_wildcard_search(last_name) }
 	end
+
+  # A trailing-only wildcard after literal characters ("smith*", "smit?") is already an
+  # indexable prefix range for MySQL - leave it as LIKE. Only a leading or embedded
+  # wildcard ("*son", "sm*th") cannot use a prefix range and is worth resolving via the
+  # dictionary into `Surname IN (...)`.
+  def surname_wildcard_leading_or_embedded?(name)
+    stripped = sanitize_search_input(name)
+    return false unless stripped.match?(WILDCARD)
+
+    literal_prefix = stripped[/\A[^*?]*/]
+    literal_prefix.empty? || stripped[literal_prefix.length..-1].to_s.match?(/[^*?]/)
+  end
 
 	def build_mother_surname_wildcard_condition
 	  return nil unless mother_last_name.present? && do_wildcard_seach?(mother_last_name)
@@ -3688,4 +3734,52 @@
 	  pattern = "#{name_wildcard_search(mother_last_name)}#{conditional_percentage_wildcard(mother_last_name)}"
 	  { sql: "(BestGuess.RecordTypeID != ? OR BestGuess.AssociateName LIKE ?)", values: [RecordType::BIRTHS, pattern] }
 	end
+
+  # Resolve a leading/embedded wildcard surname ("*son", "sm*th") against the surname
+  # dictionary and return the concrete list, so the caller can query BestGuess with
+  # `Surname IN (...)` (uses the Surname index) instead of `Surname LIKE '%x%'` (scans the
+  # whole ~300M-row table).
+  #
+  # Source is currently the UniqueSurname Mongo collection (distinct BestGuess.Surname +
+  # count, maintained for the search-form type-ahead by lib/tasks/unique_surnames.rake).
+  # The dormant MySQL migration db/migrate/20221209222347_create_unique_surname.rb is the
+  # intended long-term home - same datastore as BestGuess, one connection, a plain indexed
+  # LIKE - and this method should move to it once that table is built and populated.
+  #
+  # Returns nil - and the caller keeps LIKE - when the dictionary is empty/unavailable,
+  # nothing matches, or more than WILDCARD_SURNAME_IN_LIST_LIMIT surnames match.
+  def resolve_wildcard_surnames(name)
+    regex = wildcard_name_to_anchored_regex(name)
+    return nil if regex.nil?
+
+    matches = UniqueSurname.where(Name: regex).limit(WILDCARD_SURNAME_IN_LIST_LIMIT + 1).pluck(:Name)
+    if matches.size > WILDCARD_SURNAME_IN_LIST_LIMIT
+      logger.warn("#{App.name_upcase}:WILDCARD_SURNAME: #{name.inspect} matched > #{WILDCARD_SURNAME_IN_LIST_LIMIT} surnames - keeping LIKE")
+      return nil
+    end
+    return nil if matches.empty?
+
+    logger.warn("#{App.name_upcase}:WILDCARD_SURNAME: #{name.inspect} resolved to #{matches.size} surname(s)")
+    matches
+  rescue StandardError => e
+    logger.warn("#{App.name_upcase}:WILDCARD_SURNAME: dictionary lookup failed for #{name.inspect} (#{e.class}: #{e.message}) - keeping LIKE")
+    nil
+  end
+
+  # User wildcard string -> anchored, case-insensitive Regexp for the dictionary lookup.
+  # "*" = any run of characters, "?" = one character (matching the SQL LIKE mapping in
+  # #name_wildcard_search); literal segments are Regexp.escaped.
+  def wildcard_name_to_anchored_regex(name)
+    sanitized = sanitize_search_input(name)
+    return nil if sanitized.blank? || !sanitized.match?(WILDCARD)
+
+    body = sanitized.split(/([*?])/).map do |segment|
+      case segment
+      when '*' then '.*'
+      when '?' then '.'
+      else Regexp.escape(segment)
+      end
+    end.join
+    Regexp.new("\\A#{body}\\z", Regexp::IGNORECASE)
+  end
 end
