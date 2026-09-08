@@ -310,6 +310,6 @@ class SearchQueriesController < ApplicationController
   private
 
   def search_params
-    permitted_model_params(SearchQuery)
+    params.require(:search_query).permit!
   end
 end
