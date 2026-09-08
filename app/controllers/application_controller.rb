@@ -84,6 +84,17 @@ class ApplicationController < ActionController::Base
    #removeing this code since we are not using Refinery anymore
   end
 
+  def permitted_model_params(model, key = model.model_name.param_key)
+    allowed = model.fields.keys - %w[_id _type]
+    params.require(key).permit!.to_h.slice(*allowed)
+  end
+
+  def unknown_request_parameter(exception)
+    logger.warn("#{appname_upcase}:We received an unexpected parameter #{exception.message} #{params}")Expand commentComment on line R130
+    flash[:notice] = 'Your request contained an unexpected value and could not be processed. Please try again.'Expand commentComment on line R131
+    redirect_to new_search_query_path
+  end
+
   private
 
   def strip_string_params
