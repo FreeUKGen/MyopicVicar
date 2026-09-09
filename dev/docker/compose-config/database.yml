@@ -1,0 +1,19 @@
+development:
+  adapter: mysql2
+  encoding: utf8
+  database: freereg2_development
+  pool: 5
+  username: freereg2
+  password: freereg2
+  host: mysql
+  port: 3306
+
+test:
+  adapter: mysql2
+  encoding: utf8
+  database: freereg2_development
+  pool: 5
+  username: freereg2
+  password: freereg2
+  host: mysql
+  port: 3306

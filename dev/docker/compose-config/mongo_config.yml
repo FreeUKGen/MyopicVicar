@@ -1,0 +1,26 @@
+development:
+  sleep: '0.0'
+  emmendation_sleep: '0'
+  mongodb_bin_location: '/usr/bin'
+  datafiles: 'tmp/users/'
+  datafiles_changeset: ''
+  website: 'localhost:3001'
+  delete_list: 'log/delete_files'
+  fc_update_processor_status_file: ''
+  member_open: true
+  ucf_support: true
+  wildcard_support: true
+  witness_support: true
+  github_issues_login: ''
+  github_issues_password: ''
+  github_issues_repo: ''
+  days_to_retain_search_queries: 10
+  max_search_time: 50000
+  our_secret_key: 'I do not think that word means what you think it means.'
+  secret_key_base:
+  timeout_researcher: 120
+  timeout_transcriber: 60
+  timeout_manager: 240
+  register_embargo_list: 'log/register_embargo_list'
+
+test:

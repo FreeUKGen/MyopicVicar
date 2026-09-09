@@ -1,0 +1,10 @@
+development:
+  api_key: "local-development-placeholder"
+  project_id: 1
+  host: ""
+  secure: false
+
+test:
+  api_key: "1"
+  project_id: 1
+  host: ""
