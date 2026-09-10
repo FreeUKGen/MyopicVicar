@@ -234,7 +234,7 @@ class SearchQuery
     if MyopicVicar::Application.config.template_set == 'freecen'
       first_name.present? && chapman_codes.length.positive? && freecen2_place_ids.present?
     elsif MyopicVicar::Application.config.template_set == 'freepro'
-      first_name.present? || text.present?
+      first_name.present? || text.present? || occupation.present?
     else
       first_name.present? && chapman_codes.length.positive? && place_ids.present?
     end
@@ -361,6 +361,24 @@ class SearchQuery
       date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
       date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
       params[:search_date] = date_params
+    end
+    params
+  end
+  def pro_date_search_params
+    params = {}
+    if start_year || end_year
+      date_params = {}
+      date_params['$gte'] = DateParser::start_search_date(start_year) if start_year
+      date_params['$lt'] = DateParser::end_search_date(end_year) if end_year
+      params["Death.Year"] = date_params
+    end
+    params
+  end
+
+  def pro_occupation_search_params
+    params = {}
+    if occupation
+      params["occupation"] = occupation
     end
     params
   end
@@ -1068,6 +1086,7 @@ class SearchQuery
   end
 
   def freepro_search_records
+    search_fields = pro_search_params
     search_fields = pro_adjust_field_names
     text_search = self.attributes.symbolize_keys[:text]
     if text_search.present?
@@ -1075,16 +1094,18 @@ class SearchQuery
       text_search_criterion = {"$search" => text_search}
       search_fields_with_text_search["$text".to_sym] = text_search_criterion
       search_fields.each do |key, value|
-        search_fields_with_text_search[key] = value.to_s
+        search_fields_with_text_search[key] = value.to_s unless key.to_s == 'Death.Year'
       end
       records = SearchQuery.get_search_table.where(search_fields_with_text_search)
     else
       records = SearchQuery.get_search_table.where(search_fields)
     end
-    recordCount = SearchQuery.get_search_table.count
     #records = SearchQuery.get_search_table.where("$text" => { "$search" => "Surrey" } ).and("Death.LastName" => "SMITH")
     #records = SearchQuery.get_search_table.where("Death.Address" => "the Lower Bourne Farnham Rural Surrey")
     #records = SearchQuery.get_search_table.where({"Death.LastName" => "EARWAKER"})
+    #records = SearchQuery.get_search_table.where("Death.Year": '1892'..'1895').and({"Death.GivenName": "William"})
+    #records = SearchQuery.get_search_table.where({"Death.Occupation" => "widow"})
+    recordCount = records.count
     persist_results(records)
     records
   end
@@ -1093,13 +1114,14 @@ class SearchQuery
     {
       first_name: 'Death.GivenName',
       last_name: 'Death.LastName',
-      start_year: 'Death.Year',
+      date_search: 'Death.Year',
+      occupation: 'Death.Occupation',
       session_id: 'RecordId'
     }
   end
 
   def name_fields
-    [:first_name, :last_name, :start_year, :end_year, :fuzzy]
+    [:first_name, :last_name, :fuzzy]
   end
 
   def has_wildcard? name
@@ -1129,6 +1151,8 @@ class SearchQuery
   def pro_search_params
     params = {}
     params.merge!(pro_search_names_criteria)
+    params.merge!(pro_date_search_params)
+    params.merge!(pro_occupation_search_params)
     params
   end
 

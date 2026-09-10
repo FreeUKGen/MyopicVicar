@@ -17,6 +17,7 @@
 class ApplicationController < ActionController::Base
   rescue_from ActionController::UnknownFormat, with: :missing_template
   protect_from_forgery :with => :reset_session, prepend: true
+  before_action :strip_string_params, prepend: true
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :require_login
   before_action :load_last_stat
@@ -27,7 +28,8 @@ class ApplicationController < ActionController::Base
   require 'userid_role'
   require 'register_type'
   require 'gdpr_countries'
-  helper_method :appname, :appname_upcase, :appname_downcase, :mobile_device?, :device_type
+  helper_method :appname, :appname_upcase, :appname_downcase, :mobile_device?, :device_type,
+                :current_authentication_devise_user
   def appname
     MyopicVicar::Application.config.freexxx_display_name
   end
@@ -78,24 +80,44 @@ class ApplicationController < ActionController::Base
   end
 
   def load_message_flag
-    # This tells system there is a message to display
-    if session[:message].blank?
-      session[:message] = 'no'
-      # session[:message] = 'load' if Refinery::Page.where(slug: 'message').exists?
-    end
+    # Message flag previously loaded from Refinery CMS pages; no longer used.
   end
 
   private
 
+  def strip_string_params
+    strip_hash_values(params)
+  end
+
+  def strip_hash_values(hash)
+    return unless hash.respond_to?(:each)
+    hash.each do |key, value|
+      case value
+      when String
+        hash[key] = value.strip
+      when Hash, ActionController::Parameters
+        strip_hash_values(value)
+      when Array
+        value.each_with_index do |item, i|
+          value[i] = item.strip if item.is_a?(String)
+          strip_hash_values(item) if item.is_a?(Hash) || item.is_a?(ActionController::Parameters)
+        end
+      end
+    end
+  end
+
   def after_sign_in_path_for(resource_or_scope)
     cookies.signed[:Administrator] = Rails.application.config.github_issues_password
-    cookies.signed[:userid] = current_authentication_devise_user.userid_detail_id
-    session[:userid_detail_id] = current_authentication_devise_user.userid_detail_id
-    session[:devise] = current_authentication_devise_user.id
-    logger.warn "#{appname_upcase}::USER current  #{current_authentication_devise_user.username}"
-    scope = Devise::Mapping.find_scope!(resource_or_scope)
-    home_path = "#{scope}_root_path"
-    # respond_to?(home_path, true) ? refinery.send(home_path) : main_app.new_manage_resource_path
+    cookies.signed[:userid] = current_user.userid_detail_id
+    session[:userid_detail_id] = current_user.userid_detail_id
+    session[:devise] = current_user.id
+    logger.warn "#{appname_upcase}::USER current  #{current_user.username}"
+    main_app.new_manage_resource_path
+  end
+
+  # Legacy name from Refinery::Authentication::Devise; app views and controllers still use it.
+  def current_authentication_devise_user
+    current_user
   end
 
   def check_for_mobile
@@ -244,9 +266,24 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
-    if session[:userid_detail_id].nil?
+    return if request.path.start_with?('/assets/')
+
+    unless user_signed_in?
       flash[:notice] = "You must be logged in to access that action"
-      redirect_to(new_search_query_path) && return  # halts request cycle
+      redirect_to(new_search_query_path) && return
+    end
+
+    uid = current_user.userid_detail_id
+    if uid.blank?
+      flash[:notice] = 'Your account is not linked to a member profile. Please contact support.'
+      sign_out(:user)
+      redirect_to(new_search_query_path) && return
+    end
+
+    if session[:userid_detail_id].to_s != uid.to_s || session[:devise].to_s != current_user.id.to_s
+      session[:userid_detail_id] = uid.to_s
+      session[:devise] = current_user.id.to_s
+      cookies.signed[:userid] = uid.to_s
     end
   end
 

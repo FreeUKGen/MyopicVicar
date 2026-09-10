@@ -20,6 +20,17 @@ MyopicVicar::Application.routes.draw do
   resources :reminder_to_donate
   resources :donate_cta_feedback
 
+  devise_for :users, controllers: {sessions: 'users/sessions', passwords: 'users/passwords'} do
+    get '/users/sign_in(.:format)', to: 'users/sessions#new', as: :new_user_session
+    post '/users/sign_in(.:format)', to: 'users/sessions#create', as: :user_session
+    delete '/users/sign_out(.:format)', to: 'users/sessions#destroy', as: :destroy_user_session
+    get '/users/password/new(.:format)', to: 'users/passwords#new', as: :new_user_password
+    get '/users/password/edit(.:format)', to: 'users/passwords#edit', as: :edit_user_password
+    patch '/users/password(.:format)', to: 'users/passwords#update', as: :user_password
+    put '/users/password(.:format)', to: 'users/passwords#update', as: :update_user_password
+    post '/users/password(.:format)', to: 'users/passwords#create', as: :create_user_password
+  end
+
   get 'tna_change_logs/:id/download(.:format)', :to => 'tna_change_logs#download', :as => :download_tna_change_logs
   resources :tna_change_logs
 
@@ -622,14 +633,6 @@ MyopicVicar::Application.routes.draw do
   patch '/probates/:id/edit', :to => 'probates#update', :as => :probate_update
   #post '/probates/:id/edit', :to => 'probates#update', :as => :probate_update
 
-  # This line mounts Refinery's routes at the root of your application.
-  # This means, any requests to the root URL of your application will go to Refinery::PagesController#home.
-  # If you would like to change where this extension is mounted, simply change the :at option to something different.
-  #
-  # We ask that you don't use the :as option here, as Refinery relies on it being the default of "refinery"
-
-  # mount Refinery::Core::Engine, :at => '/cms'
-
   #ActiveAdmin.routes(self)
 
   #devise_for :admin_users, ActiveAdmin::Devise.config
@@ -688,7 +691,6 @@ MyopicVicar::Application.routes.draw do
 
   # See how all your routes lay out with "rake routes"
 
-  # This is a legacy wild controller route that's not recommended for RESTful applications.
-  # Note: This route will make all actions in every controller accessible via GET requests.
-  # match ':controller(/:action(/:id(.:format)))'
+  # Catch-all route for static pages copied from Refinery CMS
+  get '*path', to: 'pages#show', as: :page, format: false
 end

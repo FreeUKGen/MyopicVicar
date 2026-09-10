@@ -383,6 +383,7 @@ module ApplicationHelper
     when 'freepro'
       display_map['Start Year'] = search_query.start_year if search_query.start_year
       display_map['End Year'] = search_query.end_year if search_query.end_year
+      display_map['Occupation'] = search_query.occupation if search_query.occupation.present?
       display_map['Text search'] = search_query.text if search_query.text.present?
     end
     display_map

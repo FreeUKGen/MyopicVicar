@@ -1,6 +1,6 @@
 <header class="site__header" style='padding-top: 20px;' >
   <div class="container">
-    <% unless current_page?('/cms/refinery/login') || current_page?('/cms/home/page-not-found') || current_page?('/cms/refinery/users/login')%>
+    <% unless current_page?('/users/sign_in') || current_page?('/cms/home/page-not-found')%>
       <% case appname_downcase %>
       <% when 'freecen' %>
       <% unless device_type == :mobile%>

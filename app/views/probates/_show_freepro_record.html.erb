@@ -41,23 +41,27 @@
     <% end %>
     <% if @event[:Date].present? %>
     <tr>
-      <th scope="row"><%= @event[:Type] %> Date</th>
+      <th scope="row"><%= @event[:Type] %> date</th>
       <td><%= @event[:Date] %></td>
     </tr>
     <% end %>
     <% if @event[:Person].present? %>
     <tr>
-      <th scope="row"><%= @event[:Type] %> People</th>
+      <th scope="row"><%= @event[:Type] %> executors</th>
       <td>
         <% @event[:Person].each do |p| %>
-          <%= p %><br/>
+          <%= p[:GivenName] if p[:GivenName].present? %>
+          <%= p[:LastName] if p[:LastName].present? %>
+          <%= ' ('+p[:Occupation]+')' if p[:Occupation].present? %>
+          <%= ' ('+p[:Note]+')' if p[:Note].present? %>
+          <br/>
         <% end %>
       </td>
     </tr>
     <% end %>
     <% if @event[:Value].present? %>
     <tr>
-      <th scope="row"><%= @event[:Type] %> Value</th>
+      <th scope="row"><%= @event[:Type] %> value (£)</th>
       <td><%= @event[:Value] %></td>
     </tr>
     <% end %>

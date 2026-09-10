@@ -100,10 +100,10 @@ class ReportProblemEmailAddress
         p " #{header[:userid]} is not present and will be added"
         userid = UseridDetail.new(header)
         userid.save
-        u = Refinery::Authentication::Devise::User.where(:username => header[:userid]).first
+        u = User.where(:username => header[:userid]).first
       else
         unless header[:email_address] == userid.email_address
-          u = Refinery::Authentication::Devise::User.where(:username => header[:userid]).first
+          u = User.where(:username => header[:userid]).first
           u.email = nil
           u.save
           userid.update_attributes(:email_address => header[:email_address])
@@ -118,7 +118,7 @@ class ReportProblemEmailAddress
       if !userid.nil? && (userid.errors.any? )
         previous_userid = UseridDetail.where(:email_address => header[:email_address]).first
         previous_userid = previous_userid.userid unless previous_userid.nil?
-        previous_user = Refinery::Authentication::Devise::User.where(:email => header[:email_address]).first
+        previous_user = User.where(:email => header[:email_address]).first
         previous_user = previous_user.username unless previous_user.nil?
         @@message_file.puts "#{header[:userid]};#{userid.errors.messages};#{header[:email_address]}; #{previous_userid}; #{previous_user}"
         p "#{header[:userid]};#{userid.errors.messages};#{header[:email_address]}; #{previous_userid}; #{previous_user}"
