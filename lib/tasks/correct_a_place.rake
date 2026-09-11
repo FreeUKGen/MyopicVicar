@@ -2,7 +2,7 @@ desc "Correct a place"
 task :correct_a_place => :environment do
 
   file_for_warning_messages = "log/correct_a_place.log"
-  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
   message_file = File.new(file_for_warning_messages, "w")
   p "Started a correct a place"
   message_file.puts  "Started a correct a place"

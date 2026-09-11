@@ -26,7 +26,7 @@ class Csvfile < CarrierWave::Uploader::Base
 
       if File.file?(file_location)
         newdir = File.join(File.join(Rails.application.config.datafiles, userid), '.attic')
-        Dir.mkdir(newdir) unless Dir.exists?(newdir)
+        Dir.mkdir(newdir) unless Dir.exist?(newdir)
         time = Time.now.to_i.to_s
         renamed_file = (file_location + '.' + time).to_s
         File.rename(file_location, renamed_file)
@@ -151,7 +151,7 @@ class Csvfile < CarrierWave::Uploader::Base
     case MyopicVicar::Application.config.template_set
     when 'freereg'
       if user.person_role == 'trainee'
-        pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
+        pid1 = RakeSpawn.run("build:freereg_new_update[no_search_records,individual,no,#{range}]")
         message = "The csv file #{file_name} is being checked. You will receive an email when it has been completed."
         process = true
       elsif processing_time < PROCESSING_TIME_THRESHOLD
@@ -162,7 +162,7 @@ class Csvfile < CarrierWave::Uploader::Base
          # message = "The csv file #{file_name} has been sent for processing . You will receive an email when it has been completed."
         #else
           initiation_locking_file = File.new(processor_initiation_lock_file, 'w') unless File.exist?(processor_initiation_lock_file)
-          pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+          pid1 = RakeSpawn.run('build:freereg_new_update[create_search_records,waiting,no,a-9]')
           message = "The csv file #{file_name} is being processed . You will receive an email when it has been completed."
         #end
         process = true
@@ -175,7 +175,7 @@ class Csvfile < CarrierWave::Uploader::Base
     when 'freecen'
       batch.update_attributes(waiting_to_be_processed: true, waiting_date: Time.now)
       logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{userid} #{file_name}")
-      pid1 =  spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{range}\",\"'Modern'\",\"#{type_of_processing}\"]")
+      pid1 = RakeSpawn.run("build:freecen_csv_process[no_search_records,individual,no,#{range},Modern,#{type_of_processing}]")
       message = "The csv file #{file_name} is being checked. You will receive an email when it has been completed."
       logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
       process = true

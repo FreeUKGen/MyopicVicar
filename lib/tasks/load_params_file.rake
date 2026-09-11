@@ -4,7 +4,7 @@ ALLOWED_FILE_TYPES = ['*.dat', '*.csv', '*.DAT', '*.CSV']
 
 def load_params(origin, file_type)
   Dir.glob(File.join(origin, file_type)).each do |file|
-  	if File.exists? File.join(DESTINATION, File.basename(file))
+  	if File.exist? File.join(DESTINATION, File.basename(file))
   		FileUtils.move file, File.join(DESTINATION, "1-#{File.basename(file)}")
   	else
   		FileUtils.move file, File.join(DESTINATION, File.basename(file))

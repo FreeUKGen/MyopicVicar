@@ -74,7 +74,7 @@ class CreateUseridDocs
       p "unknown range style"
     end
     file_for_warning_messages = "log/userid_detail_messages.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
     @@message_file = File.new(file_for_warning_messages, "w")
     @@message_file.puts  "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a range #{range} that translates to #{filenames.length} userids"
     p "Started a Userid Detail build with options of #{type} with a base directory at #{base_directory} and a range #{range} that translates to #{filenames.length} userids"

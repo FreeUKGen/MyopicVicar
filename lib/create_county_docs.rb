@@ -6,7 +6,7 @@ def self.process(type,range)
  
      
  	   file_for_warning_messages = "log/update_freereg_syndicate_messages.log"
-     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+     FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
      message_file = File.new(file_for_warning_messages, "w")
      p "Started a county build with options of #{type} with a base directory at #{base_directory} and a file #{range}"
      message_file.puts  "Started a county build with options of #{type} with a base directory at #{base_directory} and a file #{range}"

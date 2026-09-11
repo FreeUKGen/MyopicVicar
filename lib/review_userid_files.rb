@@ -29,7 +29,7 @@ class ReviewUseridFiles
 
   def self.process(len,range,fr)
     file_for_warning_messages = "log/review_userid_detail_file_message.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
     @@message_file = File.new(file_for_warning_messages, "w")
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     @@message_file.puts "This is a comparison of userids and the user fileset"

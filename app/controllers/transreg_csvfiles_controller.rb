@@ -43,14 +43,14 @@ class TransregCsvfilesController < ApplicationController
           @result = "success"
 
           Rails.logger.info "[transreg_csvfiles_controller] trainee: spawn rake build:freereg_new_update"
-          pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
+          pid1 = RakeSpawn.run("build:freereg_new_update[no_search_records,individual,no,#{range}]")
           @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
         when processing_time < 600
           batch.update_attributes(:waiting_to_be_processed => true, :waiting_date => Time.now)
           #check to see if rake task running
           rake_lock_file = File.join(Rails.root,"tmp","processing_rake_lock_file.txt")
           processor_initiation_lock_file = File.join(Rails.root,"tmp","processor_initiation_lock_file.txt")
-          pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+          pid1 = RakeSpawn.run('build:freereg_new_update[create_search_records,waiting,no,a-9]')
           @message =  "The csv file #{ @csvfile.file_name} has been sent for processing . You will receive an email when it has been completed."
           #f = File.open(rake_lock_file, File::CREAT)
           #if f.flock(File::LOCK_SH) || File.exist?(processor_initiation_lock_file)
@@ -137,7 +137,7 @@ class TransregCsvfilesController < ApplicationController
           @result = "success"
 
           Rails.logger.info "[transreg_csvfiles_controller] trainee: spawn rake build:freereg_new_update"
-          pid1 = Kernel.spawn("rake build:freereg_new_update[\"no_search_records\",\"individual\",\"no\",#{range}]")
+          pid1 = RakeSpawn.run("build:freereg_new_update[no_search_records,individual,no,#{range}]")
           @message =  "The csv file #{ @csvfile.file_name} is being checked. You will receive an email when it has been completed."
         when processing_time < 600
           batch.update_attributes(:waiting_to_be_processed => true, :waiting_date => Time.now)
@@ -150,7 +150,7 @@ class TransregCsvfilesController < ApplicationController
           else
             @result = "success"
             logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{@csvfile.userid} #{@csvfile.file_name}")
-            pid1 = Kernel.spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+            pid1 = RakeSpawn.run('build:freereg_new_update[create_search_records,waiting,no,a-9]')
             @message =  "The csv file #{ @csvfile.file_name} is being processed . You will receive an email when it has been completed."
           end
         when processing_time >= 600

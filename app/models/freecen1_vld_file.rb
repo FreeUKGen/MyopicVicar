@@ -205,7 +205,7 @@ class Freecen1VldFile
   def auto_validate_pobs(email_userid)
     mode = 'F'
     logger.warn("FREECEN:VLD_POB_VALIDATION: Starting rake task for #{email_userid} VLD File #{file_name} in #{dir_name}")
-    pid1 = spawn("bundle exec rake freecen:vld_auto_validate_pob[#{mode},#{dir_name},#{file_name},#{email_userid}]")
+    pid1 = RakeSpawn.run("freecen:vld_auto_validate_pob[#{mode},#{dir_name},#{file_name},#{email_userid}]")
     logger.warn("FREECEN:VLD_POB_VALIDATION: rake task for #{pid1}")
   end
 
@@ -692,7 +692,7 @@ class Freecen1VldFile
       return [proceed, message]
     end
     logger.warn("FREECEN:VLD_PROCESSING: Starting rake task for #{userid} #{uploaded_file_name} in #{dir_name}")
-    pid1 = spawn("rake freecen:process_freecen1_vld[#{ File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)},#{userid}]")
+    pid1 = RakeSpawn.run("freecen:process_freecen1_vld[#{File.join(Rails.application.config.vld_file_locations, dir_name, uploaded_file_name)},#{userid}]")
     message = "The vld file #{uploaded_file_name} is being processed. You will receive an email when it has been completed."
     logger.warn("FREECEN:VLD_PROCESSING: rake task for #{pid1}")
     process = true
