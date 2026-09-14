@@ -33,6 +33,7 @@ class Register
   belongs_to :church, index: true
 
   has_many :sources, dependent: :restrict_with_error # includes origin server of images
+  has_many :register_unique_names, dependent: :destroy
   has_many :embargo_rules
   has_many :gaps
 
