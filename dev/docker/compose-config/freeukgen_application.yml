@@ -1,0 +1,17 @@
+development:
+  template_set: 'freereg'
+  gtm_key: ''
+  advert_key:
+    data_ad_client: ""
+    data_ad_slot_header: ""
+    data_ad_slot_google_advert: ""
+    data_ad_slot_coverage: ""
+    data_ad_slot_fullwidth: ""
+    data_ad_slot_side: ""
+
+test:
+  template_set: 'freereg'
+  gtm_key: ''
+  advert_key:
+    data_ad_client: ""
+    data_ad_slot_header: ""
