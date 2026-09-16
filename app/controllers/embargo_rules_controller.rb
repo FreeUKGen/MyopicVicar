@@ -36,7 +36,7 @@ class EmbargoRulesController < ApplicationController
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
     @edit = true
     get_user_info_from_userid
-    reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(session[:role])
+    reject_access(@user, 'Embargo Reason') unless EmbargoRule::PERMITTED_ROLES.include?(session[:role])
   end
 
   def extract_location_from_params(param)
@@ -62,7 +62,7 @@ class EmbargoRulesController < ApplicationController
   def new
     extract_location_from_params(params)
     get_user_info_from_userid
-    reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(session[:role])
+    reject_access(@user, 'Embargo Reason') unless EmbargoRule::PERMITTED_ROLES.include?(session[:role])
 
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
     rules = []
