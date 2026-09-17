@@ -870,7 +870,7 @@ class CsvFile < CsvFiles
       freereg1_csv_file.update_register
       message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
     else
-      freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def], :order => self.header[:order])
+      freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :modification_date => self.header[:modification_date], :lds => self.header[:lds], :def => self.header[:def], :order => self.header[:order])
       message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
       #remove batch errors for this location
       freereg1_csv_file.error = 0
