@@ -1,5 +1,5 @@
 # Publift Fuse ads.txt #
-# Updated: August 2026 #
+# Updated: September 2026 #
 # Contact: support@publift.com #
 
 
@@ -379,6 +379,7 @@ amxrtb.com, 105199565, RESELLER, 3adbe8d09f15cf6c
 adagio.io, 1421, RESELLER
 programmaticx.ai, 656312, DIRECT, b42d42eb28400efa
 targetbetter.com, T6312, DIRECT
+vidazoo.com, 69c57fe5a4f8fe1962093b68, DIRECT, b6ada874b4d7d0b2
 
 
 # Equative
@@ -699,6 +700,7 @@ sharethrough.com, n98xdzel, RESELLER, d53b998a7bd4ecd2
 themediagrid.com, uot45z, RESELLER, 35d5010d7789b49d
 appnexus.com, 3920, RESELLER, f5ab79cb980f11d1
 xandr.com, 16546, RESELLER, f5ab79cb980f11d1
+eskimi.com, 2020001283, RESELLER
 
 
 # Seedtag
