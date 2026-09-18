@@ -5,6 +5,7 @@ class Register
   require 'record_type'
   require 'register_type'
   require 'freereg_validations'
+  require 'extract_collection_unique_names'
 
 
   field :status, type: String
@@ -316,20 +317,117 @@ class Register
   end
 
   def merge_registers
-    register_id = self._id
-    church = self.church
-    church.registers.each do |register|
-      register.register_type
-      unless (register._id == register_id || register.register_type != self.register_type)
-        return [false, "a register being merged has input"] if register.has_input?
-        register.freereg1_csv_files.each do |file|
-          file.update_attribute(:register_id, register_id)
-        end
-        church.registers.delete(register)
+    losing_registers = Register.where(church_id: church_id, register_type: register_type, :id.ne => id).to_a
+    return [false, 'a register being merged has input'] if losing_registers.any?(&:has_input?)
+    return [true, ''] if losing_registers.empty?
+
+    dependency_ids = merge_dependency_ids(losing_registers)
+    Register.with_session do |session|
+      session.with_transaction do
+        verify_merge_candidates!(losing_registers)
+        merge_dependencies!(losing_registers, dependency_ids, session)
       end
     end
-    return [true, ""]
+
+    enqueue_merged_embargo_rules(dependency_ids[:embargo_rule_ids])
+    [true, '']
+  rescue StandardError => error
+    Rails.logger.error("Register merge failed for #{id}: #{error.class}: #{error.message}")
+    [false, "#{error.class}: #{error.message}"]
   end
+
+  private
+
+  def merge_dependency_ids(losing_registers)
+    losing_ids = losing_registers.map(&:id)
+    {
+      register_ids: losing_ids,
+      file_ids: Freereg1CsvFile.where(:register_id.in => losing_ids).pluck(:id),
+      source_ids: Source.where(:register_id.in => losing_ids).pluck(:id),
+      gap_ids: Gap.where(:register_id.in => losing_ids).pluck(:id),
+      embargo_rule_ids: EmbargoRule.where(:register_id.in => losing_ids).pluck(:id)
+    }
+  end
+
+  def verify_merge_candidates!(losing_registers)
+    expected_ids = losing_registers.map(&:id).sort
+    current = Register.where(church_id: church_id, register_type: register_type, :id.ne => id).to_a
+    raise 'merge candidates changed after preflight' unless current.map(&:id).sort == expected_ids
+    raise 'a register being merged has input' if current.any?(&:has_input?)
+    raise 'target register changed after preflight' unless Register.where(id: id, church_id: church_id, register_type: register_type).exists?
+  end
+
+  def merge_dependencies!(losing_registers, dependency_ids, session)
+    losing_ids = dependency_ids[:register_ids]
+    Freereg1CsvFile.where(:id.in => dependency_ids[:file_ids]).update_all(register_id: id)
+    Source.where(:id.in => dependency_ids[:source_ids]).update_all(register_id: id)
+    Gap.where(:id.in => dependency_ids[:gap_ids]).update_all(register_id: id)
+    merge_embargo_rules!(dependency_ids[:embargo_rule_ids], session)
+
+    RegisterUniqueName.where(:register_id.in => [id] + losing_ids).delete_all
+    ExtractCollectionUniqueNames.reconcile_register(self)
+
+    verify_dependencies_transferred!(losing_ids)
+    losing_registers.each { |register| destroy_merged_register!(register) }
+    reload.calculate_register_numbers
+  end
+
+  def merge_embargo_rules!(losing_rule_ids, session)
+    target_rules = EmbargoRule.where(register_id: id).to_a
+    EmbargoRule.where(:id.in => losing_rule_ids).no_timeout.each do |losing_rule|
+      retained_rule = target_rules.find { |rule| embargo_rules_equivalent?(rule, losing_rule) }
+      if retained_rule
+        remap_embargo_rule_references!(losing_rule, retained_rule, session)
+        EmbargoRule.where(id: losing_rule.id).delete_all
+      else
+        EmbargoRule.where(id: losing_rule.id).update_all(register_id: id)
+        target_rules << losing_rule
+      end
+    end
+  end
+
+  def embargo_rules_equivalent?(first, second)
+    first.period == second.period && first.rule == second.rule && first.record_type == second.record_type
+  end
+
+  def remap_embargo_rule_references!(losing_rule, retained_rule, session)
+    Freereg1CsvEntry.collection.find('embargo_records.rule_applied' => losing_rule.id.to_s).update_many(
+      { '$set' => {
+        'embargo_records.$[record].rule_applied' => retained_rule.id.to_s,
+        'embargo_records.$[record].rule_date' => retained_rule.updated_at.utc.to_s
+      } },
+      array_filters: [{ 'record.rule_applied' => losing_rule.id.to_s }],
+      session: session
+    )
+  end
+
+  def verify_dependencies_transferred!(losing_ids)
+    remaining = {
+      files: Freereg1CsvFile.where(:register_id.in => losing_ids).exists?,
+      sources: Source.where(:register_id.in => losing_ids).exists?,
+      gaps: Gap.where(:register_id.in => losing_ids).exists?,
+      embargo_rules: EmbargoRule.where(:register_id.in => losing_ids).exists?,
+      unique_names: RegisterUniqueName.where(:register_id.in => losing_ids).exists?
+    }
+    failures = remaining.select { |_name, present| present }
+    raise "dependencies remain on losing registers: #{failures.inspect}" if failures.present?
+  end
+
+  def destroy_merged_register!(register)
+    destroyed = register.destroy
+    raise "failed to destroy losing register #{register.id}: #{register.errors.full_messages.join(', ')}" unless destroyed
+    raise "losing register #{register.id} still exists after destruction" if Register.where(id: register.id).exists?
+  end
+
+  def enqueue_merged_embargo_rules(losing_rule_ids)
+    return if losing_rule_ids.blank?
+
+    reload.embargo_rules.no_timeout.each(&:add_to_rake_register_embargo_list)
+  rescue StandardError => error
+    Rails.logger.error("Register merge embargo enqueue failed for #{id}: #{error.class}: #{error.message}")
+  end
+
+  public
 
   def propogate_register_type_change(old_type)
     place = self.church.place

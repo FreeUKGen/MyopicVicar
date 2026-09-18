@@ -79,6 +79,20 @@ class ExtractCollectionUniqueNames
       end
     end
 
+    def reconcile_register(register)
+      unique_names = {}
+      register.freereg1_csv_files.no_timeout.each do |file|
+        unique_names = unique_names.merge(file.get_unique_names) { |_key, first, second| first + second }
+      end
+
+      forenames = extract_unique_forenames(unique_names).sort
+      surnames = extract_unique_surnames(unique_names).sort
+      RegisterUniqueName.where(register_id: register.id).delete_all
+      return if forenames.blank? && surnames.blank?
+
+      RegisterUniqueName.create!(register_id: register.id, unique_forenames: forenames, unique_surnames: surnames)
+    end
+
     def extract_unique_forenames(names)
       forenames = []
       names.each_pair do |key, value|
