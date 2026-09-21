@@ -1,0 +1,63 @@
+name: Issue closure report (TSC)
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: 'First day of period (YYYY-MM-DD)'
+        required: true
+        type: string
+      end_date:
+        description: 'Last day of period (YYYY-MM-DD)'
+        required: true
+        type: string
+      repository:
+        description: 'FreeREG'
+        required: true
+        default: 'FreeUKGen/MyopicVicar'
+        type: string
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    steps:
+      - name: Count closed / opened / open
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ inputs.repository }}
+          FROM: ${{ inputs.start_date }}
+          TO: ${{ inputs.end_date }}
+        run: |
+          set -e
+          q_closed="repo:${REPO}+is:issue+is:closed+closed:${FROM}..${TO}"
+          q_opened="repo:${REPO}+is:issue+created:${FROM}..${TO}"
+          q_still_open="repo:${REPO}+is:issue+is:open"
+
+          closed=$(gh api "/search/issues?q=${q_closed}&per_page=1" --jq '.total_count')
+          opened=$(gh api "/search/issues?q=${q_opened}&per_page=1" --jq '.total_count')
+          still_open=$(gh api "/search/issues?q=${q_still_open}&per_page=1" --jq '.total_count')
+
+          {
+            echo "## Issue report for TSC"
+            echo ""
+            echo "- **Repository:** ${REPO}"
+            echo "- **Period:** ${FROM} → ${TO} (inclusive, by *closed* date)"
+            echo "- **Issues closed in period:** ${closed}"
+            echo "- **Issues opened in period:** ${opened}"
+            echo "- **Issues still open (today):** ${still_open}"
+            echo ""
+            echo "_Generated $(date -u +%Y-%m-%dT%H:%MZ)_"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          gh search issues --repo "${REPO}" --limit 200 \
+            --json number,title,closedAt,labels \
+            -- -q "is:issue is:closed closed:${FROM}..${TO}" \
+            > closed-issues.json
+
+      - name: Upload closed-issues list
+        uses: actions/upload-artifact@v4
+        with:
+          name: closed-issues-${{ inputs.start_date }}-to-${{ inputs.end_date }}
+          path: closed-issues.json

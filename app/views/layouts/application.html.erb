@@ -102,6 +102,7 @@
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %> 
+    <%= javascript_include_tag "multi_file_upload.js" %>
     <% if DonationCampaign.active? && %w[freereg freecen].include?(appname.downcase) %>
       <%= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
     <% end %>
@@ -150,7 +151,7 @@
           <div style="float:left;">
             <a href="#top">Top of page</a>
           </div>
-          <% if  session[:userid_detail_id].present?%>
+          <% if session[:userid_detail_id].present? && !(controller_name == 'freecen2_places' && action_name == 'search_names_results') %>
             <div  style="float:right;">
               <%= form_tag(problem_url, :method=>:get) do %>
                 <% problem_button_options.each_pair do |name, value| %>

@@ -51,7 +51,7 @@
   <% if DonationCampaign.active? %>
     <div id="overlay"></div>
     <dialog id="myDialog" role="dialog">
-      <%= render "layouts/donate_cta" %>
+      <%= render "layouts/#{DonationCampaign.kind == 'pledge' ? 'pledge_cta' : 'donate_cta'}" %>
     </dialog>
   <% end %>
   <!--dialog id="myDialog1" role="dialog">

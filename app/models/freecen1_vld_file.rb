@@ -145,27 +145,36 @@ class Freecen1VldFile
       @vld_audit.save
     end
 
+    # Bulk-delete associated records without per-record callbacks (large VLDs).
+    def delete_associated_records_for_vld_file!(vld_file)
+      vld_id = vld_file.id
+      SearchRecord.where(freecen1_vld_file_id: vld_id).delete_all
+      FreecenIndividual.where(freecen1_vld_file_id: vld_id).delete_all
+      FreecenDwelling.where(freecen1_vld_file_id: vld_id).delete_all
+      Freecen1VldEntry.where(freecen1_vld_file_id: vld_id).delete_all
+    end
+
     def delete_search_records(dir_name, file_name)
       Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
-        SearchRecord.where(freecen1_vld_file_id: file.id).destroy_all
+        SearchRecord.where(freecen1_vld_file_id: file.id).delete_all
       end
     end
 
     def delete_freecen1_vld_entries(dir_name, file_name)
       Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
-        Freecen1VldEntry.where(freecen1_vld_file_id: file.id).destroy_all
+        Freecen1VldEntry.where(freecen1_vld_file_id: file.id).delete_all
       end
     end
 
     def delete_dwellings(dir_name, file_name)
       Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
-        FreecenDwelling.where(freecen1_vld_file_id: file.id).destroy_all
+        FreecenDwelling.where(freecen1_vld_file_id: file.id).delete_all
       end
     end
 
     def delete_individuals(dir_name, file_name)
       Freecen1VldFile.where(dir_name: dir_name, file_name: file_name).each do |file|
-        FreecenIndividual.where(freecen1_vld_file_id: file.id).destroy_all
+        FreecenIndividual.where(freecen1_vld_file_id: file.id).delete_all
       end
     end
 

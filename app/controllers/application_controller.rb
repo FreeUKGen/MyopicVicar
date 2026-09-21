@@ -84,6 +84,17 @@ class ApplicationController < ActionController::Base
    #removeing this code since we are not using Refinery anymore
   end
 
+  def permitted_model_params(model, key = model.model_name.param_key)
+    allowed = model.fields.keys - %w[_id _type]
+    params.require(key).permit!.to_h.slice(*allowed)
+  end
+
+  def unknown_request_parameter(exception)
+    logger.warn("#{appname_upcase}:We received an unexpected parameter #{exception.message} #{params}")
+    flash[:notice] = 'Your request contained an unexpected value and could not be processed. Please try again.'
+    redirect_to new_search_query_path
+  end
+
   private
 
   def strip_string_params
@@ -282,6 +293,11 @@ class ApplicationController < ActionController::Base
     return if request.path.start_with?('/assets/')
 
     unless user_signed_in?
+      # Legacy code paths (nav bar, get_user) trust session[:userid_detail_id]/cookies.signed[:userid]
+      # independently of Warden; clear them so they don't disagree with the real auth state.
+      session.delete(:userid_detail_id)
+      session.delete(:devise)
+      cookies.delete(:userid)
       flash[:notice] = "You must be logged in to access that action"
       redirect_to(new_search_query_path) && return
     end

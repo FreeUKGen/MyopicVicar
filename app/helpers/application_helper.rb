@@ -151,7 +151,7 @@ module ApplicationHelper
       @userid = @user.id
       @manager = manager?(@user)
       role = session[:role].present? ? session[:role] : @user.person_role
-      @roles = UseridRole::OPTIONS.fetch(session[:role])
+      @roles = UseridRole::OPTIONS.fetch(role, [])
     end
   end
 

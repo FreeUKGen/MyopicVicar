@@ -28,3 +28,63 @@
   <% end%>
 <% end%>
 <%= render 'message_detail'%>
+<% if @message.session_data.present? %>
+  <% sd = @message.session_data || {} %>
+  <% prev_url = sd['previous_page_url'].to_s %>
+  <% curr_url = sd['current_page_url'].to_s %>
+  <% userid = sd['userid'].to_s %>
+  <% role = sd['role'].to_s %>
+  <% gaz_chapman = sd['gazetteer_chapman'].to_s %>
+  <% gaz_county_name = sd['gazetteer_county_name'].to_s %>
+  <% chosen_chapman = sd['selected_gazetteer_chapman'].to_s %>
+  <% chosen_county_name = sd['selected_gazetteer_county_name'].to_s %>
+  <% search_names = sd['search_names'].is_a?(Hash) ? sd['search_names'] : {} %>
+  <% search_term = (search_names['search'] || search_names[:search]).to_s %>
+  <% search_county = (search_names['search_county'] || search_names[:search_county]).to_s %>
+  <% display_county = chosen_county_name.presence ||
+                      gaz_county_name.presence ||
+                      search_county.presence ||
+                      (chosen_chapman.present? ? "#{ChapmanCode.name_from_code(chosen_chapman)} (#{chosen_chapman})" : '') ||
+                      (gaz_chapman.present? ? "#{ChapmanCode.name_from_code(gaz_chapman)} (#{gaz_chapman})" : '') %>
+  <div class="grid">
+    <section class="island">
+      <div class="grid__item">
+        <h4 class="text--center push--bottom">Session information</h4>
+        <table class="table--bordered table--data" style="text-align: left">
+          <colgroup>
+            <col class="t25">
+            <col class="t75">
+          </colgroup>
+          <tr>
+            <th class="caps">Field</th>
+            <th class="caps">Value</th>
+          </tr>
+          <tr>
+            <td>Current page</td>
+            <td class="weight--semibold"><%= curr_url.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>Previous page</td>
+            <td class="weight--semibold"><%= prev_url.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>UserID</td>
+            <td class="weight--semibold"><%= userid.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>Role</td>
+            <td class="weight--semibold"><%= role.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>Gazetteer search</td>
+            <td class="weight--semibold"><%= search_term.presence || 'unknown' %></td>
+          </tr>
+          <tr>
+            <td>Gazetteer county</td>
+            <td class="weight--semibold"><%= display_county.presence || 'none' %></td>
+          </tr>
+        </table>
+      </div>
+    </section>
+  </div>
+<% end %>

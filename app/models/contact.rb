@@ -19,7 +19,6 @@ class Contact
   field :github_number, type: String
   field :session_data, type: Hash
   field :screenshot, type: String
-  field :screenshots, type: Array, default: []
   field :record_id, type: String
   field :entry_id, type: String
   field :line_id, type: String
@@ -56,7 +55,8 @@ class Contact
   mount_uploaders :screenshots, ScreenshotUploader
 
   before_validation :normalize_freecen_contact_fields
-  before_create :url_check, :add_identifier, :add_screenshot_location
+  before_create :url_check, :add_identifier
+  after_save :sync_screenshot_location
 
   before_destroy :delete_replies
 
@@ -197,9 +197,17 @@ class Contact
   end
 
   def action_recipient_copies_userids(action_person)
-    if freecen_routed_volunteering_question? || freecen_routed_data_question?
+    if freecen_routed_volunteering_question?
       update_attribute(:copies_of_contact_action_sent_to_userids, [])
       return []
+    end
+
+    if freecen_routed_data_question?
+      all = freecen_all_county_coordinator_userids_for_chapman(selected_county)
+      copies = all - [action_person]
+      copies = copies.compact.uniq
+      update_attribute(:copies_of_contact_action_sent_to_userids, copies)
+      return copies
     end
 
     action_recipient_copies_userids = []
@@ -243,16 +251,69 @@ class Contact
     self.update_attribute(:body, body)
   end
 
-  def add_screenshot_location
-    if screenshot&.filename.present?
-      self.screenshot_location = "uploads/contact/screenshot/#{screenshot.model._id}/#{screenshot.filename}"
-      return
+  def attachments_present?
+    attachment_urls.present?
+  end
+
+  def attachment_urls
+    urls = []
+    append_uploader_url(urls, screenshot)
+    if screenshots.present?
+      screenshots.each { |img| append_uploader_url(urls, img) }
+    end
+    if urls.empty?
+      public_path = resolved_screenshot_public_path
+      urls << attachment_url_for_public_path(public_path) if public_path.present?
+    end
+    urls.compact.uniq
+  end
+
+  def attachment_file_paths
+    paths = []
+    append_uploader_path(paths, screenshot)
+    if screenshots.present?
+      screenshots.each { |img| append_uploader_path(paths, img) }
+    end
+    if paths.empty?
+      public_path = resolved_screenshot_public_path
+      paths << public_path.to_s if public_path.present?
+    end
+    paths.compact.uniq
+  end
+
+  def repair_screenshot_identifiers!
+    public_path = resolved_screenshot_public_path
+    return false unless public_path
+
+    filename = File.basename(public_path)
+    storage_location = Pathname.new(public_path).relative_path_from(Rails.public_path).to_s
+
+    if public_path.to_s.include?('/screenshots/')
+      update_attribute(:screenshots, [filename]) unless Array.wrap(read_attribute(:screenshots)) == [filename]
+    else
+      update_attribute(:screenshot, filename) unless read_attribute(:screenshot) == filename
     end
 
-    first = screenshots&.first
-    return if first.blank? || first.filename.blank?
+    set(screenshot_location: storage_location) if screenshot_location != storage_location
+    true
+  end
 
-    self.screenshot_location = "uploads/contact/screenshots/#{id}/#{first.filename}"
+  def sync_screenshot_location
+    location = computed_screenshot_location
+    return if location.blank? || screenshot_location == location
+
+    set(screenshot_location: location)
+  end
+
+  def computed_screenshot_location
+    if screenshot&.filename.present?
+      "uploads/contact/screenshot/#{id}/#{screenshot.filename}"
+    elsif screenshots.present?
+      first = screenshots.first
+      return if first.blank? || first.filename.blank?
+
+      "uploads/contact/screenshots/#{id}/#{first.filename}"
+    end
   end
 
   def add_message_to_userid_messages_for_contact(message)
@@ -634,6 +695,25 @@ class Contact
     cc
   end
 
+  # Returns all active county coordinators associated with a chapman code.
+  # - Primary is the County record's `county_coordinator` (or fallback).
+  # - Additional coordinators are any active UseridDetails with role county_coordinator
+  #   whose `county_groups` includes the chapman code.
+  def freecen_all_county_coordinator_userids_for_chapman(chapman)
+    primary = freecen_county_coordinator_userid_for_chapman(chapman)
+    candidates = [primary]
+
+    begin
+      UseridDetail.role('county_coordinator').active(true).where(:county_groups.in => [chapman]).only(:userid).each do |ud|
+        candidates << ud.userid
+      end
+    rescue StandardError
+      # Defensive: if Mongoid query fails for any reason, we still route to primary.
+    end
+
+    candidates.compact.uniq
+  end
+
   def freecen_syndicate_coordinator_userid_for_chapman(chapman)
     syn = freecen_syndicate_for_chapman(chapman)
     if syn.present?
@@ -666,6 +746,58 @@ class Contact
   end
 
   private
+
+  def screenshot_public_path(location = screenshot_location)
+    return if location.blank?
+
+    Rails.public_path.join(location)
+  end
+
+  def resolved_screenshot_public_path
+    candidates = []
+    if screenshot_location.present?
+      candidates << screenshot_public_path
+      filename = File.basename(screenshot_location)
+      candidates << Rails.public_path.join('uploads', 'contact', 'screenshots', id.to_s, filename)
+      candidates << Rails.public_path.join('uploads', 'contact', 'screenshot', id.to_s, filename)
+    end
+    candidates << Rails.public_path.join('uploads', 'contact', 'screenshots', id.to_s)
+    candidates << Rails.public_path.join('uploads', 'contact', 'screenshot', id.to_s)
+
+    candidates.each do |candidate|
+      next if candidate.blank?
+      return candidate if candidate.file?
+      next unless candidate.directory?
+
+      image = Dir.glob(candidate.join('*')).find { |path| path =~ /\.(jpe?g|gif|png)\z/i }
+      return Pathname.new(image) if image.present?
+    end
+    nil
+  end
+
+  def attachment_url_for_public_path(public_path)
+    return if public_path.blank?
+
+    "/#{Pathname.new(public_path).relative_path_from(Rails.public_path).to_s}"
+  end
+
+  def append_uploader_url(urls, uploader)
+    return if uploader.blank?
+
+    path = uploader.path
+    url = uploader.url
+    return if url.blank?
+    return unless path.blank? || File.file?(path)
+
+    urls << url unless urls.include?(url)
+  end
+
+  def append_uploader_path(paths, uploader)
+    return if uploader.blank? || uploader.path.blank?
+    return unless File.file?(uploader.path)
+
+    paths << uploader.path unless paths.include?(uploader.path)
+  end
 
   def reply_sent_messages(message, sender_userid, contact_recipients, other_recipients)
     @message = message

@@ -7,6 +7,18 @@
     <%= name %>: <strong><%= value %></strong><br />
   <% end %>
 </div>
+<h2>Indexes</h2>
+<dl>
+  <dt>Index hint (passed to MongoDB)</dt>
+  <dd><strong><%= @search_index_hint %></strong></dd>
+  <dt>Winning plan index (chosen by MongoDB)</dt>
+  <dd><strong><%= @search_index_winning_plan.presence || '—' %></strong></dd>
+</dl>
+<p class="read-length">
+  The hint is computed from the search criteria and passed with <code>.hint()</code>.
+  The winning plan index is what MongoDB reports in <code>queryPlanner.winningPlan</code>
+  for that explain run; it may differ from the hint.
+</p>
 <h2>Explain Plan</h2>
 <% unless @plan_error.blank? %>
   Explain command failed with error <b><%= @plan_error %></b>!<br />

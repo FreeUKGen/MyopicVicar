@@ -11,6 +11,10 @@
 <p>The following is the information submitted.</p>
 <p>  <b><%= @contact.contact_type %>:</b></p>
 <p>  <%= @contact.body %></p>
+<% if @contact.session_data.present? %>
+  <p><b>Session data:</b></p>
+  <pre><%= JSON.pretty_generate(@contact.session_data) rescue @contact.session_data.inspect %></pre>
+<% end %>
 <% if @contact.contact_type == 'Data Problem' &&  @contact.entry_id.present?%>
   <p><a href="<%=Rails.application.config.website%>/freereg1_csv_entries/<%=@contact.entry_id%>"> <%=@contact.line_id %> </a></p>
 <% end%>
@@ -20,7 +24,7 @@
   <% end %>
 <% end %>
 <p>
-  <% if @contact.screenshot_url.present? || (@contact.respond_to?(:screenshots) && @contact.screenshots.present?) %>
+  <% if @contact.attachments_present? %>
     <p>An image/attachment is provided</p>
   <% end %>
 </p>

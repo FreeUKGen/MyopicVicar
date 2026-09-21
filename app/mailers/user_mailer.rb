@@ -5,9 +5,9 @@ class UserMailer < Devise::Mailer
   reg_website = MyopicVicar::Application.config.website == 'https://www.freereg.org.uk' ? '' : 'Test'
   cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: "#{reg_website} FreeREG Servant <no-reply@freereg.org.uk>"
+    default from: "#{reg_website} FreeREG <no-reply@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{cen_website} FreeCEN Servant <no-reply@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN <no-reply@freecen.org.uk>"
   end
 
   helper EmailHelper
@@ -136,6 +136,20 @@ class UserMailer < Devise::Mailer
     mail(from: sender_email_address, cc: copies_to_userids_emails,to: "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
+
+  def contact_forward(contact, message, recipient_userids, sender_userid)
+    @appname = appname
+    @contact = contact
+    @message = message
+    @forwarder = UseridDetail.userid(sender_userid).first
+    @forwarder_name = @forwarder.present? ? "#{@forwarder.person_forename} #{@forwarder.person_surname}" : sender_userid
+    @contact_url = "#{Rails.application.config.website}/contacts/#{@contact.id}"
+    sender_email_address = get_email_address_from_userid(sender_userid)
+    recipient_email_addresses = get_email_address_array_from_array_of_userids(recipient_userids)
+    get_attachment(@contact)
+    mail(from: sender_email_address, to: recipient_email_addresses, subject: "Forwarded contact: #{@message.subject}")
+  end
+
   def coordinator_feedback_reply(feedback, ccs_userids, message, sender_userid)
     @appname = appname
     @feedback = feedback
@@ -190,17 +204,9 @@ class UserMailer < Devise::Mailer
   end
 
   def get_attachment(contact)
-    if contact.respond_to?(:screenshot) && contact.screenshot&.path.present?
-      file_name = File.basename(contact.screenshot.path)
-      attachments[file_name] = File.binread(contact.screenshot.path)
-    end
-
-    if contact.respond_to?(:screenshots) && contact.screenshots.present?
-      contact.screenshots.each do |img|
-        next if img.blank? || img.path.blank?
-        file_name = File.basename(img.path)
-        attachments[file_name] = File.binread(img.path)
-      end
+    contact.attachment_file_paths.each do |path|
+      file_name = File.basename(path)
+      attachments[file_name] = File.binread(path)
     end
   end
 

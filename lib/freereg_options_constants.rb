@@ -31,8 +31,8 @@ module FreeregOptionsConstants
   CAPITALIZATION_WORD_EXCEPTIONS = ['a', 'ad', 'an', 'and', 'at', 'but', 'by', 'cum', 'de', 'en', 'for', 'has', 'in', 'la', 'le', 'near', 'next', 'nor', 'nr',
                                     'or', 'on', 'of', 'so', 'the', 'to', 'under', 'upon', 'von', 'with', 'yet', 'y'];
 
-  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Unknown', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan',
-                               'South Glamorgan', 'West Glamorgan', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
+  CHAPMAN_CODE_ELIMINATIONS = ['England', 'Scotland', 'Wales', 'Ireland', 'Unknown', 'Clwyd', 'Dyfed', 'Gwent', 'Gwynedd', 'Powys', 'Mid Glamorgan/Morgannwg Ganol',
+                               'South Glamorgan/De Morgannwg', 'West Glamorgan/Gorllewin Morgannwg', 'Borders', 'Central', 'Dumfries and Galloway', 'Grampian', 'Highland', 'Lothian',
                                'Orkney Isles', 'Shetland Isles', 'Strathclyde', 'Tayside', 'Western Isles', 'England and Wales Shipping',
                                'Out of County', 'Overseas British', 'Overseas Foreign', 'Scottish Shipping', 'Military', 'Royal Navy Ships',
                                'Special'];
@@ -278,10 +278,9 @@ module FreeregOptionsConstants
 
   MAXIMUM_WINESSES = 8;
 
-  MAX_RECORDS_COORDINATOR = 4000;
-
+  # max amount of record a specific role can delete
+  MAX_RECORDS_COORDINATOR = 5000;
   MAX_RECORDS_DATA_MANAGER = 15000;
-
   MAX_RECORDS_SYSTEM_ADMINISTRATOR = 100000;
 
   MESSAGE_RECIPIENTS = ['Myself to Review', 'Active Transcribers', 'Inactive Transcribers', 'Coordinators', 'Researchers', 'Managers', 'Coordinators and Managers'];
