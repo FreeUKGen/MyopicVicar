@@ -102,7 +102,6 @@ class Freecen2Place
 
 
 
-  PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem
     SI = 'si'
