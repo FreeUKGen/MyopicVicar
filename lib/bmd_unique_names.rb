@@ -47,6 +47,7 @@ class BmdUniqueNames
     def update_or_create_district_unique_name(district, record_type_id, forenames, surnames, total_records)
       district_unique_name = DistrictUniqueName.find_or_initialize_by(district_number: district.DistrictNumber, record_type: record_type_id)
       district_unique_name.update(unique_forenames: forenames, unique_surnames: surnames, total_records: total_records)
+      Rails.cache.delete("district_unique_name_counts_#{district.DistrictNumber}")
     end
 
     def extract_unique_names(names, *fields)
