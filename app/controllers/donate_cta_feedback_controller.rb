@@ -22,6 +22,6 @@ class DonateCtaFeedbackController < ApplicationController
   private
 
   def feedback_params
-    params.require(:feedback).permit!
+    params.require(:feedback).permit(:name, :email_address, :body)
   end
 end

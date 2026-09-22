@@ -145,6 +145,8 @@ class GapsController < ApplicationController
   private
 
   def gap_params
-    params.require(:gap).permit! if params[:_method] != 'put'
+    return if params[:_method] == 'put'
+
+    params.require(:gap).permit(:record_type, :freereg1_csv_file, :start_date, :end_date, :reason, :note, :register)
   end
 end

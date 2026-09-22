@@ -627,12 +627,21 @@ class UseridDetailsController < ApplicationController
 
     @county_names = ChapmanCode::CODES.values.reduce({}, :merge).invert
   end
-    
+
 
   private
 
   def userid_details_params
-    params.require(:userid_detail).permit!
+    params.require(:userid_detail).permit(
+      :userid, :person_forename, :person_surname, :email_address, :alternate_email_address,
+      :address, :telephone_number, :fiche_reader, :do_not_acknowledge_me,
+      :acknowledge_with_pseudo_name, :pseudo_name, :no_processing_messages, :syndicate,
+      :person_role, :new_transcription_agreement, :recieve_system_emails,
+      :email_address_valid, :email_address_last_confirmned, :reason_for_invalidating,
+      :skill_level, :active, :disabled_reason_standard, :disabled_reason,
+      :transcription_agreement, :skill_notes, :disabled_date, :previous_syndicate,
+      secondary_role: []
+    )
   end
 
   def spam_check
