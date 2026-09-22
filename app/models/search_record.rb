@@ -17,6 +17,18 @@ class SearchRecord
   SYMBOLS_TO_CLEAN = ['.', ':', ';', "'", '-', '`', '"'].freeze
   DELETE_SET = SYMBOLS_TO_CLEAN.join.gsub('-', '\-').freeze
 
+  # Cap for an active embargo with no defined release year (indefinite embargo, or a
+  # manual embargo missing release_date). filter_embargoed and the search query's $nor
+  # only exclude a record when release_year is present AND in the future, so a nil
+  # release_year on an actively-embargoed record would otherwise leak into search.
+  # 100 years matches the standard genealogy privacy convention (embargoed for 100
+  # years from now) rather than an arbitrary far-future sentinel.
+  INDEFINITE_EMBARGO_YEARS = 100
+
+  def self.indefinite_embargo_release_year
+    DateTime.now.year.to_i + INDEFINITE_EMBARGO_YEARS
+  end
+
   module Source
     TRANSCRIPT = 'transcript'
     EMENDOR = 'e'
@@ -562,7 +574,7 @@ class SearchRecord
       record[:freereg1_csv_entry_id] = entry.id
       if entry.embargo_records.present?
         record[:embargoed] = entry.currently_under_embargo?
-        record[:release_year] = entry.embargo_records.last.release_year
+        record[:release_year] = entry.effective_embargo_release_year
       end
       record.transform
       record.digest = record.cal_digest

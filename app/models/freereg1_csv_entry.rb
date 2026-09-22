@@ -389,7 +389,14 @@ class Freereg1CsvEntry
     end
 
     stored = last.release_year.presence || last.release_date.presence
-    stored.to_i if stored.present?
+    return stored.to_i if stored.present?
+
+    # Manually embargoed with no release date at all: this register may still have a
+    # configured period for this record_type even though no rule was actually applied
+    # to create this embargo. Prefer that convention over a flat default.
+    return nil unless last.embargoed
+
+    indefinite_embargo_fallback_release_year
   end
 
   def computed_release_year_from_register_rule
@@ -403,6 +410,14 @@ class Freereg1CsvEntry
     return nil if rule.blank?
 
     EmbargoRecord.process_embargo_year(rule, year)
+  end
+
+  def indefinite_embargo_fallback_release_year
+    register = freereg1_csv_file&.register
+    rule = register.embargo_rules.find_by(record_type: record_type) if register.present?
+    return EmbargoRecord.process_embargo_year(rule, year) if rule.present?
+
+    SearchRecord.indefinite_embargo_release_year
   end
 
   def cal_digest
