@@ -502,7 +502,9 @@ class BestGuess < FreebmdDbBase
 
     surname = self.Surname.encode('ISO-8859-1').upcase
     given_name = self.GivenName.encode('ISO-8859-1').upcase
+    # rbl 22.9.2026: replaced next line by the one after it:
     Rails.env.development? ? district_name = self.District.upcase : district_name = self.district.DistrictName.upcase
+    # district_name = self.District.upcase
     volume = self.Volume.upcase
     page = self.Page.upcase
     year = QuarterDetails.quarter_year(self.QuarterNumber)
