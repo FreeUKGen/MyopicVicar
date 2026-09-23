@@ -29,7 +29,7 @@ SAME_REGISTER_FILES = [
 
 describe Place do
   before(:each) do
-    FreeregCsvProcessor::delete_all
+    NewFreeregCsvUpdateProcessor::delete_all
     Place.delete_all
     Church.delete_all
     Register.delete_all

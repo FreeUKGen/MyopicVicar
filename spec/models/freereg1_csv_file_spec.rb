@@ -8,7 +8,7 @@ describe Freereg1CsvFile do
   end
 
   before(:each) do
-    FreeregCsvUpdateProcessor::delete_all
+    NewFreeregCsvUpdateProcessor::delete_all
   end
 
 
