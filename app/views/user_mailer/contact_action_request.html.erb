@@ -1,5 +1,8 @@
 <p> Dear <%= @send_to.person_forename %>;</p>
 <p>We have received correspondence <%= @contact.identifier %> from <%= @contact.name %> email <%= @contact.email_address %> at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%>. </p>
+<% if @appname.downcase == 'freecen' && @contact.selected_county.present? %>
+  <p><b>County:</b> <%= ChapmanCode.name_from_code(@contact.selected_county) || @contact.selected_county %></p>
+<% end %>
 <p>You are requested to take action on the correspondence preferably using the on-line contact system</p>
 <% unless @cc_names.blank? %>
   <p>Copies of the action request were sent to the following. Please include them in any correspondence<br>
