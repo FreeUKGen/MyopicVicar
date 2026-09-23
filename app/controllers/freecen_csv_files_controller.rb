@@ -114,7 +114,7 @@ class FreecenCsvFilesController < ApplicationController
     if session[:my_own]
       redirect_to my_own_freecen_csv_file_path
     else
-      redirect_to register_path(@return_location)
+      redirect_to :action => 'index'
     end
   end
 
