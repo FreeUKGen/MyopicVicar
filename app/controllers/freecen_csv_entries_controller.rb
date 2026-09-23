@@ -68,7 +68,7 @@ class FreecenCsvEntriesController < ApplicationController
     @freecen_csv_file = @freecen_csv_entry.freecen_csv_file
     @freecen_csv_file.update_total_warning_messages
     session[:propagate_alternate] = @freecen_csv_entry.id unless verbatim_place_of_birth_matches_place_of_birth(@freecen_csv_entry)
-    session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present? && @freecen_csv_entry.birth_county.present?
+    session[:propagate_note] = @freecen_csv_entry.id if @freecen_csv_entry.notes.present? && @freecen_csv_entry.verbatim_birth_county.present?
     flash[:notice] = 'The acceptance was successful'
     redirect_to(freecen_csv_entry_path(@freecen_csv_entry)) && return
   end

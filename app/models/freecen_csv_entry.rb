@@ -1847,7 +1847,7 @@ class FreecenCsvEntry
 
     return false unless freecen_csv_file.validation
 
-    return false if parameters[:birth_county].blank? && birth_county.blank? and parameters[:birth_place].blank? && birth_place.blank?
+    return false if parameters[:verbatim_birth_county].blank? &&  verbatim_birth_county.blank? and parameters[:verbatim_birth_place].blank? &&  verbatim_birth_place.blank?
 
     return true if parameters[:notes].present? && parameters[:notes] != notes
 
