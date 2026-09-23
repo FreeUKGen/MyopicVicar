@@ -53,7 +53,7 @@
     <hr class="rule rule--ornament" />
 
     <h2 id="nature">Nature of the Search</h2>
-    <p>The minimum information required for a search is a surname, or a forename together with a census county and place. However, this is very likely to produce too many results: the maximum number of records that can be shown is 500. If your search is giving too many results, you will need to narrow it down by giving more information and/or selecting a census year.</p>
+    <p>The minimum information required for a search is a surname, or a forename together with a census county and place. However, this is very likely to produce too many results: the maximum number of records that can be shown is <%= FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %>. If your search is giving too many results, you will need to narrow it down by giving more information and/or selecting a census year.</p>
     <hr class="rule rule--ornament" />
   </div>
 <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
@@ -169,7 +169,7 @@
     <p><strong>Language</strong>. 1891 is currently the only year we can show. ‘Both’ means either English and Welsh (in Wales) or English and Gaelic (in Scotland).</p>
 
     <h3>An example using filters</h3>
-    <p>Start by making a search, without any filters, that produces fewer than 500 results. Then filter those results.</p>
+    <p>Start by making a search, without any filters, that produces fewer than <%= FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %> results. Then filter those results.</p>
     <p>The example here is for a search made early in 2020: the numbers will probably be different by now.</p>
     <p>In this example, we searched for people named <em>ALCOCK</em> in the <em>Yorkshire</em> census (all years) and this gave 373 results: we then clicked on ‘Revise search’ and selected ‘Married’ for the ‘Marital Status’ filter which gave 135 results.</p>
     <p>Next we selected ‘--’ in the ‘Marital status’ filter (to remove the filter) and typed ‘far’ in the Occupation filter: out of our initial 373 results, 30 had ‘far’ in the Occupation field. Revising the Occupation filter to ‘farmer’ gave only 21 people.</p>
