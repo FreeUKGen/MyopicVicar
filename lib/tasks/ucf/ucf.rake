@@ -488,22 +488,24 @@ namespace :ucf do
   # end
 
   # ============================================================================
-  # Task name: freereg:refresh_ucf_lists - verbose, slow
+  # Task name: freereg:refresh_ucf_lists - fast
   # Arguments:
   #   skip       → how many places to skip at the start
   #   sleep_time → pause between processing places
-  # 
-  # This rake task **refreshes the UCF lists** (Uncertain Character Format lists) for each `Place`. 
+  #
+  # This rake task **refreshes the UCF lists** (Uncertain Character Format lists) for each `Place`.
   # It rebuilds them from scratch by scanning all `Freereg1CsvFile` records belonging to that place.
-  #    
+  # This updates the database directly via the MongoDB driver, entirely bypassing Mongoid validations and
+  # standard model callbacks (like `before_save` and `after_save`).
+  # In a loop with thousands of iterations, this results in a **massive performance gain**.
+  #
   # rake ucf:refresh_ucf_lists
-  # 
-  # rake ucf:refresh_ucf_lists[0, 0.5]
-  # 
+  #
+  # rake "ucf:refresh_ucf_lists[0, 0.1]""
+  #
   # ============================================================================
   desc "Refresh UCF lists on places"
   task :refresh_ucf_lists, [:skip, :sleep_time] => [:environment] do |t, args|
-
     # Default arguments
     args.with_defaults(skip: 0, sleep_time: 0)
 
@@ -516,7 +518,7 @@ namespace :ucf do
 
     time_start = Time.now
 
-    # Iterate through all places with data_present field == true, 
+    # Iterate through all places with data_present field == true,
     # ordered by county (chapman_code) and place name
     Place.data_present.order(chapman_code: :asc, place_name: :asc).no_timeout.each_with_index do |place, i|
       time_place_start = Time.now
@@ -546,19 +548,31 @@ namespace :ucf do
         puts "#{msg}"
 
         # Update UCF list with this Place's Freereg1CsvFile file
+        # We wrap this in a begin/rescue block so that if one file fails to update or save,
+        # the entire task doesn't crash. Instead, it catches the error, logs it, and moves to the next file.
         begin
           place.update_ucf_list(file)
-          place.ucf_list[file.id.to_s] ||= [] 
-          file.save!
+
+          # This line ensures that even if a file has no UCF records (ids is empty/nil),
+          # it initializes an empty array for that file ID in the place's ucf_list hash.
+          place.ucf_list[file.id.to_s] ||= []
+
+          # We use `.set` to directly update specific fields in the database.
+          # This bypasses both Mongoid validations and callbacks, providing a massive
+          # performance gain, especially when iterating over tens of thousands of records.
+          file.set(ucf_list: file.ucf_list, ucf_updated: file.ucf_updated)
         rescue => e
           Rails.logger.error "Error updating file #{file.file_name} for place #{place.place_name}: #{e.message}"
-          ap e.backtrace.take(5) # show first 5 lines of backtrace
+          Rails.logger.error e.backtrace.take(5).join("\n")
         end
       end
 
-      # Save updated place
+      # Save the updated place record
+      # Wrapped in begin/rescue to log any failures instead of halting the rake task loop.
       begin
-        place.save!
+        # We use `.set` here for the same massive performance benefit. It writes the ucf_list
+        # hash directly to MongoDB without loading all unchanged fields or triggering callbacks.
+        place.set(ucf_list: place.ucf_list)
       rescue => e
         Rails.logger.error "Error saving place #{place.place_name}: #{e.message}"
       end
