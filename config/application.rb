@@ -80,6 +80,8 @@ module MyopicVicar
     config.advert_key = app['advert_key']
     config.gtm_key = app['gtm_key']
     config.master = app['master'].presence || ENV['MASTER'].presence
+    config.bmd_api_token = app['bmd_api_token'].presence || ENV['BMD_API_TOKEN'].presence
+    ENV['BMD_API_TOKEN'] ||= app['bmd_api_token']
     config.freebmd_master_url = app['freebmd_master_url'].presence || ENV['FREEBMD_MASTER_URL'].presence
     api_url = app['freebmd_postem_api_url'].presence || app['FREEBMD_POSTEM_API_URL'].presence
     api_key = app['freebmd_api_key'].presence || app['FREEBMD_API_KEY'].presence
