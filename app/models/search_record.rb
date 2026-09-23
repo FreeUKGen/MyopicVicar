@@ -102,7 +102,7 @@ class SearchRecord
     'place2_lnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.last_name', 'record_type', 'search_date'],
     'place2_lnsdx_fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
     'place2_fn_rt_sd' => ['freecen2_place_id', 'search_names.first_name', 'record_type', 'search_date'],
-    'place_2fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'place2_fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
     'place2_rt_sd' => ['freecen2_place_id', 'record_type', 'search_date']
   }.freeze
 
