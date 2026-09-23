@@ -33,8 +33,12 @@ class Assignment
       assignment = Assignment.id(assignment_id)
       return false if assignment.first.nil?
 
-      image_server_image = ImageServerImage.where(:assignment_id=>assignment_id, :status=>orig_status)
-      return false if image_server_image.first.nil? 
+      # orig_status only drives get_update_assignment_new_status (a param comparison, not a
+      # DB read) - filtering images by it here just re-introduces the #2982 bug one step
+      # later, since an image's own status can lag behind what the group/assignment reports.
+      # assignment_id is the reliable link.
+      image_server_image = ImageServerImage.where(:assignment_id=>assignment_id)
+      return false if image_server_image.first.nil?
 
       image_server_group = ImageServerGroup.where(:id=>image_server_image.first.image_server_group.id)
       user = UseridDetail.where(:id=>assignment.first.userid_detail_id).first.userid
