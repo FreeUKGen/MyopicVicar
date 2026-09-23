@@ -17,6 +17,12 @@ MyopicVicar::Application.routes.draw do
 
 
   root :to => 'search_queries#new'
+  namespace :api do
+    namespace :v1 do
+      get 'bmd/search', to: 'bmd_search#index'
+    end
+  end
+  
   resources :reminder_to_donate
   resources :donate_cta_feedback
   get 'donate', to: 'pages#donate'
