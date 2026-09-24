@@ -83,7 +83,20 @@ class UserMailer < Devise::Mailer
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
     case appname.downcase
     when 'freereg'
-      subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+      #  subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+      subject =
+        if @batch&.error.nil?
+          "#{@userid.userid}/#{batch} processed at #{Time.now} with errors"
+        else
+          error_count = @batch.error.to_i
+          error_word  = error_count == 1 ? "error" : "errors"
+
+          if @batch.datemin.present? && @batch.datemax.present?
+            "#{@userid.userid}/#{batch} processed at #{Time.now} with #{error_count} #{error_word} over period #{@batch.datemin}-#{@batch.datemax}"
+          else
+            "#{@userid.userid}/#{batch} processed at #{Time.now} with #{error_count} #{error_word}"
+          end
+        end
     when 'freecen'
       subject = "#{@userid.userid} processed #{batch} at #{Time.now} "
     end
