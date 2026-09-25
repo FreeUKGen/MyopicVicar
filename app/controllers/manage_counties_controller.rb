@@ -187,7 +187,7 @@ class ManageCountiesController < ApplicationController
         @counties << county unless @counties.include?(county)
       end
     end
-    @counties = @counties.compact if @counties.present?
+    @counties = @counties.reject(&:blank?) if @counties.present?
     @counties.sort! if @counties.present?
   end
 
@@ -220,7 +220,7 @@ class ManageCountiesController < ApplicationController
     session.delete(:from_source)
     session[:image_group_filter] = 'completion_submitted'
     @source, @group_ids, @group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'completion_submitted')            # not sort by place, unallocated groups
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Allocate Request Image Groups exists') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
+    redirect_to(manage_image_group_manage_county_path, notice: "No image groups found with status of 'Completion Submitted'") && return if @source.blank? || @group_ids.blank? || @group_id.blank?
 
     @county = session[:county]
     # for 'Accept All Groups As Completed'
@@ -298,7 +298,7 @@ class ManageCountiesController < ApplicationController
     get_counties_for_selection
     number_of_counties = 0
     number_of_counties = @counties.length if @counties.present?
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'You do not have any counties to manage') && return if number_of_counties.zero?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No counties/syndicates to manage.') && return if number_of_counties.zero?
 
     if number_of_counties == 1
       session[:chapman_code] = @counties[0]

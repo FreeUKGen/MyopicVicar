@@ -241,6 +241,7 @@ class ImageServerGroupsController < ApplicationController
 
         ImageServerGroup.email_cc_completion(x, @place.chapman_code, @user)
       end
+      redirect_to(manage_image_group_manage_syndicate_path, :notice => 'Email sent to County Coordinator') && return
     end
 
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'Email sent to County Coordinator')
@@ -270,7 +271,9 @@ class ImageServerGroupsController < ApplicationController
       user = get_user
       flash[:notice] = ImageServerGroup.update_put_request(params, user)
 
-      if params[:type] == 'complete'
+      if params[:type] == 'complete' && params[:completed_groups].present?
+        redirect_to manage_image_group_manage_county_path
+      elsif params[:type] == 'complete'
         redirect_to manage_completion_submitted_image_group_manage_county_path(session[:chapman_code])
       else
         redirect_to index_image_server_group_path(image_server_group.source)

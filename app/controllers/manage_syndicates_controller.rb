@@ -148,7 +148,7 @@ class ManageSyndicatesController < ApplicationController
         synd << syn unless all
         synd << syn.syndicate_code if all
       end
-      @syndicates = synd
+      @syndicates = synd.reject(&:blank?)
       @syndicates.sort! if @syndicates.present?
     else
       case appname_downcase
@@ -157,7 +157,6 @@ class ManageSyndicatesController < ApplicationController
       when 'freecen'
         logger.warn "FREECEN::USER #{@user.userid} has no syndicates and attempting to manage one"
       end
-      redirect_back(fallback_location: new_manage_syndicate_path, notice: 'You do not have any syndicates') && return
     end
   end
 
@@ -172,7 +171,7 @@ class ManageSyndicatesController < ApplicationController
     @source, @group_ids, @group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 'r')
     @completed_groups = []
     @group_ids.each { |x| @completed_groups << x[0] } if @group_ids.present?
-    redirect_back(fallback_location: manage_image_group_manage_syndicate_path(session[:syndicate]), notice: 'No Fully Reviewed Image Groups Under This Syndicate') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
+    redirect_to(manage_image_group_manage_syndicate_path, notice: 'No Fully Reviewed Image Groups Under This Syndicate') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
 
     # added for 'email CC of all image groups' button under 'List Fully Reviewed Groups'
     session.delete(:from_source)
@@ -188,7 +187,7 @@ class ManageSyndicatesController < ApplicationController
     # added for 'email CC of all image groups' button under 'List Fully Transcribed Groups'
     @completed_groups = []
     @group_ids.each { |x| @completed_groups << x[0] } if @group_ids.present?
-    redirect_back(fallback_location: manage_image_group_manage_syndicate_path(session[:syndicate]), notice: 'No Fully Transcribed Image Groups Under This Syndicate') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
+    redirect_to(manage_image_group_manage_syndicate_path, notice: 'No Fully Transcribed Image Groups Under This Syndicate') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
 
     session.delete(:from_source)
     session[:image_group_filter] = 'fully_transcribed'
@@ -231,7 +230,7 @@ class ManageSyndicatesController < ApplicationController
     syndicates_for_selection
     @syndicates.blank? ? number_of_syndicates = 0 : number_of_syndicates = @syndicates.length
 
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'You do not have any syndicates to manage') && return if number_of_syndicates.zero?
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'No counties/syndicates to manage.') && return if number_of_syndicates.zero?
 
     if number_of_syndicates == 1
       @syndicate = @syndicates[0]

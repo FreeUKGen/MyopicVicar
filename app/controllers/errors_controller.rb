@@ -1,0 +1,110 @@
+# Copyright 2012 Trustees of FreeBMD
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+require 'socket'
+
+class ErrorsController < ActionController::Base
+  layout false
+
+  def not_found
+    render file: Rails.root.join('public', '404.html'), layout: false, status: :not_found
+  end
+
+  def unprocessable_entity
+    render file: Rails.root.join('public', '422.html'), layout: false, status: :unprocessable_entity
+  end
+
+  def internal_server_error
+    @error_url = error_url
+    @userid = userid
+    @client_ip = client_ip
+    @server_hostname = server_hostname
+
+    log_error_details
+
+    render status: :internal_server_error
+  end
+
+  private
+
+  def error_url
+    original_url = request.env['action_dispatch.original_url']
+    return original_url if original_url.present?
+
+    original_path = request.env['action_dispatch.original_path'].presence
+    original_fullpath = request.env['ORIGINAL_FULLPATH'].presence || request.env['action_dispatch.original_fullpath'].presence
+    fullpath = original_path.present? ? original_path_with_query(original_path) : original_fullpath
+    fullpath = request.original_fullpath if fullpath.blank?
+
+    if fullpath.match?(/\Ahttps?:\/\//)
+      fullpath
+    else
+      "#{request.protocol}#{request.host_with_port}#{fullpath}"
+    end
+  rescue StandardError
+    'Unavailable'
+  end
+
+  def original_path_with_query(original_path)
+    return original_path if request.query_string.blank? || original_path.include?('?')
+
+    "#{original_path}?#{request.query_string}"
+  end
+
+  def userid
+    userid_detail_id = session[:userid_detail_id].presence || cookies.signed[:userid].presence
+    return 'Not logged in' if userid_detail_id.blank?
+
+    userid_detail = UseridDetail.id(userid_detail_id).first
+    userid_detail&.userid.presence || 'Unavailable'
+  rescue StandardError
+    'Unavailable'
+  end
+
+  def log_error_details
+    details = {
+      URL: @error_url,
+      USERID: @userid,
+      CLIENT_IP: @client_ip,
+      SERVER_HOSTNAME: @server_hostname,
+      REQUEST_ID: request_id
+    }
+
+    Rails.logger.error("500 ERROR: #{details.map { |key, value| "#{key}=#{log_value(value)}" }.join(' ')}")
+  rescue StandardError
+    nil
+  end
+
+  def log_value(value)
+    value.to_s.gsub(/[\r\n]+/, ' ')
+  end
+
+  def request_id
+    request.request_id.presence || 'Unavailable'
+  rescue StandardError
+    'Unavailable'
+  end
+
+  def client_ip
+    request.remote_ip.presence || request.remote_addr.presence || 'Unavailable'
+  rescue StandardError
+    'Unavailable'
+  end
+
+  def server_hostname
+    Socket.gethostname.presence || 'Unavailable'
+  rescue StandardError
+    'Unavailable'
+  end
+end

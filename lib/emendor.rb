@@ -37,7 +37,7 @@ module Emendor
             end
           end
           #p "actually applying rule #{rule.inspect}"
-          emended_name = SearchName.new(name.attributes)
+          emended_name = SearchName.new(name.attributes.except('_id'))
           emended_name[:first_name] = rule.replacement
           emended_name.origin = SearchRecord::Source::EMENDOR
           emended_names << emended_name

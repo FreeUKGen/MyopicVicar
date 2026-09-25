@@ -17,8 +17,8 @@ class MessagesController < ApplicationController
   require 'userid_role'
   require 'reply_userid_role'
 
-  # Shortcut entrypoint for FreeCEN Gazetteer: start a Communicate Action thread to a county coordinator
-  # for a specific chapman code.
+  # Shortcut entrypoint for FreeCEN Gazetteer: start a Communicate Action thread to a county coordinator.
+  # No county is pre-selected here; the user chooses the coordinator on the next page.
   def gazetteer_county_coordinator
     get_user_info_from_userid
     redirect_back(fallback_location: search_names_freecen2_place_path, notice: 'You need to be logged in to communicate') && return if @user.blank?
@@ -26,10 +26,8 @@ class MessagesController < ApplicationController
     session[:message_base] = 'communication'
     session[:host] = request.host if session[:host].blank?
 
-    chapman = params[:chapman].to_s.strip
     search = params[:search].to_s.strip
     allowed_chapmans = params[:allowed_chapmans].to_s.strip
-    county_name = chapman.present? ? ChapmanCode.name_from_code(chapman) : ''
 
     @message = Message.new(
       nature: 'communication',
@@ -37,15 +35,12 @@ class MessagesController < ApplicationController
       message_time: Time.now,
       subject: 'Gazetteer enquiry (county coordinator)',
       body: "[Gazetteer enquiry — add your message below]\n\n" \
-            "Search: #{search.presence || '(not provided)'}\n" \
-            "County: #{county_name.presence || '(not selected)'} (#{chapman.presence || '---'})\n"
+            "Search: #{search.presence || '(not provided)'}\n"
     )
     @message.path = request.fullpath
     @message.session_data = {
       'previous_page_url' => request.referer,
       'current_page_url' => request.original_url,
-      'gazetteer_chapman' => chapman,
-      'gazetteer_county_name' => county_name,
       'role' => session[:role],
       'userid' => session[:userid],
       'userid_detail_id' => session[:userid_detail_id],
@@ -57,7 +52,6 @@ class MessagesController < ApplicationController
       redirect_to(edit_message_path(@message.id,
         next: 'select_individual',
         role: 'county_coordinator',
-        default_chapman: chapman,
         allowed_chapmans: allowed_chapmans,
         source: 'gazetteer'
       )) && return
@@ -609,23 +603,17 @@ class MessagesController < ApplicationController
 
     session[:com_role] = params[:role]
     @people = @message.select_the_list_of_individuals(params[:role])
-    if params[:default_chapman].present? && params[:role] == 'county_coordinator' && @people.present?
-      county_name = ChapmanCode.name_from_code(params[:default_chapman].to_s.strip).to_s
-      if county_name.present?
-        match_idx = @people.index { |p| p.to_s.start_with?("#{county_name} (") }
-        if match_idx.present? && match_idx > 0
-          match = @people.delete_at(match_idx)
-          @people.unshift(match)
-        end
-      end
-    end
 
-    # Gazetteer: restrict the list to only counties present in the search results list.
-    if params[:source].to_s == 'gazetteer' && params[:role] == 'county_coordinator' && params[:allowed_chapmans].present? && @people.present?
-      chapmans = params[:allowed_chapmans].to_s.split(',').map { |c| c.to_s.strip }.reject(&:blank?).uniq
-      allowed_names = chapmans.map { |c| ChapmanCode.name_from_code(c).to_s }.reject(&:blank?).uniq
-      if allowed_names.present?
-        @people = @people.select { |p| allowed_names.any? { |n| p.to_s.start_with?("#{n} (") } }
+    # Gazetteer: restrict the list to only counties present in the search results list,
+    # and require the user to actively choose one rather than pre-selecting a default.
+    if params[:source].to_s == 'gazetteer' && params[:role] == 'county_coordinator'
+      @no_default_recipient = true
+      if params[:allowed_chapmans].present? && @people.present?
+        chapmans = params[:allowed_chapmans].to_s.split(',').map { |c| c.to_s.strip }.reject(&:blank?).uniq
+        allowed_names = chapmans.map { |c| ChapmanCode.name_from_code(c).to_s }.reject(&:blank?).uniq
+        if allowed_names.present?
+          @people = @people.select { |p| allowed_names.any? { |n| p.to_s.start_with?("#{n} (") } }
+        end
       end
     end
 

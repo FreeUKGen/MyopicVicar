@@ -374,7 +374,7 @@ class SearchRecordsController < ApplicationController
   def viewed
     session[:viewed] ||= []
   end
-  
+
   private
 
   # Citation links are often opened from other sites; redirect_back would send users to the Referer (that site)

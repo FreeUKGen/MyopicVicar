@@ -7,7 +7,7 @@
 <div class="grid">
   <% if not @group_ids.empty? %>
     <div style="text-align: center">
-      <%= link_to 'Email CC of All Image Groups', send_complete_to_cc_image_server_group_path(:completed_groups=>@completed_groups), method: :get, :class => "btn  btn--small" %>
+      <%= button_to 'Email CC of All Image Groups', send_complete_to_cc_image_server_groups_path, method: :post, params: { completed_groups: @completed_groups }, class: "btn  btn--small" %>
     </div>
   <% end %>
   <section class="island">

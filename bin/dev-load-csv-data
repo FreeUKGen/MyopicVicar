@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Process transcriber CSV files already sitting in a datafiles directory into the dev database.
+# Run bin/dev-import-collections first (places/churches/registers/userid_details must already exist).
+#
+# Usage:
+#   bin/dev-load-csv-data [datafiles_dir] [--with-content]
+#
+#   datafiles_dir   Directory containing <userid>/<file>.csv subfolders (default: tmp/datafiles).
+#                   No mentor data? Try the fixtures already in the repo, e.g.:
+#                     mkdir -p tmp/datafiles/kirknorfolk
+#                     cp test_data/freereg1_csvs/kirknorfolk/*.csv tmp/datafiles/kirknorfolk/
+#   --with-content  Also rebuild the freereg_contents collection (freereg:calculate_freereg_content).
+#                    Skipped by default: it can take 30-60+ minutes.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+DATA_DIR="tmp/datafiles"
+WITH_CONTENT=false
+
+for arg in "$@"; do
+  case "$arg" in
+    --with-content) WITH_CONTENT=true ;;
+    *) DATA_DIR="$arg" ;;
+  esac
+done
+
+if [[ ! -d "$DATA_DIR" ]] || [[ -z "$(find "$DATA_DIR" -mindepth 2 -iname '*.csv' -print -quit 2>/dev/null)" ]]; then
+  echo "No CSV files found under $DATA_DIR/<userid>/."
+  echo "Copy some in first, e.g.:"
+  echo "  mkdir -p tmp/datafiles/kirknorfolk"
+  echo "  cp test_data/freereg1_csvs/kirknorfolk/*.csv tmp/datafiles/kirknorfolk/"
+  exit 1
+fi
+
+echo "== 1) Create search_records indexes (needed for search to work at all) =="
+"$ROOT/bin/dev-create-search-indexes"
+
+echo
+echo "== 2) Link UseridDetail records to Devise logins =="
+bundle exec rake freeuk:add_user
+
+echo
+echo "== 3) Load emendation rules =="
+bundle exec rake load_emendations --trace
+
+echo
+echo "== 4) Process CSV files under $DATA_DIR into freereg1_csv_entries + search_records =="
+echo "   (a-9 covers every userid folder under $DATA_DIR; can take a while for large sets)"
+bundle exec rake "build:recommence_freereg_new_update[create_search_records,range,force_rebuild,a-9]" --trace
+
+echo
+echo "== 5) Refresh places cache =="
+bundle exec rake foo:refresh_places_cache
+
+if [[ "$WITH_CONTENT" == true ]]; then
+  echo
+  echo "== 6) Rebuild freereg_contents (this is the slow one: 30-60+ minutes) =="
+  bundle exec rake freereg:calculate_freereg_content --trace
+else
+  echo
+  echo "Skipped freereg_contents rebuild. Re-run with --with-content if you need it."
+fi
+
+echo
+echo "Done. Spot-check in a mongo shell or the Rails console, e.g.:"
+echo "  Freereg1CsvEntry.count"
+echo "  SearchRecord.count"

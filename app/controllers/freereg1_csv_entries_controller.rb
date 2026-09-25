@@ -182,7 +182,7 @@ class Freereg1CsvEntriesController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     display_info
 
-    @embargo_permitted = (session[:role] == 'system_administrator' || session[:role] == 'executive_director') ? true : false
+    @embargo_permitted = EmbargoRule::PERMITTED_ROLES.include?(session[:role])
     @freereg1_csv_entry.embargo_records.build if @embargo_permitted
     @date = DateTime.now
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
@@ -202,7 +202,7 @@ class Freereg1CsvEntriesController < ApplicationController
 
     display_info
 
-    @embargo_permitted = (session[:role] == 'system_administrator' || session[:role] == 'executive_director') ? true : false
+    @embargo_permitted = EmbargoRule::PERMITTED_ROLES.include?(session[:role])
     @freereg1_csv_entry.embargo_records.build if @embargo_permitted
     @date = DateTime.now
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
@@ -283,7 +283,7 @@ class Freereg1CsvEntriesController < ApplicationController
     display_info
     session[:from] = 'file' if params[:from].present? && params[:from] == 'file'
     @embargoed = @freereg1_csv_entry.currently_under_embargo?
-    @embargo_permitted = (@user.present? && (session[:role] == 'system_administrator' || session[:role] == 'executive_director' || session[:role] == 'data_manager')) ? true : false
+    @embargo_permitted = @user.present? && EmbargoRule::PERMITTED_ROLES.include?(session[:role])
     session[:freereg1_csv_entry_id] = @freereg1_csv_entry._id
     @search_record = @freereg1_csv_entry.search_record
     @forenames = []
@@ -304,6 +304,13 @@ class Freereg1CsvEntriesController < ApplicationController
 
     old_search_record = @freereg1_csv_entry.search_record
     @freereg1_csv_file = @freereg1_csv_entry.freereg1_csv_file
+
+    # The edit_embargo form only submits embargo_records (plus the unchanged year).
+    # Such an edit does not alter the CSV, so it must not back up or lock the file.
+    submitted = params[:freereg1_csv_entry] || {}
+    @embargo_only = submitted[:embargo_records_attributes].present? &&
+                    (submitted.keys.map(&:to_s) - %w[embargo_records_attributes year]).empty?
+
     params[:freereg1_csv_entry][:record_type] = @freereg1_csv_file.record_type
     @freereg1_csv_file.check_and_augment_def(params[:freereg1_csv_entry])
 
@@ -325,7 +332,11 @@ class Freereg1CsvEntriesController < ApplicationController
 
     @freereg1_csv_entry.reload
     @freereg1_csv_entry.update_place_ucf_list(place, @freereg1_csv_file, old_search_record)
-    flash[:notice] = 'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
+    flash[:notice] = if @embargo_only
+                       'The embargo status was updated.'
+                     else
+                       'The change in entry contents was successful, the file is now locked against replacement until it has been downloaded.'
+                     end
     if session[:zero_listing]
       session.delete(:zero_listing)
       redirect_to freereg1_csv_entry_path(@freereg1_csv_entry, zero_listing: 'true')
@@ -341,9 +352,14 @@ class Freereg1CsvEntriesController < ApplicationController
   end
 
   def update_file_statistics(place)
-    @freereg1_csv_file.calculate_distribution
     search_version = calculate_software_version
     SearchRecord.update_create_search_record(@freereg1_csv_entry, search_version, place)
+
+    # An embargo-only edit leaves the CSV untouched: no distribution change, no
+    # backup, and no lock (the file does not need re-downloading).
+    return if @embargo_only
+
+    @freereg1_csv_file.calculate_distribution
     @freereg1_csv_file.backup_file
     @freereg1_csv_file.lock_all(session[:my_own])
     @freereg1_csv_file.modification_date = Time.now.strftime("%d %b %Y")
