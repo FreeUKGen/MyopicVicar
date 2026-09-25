@@ -456,7 +456,7 @@ class Freecen2Place
         i += 1
       end
       column_headers_final = column_headers_all + column_headers_end
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
         csv << column_headers_final
         gaz_places.each do |rec|
           line = []

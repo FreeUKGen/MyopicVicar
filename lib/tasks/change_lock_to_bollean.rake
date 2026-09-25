@@ -1,7 +1,7 @@
 task :change_lock_to_bollean => :environment do
   #This task resets the coordinators and their roles based on the syndicate coordinators collection
   file_for_warning_messages = "log/change_lock.log"
-  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
   message_file = File.new(file_for_warning_messages, "w")
   n = 0
   p "starting"

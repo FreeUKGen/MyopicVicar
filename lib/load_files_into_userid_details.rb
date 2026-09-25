@@ -8,7 +8,7 @@ class LoadFilesIntoUseridDetails
  
   def self.process(len,type,fr)
     file_for_warning_messages = "log/load_files_into_userid_details.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
     @@message_file = File.new(file_for_warning_messages, "w")
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     puts "Loading files into useris_details and into attic files collection"

@@ -477,7 +477,7 @@ class UseridDetail
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
     details_file = File.join(details_dir,".uDetails")
     newdir = File.join(details_dir,'.attic')
-    Dir.mkdir(newdir) unless Dir.exists?(newdir)
+    Dir.mkdir(newdir) unless Dir.exist?(newdir)
     renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
     File.rename(details_file,renamed_file)
     FileUtils.mv(renamed_file,newdir)
@@ -645,7 +645,7 @@ class UseridDetail
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
     details_file = File.join(details_dir,".uDetails")
     newdir = File.join(details_dir,'.attic')
-    Dir.mkdir(newdir) unless Dir.exists?(newdir)
+    Dir.mkdir(newdir) unless Dir.exist?(newdir)
     renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
     File.rename(details_file,renamed_file)
     FileUtils.mv(renamed_file,newdir)
