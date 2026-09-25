@@ -1,0 +1,28 @@
+development:
+  clients:
+    default:
+      database: myopic_vicar_development
+      hosts:
+        - mongo:27017
+      options:
+    local_writable:
+      database: writable_development
+      hosts:
+        - mongo:27017
+      options:
+  options:
+    raise_not_found_error: false
+    scope_overwrite_exception: false
+
+test:
+  clients:
+    default:
+      database: freereg_development
+      hosts:
+        - mongo:27017
+      options:
+    local_writable:
+      database: writable_development
+      hosts:
+        - mongo:27017
+      options:
