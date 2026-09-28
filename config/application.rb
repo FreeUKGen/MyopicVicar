@@ -61,6 +61,13 @@ module MyopicVicar
     config.cta_display_status = app['cta_display_status']
     config.server_upgrade = app['server_upgrade']
     config.site_notice_banner_html = app['site_notice_banner_html']
+
+    # FreeBMD cross-project search API (pilot) - see app/services/bmd_search_client.rb
+    bmd_search_api_url = app['bmd_search_api_url'].presence || ENV['BMD_SEARCH_API_URL'].presence
+    ENV['BMD_SEARCH_API_URL'] ||= bmd_search_api_url
+    bmd_api_token = app['bmd_api_token'].presence || ENV['BMD_API_TOKEN'].presence
+    ENV['BMD_API_TOKEN'] ||= bmd_api_token
+
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
 

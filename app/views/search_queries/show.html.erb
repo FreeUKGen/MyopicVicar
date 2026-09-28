@@ -31,6 +31,11 @@
                 <div class="grid__item one-whole">
                   <%= render(:partial => app_specific_partial("desktop"), :locals => {:search_results => @search_results, :inclusive => @search_query.inclusive, :witness =>@search_query.witness, :first_name => @search_query.first_name, :last_name => @search_query.last_name, :ucf_results => @ucf_results})  %>
                 </div>
+                <% if @bmd_results.present? %>
+                  <div class="grid__item one-whole">
+                    <%= render 'freebmd_cross_results', bmd_results: @bmd_results %>
+                  </div>
+                <% end %>
                 <div class="grid__item one-whole">
                   <% if @result_count > 0 && @result_count < FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}") %>
                     <%= render 'please_donate' %>

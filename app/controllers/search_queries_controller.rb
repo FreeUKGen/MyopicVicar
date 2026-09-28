@@ -267,6 +267,7 @@ class SearchQueriesController < ApplicationController
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
     end
+    @bmd_results = fetch_bmd_cross_results if show_bmd_cross_results?
   end
 
   def show_print_version
@@ -311,5 +312,43 @@ class SearchQueriesController < ApplicationController
 
   def search_params
     permitted_model_params(SearchQuery)
+  end
+
+  # Pilot: FreeREG -> FreeBMD cross-project search (use case #2 from the API workshop).
+  # Deliberately narrow: only FreeREG, only when a surname is present, only when the
+  # search's own year range could plausibly overlap FreeBMD's 1837+ civil registration
+  # coverage, and only when the county (if any is specified) is England or Wales -
+  # FreeBMD has no Scottish, Irish, or overseas coverage. BmdSearchClient fails soft,
+  # so a FreeBMD outage never breaks this page.
+  def show_bmd_cross_results?
+    MyopicVicar::Application.config.template_set == 'freereg' &&
+      @search_query.last_name.present? &&
+      bmd_eligible_year_range? &&
+      bmd_eligible_county?
+  end
+
+  def bmd_eligible_year_range?
+    end_year = @search_query.end_year
+    end_year.blank? || end_year.to_i >= 1837
+  end
+
+  # No county specified: can't rule it out ahead of time, so allow the call.
+  # County specified: only proceed if at least one is England or Wales.
+  def bmd_eligible_county?
+    @search_query.chapman_codes.blank? || bmd_matching_chapman_codes.any?
+  end
+
+  def bmd_matching_chapman_codes
+    england_and_wales_codes = ChapmanCode::CODES['England'].values + ChapmanCode::CODES['Wales'].values
+    @search_query.chapman_codes & england_and_wales_codes
+  end
+
+  def fetch_bmd_cross_results
+    BmdSearchClient.new.search(
+      surname: @search_query.last_name,
+      first_name: @search_query.first_name,
+      year: @search_query.start_year,
+      county: bmd_matching_chapman_codes.first
+    )
   end
 end

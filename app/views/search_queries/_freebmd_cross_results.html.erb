@@ -1,0 +1,34 @@
+<%#
+  Pilot: FreeREG -> FreeBMD cross-project search results (API workshop use case #2).
+  bmd_results is an array of business objects from BmdSearchClient - see
+  app/services/bmd_search_client.rb and the FreeBMD API's Api::V1::BmdSearchController.
+
+  NOTE: record_type is still a raw numeric RecordTypeID from the API today (a known
+  contract gap - see the pilot deck), so it's mapped to a label here rather than in
+  the API. Move this mapping server-side once the contract exposes event_type directly.
+%>
+<% bmd_record_type_labels = { 1 => 'Birth', 2 => 'Death', 3 => 'Marriage' } %>
+<div class="freebmd-cross-results" style="border: 1px solid #ddd; padding: 12px; margin-top: 8px;">
+  <h3 style="margin-top: 0;">Possible matches in FreeBMD (civil registration)</h3>
+  <p><i>Pilot feature - these are separate civil registration index entries, not part of this FreeREG record.</i></p>
+  <table class="table--bordered table--striped table--data">
+    <thead>
+      <tr>
+        <th>Person</th>
+        <th>Record type</th>
+        <th>Year : Quarter</th>
+        <th>District</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% bmd_results.each do |result| %>
+        <tr>
+          <td><%= "#{result[:forename]} #{result[:surname]}".strip %></td>
+          <td><%= bmd_record_type_labels[result[:record_type]] || result[:record_type] %></td>
+          <td><%= "#{result[:year]} : Q#{result[:quarter]}" %></td>
+          <td><%= result[:district] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
