@@ -267,7 +267,8 @@ class SearchQueriesController < ApplicationController
         redirect_to(new_search_query_path(search_id: @search_query)) && return
       end
     end
-    @bmd_results = fetch_bmd_cross_results if show_bmd_cross_results?
+    fetch_and_cache_bmd_cross_results if show_bmd_cross_results?
+    @bmd_results = @search_query.bmd_cross_results
   end
 
   def show_print_version
@@ -341,6 +342,17 @@ class SearchQueriesController < ApplicationController
   def bmd_matching_chapman_codes
     england_and_wales_codes = ChapmanCode::CODES['England'].values + ChapmanCode::CODES['Wales'].values
     @search_query.chapman_codes & england_and_wales_codes
+  end
+
+  # Fetch at most once per search and persist on the SearchQuery itself, so
+  # reordering/paginating an already-completed search reads the cached value
+  # instead of re-hitting the FreeBMD API on every page view.
+  def fetch_and_cache_bmd_cross_results
+    return if @search_query.bmd_cross_results_fetched?
+
+    @search_query.bmd_cross_results = fetch_bmd_cross_results
+    @search_query.bmd_cross_results_fetched = true
+    @search_query.save
   end
 
   def fetch_bmd_cross_results

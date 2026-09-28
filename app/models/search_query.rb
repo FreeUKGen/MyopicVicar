@@ -107,6 +107,11 @@ class SearchQuery
   field :radius_factor, type: Integer, default: 101
   field :search_nearby_places, type: Boolean
   field :result_count, type: Integer
+  # Pilot: FreeREG -> FreeBMD cross-project search cache. Fetched at most once per
+  # search (see SearchQueriesController#fetch_and_cache_bmd_cross_results), not
+  # re-fetched on every page view/reorder of the same search.
+  field :bmd_cross_results, type: Array, default: []
+  field :bmd_cross_results_fetched, type: Boolean, default: false
   field :place_system, type: String, default: Place::MeasurementSystem::ENGLISH
   field :ucf_filtered_count, type: Integer
   field :session_id, type: String
