@@ -1170,7 +1170,8 @@
         #Handle multiple records with same hash
         if records.has_key? rec_hash
           v1 = records[rec_hash]
-          existing = Array(v1).flatten
+          # Array(hash) splits a Hash into [key, value] pairs, which silently drops the first record.
+          existing = v1.is_a?(Array) ? v1 : [v1]
           records[rec_hash] = existing + [rec_attr]
         else
           records[rec_hash] = rec_attr
