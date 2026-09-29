@@ -114,7 +114,7 @@
                             <label>
                                 <small>
                                     <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
-                                Exact match on first names
+                                Exact match
                                 </small>
                             </label>
                         </li>
@@ -130,7 +130,7 @@
                             <label>
                                 <small class="ttip__text">
                                     <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
-                                    Phonetic search surnames
+                                    Phonetic search
                                 </small>
                             </label>
                         </li>
