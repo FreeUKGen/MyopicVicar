@@ -1158,6 +1158,19 @@
 
   def persist_results(results)
     return unless results
+
+    # BestGuess#record_hash reads district.DistrictName per row (non-development envs).
+    # persist_results hashes up to FREEBMD_DISPLAY_LIMIT rows, so preload :district once
+    # instead of firing one District query per result row.
+    if freebmd_app?
+      if results.is_a?(ActiveRecord::Relation)
+        results = results.includes(:district)
+      elsif results.is_a?(Array)
+        ar_rows = results.select { |r| r.is_a?(ActiveRecord::Base) }
+        ActiveRecord::Associations::Preloader.new.preload(ar_rows, :district) if ar_rows.any?
+      end
+    end
+
     # finally extract the records IDs and persist them
     records = {}
     county_by_combo = SearchQuery.app_template == 'freebmd' ? bmd_county_lookup_for_records(results) : {}
@@ -1170,7 +1183,8 @@
         #Handle multiple records with same hash
         if records.has_key? rec_hash
           v1 = records[rec_hash]
-          existing = Array(v1).flatten
+          # Array(hash) splits a Hash into [key, value] pairs, which silently drops the first record.
+          existing = v1.is_a?(Array) ? v1 : [v1]
           records[rec_hash] = existing + [rec_attr]
         else
           records[rec_hash] = rec_attr
