@@ -5,6 +5,7 @@ class Register
   require 'record_type'
   require 'register_type'
   require 'freereg_validations'
+  require 'extract_collection_unique_names'
 
 
   field :status, type: String
@@ -33,6 +34,7 @@ class Register
   belongs_to :church, index: true
 
   has_many :sources, dependent: :restrict_with_error # includes origin server of images
+  has_many :register_unique_names, dependent: :destroy
   has_many :embargo_rules
   has_many :gaps
 

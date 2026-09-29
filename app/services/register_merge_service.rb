@@ -115,8 +115,9 @@ class RegisterMergeService
         merged_ids << source.id
         merge_one!(source)
       end
+      ExtractCollectionUniqueNames.reconcile_register(@target)
     end
-
+    queue_embargo_reprocessing if totals_moved['EmbargoRule'].positive?
     success(build_success_summary(merged_ids, totals_moved))
   rescue StandardError => e
     Rails.logger.error("FREEREG:REGISTER_MERGE: Failed for #{@target.id}: #{e.class} #{e.message}")
@@ -312,6 +313,7 @@ class RegisterMergeService
 
   def merge_one!(source)
     DEPENDENCY_MODELS.each do |model|
+      next if model == EmbargoRule
       before_count = model.where(register_id: source.id).count
       next if before_count.zero?
 
@@ -320,9 +322,40 @@ class RegisterMergeService
       raise "Could not move all #{model.name} records from #{source.id}" unless remaining.zero?
       raise "Unexpected moved count for #{model.name} on #{source.id}" if moved.matched_count < before_count
     end
-
+    merge_embargo_rules!(source)
     source.destroy
     raise "Could not delete merged register #{source.id}" if Register.where(id: source.id).exists?
+  end
+
+   def merge_embargo_rules!(source)
+    EmbargoRule.where(register_id: source.id).each do |rule|
+      # Period must match too: repointed entries keep their release date, and EmbargoRecord#already_applied?
+      # would stop the embargo job recalculating it against a rule with a different period.
+      kept = EmbargoRule.where(register_id: @target.id, rule: rule.rule, record_type: rule.record_type, period: rule.period).first
+      if kept
+        repoint_embargoed_entries!(rule, kept)
+        EmbargoRule.where(id: rule.id).delete_all
+      else
+        EmbargoRule.where(id: rule.id).update_all(register_id: @target.id)
+      end
+    end
+    raise "Could not move all EmbargoRule records from #{source.id}" if EmbargoRule.where(register_id: source.id).exists?
+  end
+
+  def repoint_embargoed_entries!(from_rule, to_rule)
+    Freereg1CsvEntry.collection.find('embargo_records.rule_applied' => from_rule.id.to_s).update_many(
+      { '$set' => {
+        'embargo_records.$[record].rule_applied' => to_rule.id.to_s,
+        'embargo_records.$[record].rule_date' => to_rule.updated_at.utc.to_s
+      } },
+      array_filters: [{ 'record.rule_applied' => from_rule.id.to_s }]
+    )
+  end
+
+  def queue_embargo_reprocessing
+    EmbargoRule.where(register_id: @target.id).first&.add_to_rake_register_embargo_list
+  rescue StandardError => e
+    Rails.logger.error("FREEREG:REGISTER_MERGE: embargo queue failed for #{@target.id}: #{e.message}")
   end
 
   # Transactions are supported only on replica sets/sharded clusters.
