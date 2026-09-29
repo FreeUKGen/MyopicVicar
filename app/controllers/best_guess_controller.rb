@@ -404,7 +404,10 @@ class BestGuessController < ApplicationController
     clean_session_for_saved_entry
     saved_record = session[:saved_search_record]
     @anchor_entry = saved_record
-    @saved_entry = BestGuess.find(saved_record)
+    # saved_record=true can arrive with no saved_entry param and no prior session value
+    # (direct/shared/bookmarked link, or a session that never had one) - BestGuess.find(nil)
+    # raises "Couldn't find BestGuess without an ID" rather than returning nil.
+    @saved_entry = BestGuess.find(saved_record) if saved_record.present?
   end
 
   def clean_session_for_search
