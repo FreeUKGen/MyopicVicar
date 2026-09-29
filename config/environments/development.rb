@@ -95,6 +95,7 @@ MyopicVicar::Application.configure do
   config.sendgrid_api_key = MyopicVicar::MongoConfig['sendgrid_api_key']
   config.citation = MyopicVicar::MongoConfig['citation']
   config.eager_load = false
+  config.hosts << "dev.freebmd2.org.uk"
   config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
   config.register_embargo_list = MyopicVicar::MongoConfig['register_embargo_list']
   config.freecen2_place_cache = MyopicVicar::MongoConfig['freecen2_place_cache']

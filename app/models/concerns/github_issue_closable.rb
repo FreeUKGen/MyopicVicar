@@ -5,7 +5,7 @@ module GithubIssueClosable
 
   included do
     field :github_issue_state, type: String
-    field :notified_issue_closed, type: Boolean, default: false
+    field :notified_issue_closed, type: Mongoid::Boolean, default: false
   end
 
   module ClassMethods
