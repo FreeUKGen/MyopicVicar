@@ -4,6 +4,7 @@ class ExtractCollectionUniqueNames
       file_for_messages = 'log/extract_names_report.log'
       message_file = File.new(file_for_messages, 'w')
       limit = limit.to_i
+      full_rebuild = limit == 0
       p 'Producing report of the population of surnames'
       message_file.puts 'Producing report of unique names'
       num = 0
@@ -21,18 +22,18 @@ class ExtractCollectionUniqueNames
             register.freereg1_csv_files.no_timeout.each do |file|
               unique_names = unique_names.merge(file.get_unique_names) { |key, v1, v2| v1 + v2 }
             end
-            if unique_names.present?
-              distinct_register_forenames = ExtractCollectionUniqueNames.extract_unique_forenames(unique_names)
-              distinct_register_surnames = ExtractCollectionUniqueNames.extract_unique_surnames(unique_names)
-              distinct_register_forenames = distinct_register_forenames.sort
-              distinct_register_surnames = distinct_register_surnames.sort
-              register_unique_name = RegisterUniqueName.find_by(register_id: register.id)
+            distinct_register_forenames = ExtractCollectionUniqueNames.extract_unique_forenames(unique_names).sort
+            distinct_register_surnames = ExtractCollectionUniqueNames.extract_unique_surnames(unique_names).sort
+            register_unique_names = RegisterUniqueName.where(register_id: register.id)
+            if distinct_register_forenames.present? || distinct_register_surnames.present?
+              register_unique_name = register_unique_names.first
               if register_unique_name.present?
                 register_unique_name.update_attributes(unique_forenames: distinct_register_forenames, unique_surnames: distinct_register_surnames)
               else
-                register_unique_name = RegisterUniqueName.new(register_id: register.id, unique_forenames: distinct_register_forenames, unique_surnames: distinct_register_surnames)
-                register_unique_name.save
+                RegisterUniqueName.create(register_id: register.id, unique_forenames: distinct_register_forenames, unique_surnames: distinct_register_surnames)
               end
+            else
+              register_unique_names.destroy_all
             end
             distinct_church_forenames += distinct_register_forenames
             distinct_church_surnames += distinct_register_surnames
@@ -66,9 +67,30 @@ class ExtractCollectionUniqueNames
         num += 1
         break if num == limit
       end
+      ExtractCollectionUniqueNames.remove_orphaned_register_unique_names if full_rebuild
       time_elapsed = Time.now - time_start
       p "Finished #{num} places in #{time_elapsed}"
       message_file.puts "Finished #{num} places in #{time_elapsed}"
+    end
+
+    def remove_orphaned_register_unique_names
+      RegisterUniqueName.no_timeout.each do |register_unique_name|
+        register_unique_name.destroy unless Register.where(id: register_unique_name.register_id).exists?
+      end
+    end
+
+    def reconcile_register(register)
+      unique_names = {}
+      register.freereg1_csv_files.no_timeout.each do |file|
+        unique_names = unique_names.merge(file.get_unique_names) { |_key, first, second| first + second }
+      end
+
+      forenames = extract_unique_forenames(unique_names).sort
+      surnames = extract_unique_surnames(unique_names).sort
+      RegisterUniqueName.where(register_id: register.id).delete_all
+      return if forenames.blank? && surnames.blank?
+
+      RegisterUniqueName.create!(register_id: register.id, unique_forenames: forenames, unique_surnames: surnames)
     end
 
     def extract_unique_forenames(names)
