@@ -346,7 +346,7 @@ class Freereg1CsvFilesController < ApplicationController
     session[:return_to] = request.original_url
     controls(@freereg1_csv_file)
     session[:initial_page] = @return_location
-    
+
     place  = @freereg1_csv_file.register.church.place
     church = @freereg1_csv_file.register.church
 
@@ -421,7 +421,9 @@ class Freereg1CsvFilesController < ApplicationController
 
     redirect_back(fallback_location: freereg1_csv_file_path(@freereg1_csv_file), notice: 'File is currently awaiting processing and should not be edited') && return unless @freereg1_csv_file.can_we_edit?
     controls(@freereg1_csv_file)
-    proceed, message = @freereg1_csv_file.remove_batch
+
+    max_records = get_max_records(@user)
+    proceed, message = @freereg1_csv_file.remove_batch(max_records)
     proceed ? flash[:notice] = 'The removal of the batch entry was successful' : flash[:notice] = message
 
     if session[:my_own]
@@ -480,7 +482,7 @@ class Freereg1CsvFilesController < ApplicationController
       @placenames = places.map { |p| [p.place_name, p.id] }
       @selected_place = session[:selectplace]
       @churches = place.churches.map { |a| [a.church_name, a.id] }
-      
+
       @churches[1] = 'Has no churches' if place.churches.blank?
       @freereg1_csv_file.county == session[:selectcounty] && session[:selectplace] == @freereg1_csv_file.place ? @selected_church = @freereg1_csv_file.church_name : @selected_place = ''
       @selected_place = session[:selectplace]

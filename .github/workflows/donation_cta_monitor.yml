@@ -32,6 +32,7 @@ jobs:
         env:
           GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
           GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+          MONITOR_USER_AGENT: ${{ secrets.MONITOR_USER_AGENT }}
           FORCE_CHECK: ${{ inputs.force_check }}
         run: ruby script/donation_cta_monitor.rb
 

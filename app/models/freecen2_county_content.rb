@@ -60,6 +60,7 @@ class Freecen2CountyContent
         end
 
         county_name = ChapmanCode.name_from_code(county)
+
         new_county = false
 
         if update_all
@@ -307,8 +308,10 @@ class Freecen2CountyContent
 
       end
 
-      counties_array_sorted = counties_array.sort
+
+      counties_array_sorted = counties_array.compact.sort
       records[:total][:counties] = counties_array_sorted
+
 
       stat.records = records
       stat.new_records = new_records.sort

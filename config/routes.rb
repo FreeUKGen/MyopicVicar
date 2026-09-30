@@ -654,6 +654,7 @@ MyopicVicar::Application.routes.draw do
   get 'image_server_groups/upload_return', :to => 'image_server_groups#upload_return', :as => :upload_return_image_server_group
   get 'image_server_groups/:id/request_cc_image_server_group(.:format)', :to => 'image_server_groups#request_cc_image_server_group', :as => :request_cc_image_server_group
   get 'image_server_groups/:id/request_sc_image_server_group(.:format)', :to => 'image_server_groups#request_sc_image_server_group', :as => :request_sc_image_server_group
+  post 'image_server_groups/send_complete_to_cc(.:format)', :to => 'image_server_groups#send_complete_to_cc', :as => :send_complete_to_cc_image_server_groups
   get 'image_server_groups/:id/send_complete_to_cc(.:format)', :to => 'image_server_groups#send_complete_to_cc', :as => :send_complete_to_cc_image_server_group
   resources :image_server_groups
 

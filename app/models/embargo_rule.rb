@@ -3,6 +3,12 @@ class EmbargoRule
   include Mongoid::Document
   include Mongoid::Timestamps
   require 'record_type'
+
+  # Single source of truth for which roles may view/set/edit embargoes,
+  # shared by EmbargoRulesController and Freereg1CsvEntriesController so
+  # the two stay in sync.
+  PERMITTED_ROLES = ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].freeze
+
   field :authority, type: String
   validates :authority, presence: true
   field :period, type: Integer

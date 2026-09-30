@@ -31,9 +31,12 @@ RSpec.describe ManageCountiesController, type: :controller do
         .with('NFK', 'completion_submitted')
         .and_return([[], [], {}])
 
+      request.env["HTTP_REFERER"] = "http://test.host/manage_counties/manage_completion_submitted_image_group"
+
       get :manage_completion_submitted_image_group
 
-      expect(response).to have_http_status(:redirect)
+      expect(response).to redirect_to(manage_image_group_manage_county_path)
+      expect(response.location).not_to eq(request.env["HTTP_REFERER"])
       expect(flash[:notice]).to eq("No image groups found with status of 'Completion Submitted'")
     end
   end

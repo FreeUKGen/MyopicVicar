@@ -95,7 +95,6 @@ class Place
   has_many :gaps
 
   has_many :open_names_per_place
-  PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem
     SI = 'si'
