@@ -278,10 +278,4 @@ class Freecen2ContentsController < ApplicationController
   def show
     redirect_to(freecen2_contents_path, notice: 'No such record') && return
   end
-
-  private
-
-  def freecen2_content_params
-    params.require(:freecen2_content).permit!
-  end
 end
