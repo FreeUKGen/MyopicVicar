@@ -14,10 +14,10 @@
 #   Set BIWEEKLY_ANCHOR_SATURDAY to the Saturday that starts the first "ON" weekend; after that,
 #   no config changes are needed (same code keeps alternating forever).
 #
-# Optional mongo_config.yml keys: donation_campaign_active, donation_campaign_starts_at, donation_campaign_ends_at
-# (see config/mongo_config.example.yml header).
+# Optional mongo_config.yml keys: donation_campaign_active, donation_campaign_starts_at, donation_campaign_ends_at,
+# donation_campaign_kind ("donate" default, or "pledge" to render the pledge dialog instead).
 #
-# When active: show donate CTA dialog, load per-app fuse_tag JS, do not load async fuse script in <head>.
+# When active: show donate/pledge CTA dialog, load per-app fuse_tag JS, do not load async fuse script in <head>.
 # When inactive: hide CTA, load async fuse script in <head>, do not load per-app fuse_tag JS.
 module DonationCampaign
   module_function
@@ -31,6 +31,20 @@ module DonationCampaign
     donation_campaign_ends_at
     donation_campaign_active
   ].freeze
+
+  KINDS = %w[donate pledge].freeze
+
+  # Which dialog partial to render while active: "donate" (default) or "pledge".
+  def kind
+    env_kind = ENV['DONATION_CAMPAIGN_KIND'].to_s.strip.downcase
+    return env_kind if KINDS.include?(env_kind)
+
+    cfg = mongo_cfg
+    cfg_kind = (cfg && (cfg['donation_campaign_kind'] || cfg[:donation_campaign_kind])).to_s.strip.downcase
+    return cfg_kind if KINDS.include?(cfg_kind)
+
+    'donate'
+  end
 
   def active?
     if ENV['DONATION_CAMPAIGN_ACTIVE'].present?

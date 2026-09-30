@@ -170,6 +170,20 @@ class UseridDetail
     end
 
 
+
+    def internal_contact_recipient_options
+      roles = FreeregOptionsConstants::COMMUNICATION_ROLES
+      users = UseridDetail.active(true).email_address_valid.where(:email_address.nin => [nil, '']).any_of(
+        { :person_role.in => roles },
+        { :secondary_role.in => roles }
+      ).order_by(person_surname: 1, person_forename: 1, userid_lower_case: 1)
+
+      users.map do |user|
+        role_label = ([user.person_role] + Array(user.secondary_role)).compact.uniq.select { |role| roles.include?(role) }.join(', ')
+        ["#{user.person_forename} #{user.person_surname} (#{user.userid}) — #{role_label}", user.userid]
+      end
+    end
+
     def uploaded_freecen_file(users, transcribers)
       uploaded = []
       FreecenCsvFile.where(:userid.exists => true).each do |file|
@@ -470,8 +484,8 @@ class UseridDetail
   end
 
   def userid_and_email_address_does_not_exist
-    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exists") if User.where(:username => self[:userid]).exists?
+    errors.add(:userid, "Userid Already exists") if UseridDetail.where(userid: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
+    errors.add(:userid, "Refinery User Already exists") if User.where(username: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
     errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
     errors.add(:email_address, "Refinery email already exists") if User.where(:email => self[:email_address]).exists?
   end
@@ -531,7 +545,7 @@ class UseridDetail
   end
 
   def check_exists_in_refinery
-    refinery_user = User.where(:username => self.userid).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     if refinery_user.nil?
       return[false,"There is no refinery entry"]
     else
@@ -548,7 +562,7 @@ class UseridDetail
   end
 
   def delete_refinery_user_and_userid_folder
-    refinery_user = User.where(:username => self.userid).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
     return if MyopicVicar::Application.config.template_set == 'freecen'
@@ -565,7 +579,7 @@ class UseridDetail
       errors.add(:email_address, "Userid email already exists on change")
     end
 
-    refinery_user = User.where(username: self.userid_lower_case).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     other = User.where(email: /\A#{::Regexp.escape(new_email)}\z/i).first
     if other.present? && (refinery_user.nil? || other.id != refinery_user.id)
       errors.add(:email_address, "Refinery email already exists on change")
@@ -639,7 +653,7 @@ class UseridDetail
 
   def save_to_refinery
     #avoid looping on password changes
-    u = User.where(:username => self.userid).first
+    u = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     if u.nil?
       u = User.new
     end
@@ -655,11 +669,11 @@ class UseridDetail
     #u.add_role('Refinery')
     #u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
     #u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
-    u.save
+    Rails.logger.warn("FREEREG:USERID: save_to_refinery failed for #{self.userid}: #{u.errors.full_messages.join(', ')}") unless u.save
   end
 
   def update_refinery
-    u = User.where(:username => self.userid).first
+    u = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     unless u.nil?
       u.email = self.email_address
       u.userid_detail_id = self.id.to_s

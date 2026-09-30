@@ -136,6 +136,20 @@ class UserMailer < Devise::Mailer
     mail(from: sender_email_address, cc: copies_to_userids_emails,to: "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
   end
 
+
+  def contact_forward(contact, message, recipient_userids, sender_userid)
+    @appname = appname
+    @contact = contact
+    @message = message
+    @forwarder = UseridDetail.userid(sender_userid).first
+    @forwarder_name = @forwarder.present? ? "#{@forwarder.person_forename} #{@forwarder.person_surname}" : sender_userid
+    @contact_url = "#{Rails.application.config.website}/contacts/#{@contact.id}"
+    sender_email_address = get_email_address_from_userid(sender_userid)
+    recipient_email_addresses = get_email_address_array_from_array_of_userids(recipient_userids)
+    get_attachment(@contact)
+    mail(from: sender_email_address, to: recipient_email_addresses, subject: "Forwarded contact: #{@message.subject}")
+  end
+
   def coordinator_feedback_reply(feedback, ccs_userids, message, sender_userid)
     @appname = appname
     @feedback = feedback
@@ -554,7 +568,11 @@ class UserMailer < Devise::Mailer
     if file.present?
       attachments[File.basename(file)] = File.read(file)
     end
-    mail(to: 'Vinodhini.subbu@freeukgenealogy.org.uk', bcc: ccs, subject: subjects, body: body_message)
+    # BCC hid these recipients from the header entirely (and Mail::Message drops a bcc-only
+    # recipient list silently if `to` isn't a real mailbox someone checks) - the rule creator(s)
+    # and sysadmin need to actually see they're addressed, per the agreed CC-not-BCC fix.
+    recipients = ccs.presence || ['vinodhini.subbu@freeukgenealogy.org.uk']
+    mail(to: recipients, subject: subjects, body: body_message)
   end
 
   def send_upload_stats(start_date, end_date)
@@ -572,7 +590,11 @@ class UserMailer < Devise::Mailer
   def embargo_process_completion_email(rule_id, ccs)
     @rule = EmbargoRule.find_by(id: rule_id)
     @register = @rule.register
-    mail(to: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Embargo processing is complete")
+    # ccs (the person who ran this, plus the rule's creator) was computed by the caller and
+    # then never used here - every completion email went to this hardcoded address regardless
+    # of who actually processed the embargo, which is why nobody else ever received one.
+    recipients = ccs.presence || ['vinodhini.subbu@freeukgenealogy.org.uk']
+    mail(to: recipients, subject: "Embargo processing is complete")
   end
 
   def update_report_to_freereg_manager(file, user)

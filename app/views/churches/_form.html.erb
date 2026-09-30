@@ -11,6 +11,7 @@
   <%= f.input :location, :label => "The Church Location :", :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 60 }%>
   <%= f.input :website, :label => "The Church Website :", :input_html => {:class => " simple_form_bgcolour simple_form_position overide_selection_field_width",:size => 60 }%>
   <%= f.input :church_notes, :label => "Notes about the church :",as: :text, :input_html => { :rows => 5, :columns =>30 , :placeholder => "Enter your notes", :class => " simple_form_bgcolour simple_form_position overide_selection_field_width"} %>
+  <%= f.input :location_of_source_documents, :label => "Location of Source Documents :", :as => :text, :hint => "Enter the names of all archives that hold the registers of this church, along with the catalogue numbers for each set of registers. Do the same for documents that are not church registers (e.g., parish minute books).", :input_html => { :rows => 5, :columns => 30, :class => " simple_form_bgcolour simple_form_position overide_selection_field_width" } %>
   <%= f.input :last_amended, :label => "Last date when data for the place was updated", :hint =>"System generated ",:input_html => { :disabled => true, :size => 20  }%>
   <%= f.button :submit, 'Submit'   %>
 <% end %>

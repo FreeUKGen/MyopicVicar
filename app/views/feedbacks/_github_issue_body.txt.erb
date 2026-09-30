@@ -6,4 +6,6 @@ Previous Page URL: [<%= feedback.previous_page_url%>](<%= feedback.previous_page
 Reported Issue:
 <%= feedback.body%>    
 
-![Screenshot](<%= Rails.application.config.website%><%= feedback.screenshot_url%>)
+<% feedback.attachment_urls.each do |url| %>
+![Screenshot](<%= Rails.application.config.website%><%= url%>)
+<% end %>

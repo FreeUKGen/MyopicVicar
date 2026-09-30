@@ -17,6 +17,12 @@ class ContactsController < ApplicationController
 
   skip_before_action :require_login, only: [:new, :report_error, :create, :show]
 
+  # Defense-in-depth against scripted abuse of the public contact form, on top of
+  # the contact_name honeypot and any edge-level (Altcha) protection in front of /contacts/new.
+  MIN_CONTACT_FORM_SECONDS = 3
+  CONTACT_RATE_LIMIT_WINDOW = 10.minutes
+  CONTACT_RATE_LIMIT_MAX = 8
+
   def archive
     @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
@@ -54,6 +60,12 @@ class ContactsController < ApplicationController
   def create
     @contact = Contact.new(contact_params)
     if @contact.contact_name.blank? #spam trap
+      if likely_automated_submission?
+        # Pretend success so scripted abuse gets no signal that it was blocked.
+        flash[:notice] = 'Thank you for contacting us!'
+        redirect_to(new_search_query_path) && return
+      end
+
       @contact.previous_page_url = request.env['HTTP_REFERER']
       @contact.session_data = safe_session_data
       if @contact.selected_county == 'nil'
@@ -107,6 +119,22 @@ class ContactsController < ApplicationController
     @contact.delete
     flash.notice = 'Contact and all its replies are destroyed'
     redirect_to(action: 'index') && return
+  end
+
+  def forward_contact
+    @respond_to_contact = Contact.find(params[:source_contact_id]) if params[:source_contact_id].present?
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @respond_to_contact.blank?
+
+    get_user_info_from_userid
+    @message = Message.new(
+      message_time: Time.now,
+      userid: @user.userid,
+      source_contact_id: @respond_to_contact.id.to_s,
+      nature: 'contact',
+      sub_nature: 'forward',
+      subject: helpers.contact_subject(@respond_to_contact)
+    )
+    @recipient_options = UseridDetail.internal_contact_recipient_options
   end
 
   def index
@@ -262,7 +290,41 @@ class ContactsController < ApplicationController
     @message = Message.new
     @message.message_time = Time.now
     @message.userid = @user.userid
-    @userids = array_of_userids
+    @recipient_options = UseridDetail.internal_contact_recipient_options
+  end
+
+  def send_forward_contact
+    @respond_to_contact = Contact.find(params[:source_contact_id]) if params[:source_contact_id].present?
+    redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @respond_to_contact.blank?
+
+    get_user_info_from_userid
+    @recipient_options = UseridDetail.internal_contact_recipient_options
+    selected_recipients = permitted_forward_recipients(params[:message] && params[:message][:recipients])
+    if selected_recipients.blank?
+      flash.now[:notice] = 'Please select at least one internal recipient'
+      @message = forward_message_from_params
+      render :forward_contact
+      return
+    end
+
+    @message = forward_message_from_params
+    @message.recipients = selected_recipients
+    @message.save
+    if @message.errors.any?
+      flash.now[:notice] = "The forward was not created #{@message.errors.full_messages}"
+      render :forward_contact
+      return
+    end
+
+    UserMailer.contact_forward(@respond_to_contact, @message, selected_recipients, @user.userid).deliver_now
+    @message.record_contact_forward_delivery(@user.userid, selected_recipients)
+    @message.add_message_to_userid_messages(@user)
+    selected_recipients.each do |recipient|
+      @message.add_message_to_userid_messages(UseridDetail.look_up_id(recipient))
+    end
+
+    flash[:notice] = 'Contact was forwarded'
+    redirect_to(contact_path(@respond_to_contact)) && return
   end
 
   def return_after_archive(source, id)
@@ -388,6 +450,31 @@ class ContactsController < ApplicationController
     params.require(:contact).permit!
   end
 
+  def likely_automated_submission?
+    submitted_too_fast? || contact_rate_limited?
+  end
+
+  # Real visitors take at least a few seconds to fill in the form; the hidden
+  # contact_time field records when it was rendered. Missing/unparseable/too-fast
+  # all count as suspicious, since a direct scripted POST won't reproduce it faithfully.
+  def submitted_too_fast?
+    rendered_at = params.dig(:contact, :contact_time)
+    return true if rendered_at.blank?
+
+    Time.now - Time.zone.parse(rendered_at.to_s) < MIN_CONTACT_FORM_SECONDS
+  rescue ArgumentError, TypeError
+    true
+  end
+
+  def contact_rate_limited?
+    return false if request.remote_ip.blank?
+
+    key = "contacts_create_rate_limit:#{request.remote_ip}"
+    count = Rails.cache.read(key).to_i + 1
+    Rails.cache.write(key, count, expires_in: CONTACT_RATE_LIMIT_WINDOW)
+    count > CONTACT_RATE_LIMIT_MAX
+  end
+
   # Prefill Contact from FreeCEN Gazetteer (freecen2_places search / place show). Routed as Data Question to county coordinator.
   def apply_freecen_gazetteer_contact_prefill
     return unless appname_downcase == 'freecen'
@@ -437,6 +524,25 @@ class ContactsController < ApplicationController
 
   def delete_reply_messages(contact_id)
     Message.where(source_contact_id: contact_id).destroy
+  end
+
+  def forward_message_from_params
+    message_params = params[:message].present? ? params.require(:message).permit(:subject, :body) : {}
+    Message.new(
+      subject: message_params[:subject].presence || helpers.contact_subject(@respond_to_contact),
+      body: message_params[:body],
+      message_time: Time.now,
+      userid: @user.userid,
+      source_contact_id: @respond_to_contact.id.to_s,
+      nature: 'contact',
+      sub_nature: 'forward'
+    )
+  end
+
+  def permitted_forward_recipients(raw_recipients)
+    selected = Array(raw_recipients).map(&:to_s).reject(&:blank?)
+    allowed = UseridDetail.internal_contact_recipient_options.map(&:last)
+    selected & allowed
   end
 
   # We store a small, non-sensitive subset of session/request context to help coordinators

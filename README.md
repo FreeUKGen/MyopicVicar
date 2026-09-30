@@ -21,7 +21,9 @@ Myopic Vicar uses MongoDB to allow researchers to search heterogeneous records. 
 
 
 
-Please see <a href="https://docs.google.com/document/d/11n5F9WB9WA9BgZwj1QDJf2OdZOPO1-jkdY1cXOU-AHE/edit#heading=h.acid0fo1ifql">Installation Instructions</a> for more information.
+For local development, see **[doc/DEVELOPMENT_SETUP.md](doc/DEVELOPMENT_SETUP.md)** (quick start: `bin/setup`).
+
+Older notes: <a href="https://docs.google.com/document/d/11n5F9WB9WA9BgZwj1QDJf2OdZOPO1-jkdY1cXOU-AHE/edit#heading=h.acid0fo1ifql">Google Doc installation instructions</a>. Ignore archived PDF install guides (Ruby 2.4 / Refinery-era).
 
 # Release Notes 
 
