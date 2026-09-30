@@ -256,20 +256,8 @@ module FreeregValidations
 
     characters = yyyy.split('')
 
-    # allow a single '*' as a valid year (characters_length == 1)
-    return true if yyyy == "*"
-
     if characters.length == 4
       # deal with the yyyy and permit the wild character
-
-      # allow * in 3rd or 4th digit (18*, 185*)
-      return true if yyyy =~ /\A\d{2}\d\*\z/ || yyyy =~ /\A\d{2}\*\d\z/
-
-      # allow _ in 4th digit (178_)
-      return true if yyyy =~ /\A\d{3}_\z/
-
-      # allow __ in 3rd and 4th digits (19__)
-      return true if yyyy =~ /\A\d{2}__\z/
 
       return false if yyyy.present? && (yyyy.to_i > YEAR_MAX || yyyy.to_i < YEAR_MIN)
 
@@ -288,9 +276,9 @@ module FreeregValidations
       ext = characters.drop(5).join
       return false unless year.to_s =~ VALID_YEAR
 
-      return false if year.to_i > YEAR_MAX || 1753 < year.to_i
+      return false if year.to_i > YEAR_MAX || year.to_i > 1753
 
-      return false if ext.to_i < 0 || ext.to_i > 1753
+      return false if ext.to_i.negative? || ext.to_i > 1753
 
       return true
     else
