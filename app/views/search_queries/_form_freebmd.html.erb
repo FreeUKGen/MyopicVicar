@@ -114,13 +114,12 @@
                             <label>
                                 <small>
                                     <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
-                                Exact match on first names
+                                Exact match
                                 </small>
                             </label>
-                            <p class="additional" style="font-size: 12px;">Leaving this unticked may also return people who only share the same first name and second-forename initial.</p>
                         </li>
 
-                      <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
+                        <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
                             <p id="hint_bmd_last_name" class="accessibility">As you type, matching surnames may appear below. Use arrow keys to pick a suggestion or continue typing.</p>
                             <div class='labels push-half--bottom'>
                                 <%= label_tag 'last_name', "Surname".html_safe, class: "ttip" do %>
@@ -131,10 +130,10 @@
                             <label>
                                 <small class="ttip__text">
                                     <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
-                                    Phonetic search surnames
+                                    Phonetic search
                                 </small>
                             </label>
-                      </li>
+                        </li>
 
                       <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
                         <fieldset class="choices">

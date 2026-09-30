@@ -86,10 +86,10 @@
                   <% has_postem = @search_query.bmd_snapshot_has_postem?(search_record) %>
                   <% has_scan = false %>
                   <center>
-                    <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, search_entry: search_record.RecordNumber, record_hash: search_record.record_hash), :rel => "nofollow", :title => "")%>
+                    <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, record_hash: search_record.record_hash), :rel => "nofollow", :title => "")%>
                     <br>
                     <% if has_postem %>
-                      <% postem_entry_url = friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, search_entry: search_record.RecordNumber, record_hash: search_record.record_hash) %>
+                      <% postem_entry_url = friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, record_hash: search_record.record_hash) %>
                       <a href="<%= "#{postem_entry_url}#postems" %>">
                         <span class="accessibility">Postem Available</span>
                         <%= app_icons[:postem].html_safe %>
@@ -141,7 +141,7 @@
                       <% elsif spouse_records.count == 1 %>
                         <% spouse_record = spouse_records[0] %>
                         <%= link_to("#{titleize_string(spouse_record[:GivenName])} #{spouse_record[:Surname].upcase}".html_safe,
-                                    friendly_bmd_record_details_path(@search_query.id, spouse_record.RecordNumber, spouse_record.friendly_url, search_entry: spouse_record.RecordNumber, record_hash: spouse_record.record_hash), :rel => "nofollow", :title => "")%>
+                                    friendly_bmd_record_details_path(@search_query.id, spouse_record.RecordNumber, spouse_record.friendly_url, record_hash: spouse_record.record_hash), :rel => "nofollow", :title => "")%>
                       <% elsif spouse_records.count > 1 %>
                         <%= "More than one matching spouse surname #{search_record[:AssociateName]}: check Page link to see possible spouses" %>
                       <% else %>
