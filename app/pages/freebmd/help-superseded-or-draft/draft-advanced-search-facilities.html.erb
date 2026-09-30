@@ -1,0 +1,71 @@
+<h1>DRAFT - Advanced search facilities</h1>
+
+<p class="lead"> Here, you will find information about some of the advanced search facilities that are available on FreeBMD, regarding districts, page-number ranges, names, postems, record counts, and saved searches. </p>
+<div class="grid">
+  <aside class="grid__item two-fifths lap-one-half palm-one-whole float--right">
+    <div class="islet islet--bordered">
+      <h2 class="title-block" id="thisPage">Contents</h2>
+      <ul class="sub-nav">
+        <li> <a href="#uaSf"> Use of the advanced search facilities </a> </li>
+        <li> <a href="#districts"> Districts </a> </li>
+        <li> <a href="#pageRanges"> Page-number ranges </a> </li>
+        <li> <a href="#names"> Names </a> </li>
+        <li> <a href="#postems"> Postems </a> </li>
+        <li> <a href="#recordCounts"> Record counts </a> </li>
+        <li> <a href="#savedSearch"> Saved searches</a> </li>
+      </ul>
+    </div>
+   </aside>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+  <h2 id="uaSf">Use of the advanced search facilities </h2>
+  <p> Most users of FreeBMD will only make use of the standard search, and, indeed, many will be unaware of the [more complex aspects of the search] [link=search-help]. This page, however, is for those who wish to make use of the more advanced search facilities.</p>
+  <p>The FreeBMD database is updated with new transcriptions approximately monthly, on a 28-day cycle. Further information is produced during the update process, and some of this is made available through the facilities described below. The remaining information is used purely for diagnostic purposes. The information that is made available exists as reports or other facilities, such as a search. However, some of these reports are large so they are provided as a structured hierarchy of pages.</p>
+<h3> Before using these facilities </h3>
+  <div class="island island--light"> You should ensure that you are familiar with the following before using any of the facilities given below:
+     <ul class="push-half--bottom">
+         <li> the full facilities of [the standard FreeBMD search] [link="search-help"] — maybe you don't need to use these advanced facilities after all</li>
+         <li>  the details of the [Uncertain Character Format] [link ="Age at Death Search#ucf"] — you will need this information to understand the results of the advanced facilities.</li> 
+      </ul>   
+  <p> This information is provided on an <em>as-is</em> basis. Although FreeBMD will consider correction requests in respect changing the presentation of this information, it will not be given as high a priority as corrections to the search database. Furthermore, we do not intend to answer questions on <em>how</em> the information can used. That is an exercise for the reader!</p>
+</div>
+ 
+  <h2 id="districts">Districts </h2>
+  <p class="push-half--bottom"> You can find out general information about Districts through our [Registration Districts page] [ link = "Registration Districts"]. The latter two are probably of less interest: </p>
+   <ul>
+       <li> <strong> District aliases: </strong> When creating the FreeBMD database, district names that do not correspond to the precise official district name are&#160; [<em>aliased</em> to the official district] [ link='/district-map-all]. The mapping page gives all the aliases that have been created for each official district.</li>
+       <li> <strong> County mapping: </strong> This mapping gives the [districts that are in each county and the dates between which this was true] [ link ='/county-map]</li>
+      <li> <strong>District to Volume mapping:</strong> This listing gives the [volumes that have been found for each district and for which years] [ link ='/districts]</li>
+      <li> <strong>District with Volume clashes:</strong> This listing gives the [volumes that have been found for each year against each district] [ link ='/district-clash]. Since one would expect only one volume against each year this indicates a probable error.</li>
+   </ul>
+  <h2 id="pageRanges"> Page-number ranges </h2>
+  <p class="push-half--bottom"> The following two reports give the page-number ranges that have been found for each district and volume: </p>
+     <ul>
+         <li> <strong>Event Type:</strong> This [link ='/district-page-reverse-map-index] listing gives the page range for each district within an event and quarter</li>
+         <li> <strong>Indexed by District:</strong> This [link ='/district-page-map-index] listing gives the page range for each event and quarter for each district.</li>
+    </ul>
+
+  <p> Information is only included where there is sufficient data, so if a district or quarter is missing there is not enough data. However, because of the nature of the data, the determination of the page range is done statistically and is not necessarily precise. </p>
+  
+  <h2 id="names"> Names </h2>
+  <mark> This section refers to FreeBMD and may not be applicable to FreeBMD2. </mark>
+  <p>The surnames and given names found in the database can be searched using this [ link ='/cgi/search-names] facility. Note that this is a search of the unique names in the database, not the database itself. The given names have been split, so an entry with three given names would be counted as three separate names, not one name with three components.</p>
+  <p class="push-half--bottom"> There are two exceptions to this rule: </p>
+    <ul>
+        <li> <strong>St John</strong> is counted as one name</li>
+        <li> names with less than two characters are not included (they are assumed to be initials).</li>
+    </ul>
+  <h2 id="postems"> Postems </h2>
+  <mark> This section refers to FreeBMD and may not be applicable to FreeBMD2. </mark>
+  <p> You can view the Postems that have been left by users by using this [link ='/cgi/ShowPostems] facility. The Postems are listed in the order they were created but the facility offers the capability to filter on different parts of Postem data. Note: Postems can get “unlinked”, meaning that the record has changed and we can no longer match the Postem. Such Postems are shown in red. Tidying these is a manual process that is is done on a regular basis.</p>
+  <h2 id="recordCounts"> Record counts </h2>
+  <mark> This section refers to FreeBMD and may not be applicable to FreeBMD2. </mark>
+  <p> The different record counts can be viewed [link ='/cgi/EntryCounts] here. These show the number of entries found for each quarter and there is also a facility to compare the values between different updates of the database. </p>
+
+  <h2 id="savedSearch"> Saved searches </h2>
+ <p class="push-half--bottom">FreeBMD2 offers a feature which will allow you to easily see if we have added, removed or corrected records since you last ran a saved search, so that you now get different results. </p>
+<p>If you re-run a saved search you will get a result that you can compare with the previous search, by pressing the Search comparison button:</p>
+<p><%= image_tag 'search%20comparison%20button.png?sha=7e1c58f450d16f21', alt: 'Search comparison button', title: 'Search comparison button', width: 225, height: 121 %></p>
+<p>This brings up a side by side comparison of the search you have just run and the results when the search was saved:</p>
+<p><%= image_tag 'search%20results%20comparison.png?sha=6be57c7645b09785', alt: 'Saved search results comparison', title: 'Saved search results comparison', width: 450, height: 255 %> </p>
+</div>
+ </div>

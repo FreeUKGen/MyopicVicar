@@ -15,8 +15,7 @@
           We sent it to <%= @respond_to_feedback.contact_action_sent_to_userid%> for action.
           The contact information was:<br>
         <% end %>
-        <%= @respond_to_feedback.body %><br>
-        <br>
+        <%= simple_format(@respond_to_feedback.body) %>
         <p><b>Further details of the feedback follow:</b></p>
         <div class="scrollable">
           <table class= "table--bordered table--data push--bottom t100">
@@ -63,7 +62,7 @@
                 </strong>
               <% end%>
             <% end %>
-            <%= reply.body %>
+            <%= simple_format(reply.body) %>
             <% if reply.attachment.present?%>
               <br/>
               <span>Attachment: </span>

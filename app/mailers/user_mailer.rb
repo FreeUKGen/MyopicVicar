@@ -6,11 +6,11 @@ class UserMailer < ActionMailer::Base
   cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
   @website = ['https://test3.freereg.org.uk', 'https://test3.freecen.org.uk', 'https://test3.freebmd.org.uk'].include?(MyopicVicar::Application.config.website) ? 'Test' : ''
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: "#{@website} FreeREG Servant <freereg-processing@freereg.org.uk>"
+    default from: "#{@website} FreeREG <freereg-processing@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freebmd'
-    default from: "#{@website} FreeBMD Servant <freebmd-contacts@freebmd.org.uk>"
+    default from: "#{@website} FreeBMD <freebmd-contacts@freebmd.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{cen_website} FreeCEN Servant <freecen-processing@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN <freecen-processing@freecen.org.uk>"
   end
 
   def appname
@@ -38,6 +38,7 @@ class UserMailer < ActionMailer::Base
     mail(:to => to_email, :subject => subj, :body => report, :content_type => "text/plain")
   end
   add_template_helper(EmailHelper)
+  add_template_helper(ContactsHelper)
 
   def acknowledge_communication(original)
     @appname = appname
@@ -493,6 +494,30 @@ class UserMailer < ActionMailer::Base
     @person_forename = user.person_forename
     @email_address = user.email_address
     mail(:to => "#{@person_forename} <#{@email_address}>", :cc=>ccs, :subject => "FreeCEN update processing report")
+  end
+
+  def reset_password_instructions(record, token, _opts = {})
+    @resource = record
+    @token = token
+    @coordinator = nil
+    if record.respond_to?(:userid_detail_id) && record.userid_detail_id.present?
+      detail = UseridDetail.id(record.userid_detail_id).first
+      if detail.present?
+        syndicate = Syndicate.where(syndicate_code: detail.syndicate).first
+        if syndicate.present?
+          cid = syndicate.syndicate_coordinator
+          if cid.present?
+            @coordinator = UseridDetail.where(userid: cid, email_address_valid: true).first
+          end
+        end
+      end
+    end
+    mail(
+      to: record.email,
+      subject: I18n.t('devise.mailer.reset_password_instructions.subject', default: 'Reset password instructions')
+    ) do |format|
+      format.html { render template: 'devise/mailer/reset_password_instructions' }
+    end
   end
 
   private

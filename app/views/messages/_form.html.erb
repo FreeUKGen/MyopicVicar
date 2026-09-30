@@ -35,9 +35,9 @@
         <li class="grid__item  one-whole  palm-one-whole push--bottom">
           <label>Message (a salutation is not required but a personal sign off would be nice)</label>
           <% if @message.body.nil? %>
-            <textarea name="message[body]"  style="width: 100%;"  rows="8" ></textarea>
+            <textarea name="message[body]"  style="width: 100%;" wrap="hard" cols="80"  rows="8" ></textarea>
           <% else%>
-            <textarea name="message[body]"  style="width: 100%;"  rows="8" ><%=@message.body%></textarea>
+            <textarea name="message[body]"  style="width: 100%;" wrap="hard" cols="80"  rows="8" ><%=@message.body%></textarea>
           <% end%>
         </li>
       </ul>

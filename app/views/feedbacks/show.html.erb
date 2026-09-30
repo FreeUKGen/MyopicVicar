@@ -21,7 +21,7 @@
         <%#= render 'show_actor' %>
         <tr>
           <td>The explanation was:</td>
-          <td class="weight--semibold"><%= @feedback.body %></td>
+          <td class="weight--semibold"><%= simple_format(@feedback.body) %></td>
         </tr>
         <tr>
           <td>Session Data:</td>

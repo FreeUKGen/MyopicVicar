@@ -1,5 +1,5 @@
 <% if @current_record.present? %>
-  <% title "Record details for #{@current_record[:GivenName].camelize} #{@current_record[:Surname].upcase}" %>
+  <% title "Record details for #{@current_record[:GivenName].to_s.camelize} #{@current_record[:Surname].to_s.upcase}" %>
 <% else %>
   <% title "Record Details" %>
 <% end %>
@@ -45,10 +45,10 @@
     <p class="push-half--bottom"><%= raw ERB.new(ApplicationText::SCAN_HELP_TEXT).result(binding) %></p>
       <div id="postems">
         <div>
-          <h4 class="push-half--bottom">Postems</h4>
+          <h4 class="push-half--bottom">Additional Information (Postems)</h4>
           <p class="push-half--bottom">
             Do you know more about the people or event in this record that you are willing to share with other researchers?<br /> 
-            We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on FreeREG, or more about the family from a search on FreeCEN, or have found other records about them in another country's registration system. Contribute what you know.
+            We call these helpful additions to the database 'Postems'. For example, you might know a more precise place or other details from a certificate or from a search on <%= link_to 'FreeREG', 'https://www.freereg.org.uk/', rel: 'noopener noreferrer' %>, or more about the family from a search on <%= link_to 'FreeCEN', 'https://www.freecen.org.uk/', rel: 'noopener noreferrer' %>, or have found other records about them in another country's registration system. Contribute what you know.
           </p>
           <%= render partial: 'display_postems', locals: { record: @current_record } %>
           <p class="push-half--bottom">Submit a postem:</p>
@@ -78,7 +78,7 @@
       You can order certificates from the <%= link_to 'General Register Office (GRO)', 'https://www.gro.gov.uk/gro/content/certificates/login.asp' %> to help you research your family history and family tree.
     </p>
     <div class="grid__item two-thirds lap-two-thirds palm-one-whole hard--left push-half--top push-half--bottom ">
-      <%= link_to 'Suggest a correction', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
+      <%#= link_to 'Suggest a correction', report_error_contact_path(@current_record.RecordNumber, query: @search_query), class: 'btn btn--natural' unless  @current_record.blank? %>
     </div>
   </div>
   <% unless print_friendly %>

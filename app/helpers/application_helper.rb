@@ -17,7 +17,10 @@ module ApplicationHelper
   def entry_information_path_for(record)
     return nil if record.blank?
 
-    cleaned_hash = URI.encode_www_form_component(record.record_hash)
+    hash = record.record_hash
+    return nil if hash.blank?
+
+    cleaned_hash = URI.encode_www_form_component(hash.to_s)
     hash_url_path(id: cleaned_hash)
   end
 
@@ -38,9 +41,12 @@ module ApplicationHelper
       "freereg" => '5004',
     }
   def nav_search_form_link
-    #check_current_page(main_app.new_search_query_path)
     path = 'search_queries/new'
-    link_to('Search', main_app.new_search_query_path, class: check_current_page(path)) #unless controller_name.nil? || controller_name == 'search_queries' || controller_name == 'search_records'
+    link_to(
+      'Search',
+      main_app.new_search_query_path(clear: 1),
+      class: check_current_page(path)
+    )
   end
 
   def nav_actions_page_link
@@ -131,7 +137,7 @@ module ApplicationHelper
     if session[:userid_detail_id].present?
       link_to 'Logout', main_app.logout_manage_resources_path
     else
-      link_to 'Member', refinery.login_path, class: check_current_page("cms/refinery/login")
+      link_to 'Member', new_user_session_path, class: check_current_page("cms/refinery/login")
     end
   end
 
@@ -449,6 +455,7 @@ module ApplicationHelper
   end
 
   def title(title = nil)
+    page_title = ''
     if title.present?
       content_for :title, title
     elsif content_for?(:title)
@@ -836,11 +843,11 @@ module ApplicationHelper
 
   def helpful_links
     {
-      cookiePolicy: '/cms/about/cookie-policy',
+      cookiePolicy: '/about/cookie-policy',
       privacyNotice: Constant::PRIVACY_POLICY_LINK,
-      termAndConditions: '/cms/terms-and-conditions',
+      termAndConditions: '/terms-and-conditions',
       contactUs: contact_us_path,
-      accessibility: "#{Rails.application.config.website}/cms/about/accessibility-statement",
+      accessibility: "/about/accessibility-statement",
       donation: 'https://www.freeukgenealogy.org.uk/help-us-keep-history-free',
       fugNews: 'https://www.freeukgenealogy.org.uk/news/',
       freereg: 'https://www.freereg.org.uk/',
@@ -856,8 +863,8 @@ module ApplicationHelper
     }
   end
 
-  def footer_records_stats(stat,type)
-    stat.where(record_type: type).first.total_records if stat.where(record_type: type).first.present?
+  def footer_records_stats(stat, type)
+    stat.where(record_type: type).first&.total_records || 0
   end
 
   def contact_us_path
@@ -1249,5 +1256,20 @@ module ApplicationHelper
       end)
       concat(content_tag(:div, '', data: { fuse: fuse }, style: 'height: 150px;'))
     end
+  end
+
+  # Inserts the accessibility-aware GRO markup (safe for HTML contexts). Canonical fragment: GroAbbrev::ACCESSIBILITY_HTML.
+  def gro_abbrev_html
+    GroAbbrev::ACCESSIBILITY_HTML.html_safe
+  end
+
+  # Escape +text+, then replace whole-word "GRO" or "G.R.O" with the accessibility markup (+.html_safe+ result).
+  def gro_abbrev_in_user_text(text)
+    ERB::Util.html_escape(text.to_s).gsub(/\bG(?:\.R\.O|RO)\b/, GroAbbrev::ACCESSIBILITY_HTML).html_safe
+  end
+
+  # Plain "G.R.O" for aria-label and other attribute-only strings (no HTML).
+  def gro_abbrev_plain_in_text(text)
+    text.to_s.gsub(/\bG(?:\.R\.O|RO)\b/, 'G.R.O')
   end
 end

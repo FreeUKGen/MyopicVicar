@@ -64,12 +64,12 @@
 			<h3>Date Range</h3>
 			Search Criteria:
 			<b>Start Year</b> is <b><i><%= @search_query.start_year %></i></b>,
-			<b>Start Quarter</b> is <b><i><%= QuarterDetails.quarters.key(@search_query.start_quarter).upcase %></i></b>,
+			<b>Start Quarter</b> is <b><i><%= bmd_display_quarter_name(@search_query.start_quarter) || 'Not specified' %></i></b>,
 			<b>End Year</b> is <b><i><%= @search_query.end_year %></i></b>,
-			<b>End Quarter</b> is <b><i><%= QuarterDetails.quarters.key(@search_query.end_quarter).upcase %></i></b>.
+			<b>End Quarter</b> is <b><i><%= bmd_display_quarter_name(@search_query.end_quarter) || 'Not specified' %></i></b>.
 		</p>
 		Search Logic:
-    Search is done from <b>Start Year: </b><%= @search_query.start_year%>, <b>Quarter: </b><%= QuarterDetails.quarters.key(@search_query.start_quarter) %> to <b>End Year: </b><%= @search_query.end_year%>, <b>Quarter: </b><%= QuarterDetails.quarters.key(@search_query.end_quarter) %>
+    Search is done from <b>Start Year: </b><%= @search_query.start_year%>, <b>Quarter: </b><%= bmd_display_quarter_name(@search_query.start_quarter)&.downcase || 'any' %> to <b>End Year: </b><%= @search_query.end_year%>, <b>Quarter: </b><%= bmd_display_quarter_name(@search_query.end_quarter)&.downcase || 'any' %>
 	</p>
 	<p>
 		<h3>Record Type</h3>

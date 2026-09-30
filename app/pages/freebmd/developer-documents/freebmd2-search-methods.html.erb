@@ -1,0 +1,51 @@
+<h1>FreeBMD2 search methods</h1>
+
+<h2><strong>Methods:</strong>
+</h2>
+<p>1. <strong>get_quarter</strong>: Specifies the date range for the search. Range is calculated in quarters. This method uses&#160;<em>start_year_quarter</em> and <em>end_year_quarter</em> methods.</p>
+<p>2.&#160;<strong>mother_surname_search</strong>:&#160; adds mother's surname to the search params hash.</p>
+<p>3.&#160;<strong>start_year_quarter</strong>: Calculates search start quarter. This method is used by get_quarter for range calculation.&#160; The method picks the max of Date range from quarter and Date of Birth Quarter.&#160;This method uses from <em>Date range from</em> and <em>Age at Death(Date of Birth or Date of Birth range)</em> search form field. This method uses&#160;<em>year_with_default(year,default), quarter_number(year,quarter)</em> and <em>min_dob_range_quarter</em> methods.</p>
+<p>4.&#160;<strong>end_year_quarter</strong>:&#160;Calculates search finish quarter. This is calculated from <em>Date range to</em>&#160;Search form field. The method uses&#160;<em>year_with_default(year, default)</em> with default:1993 and <em>quarter_number(year, quarter)</em> methods.</p>
+<p>5.&#160;<strong>year_with_default(year, default:nil</strong>): This method returns year. If year is blank it returns the default value. This method is used by&#160;<em>start_year_quarter</em> and <em>end_year_quarter</em>&#160; methods.</p>
+<p>6. <strong>quarter_number(year, quarter)</strong>: Calculates quarter. This method is used by&#160;<em>start_year_quarter</em>, <em>end_year_quarter</em>, <em>dob_quarter_number(date) </em>and <em>dob_quarter(date)</em> methods.</p>
+<p>7.&#160;<strong>search_records</strong>: This method specifies search method according to the Application. Does freebmd_search_records for FreeBMD else search. This method uses&#160;self.freebmd_search_records and self.search methods</p>
+<p>8.&#160;<strong>freebmd_search_records</strong>: This does the FreeBMD2 search. Following are the methods used:</p>
+<ul><li><em>get_search_table</em>
+</li>
+<li><em>index_hint</em>
+</li>
+<li><em>bmd_adjust_field_names</em>
+</li>
+<li><em>bmd_params_hash</em>
+</li>
+<li><em>first_name_filteration</em>
+</li>
+<li><em>marriage_surname_filteration(records)</em>
+</li>
+<li><em>spouse_given_name_filter(records)</em>
+</li>
+<li><em>combined_results(records)</em>
+</li>
+<li><em>combined_age_results(records)</em>
+</li>
+<li><em>persist_results(records)</em>
+</li>
+<li><em>check_age_range?</em>
+</li>
+</ul>
+
+9.&#160;<strong>bmd_record_type_params</strong>: Adds Record Type to the search params. It uses Record Type form field.&#160; When user input is blank then all Record Types is used. It uses <em>RecordType.all_types</em> method.
+<p>10.&#160;<strong>bmd_county_params</strong>: Adds Counties to the search params if provided in the search. It uses Counties multiple select form field.</p>
+<p>11.&#160;<strong>bmd_districts_params</strong>:&#160;Adds Districts to the search parameters hash if provided in the search. It uses Districts multiple select form field.</p>
+<p>12.&#160;<strong>bmd_age_at_death_params: </strong>Adds Age At Death to the search parameter hash if a value is present for age_at_death field in SearchQuery Collection .<br />The parameter hash key: :age_at_death<br />The value can be an Array or String or Raw SQL.<br />The value is an Array unless match_only_recorded_ages_or_dob field value of SearchQuery Collection is true.<br /><br />params[:age_at_death]<br /><br />12.&#160;<strong>check_age_range?</strong>: Returns true if&#160;min_age_at_death and max_age_at_death fields in SearchQuery Collection are present. This method is used in the following methods:</p>
+<ul><li><em>define_range</em>
+</li>
+<li><em>age_range_search(records)&#160;</em>
+</li>
+<li><em>calculate_age_range_for_dob(records)</em>
+</li>
+<li><em>freebmd_search_records</em>
+</li>
+</ul>
+<p>13:&#160;<strong>define_range</strong>: Returns Raw SQL for range if&#160;<em>check_age_range?</em> is true.&#160; This method is used in&#160;<em>age_range_search(records)</em>
+</p>

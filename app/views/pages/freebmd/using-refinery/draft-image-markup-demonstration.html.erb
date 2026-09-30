@@ -1,0 +1,49 @@
+<h1>DRAFT Image markup demonstration</h1>
+
+<p><style scoped="scoped">
+  figcaption {
+    font-style: italic;
+    color: #737373; /* 4.74:1 */
+    margin-top: 0.3em;
+  }
+  figure.site img {
+    border: 2px solid #00a099;
+    padding: 0.3em;
+  }  
+  figure.image-wide img {
+    width: 100%;
+    height: auto;
+  }
+  figure img.narrow { max-width: 291px; } /* not tested here */
+</style>
+</p>
+
+<div class="grid">
+  <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
+    <h2>Full column-width (747px), class="image-wide", no constraint</h2>
+    <h3>Image wider than column</h3>
+    <figure class="site image-wide">
+      <%= image_tag 'death-cert.png?sha=6da809cc966ee522', alt: 'Death certificate', width: 842, height: 256 %>
+      <figcaption>Death certificate for Harry Dent, 1907 (842px wide)</figcaption>
+    </figure>
+
+    <h3>Image narrower than column, class="image-wide", no constraint</h3>
+    <figure class="site image-wide">
+      <%= image_tag 'view-image-button.png?sha=b09353a3ada97d45', alt: 'View image button', title: 'View image button', width: 233, height: 196 %>
+      <figcaption>The 'view image' link (233px wide)</figcaption>
+    </figure>
+    <p class="flush--bottom">Issues:</p>
+    <ul>
+      <li>framing of content — need a different way to highlight the link (it looks like a button but it has an href attribute, behaves as and <em>is a</em> link)</li>
+      <li>image out of focus</li>
+    </ul>
+
+    <h3>Image narrower than column, class="image-wide", constraint applied </h3>
+    <figure class="site image-wide" style="max-width:233px">
+       <%= image_tag 'view-image-button.png?sha=b09353a3ada97d45', alt: 'View image button', title: 'View image button', width: 233, height: 196 %>
+      <figcaption>The 'view image' link (233px wide)</figcaption>
+    </figure>
+<p>PH</p>
+  
+</div>
+</div>

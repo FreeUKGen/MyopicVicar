@@ -15,6 +15,19 @@
   <td class="weight--semibold">
     <%= link_to ' Record in question', freereg1_csv_entry_path(@contact.entry_id),  method: :get, :class => "btn btn--small"%></td>
 </tr>
+<%when 'freebmd' %>
+<tr>
+  <td>Data Record :</td>
+  <td class="weight--semibold">
+    <% if @contact.record_url.present? %>
+      <%= link_to 'Record in question', @contact.record_url, target: '_blank', rel: 'noopener noreferrer', class: 'btn btn--small' %>
+    <% elsif @contact.record_id.present? %>
+      <%= @contact.record_id %>
+    <% else %>
+      &ndash;
+    <% end %>
+  </td>
+</tr>
 <% end %>
 <tr>
   <td>County :</td>

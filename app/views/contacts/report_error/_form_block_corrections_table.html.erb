@@ -1,0 +1,9 @@
+<%# FreeBMD report_error — form_numbers: 2 (see lib/freebmd_data_problem.rb). Toggled via #freebmd_corrections_table_block in report_error JS. %>
+<div id="freebmd_corrections_table_block" style="display: none;" class="push--bottom">
+  <p class="push-half--bottom">Please enter corrections only for fields that are wrong.</p>
+  <% if defined?(@freebmd_record) && @freebmd_record.present? %>
+    <%= render partial: 'contacts/freebmd_entry_information_corrections_table', locals: { record: @freebmd_record } %>
+  <% else %>
+    <p>Current details are not available for this entry.</p>
+  <% end %>
+</div>

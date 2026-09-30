@@ -8,7 +8,8 @@ class BestGuessController < ApplicationController
     search_id = params[:search_id]
     show_saved_record = params[:saved_record]
     @search = search_id.present?
-    @search_entry = params[:search_entry]
+    # The search entry is the path RecordNumber; a legacy ?search_entry= param is ignored as it can be stale.
+    @search_entry = params[:id]
     @saved_entry_number = params[:saved_entry]
     rh = params[:record_hash].presence
     @record_hash_param = rh
@@ -39,8 +40,7 @@ class BestGuessController < ApplicationController
     if record_hash_freebmd_request? && params[:id].present? && @current_record.RecordNumber.to_s != params[:id].to_s
       common_params = {
         locale: params[:locale],
-        record_hash: @resolved_record_hash,
-        search_entry: params[:search_entry]
+        record_hash: @resolved_record_hash
       }.compact
 
       if @search && params[:search_id].present?
@@ -169,13 +169,16 @@ class BestGuessController < ApplicationController
     @search = params[:search_id].present?
     @search_id = params[:search_id] if @search
     @search_query = SearchQuery.find(@search_id) if @search && @search_id.present?
-    record_number = params[:entry_id]
-    @record = BestGuess.find(record_number)
-    @volume = @record.Volume #params[:volume]
-    @page = @record.Page #params[:page]
-    @district = @record.District #params[:district]
-    @quarter = params[:quarter]
-    @page_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: params[:quarter], RecordTypeID: params[:record])
+    @record = BestGuessHash.find_by(Hash: decode_hash_id(params[:hash_id]))&.best_guess
+    unless @record
+      flash[:notice] = 'The record you requested does not exist.'
+      redirect_back(fallback_location: root_path) && return
+    end
+    @volume = @record.Volume
+    @page = @record.Page
+    @district = @record.District
+    @quarter = @record.QuarterNumber
+    @page_records = BestGuess.where(Volume: @volume, Page: @page, QuarterNumber: @quarter, RecordTypeID: @record.RecordTypeID)
     @page_records = @record.possible_alternate_names if from_quarter_to_year(@record.QuarterNumber) >= 1993 && @record.RecordTypeID != 3
   end
 
@@ -230,7 +233,7 @@ class BestGuessController < ApplicationController
     user.save
     flash[:notice] = user.save ? "The entry is saved. Use 'View Saved Entries' action in Your Actions list to view your saved searches list." : 'unsuccessful'
     if params[:search_id].present?
-      redirect_to friendly_bmd_record_details_url(params[:search_id], entry_id, @entry.friendly_url, search_entry: entry_id, record_hash: @entry.record_hash)
+      redirect_to friendly_bmd_record_details_url(params[:search_id], entry_id, @entry.friendly_url, record_hash: @entry.record_hash)
       return
     else
       redirect_to best_guess_path(@entry.RecordNumber) && return
@@ -246,7 +249,7 @@ class BestGuessController < ApplicationController
     user.save
     flash[:notice] = user.save ? "The record is unsaved" : 'unsuccessful'
     if params[:search_id].present?
-      redirect_to friendly_bmd_record_details_path(params[:search_id], entry_id, @entry.friendly_url, search_entry: entry_id, record_hash: @entry.record_hash)
+      redirect_to friendly_bmd_record_details_path(params[:search_id], entry_id, @entry.friendly_url, record_hash: @entry.record_hash)
       return
     else
        redirect_to best_guess_path(@entry.RecordNumber)
@@ -269,6 +272,10 @@ class BestGuessController < ApplicationController
   end
 
   private
+
+  def decode_hash_id(hash_id)
+    URI.decode_www_form_component(hash_id.to_s)
+  end
 
   def forenames_as_array(records)
     arr = []
@@ -354,9 +361,6 @@ class BestGuessController < ApplicationController
     return unless @search && @search_query.present?
 
     @resolved_record_hash = @search_query.bmd_record_hash_for_snapshot_record_number(params[:id])
-    if @resolved_record_hash.blank? && params[:search_entry].present?
-      @resolved_record_hash = @search_query.bmd_record_hash_for_snapshot_record_number(params[:search_entry])
-    end
     @resolved_record_hash = @resolved_record_hash.presence
   end
 
@@ -365,9 +369,9 @@ class BestGuessController < ApplicationController
     clean_session_for_search
     @search_record_number = session[:search_entry_number]
     @anchor_entry = @search_record_number
+    missing = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
 
     if record_hash_freebmd_request?
-      missing = 'We are sorry but the record you requested no longer exists; possibly as a result of some data being edited. You will need to redo the search with the original criteria to obtain the updated version.'
       # Spouse / same-register-page links use a valid record_hash but that row is often *not* a key in
       # this search's snapshot (only matching hits are stored). Reject only when the hash does not resolve.
       hkey = normalize_marriage_hash_param(@resolved_record_hash)
@@ -388,7 +392,14 @@ class BestGuessController < ApplicationController
     else
       redirect_back(fallback_location: new_search_query_path) && return unless show_value_check
 
-      @search_record = BestGuess.find(@search_record_number)
+      # Legacy links (no record_hash) can carry a RecordNumber that was reassigned or
+      # removed by a BestGuess rebuild; BestGuess.find raises RecordNotFound instead of returning nil.
+      @search_record = BestGuess.find_by(RecordNumber: @search_record_number)
+      unless @search_record
+        flash[:notice] = missing
+        flash.keep
+        redirect_back(fallback_location: new_search_query_path) && return
+      end
     end
   end
 
@@ -397,7 +408,10 @@ class BestGuessController < ApplicationController
     clean_session_for_saved_entry
     saved_record = session[:saved_search_record]
     @anchor_entry = saved_record
-    @saved_entry = BestGuess.find(saved_record)
+    # saved_record=true can arrive with no saved_entry param and no prior session value
+    # (direct/shared/bookmarked link, or a session that never had one) - BestGuess.find(nil)
+    # raises "Couldn't find BestGuess without an ID" rather than returning nil.
+    @saved_entry = BestGuess.find(saved_record) if saved_record.present?
   end
 
   def clean_session_for_search

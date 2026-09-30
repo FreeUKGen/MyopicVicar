@@ -95,10 +95,6 @@
 </div>
 
 <div class="grid">
-    <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads" style="height: 650px;">
-      <p style="margin-bottom:5px;">Advertisement</p>
-      <div data-fuse="freebmd_skyscraper_1"></div>
-    </div>
     <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
     <%= horz_advert_whole('freebmd_hrec_1') %>
     <div id="top" class="grid__item desk-wide-five-sixths desk-one-whole lap-one-whole palm-one-whole hard--left" style="padding-right:5px;">
@@ -118,12 +114,12 @@
                             <label>
                                 <small>
                                     <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
-                                Exact match on first names
+                                Exact match
                                 </small>
                             </label>
                         </li>
 
-                      <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
+                        <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
                             <p id="hint_bmd_last_name" class="accessibility">As you type, matching surnames may appear below. Use arrow keys to pick a suggestion or continue typing.</p>
                             <div class='labels push-half--bottom'>
                                 <%= label_tag 'last_name', "Surname".html_safe, class: "ttip" do %>
@@ -134,10 +130,10 @@
                             <label>
                                 <small class="ttip__text">
                                     <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
-                                    Phonetic search surnames
+                                    Phonetic search
                                 </small>
                             </label>
-                      </li>
+                        </li>
 
                       <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
                         <fieldset class="choices">
@@ -149,7 +145,7 @@
                                 </div>
                                 <div class="flex_item">
                                     <label class="accessibility" for="from_year">Start Year</label>
-                                    <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                                    <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'from_year', tabindex: "0", placeholder: 'YYYY', onfocus: 'this.select()' %>
                                 </div>
                             </div>
                         </fieldset>
@@ -165,7 +161,7 @@
                                     </div>
                                 <div class="flex_item">
                                     <label class="accessibility" for="to_year">To Year</label>
-                                    <%= number_field_tag 'search_query[end_year]', set_value_or_default(1999, @search_query.end_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+                                    <%= number_field_tag 'search_query[end_year]', set_value_or_default(1999, @search_query.end_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'to_year', tabindex: "0", placeholder: 'YYYY', onfocus: 'this.select()'%>
                                     </div>
                             </div>
                         </fieldset>
@@ -476,6 +472,10 @@
           <% end %>
         </div>
     </div>
+    <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads" style="height: 650px;">
+      <p style="margin-bottom:5px;">Advertisement</p>
+      <div data-fuse="freebmd_skyscraper_1"></div>
+    </div>
 </div>
 <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
 <%= horz_advert('freebmd_hrec_1') %>
@@ -580,6 +580,47 @@
     });
 
     $('#search_query_districts').empty();
+
+    function resetBmdSearchForm() {
+        var form = document.getElementById('new_search_query');
+        if (form) {
+            form.reset();
+        }
+
+        $('#new_search_query input[type="text"]').val('');
+        $('#new_search_query input[type="number"]').val('');
+        $('#new_search_query select').val('');
+        $('#new_search_query input[type="checkbox"]').prop('checked', false);
+        $('#search_query_bmd_record_type_birth').prop('checked', false);
+        $('#search_query_bmd_record_type_death').prop('checked', false);
+        $('#search_query_bmd_record_type_marriage').prop('checked', false);
+        $('#hit_count').text(' ');
+        $('#from_year').val('1837');
+        $('#to_year').val('1999');
+        $('#from_quarter').val('1');
+        $('#to_quarter').val('4');
+        $('#search_query_districts').empty();
+
+        if (typeof hide_all_death_options === 'function') {
+            hide_all_death_options();
+        }
+        $('#death_select_box').val([]);
+        $('#death_select_box').prop('disabled', 'disabled');
+        $('#spouse_firstnames_div').hide();
+        $('#spouse_or_mother_surname_div').hide();
+        $('#age_at_death_or_date_of_birth_div').hide();
+        $('#spouse_first_name').val('');
+        $('#spouses_mother_surname').val('');
+        $('.spouse_or_mother_surname_label').text("Spouse/Mothers surname");
+        $("#advanced_search").show();
+        $('#new_search_query').find('.error').removeClass('error');
+        $('#new_search_query').find('.validation-list').hide();
+        $('#first_name').val('');
+        $('#last_name').val('');
+        $('#search_query_chapman_codes').val('');
+        $('.checkboxtag, .checkAll').trigger('change');
+    }
+
     $(document).ready(function() {
         $("#search_query_chapman_codess").change(function () {
             var counties = [];
@@ -932,66 +973,13 @@
         });
 
         $('.clear_forms').click(function () {
-            // Reset the form using the native reset method
-            $('#new_search_query')[0].reset();
-
-            // Clear all text inputs
-            $('#new_search_query input[type="text"]').val('');
-            $('#new_search_query input[type="number"]').val('');
-
-            // Clear select dropdowns
-            $('#new_search_query select').val('');
-
-            // Uncheck all checkboxes
-            $('#new_search_query input[type="checkbox"]').prop('checked', false);
-
-            // Reset record type checkboxes - check "Select All" and uncheck others
-            $('#search_query_bmd_record_type_birth').prop('checked', false);
-            $('#search_query_bmd_record_type_death').prop('checked', false);
-            $('#search_query_bmd_record_type_marriage').prop('checked', false);
-
-            // Clear result count
-            $('#hit_count').text(' ');
-
-            // Reset specific fields to defaults
-            $('#from_year').val('1837');
-            $('#to_year').val('1999');
-            $('#from_quarter').val('1');
-            $('#to_quarter').val('4');
-
-            // Clear districts selection
-            $('#search_query_districts').empty();
-
-            // Reset form state
-            hide_all_death_options();
-            $('#death_select_box').val([]);
-            $('#death_select_box').prop('disabled', 'disabled');
-
-            // Hide conditional fields
-            $('#spouse_firstnames_div').hide();
-            $('#spouse_or_mother_surname_div').hide();
-            $('#age_at_death_or_date_of_birth_div').hide();
-            $('#spouse_first_name').val('');
-            $('#spouses_mother_surname').val('');
-
-            // Reset labels
-            $('.spouse_or_mother_surname_label').text("Spouse/Mothers surname");
-
-            // Show advanced search
-            $("#advanced_search").show();
-
-            // Clear any validation errors
-            $('#new_search_query').find('.error').removeClass('error');
-            $('#new_search_query').find('.validation-list').hide();
-
-            // Reset autocomplete fields
-            $('#first_name').val('');
-            $('#last_name').val('');
-            $('#search_query_chapman_codes').val('');
-
-            // Trigger change events to update form state
-            $('.checkboxtag, .checkAll').trigger('change');
+            resetBmdSearchForm();
+            location.reload(); // Issue 1438: rbl 28.7.2026
         });
+
+        <% if @fresh_search %>
+        resetBmdSearchForm();
+        <% end %>
         // $('.count_hits').click(function () {
             // load all form elements into an array - use existing function for this?
             // run the Count routine, using this array

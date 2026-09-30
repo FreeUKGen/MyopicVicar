@@ -1,0 +1,141 @@
+<h1>DRAFT -  Districts, volumes and pages (interim version)</h1>
+
+<style scoped="scoped">
+.replace { text-decoration: line-through; color: #737373; }
+figcaption {
+  font-style: italic;
+  color: #737373; /* 4.74:1 */
+  margin-top: 0.3em;
+}
+  figure.site img {
+  border: 2px solid #00a099;
+  padding: 0.3em;
+  width: 100%;
+  height: auto;
+ max-width: 1000px;
+}
+  </style>
+ <p><mark><strong>NB</strong> page being checked offline — do not edit. 23 Jun, AO. </mark> </p>
+ <p><mark>This page is a pared-down version of page previously reviewed by Alison - missing out the details of how "suspect entries" found in the QA checks are "indicated". </mark> </p>
+  <p><mark>The comments immediately below refer to DRAFT -  Districts, volumes and pages which still exists - 23 May 21, PC</mark> </p>
+  <p><mark>Preliminary checking completed. NB page <strong>cannot</strong> be made sync-ready yet. 07 Mar 21, AO</mark> </p>
+
+  <p class="lead">On this page you can find out more about Districts, Volume numbers and Page numbers and how they form an essential part of the <strong>GRO Index Reference number</strong> for the record or records that you are searching for.</p>
+  <div class="grid">
+    <aside class="grid__item two-fifths lap-one-half palm-one-whole float--right">
+      <div class="islet islet--bordered">
+        <h2 class="title-block">On this page</h2>
+        <ul class="sub-nav">
+         <li><a href="#indexes">The GRO Indexes</a> </li>
+         <li><a href="#districts">Districts</a> </li>
+         <li><a href="#volume">Volumes</a> </li>
+         <li><a href="#page">Page numbers</a> </li>
+         <li><a href="#qualityControl">Quality control checks</a> </li>
+       </ul>
+     </div>
+  </aside>
+  <div class="grid__item three-fifths lap-one-half palm-one-whole">
+    <h2 id="indexes">The GRO Indexes</h2>
+    <p>The GRO (General Register Office), at the end of every quarter, creates an index to its latest set of birth, marriage and death registers, collectively known as the <em>GRO Index</em>. FreeBMD is an online transcription of the index, which you can search in various ways.</p>
+    <p class="islet islet--light">Note: after 1983 the Index became “annual” and <em>Events</em> within them are registered by month. For example, finding <strong>01.89</strong> in the Registration field would tell you that the event (a birth, marriage or death, as appropriate) was registered in January 1989.</p>
+    <p class="push-half--left push-half--bottom">A  particular event, the registration of a birth, marriage or death, for a named person, is uniquely identified in the GRO Index by quoting the: <em>who</em>, <em>what</em>, <em>when</em>, <em>where</em> and <em>which</em>:</p>
+    <ul> 
+      <li>the person’s name (<em>who?</em>)</li>
+      <li>the event (<em>what?</em>)</li>
+      <li>the quarter and year of the registration (or just the year for post-1983 indexes) (<em>when?</em>)</li>
+      <li>the Registration District (known as the “District”) (<em>where?</em>)</li>
+      <li>the Volume number (<em>where?</em>)</li>
+      <li>the register Page number (often known as the “Page” or “Page No.”) (<em>which?</em>)</li>
+    </ul>
+    <p>The General Register Office defines the <strong>GRO Index Reference</strong>, in their <a href="https://www.gro.gov.uk/gro/content/certificates/images/CG4.pdf" target="_blank">GRO Customer Guide No. 4 (PDF, opens in a new window)</a>, as typically consisting of: the quarter and the year, plus the Volume and the Page number — as shown on their Index pages (see Figure 1, below). This takes them to a particular page (a birth, marriage or death page) in a particular Register. The register page will have a small number of birth, marriage or death entries on it, so you need to give a name in order to identify the particular event.</p> 
+  <p>Customer Guide No. 4 also refers to the District as being contained within the Volume number. (See <a href="#pageDistrictRelationship">relationships between Volume Page numbers and Districts</a> for more details).</p>
+  
+  <p>The GRO Indexes name the District associated with every event and GRO Online Orders confirm — the person, the event, the District; and the GRO Index Reference is confirmed as the year, quarter, Volume and Page.</p>
+
+    <p>You can see the use of these concepts in the following extract of a marriage index page:</p>
+    <figure class="site">
+      <%= image_tag 'Marriage-Index-Sample.gif?sha=74d531e9b4b826cc', alt: 'Marriage Image Sample', width: 700, height: 200 %>
+      <figcaption> Figure 1: part of page 214 of the Marriages Index for the March quarter of 1883</figcaption>
+      </figure>
+    <p> For each entry, the District name, the Volume and the (Register) Page number are on the right of the entry. Each entry is registered in a <em>District</em> (sometimes referred to as a <em>Registration District</em> or <em>RD</em> for short).</p>
+  <p class="islet islet--light">Each Index page has a page number. You would not normally use that, unless you wished to reference a particular index page — or its image — or report a problem with that page. </p>
+
+  <h3 id="pageDistrictRelationship"> Relationships between Pages and Districts</h3>
+  <p> <mark>{This has been add as a result of questions raised at review - PC }</mark> </p>  
+  <p> For each and every Volume, in a quarter, there will be a direct relationship between the Page numbers associated with a particular Volume and its Districts. This relationship, may “break” if either the GRO, or FreeBMD during transcription mis-record a page number, a district name or a volume number. FreeBMD carries out a number of data-base quality control checks every time it does undertakes its data-base update cycle; and this is one of the checks carried out.</p>
+  <p>Events (birth, marriages and deaths) are, firstly, locally-registered in a District, in registration-date-order, onto numbered-pages of the relevant Register. Copies of pages from each District are sent on a quarterly-basis to by the GRO and are combined in a specific District-order into Volumes. Each GRO Volume has numbered-pages; and from these the Index is produced. So, a specific group of adjacent pages in a GRO Volume will directly-relate to a specific District — the entries within this group are arranged in registration-date-sequence. There will then be a discontinuity in District and dates of Registration, with the next specific group of adjacent pages in that Volume directly-relating to a diferent specific District — its entries also arranged in registration-date-sequence.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="districts">Districts</h2>
+    <p>All births, marriages and deaths in England and Wales, since the start of Civil Registration, must be registered locally in their own district. There they are recorded in <em>Registers</em>, with marriage registers having typically two or four entries per page. There are separate registers for each type of event (births, marriages and deaths) and at the end of every quarter, true copies of the pages of these registers are sent first to the Superintendent Registrar of the District.</p>
+    <p>Superintendent Registrars send the pages to the GRO who use them to create the quarterly Indexes for England and Wales. These became annual indexes after the 31st December 1893, and so the date of registration of an event changed from being in a specific “quarter” to being in a specific month: for example, <strong>01.89</strong> for an event registered in January 1989.</p>
+     <p>You can find out more about districts on our [Registration Districts page]("Registration Districts"). You can also visit the <a href="https://www.ukbmd.org.uk/reg/districts/index.html" target="_blank">UK BMD Registration Districts pages (opens in new tab)</a> for detailed information on which places are in each District.</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="volume">Volumes</h2>
+    <p>At the GRO, all the true copies of pages received via the Superintendent Registers are sorted in registration-date order in a specific order (see <a href="#pageDistrictRelationship">relationships between Volume Page numbers and Districts</a> for more details); and grouped into <em>Volumes</em> which are assigned a Volume number — a number possibly followed by a single letter. Each of these Volumes covers a specific group of Registration Districts.</p>
+  <p>The GRO changed the ordering and number of Volumes at various times; but this was generally consistent within the following periods:</p>
+    
+    <table>
+      <caption>For each date range, the number of Volumes used and their numbering-format</caption>
+      <thead>
+        <tr>
+          <th>From</th>
+          <th>To</th>
+          <th>Number of Volumes</th>
+          <th>Numbering format</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1st July 1837</td>
+          <td>31st Dec 1851</td>
+          <td>27</td>
+          <td>Roman (XII) </td>
+          </tr>
+        <tr>
+          <td>1st Jan 1852</td>
+          <td>30th Jun 1946</td>
+          <td>11 <small>[1]</small> </td>
+          <td>Arabic (12) </td>
+        </tr>
+        <tr>
+          <td>1st Jul 1946</td>
+          <td>31st Mar 1964</td>
+          <td>10 <small>[1]</small> </td>
+          <td>Arabic (12)</td>
+        </tr>
+        <tr>
+          <td>1st Apr 1965</td>
+          <td>31st Mar 1974</td>
+          <td>10 <small>[1]</small>
+        </td>
+          <td>Arabic (12) </td>
+         </tr>
+        <tr>
+          <td>1st Apr 1974</td>
+          <td>present</td>
+          <td>40</td>
+          <td>Arabic (12)</td>
+         </tr>
+      </tbody>
+      </table>
+     <p> <strong>Table Notes:</strong> <small>[1]</small> = Volume divided into sub-volumes, using a letter suffix, such as Volume 6b.</p> 
+    <p class="islet islet--light"> Note: the Volume numbers in the early indexes were identified by <em>Roman numeral</em>s and later ones by <em>Arabic numerals</em>, but FreeBMD uses only Arabic numerals for searching (so a search for Volume <em>12</em> would also find Volume <em>XII</em>).</p>
+    <p>The GRO Registers themselves are held by the <a href="https://www.gro.gov.uk/" target="_blank">General Register Office (opens in new window)</a> (GRO); and under current legislation only officials of the GRO are allowed to access them. You can buy a certified copy of an entry in the Registers from the GRO: for more details, see our page on [Ordering Certificates]("Ordering Certificates").</p>
+    <hr class="rule rule--ornament" />
+
+    <h2 id="page">Pages</h2>
+   <p class="islet islet--neutral">Civil Registration was set up as a ‘paper-based’ system. However, parchment (not paper) was used for index pages and — as part of a security system — every page was individually numbered and was bound into an index volume or into a register (as appropriate). Loose sheets of paper could be lost and were a security risk. So, confusingly, a <em>page number</em> has two possible meanings. </p>
+<p class="islet islet--neutral">If you wish to purchase a certificate, you need to quote a <strong>Page number</strong> — this is the number of the page in the GRO Register containing your record. FreeBMD transcribes pages of the GRO Indexes, so if you, for example, ask us to add a missing entry (that you see on the scan) to our database, you need to do that from the Entry Information page for the record on the <strong>Index Page</strong> immediately above the missing one. Sometimes, we need to clarify which type of page we are referring to, such as in the figure above. If we have not added a <em>clarification</em> of what we are referring to: <em>Page number </em>means <strong>Register Page number</strong>.</p>
+    <p>The (Register) Page (or<strong> Page</strong>) is a number, possibly followed by a letter, that identifies the page in the Register containing the entry. You will need this page number, together with: the name of person for which you need a certificate, the <em>event,</em> when it happened, the District and the Volume, the year and quarter to uniquely identify an entry. You can use this “packet” of information, the <a href="#indexes">GRO Index Reference</a> to order a certified copy of the entry in the Register (commonly known as a “certificate”).</p>
+    <p>Entries on a page are generally not related, other than having been entered in registration-date-order at the same (Registrar’s) Registration District. The exceptions being for: twins (in the birth Registers), although they might appear on adjoining pages; spouses (in the marriage registers); and possibly victims of a multiple death event (in the deaths registers), again they might appear on adjoining pages.</p>
+  <p class="islet islet--neutral">The early indexes (1837 to 1851) appear to have a logical page-ordering sequence. For births, marriage and death registers: arranged by registration date and alphabetical ordering of Registration Districts within a Superintendent Registrar’s Registration District. For weddings ordering was by parish church (in alphabetical order, then Register Office weddings and Registrar-attended weddings (Non-Conformist weddings). FreeBMD does not carry out page-checks below the level of the Registration District, so this cannot be verified. After 1851, alphabetical-ordered by district can be seen in some volumes, but less so in others.</p>
+  <hr class="rule rule--ornament" />
+
+    <h2 id="qualityControl"> Database quality control checking</h2>
+   <p class="islet islet--light">This section is incomplete as not some of the “functionality” is still to be implemented. Further details will be given in the next revision of this page.</p> 
+  <p>FreeBMD updates its main database on an approximately 28-day cycle. During these updates, all the new entries that have been transcribed since the last update — together with any corrections made to the existing records — are incorporated into the database and made available for you to search.</p>
+   
+  </div>
+</div>

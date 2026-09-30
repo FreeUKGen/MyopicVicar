@@ -13,6 +13,9 @@ module DownloadAsCsv
       csv << ['You can only download 50 results.']
       csv << FIELDS
       array.flatten.each do |record|
+        next unless record.is_a?(Hash)
+
+        record = record.stringify_keys if record.respond_to?(:stringify_keys)
         format_csv_data(record)
         record = record.except!('AssociateName', 'AgeAtDeath')
         search_results_attr =  SEARCH_RESULTS_ATTRIBUTES - ['AssociateName', 'AgeAtDeath']
@@ -24,7 +27,10 @@ module DownloadAsCsv
   def search_results_tsv(array)
     CSV.generate(headers: true, col_sep: "\t") do |tsv|
       tsv << TSV_FIELDS
-      array.each do |record|
+      array.flatten.each do |record|
+        next unless record.is_a?(Hash)
+
+        record = record.stringify_keys if record.respond_to?(:stringify_keys)
         format_tsv_data(record)
         search_results_attr =  TSV_ATTRIBUTES - ['AgeAtDeath', 'AssociateName']
         tsv << search_results_attr.map{ |attr| record[attr] }
@@ -89,7 +95,7 @@ module DownloadAsCsv
     qn = record['QuarterNumber']
     record['Quarter'] = format_quarter(qn)[0]
     record['Year'] = format_quarter(qn)[1]
-    record['RecordType'] = format_record_type(record[:RecordTypeID])
+    record['RecordType'] = format_record_type(record['RecordTypeID'])
 
     case record['RecordType']
     when 'BIRTHS'
@@ -111,7 +117,7 @@ module DownloadAsCsv
     qn = record['QuarterNumber']
     record['Quarter'] = QuarterDetails.quarter_month(qn)[0..2].capitalize
     record['Year'] = QuarterDetails.quarter_year(qn)
-    record['RecordType'] = format_record_type(record[:RecordTypeID])
+    record['RecordType'] = format_record_type(record['RecordTypeID'])
 
     case record['RecordType']
     when 'BIRTHS'

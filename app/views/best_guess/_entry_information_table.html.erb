@@ -247,15 +247,13 @@
             <% if @search %>
               <%= render partial: 'page_records_navigation_search', locals: {record: record, search_id: search_id, original_record: original_record} %>
               <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
-            <% end %>
-            <% if @hash %>
-              <%= record.Page %>
-            <% end %>
-            <% if params[:saved_record] %>
+            <% elsif params[:saved_record] %>
               <%= render partial: 'page_records_navigation_saved', locals: {record: @current_record, original_record: @original_record} %>
               <span class="weight--normal"><%= "(#{ApplicationText::SAME_PAGE_ENTRIES_TEXT})" %></span>
-              <% end %>
-          <% else%>
+            <% else %>
+              <%= record.Page %>
+            <% end %>
+          <% else %>
             <%= record.Page %>
           <% end %>
           <% if record.bad_page_range_for_district or record.page_range_not_checked %>
@@ -288,9 +286,9 @@
           <% if event_entry_number.present? %>
             <% if alternate_names.present? && alternate_names.length > 1  %>
               <% if @search %>
-                <%= link_to "#{event_entry_number}", same_page_entries_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, search_id: search_id, entry_id: record.RecordNumber) %><br>
+                <%= link_to "#{event_entry_number}", same_page_entries_path(search_id: search_id, hash_id: record.url_safe_record_hash) %><br>
               <% else %>
-                <%= link_to "#{event_entry_number}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: record.RecordNumber) %><br>
+                <%= link_to "#{event_entry_number}", same_page_entries_non_search_path(hash_id: record.url_safe_record_hash) %><br>
               <% end %>
               <span class="weight--normal"><%= "(#{ApplicationText::ALTERNATE_NAMES_TEXT})" %></span>
             <% else %>
@@ -304,20 +302,18 @@
     <% else %>     
     <% end %>
     <% unless record.post_1994_marriage? %>
-      <% if search %>
-        <% event_registered = record.event_registration %>
-        <% if event_registered.present?%>
-          <tr>
-            <th scope="row">
-              Registered
-            </th>
-            <td >
-              <%= format_registered(event_registered, record.QuarterNumber) %>
-            </td>
-          </tr>
-        <% end %>
+      <% event_registered = record.event_registration %>
+      <% if event_registered.present?%>
+        <tr>
+          <th scope="row">
+            Registered
+          </th>
+          <td >
+            <%= format_registered(event_registered, record.QuarterNumber) %>
+          </td>
+        </tr>
       <% end %>
-    <% end %> 
+    <% end %>
     <% if entry_type == "marriage" %>
       <% if record.post_1994_marriage? %>
         <% sub = record.get_submission %>
@@ -409,8 +405,8 @@
     <% if params[:search_id].present? %>
       <div class="grid">
         <div class='grid__item text--center'>
-          <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, search_entry: @previous_record.RecordNumber, record_hash: @previous_record.record_hash), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
-          <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, search_entry: @next_record.RecordNumber, record_hash: @next_record.record_hash), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
+          <%= link_to '<i class="fa fa-chevron-left view_arrow"></i> Previous Result'.html_safe, friendly_bmd_record_details_path(params[:search_id], @previous_record.RecordNumber, @previous_record.friendly_url, record_hash: @previous_record.record_hash), class: 'push-half--right push-half--top push--bottom' unless @previous_record.nil? %>
+          <%= link_to 'Next Result <i class="fa fa-chevron-right view_arrow"></i>'.html_safe, friendly_bmd_record_details_path(params[:search_id], @next_record.RecordNumber, @next_record.friendly_url, record_hash: @next_record.record_hash), class: 'push-half--right push-half--top push--bottom' unless @next_record.nil?%>
         </div>
       </div>
     <% end %>

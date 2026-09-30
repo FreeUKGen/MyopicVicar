@@ -17,7 +17,7 @@
                 <%= DateTime.strptime("#{postem.Created}",'%s').to_date if postem.Created.present?%>
               </td>
               <td>
-                <%= auto_link(postem.Information, :html => { :target => '_blank' }) %>
+                <%= auto_link(postem.Information, :html => { :rel => 'noopener noreferrer' }) %>
               </td>
             </tr>
           <% end %>
