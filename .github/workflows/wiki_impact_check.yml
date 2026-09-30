@@ -18,14 +18,27 @@ on:
       - 'config/**/*.yml'
       - 'Gemfile'
       - '.ruby-version'
+  # Manual run against any open PR, e.g. to test the check. Report goes to the
+  # run's Summary tab; it only comments on the PR if post_comment is ticked.
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check'
+        required: true
+        type: string
+      post_comment:
+        description: 'Also post/update the comment on the PR'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
-  group: wiki-impact-${{ github.event.pull_request.number }}
+  group: wiki-impact-${{ github.event.pull_request.number || inputs.pr_number }}
   cancel-in-progress: true
 
 jobs:
   check:
-    if: github.event.pull_request.draft == false
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -34,6 +47,18 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      - name: Resolve PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number || inputs.pr_number }}
+        run: |
+          # Works for fork PRs too: GitHub mirrors every PR head as refs/pull/N/head.
+          git fetch -q origin "pull/$PR/head"
+          gh api "repos/${{ github.repository }}/pulls/$PR" \
+            --jq '"base=\(.base.sha)\nhead=\(.head.sha)"' >> "$GITHUB_OUTPUT"
+          echo "number=$PR" >> "$GITHUB_OUTPUT"
 
       - name: Fetch wiki
         run: git clone --depth 1 "https://github.com/${{ github.repository }}.wiki.git" "$RUNNER_TEMP/wiki" || mkdir -p "$RUNNER_TEMP/wiki"
@@ -46,8 +71,8 @@ jobs:
         id: analyse
         continue-on-error: true
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ steps.pr.outputs.base }}
+          HEAD_SHA: ${{ steps.pr.outputs.head }}
         run: |
           ruby script/wiki_impact_check.rb "$BASE_SHA" "$HEAD_SHA" "$RUNNER_TEMP/wiki" "$RUNNER_TEMP/report.md"
           if [ -s "$RUNNER_TEMP/report.md" ]; then
@@ -60,12 +85,12 @@ jobs:
       # a read-only token, so the comment can fail there - the job summary above
       # still has the report.
       - name: Post or update PR comment
-        if: steps.analyse.outcome == 'success'
+        if: steps.analyse.outcome == 'success' && (github.event_name == 'pull_request' || inputs.post_comment)
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          PR: ${{ github.event.pull_request.number }}
+          PR: ${{ steps.pr.outputs.number }}
         run: |
           existing=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
             --jq '.[] | select(.body | startswith("<!-- wiki-impact-check -->")) | .id' | head -n1)
