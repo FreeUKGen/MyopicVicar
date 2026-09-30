@@ -36,6 +36,7 @@ require 'rails'
 end
 require 'csv'
 require File.expand_path('../lib/gro_abbrev', __dir__)
+require File.expand_path('../lib/config_yaml', __dir__)
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -173,12 +174,12 @@ module MyopicVicar
     config.before_configuration do
       env_file = Rails.root.join('config', 'application.yml').to_s
       if File.exist?(env_file)
-        YAML.load_file(env_file)[Rails.env].each do |key, value|
+        ConfigYaml.load_file(env_file)[Rails.env].each do |key, value|
           ENV[key.to_s] = value
         end
       end
       mongo_config = Rails.root.join('config', 'mongo_config.yml')
-      MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env] if File.exist?(mongo_config)
+      MyopicVicar::MongoConfig = ConfigYaml.load_file(mongo_config)[Rails.env] if File.exist?(mongo_config)
     end
   end
 end

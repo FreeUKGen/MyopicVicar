@@ -443,7 +443,7 @@ class Freereg1CsvFile
     file_folder = File.join(Rails.application.config.datafiles,self.userid)
     file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
     success = false
-    if File.exists?(file_folder)
+    if File.exist?(file_folder)
       self.write_csv_file(file_location)
       success = true
     end
@@ -835,7 +835,7 @@ class Freereg1CsvFile
     file_location = File.join(Rails.application.config.datafiles,self.userid,file)
     if File.file?(file_location)
       newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
-      Dir.mkdir(newdir) unless Dir.exists?(newdir)
+      Dir.mkdir(newdir) unless Dir.exist?(newdir)
       time = Time.now.to_i.to_s
       renamed_file = (file_location + "." + time).to_s
       File.rename(file_location,renamed_file)
