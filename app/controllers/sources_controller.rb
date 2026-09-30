@@ -32,7 +32,7 @@ class SourcesController < ApplicationController
     register = source.register
     redirect_back(fallback_location: root_path, notice: 'Attempting to create without the required parameters') && return if register.blank?
 
-    source = Source.new(source_params)
+    source = Source.new(source_params.merge(register_id: register.id))
     source.save
     redirect_back(fallback_location: root_path, notice: "Addition of Source was unsuccessful because #{source.errors.messages}") && return if source.errors.any?
 
@@ -205,6 +205,11 @@ class SourcesController < ApplicationController
   private
 
   def source_params
-    params.require(:source).permit!
+    params.require(:source).permit(:source_name, :notes, :start_date, :end_date, :original_owner,
+                                   :creating_institution, :holding_institution,
+                                   :restrictions_on_use_by_creating_institution,
+                                   :restrictions_on_use_by_holding_institution,
+                                   :open_data, :url, :choice, :initialize_status,
+                                   original_form: %i[type name])
   end
 end

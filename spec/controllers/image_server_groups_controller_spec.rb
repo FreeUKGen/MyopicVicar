@@ -41,4 +41,32 @@ RSpec.describe ImageServerGroupsController, type: :controller do
       expect(flash[:notice]).to eq("updated")
     end
   end
+
+  describe "#image_server_group_params (strong parameters)" do
+    def permitted(attrs)
+      controller.params = ActionController::Parameters.new(image_server_group: attrs)
+      controller.send(:image_server_group_params)
+    end
+
+    it "permits the form fields, custom_field as scalar or array, and strips the rest" do
+      expect(permitted(group_name: "g", source_id: "s", origin: "allocate", custom_field: %w[1 2],
+                       status: "c", source_start_date: "1800", number_of_images: 5).to_h.keys)
+        .to contain_exactly("group_name", "source_id", "origin", "custom_field")
+    end
+
+    it "permits custom_field as a scalar (single-group initialize form)" do
+      expect(permitted(custom_field: "1")[:custom_field]).to eq("1")
+    end
+
+    it "strips image_server_images_attributes" do
+      result = permitted(group_name: "g", image_server_images_attributes: { "0" => { image_file_name: "x" } })
+      expect(result.to_h.keys).to eq(["group_name"])
+    end
+
+    it "returns the same object each call so callers' assignments (assign_date) persist" do
+      permitted(group_name: "g", syndicate_code: "SYN")
+      controller.send(:image_server_group_params)[:assign_date] = "now"
+      expect(controller.send(:image_server_group_params)[:assign_date]).to eq("now")
+    end
+  end
 end
