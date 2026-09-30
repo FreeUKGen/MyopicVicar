@@ -17,7 +17,7 @@ class CountiesController < ApplicationController
   def create
     params[:county][:chapman_code] = ChapmanCode.values_at(params[:county][:county_description])
     params[:county][:county_coordinator] = UseridDetail.id(params[:county][:county_coordinator]).first.userid
-    county = County.create(county_params)
+    county = County.create(county_create_params)
     if county.errors.any?
       flash[:notice] = 'Activation failed'
       redirect_to(new_county_path) && return
@@ -137,7 +137,12 @@ class CountiesController < ApplicationController
 
   private
 
+  def county_create_params
+    params.require(:county).permit(:chapman_code, :county_description, :county_coordinator, :county_notes)
+  end
+
+  # chapman_code and county_description are disabled on the edit form
   def county_params
-    params.require(:county).permit!
+    params.require(:county).permit(:county_coordinator, :previous_county_coordinator, :county_notes)
   end
 end
