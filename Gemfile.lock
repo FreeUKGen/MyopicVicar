@@ -199,7 +199,7 @@ GEM
       mongoid (>= 3.0, < 10.0)
     mysql2 (0.5.7)
       bigdecimal
-    net-imap (0.6.4.1)
+    net-imap (0.3.10)
       date
       net-protocol
     net-pop (0.1.2)
@@ -227,9 +227,9 @@ GEM
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.10.1)
+    pry-byebug (3.8.0)
       byebug (~> 11.0)
-      pry (>= 0.13, < 0.15)
+      pry (~> 0.10)
     public_suffix (5.1.1)
     racc (1.8.1)
     rack (2.2.23)
