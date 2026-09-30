@@ -1,0 +1,83 @@
+name: Wiki impact check
+
+# Advisory only: comments on the PR with wiki pages that may need updating and
+# what to add. Never fails the PR - the developer decides whether to act on it.
+# Logic lives in script/wiki_impact_check.rb.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'app/models/**'
+      - 'app/controllers/**'
+      - 'app/constraints/**'
+      - 'app/mailers/**'
+      - 'app/uploaders/**'
+      - 'lib/**'
+      - 'config/routes.rb'
+      - 'config/**/*.yml'
+      - 'Gemfile'
+      - '.ruby-version'
+
+concurrency:
+  group: wiki-impact-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Fetch wiki
+        run: git clone --depth 1 "https://github.com/${{ github.repository }}.wiki.git" "$RUNNER_TEMP/wiki" || mkdir -p "$RUNNER_TEMP/wiki"
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Analyse diff against wiki
+        id: analyse
+        continue-on-error: true
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          ruby script/wiki_impact_check.rb "$BASE_SHA" "$HEAD_SHA" "$RUNNER_TEMP/wiki" "$RUNNER_TEMP/report.md"
+          if [ -s "$RUNNER_TEMP/report.md" ]; then
+            cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No wiki-relevant changes detected." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Keeps a single comment per PR, edited in place on each push. Fork PRs get
+      # a read-only token, so the comment can fail there - the job summary above
+      # still has the report.
+      - name: Post or update PR comment
+        if: steps.analyse.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          existing=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.body | startswith("<!-- wiki-impact-check -->")) | .id' | head -n1)
+
+          if [ -s "$RUNNER_TEMP/report.md" ]; then
+            if [ -n "$existing" ]; then
+              gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@"$RUNNER_TEMP/report.md" > /dev/null
+            else
+              gh api -X POST "repos/$REPO/issues/$PR/comments" -F body=@"$RUNNER_TEMP/report.md" > /dev/null
+            fi
+          elif [ -n "$existing" ]; then
+            # An earlier push flagged something; this one doesn't.
+            printf '%s\n' '<!-- wiki-impact-check -->' '## 📚 Wiki impact check' '' '✅ Latest changes have no wiki-relevant impact.' > "$RUNNER_TEMP/clear.md"
+            gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@"$RUNNER_TEMP/clear.md" > /dev/null
+          fi
