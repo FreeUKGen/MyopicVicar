@@ -136,7 +136,7 @@ GEM
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
     jquery-validation-rails (1.19.0)
-    json (2.2.0)
+    json (2.7.6)
     kaminari (1.2.1)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.1)
@@ -360,7 +360,7 @@ DEPENDENCIES
   gretel
   jquery-rails
   jquery-validation-rails (~> 1.13, >= 1.13.1)
-  json
+  json (~> 2.7.6)
   kaminari
   kaminari-mongoid
   mail-logger
