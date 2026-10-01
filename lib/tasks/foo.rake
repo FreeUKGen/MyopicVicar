@@ -454,9 +454,9 @@ namespace :foo do
     if args.search_records == 'create_search_records_parallel'  then
       time_start = Time.now
       puts "Processing entries to search records with #{args.search_records}"
-      pid1 = Kernel.spawn("rake build:create_search_records[#{args.type},#{args.search_records},#{args.range1}]")
-      pid2 = Kernel.spawn("rake build:create_search_records[#{args.type},#{args.search_records},#{args.range2}]")  unless args.range2.nil?
-      pid3 = Kernel.spawn("rake build:create_search_records[#{args.type},#{args.search_records},#{args.range3}]")  unless args.range3.nil?
+      pid1 = Kernel.spawn(RbConfig.ruby, Rails.root.join('bin', 'rake').to_s, "build:create_search_records[#{args.type},#{args.search_records},#{args.range1}]")
+      pid2 = Kernel.spawn(RbConfig.ruby, Rails.root.join('bin', 'rake').to_s, "build:create_search_records[#{args.type},#{args.search_records},#{args.range2}]")  unless args.range2.nil?
+      pid3 = Kernel.spawn(RbConfig.ruby, Rails.root.join('bin', 'rake').to_s, "build:create_search_records[#{args.type},#{args.search_records},#{args.range3}]")  unless args.range3.nil?
       p Process.waitall
       time_end = Time.now
       process_time = time_end - time_start
