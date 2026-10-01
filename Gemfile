@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '5.2.8'
+gem 'rails', '~> 6.1.7'
 gem 'tzinfo-data' #needed by windows
 gem 'mysql2'
 #gem 'refinerycms'
@@ -20,9 +20,8 @@ gem 'airbrake'
 #  gem 'bcrypt', git: 'https://github.com/codahale/bcrypt-ruby'
 gem 'bcrypt'
 gem 'text'
-gem 'json'
+gem 'json', '~> 2.7.6'
 gem 'pry'
-gem 'pry-byebug'
 gem 'email_veracity'
 gem 'unicode'
 gem 'kaminari'
@@ -55,3 +54,6 @@ gem 'browser'
 gem 'rails3-jquery-autocomplete'
 gem 'jquery-validation-rails', '~> 1.13', '>= 1.13.1'
 gem 'rails_autolink'
+gem 'net-smtp', require: false
+gem 'net-pop', require: false
+gem 'net-imap', '~> 0.3.10', require: false

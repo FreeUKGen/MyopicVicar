@@ -75,7 +75,7 @@ class LatestDatabaseJob < ApplicationJob
 
     begin
       yaml_content = File.read(@yaml_file)
-      yaml_data = YAML.load(yaml_content)
+      yaml_data = ConfigYaml.load(yaml_content)
 
       env_config = yaml_data[@environment]
       unless env_config
