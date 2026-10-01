@@ -159,7 +159,7 @@ GEM
     kaminari-mongoid (1.0.2)
       kaminari-core (~> 1.0)
       mongoid
-    logger (1.3.0)
+    logger (1.6.0)
     loofah (2.25.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -383,7 +383,7 @@ DEPENDENCIES
   json
   kaminari
   kaminari-mongoid
-  logger (= 1.3.0)
+  logger (= 1.6.0)
   mail-logger
   mime-types (~> 3.5.0)
   mimemagic (~> 0.4.3)
