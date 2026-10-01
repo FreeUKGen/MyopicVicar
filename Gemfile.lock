@@ -100,6 +100,7 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.7)
     crass (1.0.6)
+    date (3.5.1)
     devise (4.7.3)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -181,6 +182,11 @@ GEM
     multipart-post (2.1.1)
     mysql2 (0.5.7)
       bigdecimal
+    net-imap (0.3.10)
+      date
+      net-protocol
+    net-pop (0.1.2)
+      net-protocol
     net-protocol (0.4.0)
       timeout
     net-smtp (0.5.2)
@@ -362,6 +368,8 @@ DEPENDENCIES
   mongo
   mongoid
   mysql2
+  net-imap (~> 0.3.10)
+  net-pop
   net-smtp
   newrelic_rpm
   nokogiri (>= 1.13.6)

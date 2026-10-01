@@ -55,3 +55,5 @@ gem 'rails3-jquery-autocomplete'
 gem 'jquery-validation-rails', '~> 1.13', '>= 1.13.1'
 gem 'rails_autolink'
 gem 'net-smtp', require: false
+gem 'net-pop', require: false
+gem 'net-imap', '~> 0.3.10', require: false
