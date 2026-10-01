@@ -61,10 +61,4 @@ class FreecenPobPropagationsController < ApplicationController
     @chapman_code = @pob_propagation.match_verbatim_birth_county
     @county = ChapmanCode.name_from_code(@chapman_code)
   end
-
-  private
-
-  def freecen_pob_propagation_params
-    params.require(:freecen_pob_propagation).permit!
-  end
 end

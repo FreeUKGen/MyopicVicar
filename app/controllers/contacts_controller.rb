@@ -447,7 +447,11 @@ class ContactsController < ApplicationController
   private
 
   def contact_params
-    params.require(:contact).permit!
+    params.require(:contact).permit(
+      :contact_time, :session_id, :problem_page_url, :previous_page_url, :name,
+      :email_address, :body, :contact_type, :selected_county, :screenshot, :contact_name,
+      :query, :record_id, :entry_id, :line_id, :county, screenshots: []
+    )
   end
 
   def likely_automated_submission?

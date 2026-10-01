@@ -12,10 +12,4 @@ class Freecen1VldFileAuditsController < ApplicationController
     end
     @freecen1_vld_file_audits = Freecen1VldFileAudit.chapman(session[:chapman_code]).order_by(c_at: -1)
   end
-
-  private
-
-  def freecen1_vld_file_audit_params
-    params.require(:freecen1_vld_file_audit).permit!
-  end
 end

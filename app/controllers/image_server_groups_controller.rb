@@ -351,6 +351,9 @@ class ImageServerGroupsController < ApplicationController
   private
 
   def image_server_group_params
-    params.require(:image_server_group).permit!
+    @image_server_group_params ||= params.require(:image_server_group).permit(
+      :group_name, :start_date, :end_date, :notes, :source_id, :syndicate_code,
+      :origin, :initialize_status, :custom_field, custom_field: []
+    )
   end
 end

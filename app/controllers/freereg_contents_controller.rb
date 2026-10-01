@@ -318,6 +318,6 @@ class FreeregContentsController < ApplicationController
   private
 
   def freereg_content_params
-    params.require(:freereg_content).permit!
+    params.require(:freereg_content).permit(chapman_codes: [])
   end
 end

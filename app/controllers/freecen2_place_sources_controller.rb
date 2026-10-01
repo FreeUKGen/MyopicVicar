@@ -68,6 +68,6 @@ class Freecen2PlaceSourcesController < ApplicationController
   private
 
   def freecen2_place_source_params
-    params.require(:freecen2_place_source).permit!
+    params.require(:freecen2_place_source).permit(:source)
   end
 end

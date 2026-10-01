@@ -72,6 +72,6 @@ class GapReasonsController < ApplicationController
   private
 
   def gap_reason_params
-    params.require(:gap_reason).permit!
+    params.require(:gap_reason).permit(:reason, :notes)
   end
 end

@@ -29,10 +29,10 @@ class Freecen1VldFilesController < ApplicationController
 
     @vldfile = Freecen1VldFile.find_by(dir_name: session[:chapman_code], file_name: params[:freecen1_vld_file][:uploaded_file].original_filename)
     if @vldfile.present?
-      @vldfile.update_attributes(freecen1_vld_file_params)
+      @vldfile.update_attributes(freecen1_vld_file_upload_params)
       @vldfile.set(num_invalid_pobs: nil)
     else
-      @vldfile = Freecen1VldFile.new(freecen1_vld_file_params)
+      @vldfile = Freecen1VldFile.new(freecen1_vld_file_upload_params)
     end
     @vldfile.uploaded_file_name = @vldfile.uploaded_file.identifier
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file exists please use the replace action') && return if @vldfile.check_exists_on_upload && session[:replace].blank?
@@ -296,6 +296,12 @@ class Freecen1VldFilesController < ApplicationController
   private
 
   def freecen1_vld_file_params
-    params.require(:freecen1_vld_file).permit!
+    params.require(:freecen1_vld_file).permit(:file_name, :dir_name, :census_type, :raw_year, :full_year, :piece,
+                                              :series, :transcriber_name, :transcriber_email_address,
+                                              :transcriber_userid)
+  end
+
+  def freecen1_vld_file_upload_params
+    params.require(:freecen1_vld_file).permit(:action, :uploaded_file, :dir_name)
   end
 end
