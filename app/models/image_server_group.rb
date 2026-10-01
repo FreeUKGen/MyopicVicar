@@ -408,7 +408,7 @@ class ImageServerGroup
     register = source.register
     church = register.church
     place = self.place
-    URI.escape(Rails.application.config.image_server + 'manage_freereg_images/upload_images?chapman_code=' + place.chapman_code + '&place=' + place.place_name + '&church=' + church.church_name + '&register_type=' + register.register_type  + '&register=' + register.id + '&folder_name=' + source.folder_name + '&userid=' + userid + '&group_id=' + self.id + '&image_server_group_name=' + self.group_name + '&image_server_access=' + Rails.application.config.image_server_access)
+    URI::RFC2396_Parser.new.escape(Rails.application.config.image_server + 'manage_freereg_images/upload_images?chapman_code=' + place.chapman_code + '&place=' + place.place_name + '&church=' + church.church_name + '&register_type=' + register.register_type  + '&register=' + register.id + '&folder_name=' + source.folder_name + '&userid=' + userid + '&group_id=' + self.id + '&image_server_group_name=' + self.group_name + '&image_server_access=' + Rails.application.config.image_server_access)
   end
 
   def determine_ownership
