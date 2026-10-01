@@ -14,16 +14,8 @@
 #
 MyopicVicar::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
-  # Rails 6+ Host Authorization
-  # Allow the configured public website host (some deploys reuse production env for staging).
-  begin
-    website_host = URI.parse(MyopicVicar::MongoConfig['website'].to_s).host
-    website_url = URI.parse(MyopicVicar::MongoConfig['website_url'].to_s).host
-    config.hosts << website_host if website_host.present?
-    config.hosts << website_url if website_url.present?
-  rescue URI::InvalidURIError
-    # ignore invalid website config
-  end
+  # Rails 6 Host Authorization stays off in production (config.hosts empty = every host allowed,
+  # as on Rails 5.2): adding any host blocks all others with an empty 403, e.g. beta.freebmd2.org.uk.
 
   # Code is not reloaded between requests
   config.cache_classes = true
