@@ -38,7 +38,7 @@ class ImageServerImage
 
 
     def create_url(method,id,chapman_code,folder_name,image_file_name,userid)
-      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id  + '&image_server_access=' + Rails.application.config.image_server_access)
+      URI::RFC2396_Parser.new.escape(Rails.application.config.image_server + 'manage_freereg_images/' + method + '?' + 'chapman_code=' + chapman_code + '&folder_name=' + folder_name + '&image_file_name=' + image_file_name + '&userid=' + userid + '&id=' + id  + '&image_server_access=' + Rails.application.config.image_server_access)
     end
 
     def find_by_image_server_group_ids(id)
@@ -182,6 +182,6 @@ class ImageServerImage
     image_server_group = self.image_server_group
     source = image_server_group.source
     place = image_server_group.place
-    URI.escape(Rails.application.config.image_server + 'manage_freereg_images/remove_image?chapman_code=' + place.chapman_code + '&image_server_group_id=' + self.image_server_group.id + '&folder_name=' + source.folder_name + '&image_file_name=' + self.image_file_name + '&image_server_access=' + Rails.application.config.image_server_access)
+    URI::RFC2396_Parser.new.escape(Rails.application.config.image_server + 'manage_freereg_images/remove_image?chapman_code=' + place.chapman_code + '&image_server_group_id=' + self.image_server_group.id + '&folder_name=' + source.folder_name + '&image_file_name=' + self.image_file_name + '&image_server_access=' + Rails.application.config.image_server_access)
   end
 end
