@@ -79,7 +79,7 @@ class UseridDetailsController < ApplicationController
         next_place_to_go_unsuccessful_create
       end
     else
-      render status: :not_found
+      head :not_found
     end
   end
 
