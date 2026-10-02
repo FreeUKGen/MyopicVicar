@@ -171,7 +171,7 @@ class Freecen1VldFilesController < ApplicationController
       load_people
       @type = params[:type].presence || 'all'
 
-      @civil_parishes = SortedSet.new
+      @civil_parishes = Set.new
       all_civil_parishes = Freecen1VldEntry.where(:freecen1_vld_file_id => params[:id]).pluck(:enumeration_district, :civil_parish)
       all_civil_parishes.each do |cp|
         @civil_parishes << "#{cp[0]} -- #{cp[1]}" if cp.present?
