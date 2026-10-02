@@ -524,11 +524,12 @@ class SearchQueriesController < ApplicationController
   end
 
   def select_counties
-    prefix = params[:prefix].split(',').pop.strip.downcase
+    raw_prefix = params[:prefix].to_s
+    prefix = raw_prefix.split(',').last.to_s.strip.downcase
     @counties_group = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
     county_keys = []
     counties_array = @counties_group.each{|ctry, county| county_keys << county.keys }
-    if (params[:prefix].strip.include?'All England') || (params[:prefix].strip.include?'All Wales')
+    if (raw_prefix.include?'All England') || (raw_prefix.include?'All Wales')
       county_keys = ['All England', 'All Wales']
     end
     @counties = county_keys.flatten.select { |s| s.downcase.include?(prefix) }
