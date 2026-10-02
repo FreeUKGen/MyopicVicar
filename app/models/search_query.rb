@@ -842,7 +842,7 @@
   def locate(record_id)
     return nil unless search_result&.records.is_a?(Hash)
 
-    records = search_result.records.values.flatten
+    records = search_result.records.values.flatten.select { |r| r.is_a?(Hash) } # skip stray non-record entries in old cached results
     position = locate_index(records, record_id)
     record = position.present? ? records[position] : nil
     record
@@ -913,7 +913,7 @@
 
   def bmd_next_and_previous_records current
     if search_result&.records.is_a?(Hash)
-      search_results = search_result.records.values.flatten
+      search_results = search_result.records.values.flatten.select { |r| r.is_a?(Hash) } # skip stray non-record entries in old cached results
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
       next_record_id = nil
