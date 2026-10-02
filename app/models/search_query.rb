@@ -407,6 +407,9 @@
   # (e.g. 'Surname'). Plain h['Surname'] is nil on symbol-keyed hashes, so sorting appeared broken.
   def sort_field_lookup(obj, fieldname)
     return nil if obj.nil?
+    # plain values (e.g. strings in old cached results) have no named fields;
+    # String#[] with a symbol raises "no implicit conversion of Symbol into Integer"
+    return nil if obj.is_a?(String) || obj.is_a?(Numeric) || obj.is_a?(Array)
 
     key_str = fieldname.to_s
     key_sym = fieldname.to_sym
