@@ -127,7 +127,7 @@ namespace :freecen do
       # alternative_names_list = '['
       if old_search_records_pobs.positive?
         # get CSV file names where OLd Place is used as a Birth Place
-        csv_file_ids = SortedSet.new
+        csv_file_ids = Set.new
         csv_files = SearchRecord.where(:birth_chapman_code => old_place_record.chapman_code, :freecen2_place_of_birth_id => old_place_record.id, :freecen_csv_file_id.ne => nil)
         csv_files.each do |search_rec|
           csv_file_ids << search_rec.freecen_csv_file_id
@@ -145,8 +145,8 @@ namespace :freecen do
         end
 
         # get VLD file names where OLd Place is used as a Birth Place
-        individ_file_ids = SortedSet.new
-        vld_file_ids = SortedSet.new
+        individ_file_ids = Set.new
+        vld_file_ids = Set.new
         individ_recs = SearchRecord.where(:birth_chapman_code => old_place_record.chapman_code, :freecen2_place_of_birth_id => old_place_record.id, :freecen_csv_file_id => nil, :freecen_individual_id.ne => nil)
         individ_recs.each do |search_rec|
           individ_file_ids << search_rec.freecen_individual_id
