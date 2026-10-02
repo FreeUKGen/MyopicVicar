@@ -496,11 +496,16 @@
     end
   end
 
+  # must never return nil: sort! raises "comparison of X with Y failed" if the block returns nil
   def compare_single_values(x_val, y_val)
+    return 0 if x_val.nil? && y_val.nil?
+    return 1 if x_val.nil? # blanks sort last
+    return -1 if y_val.nil?
+
     if x_val.is_a?(String) && y_val.is_a?(String)
-      x_val.to_s.downcase <=> y_val.to_s.downcase
+      x_val.downcase <=> y_val.downcase
     else
-      x_val <=> y_val
+      (x_val <=> y_val) || (x_val.to_s <=> y_val.to_s)
     end
   end
 
