@@ -55,9 +55,11 @@ class SearchRecordsController < ApplicationController
       show_freebmd
     elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.present?
       show_freecen_csv
+      return if performed?
       render '/freecen_csv_entries/show'
     elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.blank?
       show_freecen
+      return if performed?
     elsif @appname == 'freereg'
       @display_date = false
       show_freereg
@@ -72,6 +74,10 @@ class SearchRecordsController < ApplicationController
     # common code for the three show versions show print and citation
     @individual = FreecenIndividual.find_by(_id: @search_record.freecen_individual_id)
     @dwelling = @individual.freecen_dwelling if @individual
+    # the individual or household can be missing if the original data was removed or reloaded
+    if @individual.blank? || @dwelling.blank?
+      redirect_to(new_search_query_path, notice: 'Sorry, the details for this record are no longer available.') && return
+    end
     @cen_year = ' '
     @cen_piece = ' '
     @cen_chapman_code = ' '
@@ -280,6 +286,8 @@ class SearchRecordsController < ApplicationController
       render '/freecen_csv_entries/show', layout: false
     elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.blank?
       show_freecen
+      return if performed?
+
       @display_date = true
       render '_search_records_freecen_print', layout: false
     elsif @appname == 'freereg'
@@ -307,7 +315,11 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_freecen_csv
-    @freecen_csv_entry = @search_record.freecen_csv_entry.blank? ? session[:freecen_csv_entry_id] : @search_record.freecen_csv_entry
+    # session[:freecen_csv_entry_id] holds an id, not an entry, so look the entry up
+    @freecen_csv_entry = @search_record.freecen_csv_entry.presence || FreecenCsvEntry.find_by(_id: session[:freecen_csv_entry_id])
+    if @freecen_csv_entry.blank?
+      redirect_to(new_search_query_path, notice: 'Sorry, the details for this record are no longer available.') && return
+    end
 
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @individual = @freecen_csv_entry
@@ -355,6 +367,7 @@ class SearchRecordsController < ApplicationController
     when 'freecen'
       @display_date = true
       show_freecen
+      return if performed?
     when 'freereg'
       @display_date = false
       @printable_format = true

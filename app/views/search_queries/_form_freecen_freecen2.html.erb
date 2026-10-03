@@ -251,7 +251,8 @@
     <% if true %>
       <script type="text/javascript" charset="utf-8" >
         <% if @search_query && @search_query.chapman_codes.size > 0 %>
-          var selection=<%= raw(Freecen2PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first.places_json) %>;
+          <%# no place cache for the county (e.g. invalid code from a failed search) gives an empty place list %>
+          var selection=<%= raw(Freecen2PlaceCache.where(:chapman_code => @search_query.chapman_codes.first).first&.places_json || '{}') %>;
           <% if @search_query.freecen2_places.size > 0 %>
             selection["selected"]="<%= @search_query.freecen2_places.first.id %>";
           <% end %>
