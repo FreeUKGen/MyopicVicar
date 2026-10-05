@@ -100,6 +100,9 @@ class SearchQueriesController < ApplicationController
   def edit
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
+    # the old shared edit form no longer exists; revising a search is done on the new search page
+    redirect_to new_search_query_path(search_id: @search_query)
   end
 
   def expand_search_query_composite_chapman_codes(composite_counties, chapman_codes)
