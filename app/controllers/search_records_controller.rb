@@ -213,9 +213,10 @@ class SearchRecordsController < ApplicationController
   end
 
   def add_viewed
-    if @search_query.present?
+    # an old search can have its results removed; still show the record, just without viewed tracking/navigation
+    if @search_query.present? && @search_query.search_result.present?
       @search_result = @search_query.search_result
-      @viewed_records = @search_result.viewed_records
+      @viewed_records = @search_result.viewed_records || []
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
     end
@@ -265,9 +266,10 @@ class SearchRecordsController < ApplicationController
     @image_id = @entry.get_the_image_id(@church, @user, session[:manage_user_origin], session[:image_server_group_id], session[:chapman_code])
     @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type], @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
     @embargoed = @search_record[:embargoed]
-    if @search_query.present?
+    # an old search can have its results removed; still show the record, just without viewed tracking/navigation
+    if @search_query.present? && @search_query.search_result.present?
       @search_result = @search_query.search_result
-      @viewed_records = @search_result.viewed_records
+      @viewed_records = @search_result.viewed_records || []
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
       @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) if params[:ucf].blank?
