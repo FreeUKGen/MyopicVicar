@@ -99,9 +99,13 @@ class DistrictsController < ApplicationController
   end
 
   def year_page_map
-    @year = params[:year]
-    @quarter = params[:quarter]
-    @event_type = params[:event_type]
+    @year = params[:year].to_s
+    @quarter = params[:quarter].to_s
+    @event_type = params[:event_type].to_s
+    # these build a file path in the view, so only accept the values the form can send
+    unless @year.match?(/\A\d{4}\z/) && @quarter.match?(/\A[1-4]\z/) && @event_type.match?(/\A[BMD]\z/)
+      redirect_to(districts_overview_path, notice: 'Please select a year, quarter and event type') && return
+    end
   end
 
   private

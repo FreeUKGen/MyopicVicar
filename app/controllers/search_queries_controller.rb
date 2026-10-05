@@ -451,6 +451,7 @@ class SearchQueriesController < ApplicationController
   def download_as_tsv
     search_id = params[:id]
     @search_query = SearchQuery.find_by(id: search_id)
+    redirect_to(new_search_query_path, notice: 'Please run a search before downloading results') && return if @search_query.blank?
     page_number = params[:page]
     results_per_page = params[:results_per_page]
     sorted_results = @search_query.sorted_and_paged_searched_records
@@ -462,6 +463,7 @@ class SearchQueriesController < ApplicationController
   def download_as_gedcom
     search_id = params[:id]
     @search_query = SearchQuery.find_by(id: search_id)
+    redirect_to(new_search_query_path, notice: 'Please run a search before downloading results') && return if @search_query.blank?
     page_number = params[:page]
     results_per_page = params[:results_per_page]
     sorted_results = @search_query.sorted_and_paged_searched_records
