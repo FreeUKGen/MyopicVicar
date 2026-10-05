@@ -10,7 +10,7 @@ module PhysicalFilesHelper
     userid = file.userid if file.present?
     file_name = file.file_name if file.present?
     file_location =  File.join(Rails.application.config.datafiles, userid,file_name)
-    if File.exists?(file_location)
+    if File.exist?(file_location)
       size = number_to_human_size(File.size(file_location))
     else
       size = nil

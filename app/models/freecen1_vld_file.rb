@@ -306,7 +306,7 @@ class Freecen1VldFile
     census_fields.each do |field|
       @initial_line_hash[field] = nil
     end
-    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+    CSV.open(file_location, 'wb', row_sep: "\r\n") do |csv|
       csv << header
       records = freecen1_vld_entries.order_by(_id: 1)
       @record_number = 0
@@ -329,7 +329,7 @@ class Freecen1VldFile
     census_fields.each do |field|
       @initial_line_hash[field] = nil
     end
-    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+    CSV.open(file_location, 'wb', row_sep: "\r\n") do |csv|
       csv << header
       records = freecen1_vld_entries.order_by(_id: 1)
       @record_number = 0

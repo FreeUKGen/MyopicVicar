@@ -19,7 +19,7 @@ class UserMailer < ActionMailer::Base
     @freecen_report = report
     mail(:to => to_email, :subject => subj, :body => report, :content_type => "text/plain")
   end
-  add_template_helper(EmailHelper)
+  helper EmailHelper
 
   def acknowledge_communication(original)
     @appname = appname

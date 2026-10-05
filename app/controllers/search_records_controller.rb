@@ -288,8 +288,8 @@ class SearchRecordsController < ApplicationController
           send_data @json_of_entries.to_json, type: 'application/json; header=present', disposition: "attachment; filename=\"#{file_name}\""
         end
         format.csv do
-          header_line = CSV.generate_line(@order, options = { row_sep: "\r\n" })
-          data_line = CSV.generate_line(@array_of_entries, options = { row_sep: "\r\n", force_quotes: true })
+          header_line = CSV.generate_line(@order, row_sep: "\r\n")
+          data_line = CSV.generate_line(@array_of_entries, row_sep: "\r\n", force_quotes: true)
           file_name = "search-record-#{@entry.id}.csv"
           send_data (header_line + data_line), type: 'text/csv', disposition: "attachment; filename=\"#{file_name}\""
         end
