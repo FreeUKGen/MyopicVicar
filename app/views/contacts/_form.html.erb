@@ -14,7 +14,12 @@
   </div>
 <% end %>
 <div class="grid">
-  <div class="">
+  <%# skyscraper advert on wide screens, kept in its own column away from the form fields (same unit as the search form) %>
+  <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads" style="height: 650px;">
+    <p style="margin-bottom:5px;">Advertisement</p>
+    <div data-fuse="freebmd_skyscraper_1"></div>
+  </div>
+  <div class="grid__item contact_form_column">
     <section class="island island--light">
       <%= semantic_form_for(@contact, :html => {:multipart => true}) do |f| %>
         <%= f.hidden_field :contact_time %>
@@ -123,3 +128,13 @@
     </section>
   </div>
 </div>
+<style>
+@media (max-width: 1299px) {
+    .big_screen_ads { display: none; }
+    .contact_form_column { width: 100%; }
+}
+@media (min-width: 1300px) {
+    .big_screen_ads { display: block; }
+    .contact_form_column { width: 83.333%; }
+}
+</style>
