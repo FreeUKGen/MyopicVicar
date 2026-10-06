@@ -16,7 +16,9 @@ class SearchQueriesController < ApplicationController
   skip_before_action :require_login
   skip_before_action :verify_authenticity_token
   before_action :check_for_mobile, only: :show
-  before_action :require_login, only: :compare_search
+  before_action :require_login, only: [:compare_search, :report, :selection]
+  # the search report lists other people's searches, so only roles with the 'Search Performance' menu option may see it
+  before_action :require_search_performance_role, only: [:report, :selection]
   before_action :sanitize_autocomplete_term, only: [:autocomplete_BestGuess_Surname, :autocomplete_BestGuess_GivenName]
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
@@ -553,6 +555,12 @@ class SearchQueriesController < ApplicationController
   end
 
   private
+
+  def require_search_performance_role
+    roles = member_roles_for(get_user)
+    allowed = roles.any? { |role| UseridRole::OPTIONS.fetch(role, []).include?('system_administrator') }
+    redirect_to(new_search_query_path, notice: 'You are not authorised to view that page') && return unless allowed
+  end
 
   def search_params
     permitted_model_params(SearchQuery)
