@@ -113,7 +113,9 @@ namespace :freereg do
         next if last_file.present? && last_file.uploaded_date.to_date >= @cutoff_date
 
         # Condition 2: has never signed in since tracking was enabled
-        devise_user = User.where(username: user.userid).first
+        # logins are linked by userid_detail_id; usernames can differ in case from the userid (e.g. jmt199 vs JMT199)
+        devise_user = User.where(userid_detail_id: user.id.to_s).first ||
+                      User.where(username: /\A#{Regexp.escape(user.userid)}\z/i).first
         next unless devise_user.present? && devise_user.last_sign_in_at.nil?
 
         user_full_name = "#{user.person_forename} #{user.person_surname}"
