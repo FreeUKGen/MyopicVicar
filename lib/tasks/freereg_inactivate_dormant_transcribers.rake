@@ -44,7 +44,7 @@ namespace :freereg do
 
       email_subject = "FREEREG:: Inactivation of dormant transcribers in #{@syndicate} (run mode: #{@mode})."
       email_body = "We have reviewed transcribers in #{@syndicate} who have not uploaded a file in the last " \
-                   "#{CUTOFF_MONTHS} months and have never signed in to the system.\n\n" \
+                   "#{CUTOFF_MONTHS} months and have not set their password on the new login system.\n\n" \
                    "#{list_status}\n\n" \
                    "The attached file lists the affected transcribers. Please review this list and reactivate " \
                    "anyone who should remain active.\n"
@@ -108,15 +108,23 @@ namespace :freereg do
       users_to_inactivate = 0
 
       active_transcribers.each do |user|
+        # new volunteers have not had CUTOFF_MONTHS to upload yet
+        next if user.sign_up_date.present? && user.sign_up_date.to_date >= @cutoff_date
+
         # Condition 1: no FreeREG file uploaded within the cutoff window
         last_file = Freereg1CsvFile.where(userid: user.userid).desc(:uploaded_date).limit(1).first
         next if last_file.present? && last_file.uploaded_date.to_date >= @cutoff_date
 
-        # Condition 2: has never signed in since tracking was enabled
+        # Condition 2: has not set a password on the new (Devise) login system
         # logins are linked by userid_detail_id; usernames can differ in case from the userid (e.g. jmt199 vs JMT199)
         devise_user = User.where(userid_detail_id: user.id.to_s).first ||
                       User.where(username: /\A#{Regexp.escape(user.userid)}\z/i).first
-        next unless devise_user.present? && devise_user.last_sign_in_at.nil?
+        next if devise_user.blank?
+
+        # sign-ins are only tracked since July 2026, so also count a completed password reset:
+        # Devise clears reset_password_sent_at when the reset is completed (a pending one keeps it set)
+        completed_reset = devise_user.reset_password_sent_at.nil? && devise_user.updated_at > devise_user.created_at + 1.minute
+        next if devise_user.last_sign_in_at.present? || completed_reset
 
         user_full_name = "#{user.person_forename} #{user.person_surname}"
         joined = user.sign_up_date.present? ? user.sign_up_date.strftime('%d/%m/%Y') : 'Unknown'
