@@ -93,7 +93,7 @@ class Freecen2SiteStatisticsController < ApplicationController
     when 'pieces'
       column_headers = %w[chapman_code year number name civil_parishes status date records]
     end
-    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+    CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
       csv << column_headers
       report_array.each do |rec|
         csv << rec

@@ -55,9 +55,11 @@ class SearchRecordsController < ApplicationController
       show_freebmd
     elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.present?
       show_freecen_csv
+      return if performed?
       render '/freecen_csv_entries/show'
     elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.blank?
       show_freecen
+      return if performed?
     elsif @appname == 'freereg'
       @display_date = false
       show_freereg
@@ -72,6 +74,10 @@ class SearchRecordsController < ApplicationController
     # common code for the three show versions show print and citation
     @individual = FreecenIndividual.find_by(_id: @search_record.freecen_individual_id)
     @dwelling = @individual.freecen_dwelling if @individual
+    # the individual or household can be missing if the original data was removed or reloaded
+    if @individual.blank? || @dwelling.blank?
+      redirect_to(new_search_query_path, notice: 'Sorry, the details for this record are no longer available.') && return
+    end
     @cen_year = ' '
     @cen_piece = ' '
     @cen_chapman_code = ' '
@@ -207,9 +213,10 @@ class SearchRecordsController < ApplicationController
   end
 
   def add_viewed
-    if @search_query.present?
+    # an old search can have its results removed; still show the record, just without viewed tracking/navigation
+    if @search_query.present? && @search_query.search_result.present?
       @search_result = @search_query.search_result
-      @viewed_records = @search_result.viewed_records
+      @viewed_records = @search_result.viewed_records || []
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
     end
@@ -259,9 +266,10 @@ class SearchRecordsController < ApplicationController
     @image_id = @entry.get_the_image_id(@church, @user, session[:manage_user_origin], session[:image_server_group_id], session[:chapman_code])
     @order, @array_of_entries, @json_of_entries = @entry.order_fields_for_record_type(@search_record[:record_type], @entry.freereg1_csv_file.def, current_authentication_devise_user.present?)
     @embargoed = @search_record[:embargoed]
-    if @search_query.present?
+    # an old search can have its results removed; still show the record, just without viewed tracking/navigation
+    if @search_query.present? && @search_query.search_result.present?
       @search_result = @search_query.search_result
-      @viewed_records = @search_result.viewed_records
+      @viewed_records = @search_result.viewed_records || []
       @viewed_records << params[:id] unless @viewed_records.include?(params[:id])
       @search_result.update_attribute(:viewed_records, @viewed_records)
       @response, @next_record, @previous_record = @search_query.next_and_previous_records(params[:id]) if params[:ucf].blank?
@@ -280,6 +288,8 @@ class SearchRecordsController < ApplicationController
       render '/freecen_csv_entries/show', layout: false
     elsif @appname == 'freecen' && @search_record.freecen_csv_entry_id.blank?
       show_freecen
+      return if performed?
+
       @display_date = true
       render '_search_records_freecen_print', layout: false
     elsif @appname == 'freereg'
@@ -297,8 +307,8 @@ class SearchRecordsController < ApplicationController
           send_data @json_of_entries.to_json, type: 'application/json; header=present', disposition: "attachment; filename=\"#{file_name}\""
         end
         format.csv do
-          header_line = CSV.generate_line(@order, options = { row_sep: "\r\n" })
-          data_line = CSV.generate_line(@array_of_entries, options = { row_sep: "\r\n", force_quotes: true })
+          header_line = CSV.generate_line(@order, row_sep: "\r\n")
+          data_line = CSV.generate_line(@array_of_entries, row_sep: "\r\n", force_quotes: true)
           file_name = "search-record-#{@entry.id}.csv"
           send_data (header_line + data_line), type: 'text/csv', disposition: "attachment; filename=\"#{file_name}\""
         end
@@ -307,7 +317,11 @@ class SearchRecordsController < ApplicationController
   end
 
   def show_freecen_csv
-    @freecen_csv_entry = @search_record.freecen_csv_entry.blank? ? session[:freecen_csv_entry_id] : @search_record.freecen_csv_entry
+    # session[:freecen_csv_entry_id] holds an id, not an entry, so look the entry up
+    @freecen_csv_entry = @search_record.freecen_csv_entry.presence || FreecenCsvEntry.find_by(_id: session[:freecen_csv_entry_id])
+    if @freecen_csv_entry.blank?
+      redirect_to(new_search_query_path, notice: 'Sorry, the details for this record are no longer available.') && return
+    end
 
     session[:freecen_csv_entry_id] = @freecen_csv_entry._id
     @individual = @freecen_csv_entry
@@ -355,6 +369,7 @@ class SearchRecordsController < ApplicationController
     when 'freecen'
       @display_date = true
       show_freecen
+      return if performed?
     when 'freereg'
       @display_date = false
       @printable_format = true
@@ -374,7 +389,7 @@ class SearchRecordsController < ApplicationController
   def viewed
     session[:viewed] ||= []
   end
-  
+
   private
 
   # Citation links are often opened from other sites; redirect_back would send users to the Referer (that site)

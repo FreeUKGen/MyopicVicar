@@ -174,6 +174,17 @@ class NewFreeregCsvUpdateProcessor
     write_member_message_file(message) if no_member_message
   end
 
+  # Warn (once per church) that a batch arrived without a register type and was
+  # recorded as Unknown. Keeps a new upload from silently storing a blank type.
+  def report_unspecified_register_type(church_name, line)
+    @reported_unspecified_register_types ||= []
+    return if @reported_unspecified_register_types.include?(church_name)
+
+    @reported_unspecified_register_types << church_name
+    write_messages_to_all("The register type was not specified for #{church_name} (line #{line}); " \
+      "it has been recorded as Unknown. Please add the register type after the church name, e.g. 'St Mary PR'. <br>", true)
+  end
+
   def write_log_file(message)
     message_file.puts message
   end
@@ -302,10 +313,10 @@ class CsvFile < CsvFiles
     @file_name = standalone_filename
     @file_start =  nil
     @uploaded_date = Time.new
-    @uploaded_date = File.mtime(file) if File.exists?(file)
+    @uploaded_date = File.mtime(file) if File.exist?(file)
     @header_error = Array.new()
     @header = Hash.new
-    @header[:digest] = Digest::MD5.file(file).hexdigest if File.exists?(file)
+    @header[:digest] = Digest::MD5.file(file).hexdigest if File.exist?(file)
     @header[:file_name] = standalone_filename #do not capitalize filenames
     @header[:userid] = user_dirname
     @header[:uploaded_date] = @uploaded_date
@@ -483,7 +494,7 @@ class CsvFile < CsvFiles
   def check_file_exists?(project)
     #make sure file actually exists
     message = "The file #{@file_name} for #{@userid} does not exist. <br>"
-    if File.exists?(@file)
+    if File.exist?(@file)
       return true, "OK"
     else
       project.write_messages_to_all(message,true)
@@ -515,7 +526,7 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_message(project)
-    File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file) && !Rails.env.test?
+    File.delete(project.message_file) if project.type_of_project == "individual" && File.exist?(project.message_file) && !Rails.env.test?
   end
 
   def clean_up_physical_files_after_failure(message)
@@ -711,7 +722,7 @@ class CsvFile < CsvFiles
   def extract_the_array_of_lines(csvtxt)
     #now get all the data
     self.slurp_fail_message = "the CSV parser failed. The CSV file might not be formatted correctly. <br>"
-    @array_of_data_lines = CSV.parse(csvtxt, {:row_sep => "\r\n",:skip_blanks => true})
+    @array_of_data_lines = CSV.parse(csvtxt, row_sep: "\r\n", skip_blanks: true)
     #remove zzz fields and white space
     @array_of_data_lines.each do |line|
       line.each_index    {|x| line[x] = line[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless line[x].nil? }
@@ -870,7 +881,7 @@ class CsvFile < CsvFiles
       freereg1_csv_file.update_register
       message = "Creating a new batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
     else
-      freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :lds => self.header[:lds], :def => self.header[:def], :order => self.header[:order])
+      freereg1_csv_file.update_attributes(:uploaded_date => self.uploaded_date, :modification_date => self.header[:modification_date], :lds => self.header[:lds], :def => self.header[:def], :order => self.header[:order])
       message = "Updating the current batch for #{batch_header[:chapman_code]}, #{batch_header[:place_name]}, #{batch_header[:church_name]}, #{RegisterType::display_name(batch_header[:register_type])}. <br>"
       #remove batch errors for this location
       freereg1_csv_file.error = 0
@@ -1430,7 +1441,7 @@ class CsvRecord < CsvRecords
 
     success
   end
-  def validate_and_set_register_type(possible_register_type)
+  def validate_and_set_register_type(possible_register_type, church_name, project, line)
     if possible_register_type =~ FreeregOptionsConstants::VALID_REGISTER_TYPES
       # deal with possible register type; clean up variations before we check
       possible_register_type = possible_register_type.gsub(/\(?\)?'?"?[Ss]?/, '')
@@ -1441,10 +1452,12 @@ class CsvRecord < CsvRecords
         register_type = "PH" if register_type == "PT"
         register_type = "TR" if register_type == "OT"
       else
-        register_type = " "
+        project.report_unspecified_register_type(church_name, line)
+        register_type = "UK"
       end
     else
-      register_type = " "
+      project.report_unspecified_register_type(church_name, line)
+      register_type = "UK"
     end
     register_type
   end
@@ -1469,16 +1482,21 @@ class CsvRecord < CsvRecords
             register_type = "TR" if register_type == "OT"
             church_name = register_words.shift(n).join(" ")
           else
-            register_type = " "
+            #last word looked like a register type but isn't one; treat the whole field as the church name
+            church_name = @data_line[csvrecords.data_entry_order[:church_name]]
+            project.report_unspecified_register_type(church_name, line)
+            register_type = "UK"
           end
         else
           #straight church name and no register type
-          register_type = " "
           church_name = @data_line[csvrecords.data_entry_order[:church_name]]
+          project.report_unspecified_register_type(church_name, line)
+          register_type = "UK"
         end
       else
-        register_type = " "
         church_name = @data_line[csvrecords.data_entry_order[:church_name]]
+        project.report_unspecified_register_type(church_name, line)
+        register_type = "UK"
       end
       success = true
       message = "OK"
@@ -1512,7 +1530,7 @@ class CsvRecord < CsvRecords
       success4 = true
       church_name = @data_line[csvrecords.data_entry_order[:church_name]]
       possible_register_type = @data_line[csvrecords.data_entry_order[:register_type]]
-      register_type = validate_and_set_register_type(possible_register_type)
+      register_type = validate_and_set_register_type(possible_register_type, church_name, project, line)
       success5, set_church_name = validate_church_and_set(church_name,chapman_code,place_name) if success1
     else
       #part of church name

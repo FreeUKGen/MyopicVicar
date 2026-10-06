@@ -443,7 +443,7 @@ class Freereg1CsvFile
     file_folder = File.join(Rails.application.config.datafiles,self.userid)
     file_location = File.join(Rails.application.config.datafiles,self.userid,self.file_name)
     success = false
-    if File.exists?(file_folder)
+    if File.exist?(file_folder)
       self.write_csv_file(file_location)
       success = true
     end
@@ -675,7 +675,7 @@ class Freereg1CsvFile
         # Only write if something actually changed
         if cleaned_list != place_list
           Rails.logger.info("[Freereg1CsvFile##{id}] Removing entry from Place##{place.id} ucf_list")
-          
+
           # Atomic update with counters
           place.update(
             ucf_list: cleaned_list,
@@ -713,9 +713,9 @@ class Freereg1CsvFile
 
     proceed, place, _church, _register = location_from_file
     return unless proceed && place.present?
-    
+
     file_id_str = id.to_s
-    
+
     # Fetch fresh place instance (no .reload)
     fresh_place = Place.where(id: place.id).first
     return unless fresh_place
@@ -742,7 +742,7 @@ class Freereg1CsvFile
 
     # Update only fields that exist on Freereg1CsvFile
     update(ucf_list: [])
-    
+
     Rails.logger.info(
       "[Freereg1CsvFile##{id}] Atomic cleanup complete: " \
       "removed #{record_count} records from Place##{place.id}"
@@ -942,12 +942,12 @@ class Freereg1CsvFile
     file_location = File.join(Rails.application.config.datafiles,self.userid,file)
     if File.file?(file_location)
       newdir = File.join(File.join(Rails.application.config.datafiles,self.userid),'.attic')
-      Dir.mkdir(newdir) unless Dir.exists?(newdir)
+      Dir.mkdir(newdir) unless Dir.exist?(newdir)
       time = Time.now.to_i.to_s
       renamed_file = (file_location + "." + time).to_s
       File.rename(file_location,renamed_file)
       FileUtils.mv(renamed_file,newdir,:verbose => true)
-      user =UseridDetail.where(:userid => self.userid).first
+      user = UseridDetail.where(:userid => self.userid).first
       unless user.nil?
         attic_file = AtticFile.new(:name => "#{file}.#{time}", :date_created => DateTime.strptime(time,'%s'), :userid_detail_id => user.id)
         attic_file.save
@@ -957,10 +957,10 @@ class Freereg1CsvFile
     end
   end
 
-  def remove_batch
+  def remove_batch(max_records)
     case
-    when self.records.to_i > 5000
-      UserMailer.report_to_data_manger_of_large_file( self.file_name,self.userid).deliver_now
+    when records.to_i > max_records
+      UserMailer.report_to_data_manger_of_large_file( self.file_name, self.userid ).deliver_now
       return false,'There are too many records for a simple removal. Please discuss with your coordinator or the data managers how best to deal with its restructuring'
     when self.locked_by_transcriber || self.locked_by_coordinator
       return false,'The removal of the batch was unsuccessful; the batch is locked'
@@ -969,7 +969,7 @@ class Freereg1CsvFile
       add_to_rake_delete_list
       save_to_attic
       # clean_up_place_ucf_list
-      clean_up_place_ucf_list_atomic  
+      clean_up_place_ucf_list_atomic
       delete
       # deal with the Physical Files collection
       PhysicalFile.delete_document(self.userid, self.file_name)
@@ -1055,6 +1055,12 @@ class Freereg1CsvFile
     end
   end
 
+  def refresh_file_information_after_online_edit
+    calculate_distribution &&
+      update(error: batch_errors.count) &&
+      update_freereg_contents_after_processing
+  end
+
   def update_number_of_files
     # this code although here and works produces values in fields that are no longer being used
     userid = UseridDetail.where(:userid => self.userid).first
@@ -1093,7 +1099,7 @@ class Freereg1CsvFile
     # since there can be multiple places/churches in a single file we must combine the records for all those back into the single file
     chapman_code, place_name, church_name, register_type, proceed = file.write_csv_get_location
     fields = file.field_order_of_csv
-    CSV.open(file_location, "wb", { :row_sep => "\r\n"}) do |csv|
+    CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
       file.write_csv_headers(csv,fields)
       # eg +INFO,David@davejo.eclipse.co.uk,password,SEQUENCED,BURIALS,cp850,,,,,,,
       records = file.freereg1_csv_entries
@@ -1341,7 +1347,7 @@ class Freereg1CsvFile
       entries["Bride's Father's Forename"] = all_entries.distinct(:bride_father_forename).delete_if{|x| x == nil}.sort
       entries["Groom's Mother's Surname"] = all_entries.distinct(:groom_mother_surname).delete_if{|x| x == nil}.sort
       entries["Groom's Mother's Forename"] = all_entries.distinct(:groom_mother_forename).delete_if{|x| x == nil}.sort
-      entries["Bride's Mother's Surname"] = all_entries.distinct(:bride_motherr_surname).delete_if{|x| x == nil}.sort
+      entries["Bride's Mother's Surname"] = all_entries.distinct(:bride_mother_surname).delete_if{|x| x == nil}.sort
       entries["Bride's Mother's Forename"] = all_entries.distinct(:bride_mother_forename).delete_if{|x| x == nil}.sort
       entries["Witness Surname"] = all_entries.distinct('multiple_witnesses.witness_surname').delete_if{|x| x == nil}.sort
       entries["Witness Forename"] = all_entries.distinct('multiple_witnesses.witness_forename').delete_if{|x| x == nil}.sort

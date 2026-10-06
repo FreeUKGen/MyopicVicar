@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>We're sorry, but something went wrong (500)</title>
+  <style type="text/css">
+    body { background-color: #fff; color: #666; text-align: center; font-family: arial, sans-serif; }
+    div.dialog {
+      width: 25em;
+      padding: 0 4em;
+      margin: 4em auto 0 auto;
+      border: 1px solid #ccc;
+      border-right-color: #999;
+      border-bottom-color: #999;
+    }
+    h1 { font-size: 100%; color: #f00; line-height: 1.5em; }
+    dl { text-align: left; }
+    dt { font-weight: bold; margin-top: 1em; }
+    dd { margin-left: 0; word-break: break-word; }
+  </style>
+</head>
+
+<body>
+  <div class="dialog">
+    <h1>We're sorry, but something went wrong while processing your request. Please return to your previous activity but try to avoid doing the exact same action again. If you wish to send in an error report, please copy or take a screenshot of the following information:</h1>
+    <dl>
+      <dt>URL</dt>
+      <dd><%= @error_url %></dd>
+      <dt>Userid</dt>
+      <dd><%= @userid %></dd>
+      <dt>Client IP address</dt>
+      <dd><%= @client_ip %></dd>
+      <dt>Server hostname</dt>
+      <dd><%= @server_hostname %></dd>
+    </dl>
+  </div>
+</body>
+</html>

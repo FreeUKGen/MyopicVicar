@@ -31,10 +31,11 @@ task :list_freecen_search_records_broken_csv_files_link, [:batch_size, :limit, :
   log_file.puts message
   p message
 
-  search_recs_to_process = SearchRecord.where(:freecen_csv_file_id.ne => nil).count
-  message = "Total records with freecen_csv_file_id specified = #{search_recs_to_process}"
-  log_file.puts message
-  p message
+  # Commented out as timeout issues on LIVE (although ran ok on TEST with a similar number of search_records) - AEV 17/06
+  # search_recs_to_process = SearchRecord.where(:freecen_csv_file_id.ne => nil).count
+  # message = "Total records with freecen_csv_file_id specified = #{search_recs_to_process}"
+  # log_file.puts message
+  # p message
 
   last_id = BSON::ObjectId(start_after_id) rescue nil
   broken_ids = []

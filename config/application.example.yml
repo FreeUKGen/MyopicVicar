@@ -1,3 +1,4 @@
 development:
  gmail_username: # your gmail account
  gmail_password: #your gmail password
+ dev_mail_recipient: #where trapped dev emails should go, e.g. your own address; defaults to a non-deliverable address if left blank

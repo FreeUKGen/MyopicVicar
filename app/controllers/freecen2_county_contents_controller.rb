@@ -238,7 +238,10 @@ class Freecen2CountyContentsController < ApplicationController
   end
 
   def set_county_vars
-    @interval_end = session[:contents_date].presence || Freecen2CountyContent.find_by(county: 'ALL').order(interval_end: :desc).first.interval_end
+    @interval_end = session[:contents_date].presence ||
+                    Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first&.interval_end
+    return false if @interval_end.blank?
+
     session[:contents_date] = @interval_end
     @county_description = params[:county_description].presence || session[:contents_county_description]
     session[:contents_county_description] = @county_description

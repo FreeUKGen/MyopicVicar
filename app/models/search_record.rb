@@ -17,6 +17,18 @@ class SearchRecord
   SYMBOLS_TO_CLEAN = ['.', ':', ';', "'", '-', '`', '"'].freeze
   DELETE_SET = SYMBOLS_TO_CLEAN.join.gsub('-', '\-').freeze
 
+  # Cap for an active embargo with no defined release year (indefinite embargo, or a
+  # manual embargo missing release_date). filter_embargoed and the search query's $nor
+  # only exclude a record when release_year is present AND in the future, so a nil
+  # release_year on an actively-embargoed record would otherwise leak into search.
+  # 100 years matches the standard genealogy privacy convention (embargoed for 100
+  # years from now) rather than an arbitrary far-future sentinel.
+  INDEFINITE_EMBARGO_YEARS = 100
+
+  def self.indefinite_embargo_release_year
+    DateTime.now.year.to_i + INDEFINITE_EMBARGO_YEARS
+  end
+
   module Source
     TRANSCRIPT = 'transcript'
     EMENDOR = 'e'
@@ -102,7 +114,7 @@ class SearchRecord
     'place2_lnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.last_name', 'record_type', 'search_date'],
     'place2_lnsdx_fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
     'place2_fn_rt_sd' => ['freecen2_place_id', 'search_names.first_name', 'record_type', 'search_date'],
-    'place_2fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'place2_fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
     'place2_rt_sd' => ['freecen2_place_id', 'record_type', 'search_date']
   }.freeze
 
@@ -161,6 +173,7 @@ class SearchRecord
 
 
   index({ place_id: 1, locations_names: 1 }, { name: 'place_location' })
+  index({ chapman_code: 1, record_type: 1 }, { name: 'chapman_record_type' })
 
   # This speeds up the lookup of SearchRecords by their Entry ID
   index({ freereg1_csv_entry_id: 1 })
@@ -444,7 +457,10 @@ class SearchRecord
     def explain_find(params, hint: nil)
       view = collection.find(params)
       view = view.hint(hint.to_s) if hint.present?
-      view.explain
+      # queryPlanner is the only verbosity that never executes the query --
+      # this is only used to log which index won, not to gather execution stats,
+      # so anything more expensive (executionStats/allPlansExecution) is unnecessary cost.
+      view.explain(verbosity: :query_planner)
     end
 
     def winning_plan_index_name(params, hint = nil)
@@ -556,8 +572,10 @@ class SearchRecord
       record = existing || SearchRecord.new
       record.assign_attributes(search_record_parameters)
       record[:freereg1_csv_entry_id] = entry.id
-      record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
-      record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
+      if entry.embargo_records.present?
+        record[:embargoed] = entry.currently_under_embargo?
+        record[:release_year] = entry.effective_embargo_release_year
+      end
       record.transform
       record.digest = record.cal_digest
       if existing.present? && record.digest == previous_digest
@@ -708,7 +726,7 @@ class SearchRecord
   def create_soundex
     search_names.each do |name|
       sdx = soundex_name_type_triple(name)
-      search_soundex << sdx unless sdx[:first_name].nil? || sdx[:last_name].nil?
+      search_soundex << sdx unless sdx[:first_name].nil? && sdx[:last_name].nil?
     end
   end
 

@@ -141,7 +141,7 @@ class PhysicalFile
         #p "processor lock file: #{locked}"
         #unless locked == 0
          # logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
-          pid1 = spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+          pid1 = RakeSpawn.run('build:freereg_new_update[create_search_records,waiting,no,a-9]')
           message = "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
         #else
          # logger.warn("FREEREG:CSV_PROCESSING: Rake lock file exists but unlocked. Starting rake task for #{self.userid} #{self.file_name}")
@@ -161,7 +161,7 @@ class PhysicalFile
       else
 
         logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
-        pid1 = spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{File.join(userid, file_name)}\",\"Traditional\",\"Check(Warn)\"]")
+        pid1 = RakeSpawn.run("build:freecen_csv_process[no_search_records,individual,no,#{File.join(userid, file_name)},Traditional,Check(Warn)]")
         message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
         logger.warn("FREECEN:CSV_PROCESSING: #{pid1}")
       end
@@ -181,7 +181,7 @@ class PhysicalFile
       rake_lock_file = Rails.root.join('tmp', 'processing_rake_lock_file.txt')
       #if File.exist?(rake_lock_file)
         #logger.warn("FREEREG:CSV_PROCESSING: rake lock file #{rake_lock_file} already exists")
-        pid1 = spawn("rake build:freereg_new_update[\"create_search_records\",\"waiting\",\"no\",\"a-9\"]")
+        pid1 = RakeSpawn.run('build:freereg_new_update[create_search_records,waiting,no,a-9]')
         message = "The csv file #{ self.file_name} has been sent for processing . You will receive an email when it has been completed."
       #else
         #logger.warn("FREEREG:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
@@ -196,7 +196,7 @@ class PhysicalFile
       else
 
         logger.warn("FREECEN:CSV_PROCESSING: Starting rake task for #{self.userid} #{self.file_name}")
-        pid1 = spawn("rake build:freecen_csv_process[\"no_search_records\",\"individual\",\"no\",\"#{File.join(userid, file_name)}\",\"Traditional\",\"#{type_of_processing}\"]")
+        pid1 = RakeSpawn.run("build:freecen_csv_process[no_search_records,individual,no,#{File.join(userid, file_name)},Traditional,#{type_of_processing}]")
         message = "The csv file #{ self.file_name} is being processed . You will receive an email when it has been completed."
         logger.warn("FREECEN:CSV_PROCESSING: #{pid1}")
       end

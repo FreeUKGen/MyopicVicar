@@ -42,7 +42,7 @@ describe ImageFile do
 #     
     # # new derived file should exist
     # new_name = f.name
-    # File.exists?(new_name).should eq(true)
+    # File.exist?(new_name).should eq(true)
 #     
     # # revert
     # f.revert
@@ -51,7 +51,7 @@ describe ImageFile do
     # f.original?.should eq(true)
     # f.original_name.should eq(nil)
     # f.name.should_not eq(f.original_name)
-    # File.exists?(new_name).should eq(false)
+    # File.exist?(new_name).should eq(false)
 #     
   # end
 #   
@@ -118,7 +118,7 @@ describe ImageFile do
 #  
   # it "should create a thumbnail" do
     # i = ImageFile.create(:name => test_file)
-    # File.exists?(i.thumbnail_name).should be_true
+    # File.exist?(i.thumbnail_name).should be_true
   # end
 #   
   # it "should read height and width" do
@@ -133,7 +133,7 @@ describe ImageFile do
   # def test_file
     # # quarantine the files
     # unless @dir
-      # Dir.mkdir(BASE_DIR) unless File.exists?(BASE_DIR)
+      # Dir.mkdir(BASE_DIR) unless File.exist?(BASE_DIR)
       # @dir=File.join(BASE_DIR, Time.now.strftime("%s"))
 # 
       # FileUtils.rm_rf(@dir)

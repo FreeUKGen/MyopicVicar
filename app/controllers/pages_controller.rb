@@ -67,7 +67,7 @@ class PagesController < ApplicationController
       if File.exist?(shared_view_file)
         render template: "pages/#{view_name}", layout: 'application'
       else
-        raise ActionController::RoutingError, "Page not found: #{page_path}"
+        render plain: 'Not Found', status: :not_found
       end
     end
   end

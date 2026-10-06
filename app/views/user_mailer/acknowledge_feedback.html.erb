@@ -4,7 +4,7 @@
 <p>The following is the information you submitted.</p>
 <p>  <b><%= @communication.feedback_type %>:</b></p>
 <p>  <%= @communication.body %></p>
-<% if @communication.screenshot_url.present?%>
+<% if @communication.attachments_present?%>
   <p>A copy of any attachment is provided.</p>
 <% end%>
 <p>The <%= @appname %> Team</p>

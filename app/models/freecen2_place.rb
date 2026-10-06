@@ -102,7 +102,6 @@ class Freecen2Place
 
 
 
-  PLACE_BASE_URL = "http://www.genuki.org.uk"
 
   module MeasurementSystem
     SI = 'si'
@@ -456,7 +455,7 @@ class Freecen2Place
         i += 1
       end
       column_headers_final = column_headers_all + column_headers_end
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
         csv << column_headers_final
         gaz_places.each do |rec|
           line = []
@@ -538,9 +537,9 @@ class Freecen2Place
   end
 
   def check_alternate_names(alternate_freecen2_place_names_attributes, chapman_code, this_place_id)
-    alternate_names_set = SortedSet.new
+    alternate_names_set = Set.new
     entries = 0
-    dup_place_set = SortedSet.new
+    dup_place_set = Set.new
     if alternate_freecen2_place_names_attributes.present?
       alternate_freecen2_place_names_attributes.each do |_key, value|  # check for duplicate alternate_names
         next unless value[:alternate_name].present? && value[:_destroy] == '0'
@@ -559,7 +558,7 @@ class Freecen2Place
     if entries != alternate_names_set.length || dup_place_set.length.positive?
       if dup_place_set.length.positive?
         dups = '('
-        dup_place_set.each do |entry|
+        dup_place_set.sort.each do |entry|
           dups += "#{entry},"
         end
         display_dups = "#{dups[0...-1]})"
