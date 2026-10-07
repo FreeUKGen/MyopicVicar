@@ -558,7 +558,7 @@ class SearchQueriesController < ApplicationController
 
   def require_search_performance_role
     roles = member_roles_for(get_user)
-    allowed = roles.any? { |role| UseridRole::OPTIONS.fetch(role, []).include?('system_administrator') }
+    allowed = roles.any? { |role| UseridRole::OPTIONS.fetch(role, []).include?('Search Performance') }
     redirect_to(new_search_query_path, notice: 'You are not authorised to view that page') && return unless allowed
   end
 
