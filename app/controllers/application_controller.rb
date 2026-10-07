@@ -85,8 +85,9 @@ class ApplicationController < ActionController::Base
   end
 
   def permitted_model_params(model, key = model.model_name.param_key)
-    allowed = model.fields.keys - %w[_id _type]
-    params.require(key).permit!.to_h.slice(*allowed)
+    fields = model.fields.except('_id', '_type')
+    scalars, arrays = fields.partition { |_name, field| field.type != Array }.map { |group| group.map(&:first) }
+    params.require(key).permit(*scalars, arrays.index_with { [] })
   end
 
   def unknown_request_parameter(exception)

@@ -18,8 +18,6 @@ class Freereg1CsvEntriesController < ApplicationController
 
   skip_before_action :require_login, only: [:show]
 
-  ActionController::Parameters.permit_all_parameters = true
-
   def calculate_software_version
     @server = SoftwareVersion.extract_server(Socket.gethostname)
     @application = appname
@@ -379,7 +377,42 @@ class Freereg1CsvEntriesController < ApplicationController
   private
 
   def freereg1_csv_entry_params
-    params.require(:freereg1_csv_entry).permit!
+    params.require(:freereg1_csv_entry).permit(
+      :baptism_date, :birth_date, :bride_abode, :bride_age, :bride_condition,
+      :bride_father_forename, :bride_father_occupation, :bride_father_surname,
+      :bride_father_title, :bride_forename, :bride_marked, :bride_mother_forename,
+      :bride_mother_occupation, :bride_mother_surname, :bride_mother_title, :bride_occupation,
+      :bride_parish, :bride_surname, :bride_title, :burial_date, :burial_location_information,
+      :burial_parish, :burial_person_abode, :burial_person_forename, :burial_person_surname,
+      :burial_person_title, :cause_of_death, :church_name, :confirmation_date,
+      :consecrated_ground, :contract_date, :county, :credit, :death_date, :error_flag,
+      :father_abode, :father_county, :father_forename, :father_occupation, :father_place,
+      :father_surname, :father_title, :female_relative_forename, :female_relative_surname,
+      :female_relative_title, :file_line_number, :film, :film_number, :groom_abode, :groom_age,
+      :groom_condition, :groom_father_forename, :groom_father_occupation,
+      :groom_father_surname, :groom_father_title, :groom_forename, :groom_marked,
+      :groom_mother_forename, :groom_mother_occupation, :groom_mother_surname,
+      :groom_mother_title, :groom_occupation, :groom_parish, :groom_surname, :groom_title,
+      :image_file_name, :line_id, :location, :male_relative_forename, :male_relative_title,
+      :marriage_by, :marriage_by_licence, :marriage_date, :memorial_information, :mother_abode,
+      :mother_condition_prior_to_marriage, :mother_county_prior_to_marriage, :mother_forename,
+      :mother_occupation, :mother_place_prior_to_marriage, :mother_surname, :mother_title,
+      :notes, :notes_from_transcriber, :person_abode, :person_age, :person_condition,
+      :person_county_birth, :person_forename, :person_occupation, :person_place_birth,
+      :person_relationship, :person_sex, :person_status, :person_surname, :person_title,
+      :place, :place_of_death, :private_baptism, :processed_date, :received_into_church_date,
+      :record_digest, :record_type, :register, :register_entry_number, :register_type,
+      :relationship, :relative_occupation, :relative_surname, :suffix, :transcribed_by,
+      :witness1_forename, :witness1_surname, :witness2_forename, :witness2_surname,
+      :witness3_forename, :witness3_surname, :witness4_forename, :witness4_surname,
+      :witness5_forename, :witness5_surname, :witness6_forename, :witness6_surname,
+      :witness7_forename, :witness7_surname, :witness8_forename, :witness8_surname, :year,
+      # rule_applied, rule_date and release_year are set only by internal embargo-rule
+      # logic (see Freereg1CsvEntry#process_embargo); the edit_embargo form never
+      # submits them, so they must not be user-settable here.
+      embargo_records_attributes: [:id, :embargoed, :who, :why, :when, :release_date],
+      multiple_witnesses_attributes: [:id, :witness_forename, :witness_surname, :_destroy]
+    )
   end
 
   def prepare_embargo_edit_form

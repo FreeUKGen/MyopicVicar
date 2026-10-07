@@ -85,7 +85,7 @@ class FreecenCoverageController < ApplicationController
   private
 
   def freecen_coverage_params
-    params.require(:freecen_coverage).permit!
+    params.require(:freecen_coverage).permit(chapman_codes: [])
   end
 
 end

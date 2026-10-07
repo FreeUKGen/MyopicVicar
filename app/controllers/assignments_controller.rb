@@ -270,6 +270,11 @@ class AssignmentsController < ApplicationController
   private
 
   def assignment_params
-    params.require(:assignment).permit! if params[:_method] != 'put'
+    return if params[:_method] == 'put'
+
+    params.require(:assignment).permit(
+      :type, :source_id, :instructions, :image_server_group_id,
+      transcriber_image_file_name: [], reviewer_image_file_name: [], user_id: []
+    )
   end
 end

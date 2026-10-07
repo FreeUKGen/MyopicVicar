@@ -156,6 +156,6 @@ class Freecen2SiteStatisticsController < ApplicationController
   private
 
   def freecen2_site_statistic_params
-    params.require(:freecen2_site_statistic).permit!
+    params.require(:freecen2_site_statistic).permit(:year, :month, :day)
   end
 end

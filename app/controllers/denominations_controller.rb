@@ -74,6 +74,6 @@ class DenominationsController < ApplicationController
   private
 
   def denomination_params
-    params.require(:denomination).permit!
+    params.require(:denomination).permit(:denomination, :notes)
   end
 end

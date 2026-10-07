@@ -1,8 +1,6 @@
 class Freecen1VldEntriesController < ApplicationController
   skip_before_action :require_login, only: [:show]
 
-  ActionController::Parameters.permit_all_parameters = true
-
   def edit_pob
     get_user_info_from_userid
     if params[:id].present?
@@ -145,7 +143,7 @@ class Freecen1VldEntriesController < ApplicationController
           was_OUC = @freecen1_vld_entry.birth_county == 'OUC' ? true : false
           # #######
           @freecen1_vld_entry.add_freecen1_vld_entry_edit(@user.userid, reason, @freecen1_vld_entry.verbatim_birth_county, @freecen1_vld_entry.verbatim_birth_place, @freecen1_vld_entry.birth_county, @freecen1_vld_entry.birth_place, @freecen1_vld_entry.notes)
-          @freecen1_vld_entry.update_attributes(params[:freecen1_vld_entry])
+          @freecen1_vld_entry.update_attributes(freecen1_vld_entry_params)
           Freecen1VldEntry.update_linked_records_pob(@freecen1_vld_entry,  params[:freecen1_vld_entry][:birth_county], params[:freecen1_vld_entry][:birth_place],  params[:freecen1_vld_entry][:notes])
         end
         @freecen1_vld_entry.update_attributes(pob_valid: result, pob_warning: warning)
@@ -173,6 +171,15 @@ class Freecen1VldEntriesController < ApplicationController
   private
 
   def freecen1_vld_entry_params
-    params.require(:freecen1_vld_entry).permit!
+    params.require(:freecen1_vld_entry).permit(
+      :age, :age_unit, :birth_county, :birth_place, :birth_place_flag, :civil_parish,
+      :deleted_flag, :detail_flag, :disability, :dwelling_number, :ecclesiastical_parish,
+      :enumeration_district, :folio_number, :forenames, :house_number, :house_or_street_name,
+      :individual_flag, :language, :marital_status, :name_flag, :notes, :occupation,
+      :occupation_flag, :page_number, :pob_valid, :pob_warning, :relationship,
+      :rooms_with_windows, :schedule_number, :school_children, :sequence_in_household, :sex,
+      :surname, :uninhabited_flag, :unoccupied_notes, :verbatim_birth_county,
+      :verbatim_birth_place
+    )
   end
 end

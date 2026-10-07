@@ -256,7 +256,7 @@ class TransregCsvfilesController < ApplicationController
 
   private
   def csvfile_params
-    params.require(:csvfile).permit!
+    params.require(:csvfile).permit(:csvfile, :process, :action)
   end
 
 end

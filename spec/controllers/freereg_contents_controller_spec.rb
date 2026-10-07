@@ -41,4 +41,13 @@ RSpec.describe FreeregContentsController, type: :controller do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  describe '#freereg_content_params (strong parameters)' do
+    it 'permits only the chapman_codes array the county selection form submits' do
+      controller.params = ActionController::Parameters.new(freereg_content: { chapman_codes: ['', 'NFK'], place: 'x', church: 'y' })
+      result = controller.send(:freereg_content_params)
+      expect(result).to be_permitted
+      expect(result.to_h).to eq('chapman_codes' => ['', 'NFK'])
+    end
+  end
 end

@@ -340,7 +340,10 @@ class FeedbacksController < ApplicationController
   end
 
   def feedback_params
-    params.require(:feedback).permit!
+    params.require(:feedback).permit(
+      :title, :body, :feedback_time, :user_id, :session_id, :problem_page_url,
+      :previous_page_url, :feedback_type, screenshots: []
+    )
   end
 
   def new_params
@@ -354,7 +357,14 @@ class FeedbacksController < ApplicationController
     end
     params.delete(:report_session_id)
     params.delete('report_session_id')
-    params.permit!
+    # These are the query params problem_url/suggestion_url (application_helper.rb) build;
+    # this is the only place they're consumed, into Feedback.new (unsaved, prefilling the
+    # new-feedback form), so scope permitting to exactly that set rather than the whole
+    # top-level request params.
+    params.permit(
+      :feedback_time, :session_id, :user_id, :problem_page_url, :previous_page_url,
+      :feedback_type
+    )
   end
 
   def delete_reply_messages(feedback_id)

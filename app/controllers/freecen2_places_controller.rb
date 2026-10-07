@@ -571,7 +571,10 @@ class Freecen2PlacesController < ApplicationController
   private
 
   def freecen2_place_params
-    params.require(:freecen2_place).permit!
+    params.require(:freecen2_place).permit(:country, :county, :chapman_code, :place_name, :place_notes,
+                                           :genuki_url, :grid_reference, :latitude, :longitude, :source,
+                                           :editor, reason_for_change: [],
+                                           alternate_freecen2_place_names_attributes: %i[id alternate_name _destroy])
   end
 
 end

@@ -18,7 +18,8 @@ class AliasPlaceChurchesController < ApplicationController
   def create
     case
     when params[:commit] == "Search"
-      redirect_to alias_place_churches_path(params)
+      redirect_to alias_place_churches_path(commit: params[:commit],
+                                            alias_place_church: { chapman_code: params[:alias_place_church][:chapman_code] })
 
     when params[:commit] == "Select Place"
       place = params[:alias_place_church][:place_name]
