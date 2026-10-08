@@ -52,3 +52,5 @@ gem 'bootstrap_form'
 gem 'net-smtp', require: false
 gem 'net-pop', require: false
 gem 'net-imap', '~> 0.3.10', require: false
+
+gem "webrick", "~> 1.9"
