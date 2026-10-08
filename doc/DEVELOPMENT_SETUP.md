@@ -21,7 +21,8 @@ This page covers the **`freeprobate_development`** branch, which runs the same M
 | **Bundler** | The one bundled with Ruby 3.3 is fine (`Gemfile.lock` says `BUNDLED WITH 2.4.22`; newer Bundler reads it without changes) |
 | **MongoDB** | 4.4+, running locally for `rails s`. |
 | **Node.js** | Needed to precompile assets (`assets.compile` is off in development, same as FreeREG). |
-| **MySQL** | Not needed. `config/database.yml` only exists so Rails can boot (`rails/all` pulls in ActiveRecord); nothing on this branch actually queries MySQL since Refinery is disabled. Placeholder values from `database.example.yml` are fine. |
+| **MySQL server** | Not needed. `config/database.yml` only exists so Rails can boot (`rails/all` pulls in ActiveRecord); nothing on this branch actually queries MySQL since Refinery is disabled. Placeholder values from `database.example.yml` are fine. |
+| **MySQL client library** | Needed, because the `mysql2` gem is still in the `Gemfile` and compiles against it during `bundle install`. Ubuntu: `sudo apt install libmysqlclient-dev`. macOS: see the macOS step under Quick start. |
 | **osgb gem** | Not needed here — the `osgb` git dependency is commented out in this branch's `Gemfile`, so you don't need to clone it separately. |
 
 ---
@@ -36,6 +37,10 @@ git checkout freeprobate_development
 # Ruby 3.3 (rbenv example)
 rbenv install 3.3.0
 rbenv local 3.3.0
+
+# macOS only: point mysql2 at Homebrew's MySQL client before bundling
+#   brew install mysql-client zstd
+#   bundle config set --local build.mysql2 "--with-mysql-config=$(brew --prefix mysql-client)/bin/mysql_config --with-ldflags=-L$(brew --prefix zstd)/lib"
 
 bundle install
 
@@ -158,6 +163,8 @@ You need this to exercise free-text search locally; name/date field search works
 | App crashes on boot with no clear Mongo error | `config/database.yml` missing — copy `config/database.example.yml` |
 | Wrong skin / assets (FreeREG images/styles showing) | `template_set` in `config/freeukgen_application.yml` isn't `'freepro'`; restart `rails s` after editing |
 | Blank probate search results | Tier B import not done, or wrong `database:` name in `config/mongoid.yml` |
+| `mysql2` fails to build (`mysql_config not found` / `mysqlclient` missing) | Install the MySQL client library (see Prerequisites); on macOS also run the `bundle config set --local build.mysql2 ...` line from Quick start |
+| `nokogiri` fails to build (e.g. `'gumbo.h' file not found`) | Bundler is compiling nokogiri from source instead of using a ready-built gem. `Gemfile.lock` lists `arm64-darwin`, `x86_64-darwin` and `x86_64-linux`; if your platform isn't there, run `bundle lock --add-platform <your platform>` (see `ruby -e 'puts Gem::Platform.local'`) and mention it in your PR |
 | Ruby version errors / `bundle install` fails on old gems | Use Ruby **3.3** — this branch no longer runs on 2.6. Check `ruby -v` inside the repo; `rbenv local 3.3.0` if it shows something else |
 | `bin/rails: No such file or directory` | There is no `bin/` on this branch — use `bundle exec rails …` |
 | Wrong skin even though you set the template | Value is `freeprobate` instead of `freepro` — only `freepro` is recognised |
