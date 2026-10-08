@@ -14,8 +14,16 @@
 #
 MyopicVicar::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
-
-  #config.hosts << "localhost"
+  # Rails 6+ Host Authorization
+  # Allow the configured public website host (some deploys reuse production env for staging).
+  begin
+    website_host = URI.parse(MyopicVicar::MongoConfig['website'].to_s).host
+    website_url = URI.parse(MyopicVicar::MongoConfig['website_url'].to_s).host
+    config.hosts << website_host if website_host.present?
+    config.hosts << website_url if website_url.present?
+  rescue URI::InvalidURIError
+    # ignore invalid website config
+  end
 
 
   # In the development environment your application's code is reloaded on

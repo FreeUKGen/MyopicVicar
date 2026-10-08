@@ -302,10 +302,10 @@ class CsvFile < CsvFiles
     @file_name = standalone_filename
     @file_start =  nil
     @uploaded_date = Time.new
-    @uploaded_date = File.mtime(file) if File.exists?(file)
+    @uploaded_date = File.mtime(file) if File.exist?(file)
     @header_error = Array.new()
     @header = Hash.new
-    @header[:digest] = Digest::MD5.file(file).hexdigest if File.exists?(file)
+    @header[:digest] = Digest::MD5.file(file).hexdigest if File.exist?(file)
     @header[:file_name] = standalone_filename #do not capitalize filenames
     @header[:userid] = user_dirname
     @header[:uploaded_date] = @uploaded_date
@@ -483,7 +483,7 @@ class CsvFile < CsvFiles
   def check_file_exists?(project)
     #make sure file actually exists
     message = "The file #{@file_name} for #{@userid} does not exist. <br>"
-    if File.exists?(@file)
+    if File.exist?(@file)
       return true, "OK"
     else
       project.write_messages_to_all(message,true)
@@ -515,7 +515,7 @@ class CsvFile < CsvFiles
   end
 
   def clean_up_message(project)
-    File.delete(project.message_file) if project.type_of_project == "individual" && File.exists?(project.message_file) && !Rails.env.test?
+    File.delete(project.message_file) if project.type_of_project == "individual" && File.exist?(project.message_file) && !Rails.env.test?
   end
 
   def clean_up_physical_files_after_failure(message)
@@ -711,7 +711,7 @@ class CsvFile < CsvFiles
   def extract_the_array_of_lines(csvtxt)
     #now get all the data
     self.slurp_fail_message = "the CSV parser failed. The CSV file might not be formatted correctly. <br>"
-    @array_of_data_lines = CSV.parse(csvtxt, {:row_sep => "\r\n",:skip_blanks => true})
+    @array_of_data_lines = CSV.parse(csvtxt, row_sep: "\r\n", skip_blanks: true)
     #remove zzz fields and white space
     @array_of_data_lines.each do |line|
       line.each_index    {|x| line[x] = line[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless line[x].nil? }
