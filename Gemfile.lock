@@ -113,7 +113,10 @@ GEM
     faraday (1.1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
-    ffi (1.13.1)
+    ffi (1.17.4)
+    ffi (1.17.4-arm64-darwin)
+    ffi (1.17.4-x86_64-darwin)
+    ffi (1.17.4-x86_64-linux-gnu)
     font_awesome5_rails (1.4.0)
       railties (>= 4.2)
     formtastic (3.1.5)
