@@ -84,6 +84,9 @@ class FreecenCsvFile
 
   before_destroy do |file|
     file.save_to_attic
+    # Entries are removed with delete_many, which skips FreecenCsvEntry's before_destroy, so the search
+    # records of an incorporated file have to be removed here or they are left pointing at a missing file.
+    SearchRecord.collection.delete_many(freecen_csv_file_id: file._id)
     FreecenCsvEntry.collection.delete_many(freecen_csv_file_id: file._id)
   end
 
