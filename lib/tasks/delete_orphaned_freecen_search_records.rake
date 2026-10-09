@@ -27,10 +27,10 @@ task :delete_orphaned_freecen_search_records,[:limit] => [:environment] do |t, a
     total_recs += 1
     rec_id = line.chomp
     id = BSON::ObjectId(rec_id)
-    search_rec = SearchRecord.find(id: id)
+    search_rec = SearchRecord.where(id: id).first
 
     if search_rec.present?
-      message = "#{search_rec.id},#{search_rec.chapman_code}, #{search_rec.record_type},#{search_rec.freecen2_piece_id}, #{search_rec.freecen_csv_file_id},#{search_rec.freecen_csv_entry_id},Deleted"
+      message = "#{search_rec.id},#{search_rec.chapman_code}, #{search_rec.record_type},#{search_rec[:freecen2_piece_id]}, #{search_rec.freecen_csv_file_id},#{search_rec.freecen_csv_entry_id},Deleted"
       output_file.puts message
       search_rec.destroy
       sleep(sleep_time)
