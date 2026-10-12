@@ -55,6 +55,7 @@ class RegisterMergeService
         error: nil,
         merge_allowed: false,
         no_candidates: true,
+        keep_instead: [],
         register_type_label: register_type_label,
         target_id: @target.id,
         target: target_dry_run_summary(register_type_label),
@@ -69,11 +70,13 @@ class RegisterMergeService
     candidates = merge_candidates.map { |src| candidate_dry_run_row(src) }
     totals = sum_dependency_totals(candidates)
     blockers = candidates.select { |c| c[:blocked] }
+    keep_instead = image_server_registers_to_keep_instead(merge_candidates)
 
     {
       dry_run: true,
       error: nil,
-      merge_allowed: blockers.empty?,
+      merge_allowed: blockers.empty? && keep_instead.empty?,
+      keep_instead: keep_instead.map(&:id),
       no_candidates: false,
       register_type_label: register_type_label,
       target_id: @target.id,
@@ -104,6 +107,14 @@ class RegisterMergeService
       )
     end
 
+    keep_instead = image_server_registers_to_keep_instead(merge_candidates)
+    if keep_instead.any?
+      return failure(
+        "Cannot merge: register id(s) #{keep_instead.map { |r| r.id.to_s }.join(', ')} have an Image Server source " \
+        'and this register does not. Run the merge from the register with the Image Server source so that one is kept.'
+      )
+    end
+
     totals_moved = empty_dependency_totals
     merged_ids = []
 
@@ -130,12 +141,21 @@ class RegisterMergeService
     @target.church.registers.where(:id.ne => @target.id, register_type: @target.register_type)
   end
 
+  # The register with the Image Server source should be the one kept (as DuplicateRegisterMerger does),
+  # so a merge started from a register without one is stopped and pointed at the right register.
+  def image_server_registers_to_keep_instead(merge_candidates)
+    return [] if @target.image_servers_exist?
+
+    merge_candidates.select(&:image_servers_exist?)
+  end
+
   def preview_error(message)
     {
       dry_run: true,
       error: message,
       merge_allowed: false,
       no_candidates: false,
+      keep_instead: [],
       register_type_label: nil,
       target_id: nil,
       target: nil,

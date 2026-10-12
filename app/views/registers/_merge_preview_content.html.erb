@@ -38,7 +38,7 @@
     <% if preview[:merge_allowed] %>
       <p style="color: green;"><strong>Dry run result:</strong> merge can proceed — no blocking coordinator metadata on duplicates.</p>
     <% else %>
-      <p style="color:red"><strong>Dry run result:</strong> merge is <strong>not safe</strong> until blocked registers are edited or cleared (see below).</p>
+      <p style="color:red"><strong>Dry run result:</strong> merge is <strong>not safe</strong> until the problems below are resolved.</p>
     <% end %>
   </section>
 
@@ -52,6 +52,19 @@
     <% end %>
     <p>Currently linked: <%= target[:csv_entry_count] %> transcription rows on this register.</p>
   </section>
+
+  <% if preview[:keep_instead].any? %>
+    <section class="island island--light push-half--bottom">
+      <h5 style="color:red">Start from the register with the Image Server source</h5>
+      <p>This register has no Image Server source, but the duplicate(s) below do. The register with the
+        Image Server source should be the one kept, so run the dry run from that register instead.</p>
+      <ul>
+        <% preview[:keep_instead].each do |rid| %>
+          <li><%= link_to "Dry run from register #{rid}", merge_preview_register_path(rid), data: { turbo: false } %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
 
   <% if preview[:blockers].any? %>
     <section class="island island--light push-half--bottom">
@@ -140,7 +153,7 @@
                     class: 'btn   btn--small',
                     data: { turbo: false, confirm: 'Perform the merge now? Duplicate registers will be deleted. This cannot be undone.' } %>
     <% else %>
-      <p><strong>Confirm merge</strong> is disabled until every blocked register is edited or cleared.</p>
+      <p><strong>Confirm merge</strong> is disabled until every problem listed above is resolved.</p>
     <% end %>
 
     <%= link_to 'Back to register', register_path(register), class: 'btn   btn--small push-half--top', data: { turbo: false } %>
