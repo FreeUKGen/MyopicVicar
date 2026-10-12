@@ -9,13 +9,18 @@
       <table>
         <tr><th colspan="2"></th><th scope="column">Page</th><th scope="column" colspan="3">Assessment data</th></tr>
         <tr><th scope="column">District</th><th scope="column">Volume</th><th scope="column">Lowest/Highest</th><th scope="column">Before/After</th><th scope="column">Gaps</th><th scope="column">Total</th></tr>
-        <% File.readlines('/raid/freebmd2/district_csv_files/'+@year+@event_type+@quarter+'.csv', chomp: true).sort.each do | line | %>
+        <%  lines = File.readlines('/raid/freebmd2/district_csv_files/'+@year+@event_type+@quarter+'.csv', chomp: true).sort
+            district_names = lines.map { |line| line.split(',')[0].to_s.delete('"') }.uniq
+            # one lookup for the whole page; a CSV name with no matching District is shown without a link
+            district_ids = District.where(:DistrictName.in => district_names).pluck(:DistrictName, :id).to_h
+        %>
+        <% lines.each do | line | %>
           <%  cells = line.split(',')
-              district_stripped_name = cells[0].delete'"'
-              district_id = District.where(DistrictName: district_stripped_name).first.id
+              district_stripped_name = cells[0].to_s.delete('"')
+              district_id = district_ids[district_stripped_name]
           %>
           <tr>
-            <td><%= link_to district_stripped_name, "/districts/select_district?id=#{district_id}" %></td>
+            <td><%= district_id ? link_to(district_stripped_name, "/districts/select_district?id=#{district_id}") : district_stripped_name %></td>
             <td><%= cells[1] %></td>
             <td><%= cells[2]+'-'+cells[3] %></td>
             <td><%= cells[4]+','+cells[5] %></td>
