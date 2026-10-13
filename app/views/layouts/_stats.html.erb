@@ -66,6 +66,10 @@
     <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 3)).downcase %> Marriage records</dd>
     <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 2)).downcase %> Death records</dd>
     <dd class="c-subfooter-1__stats-value"><%= number_to_human(footer_records_stats(@site_stat, 0)).downcase %> Total records<b></b></dd>
+    <% if (database_updated_on = freebmd_database_updated_on) %>
+      <dt class="c-subfooter-1__stats-term">Database last updated</dt>
+      <dd class="c-subfooter-1__stats-value"><%= database_updated_on.strftime('%-d %B %Y') %></dd>
+    <% end %>
   </dl>
 <% end%>
 </div>

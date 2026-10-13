@@ -867,6 +867,11 @@ module ApplicationHelper
     stat.where(record_type: type).first&.total_records || 0
   end
 
+  def freebmd_database_updated_on
+    epoch = FREEBMD_DB['database'].to_s[/\Abmd_(\d+)\z/, 1]
+    Time.zone.at(epoch.to_i).to_date if epoch
+  end
+
   def contact_us_path
     case appname_downcase
     when "freereg"
