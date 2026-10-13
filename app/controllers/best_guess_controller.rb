@@ -265,7 +265,6 @@ class BestGuessController < ApplicationController
   end
   def unique_surnames
     prefix = params[:prefix].downcase
-    surnames = BestGuess.distinct(:Surname)
     @entries = BestGuess.select("Surname").where('lower(Surname) LIKE ?', prefix+"%").distinct(:Surname)
     namesarray = surnames_as_array(@entries)
     render :json => namesarray
@@ -278,19 +277,11 @@ class BestGuessController < ApplicationController
   end
 
   def forenames_as_array(records)
-    arr = []
-    records.each do |rec|
-      arr << rec.GivenName
-    end
-    arr.sort
+    records.pluck(:GivenName).sort
   end
 
   def surnames_as_array(records)
-    arr = []
-    records.each do |rec|
-      arr << rec.Surname
-    end
-    arr.sort
+    records.pluck(:Surname).sort
   end
 
   def show_postem_or_scan
