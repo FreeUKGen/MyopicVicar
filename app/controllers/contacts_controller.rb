@@ -55,7 +55,8 @@ class ContactsController < ApplicationController
   def create
     @contact = Contact.new(contact_params)
     if @contact.contact_name.blank? #spam trap
-      @contact.previous_page_url = request.env['HTTP_REFERER']
+      # keep the pages passed through from the Contact Us button; the referer here is only the contact form itself
+      @contact.previous_page_url = request.env['HTTP_REFERER'] if @contact.previous_page_url.blank?
       if @contact.selected_county == 'nil'
         @contact.selected_county = nil # string 'nil' to nil
       end
@@ -80,8 +81,9 @@ class ContactsController < ApplicationController
         @contact.communicate_initial_contact
         if @contact.contact_type == 'Data Problem'
           redirect_to(data_problem_redirect_target(@contact)) && return
-        elsif @contact.query
-          redirect_to(search_query_path(@contact.query)) && return
+        elsif (return_query = @contact.query.presence || session[:query]).present?
+          # back to the visitor's last search results rather than an empty search form (#1443)
+          redirect_to(search_query_path(return_query)) && return
         else
           redirect_to(new_search_query_path) && return
         end
@@ -193,6 +195,11 @@ class ContactsController < ApplicationController
       @options = FreebmdConstants::ISSUES
     end
     @contact.contact_time = Time.now
+    # the Contact Us button sends the page the visitor was on (as the old feedback button did);
+    # fall back to the referer when the form is opened from a plain link
+    @contact.problem_page_url = params[:problem_page_url].presence || request.referer
+    @contact.previous_page_url = params[:previous_page_url]
+    @contact.session_id = params[:session_id].presence || request.session['session_id']
     case appname_downcase
     when 'freereg'
       @contact.contact_type = FreeregOptionsConstants::ISSUES[0]
