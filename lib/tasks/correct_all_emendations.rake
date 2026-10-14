@@ -13,6 +13,7 @@ task :correct_all_emendations,[:limit,:fix,:reset,:since] => [:environment] do |
   # a legal ObjectId, so it reads as "no checkpoint" here -- a safe restart under this algorithm.
   # pass reset=true to ignore/clear an existing checkpoint and start over from the beginning.
   progress_file = "#{Rails.root}/tmp/correct_all_emendations_progress.txt"
+  FileUtils.mkdir_p(File.dirname(progress_file))
   File.delete(progress_file) if args.reset == "true" && File.exist?(progress_file)
   resume_last_id = nil
   if File.exist?(progress_file)
@@ -132,4 +133,5 @@ task :correct_all_emendations,[:limit,:fix,:reset,:since] => [:environment] do |
   # ran to completion without hitting the limit -- nothing left to resume, clear the checkpoint
   File.delete(progress_file) if fix && !hit_limit && File.exist?(progress_file)
   p "  A total of #{num} records examined with #{total_num_emended} already emended and #{total_num_unemended} #{fix ? 'emended' : 'needing emendation'} at #{Time.now}"
+  output_file.close
 end
