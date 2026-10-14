@@ -567,28 +567,35 @@ class SearchRecord
       end
       search_record_parameters = Freereg1Translator.translate(entry.freereg1_csv_file, entry)
       existing = entry.search_record
-      previous_digest = existing&.digest
 
-      record = existing || SearchRecord.new
-      record.assign_attributes(search_record_parameters)
-      record[:freereg1_csv_entry_id] = entry.id
+      # Build the new version on an unsaved record: transform clears and re-adds the search names,
+      # and on a saved record each of those changes is written to the database at once, so an
+      # unchanged record used to be rewritten every time even though this returned 'no update'
+      record = SearchRecord.new(search_record_parameters)
+      record.freereg1_csv_entry = entry # reuse the loaded entry, file, register and church in transform
       if entry.embargo_records.present?
         record[:embargoed] = entry.currently_under_embargo?
         record[:release_year] = entry.effective_embargo_release_year
       end
       record.transform
       record.digest = record.cal_digest
-      if existing.present? && record.digest == previous_digest
-        existing.reload
-        return 'no update'
-      end
+      return 'no update' if existing.present? && record.digest == existing.digest
+
       record.search_record_version = search_version
       record.search_date = ' ' if record.search_date.nil?
       record.place_id = place.id
       record.chapman_code = place.chapman_code
       record.possible_last_names = record.transcript_names.map { |n| n[:last_name].downcase if n[:last_name].present? }.uniq.compact
-      record.save
-      existing.present? ? 'updated' : 'created'
+      if existing.blank?
+        record.save
+        return 'created'
+      end
+
+      # keep the existing record (and its id) and give it the rebuilt fields
+      existing.assign_attributes(record.attributes.except('_id', 'c_at', 'u_at', 'search_names'))
+      existing.search_names = record.search_names.map { |name| SearchName.new(name.attributes) }
+      existing.save
+      'updated'
     end
   end
 
@@ -1058,11 +1065,11 @@ ry_search_date
   def populate_search_names
     return unless transcript_names.present? && transcript_names.any?
 
-    Rails.logger.info("[SearchRecord] Starting populate_search_names with #{transcript_names.size} transcript_names")
+    Rails.logger.debug { "[SearchRecord] Starting populate_search_names with #{transcript_names.size} transcript_names" }
 
     transcript_names.each do |raw|
       name_hash = raw.is_a?(Hash) ? raw.with_indifferent_access : raw
-      Rails.logger.debug("[SearchRecord] Processing name_hash: #{name_hash.inspect}")
+      Rails.logger.debug { "[SearchRecord] Processing name_hash: #{name_hash.inspect}" }
 
       # 1. Person type
       person_type =
@@ -1071,11 +1078,11 @@ ry_search_date
         when 'witness' then PersonType::WITNESS
         else PersonType::FAMILY
         end
-      Rails.logger.debug("[SearchRecord] person_type resolved to #{person_type}")
+      Rails.logger.debug { "[SearchRecord] person_type resolved to #{person_type}" }
 
       # 2. Role
       person_role = name_hash[:role].presence
-      Rails.logger.debug("[SearchRecord] person_role resolved to #{person_role.inspect}")
+      Rails.logger.debug { "[SearchRecord] person_role resolved to #{person_role.inspect}" }
 
       # 3. Gender resolution
       person_gender =
@@ -1087,13 +1094,13 @@ ry_search_date
         else
           gender_from_role(person_role)
         end
-      Rails.logger.debug("[SearchRecord] person_gender resolved to #{person_gender.inspect}")
+      Rails.logger.debug { "[SearchRecord] person_gender resolved to #{person_gender.inspect}" }
 
       # 4. Build search name
       name = search_name(name_hash[:first_name], name_hash[:last_name], person_type, person_role, person_gender)
       if name
         search_names << name
-        Rails.logger.info("[SearchRecord] Added search_name: #{name.inspect}")
+        Rails.logger.debug { "[SearchRecord] Added search_name: #{name.inspect}" }
       end
 
       # 5. Handle symbol cleaning
@@ -1104,12 +1111,12 @@ ry_search_date
         sn_cleaned = search_name(cleaned_first_name, cleaned_last_name, person_type, person_role, person_gender)
         if sn_cleaned
           search_names << sn_cleaned
-          Rails.logger.info("[SearchRecord] Added cleaned search_name: #{sn_cleaned.inspect}")
+          Rails.logger.debug { "[SearchRecord] Added cleaned search_name: #{sn_cleaned.inspect}" }
         end
       end
     end
 
-    Rails.logger.info("[SearchRecord] Finished populate_search_names with #{search_names.size} total search_names")
+    Rails.logger.debug { "[SearchRecord] Finished populate_search_names with #{search_names.size} total search_names" }
   end
 
   # def name_contains_symbols?(names)

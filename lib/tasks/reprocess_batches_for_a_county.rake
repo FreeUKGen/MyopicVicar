@@ -225,21 +225,20 @@ namespace :freereg do
     software_version = get_software_version
     search_version = software_version&.last_search_record_version.to_s
 
-    scope.no_timeout.each_slice(BATCH_SIZE) do |search_record_group|
-      search_record_group.each do |search_record|
-        begin
-          result = process_single_search_record(search_record, search_version)
-          if result == :skipped
-            skipped += 1
-          else
-            processed += 1
-            if (processed % PROGRESS_INTERVAL).zero?
-              print_progress(processed, total, start_time)
-            end
+    # one record at a time from the cursor (each_slice held BATCH_SIZE full records in memory for no gain)
+    scope.no_timeout.each do |search_record|
+      begin
+        result = process_single_search_record(search_record, search_version)
+        if result == :skipped
+          skipped += 1
+        else
+          processed += 1
+          if (processed % PROGRESS_INTERVAL).zero?
+            print_progress(processed, total, start_time)
           end
-        rescue => e
-          handle_search_record_error(search_record, e, failed)
         end
+      rescue => e
+        handle_search_record_error(search_record, e, failed)
       end
     end
 
