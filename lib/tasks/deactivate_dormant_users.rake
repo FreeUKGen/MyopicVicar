@@ -86,7 +86,7 @@ task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicate
       synd_code = "#{county_name} Syndicate"
       syndicate = Syndicate.find_by(syndicate_code: synd_code)
       abort "Invalid exclude_syndicate value #{synd}=(#{synd_code})" if syndicate.blank?
-      @ignore_syndicates << "#{synd_code} "
+      @ignore_syndicates << "#{synd_code}"
     end
     log_message = "Ignoring:  #{@ignore_syndicates}"
     output_to_log(file_for_log, log_message)
@@ -118,8 +118,6 @@ task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicate
     next if synd.syndicate_code == 'Technical' || synd.syndicate_code == 'Any Questions Ask Us'
 
     next if @ignore_syndicates.include?(synd.syndicate_code)
-
-    # next unless synd.syndicate_code == 'Essex Syndicate'    # AEV TESTING
 
     @syndicate = synd.syndicate_code
 
@@ -156,9 +154,6 @@ task :deactivate_dormant_users, [:mode, :months, :email_user, :exclude_syndicate
 
       if @mode == 'UPDATE'
         user.update_attributes(active: false)
-
-        # user.update_attributes(active: false) unless deactivated_users.positive?       # AEV TESTING
-
         deactivated_users += 1
       end
     end
