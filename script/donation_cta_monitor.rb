@@ -35,10 +35,10 @@ SITES = {
   'FreeCEN' => 'https://www.freecen.org.uk'
 }.freeze
 
-# Update with the real CEO address before relying on this.
+# Update with the real COO address before relying on this.
 RECIPIENTS = [
   'vinosrik@gmail.com',
-  'ceo@freeukgenealogy.org.uk' # placeholder
+  'coo@freeukgenealogy.org.uk' # placeholder
 ].freeze
 
 DIALOG_WAIT_SECONDS = 10

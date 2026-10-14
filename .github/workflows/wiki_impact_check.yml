@@ -1,0 +1,108 @@
+name: Wiki impact check
+
+# Advisory only: comments on the PR with wiki pages that may need updating and
+# what to add. Never fails the PR - the developer decides whether to act on it.
+# Logic lives in script/wiki_impact_check.rb.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'app/models/**'
+      - 'app/controllers/**'
+      - 'app/constraints/**'
+      - 'app/mailers/**'
+      - 'app/uploaders/**'
+      - 'lib/**'
+      - 'config/routes.rb'
+      - 'config/**/*.yml'
+      - 'Gemfile'
+      - '.ruby-version'
+  # Manual run against any open PR, e.g. to test the check. Report goes to the
+  # run's Summary tab; it only comments on the PR if post_comment is ticked.
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check'
+        required: true
+        type: string
+      post_comment:
+        description: 'Also post/update the comment on the PR'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: wiki-impact-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Resolve PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number || inputs.pr_number }}
+        run: |
+          # Works for fork PRs too: GitHub mirrors every PR head as refs/pull/N/head.
+          git fetch -q origin "pull/$PR/head"
+          gh api "repos/${{ github.repository }}/pulls/$PR" \
+            --jq '"base=\(.base.sha)\nhead=\(.head.sha)"' >> "$GITHUB_OUTPUT"
+          echo "number=$PR" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch wiki
+        run: git clone --depth 1 "https://github.com/${{ github.repository }}.wiki.git" "$RUNNER_TEMP/wiki" || mkdir -p "$RUNNER_TEMP/wiki"
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Analyse diff against wiki
+        id: analyse
+        continue-on-error: true
+        env:
+          BASE_SHA: ${{ steps.pr.outputs.base }}
+          HEAD_SHA: ${{ steps.pr.outputs.head }}
+        run: |
+          ruby script/wiki_impact_check.rb "$BASE_SHA" "$HEAD_SHA" "$RUNNER_TEMP/wiki" "$RUNNER_TEMP/report.md"
+          if [ -s "$RUNNER_TEMP/report.md" ]; then
+            cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No wiki-relevant changes detected." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Keeps a single comment per PR, edited in place on each push. Fork PRs get
+      # a read-only token, so the comment can fail there - the job summary above
+      # still has the report.
+      - name: Post or update PR comment
+        if: steps.analyse.outcome == 'success' && (github.event_name == 'pull_request' || inputs.post_comment)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          existing=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.body | startswith("<!-- wiki-impact-check -->")) | .id' | head -n1)
+
+          if [ -s "$RUNNER_TEMP/report.md" ]; then
+            if [ -n "$existing" ]; then
+              gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@"$RUNNER_TEMP/report.md" > /dev/null
+            else
+              gh api -X POST "repos/$REPO/issues/$PR/comments" -F body=@"$RUNNER_TEMP/report.md" > /dev/null
+            fi
+          elif [ -n "$existing" ]; then
+            # An earlier push flagged something; this one doesn't.
+            printf '%s\n' '<!-- wiki-impact-check -->' '## 📚 Wiki impact check' '' '✅ Latest changes have no wiki-relevant impact.' > "$RUNNER_TEMP/clear.md"
+            gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@"$RUNNER_TEMP/clear.md" > /dev/null
+          fi

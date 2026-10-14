@@ -568,7 +568,11 @@ class UserMailer < Devise::Mailer
     if file.present?
       attachments[File.basename(file)] = File.read(file)
     end
-    mail(to: 'Vinodhini.subbu@freeukgenealogy.org.uk', bcc: ccs, subject: subjects, body: body_message)
+    # BCC hid these recipients from the header entirely (and Mail::Message drops a bcc-only
+    # recipient list silently if `to` isn't a real mailbox someone checks) - the rule creator(s)
+    # and sysadmin need to actually see they're addressed, per the agreed CC-not-BCC fix.
+    recipients = ccs.presence || ['vinodhini.subbu@freeukgenealogy.org.uk']
+    mail(to: recipients, subject: subjects, body: body_message)
   end
 
   def send_upload_stats(start_date, end_date)
@@ -586,7 +590,11 @@ class UserMailer < Devise::Mailer
   def embargo_process_completion_email(rule_id, ccs)
     @rule = EmbargoRule.find_by(id: rule_id)
     @register = @rule.register
-    mail(to: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Embargo processing is complete")
+    # ccs (the person who ran this, plus the rule's creator) was computed by the caller and
+    # then never used here - every completion email went to this hardcoded address regardless
+    # of who actually processed the embargo, which is why nobody else ever received one.
+    recipients = ccs.presence || ['vinodhini.subbu@freeukgenealogy.org.uk']
+    mail(to: recipients, subject: "Embargo processing is complete")
   end
 
   def update_report_to_freereg_manager(file, user)

@@ -3,7 +3,7 @@ class EmbargoRulesController < ApplicationController
     redirect_back(fallback_location: { action: 'index', county: session[:county], place: session[:place], church: session[:church], register: session[:register] },
                   notice: 'You must enter a complete set of fields') && return if params[:embargo_rule].blank?
 
-    params[:embargo_rule][:period_type] = params[:embargo_rule][:rule] == 'Embargoed until the end of ' ? 'end' : 'period'
+    params[:embargo_rule][:period_type] = end_year_embargo_rule?(params[:embargo_rule][:rule]) ? 'end' : 'period'
     @rule = EmbargoRule.new(embargo_rule_params)
     if @rule.save
       flash[:notice] = 'The creation of the new rule was successful'
@@ -36,7 +36,7 @@ class EmbargoRulesController < ApplicationController
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
     @edit = true
     get_user_info_from_userid
-    reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(session[:role])
+    reject_access(@user, 'Embargo Reason') unless EmbargoRule::PERMITTED_ROLES.include?(session[:role])
   end
 
   def extract_location_from_params(param)
@@ -62,7 +62,7 @@ class EmbargoRulesController < ApplicationController
   def new
     extract_location_from_params(params)
     get_user_info_from_userid
-    reject_access(@user, 'Embargo Reason') unless ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].include?(session[:role])
+    reject_access(@user, 'Embargo Reason') unless EmbargoRule::PERMITTED_ROLES.include?(session[:role])
 
     @options = EmbargoRule::EmbargoRuleOptions::ALL_OPTIONS
     rules = []
@@ -115,5 +115,9 @@ class EmbargoRulesController < ApplicationController
 
   def embargo_rule_params
     params.require(:embargo_rule).permit!
+  end
+
+  def end_year_embargo_rule?(rule_text)
+    EmbargoRule.until_beginning_of_year_rule_text?(rule_text)
   end
 end

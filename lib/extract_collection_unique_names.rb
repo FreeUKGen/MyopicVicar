@@ -71,6 +71,23 @@ class ExtractCollectionUniqueNames
       message_file.puts "Finished #{num} places in #{time_elapsed}"
     end
 
+    # Used by RegisterMergeService right after a merge: recomputes one summary for a single
+    # register from its (now-merged) CSV files, instead of waiting for the next scheduled
+    # reports:extract_collection_unique_names run to pick it up.
+    def reconcile_register(register)
+      unique_names = {}
+      register.freereg1_csv_files.no_timeout.each do |file|
+        unique_names = unique_names.merge(file.get_unique_names) { |_key, first, second| first + second }
+      end
+
+      forenames = extract_unique_forenames(unique_names).sort
+      surnames = extract_unique_surnames(unique_names).sort
+      RegisterUniqueName.where(register_id: register.id).delete_all
+      return if forenames.blank? && surnames.blank?
+
+      RegisterUniqueName.create!(register_id: register.id, unique_forenames: forenames, unique_surnames: surnames)
+    end
+
     def extract_unique_forenames(names)
       forenames = []
       names.each_pair do |key, value|

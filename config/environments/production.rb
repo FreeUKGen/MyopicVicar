@@ -128,7 +128,13 @@ MyopicVicar::Application.configure do
   config.witness_support = MyopicVicar::MongoConfig['witness_support']
   config.max_search_time = MyopicVicar::MongoConfig['max_search_time']
   config.our_secret_key = MyopicVicar::MongoConfig['our_secret_key']
-  config.secret_key_base = MyopicVicar::MongoConfig['secret_key_base']
+  # Rails 7.2 raises if secret_key_base is set to nil, and no longer reads config/secrets.yml itself
+  secret_key_base = MyopicVicar::MongoConfig['secret_key_base'].presence || ENV['SECRET_KEY_BASE'].presence
+  secrets_file = Rails.root.join('config', 'secrets.yml')
+  if secret_key_base.blank? && File.exist?(secrets_file)
+    secret_key_base = YAML.load_file(secrets_file, aliases: true).dig('production', 'secret_key_base').to_s.strip.presence
+  end
+  config.secret_key_base = secret_key_base if secret_key_base.present?
   config.sendgrid_api_key = MyopicVicar::MongoConfig['sendgrid_api_key']
   config.citation = MyopicVicar::MongoConfig['citation']
   config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']

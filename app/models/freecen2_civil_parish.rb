@@ -128,7 +128,7 @@ class Freecen2CivilParish
     def write_csv_file(file_location, year, chapman_code, civil_parishes)
       header = year == 'all' ? Freecen2CivilParish.all_year_header(chapman_code) : Freecen2CivilParish.year_header(chapman_code, year)
 
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
         csv << header
         record_number = 0
         civil_parishes.each do |rec|

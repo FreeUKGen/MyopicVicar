@@ -112,7 +112,7 @@ class Freecen2District
     def write_csv_file(file_location, year, chapman_code, districts)
       header = year == 'all' ? Freecen2District.all_year_header(chapman_code) : Freecen2District.year_header(chapman_code, year)
 
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
         csv << header
         record_number = 0
         districts.each do |rec|
