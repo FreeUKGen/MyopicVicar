@@ -398,13 +398,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         when 'Contact'
           recipients = freereg_contacts
         when 'Data Problem'
-          recipients = system_administrators 
+          recipients = system_administrators
         when 'General Message'
           recipients = freereg_messages
         when 'Syndicate'
           recipients = freereg_syndicate(specific)
         when 'Individual'
-          recipients = system_administrators 
+          recipients = system_administrators
         end
       when 'freecen'
         case type
@@ -413,7 +413,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         when 'Contact'
           recipients = freecen_contacts
         when 'Data Problem'
-          recipients = system_administrators 
+          recipients = system_administrators
         when 'General Message'
           recipients = freecen_messages
         when 'Syndicate'
@@ -428,13 +428,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         when 'Contact'
           recipients = freebmd_feedbacks
         when 'Data Problem'
-          recipients = system_administrators 
+          recipients = system_administrators
         when 'General Message'
           recipients = freebmd_nessages
         when 'Syndicate'
           recipients = freebmd_syndicate(specific)
         when 'Individual'
-          recipients = system_administrators 
+          recipients = system_administrators
         end
       end
       recipients
@@ -590,6 +590,11 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       managera = UseridDetail.find_by(userid: individual)
       send_to << managera.email_address if managera.present?
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
+      send_to
+    end
+    def system_administrators
+      send_to = []
+      send_to << UseridDetail.role('system_administrator').first.email_address
       send_to
     end
   end
