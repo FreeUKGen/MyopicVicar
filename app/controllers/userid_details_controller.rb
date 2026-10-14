@@ -62,7 +62,7 @@ class UseridDetailsController < ApplicationController
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
       @userid.add_fields(params[:commit], session[:syndicate])
-      if @userid.save
+      if @userid.save_with_login_user
         refinery_user = User.where(username: /\A#{::Regexp.escape(@userid.userid)}\z/i).first
         if refinery_user.present?
           refinery_user.send_reset_password_instructions
