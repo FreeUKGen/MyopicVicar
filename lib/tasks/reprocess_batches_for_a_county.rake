@@ -208,15 +208,28 @@ namespace :freereg do
   end
 
   def process_search_records_for_county(chapman_code, record_type)
-    scope = search_records_for_county(chapman_code, record_type)
-    total = scope.count
+    # Read the ids first and fetch the records in batches: a single cursor held open for the hours
+    # a county takes could be lost part-way (CursorNotFound), and the run then had to start again
+    ids = search_records_for_county(chapman_code, record_type).pluck(:_id).sort
 
-    if total.zero?
+    if ids.empty?
       puts "No search records found for #{chapman_code} (#{record_type})"
       return
     end
 
-    puts "Found #{total} search records to process for #{RecordType.display_name(record_type)}"
+    puts "Found #{ids.size} search records to process for #{RecordType.display_name(record_type)}"
+
+    # checkpoint: the last id of the last finished batch, so a rerun carries on from there
+    # (RESET_PROGRESS=1 starts the county and record type again from the beginning)
+    progress_file = File.join(Rails.root, 'tmp', "reprocess_#{chapman_code}_#{record_type}_last_id.txt")
+    FileUtils.rm_f(progress_file) if ENV['RESET_PROGRESS'].present?
+    saved = File.exist?(progress_file) ? File.read(progress_file).strip : ''
+    if BSON::ObjectId.legal?(saved)
+      done = ids.bsearch_index { |id| id > BSON::ObjectId.from_string(saved) } || ids.size
+      ids = ids.drop(done)
+      puts "Resuming after #{saved}: #{done} already done, #{ids.size} left"
+    end
+    total = ids.size
 
     processed = 0
     skipped = 0
@@ -225,27 +238,31 @@ namespace :freereg do
     software_version = get_software_version
     search_version = software_version&.last_search_record_version.to_s
 
-    # one record at a time from the cursor (each_slice held BATCH_SIZE full records in memory for no gain)
-    scope.no_timeout.each do |search_record|
+    ids.each_slice(1000) do |batch|
       # records from the same file look up the same file, register, church, place and embargo rules,
       # so answer repeats from the driver's query cache (a write clears that collection's entries);
-      # cleared every 1000 records so the cached entries don't pile up
-      Mongo::QueryCache.clear if ((processed + skipped + failed.size) % 1000).zero?
-      begin
-        result = Mongo::QueryCache.cache { process_single_search_record(search_record, search_version) }
-        if result == :skipped
-          skipped += 1
-        else
-          processed += 1
-          if (processed % PROGRESS_INTERVAL).zero?
-            print_progress(processed, total, start_time)
+      # cleared for each batch so the cached entries don't pile up
+      Mongo::QueryCache.clear
+      SearchRecord.where(:_id.in => batch).each do |search_record|
+        begin
+          result = Mongo::QueryCache.cache { process_single_search_record(search_record, search_version) }
+          if result == :skipped
+            skipped += 1
+          else
+            processed += 1
+            if (processed % PROGRESS_INTERVAL).zero?
+              print_progress(processed, total, start_time)
+            end
           end
+        rescue => e
+          handle_search_record_error(search_record, e, failed)
         end
-      rescue => e
-        handle_search_record_error(search_record, e, failed)
       end
+      FileUtils.mkdir_p(File.dirname(progress_file))
+      File.write(progress_file, batch.last.to_s)
     end
     Mongo::QueryCache.clear
+    FileUtils.rm_f(progress_file)
 
     print_search_record_summary(total, processed, skipped, failed, start_time)
   end
