@@ -398,13 +398,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         when 'Contact'
           recipients = freereg_contacts
         when 'Data Problem'
-          recipients = freereg_data_problems(specific)
+          recipients = system_administrators 
         when 'General Message'
           recipients = freereg_messages
         when 'Syndicate'
           recipients = freereg_syndicate(specific)
         when 'Individual'
-          recipients = freereg_individuals(specific)
+          recipients = system_administrators 
         end
       when 'freecen'
         case type
@@ -413,13 +413,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         when 'Contact'
           recipients = freecen_contacts
         when 'Data Problem'
-          recipients = freecen_data_problems(specific)
+          recipients = system_administrators 
         when 'General Message'
           recipients = freecen_messages
         when 'Syndicate'
           recipients = freecen_syndicate(specific)
         when 'Individual'
-          recipients = freecen_individuals(specific)
+          recipients = system_administrators
         end
       when 'freebmd'
         case type
@@ -428,13 +428,13 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
         when 'Contact'
           recipients = freebmd_feedbacks
         when 'Data Problem'
-          recipients = freebmd_data_problems(specific)
+          recipients = system_administrators 
         when 'General Message'
           recipients = freebmd_nessages
         when 'Syndicate'
           recipients = freebmd_syndicate(specific)
         when 'Individual'
-          recipients = freebmd_individuals(specific)
+          recipients = system_administrators 
         end
       end
       recipients
