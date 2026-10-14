@@ -707,7 +707,13 @@ class UseridDetail
         return false
       end
 
-      session.commit_transaction
+      begin
+        session.commit_transaction
+      rescue Mongo::Error
+        # not committed (or not known to be), so let the form be submitted again as a new record
+        self.new_record = true
+        raise
+      end
       true
     end
   end

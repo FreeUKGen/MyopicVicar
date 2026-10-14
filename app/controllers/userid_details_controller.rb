@@ -62,7 +62,16 @@ class UseridDetailsController < ApplicationController
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
       @userid.add_fields(params[:commit], session[:syndicate])
-      if @userid.save_with_login_user
+      saved = begin
+        @userid.save_with_login_user
+      rescue Mongo::Error => e
+        # e.g. a primary election or dropped connection during the registration transaction:
+        # nothing was saved, so show the form again rather than an error page
+        logger.warn("FREEREG:USERID: registration transaction failed for #{@userid.userid}: #{e.class}: #{e.message}")
+        @userid.errors.add(:base, 'Your registration could not be completed, please try again')
+        false
+      end
+      if saved
         refinery_user = User.where(username: /\A#{::Regexp.escape(@userid.userid)}\z/i).first
         if refinery_user.present?
           refinery_user.send_reset_password_instructions
