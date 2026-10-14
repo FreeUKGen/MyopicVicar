@@ -592,7 +592,7 @@ class DeleteOrArchiveOldMessagesFeedbacksAndContacts
       send_to << UseridDetail.role('system_administrator').first.email_address if send_to.blank?
       send_to
     end
-    
+
     def system_administrators
       send_to = []
       send_to << UseridDetail.role('system_administrator').first.email_address
