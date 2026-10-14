@@ -227,8 +227,12 @@ namespace :freereg do
 
     # one record at a time from the cursor (each_slice held BATCH_SIZE full records in memory for no gain)
     scope.no_timeout.each do |search_record|
+      # records from the same file look up the same file, register, church, place and embargo rules,
+      # so answer repeats from the driver's query cache (a write clears that collection's entries);
+      # cleared every 1000 records so the cached entries don't pile up
+      Mongo::QueryCache.clear if ((processed + skipped + failed.size) % 1000).zero?
       begin
-        result = process_single_search_record(search_record, search_version)
+        result = Mongo::QueryCache.cache { process_single_search_record(search_record, search_version) }
         if result == :skipped
           skipped += 1
         else
@@ -241,6 +245,7 @@ namespace :freereg do
         handle_search_record_error(search_record, e, failed)
       end
     end
+    Mongo::QueryCache.clear
 
     print_search_record_summary(total, processed, skipped, failed, start_time)
   end
