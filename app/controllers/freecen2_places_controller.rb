@@ -411,9 +411,9 @@ class Freecen2PlacesController < ApplicationController
     userid = @user.userid
     logger.warn("FREECEN:MOVE_FREECEN2_PLACE_LINKAGES: Starting rake task for #{userid} county #{county_from} place #{place_from}")
     if params[:review_move_fc2_place][:mode] == 'Update'
-      pid1 = spawn("bundle exec rake freecen:move_freecen2_place_linkages[#{userid},#{@place_from_rec.id},#{@place_to_rec.id},Y]")
+      pid1 = RakeSpawn.run("freecen:move_freecen2_place_linkages[#{userid},#{@place_from_rec.id},#{@place_to_rec.id},Y]")
     else
-      pid1 = spawn("bundle exec rake freecen:move_freecen2_place_linkages[#{userid},#{@place_from_rec.id},#{@place_to_rec.id},N]")
+      pid1 = RakeSpawn.run("freecen:move_freecen2_place_linkages[#{userid},#{@place_from_rec.id},#{@place_to_rec.id},N]")
     end
     logger.warn("FREECEN:MOVE_FREECEN2_PLACE_LINKAGES: rake task for #{pid1}")
     flash[:notice] = "The background task (with Run Mode = #{params[:review_move_fc2_place][:mode]}) for move of linkages for #{place_from} in #{ChapmanCode.name_from_code(county_from)} (#{county_from}) to #{place_to} in #{ChapmanCode.name_from_code(county_to)} (#{county_to}) has been initiated. You will be notified by email when the task has completed."

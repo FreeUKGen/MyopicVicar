@@ -211,7 +211,9 @@ class ApplicationController < ActionController::Base
       @user_userid = @user.userid
       @first_name = @user.person_forename
       @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(session[:role])
+      # role is normally set on the manage resources page; fall back to the user's own role if the session lost it
+      session[:role] = @user.person_role if session[:role].blank?
+      @roles = UseridRole::OPTIONS.fetch(session[:role], [])
       @favorite_actions = @user.favorite_actions_sorted
     end
   end
@@ -221,7 +223,8 @@ class ApplicationController < ActionController::Base
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     @userid = @user.id
-    @roles = UseridRole::OPTIONS.fetch(session[:role])
+    session[:role] = @user.person_role if session[:role].blank?
+    @roles = UseridRole::OPTIONS.fetch(session[:role], [])
   end
 
   def get_userids_and_transcribers

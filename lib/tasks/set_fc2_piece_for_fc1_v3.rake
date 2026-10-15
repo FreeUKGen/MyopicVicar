@@ -3,8 +3,8 @@ task set_fc2_piece_for_fc1_v3:  :environment do
 
   report_file = "log/set_fc1_fc2_piece_v3.csv"
   summary_file = "log/set_fc1_fc2_piece_summary_v3.csv"
-  FileUtils.mkdir_p(File.dirname(report_file) )  unless File.exists?(report_file)
-  FileUtils.mkdir_p(File.dirname(summary_file) )  unless File.exists?(summary_file)
+  FileUtils.mkdir_p(File.dirname(report_file) )  unless File.exist?(report_file)
+  FileUtils.mkdir_p(File.dirname(summary_file) )  unless File.exist?(summary_file)
   detail_file = File.new(report_file, "w")
   summary_file = File.new(summary_file, "w")
 

@@ -126,7 +126,7 @@ class Freecen2SearchStatisticsController < ApplicationController
 
   def write_csv_file(file_location, report_array)
     column_headers = %w[End_date Searches Zero_results Maxed_out Surname Forename Place Nearby Fuzzy Zero_county One_county Multiple_counties Date Census_year Zero_birth One_birth Multiple_birth Disabled Marital Sex Language Occupation]
-    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+    CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
       csv << column_headers
       report_array.each do |rec|
         csv << rec

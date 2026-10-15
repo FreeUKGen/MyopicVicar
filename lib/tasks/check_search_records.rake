@@ -86,7 +86,8 @@ task :check_search_records,[:limit,:fix,:file] => :environment do |t, args|
       end
     end
   else
-    files = Freereg1CsvEntry.count
+    # Mongoid 8 .count scans every document; the collection metadata total is instant and fine for a progress figure
+    files = Freereg1CsvEntry.estimated_count
     p "Total entries: #{files}"
     entries = 0
 

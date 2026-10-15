@@ -518,7 +518,7 @@ class FreecenCsvFile
     def write_errors_csv_file(file_location, entries)
       column_headers = %w(record_number error_messages)
 
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
         csv << column_headers
         entries.each do |rec|
           line = []
@@ -532,7 +532,7 @@ class FreecenCsvFile
     def write_warnings_csv_file(file_location, entries)
       column_headers = %w(record_number warning_messages)
 
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
         csv << column_headers
         entries.each do |rec|
           line = []
@@ -1367,7 +1367,7 @@ class FreecenCsvFile
     header << 'record_valid' if validation && !header_line.include?('record_valid')
     header << 'pob_valid' if validation && !header_line.include?('pob_valid')
     header << 'non_pob_valid' if validation && !header_line.include?('non_pob_valid')
-    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+    CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
       csv << header
       records = freecen_csv_entries.order_by(_id: 1)
       records.each do |rec|
@@ -1385,7 +1385,7 @@ class FreecenCsvFile
 
   def write_spreadsheet_header(header)
     file_location = File.join(Rails.root, 'tmp', 'spreadersheet_header.csv')
-    CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+    CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
       csv << header
     end
     file_location

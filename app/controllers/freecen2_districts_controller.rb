@@ -131,7 +131,7 @@ class Freecen2DistrictsController < ApplicationController
     redirect_back(fallback_location: new_manage_resource_path, notice: 'No district found') && return if @freecen2_district.blank?
 
     logger.warn("FREECEN:CSV_PROCESSING: Starting forced deletion rake task for #{@freecen2_district.name}")
-    pid1 = spawn("rake foo:delete_incorrect_tna_district[#{params[:id]}]")
+    pid1 = RakeSpawn.run("foo:delete_incorrect_tna_district[#{params[:id]}]")
     flash[:notice] = "The civil parishes, pieces and district for #{@freecen2_district.name} are being deleted. You will receive an email when the task has been completed."
     logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
 

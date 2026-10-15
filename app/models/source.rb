@@ -48,7 +48,7 @@ class Source
     end
 
     def create_manage_image_server_url(userid, role, chapman_code)
-      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/' + 'access?userid=' + userid + '&role=' + role + '&chapman_code=' + chapman_code + '&image_server_access=' + Rails.application.config.image_server_access)
+      URI::RFC2396_Parser.new.escape(Rails.application.config.image_server + 'manage_freereg_images/' + 'access?userid=' + userid + '&role=' + role + '&chapman_code=' + chapman_code + '&image_server_access=' + Rails.application.config.image_server_access)
     end
 
     def get_propagate_source_list(source)

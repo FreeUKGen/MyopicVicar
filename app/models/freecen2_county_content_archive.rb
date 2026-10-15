@@ -9,8 +9,8 @@ class Freecen2CountyContentArchive
   field :year, type: Integer
   field :month, type: Integer
   field :day, type: Integer
-
-  field :records, type: Hash # [chapman_code] [place_name]
+  field :county, type: String
+  field :records, type: Hash # [place_name]  - was [chapman_code] [place_name]
   field :new_records, type: Array
 
   class << self
@@ -32,6 +32,7 @@ class Freecen2CountyContentArchive
         arch.year = stat.year
         arch.month = stat.month
         arch.day = stat.day
+        arch.county = stat.county
         arch.records = stat.records
         arch.new_records = stat.new_records
 
