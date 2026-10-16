@@ -49,7 +49,7 @@ class Freecen2DistrictsController < ApplicationController
 
     params[:freecen2_district][:name] = params[:freecen2_district][:name].strip if params[:freecen2_district][:name].present?
     params[:freecen2_district][:freecen2_place_id] = Freecen2Place.place_id(params[:freecen2_district][:chapman_code], params[:freecen2_district][:freecen2_place_id])
-    @freecen2_district = Freecen2District.new(freecen2_district_params)
+    @freecen2_district = Freecen2District.new(freecen2_district_create_params)
     @freecen2_district.save
     if @freecen2_district.errors.any?
       redirect_back(fallback_location: new_manage_resource_path, notice: "'There was an error while saving the new piece' #{@freecen2_district.errors.full_messages}") && return
@@ -285,7 +285,13 @@ class Freecen2DistrictsController < ApplicationController
 
   private
 
+  # chapman_code and year are disabled on the edit form: they can be set on create only
+  def freecen2_district_create_params
+    params.require(:freecen2_district).permit(:reason_changed, :name, :freecen2_place_id, :type, :tnaid, :notes,
+                                              :code, :year, :chapman_code)
+  end
+
   def freecen2_district_params
-    params.require(:freecen2_district).permit!
+    params.require(:freecen2_district).permit(:reason_changed, :name, :freecen2_place_id, :type, :tnaid, :notes, :code)
   end
 end

@@ -659,7 +659,8 @@ class FreecenCsvFilesController < ApplicationController
   private
 
   def freecen_csv_file_params
-    params.require(:freecen_csv_file).permit!
+    params.require(:freecen_csv_file).permit(:transcriber_name, :locked_by_transcriber, :locked_by_coordinator,
+                                             :incorporation_lock, :incorporating_lock)
   end
 
   def display_info

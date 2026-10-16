@@ -18,8 +18,6 @@ class FreecenCsvEntriesController < ApplicationController
 
   skip_before_action :require_login, only: [:show]
 
-  ActionController::Parameters.permit_all_parameters = true
-
   def calculate_software_version
     @server = SoftwareVersion.extract_server(Socket.gethostname)
     @application = appname
@@ -308,7 +306,7 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
     else
       params[:freecen_csv_entry][:warning_messages] = '' if params[:freecen_csv_entry][:record_valid] == 'true'
-      @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
+      @freecen_csv_entry.update_attributes(freecen_csv_entry_params)
       if params[:commit] == 'Override warnings'
         @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
         @freecen_csv_entry.remove_flags if @freecen_csv_entry.flag
@@ -352,6 +350,22 @@ class FreecenCsvEntriesController < ApplicationController
   private
 
   def freecen_csv_entry_params
-    params.require(:freecen_csv_entry).permit!
+    params.require(:freecen_csv_entry).permit(
+      :address_flag, :age, :age_unit, :at_home, :birth_county, :birth_place, :birth_place_flag,
+      :children_born_alive, :children_deceased, :children_living, :civil_parish, :class_of_house,
+      :data_transition, :deleted_flag, :disability, :disability_notes, :dwelling_number,
+      :ecclesiastical_parish, :enumeration_district, :error_messages, :father_place_of_birth,
+      :flag, :flexible, :folio_number, :forenames, :house_number, :house_or_street_name,
+      :individual_flag, :individual_number, :industry, :info_messages, :language,
+      :location_flag, :marital_status, :name_flag, :nationality, :notes, :occupation,
+      :occupation_category, :occupation_flag, :page_number, :parliamentary_constituency,
+      :piece_number, :police_district, :poor_law_union, :read_write, :record_number,
+      :record_valid, :relationship, :religion, :roof_type, :rooms, :rooms_with_windows,
+      :sanitary_district, :scavenging_district, :schedule_number, :school_board,
+      :school_children, :sequence_in_household, :sex, :special_lighting_district,
+      :special_water_district, :surname, :surname_maiden, :uninhabited_flag,
+      :verbatim_birth_county, :verbatim_birth_place, :walls, :ward, :warning_messages,
+      :where_census_taken, :year, :years_married
+    )
   end
 end

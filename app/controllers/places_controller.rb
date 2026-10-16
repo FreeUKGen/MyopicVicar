@@ -307,6 +307,9 @@ class PlacesController < ApplicationController
   private
 
   def place_params
-    params.require(:place).permit!
+    params.require(:place).permit(:country, :county, :chapman_code, :place_name, :place_notes, :genuki_url,
+                                  :grid_reference, :latitude, :longitude, :source, :reason_for_change,
+                                  :other_reason_for_change,
+                                  alternateplacenames_attributes: %i[id alternate_name _destroy])
   end
 end

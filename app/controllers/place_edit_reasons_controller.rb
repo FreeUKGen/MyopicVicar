@@ -74,6 +74,6 @@ class PlaceEditReasonsController < ApplicationController
   private
 
   def place_edit_reason_params
-    params.require(:place_edit_reason).permit!
+    params.require(:place_edit_reason).permit(:reason)
   end
 end

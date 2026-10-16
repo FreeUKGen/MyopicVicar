@@ -480,6 +480,8 @@ class Freecen2PiecesController < ApplicationController
   private
 
   def freecen2_piece_params
-    params.require(:freecen2_piece).permit!
+    params.require(:freecen2_piece).permit(:reason_changed, :number, :name, :admin_county, :freecen2_place_id,
+                                           :parish_number, :tnaid, :code, :prenote, :notes, :film_number,
+                                           :remarks, :remarks_coord)
   end
 end

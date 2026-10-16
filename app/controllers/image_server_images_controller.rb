@@ -215,6 +215,9 @@ class ImageServerImagesController < ApplicationController
   private
 
   def image_server_image_params
-    params.require(:image_server_image).permit!
+    @image_server_image_params ||= params.require(:image_server_image).permit(
+      :id, :image_server_group_id, :orig_image_server_group_id, :origin, :status, :difficulty, :notes,
+      :image_file_name, id: []
+    )
   end
 end

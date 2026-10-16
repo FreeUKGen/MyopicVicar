@@ -69,6 +69,6 @@ class SoftwareVersionsController < ApplicationController
   private
 
   def software_version_params
-    params.require(:software_version).permit!
+    params.require(:software_version).permit(:version)
   end
 end
