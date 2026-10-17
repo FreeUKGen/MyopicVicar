@@ -1,85 +1,163 @@
 <div class="palm-flush--bottom">
   <%= semantic_form_for(@search_query) do |f| %>
     <fieldset class="inputs">
-      <legend>Search fields</legend>
+      <legend>Search options</legend>
       <ol class="grid">
-        <li class="grid__item one-quarter lap-one-half palm-one-whole">
-          <label class="ttip" for="last_name" tabindex="0">
-            Surname
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Use uppercase.</span>
+
+        <li class="grid__item one-whole"><h1>Basic Search</h1></li>
+
+        <li class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="ttip" for="death_first_name" tabindex="0">
+            Death First Name
           </label>
-          <% if @search_query.last_name.nil? %>
-            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" placeholder="Optional">
-          <% else %>
-            <input id="last_name" name="search_query[last_name]" type="text" class="text-input" value="<%=@search_query.last_name%>">
-          <% end %>
+          <input id="death_first_name" type="text" class="text-input">
         </li>
-        <li class="grid__item one-quarter lap-one-half palm-one-whole">
-          <label class="ttip" for="first_name" tabindex="0">
-            Forename(s)
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional. Use upper- and lower-case.</span>
+
+        <li class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="ttip" for="death_surname" tabindex="0">
+            Death Surname
           </label>
-          <% if @search_query.first_name.nil? %>
-            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" placeholder="Optional">
-          <% else %>
-            <input id="first_name" name="search_query[first_name]" type="text" class="text-input" value="<%=@search_query.first_name%>">
-          <% end %>
+          <input id="death_surname" type="text" class="text-input">
         </li>
-        <!--li class="grid__item one-quarter lap-one-half palm-one-whole">
-          <label class="ttip" for="session_id">Id</label>
-          <%# if @search_query.session_id.nil? %>
-            <input id="session_id" name="search_query[session_id]" type="text" class="text-input" placeholder="Optional">
-          <%# else %>
-            <input id="session_id" name="search_query[session_id]" type="text" class="text-input" placeholder="Optional" value="<%#=@search_query.session_id%>">
-          <%# end %>
-        </li-->
-        <li class="grid__item one-quarter lap-one-half palm-one-whole">
+
+        <li class="grid__item one-half lap-one-half palm-one-whole" style="margin-left: 50%" id="search_query_record_type_input">
+          <ol class="choices-group">
+            <li class="choice">
+              <label>
+                <input type="checkbox" checked>
+                Exact match on first names (*,?)
+              </label>
+            </li>
+            <li class="choice">
+              <label>
+                <input type="checkbox">
+                Phonetic search Surnames
+              </label>
+            </li>
+          </ol>
+        </li>
+
+        <li class="grid__item one-whole"><h1>Date</h1></li>
+
+        <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
           <label class="ttip" for="start_year" tabindex="0">
-            First year
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional, YYYY. The earliest year you want to search</span>
+            From year
           </label>
           <% if @search_query.start_year.nil? %>
-            <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
+            <input id="start_year" name="search_query[start_year]" type="text"  size="4" class="text-input" placeholder="YYYY" autocomplete="off">
           <% else %>
             <input id="start_year" name="search_query[start_year]" type="text" class="text-input" value="<%=@search_query.start_year%>">
           <% end %>
         </li>
-        <li class="grid__item one-quarter lap-one-half palm-one-whole">
-          <label class="ttip" for="end_year" tabindex="0">
-            Last year
-            <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
-            <span class="ttip__text">Optional, YYYY. The latest year you want to search</span>
+
+        <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
+          <label class="ttip" for="from_month" tabindex="0">
+            Month
           </label>
-          <% if @search_query.end_year.nil? %>
-            <input id="end_year" name="search_query[end_year]" type="text"  size="4" class="text-input" placeholder="YYYY Optional">
-          <% else %>
-            <input id="end_year" name="search_query[end_year]" type="text" class="text-input" value="<%=@search_query.end_year%>">
-          <% end %>
+            <%= select_tag( 'search_query[start_month]', options_for_select([['Jan', 1], ['Feb', 2], ['Mar', 3], ['Apr', 4], ['May', 5], ['Jun', 6], ['Jul', 7], ['Aug', 8], ['Sep', 9], ['Oct', 10], ['Nov', 11], ['Dec', 12]]), class: 'select_month_start date_years text-input', id: 'from_month', tabindex: "0") %>
         </li>
+
+        <li class="grid__item desk-wide-one-fifth desk-one-eighth lap-one-half palm-one-whole daterangefromgrid">
+          <label class="ttip" for="from_day" tabindex="0">
+            Day
+          </label>
+            <%= select_tag( 'search_query[start_day]', options_for_select([['01', 1], ['02', 2], ['03', 3], ['04', 4], ['05', 5], ['06', 6], ['07', 7], ['08', 8], ['09', 9], ['10', 10], ['11', 11], ['12', 12], ['13', 13], ['14', 14], ['15', 15], ['16', 16], ['17', 17], ['18', 18], ['19', 19], ['20', 20], ['21', 21], ['22', 22], ['23', 23], ['24', 24], ['25', 25], ['26', 26], ['27', 27], ['28', 28], ['29', 29], ['30', 30], ['31', 31]]), class: 'select_day_start date_years text-input', id: 'from_day', tabindex: "0") %>
+        </li>
+
+        <li class="grid__item desk-wide-one-fifth desk-three-eighths lap-one-half palm-one-whole daterangefromgrid">
+          <label class="ttip" for="flexibility" tabindex="0">
+            Flexibility
+          </label>
+            <%= select_tag( 'search_query[]', options_for_select([['+/- 5 years', 1], ['2', 2], ['3', 3], ['4', 4], ['5', 5], ['6', 6], ['7', 7], ['8', 8], ['9', 9], ['10', 10], ['11', 11], ['12', 12], ['13', 13], ['14', 14], ['15', 15], ['16', 16], ['17', 17], ['18', 18], ['19', 19], ['20', 20], ['21', 21], ['22', 22], ['23', 23], ['24', 24], ['25', 25], ['26', 26], ['27', 27], ['28', 28], ['29', 29], ['30', 30], ['31', 31]]), class: 'select_day_start date_years text-input', id: 'flexibility', tabindex: "0") %>
+        </li>
+
+        <li class="grid__item one-whole"><h1>Death Address</h1></li>
+
+        <li class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="ttip" for="address_keyword" tabindex="0">
+            Search by address keyword
+          </label>
+          <input id="address_keyword" type="text" class="text-input">
+        </li>
+
+        <li class="grid__item one-whole"><h1>Record Type</h1></li>
+
+        <li class="grid__item one-whole lap-one-whole palm-one-whole" id="search_query_record_type_input">
+          <ol class="choices-group">
+              <label>
+                <input type="checkbox" checked>
+                All
+              </label>
+              <label>
+                <input type="checkbox">
+                Probate
+              </label>
+              <label>
+                <input type="checkbox">
+                Administration
+              </label>
+              <label>
+                <input type="checkbox">
+                Confirmation
+              </label>
+          </ol>
+        </li>
+
+        <li class="grid__item one-whole"><h1>Advanced Search</h1></li>
+
         <li class="grid__item one-third lap-one-half palm-one-whole">
-          <label class="ttip" for="occupation" tabindex="0">Occupation or Role</label>
+          <label class="ttip" for="occupation" tabindex="0">Occupation</label>
           <% if @search_query.occupation.nil? %>
-            <input id="occupation" name="search_query[occupation]" type="text" class="text-input" placeholder="Optional">
+            <input id="occupation" name="search_query[occupation]" type="text" class="text-input">
           <% else %>
             <input id="occupation" name="search_query[occupation]" type="text" class="text-input" value="<%=@search_query.occupation%>">
           <% end %>
         </li>
+
         <li class="grid__item one-third lap-one-half palm-one-whole">
-          <label class="ttip" for="address" tabindex="0">Text search</label>
-          <% if @search_query.text.nil? %>
-            <input id="text" name="search_query[text]" type="text" class="text-input" placeholder="Optional">
-          <% else %>
-            <input id="text" name="search_query[text]" type="text" class="text-input" value="<%=@search_query.text%>">
-          <% end %>
+          <label class="ttip" for="executor_first_name" tabindex="0">
+            Executor firstname
+          </label>
+          <input id="executor_first_name" type="text" class="text-input">
         </li>
+
+        <li class="grid__item one-third lap-one-half palm-one-whole">
+          <label class="ttip" for="executor_surname" tabindex="0">
+            Executor surname
+          </label>
+          <input id="executor_surname" type="text" class="text-input">
+        </li>
+
+        <li class="grid__item one-third lap-one-half palm-one-whole">
+          <label class="ttip" for="estate_value" tabindex="0">
+            Estate value
+          </label>
+          <input id="estate_value" type="text" class="text-input">
+        </li>
+
+        <li class="grid__item one-third lap-one-half palm-one-whole">
+          <label class="ttip" for="court_name" tabindex="0">
+            Court name
+          </label>
+          <input id="court_name" type="text" class="text-input">
+        </li>
+
+        <li class="grid__item one-half lap-one-half palm-one-whole">
+          <label class="ttip" for="keyword_search" tabindex="0">
+            Keyword search
+          </label>
+          <input id="keyword_search" type="text" class="text-input">
+        </li>
+
         <%= f.action :submit,
-                     :as => :button,
-                     :label => 'Search ',
-                     :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname.downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" },
-                     :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
+                    :as => :button,
+                    :label => 'Search ',
+                    :button_html => { :class => "ladda-button" , "data-style" => "contract" ,"data-color" => appname.downcase , "data-size" => "s", "data-spinner-color" => "#ffffff" },
+                    :wrapper_html => { :class => "grid__item one-whole push-half--ends" } %>
+
+        <button class="ladda-button">Clear</button>
+        <button class="ladda-button">Count</button>
+        
       </ol>
     </fieldset>
   <% end %>
@@ -87,4 +165,3 @@
 <script type="text/javascript">
     Ladda.bind( 'button[type=submit]' );
 </script>
-
