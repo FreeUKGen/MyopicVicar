@@ -119,6 +119,7 @@ class SearchQuery
   field :order_asc, type: Boolean, default: true
   field :region, type: String # bot honeypot
   field :search_index, type: String
+  field :search_index_winning_plan, type: String
   field :day, type: String
   field :use_decomposed_dates, type: Boolean, default: false
   field :all_radius_place_ids, type: Array, default: []
