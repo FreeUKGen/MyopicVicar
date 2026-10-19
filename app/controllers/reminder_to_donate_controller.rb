@@ -22,6 +22,6 @@ class ReminderToDonateController < ApplicationController
   private
 
   def reminder_to_donate_params
-    params.require(:reminder_to_donate).permit!
+    params.require(:reminder_to_donate).permit(:name, :email)
   end
 end

@@ -68,6 +68,6 @@ class SiteStatisticsController < ApplicationController
   private
 
   def site_statistic_params
-    params.require(:site_statistic).permit!
+    params.require(:site_statistic).permit(:year, :month, :day, :n_records, :n_searches, :n_records_added)
   end
 end

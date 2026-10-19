@@ -182,6 +182,8 @@ class ChurchesController < ApplicationController
   private
 
   def church_params
-    params.require(:church).permit!
+    params.require(:church).permit(:church_name, :denomination, :location, :website, :church_notes,
+                                   :location_of_source_documents,
+                                   alternatechurchnames_attributes: %i[id alternate_name _destroy])
   end
 end

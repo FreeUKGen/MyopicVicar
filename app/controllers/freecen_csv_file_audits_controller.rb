@@ -12,10 +12,4 @@ class FreecenCsvFileAuditsController < ApplicationController
     end
     @freecen_csv_file_audits = FreecenCsvFileAudit.chapman_code(session[:chapman_code]).order_by(c_at: -1)
   end
-
-  private
-
-  def freecen_csv_file_audit_params
-    params.require(:freecen_csv_file_audit).permit!
-  end
 end

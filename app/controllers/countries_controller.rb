@@ -15,7 +15,7 @@ class CountriesController < ApplicationController
   def create
     params[:country][:country_code] = params[:country][:country_description]
     params[:country][:country_coordinator] = UseridDetail.find(params[:country][:country_coordinator]).userid
-    @country = Country.new(country_params)
+    @country = Country.new(country_create_params)
     @country.save
     if @country.errors.any?
       flash[:notice] = 'The addition of the Country was unsuccessful'
@@ -79,7 +79,12 @@ class CountriesController < ApplicationController
 
   private
 
+  def country_create_params
+    params.require(:country).permit(:country_code, :country_description, :country_coordinator, :country_notes)
+  end
+
   def country_params
-    params.require(:country).permit!
+    params.require(:country).permit(:country_description, :country_coordinator, :previous_country_coordinator,
+                                    :country_notes)
   end
 end

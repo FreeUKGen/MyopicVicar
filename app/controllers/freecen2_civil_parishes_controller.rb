@@ -312,6 +312,9 @@ class Freecen2CivilParishesController < ApplicationController
   private
 
   def freecen2_civil_parish_params
-    params.require(:freecen2_civil_parish).permit!
+    params.require(:freecen2_civil_parish).permit(:reason_changed, :name, :freecen2_place_id, :note, :number, :suffix,
+                                                  freecen2_hamlets_attributes: %i[id name note _destroy],
+                                                  freecen2_townships_attributes: %i[id name note _destroy],
+                                                  freecen2_wards_attributes: %i[id name note _destroy])
   end
 end

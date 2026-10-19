@@ -153,10 +153,4 @@ class FreecenPiecesController < ApplicationController
       redirect_to next_page
     end
   end
-
-  private
-
-  def freecen_piece_params
-    params.require(:freecen_piece).permit!
-  end
 end

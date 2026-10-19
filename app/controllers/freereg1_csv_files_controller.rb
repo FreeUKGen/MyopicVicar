@@ -706,7 +706,9 @@ class Freereg1CsvFilesController < ApplicationController
   end
 
   def freereg1_csv_file_params
-    params.require(:freereg1_csv_file).permit!
+    params.require(:freereg1_csv_file).permit(:transcriber_name, :transcriber_email, :credit_name, :credit_email,
+                                              :first_comment, :second_comment, :transcription_date,
+                                              :modification_date, :locked_by_transcriber, :locked_by_coordinator)
   end
 
   def display_info

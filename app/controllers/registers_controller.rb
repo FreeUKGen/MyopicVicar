@@ -27,7 +27,7 @@ class RegistersController < ApplicationController
     @church.registers.each do |register|
       redirect_to(new_register_path, notice: "A register of that register #{register.register_type} type already exists") && return if register.register_type == params[:register][:register_type]
     end #do
-    @register = Register.new(register_params)
+    @register = Register.new(register_create_params)
     @register[:alternate_register_name] = @church_name.to_s + ' ' + params[:register][:register_type]
     @church.registers << @register
     @church.save
@@ -209,7 +209,14 @@ class RegistersController < ApplicationController
 
   private
 
+  def register_create_params
+    params.require(:register).permit(:register_type, :quality, :source, :copyright, :status,
+                                     :minimum_year_for_register, :maximum_year_for_register, :register_notes)
+  end
+
+  # register_type is changed via Rename (Register#change_type), which also updates dependent records
   def register_params
-    params.require(:register).permit!
+    params.require(:register).permit(:quality, :source, :copyright, :status, :minimum_year_for_register,
+                                     :maximum_year_for_register, :credit, :register_notes)
   end
 end

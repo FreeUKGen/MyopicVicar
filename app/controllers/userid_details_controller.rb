@@ -19,6 +19,8 @@ class UseridDetailsController < ApplicationController
   rescue_from ActiveRecord::RecordInvalid, with: :record_validation_errors
   PERMITTED_ROLES = ['system_administrator', 'syndicate_coordinator', 'county_coordinator', 'country_coordinator', 'master_county_coordinator', 'newsletter_coordinator']
   STATS_PERMITTED_ROLES = ['system_administrator', 'executive_director', 'project_manager', 'engagement_coordinator', 'contacts_coordinator', 'newsletter_coordinator']
+  # UseridDetail#add_fields sets role, syndicate and active status from these commit labels
+  PUBLIC_REGISTRATION_COMMITS = ['Register Researcher', 'Register as Transcriber', 'Technical Registration'].freeze
 
 
   def all
@@ -59,8 +61,12 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
+    anonymous = get_user.blank?
+    # create does not require login; an anonymous request must be one of the public registrations
+    head(:not_found) && return if anonymous && !PUBLIC_REGISTRATION_COMMITS.include?(params[:commit])
+
     if spam_check
-      @userid = UseridDetail.new(userid_details_params)
+      @userid = UseridDetail.new(anonymous ? registration_params : userid_details_params)
       @userid.add_fields(params[:commit], session[:syndicate])
       if @userid.save
         refinery_user = User.where(username: /\A#{::Regexp.escape(@userid.userid)}\z/i).first
@@ -138,9 +144,9 @@ class UseridDetailsController < ApplicationController
     session[:type] = 'edit'
     @userid = @user if session[:my_own]
     @current_user = get_user
+    @permission = UseridDetailPermission.new(@current_user, @userid, appname_downcase, session[:my_own])
     @syndicates = Syndicate.get_syndicates
     @appname = appname_downcase
-    @authourised_roles = ['system_administrator', 'volunteer_coordinator']
   end
 
   def general
@@ -569,16 +575,18 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
-    changed_syndicate = @userid.changed_syndicate?(params[:userid_detail][:syndicate])
-    changed_email_address = @userid.changed_email?(params[:userid_detail][:email_address])
+    # fields the edit form would not show this user are dropped
+    permission = UseridDetailPermission.new(@user, @userid, appname_downcase, session[:my_own])
+    attributes = params.require(:userid_detail).permit(*permission.update_fields).to_h
+    changed_syndicate = attributes.key?('syndicate') && @userid.changed_syndicate?(attributes['syndicate'])
+    changed_email_address = @userid.changed_email?(attributes['email_address'])
     proceed = true
     case params[:commit]
     when 'Disable'
-      params[:userid_detail][:disabled_date] = DateTime.now if @userid.disabled_date.blank?
-      params[:userid_detail][:active] = false
-      params[:userid_detail][:person_role] = params[:userid_detail][:person_role] if params[:userid_detail][:person_role].present?
+      attributes['disabled_date'] = DateTime.now if @userid.disabled_date.blank?
+      attributes['active'] = false
     when 'Update'
-      params[:userid_detail][:previous_syndicate] = @userid.syndicate unless params[:userid_detail][:syndicate] == @userid.syndicate
+      attributes['previous_syndicate'] = @userid.syndicate if attributes.key?('syndicate') && attributes['syndicate'] != @userid.syndicate
     when 'Confirm'
       logger.warn "FREECEN::USER #{params.inspect}"
       if params[:userid_detail][:email_address_valid] == 'true' || params[:userid_detail][:email_address_valid] == true
@@ -598,9 +606,11 @@ class UseridDetailsController < ApplicationController
         redirect_to(edit_userid_detail_path(@userid)) && return
       end
     end
-    email_valid_change_message
-    params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
-    @userid.update_attributes(userid_details_params.except(:userid))
+    if attributes.key?('email_address_valid')
+      email_valid_change_message(attributes['email_address_valid'])
+      attributes['email_address_last_confirmned'] = ['1', 'true'].include?(attributes['email_address_valid']) ? Time.now : ''
+    end
+    @userid.update_attributes(attributes)
     @userid.write_userid_file
     @userid.save_to_refinery
     if @userid.errors.any?
@@ -627,12 +637,30 @@ class UseridDetailsController < ApplicationController
 
     @county_names = ChapmanCode::CODES.values.reduce({}, :merge).invert
   end
-    
+
 
   private
 
   def userid_details_params
-    params.require(:userid_detail).permit!
+    params.require(:userid_detail).permit(
+      :userid, :person_forename, :person_surname, :email_address, :alternate_email_address,
+      :address, :telephone_number, :fiche_reader, :do_not_acknowledge_me,
+      :acknowledge_with_pseudo_name, :pseudo_name, :no_processing_messages, :syndicate,
+      :person_role, :new_transcription_agreement, :recieve_system_emails,
+      :email_address_valid, :email_address_last_confirmned, :reason_for_invalidating,
+      :skill_level, :active, :disabled_reason_standard, :disabled_reason,
+      :transcription_agreement, :skill_notes, :disabled_date, :previous_syndicate,
+      secondary_role: []
+    )
+  end
+
+  # fields submitted by the public researcher/transcriber/technical registration forms
+  def registration_params
+    params.require(:userid_detail).permit(
+      :userid, :person_forename, :person_surname, :email_address, :address, :telephone_number, :syndicate,
+      :skill_notes, :transcription_agreement, :new_transcription_agreement,
+      :code_of_conduct, :volunteer_induction_handbook, :volunteer_policy
+    )
   end
 
   def spam_check
@@ -700,14 +728,14 @@ class UseridDetailsController < ApplicationController
     location += '+"&option=' + option +'"'
   end
 
-  def email_value_changed
-    @userid.email_address_valid.to_s != userid_details_params[:email_address_valid]
+  def email_value_changed(email_address_valid)
+    @userid.email_address_valid.to_s != email_address_valid
   end
 
-  def email_valid_change_message
-    if email_value_changed
+  def email_valid_change_message(email_address_valid)
+    if email_value_changed(email_address_valid)
       message = @userid.email_address_validity_change_message
-      case userid_details_params[:email_address_valid]
+      case email_address_valid
       when 'true'
         message << "VALID on #{Time.now.utc.strftime("%B %d, %Y")} at #{Time.now.utc.strftime("%H:%M:%S")}"
       else

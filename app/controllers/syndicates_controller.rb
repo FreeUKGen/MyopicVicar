@@ -169,6 +169,8 @@ class SyndicatesController < ApplicationController
   private
 
   def syndicate_params
-    params.require(:syndicate).permit!
+    params.require(:syndicate).permit(:syndicate_code, :syndicate_coordinator, :syndicate_description,
+                                      :accepting_transcribers, :syndicate_notes, :changing_name,
+                                      :previous_syndicate_code, :previous_syndicate_coordinator)
   end
 end

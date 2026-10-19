@@ -843,7 +843,9 @@ class MessagesController < ApplicationController
   private
 
   def message_params
-    params.require(:message).permit!
+    params.require(:message).permit(:subject, :body, :message_time, :userid, :syndicate,
+                                    :source_message_id, :source_feedback_id, :source_contact_id,
+                                    :attachment, :images, copies_to_userids: [])
   end
 
   def syndicate_messages(messages, syndicate)

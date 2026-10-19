@@ -114,7 +114,8 @@ class EmbargoRulesController < ApplicationController
   private
 
   def embargo_rule_params
-    params.require(:embargo_rule).permit!
+    params.require(:embargo_rule).permit(:register_id, :member_who_created, :record_type, :rule, :period,
+                                         :period_type, :authority, :reason)
   end
 
   def end_year_embargo_rule?(rule_text)
