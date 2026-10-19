@@ -1,0 +1,12 @@
+# Copy to config/errbit.yml (not committed). Development values are stubs only.
+development:
+  api_key: "development"
+  host: "localhost"
+
+test:
+  api_key: "test"
+  host: "localhost"
+
+production:
+  api_key: ""
+  host: ""

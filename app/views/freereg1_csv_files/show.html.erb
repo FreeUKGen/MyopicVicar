@@ -123,10 +123,6 @@
               <td class="weight--semibold">  <%= @freereg1_csv_file.transcription_date %></td>
             </tr>
             <tr>
-              <td>Date modified</td>
-              <td class="weight--semibold"><%= @freereg1_csv_file.modification_date %></td>
-            </tr>
-            <tr>
               <td>Image numbers available with record</td>
               <td class="weight--semibold">  <%= @freereg1_csv_file.lds %> </td>
             </tr>
@@ -141,6 +137,10 @@
             <tr>
               <td>Processed Date</td>
               <td class="weight--semibold"><%= look_up_processed_date(@freereg1_csv_file) %></td>
+            </tr>
+            <tr>
+              <td>Last Modified</td>
+              <td class="weight--semibold"><%= @freereg1_csv_file.modification_date %></td>
             </tr>
             <tr>
               <td>Flexible CSV Used</td>

@@ -33,8 +33,12 @@ class Assignment
       assignment = Assignment.id(assignment_id)
       return false if assignment.first.nil?
 
-      image_server_image = ImageServerImage.where(:assignment_id=>assignment_id, :status=>orig_status)
-      return false if image_server_image.first.nil? 
+      # orig_status only drives get_update_assignment_new_status (a param comparison, not a
+      # DB read) - filtering images by it here just re-introduces the #2982 bug one step
+      # later, since an image's own status can lag behind what the group/assignment reports.
+      # assignment_id is the reliable link.
+      image_server_image = ImageServerImage.where(:assignment_id=>assignment_id)
+      return false if image_server_image.first.nil?
 
       image_server_group = ImageServerGroup.where(:id=>image_server_image.first.image_server_group.id)
       user = UseridDetail.where(:id=>assignment.first.userid_detail_id).first.userid
@@ -251,7 +255,10 @@ class Assignment
     end
 
     def list_assignment_by_status(syndicate,status)
-      image_server_group = ImageServerGroup.where(:syndicate_code=>syndicate).pluck(:id, :group_name)
+      # A group's own summary.status is the source of truth for "submitted" - individual
+      # ImageServerImage#status can lag behind it (see #2982), so filter groups on that
+      # instead of requiring every image in the group to already show the same status.
+      image_server_group = ImageServerGroup.where(:syndicate_code=>syndicate, :'summary.status'=>{'$in'=>[status]}).pluck(:id, :group_name)
       group_id = image_server_group.map{|a| a[0]}.uniq
 
       u_ids = UseridDetail.pluck(:id,:userid)
@@ -259,7 +266,7 @@ class Assignment
 
       a_ids = Assignment.pluck(:id, :source_id, :assign_date, :instructions, :userid_detail_id)
 
-      i_ids = ImageServerImage.where(:assignment_id=>{'$in'=>a_ids.map(&:first)}, :status=>status, :image_server_group_id=>{'$in'=>group_id}).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
+      i_ids = ImageServerImage.where(:assignment_id=>{'$in'=>a_ids.map(&:first)}, :image_server_group_id=>{'$in'=>group_id}).pluck(:id, :assignment_id, :image_server_group_id, :image_file_name, :status, :difficulty, :notes)
 
       (assignment_id, image_assignment_id, image_group_id, image, group_name) = prepare_for_parsing(a_ids,i_ids)
 

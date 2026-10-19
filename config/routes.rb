@@ -17,6 +17,10 @@ MyopicVicar::Application.routes.draw do
 
 
   root :to => 'search_queries#new'
+  match '/404', to: 'errors#not_found', via: :all
+  match '/422', to: 'errors#unprocessable_entity', via: :all
+  match '/500', to: 'errors#internal_server_error', via: :all
+
   resources :reminder_to_donate
   resources :donate_cta_feedback
 
@@ -272,6 +276,8 @@ MyopicVicar::Application.routes.draw do
   get 'contacts/select_by_identifier',  :to => 'contacts#select_by_identifier', :as => :select_by_identifier_contacts
   get 'contacts/:id(.:format)/report_error', :to => 'contacts#report_error', :as => :report_error_contact
   get 'contacts/:source_contact_id/reply',  :to => 'contacts#reply_contact', :as => :reply_contact
+  get 'contacts/:source_contact_id/forward',  :to => 'contacts#forward_contact', :as => :forward_contact
+  post 'contacts/:source_contact_id/forward',  :to => 'contacts#send_forward_contact', :as => :send_forward_contact
   get 'contacts/:id/contact_reply_messages', to: 'contacts#contact_reply_messages', as: :contact_reply_messages
   get 'contacts/:id/force_destroy',  :to => 'contacts#force_destroy', :as => :force_destroy_contact
   get 'contacts/:id/archive',  :to => 'contacts#archive', :as => :archive_contact
@@ -561,6 +567,9 @@ MyopicVicar::Application.routes.draw do
   get 'freereg1_csv_files/update_registers', :to => 'freereg1_csv_files#update_registers', :as => :update_registers
   get 'freereg1_csv_files/:id/merge', :to => 'freereg1_csv_files#merge', :as => :merge_freereg1_csv_file
   get 'freereg1_csv_files/:id/remove', :to => 'freereg1_csv_files#remove', :as => :remove_freereg1_csv_file
+  post 'freereg1_csv_files/:id/refresh_file_information',
+    to: 'freereg1_csv_files#refresh_file_information',
+    as: :refresh_file_information_freereg1_csv_file
   get 'freereg1_csv_files/:id/relocate(.:format)', :to => 'freereg1_csv_files#relocate', :as => :relocate_freereg1_csv_file
   get 'freereg1_csv_files/:id/lock(.:format)', :to => 'freereg1_csv_files#lock', :as => :lock_freereg1_csv_file
   get 'freereg1_csv_files/:id/error(.:format)', :to => 'freereg1_csv_files#error', :as => :error_freereg1_csv_file
@@ -594,7 +603,7 @@ MyopicVicar::Application.routes.draw do
   get 'search_records/:id/show_print_version(.:format)', :to => 'search_records#show_print_version', :as => :show_print_version_search_record
   get 'search_records/:id/show_citation', :to => 'search_records#show_citation', :as => :show_citation_record
   get 'search_records/:id/:friendly(.:format)', :to => 'search_records#show', :as => :friendly_search_record
-  resources :search_records
+  resources :search_records, only: [:show], constraints: { id: /[0-9a-f]{24}/ }
 
   get 'search_queries/:id/show_query', :to => 'search_queries#show_query', :as => :show_query_search_query
   get 'search_queries/:id/show_print_version', :to => 'search_queries#show_print_version', :as => :show_print_version_search_query
@@ -645,6 +654,7 @@ MyopicVicar::Application.routes.draw do
   get 'image_server_groups/upload_return', :to => 'image_server_groups#upload_return', :as => :upload_return_image_server_group
   get 'image_server_groups/:id/request_cc_image_server_group(.:format)', :to => 'image_server_groups#request_cc_image_server_group', :as => :request_cc_image_server_group
   get 'image_server_groups/:id/request_sc_image_server_group(.:format)', :to => 'image_server_groups#request_sc_image_server_group', :as => :request_sc_image_server_group
+  post 'image_server_groups/send_complete_to_cc(.:format)', :to => 'image_server_groups#send_complete_to_cc', :as => :send_complete_to_cc_image_server_groups
   get 'image_server_groups/:id/send_complete_to_cc(.:format)', :to => 'image_server_groups#send_complete_to_cc', :as => :send_complete_to_cc_image_server_group
   resources :image_server_groups
 

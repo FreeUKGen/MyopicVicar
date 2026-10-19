@@ -2,7 +2,7 @@ class UpdatePlaceUcf
   require 'app'
   def self.process(limit)
     file_for_warning_messages = "log/place_ucf_update.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
     message_file = File.new(file_for_warning_messages, "w")
     p "Started a place ucf update for #{limit} files "
     message_file.puts  "Started a place ucf update for #{limit} files "

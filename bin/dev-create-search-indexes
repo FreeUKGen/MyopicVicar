@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Create the named compound indexes on search_records that FreeREG/FreeCEN query
+# hints depend on (see app/models/search_record.rb's *_INDEXES hashes). These are
+# raw MongoDB indexes defined in doc/design/indexes/*.reg|.cen - Mongoid's own
+# create_indexes only builds the handful declared via the `index()` macro, so
+# search silently fails with "hint provided does not correspond to an existing
+# index" until this has been run at least once per database.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+DB_NAME="${MONGOID_DATABASE:-}"
+
+if [[ -z "$DB_NAME" ]]; then
+  if [[ -f config/mongoid.yml ]]; then
+    DB_NAME="$(ruby -ryaml -e "
+      y = YAML.load_file('config/mongoid.yml')
+      puts(y.dig('development', 'clients', 'default', 'database') || 'myopic_vicar_development')
+    " 2>/dev/null || echo 'myopic_vicar_development')"
+  else
+    DB_NAME="myopic_vicar_development"
+  fi
+fi
+
+if command -v mongosh >/dev/null 2>&1; then
+  SHELL_BIN="mongosh"
+elif command -v mongo >/dev/null 2>&1; then
+  SHELL_BIN="mongo"
+else
+  echo "Neither mongosh nor mongo found. Install MongoDB shell tools."
+  exit 1
+fi
+
+echo "Using $SHELL_BIN against database: $DB_NAME"
+echo
+
+for spec in doc/design/indexes/search_records.reg doc/design/indexes/search_records.cen; do
+  if [[ ! -f "$spec" ]]; then
+    echo "  SKIP $spec (not found)"
+    continue
+  fi
+  echo "  Creating indexes from $spec"
+  "$SHELL_BIN" "$DB_NAME" "$spec"
+done
+
+echo
+echo "Done. Verify in a mongo shell:"
+echo "  use $DB_NAME"
+echo "  db.search_records.getIndexes().map(i => i.name)"

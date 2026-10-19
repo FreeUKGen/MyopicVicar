@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Import reference MongoDB collections from JSON files in tmp/ (or a path you pass).
+# Obtain collection dumps from your mentor / FreeUKGen "Files for Development" share.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+IMPORT_DIR="${1:-$ROOT/tmp}"
+DB_NAME="${MONGOID_DATABASE:-}"
+
+if [[ -z "$DB_NAME" ]]; then
+  if [[ -f config/mongoid.yml ]]; then
+    DB_NAME="$(ruby -ryaml -e "
+      y = YAML.load_file('config/mongoid.yml')
+      puts(y.dig('development', 'clients', 'default', 'database') || 'myopic_vicar_development')
+    " 2>/dev/null || echo 'myopic_vicar_development')"
+  else
+    DB_NAME="myopic_vicar_development"
+  fi
+fi
+
+COLLECTIONS=(
+  places
+  churches
+  counties
+  countries
+  denominations
+  registers
+  syndicates
+  userid_details
+  emendation_rules
+  emendation_types
+)
+
+if ! command -v mongoimport >/dev/null 2>&1; then
+  echo "mongoimport not found. Install MongoDB database tools."
+  exit 1
+fi
+
+echo "Importing into database: $DB_NAME"
+echo "From directory: $IMPORT_DIR"
+echo
+
+for name in "${COLLECTIONS[@]}"; do
+  file="$IMPORT_DIR/${name}.json"
+  if [[ ! -f "$file" ]]; then
+    echo "  SKIP $name (missing $file)"
+    continue
+  fi
+  echo "  IMPORT $name"
+  mongoimport --db "$DB_NAME" --collection "$name" --file "$file" --drop
+done
+
+echo
+echo "Done. Verify in mongo shell:"
+echo "  use $DB_NAME"
+echo "  db.places.countDocuments()"

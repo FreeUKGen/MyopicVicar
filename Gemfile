@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 #gem 'rails', '5.2.8'
 #gem 'rails', '6.1'
-gem 'rails', '~> 6.1.7'
+gem 'rails', '~> 7.2.2'
 gem 'tzinfo-data' #needed by windows
 gem 'mysql2'
 #gem 'refinerycms'
@@ -23,7 +23,7 @@ gem 'airbrake'
 gem 'bcrypt'
 gem 'text'
 gem 'json'
-gem 'pry'
+gem "pry", ">= 0.14.2"
 gem 'pry-byebug'
 gem 'email_veracity'
 gem 'unicode'
@@ -40,7 +40,8 @@ gem 'osgb', git: 'https://github.com/FreeUKGen/osgb.git'
 gem 'rubyzip'
 gem 'zip-zip'
 gem 'rspec-rails'
-gem 'carrierwave-mongoid', require: 'carrierwave/mongoid'
+gem 'carrierwave', '~> 2.1.0'
+gem 'carrierwave-mongoid', '~> 1.5', require: 'carrierwave/mongoid'
 gem 'simple_form'
 gem 'newrelic_rpm'
 gem 'octokit'
@@ -56,3 +57,8 @@ gem 'rubocop', '~> 1.23.0', require: false
 gem 'browser'
 gem "mongo_session_store", "~> 3.2"
 gem 'mimemagic', '~> 0.4.3'
+gem 'mime-types', '~> 3.5.0'
+gem "logger", "1.6.0"
+gem "net-smtp"
+gem "net-pop"
+gem "net-imap"

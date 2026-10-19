@@ -57,12 +57,14 @@ class SearchQueriesController < ApplicationController
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
 
+    @search_index_hint = @search_query.search_index_hint_for_explain
     begin
       @plan = @search_query.explain_plan
     rescue => ex
       @plan_error = ex.message
       @plan = @search_query.explain_plan_no_sort
     end
+    @search_index_winning_plan = SearchRecord.index_name_from_explain(@plan)
   end
 
   def broaden
@@ -98,6 +100,9 @@ class SearchQueriesController < ApplicationController
   def edit
     @search_query, proceed, message = SearchQuery.check_and_return_query(params[:id])
     redirect_back(fallback_location: new_search_query_path, notice: message) && return unless proceed
+
+    # the old shared edit form no longer exists; revising a search is done on the new search page
+    redirect_to new_search_query_path(search_id: @search_query)
   end
 
   def expand_search_query_composite_chapman_codes(composite_counties, chapman_codes)
@@ -308,6 +313,6 @@ class SearchQueriesController < ApplicationController
   private
 
   def search_params
-    params.require(:search_query).permit!
+    permitted_model_params(SearchQuery)
   end
 end

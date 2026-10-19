@@ -19,7 +19,7 @@ module Freecen1VldFileAuditsHelper
 
   def vld_audit_csv_files_piece_unincorporated(piece_id)
     piece = Freecen2Piece.find_by(id: piece_id)
-    if piece.freecen_csv_files.present?
+    if piece.present? && piece.freecen_csv_files.present?
       files = []
       piece.freecen_csv_files.incorporated(false).order_by(file_name: 1).each do |file|
         if file.userid.blank?
@@ -36,7 +36,7 @@ module Freecen1VldFileAuditsHelper
 
   def vld_audit_csv_files_piece_incorporated(piece_id)
     piece = Freecen2Piece.find_by(id: piece_id)
-    if piece.freecen_csv_files.present?
+    if piece.present? && piece.freecen_csv_files.present?
       files = []
       piece.freecen_csv_files.incorporated(true).order_by(file_name: 1).each do |file|
         if file.userid.blank?

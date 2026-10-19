@@ -100,31 +100,35 @@
       <h4 class=" text--center">Variable statistics </h3>
       <div class="container push--bottom">
         <div class="desk-wide-seven-tenths desk-seven-tenths lap-seven-tenths palm-one-whole">
-          <%= form_tag transcriber_statistics_userid_details_path, method: :get, id: 'timeline_form' do %>
+          <%= form_tag transcriber_statistics_userid_details_path, method: :get, id: 'date_range_form' do %>
             <div class="grid">
-              <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-                <%= label_tag 'timeline', 'Timeline in months', class: 'clear--left' %>
-                <%= select_tag(:timeline, options_for_select([1, 3, 6, 12, 36, 60], selected: @timeline), {:prompt => "Months", id: 'months', tabindex: "0"}) %>
+              <div class="grid__item desk-one-third lap-one-third palm-one-whole">
+                <%= label_tag 'from_date', 'From date', class: 'clear--left' %>
+                <%= date_field_tag :from_date, @from_date, class: 'form-control', tabindex: '0' %>
               </div>
-              <div class="grid__item desk-one-half lap-one-half palm-one-whole">
-                <%= button_tag 'Update', class: "btn btn--small push--top"%>
+              <div class="grid__item desk-one-third lap-one-third palm-one-whole">
+                <%= label_tag 'to_date', 'To date', class: 'clear--left' %>
+                <%= date_field_tag :to_date, @to_date, class: 'form-control', tabindex: '0' %>
+              </div>
+              <div class="grid__item desk-one-third lap-one-third palm-one-whole">
+                <%= button_tag 'Update', class: "btn btn--small push--top" %>
               </div>
             </div>
           <% end %>
         </div>
       </div>
-      <table  class="table--bordered   table--data">
+      <table class="table--bordered table--data">
         <tr>
           <th class="t40 caps">Statistic</th>
           <th class="t20 caps">Transcribers</th>
         </tr>
         <tr>
-          <td style="font-weight: bold;">Number of transcribers uploaded file recently</td>
+          <td style="font-weight: bold;">Number of transcribers who uploaded a file in period</td>
           <td><%= @number_of_transcribers_recently_uploaded_file %></td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">New Registrations recently </td>
-          <td ><%= @new_users %></td>
+          <td style="font-weight: bold;">New registrations in period</td>
+          <td><%= @new_users %></td>
         </tr>
       </table>
     </div>

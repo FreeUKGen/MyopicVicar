@@ -2,19 +2,19 @@
   <% unless @userids.blank? %>
     <section class="island ">
       <div class="scrollable ">
-        <table class=" table--bordered my-width table--data just--left">
+        <table class=" table--bordered my-width table--data just--left js-sortable-table">
           <thead >
             <tr>
-              <th class='sticky-header'>UserID</th>
-              <th class='sticky-header'>Forename</th>
-              <th class='sticky-header'>Surname</th>
-              <th class='sticky-header'>Email</th>
-              <th class='sticky-header'>Active</th>
-              <th class='sticky-header' title="Transcriber Agreement Accepted">Agreement</th>
-              <th class='sticky-header'>Signed Up Date</th>
+              <th class='sticky-header' data-sort-type='text'>UserID</th>
+              <th class='sticky-header' data-sort-type='text'>Forename</th>
+              <th class='sticky-header' data-sort-type='text'>Surname</th>
+              <th class='sticky-header' data-sort-type='text'>Email</th>
+              <th class='sticky-header' data-sort-type='text'>Active</th>
+              <th class='sticky-header' data-sort-type='text' title="Transcriber Agreement Accepted">Agreement</th>
+              <th class='sticky-header' data-sort-type='date'>Signed Up Date</th>
               <% unless MyopicVicar::Application.config.template_set == 'freecen'%>
-                <th class='sticky-header'>Last Upload</th>
-                <th class='sticky-header'>Files </th>
+                <th class='sticky-header' data-sort-type='date'>Last Upload</th>
+                <th class='sticky-header' data-sort-type='number'>Files </th>
               <% end %>
               <th colspan="4" class='sticky-header'>Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>SH: Show profile details; ED: Edit the profile; LB: List their batches; IN: Inactivate the userid OR ACT:Activate the userid. (You will have either IN or ACT in the field)</span></a></th>
             </tr>

@@ -117,6 +117,16 @@
           <td class="weight--semibold"> <%= @place.original_longitude %></td>
         </tr>
         <tr>
+          <td>GENUKI URL:</td>
+          <td class="weight--semibold">
+            <% if @place.genuki_url.nil? || @place.genuki_url == "no url" %>
+              <%= @place.genuki_url %>
+            <% else %>
+              <%= link_to('Genuki', @place.genuki_url) %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
           <td>Original source:</td>
           <td class="weight--semibold"> <%= @place.original_source %></td>
         </tr>

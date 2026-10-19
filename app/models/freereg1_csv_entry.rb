@@ -347,6 +347,79 @@ class Freereg1CsvEntry
     false
   end
 
+  def embargo_current_status_summary
+    return 'No embargo history on this record.' if embargo_records.blank?
+
+    last = embargo_records.order_by(updated_at: -1).first
+    release = last.release_year.presence || last.release_date.presence
+    active = currently_under_embargo?
+
+    summary = if active
+                'This record is currently embargoed (hidden from search).'
+              else
+                'This record is not currently embargoed (visible in search).'
+              end
+
+    last_change = "Last change: #{last.embargoed ? 'embargoed' : 'released'}" \
+                  " by #{last.who} on #{last.when&.strftime('%e %b %Y')} — #{last.why}"
+    last_change += " (release year #{release})" if release.present?
+
+    "#{summary} #{last_change}"
+  end
+
+  # Matches search visibility and listing: still embargoed only if not yet at release year.
+  # Uses register rule when release_year is missing on stale embedded records.
+  def currently_under_embargo?
+    return false if embargo_records.blank?
+
+    release_year = effective_embargo_release_year
+    return false if release_year.present? && DateTime.now.year.to_i >= release_year.to_i
+
+    last = embargo_records.order_by(updated_at: -1).first
+    last.present? && last.embargoed == true
+  end
+
+  def effective_embargo_release_year
+    last = embargo_records.order_by(updated_at: -1).first
+    return nil if last.blank?
+
+    if last.who == 'register_rule'
+      computed = computed_release_year_from_register_rule
+      return computed if computed.present?
+    end
+
+    stored = last.release_year.presence || last.release_date.presence
+    return stored.to_i if stored.present?
+
+    # Manually embargoed with no release date at all: this register may still have a
+    # configured period for this record_type even though no rule was actually applied
+    # to create this embargo. Prefer that convention over a flat default.
+    return nil unless last.embargoed
+
+    indefinite_embargo_fallback_release_year
+  end
+
+  def computed_release_year_from_register_rule
+    last = embargo_records.last
+    return nil if last.blank? || last.who != 'register_rule'
+
+    register = freereg1_csv_file&.register
+    return nil if register.blank? || register.embargo_rules.blank?
+
+    rule = register.embargo_rules.find_by(record_type: record_type)
+    return nil if rule.blank?
+
+    EmbargoRecord.process_embargo_year(rule, year)
+  end
+
+  def indefinite_embargo_fallback_release_year
+    register = freereg1_csv_file&.register
+    rule = register.embargo_rules.find_by(record_type: record_type) if register.present?
+    return EmbargoRecord.process_embargo_year(rule, year) if rule.present?
+
+    SearchRecord.indefinite_embargo_release_year
+  end
+
   def cal_digest
     case self.record_type
     when RecordType::BAPTISM
@@ -755,6 +828,9 @@ class Freereg1CsvEntry
       order = order + FreeregOptionsConstants::ORIGINAL_MARRIAGE_LAYOUT
       order = order + FreeregOptionsConstants::ORIGINAL_COMMON_FIELDS
     end
+    if contract_date.present? && !order.include?('contract_date')
+      order.insert(order.index('marriage_date') + 1, 'contract_date')
+    end
     order = order + FreeregOptionsConstants::END_FIELDS
     order = order.uniq
     order
@@ -845,14 +921,16 @@ class Freereg1CsvEntry
       return [false, '']
     elsif embargo_records.blank?
       embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
+    elsif embargo_records.present? && embargo_records.last.embargoed == true && DateTime.now.year.to_i >= end_year
+      # Release before already_has_this_embargo? — otherwise reprocessing never flips
+      # embargoed to false when the calendar passes but the rule document is unchanged.
+      embargo_record = EmbargoRecord.new(embargoed: false, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
     elsif embargo_records.present? && already_has_this_embargo?(rule)
       return [false, '']
     elsif embargo_records.present? && embargo_records.last.embargoed == false && DateTime.now.year.to_i >= end_year
       return [false, '']
     elsif embargo_records.present? && embargo_records.last.embargoed == false
       embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
-    elsif embargo_records.present? && embargo_records.last.embargoed == true && DateTime.now.year.to_i >= end_year
-      embargo_record = EmbargoRecord.new(embargoed: false, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
     else
       embargo_record = EmbargoRecord.new(embargoed: true, rule_date: rule.updated_at, rule_applied: rule.id, who: 'register_rule', why: rule.reason, when: DateTime.now, release_year: end_year, release_date: end_year)
     end

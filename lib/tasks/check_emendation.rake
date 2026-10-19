@@ -15,12 +15,16 @@ task :check_emendation,[:limit,:emendation,:replacement,:type,:fix] => [:environ
   num = 0
   if type
       #code for originals to replacement
+      base_query = SearchRecord.where("search_names.first_name": original)
+      num_emendations = base_query.count
+      # push the limit down to Mongo instead of loading every matching record first;
+      # 0/blank stopping still only ever processes 1 record below, so cap the fetch to match
+      effective_limit = stopping > 0 ? stopping : 1
       search_records = Hash.new
-      SearchRecord.where("search_names.first_name": original).all.each do |record|
+      base_query.limit(effective_limit).each do |record|
           rec = record.id.to_s
           search_records[rec] = record unless search_records.has_key?(rec)
       end
-      num_emendations = search_records.length  
       search_records.each_value do |record|   
         a_match = false
         record.search_names.each do |names|

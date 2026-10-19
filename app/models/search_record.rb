@@ -17,6 +17,18 @@ class SearchRecord
   SYMBOLS_TO_CLEAN = ['.', ':', ';', "'", '-', '`', '"'].freeze
   DELETE_SET = SYMBOLS_TO_CLEAN.join.gsub('-', '\-').freeze
 
+  # Cap for an active embargo with no defined release year (indefinite embargo, or a
+  # manual embargo missing release_date). filter_embargoed and the search query's $nor
+  # only exclude a record when release_year is present AND in the future, so a nil
+  # release_year on an actively-embargoed record would otherwise leak into search.
+  # 100 years matches the standard genealogy privacy convention (embargoed for 100
+  # years from now) rather than an arbitrary far-future sentinel.
+  INDEFINITE_EMBARGO_YEARS = 100
+
+  def self.indefinite_embargo_release_year
+    DateTime.now.year.to_i + INDEFINITE_EMBARGO_YEARS
+  end
+
   module Source
     TRANSCRIPT = 'transcript'
     EMENDOR = 'e'
@@ -102,7 +114,7 @@ class SearchRecord
     'place2_lnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.last_name', 'record_type', 'search_date'],
     'place2_lnsdx_fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.last_name', 'search_soundex.first_name', 'record_type', 'search_date'],
     'place2_fn_rt_sd' => ['freecen2_place_id', 'search_names.first_name', 'record_type', 'search_date'],
-    'place_2fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
+    'place2_fnsdx_rt_sd' => ['freecen2_place_id', 'search_soundex.first_name', 'record_type', 'search_date'],
     'place2_rt_sd' => ['freecen2_place_id', 'record_type', 'search_date']
   }.freeze
 
@@ -161,6 +173,7 @@ class SearchRecord
 
 
   index({ place_id: 1, locations_names: 1 }, { name: 'place_location' })
+  index({ chapman_code: 1, record_type: 1 }, { name: 'chapman_record_type' })
 
   # This speeds up the lookup of SearchRecords by their Entry ID
   index({ freereg1_csv_entry_id: 1 })
@@ -222,7 +235,8 @@ class SearchRecord
         logger.warn " #{param[:id]} no longer exists"
         return [false, search_query, search_record, messagea]
       end
-      search_query = search.present? ? SearchQuery.search_id(search).first : ''
+      query_id = search.presence || param[:search_id]
+      search_query = query_id.present? ? SearchQuery.search_id(query_id).first : ''
       search_record = SearchRecord.record_id(param[:id]).first
       if search_record.blank?
         logger.warn(warning)
@@ -432,8 +446,66 @@ class SearchRecord
       end
       scores = {}
       candidates.each { |name| scores[name] = index_score(name, search_fields, index_component) }
-      best = scores.max_by { |_k, v| v}
-      best[0]
+      best = scores.max_by { |_k, v| v }
+      hint = best[0]
+      Rails.logger.debug do
+        "[SearchRecord.index_hint] app=#{App.name_downcase} fields=#{search_fields.inspect} hint=#{hint} score=#{best[1]}"
+      end
+      hint
+    end
+
+    def explain_find(params, hint: nil)
+      view = collection.find(params)
+      view = view.hint(hint.to_s) if hint.present?
+      # queryPlanner is the only verbosity that never executes the query --
+      # this is only used to log which index won, not to gather execution stats,
+      # so anything more expensive (executionStats/allPlansExecution) is unnecessary cost.
+      view.explain(verbosity: :query_planner)
+    end
+
+    def winning_plan_index_name(params, hint = nil)
+      index_name_from_explain(explain_find(params, hint: hint))
+    rescue StandardError => e
+      Rails.logger.warn("[SearchRecord.winning_plan_index_name] #{e.class}: #{e.message}")
+      nil
+    end
+
+    def index_name_from_explain(explain_result)
+      doc = normalize_explain_document(explain_result)
+      name = doc.dig('queryPlanner', 'winningPlan', 'indexName')
+      return name if name.present? && name != '_id_'
+
+      find_index_name_in_tree(doc)
+    end
+
+    def normalize_explain_document(explain_result)
+      case explain_result
+      when Hash
+        explain_result.deep_stringify_keys
+      when BSON::Document
+        explain_result.to_hash.deep_stringify_keys
+      else
+        explain_result.respond_to?(:to_h) ? explain_result.to_h.deep_stringify_keys : {}
+      end
+    end
+
+    def find_index_name_in_tree(obj)
+      case obj
+      when Hash
+        name = obj['indexName']
+        return name if name.present? && name != '_id_'
+
+        obj.each_value do |value|
+          found = find_index_name_in_tree(value)
+          return found if found.present?
+        end
+      when Array
+        obj.each do |item|
+          found = find_index_name_in_tree(item)
+          return found if found.present?
+        end
+      end
+      nil
     end
 
     def index_score(index_name, search_fields, index_component)
@@ -500,8 +572,10 @@ class SearchRecord
       record = existing || SearchRecord.new
       record.assign_attributes(search_record_parameters)
       record[:freereg1_csv_entry_id] = entry.id
-      record[:embargoed] = entry.embargo_records.last.embargoed if entry.embargo_records.present?
-      record[:release_year] = entry.embargo_records.last.release_year if entry.embargo_records.present?
+      if entry.embargo_records.present?
+        record[:embargoed] = entry.currently_under_embargo?
+        record[:release_year] = entry.effective_embargo_release_year
+      end
       record.transform
       record.digest = record.cal_digest
       if existing.present? && record.digest == previous_digest
@@ -652,14 +726,14 @@ class SearchRecord
   def create_soundex
     search_names.each do |name|
       sdx = soundex_name_type_triple(name)
-      search_soundex << sdx unless sdx[:first_name].nil? || sdx[:last_name].nil?
+      search_soundex << sdx unless sdx[:first_name].nil? && sdx[:last_name].nil?
     end
   end
 
   def downcase_all
     search_names.each do |name|
-      name[:first_name].downcase! if name[:first_name]
-      name[:last_name].downcase! if name[:last_name]
+      name.first_name = name.first_name.downcase if name.first_name
+      name.last_name = name.last_name.downcase if name.last_name
     end
   end
 
@@ -1063,11 +1137,13 @@ ry_search_date
   end
 
   def search_name(first_name, last_name, person_type, person_role, person_gender, source = Source::TRANSCRIPT)
+    first_name = copy_name(first_name)&.downcase
+    last_name = copy_name(last_name)&.downcase
     name = nil
     unless last_name.blank?
-      name = SearchName.new({ :first_name => copy_name(first_name), :last_name => copy_name(last_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => first_name, :last_name => last_name, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     else
-      name = SearchName.new({ :first_name => copy_name(first_name), :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
+      name = SearchName.new({ :first_name => first_name, :origin => source, :type => person_type, :role => person_role, :gender => person_gender })
     end
     name
   end

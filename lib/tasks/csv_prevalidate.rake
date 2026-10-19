@@ -12,8 +12,8 @@ namespace :freecen do
         friendly_email = "#{user.person_forename} #{user.person_surname} <#{user.email_address}>"
         message = "Sending email to #{userid} to notify of task completion"
       else
-        friendly_email = "#{appname} Servant <#{appname}-processing@#{appname}.org.uk>"
-        message = "Sending email to #{appname} Servant to notify of task completion"
+        friendly_email = "#{appname} <#{appname}-processing@#{appname}.org.uk>"
+        message = "Sending email to #{appname} to notify of task completion"
       end
       output_to_log(log_file, message)
       UserMailer.freecen_processing_report(friendly_email, "FreeCEN Prevalidation for #{scope} completed", report).deliver

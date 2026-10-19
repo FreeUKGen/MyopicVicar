@@ -17,7 +17,7 @@ module RegisterType
   end
 
   def self.specified?(value)
-    !value.blank? && !value == "Unspecified"
+    value.to_s.strip.present? && value.to_s.strip != UNSPECIFIED
   end
   def self.option_values
     OPTIONS.values

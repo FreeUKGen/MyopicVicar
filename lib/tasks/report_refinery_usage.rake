@@ -1,6 +1,6 @@
 task :report_refinery_usage => :environment do
   file_for_warning_messages = "log/Freereg2_usage_report.log"
-  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
   @@message_file = File.new(file_for_warning_messages, "w")
   @@message_file.puts "User,Number,Last sign in"
   Refinery::Authentication::Devise::User.all.each do |user|

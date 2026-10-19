@@ -174,8 +174,9 @@ class Freecen2ContentsController < ApplicationController
       @place_unique_names = Freecen2PlaceUniqueName.find_by(freecen2_place_id: @place.id)
       redirect_back(fallback_location: freecen2_contents_path, notice: 'Names not found') && return if @place_unique_names.blank?
 
-      @first_names = @place_unique_names.unique_forenames[@year]
-      @last_names = @place_unique_names.unique_surnames[@year]
+      # a place may have no names recorded for the requested year
+      @first_names = @place_unique_names.unique_forenames.to_h[@year] || []
+      @last_names = @place_unique_names.unique_surnames.to_h[@year] || []
       @first_names_cnt = @first_names.count
       @last_names_cnt = @last_names.count
       if params[:name_type] == 'Surnames' || params[:name_type].to_s.empty?
@@ -185,8 +186,10 @@ class Freecen2ContentsController < ApplicationController
         @unique_names = @first_names
         @name_type = 'Forenames'
       end
-      @first_letter = params[:first_letter].presence || 'All'
       @unique_names, @remainder = Freecen2Content.letterize(@unique_names)
+      # ignore malformed letters (e.g. "A'" from badly escaped links)
+      @first_letter = params[:first_letter].presence || 'All'
+      @first_letter = 'All' unless @first_letter == 'Remainder' || @unique_names.key?(@first_letter)
     else
       redirect_back(fallback_location: freecen2_contents_path, notice: 'Place not found') && return
     end

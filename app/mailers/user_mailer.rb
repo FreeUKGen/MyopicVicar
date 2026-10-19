@@ -5,9 +5,9 @@ class UserMailer < Devise::Mailer
   reg_website = MyopicVicar::Application.config.website == 'https://www.freereg.org.uk' ? '' : 'Test'
   cen_website = MyopicVicar::Application.config.website == 'https://www.freecen.org.uk' ? '' : 'Test'
   if MyopicVicar::Application.config.template_set == 'freereg'
-    default from: "#{reg_website} FreeREG Servant <no-reply@freereg.org.uk>"
+    default from: "#{reg_website} FreeREG <no-reply@freereg.org.uk>"
   elsif MyopicVicar::Application.config.template_set == 'freecen'
-    default from: "#{cen_website} FreeCEN Servant <no-reply@freecen.org.uk>"
+    default from: "#{cen_website} FreeCEN <no-reply@freecen.org.uk>"
   end
 
   helper EmailHelper
@@ -83,7 +83,20 @@ class UserMailer < Devise::Mailer
     @county_coordinator, @county_coordinator_email = county_coordinator_email_lookup(batch, @userid)
     case appname.downcase
     when 'freereg'
-      subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+      #  subject = "#{@userid.userid}/#{batch} processed at #{Time.now} with #{@batch.error unless @batch.nil?} errors over period #{@batch.datemin unless @batch.nil?}-#{@batch.datemax unless @batch.nil?}"
+      subject =
+        if @batch&.error.nil?
+          "#{@userid.userid}/#{batch} processed at #{Time.now} with errors"
+        else
+          error_count = @batch.error.to_i
+          error_word  = error_count == 1 ? "error" : "errors"
+
+          if @batch.datemin.present? && @batch.datemax.present?
+            "#{@userid.userid}/#{batch} processed at #{Time.now} with #{error_count} #{error_word} over period #{@batch.datemin}-#{@batch.datemax}"
+          else
+            "#{@userid.userid}/#{batch} processed at #{Time.now} with #{error_count} #{error_word}"
+          end
+        end
     when 'freecen'
       subject = "#{@userid.userid} processed #{batch} at #{Time.now} "
     end
@@ -134,6 +147,20 @@ class UserMailer < Devise::Mailer
     @reply_messages = Message.where(source_contact_id: @message.source_contact_id).all
     get_message_attachment
     mail(from: sender_email_address, cc: copies_to_userids_emails,to: "#{@contact.name} <#{@contact.email_address}>", bcc: @cc_email_addresses, subject: @message.subject)
+  end
+
+
+  def contact_forward(contact, message, recipient_userids, sender_userid)
+    @appname = appname
+    @contact = contact
+    @message = message
+    @forwarder = UseridDetail.userid(sender_userid).first
+    @forwarder_name = @forwarder.present? ? "#{@forwarder.person_forename} #{@forwarder.person_surname}" : sender_userid
+    @contact_url = "#{Rails.application.config.website}/contacts/#{@contact.id}"
+    sender_email_address = get_email_address_from_userid(sender_userid)
+    recipient_email_addresses = get_email_address_array_from_array_of_userids(recipient_userids)
+    get_attachment(@contact)
+    mail(from: sender_email_address, to: recipient_email_addresses, subject: "Forwarded contact: #{@message.subject}")
   end
 
   def coordinator_feedback_reply(feedback, ccs_userids, message, sender_userid)
@@ -190,17 +217,9 @@ class UserMailer < Devise::Mailer
   end
 
   def get_attachment(contact)
-    if contact.respond_to?(:screenshot) && contact.screenshot&.path.present?
-      file_name = File.basename(contact.screenshot.path)
-      attachments[file_name] = File.binread(contact.screenshot.path)
-    end
-
-    if contact.respond_to?(:screenshots) && contact.screenshots.present?
-      contact.screenshots.each do |img|
-        next if img.blank? || img.path.blank?
-        file_name = File.basename(img.path)
-        attachments[file_name] = File.binread(img.path)
-      end
+    contact.attachment_file_paths.each do |path|
+      file_name = File.basename(path)
+      attachments[file_name] = File.binread(path)
     end
   end
 
@@ -562,7 +581,11 @@ class UserMailer < Devise::Mailer
     if file.present?
       attachments[File.basename(file)] = File.read(file)
     end
-    mail(to: 'Vinodhini.subbu@freeukgenealogy.org.uk', bcc: ccs, subject: subjects, body: body_message)
+    # BCC hid these recipients from the header entirely (and Mail::Message drops a bcc-only
+    # recipient list silently if `to` isn't a real mailbox someone checks) - the rule creator(s)
+    # and sysadmin need to actually see they're addressed, per the agreed CC-not-BCC fix.
+    recipients = ccs.presence || ['vinodhini.subbu@freeukgenealogy.org.uk']
+    mail(to: recipients, subject: subjects, body: body_message)
   end
 
   def send_upload_stats(start_date, end_date)
@@ -580,7 +603,11 @@ class UserMailer < Devise::Mailer
   def embargo_process_completion_email(rule_id, ccs)
     @rule = EmbargoRule.find_by(id: rule_id)
     @register = @rule.register
-    mail(to: 'Vinodhini Subbu <vinodhini.subbu@freeukgenealogy.org.uk>', subject: "Embargo processing is complete")
+    # ccs (the person who ran this, plus the rule's creator) was computed by the caller and
+    # then never used here - every completion email went to this hardcoded address regardless
+    # of who actually processed the embargo, which is why nobody else ever received one.
+    recipients = ccs.presence || ['vinodhini.subbu@freeukgenealogy.org.uk']
+    mail(to: recipients, subject: "Embargo processing is complete")
   end
 
   def update_report_to_freereg_manager(file, user)

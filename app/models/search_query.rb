@@ -547,20 +547,20 @@ class SearchQuery
                 filtered_records << record
               end
 
-              # CASE 2: Only first name provided
+            # CASE 2: Only first name provided
             elsif last_name.blank? && first_name.present? && name.first_name.present?
               regex = UcfTransformer.ucf_to_regex(name.first_name.downcase)
 
               Rails.logger.info "[filter_ucf_records] first_name_regex: #{regex}"
-
+              
               if first_name.downcase.match(regex)
                 Rails.logger.info "[filter_ucf_records] Matched first name wildcard"
                 filtered_records << record
               end
 
-              # CASE 3: Both names provided
+            # CASE 3: Both names provided
             elsif last_name.present? && first_name.present? &&
-                name.last_name.present? && name.first_name.present?
+                  name.last_name.present? && name.first_name.present?
 
               last_regex  = UcfTransformer.ucf_to_regex(name.last_name.downcase)
               first_regex = UcfTransformer.ucf_to_regex(name.first_name.downcase)
@@ -568,7 +568,7 @@ class SearchQuery
               Rails.logger.info "[filter_ucf_records] last_regex: #{last_regex} , first_regex: #{first_regex}"
 
               if last_name.downcase.match(last_regex) &&
-                  first_name.downcase.match(first_regex)
+                first_name.downcase.match(first_regex)
                 Rails.logger.info "[filter_ucf_records] Matched both first and last name wildcards"
                 filtered_records << record
               end
@@ -624,51 +624,13 @@ class SearchQuery
           include_record = include_record_for_wildcard_search(search_name)
         else
           include_record = include_record_for_standard_search(search_name)
-        end
+          end
         filtered_records << search_result if include_record
         break filtered_records if include_record
       end
     end
     filtered_records
   end
-
-  def freecen_and_name_includes_diacritics(params)
-
-    name_includes_diacritics = false
-    if App.name == 'FreeCEN'
-
-      first_name_exists = params.dig("search_names", :$elemMatch, "first_name")
-      if first_name_exists
-        input_first_name = params["search_names"][:$elemMatch]["first_name"]
-        name_includes_diacritics = true if input_first_name != normalize_input_name(input_first_name)
-
-      end
-
-      last_name_exists = params.dig("search_names", :$elemMatch, "last_name")
-      if last_name_exists
-        input_last_name = params["search_names"][:$elemMatch]["last_name"]
-        name_includes_diacritics = true if input_last_name != normalize_input_name(input_last_name)
-
-      end
-    end
-    name_includes_diacritics
-  end
-
-  def remove_diacritics_from_name(params)
-    modified_parameters = params
-    first_name_exists = params.dig("search_names", :$elemMatch, "first_name")
-    if first_name_exists
-      first_name = params["search_names"][:$elemMatch]["first_name"]
-      modified_parameters["search_names"][:$elemMatch]["first_name"] = normalize_input_name(first_name)
-    end
-    last_name_exists = search_params.dig("search_names", :$elemMatch, "last_name")
-    if last_name_exists
-      last_name = params["search_names"][:$elemMatch]["last_name"]
-      modified_parameters["search_names"][:$elemMatch]["last_name"] = normalize_input_name(last_name)
-    end
-    modified_parameters
-  end
-
 
   # def get_and_sort_results_for_display
   #   if self.search_result.records.respond_to?(:values)
@@ -763,17 +725,11 @@ class SearchQuery
     include_record = false
     search_name_first_name = search_name[:first_name].present? ? search_name[:first_name].downcase : ''
     search_name_last_name = search_name[:last_name].present? ? search_name[:last_name].downcase : ''
-    if first_name.present?
-      input_first_name = App.name.downcase == 'freecen' ? normalize_input_name(first_name) : first_name.downcase
-    end
-    if last_name.present?
-      input_last_name = App.name.downcase == 'freecen' ? normalize_input_name(last_name) : last_name.downcase
-    end
-    if last_name.present? && first_name.blank? && search_name_last_name == input_last_name
+    if last_name.present? && first_name.blank? && search_name_last_name == last_name.downcase
       include_record = include_record_for_type(search_name)
-    elsif last_name.present? && first_name.present? && search_name_last_name == input_last_name && input_first_name == search_name_first_name
+    elsif last_name.present? && first_name.present? && search_name_last_name == last_name.downcase && first_name.downcase == search_name_first_name
       include_record = include_record_for_type(search_name)
-    elsif last_name.blank? && first_name.present? && input_first_name == search_name_first_name
+    elsif last_name.blank? && first_name.present? && first_name.downcase == search_name_first_name
       include_record = include_record_for_type(search_name)
       #elsif last_name.present? && first_name.present? && first_name.downcase == search_name_first_name && search_name_last_name.blank?
       # include_record = include_record_for_type(search_name)
@@ -786,709 +742,696 @@ class SearchQuery
     first_name_stub = extract_stub(first_name)
     last_name_stub = last_name if last_name_stub.blank?
     first_name_stub = first_name if first_name_stub.blank?
-    f first_name_stub.present?
-    input_first_name_stub = App.name.downcase == 'freecen' ? normalize_input_name(first_name_stub) : first_name_stub.downcase
+    include_record = false
+    search_name_first_name = search_name[:first_name].present? ? search_name[:first_name].downcase : ''
+    search_name_last_name = search_name[:last_name].present? ? search_name[:last_name].downcase : ''
+    if last_name.present? && first_name.blank? && search_name_last_name.start_with?(last_name_stub)
+      include_record = include_record_for_type(search_name)
+    elsif last_name.present? && first_name.present? && search_name_last_name.start_with?(last_name_stub) && search_name_first_name.start_with?(first_name_stub)
+      include_record = include_record_for_type(search_name)
+    elsif last_name.blank? && first_name.present? && search_name_first_name.start_with?(first_name_stub)
+      include_record = include_record_for_type(search_name)
+    end
+    include_record
   end
-  if last_name_stub.present?
-    input_last_name_stub = App.name.downcase == 'freecen' ? normalize_input_name(last_name_stub) : last_name_stub.downcase
+
+  def include_record_for_type(search_name)
+    include_record = false
+    if search_name[:type] == 'p'
+      include_record = true
+    elsif search_name[:type] == 'f' && inclusive
+      include_record = true
+    elsif search_name[:type] == 'w' && witness
+      include_record = true
+    end
+    include_record
   end
-  include_record = false
-  search_name_first_name = search_name[:first_name].present? ? search_name[:first_name].downcase : ''
-  search_name_last_name = search_name[:last_name].present? ? search_name[:last_name].downcase : ''
-  if last_name.present? && first_name.blank? && search_name_last_name.start_with?(input_last_name_stub)
-    include_record = include_record_for_type(search_name)
-  elsif last_name.present? && first_name.present? && search_name_last_name.start_with?(input_last_name_stub) && search_name_first_name.start_with?(input_first_name_stub)
-    include_record = include_record_for_type(search_name)
-  elsif last_name.blank? && first_name.present? && search_name_first_name.start_with?(input_first_name_stub)
-    include_record = include_record_for_type(search_name)
+
+  def individual_sex?(individual)
+    return true if sex.blank?
+
+    return false if individual.sex.blank?
+
+    result = sex.casecmp(individual.sex).zero? ? true : false
+    result
   end
-  include_record
-end
 
-def include_record_for_type(search_name)
-  include_record = false
-  if search_name[:type] == 'p'
-    include_record = true
-  elsif search_name[:type] == 'f' && inclusive
-    include_record = true
-  elsif search_name[:type] == 'w' && witness
-    include_record = true
+  def individual_marital_status?(individual)
+    return true if marital_status.blank?
+
+    return false if individual.marital_status.blank?
+
+    return true if marital_status.casecmp(individual.marital_status).zero?
+
+    return true if individual.marital_status.casecmp('u').zero? && marital_status.casecmp('s').zero?
+
+    false
   end
-  include_record
-end
 
-def individual_sex?(individual)
-  return true if sex.blank?
+  def individual_language?(individual)
+    return true if language.blank?
 
-  return false if individual.sex.blank?
+    return false if individual.language.blank?
 
-  result = sex.casecmp(individual.sex).zero? ? true : false
-  result
-end
+    return true if language.casecmp(individual.language).zero?
 
-def individual_marital_status?(individual)
-  return true if marital_status.blank?
-
-  return false if individual.marital_status.blank?
-
-  return true if marital_status.casecmp(individual.marital_status).zero?
-
-  return true if individual.marital_status.casecmp('u').zero? && marital_status.casecmp('s').zero?
-
-  false
-end
-
-def individual_language?(individual)
-  return true if language.blank?
-
-  return false if individual.language.blank?
-
-  return true if language.casecmp(individual.language).zero?
-
-  false
-end
-
-def individual_disabled?(individual)
-  return true if disabled.blank?
-
-  return true unless disabled
-
-  return true if disabled && individual.disability.present?
-
-  false
-end
-
-def individual_occupation?(individual)
-  return true if occupation.blank?
-
-  return false if individual.occupation.blank?
-
-  reg = /\b#{occupation.downcase}/
-  return true if individual.occupation.downcase.match?(reg)
-
-  false
-end
-
-def locate(record_id)
-  records = search_result.records.values
-  position = locate_index(records, record_id)
-  record = position.present? ? records[position] : nil
-  record
-end
-
-def locate_index(records, current)
-  n = 0
-  records.each do |record|
-    break if record[:_id].to_s == current
-
-    n += 1
+    false
   end
-  n
-end
 
-def name_not_blank
-  message = 'A forename, county and place must be part of your search if you have not entered a surname.'
-  errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
-end
+  def individual_disabled?(individual)
+    return true if disabled.blank?
 
-def possible_name_search_params
-  params = {}
-  possible_surname_params = {}
-  possible_surname_params['first_name'] = first_name.downcase if first_name.present?
-  possible_surname_params['possible_last_names'] = last_name.downcase if last_name.present?
-  params['search_names'] = { '$elemMatch': possible_surname_params}
-  params
-end
+    return true unless disabled
 
-# Which search_names/search_soundex "type" (p = primary, f = family, w = witness)
-# a match is allowed to come from -- mirrors include_record_for_type, but applied in
-# the Mongo query itself instead of after the fetch, so the max_results cap (applied
-# at the DB level) narrows an already role-correct candidate set instead of an
-# any-role one. See issue 1403 / Vino-S's 2026-01-21 comment: "Max Count restriction
-# is applied before filters like (family, witness, embargo) are applied."
-def allowed_name_types
-  types = ['p']
-  types << 'f' if inclusive
-  types << 'w' if witness
-  types
-end
+    return true if disabled && individual.disability.present?
 
-def name_search_params
-  params = {}
-  name_params = {}
-  if query_contains_wildcard?
-    name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name.present?
-    name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name.present?
-    name_params['type'] = { '$in' => allowed_name_types }
-    params['search_names'] = { '$elemMatch' => name_params }
-  else
-    if fuzzy
-      name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name.present?
-      name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
-      if name_params.present?
-        # Keep name fields (and type) bound to the same embedded document.
-        name_params['type'] = { '$in' => allowed_name_types }
-        params['search_soundex'] = { '$elemMatch' => name_params }
-      end
-    else
-      name_params['first_name'] = first_name.downcase if first_name.present?
-      name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
-      name_params['last_name'] = nil if self.no_surname
+    false
+  end
+
+  def individual_occupation?(individual)
+    return true if occupation.blank?
+
+    return false if individual.occupation.blank?
+
+    reg = /\b#{occupation.downcase}/
+    return true if individual.occupation.downcase.match?(reg)
+
+    false
+  end
+
+  def locate(record_id)
+    records = search_result.records.values
+    position = locate_index(records, record_id)
+    record = position.present? ? records[position] : nil
+    record
+  end
+
+  def locate_index(records, current)
+    n = 0
+    records.each do |record|
+      break if record[:_id].to_s == current
+
+      n += 1
+    end
+    n
+  end
+
+  def name_not_blank
+    message = 'A forename, county and place must be part of your search if you have not entered a surname.'
+    errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
+  end
+
+  def possible_name_search_params
+    params = {}
+    possible_surname_params = {}
+    possible_surname_params['first_name'] = first_name.downcase if first_name.present?
+    possible_surname_params['possible_last_names'] = last_name.downcase if last_name.present?
+    params['search_names'] = { '$elemMatch': possible_surname_params}
+    params
+  end
+
+  # Which search_names/search_soundex "type" (p = primary, f = family, w = witness)
+  # a match is allowed to come from -- mirrors include_record_for_type, but applied in
+  # the Mongo query itself instead of after the fetch, so the max_results cap (applied
+  # at the DB level) narrows an already role-correct candidate set instead of an
+  # any-role one. See issue 1403 / Vino-S's 2026-01-21 comment: "Max Count restriction
+  # is applied before filters like (family, witness, embargo) are applied."
+  def allowed_name_types
+    types = ['p']
+    types << 'f' if inclusive
+    types << 'w' if witness
+    types
+  end
+
+  def name_search_params
+    params = {}
+    name_params = {}
+    if query_contains_wildcard?
+      name_params['first_name'] = wildcard_to_regex(first_name.downcase) if first_name.present?
+      name_params['last_name'] = wildcard_to_regex(last_name.downcase) if last_name.present?
       name_params['type'] = { '$in' => allowed_name_types }
-      params['search_names'] = { '$elemMatch': name_params }
-    end
-  end
-  params
-end
-
-def next_and_previous_records(current)
-  if search_result.records.respond_to?(:values)
-    search_results = search_result.records.values
-    search_results = filter_name_types(search_results)
-    search_results = filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
-    search_results = sort_results(search_results) unless search_results.nil?
-    record_number = locate_index(search_results, current)
-    next_record_id = nil
-    previous_record_id = nil
-    next_record_id = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
-    previous_record_id = search_results[record_number - 1][:_id] unless search_results.nil? || record_number.nil? || record_number.zero?
-    next_record = SearchRecord.find(next_record_id) if next_record_id.present?
-    previous_record = SearchRecord.find(previous_record_id) if previous_record_id.present?
-    response = true
-  else
-    response = false
-  end
-  [response, next_record, previous_record]
-end
-
-def no_additional_census_fields?
-  result = false
-  result = true if !disabled && occupation.blank? && marital_status.blank? && language.blank? && sex.blank?
-  result
-end
-
-def persist_additional_results(results)
-  return unless results
-
-  recs = results.to_a
-  valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
-
-  # finally extract the records IDs and persist them
-  records = {}
-  recs.each do |rec|
-    rec_id = rec['_id'].to_s
-    proceed = SearchQuery.does_the_entry_exist?(rec, valid_freereg_entry_ids: valid_entry_ids)
-    if proceed
-      record = rec
-      records[rec_id] = record
+      params['search_names'] = { '$elemMatch' => name_params }
     else
-      search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
-      search_record.delete if search_record.present?
+      if fuzzy
+        name_params['first_name'] = Text::Soundex.soundex(first_name) if first_name.present?
+        name_params['last_name'] = Text::Soundex.soundex(last_name) if last_name.present?
+        if name_params.present?
+          # Keep name fields (and type) bound to the same embedded document.
+          name_params['type'] = { '$in' => allowed_name_types }
+          params['search_soundex'] = { '$elemMatch' => name_params }
+        end
+      else
+        name_params['first_name'] = first_name.downcase if first_name.present?
+        name_params['last_name'] = last_name.downcase if last_name.present? && !self.no_surname
+        name_params['last_name'] = nil if self.no_surname
+        name_params['type'] = { '$in' => allowed_name_types }
+        params['search_names'] = { '$elemMatch': name_params }
+      end
     end
+    params
   end
-  self.search_result.records = self.search_result.records.merge(records)
-  self.result_count = self.search_result.records.length
-  self.runtime_additional = (Time.now.utc - self.updated_at) * 1000
-  self.save
-end
 
-def persist_results(results)
-  return unless results
+  def next_and_previous_records(current)
+    if search_result.records.respond_to?(:values)
+      search_results = search_result.records.values
+      search_results = filter_name_types(search_results)
+      search_results = filter_census_addional_fields(search_results) if MyopicVicar::Application.config.template_set == 'freecen'
+      search_results = sort_results(search_results) unless search_results.nil?
+      record_number = locate_index(search_results, current)
+      next_record_id = nil
+      previous_record_id = nil
+      next_record_id = search_results[record_number + 1][:_id] unless record_number.nil? || search_results.nil? || record_number >= search_results.length - 1
+      previous_record_id = search_results[record_number - 1][:_id] unless search_results.nil? || record_number.nil? || record_number.zero?
+      next_record = SearchRecord.find(next_record_id) if next_record_id.present?
+      previous_record = SearchRecord.find(previous_record_id) if previous_record_id.present?
+      response = true
+    else
+      response = false
+    end
+    [response, next_record, previous_record]
+  end
 
-  recs = results.to_a
-  valid_entry_ids = nil
-  valid_ids_ms = Benchmark.realtime do
+  def no_additional_census_fields?
+    result = false
+    result = true if !disabled && occupation.blank? && marital_status.blank? && language.blank? && sex.blank?
+    result
+  end
+
+  def persist_additional_results(results)
+    return unless results
+
+    recs = results.to_a
     valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
-  end * 1000
 
-  records = {}
-  backfill_count = 0
-  backfill_ms = 0
-  recs.each do |rec|
-    rec_id = rec['_id'].to_s
-    record = rec # should be a SearchRecord despite Mongoid bug
-    proceed = SearchQuery.does_the_entry_exist?(rec, valid_freereg_entry_ids: valid_entry_ids)
-    if proceed
-      record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
-      if record[:search_date].blank?
-        backfill_ms += Benchmark.realtime { record = SearchQuery.add_search_date_when_absent(record) } * 1000
-        backfill_count += 1
-      end
-      records[rec_id] = record
-    else
-      search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
-      search_record.delete if search_record.present?
-    end
-  end
-  logger.warn("#{App.name_upcase}:PERSIST_RESULTS_TIMING: record_count=#{recs.size} valid_ids_ms=#{valid_ids_ms.round} backfill_count=#{backfill_count} backfill_ms=#{backfill_ms.round}")
-  self.search_result = SearchResult.new
-  self.search_result.records = records
-  self.result_count = records.length
-  self.runtime = (Time.now.utc - self.updated_at) * 1000
-  self.day = Time.now.strftime('%F')
-  save_ms = Benchmark.realtime { self.save }* 1000
-  logger.warn("#{App.name_upcase}:PERSIST_RESULTS_SAVE_MS: #{save_ms.round}")
-end
-
-def place_search?
-  place_ids && place_ids.size > 0
-end
-
-def freecen2_place_search?
-  freecen2_place_ids && freecen2_place_ids.size > 0
-end
-
-def place_search_params
-  params = {}
-  appname = App.name_downcase
-  case appname
-  when 'freereg'
-    if place_search?
-      search_place_ids = radius_place_ids
-      params[:place_id] = { '$in' => search_place_ids }
-    else
-      params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes.present?
-    end
-  when 'freecen'
-    if place_search? || freecen2_place_search?
-      search_place_ids = radius_place_ids
-      if Rails.application.config.freecen2_place_cache
-        params[:freecen2_place_id] = { '$in' => search_place_ids }
+    # finally extract the records IDs and persist them
+    records = {}
+    recs.each do |rec|
+      rec_id = rec['_id'].to_s
+      proceed = SearchQuery.does_the_entry_exist?(rec, valid_freereg_entry_ids: valid_entry_ids)
+      if proceed
+        record = rec
+        records[rec_id] = record
       else
+        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
+        search_record.delete if search_record.present?
+      end
+    end
+    self.search_result.records = self.search_result.records.merge(records)
+    self.result_count = self.search_result.records.length
+    self.runtime_additional = (Time.now.utc - self.updated_at) * 1000
+    self.save
+  end
+
+  def persist_results(results)
+    return unless results
+
+    recs = results.to_a
+    valid_entry_ids = nil
+    valid_ids_ms = Benchmark.realtime do
+      valid_entry_ids = App.name_downcase == 'freereg' ? SearchQuery.valid_freereg_entry_ids_for_result_hashes(recs) : nil
+    end * 1000
+
+    records = {}
+    backfill_count = 0
+    backfill_ms = 0
+    recs.each do |rec|
+      rec_id = rec['_id'].to_s
+      record = rec # should be a SearchRecord despite Mongoid bug
+      proceed = SearchQuery.does_the_entry_exist?(rec, valid_freereg_entry_ids: valid_entry_ids)
+      if proceed
+        record = SearchQuery.add_birth_place_when_absent(record) if record[:birth_place].blank? && App.name.downcase == 'freecen'
+        if record[:search_date].blank?
+          backfill_ms += Benchmark.realtime { record = SearchQuery.add_search_date_when_absent(record) } * 1000
+          backfill_count += 1
+        end
+        records[rec_id] = record
+      else
+        search_record = SearchRecord.find_by(_id: rec['_id'].to_s)
+        search_record.delete if search_record.present?
+      end
+    end
+    logger.warn("#{App.name_upcase}:PERSIST_RESULTS_TIMING: record_count=#{recs.size} valid_ids_ms=#{valid_ids_ms.round} backfill_count=#{backfill_count} backfill_ms=#{backfill_ms.round}")
+    self.search_result = SearchResult.new
+    self.search_result.records = records
+    self.result_count = records.length
+    self.runtime = (Time.now.utc - self.updated_at) * 1000
+    self.day = Time.now.strftime('%F')
+    save_ms = Benchmark.realtime { self.save }* 1000
+    logger.warn("#{App.name_upcase}:PERSIST_RESULTS_SAVE_MS: #{save_ms.round}")
+  end
+
+  def place_search?
+    place_ids && place_ids.size > 0
+  end
+
+  def freecen2_place_search?
+    freecen2_place_ids && freecen2_place_ids.size > 0
+  end
+
+  def place_search_params
+    params = {}
+    appname = App.name_downcase
+    case appname
+    when 'freereg'
+      if place_search?
+        search_place_ids = radius_place_ids
         params[:place_id] = { '$in' => search_place_ids }
+      else
+        params[:chapman_code] = { '$in' => chapman_codes } if chapman_codes.present?
       end
-    else
-      params[:chapman_code] = chapman_codes.present? ? { '$in' => chapman_codes } : { '$in' => ChapmanCode.values }
-    end
-    params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes.present?
-  end
-  params
-end
-
-def previous_record(current)
-  records_sorted = self.results
-  return nil if records_sorted.nil?
-  record_ids_sorted = Array.new
-  records_sorted.each do |rec|
-    record_ids_sorted << rec["_id"].to_s
-  end
-  idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
-  return nil if idx.nil? || idx <= 0
-  record = record_ids_sorted[idx-1]
-  record
-end
-
-def next_record(current)
-  records_sorted = self.results
-  return nil if records_sorted.nil?
-  record_ids_sorted = Array.new
-  records_sorted.each do |rec|
-    record_ids_sorted << rec["_id"].to_s
-  end
-  idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
-  return nil if idx.nil?
-  record = record_ids_sorted[idx+1]
-  record
-end
-
-def query_contains_wildcard?
-  (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))? wildcard_search = true : wildcard_search = false
-  self.wildcard_search = wildcard_search
-  wildcard_search
-end
-
-def radius_place_ids
-  radius_ids = []
-  all_radius_places.map { |place| radius_ids << place.id }
-  if Rails.application.config.freecen2_place_cache
-    radius_ids.concat(freecen2_place_ids)
-  else
-    radius_ids.concat(place_ids)
-  end
-  radius_ids.uniq
-  self.all_radius_place_ids = radius_ids
-  radius_ids
-end
-
-def radius_places(place_id)
-  place = Rails.application.config.freecen2_place_cache ? Freecen2Place.find(place_id) : Place.find(place_id)
-  place.places_near(radius_factor, place_system)
-end
-
-def radius_search?
-  search_nearby_places
-end
-
-def reduce_attributes
-  param = {}
-  param[:first_name] = self.first_name
-  param[:last_name] = self.last_name
-  param[:fuzzy] = self.fuzzy
-  param[:role] = self.role
-  param[:record_type] = self.record_type
-  param[:chapman_codes] = self.chapman_codes
-  param[:birth_chapman_codes] = self.birth_chapman_codes
-  param[:inclusive] = self.inclusive
-  param[:witness] = self.witness
-  param[:start_year] = self.start_year
-  param[:end_year] = self.end_year
-  param[:radius_factor] = self.radius_factor
-  param[:search_nearby_places] = self.search_nearby_places
-  param[:place_system] = self.place_system
-  param[:session_id] = self.session_id
-  param[:order_field] = self.order_field
-  param[:order_asc] = self.order_asc
-  param[:region] = self.region
-  # param[:userid_detail_id] = self.userid_detail_id
-  param[:c_at] = self.c_at
-  param[:u_at] = Time.now
-  if Rails.application.config.freecen2_place_cache
-    param[:freecen2_place_ids] = freecen2_place_ids
-  else
-    param[:place_ids] = self.place_ids
-  end
-  param
-end
-
-def record_type_params
-  params = {}
-  params[:record_type] = record_type if record_type.present?
-  params[:record_type] = { '$in' => RecordType.all_types } if record_type.blank?
-  params
-end
-
-def possible_last_names_params
-  params = {}
-  params[:possible_last_names] = { '$in' => [last_name.downcase] } #if last_name.present? && self.no_surname
-  params
-end
-
-def search
-  @search_parameters = search_params
-  index_hint_ms = Benchmark.realtime { @search_index = SearchRecord.index_hint(@search_parameters) } * 1000
-  winning_plan_ms = Benchmark.realtime { @search_index_winning_plan = SearchRecord.winning_plan_index_name(@search_parameters, @search_index) } * 1000
-  logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
-  logger.warn("#{App.name_upcase}:WINNING_PLAN_INDEX: #{@search_index_winning_plan}")
-  logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
-  logger.warn("#{App.name_upcase}:INDEX_HINT_TIMING: index_hint_ms=#{index_hint_ms.round} winning_plan_ms=#{winning_plan_ms.round}")
-  update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
-  max_results = FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
-  primary_records, secondary_date_records = fetch_records_with_secondary_date(max_results)
-  persist_results(primary_records)
-  # secondary_date_records only matched via secondary_search_date, so search_date is
-  # expected to be blank for all of them -- persist_additional_results (unlike
-  # persist_results) does not run add_search_date_when_absent, so it doesn't pay a
-  # per-record find+write for every one of them.
-  persist_additional_results(secondary_date_records) if secondary_date_records.present?
-  records = search_ucf if can_query_ucf? && result_count < max_results
-  records
-end
-
-# A FreeREG record may carry a second, independent date (secondary_search_date --
-# e.g. an estimated birth year alongside a baptism date). A date-range search has to
-# match on EITHER date, so this runs both queries -- concurrently, not sequentially,
-# to avoid doubling wall-clock latency. Returns [primary_records, secondary_date_records]
-# -- kept separate (not merged) so callers can persist them through different paths;
-# secondary_date_records is deduped against primary and capped so the combined total
-# never exceeds max_results.
-def fetch_records_with_secondary_date(max_results)
-  primary_thread = Thread.new do
-    query_parameters = freecen_and_name_includes_diacritics(@search_parameters) ? remove_diacritics_from_name(@search_parameters) : @search_parameters
-    SearchRecord.collection.find(query_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
-  end
-
-  return [primary_thread.value, []] unless App.name == 'FreeREG' && @search_parameters[:search_date].present?
-
-  secondary_params = @search_parameters.dup
-  secondary_params[:secondary_search_date] = secondary_params.delete(:search_date)
-  secondary_index = SearchRecord.index_hint(secondary_params)
-  logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{secondary_index}")
-  secondary_thread = Thread.new do
-    SearchRecord.collection.find(secondary_params).hint(secondary_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
-  end
-
-  primary = nil
-  secondary = nil
-  primary_ms = Benchmark.realtime { primary = primary_thread.value } * 1000
-  secondary_ms = Benchmark.realtime do
-    secondary = begin
-      secondary_thread.value
-    rescue StandardError => e
-      logger.warn("#{App.name_upcase}:SECONDARY_DATE_SEARCH_FAILED: #{e.class}: #{e.message}")
-      []
-    end
-  end * 1000
-  # If this is genuinely running in parallel, the request's overall MongoDB time
-  # (Rails' own "Completed ... (MongoDB: Xms)" log line) should be close to
-  # max(primary_ms, secondary_ms), not their sum -- worth checking if it ever isn't.
-  logger.warn("#{App.name_upcase}:DATE_SEARCH_TIMING: primary=#{primary_ms.round}ms secondary=#{secondary_ms.round}ms")
-  primary_ids = primary.map { |r| r['_id'] }.to_set
-  additional = secondary.reject { |r| primary_ids.include?(r['_id']) }.first([max_results - primary.size, 0].max)
-  [primary, additional]
-end
-
-def search_params
-  params = {}
-  params.merge!(name_search_params)
-  # params.merge!(possible_name_search_params)
-  params.merge!(place_search_params)
-  params.merge!(record_type_params)
-  # params.merge!(possible_last_names_params)
-  params.merge!(date_search_params)
-  # Mirrors filter_embargoed -- excluded here too so max_results caps an
-  # already-embargo-correct candidate set, not one that still includes embargoed
-  # records that would just get dropped after the fetch.
-  params['$nor'] = [{ embargoed: true, release_year: { '$gt' => DateTime.now.year } }]
-  params
-end
-
-# def search_ucf
-#   start_ucf_time = Time.now.utc
-#   ucf_records = Place.extract_ucf_records(place_ids)
-#   ucf_records = filter_ucf_records(ucf_records)
-#   if ucf_records.present?
-#     ucf_filtered_count = ucf_records.length
-#     search_result.ucf_records = ucf_records.map { |sr| sr.id }
-#   else
-#     ucf_filtered_count = 0
-#   end
-#   self.ucf_filtered_count = ucf_filtered_count
-#   runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
-#   self.runtime_ucf = runtime_ucf
-#   save
-# end
-
-def search_ucf
-  started_at = Time.now.utc
-  log_ucf(:info, "Starting UCF search", started_at: started_at)
-
-  # Guard Clauses — fail fast, predictable behavior
-  return fail_ucf!("Missing place_ids") if place_ids.blank?
-  return fail_ucf!("Missing search_result") if search_result.nil?
-
-  # Step 1: Extract UCF records (safe wrapper)
-  ucf_records = safe_extract_ucf_records(place_ids)
-  log_ucf(:info, "UCF records extracted", count: ucf_records.size)
-
-  # Step 2: Filter UCF records (safe wrapper)
-  filtered = safe_filter_ucf_records(ucf_records)
-  log_ucf(:info, "UCF records filtered", filtered_count: filtered.size)
-
-  # Step 3: Assign filtered IDs to search_result
-  search_result.ucf_records = filtered.map(&:id)
-  log_ucf(:info, "Assigned filtered UCF record IDs")
-
-  # Step 4: Persist metrics on SearchQuery
-  self.ucf_filtered_count = filtered.size
-  self.runtime_ucf        = elapsed_ms(started_at)
-
-  log_ucf(
-    :info,
-    "UCF metrics updated",
-    runtime_ms: runtime_ucf,
-    place_count: safe_count(places),
-    result_count: safe_count(search_result.ucf_records)
-  )
-
-  # Step 5: Save safely
-  unless save
-    log_ucf(:error, "SearchQuery save failed", errors: errors.full_messages)
-    return false
-  end
-
-  log_ucf(:info, "UCF search complete")
-  true
-end
-
-def sort_results(results)
-  # next reorder in memory
-  if results.present?
-    case order_field
-    when *selected_sort_fields
-      order = order_field.to_sym
-      results.each do |rec|
-      end
-      results.sort! do |x, y|
-        if order_asc
-          (x[order] || '') <=> (y[order] || '')
+    when 'freecen'
+      if place_search? || freecen2_place_search?
+        search_place_ids = radius_place_ids
+        if Rails.application.config.freecen2_place_cache
+          params[:freecen2_place_id] = { '$in' => search_place_ids }
         else
-          (y[order] || '') <=> (x[order] || '')
-        end
-      end
-    when SearchOrder::DATE
-      if order_asc
-        results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
-      else
-        results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
-      end
-    when SearchOrder::LOCATION
-      if order_asc
-        results.sort! do |x, y|
-          compare_location(x, y)
+          params[:place_id] = { '$in' => search_place_ids }
         end
       else
-        results.sort! do |x, y|
-          compare_location(y, x) # note the reverse order
-        end
+        params[:chapman_code] = chapman_codes.present? ? { '$in' => chapman_codes } : { '$in' => ChapmanCode.values }
       end
-    when SearchOrder::NAME
-      if order_asc
-        results.sort! do |x, y|
-          compare_name(x, y)
-        end
-      else
-        results.sort! do |x, y|
-          compare_name(y, x) # note the reverse order
-        end
-      end
+      params[:birth_chapman_code] = { '$in' => birth_chapman_codes } if birth_chapman_codes.present?
     end
+    params
   end
-  results
-end
 
-def ucf_params
-  params = {}
-  params.merge!(place_search_params)
-  params.merge!(record_type_params)
-  params.merge!(date_search_params)
-  params['_id'] = { '$in' => ucf_record_ids } #moped doesn't translate :id into '_id'
-  params
-end
-
-def ucf_results
-  if self.can_query_ucf?
-    SearchRecord.find(self.search_result.ucf_records)
-  else
-    nil
-  end
-end
-
-# # all this now does is copy the result IDs and persist the new order
-# def new_order(old_query)
-# # first fetch the actual records
-# records = old_query.search_result.records
-# self.search_result =  SearchResult.new(records: records)
-# self.result_count = records.length
-# self.save
-# end
-
-def ucf_record_ids
-  ids = []
-  self.places.inject([]) { |accum, place| accum + place.ucf_record_ids }
-end
-
-def wildcard_to_regex(name_string)
-  return name_string unless name_string.match(WILDCARD)
-
-  trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
-  scrubbed = trimmed.gsub('?', 'QUESTION').gsub('*', 'STAR')
-  cleaned = ::Regexp.escape(scrubbed)
-  regex_string = cleaned.gsub('QUESTION', '\w').gsub('STAR', '.*') #replace glob-style wildcards with regex wildcards
-  begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
-end
-
-def wildcard_is_appropriate
-  # allow promiscuous wildcards if place is defined
-  if query_contains_wildcard?
-    if fuzzy && ((first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD)))
-      errors.add(:last_name, 'You cannot use both wildcards and soundex in a search')
+  def previous_record(current)
+    records_sorted = self.results
+    return nil if records_sorted.nil?
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
     end
-    if place_search? || (App.name_downcase == 'freecen' && freecen2_place_search?)
-      if last_name && last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
-        errors.add(:last_name, 'Two letters must precede any wildcard in a surname.')
-      end
-      if first_name && first_name.match(WILDCARD) && first_name.index(WILDCARD) < 2
-        errors.add(:last_name, 'Two letters must precede any wildcard in a forename.')
-      end
-      # place_id is an adequate index -- all is well; do nothing
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil? || idx <= 0
+    record = record_ids_sorted[idx-1]
+    record
+  end
+
+  def next_record(current)
+    records_sorted = self.results
+    return nil if records_sorted.nil?
+    record_ids_sorted = Array.new
+    records_sorted.each do |rec|
+      record_ids_sorted << rec["_id"].to_s
+    end
+    idx = record_ids_sorted.index(current.to_s) unless record_ids_sorted.nil?
+    return nil if idx.nil?
+    record = record_ids_sorted[idx+1]
+    record
+  end
+
+  def query_contains_wildcard?
+    (first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD))? wildcard_search = true : wildcard_search = false
+    self.wildcard_search = wildcard_search
+    wildcard_search
+  end
+
+  def radius_place_ids
+    radius_ids = []
+    all_radius_places.map { |place| radius_ids << place.id }
+    if Rails.application.config.freecen2_place_cache
+      radius_ids.concat(freecen2_place_ids)
     else
-      errors.add(:last_name, 'Wildcard can only be used with a specific place.')
-      # if last_name.match(WILDCARD)
-      # if last_name.index(WILDCARD) < 3
-      # errors.add(:last_name, 'Three letters must precede any wildcard in a surname unless a specific place is also chosen.')
-      # end
-      # else
-      # wildcard is in first name only -- no worries
-      # end
+      radius_ids.concat(place_ids)
     end
+    radius_ids.uniq
+    self.all_radius_place_ids = radius_ids
+    radius_ids
   end
-end
 
+  def radius_places(place_id)
+    place = Rails.application.config.freecen2_place_cache ? Freecen2Place.find(place_id) : Place.find(place_id)
+    place.places_near(radius_factor, place_system)
+  end
 
-def county_is_valid
-  if MyopicVicar::Application.config.template_set == 'freereg'
-    if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
-      errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
+  def radius_search?
+    search_nearby_places
+  end
+
+  def reduce_attributes
+    param = {}
+    param[:first_name] = self.first_name
+    param[:last_name] = self.last_name
+    param[:fuzzy] = self.fuzzy
+    param[:role] = self.role
+    param[:record_type] = self.record_type
+    param[:chapman_codes] = self.chapman_codes
+    param[:birth_chapman_codes] = self.birth_chapman_codes
+    param[:inclusive] = self.inclusive
+    param[:witness] = self.witness
+    param[:start_year] = self.start_year
+    param[:end_year] = self.end_year
+    param[:radius_factor] = self.radius_factor
+    param[:search_nearby_places] = self.search_nearby_places
+    param[:place_system] = self.place_system
+    param[:session_id] = self.session_id
+    param[:order_field] = self.order_field
+    param[:order_asc] = self.order_asc
+    param[:region] = self.region
+    # param[:userid_detail_id] = self.userid_detail_id
+    param[:c_at] = self.c_at
+    param[:u_at] = Time.now
+    if Rails.application.config.freecen2_place_cache
+      param[:freecen2_place_ids] = freecen2_place_ids
+    else
+      param[:place_ids] = self.place_ids
     end
-    if chapman_codes.length > 3
-      if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
-        errors.add(:chapman_codes, "You cannot select more than 3 counties.")
+    param
+  end
+
+  def record_type_params
+    params = {}
+    params[:record_type] = record_type if record_type.present?
+    params[:record_type] = { '$in' => RecordType.all_types } if record_type.blank?
+    params
+  end
+
+  def possible_last_names_params
+    params = {}
+    params[:possible_last_names] = { '$in' => [last_name.downcase] } #if last_name.present? && self.no_surname
+    params
+  end
+
+  def search
+    @search_parameters = search_params
+    index_hint_ms = Benchmark.realtime { @search_index = SearchRecord.index_hint(@search_parameters) } * 1000
+    winning_plan_ms = Benchmark.realtime { @search_index_winning_plan = SearchRecord.winning_plan_index_name(@search_parameters, @search_index) } * 1000
+    logger.warn("#{App.name_upcase}:SEARCH_HINT: #{@search_index}")
+    logger.warn("#{App.name_upcase}:WINNING_PLAN_INDEX: #{@search_index_winning_plan}")
+    logger.warn("#{App.name_upcase}:SEARCH_PARAMETERS: #{@search_parameters}")
+    logger.warn("#{App.name_upcase}:INDEX_HINT_TIMING: index_hint_ms=#{index_hint_ms.round} winning_plan_ms=#{winning_plan_ms.round}")
+    update_attributes(search_index: @search_index, search_index_winning_plan: @search_index_winning_plan)
+    max_results = FreeregOptionsConstants.const_get("MAXIMUM_NUMBER_OF_RESULTS_#{App.name_upcase}")
+    primary_records, secondary_date_records = fetch_records_with_secondary_date(max_results)
+    persist_results(primary_records)
+    # secondary_date_records only matched via secondary_search_date, so search_date is
+    # expected to be blank for all of them -- persist_additional_results (unlike
+    # persist_results) does not run add_search_date_when_absent, so it doesn't pay a
+    # per-record find+write for every one of them.
+    persist_additional_results(secondary_date_records) if secondary_date_records.present?
+    records = search_ucf if can_query_ucf? && result_count < max_results
+    records
+  end
+
+  # A FreeREG record may carry a second, independent date (secondary_search_date --
+  # e.g. an estimated birth year alongside a baptism date). A date-range search has to
+  # match on EITHER date, so this runs both queries -- concurrently, not sequentially,
+  # to avoid doubling wall-clock latency. Returns [primary_records, secondary_date_records]
+  # -- kept separate (not merged) so callers can persist them through different paths;
+  # secondary_date_records is deduped against primary and capped so the combined total
+  # never exceeds max_results.
+  def fetch_records_with_secondary_date(max_results)
+    primary_thread = Thread.new do
+      SearchRecord.collection.find(@search_parameters).hint(@search_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
+    end
+
+    return [primary_thread.value, []] unless App.name == 'FreeREG' && @search_parameters[:search_date].present?
+
+    secondary_params = @search_parameters.dup
+    secondary_params[:secondary_search_date] = secondary_params.delete(:search_date)
+    secondary_index = SearchRecord.index_hint(secondary_params)
+    logger.warn("#{App.name_upcase}:SSD_SEARCH_HINT: #{secondary_index}")
+    secondary_thread = Thread.new do
+      SearchRecord.collection.find(secondary_params).hint(secondary_index.to_s).max_time_ms(Rails.application.config.max_search_time).limit(max_results).to_a
+    end
+
+    primary = nil
+    secondary = nil
+    primary_ms = Benchmark.realtime { primary = primary_thread.value } * 1000
+    secondary_ms = Benchmark.realtime do
+      secondary = begin
+        secondary_thread.value
+      rescue StandardError => e
+        logger.warn("#{App.name_upcase}:SECONDARY_DATE_SEARCH_FAILED: #{e.class}: #{e.message}")
+        []
+      end
+    end * 1000
+    # If this is genuinely running in parallel, the request's overall MongoDB time
+    # (Rails' own "Completed ... (MongoDB: Xms)" log line) should be close to
+    # max(primary_ms, secondary_ms), not their sum -- worth checking if it ever isn't.
+    logger.warn("#{App.name_upcase}:DATE_SEARCH_TIMING: primary=#{primary_ms.round}ms secondary=#{secondary_ms.round}ms")
+    primary_ids = primary.map { |r| r['_id'] }.to_set
+    additional = secondary.reject { |r| primary_ids.include?(r['_id']) }.first([max_results - primary.size, 0].max)
+    [primary, additional]
+  end
+
+  def search_params
+    params = {}
+    params.merge!(name_search_params)
+    # params.merge!(possible_name_search_params)
+    params.merge!(place_search_params)
+    params.merge!(record_type_params)
+    # params.merge!(possible_last_names_params)
+    params.merge!(date_search_params)
+    # Mirrors filter_embargoed -- excluded here too so max_results caps an
+    # already-embargo-correct candidate set, not one that still includes embargoed
+    # records that would just get dropped after the fetch.
+    params['$nor'] = [{ embargoed: true, release_year: { '$gt' => DateTime.now.year } }]
+    params
+  end
+
+  # def search_ucf
+  #   start_ucf_time = Time.now.utc
+  #   ucf_records = Place.extract_ucf_records(place_ids)
+  #   ucf_records = filter_ucf_records(ucf_records)
+  #   if ucf_records.present?
+  #     ucf_filtered_count = ucf_records.length
+  #     search_result.ucf_records = ucf_records.map { |sr| sr.id }
+  #   else
+  #     ucf_filtered_count = 0
+  #   end
+  #   self.ucf_filtered_count = ucf_filtered_count
+  #   runtime_ucf = (Time.now.utc - start_ucf_time) * 1000
+  #   self.runtime_ucf = runtime_ucf
+  #   save
+  # end
+
+  def search_ucf
+    started_at = Time.now.utc
+    log_ucf(:info, "Starting UCF search", started_at: started_at)
+
+    # Guard Clauses — fail fast, predictable behavior
+    return fail_ucf!("Missing place_ids") if place_ids.blank?
+    return fail_ucf!("Missing search_result") if search_result.nil?
+
+    # Step 1: Extract UCF records (safe wrapper)
+    ucf_records = safe_extract_ucf_records(place_ids)
+    log_ucf(:info, "UCF records extracted", count: ucf_records.size)
+
+    # Step 2: Filter UCF records (safe wrapper)
+    filtered = safe_filter_ucf_records(ucf_records)
+    log_ucf(:info, "UCF records filtered", filtered_count: filtered.size)
+
+    # Step 3: Assign filtered IDs to search_result
+    search_result.ucf_records = filtered.map(&:id)
+    log_ucf(:info, "Assigned filtered UCF record IDs")
+
+    # Step 4: Persist metrics on SearchQuery
+    self.ucf_filtered_count = filtered.size
+    self.runtime_ucf        = elapsed_ms(started_at)
+
+    log_ucf(
+      :info,
+      "UCF metrics updated",
+      runtime_ms: runtime_ucf,
+      place_count: safe_count(places),
+      result_count: safe_count(search_result.ucf_records)
+    )
+
+    # Step 5: Save safely
+    unless save
+      log_ucf(:error, "SearchQuery save failed", errors: errors.full_messages)
+      return false
+    end
+
+    log_ucf(:info, "UCF search complete")
+    true
+  end  
+
+  def sort_results(results)
+    # next reorder in memory
+    if results.present?
+      case order_field
+      when *selected_sort_fields
+        order = order_field.to_sym
+        results.each do |rec|
+        end
+        results.sort! do |x, y|
+          if order_asc
+            (x[order] || '') <=> (y[order] || '')
+          else
+            (y[order] || '') <=> (x[order] || '')
+          end
+        end
+      when SearchOrder::DATE
+        if order_asc
+          results.sort! { |x, y| (x[:search_date] || '') <=> (y[:search_date] || '') }
+        else
+          results.sort! { |x, y| (y[:search_date] || '') <=> (x[:search_date] || '') }
+        end
+      when SearchOrder::LOCATION
+        if order_asc
+          results.sort! do |x, y|
+            compare_location(x, y)
+          end
+        else
+          results.sort! do |x, y|
+            compare_location(y, x) # note the reverse order
+          end
+        end
+      when SearchOrder::NAME
+        if order_asc
+          results.sort! do |x, y|
+            compare_name(x, y)
+          end
+        else
+          results.sort! do |x, y|
+            compare_name(y, x) # note the reverse order
+          end
+        end
       end
     end
-  elsif MyopicVicar::Application.config.template_set == 'freecen'
-    # don't require date range for now. may need to add back in later.
+    results
   end
-end
 
-def radius_is_valid
-  if Rails.application.config.freecen2_place_cache && search_nearby_places && freecen2_places.count == 0
-    errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
-  elsif !Rails.application.config.freecen2_place_cache && search_nearby_places && places.count == 0
-    errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
+  def ucf_params
+    params = {}
+    params.merge!(place_search_params)
+    params.merge!(record_type_params)
+    params.merge!(date_search_params)
+    params['_id'] = { '$in' => ucf_record_ids } #moped doesn't translate :id into '_id'
+    params
   end
-end
 
-def wildcards_are_valid
-  if Rails.application.config.freecen2_place_cache && first_name && begins_with_wildcard(first_name) && freecen2_places.count == 0
-    errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
-  elsif first_name && begins_with_wildcard(first_name) && places.count == 0
-    errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
+  def ucf_results
+    if self.can_query_ucf?
+      SearchRecord.find(self.search_result.ucf_records)
+    else
+      nil
+    end
   end
-end
 
-def normalize_input_name(value)
-  return nil if value.blank?
+  # # all this now does is copy the result IDs and persist the new order
+  # def new_order(old_query)
+  # # first fetch the actual records
+  # records = old_query.search_result.records
+  # self.search_result =  SearchResult.new(records: records)
+  # self.result_count = records.length
+  # self.save
+  # end
 
-  I18n.transliterate(value).downcase
-end
+  def ucf_record_ids
+    ids = []
+    self.places.inject([]) { |accum, place| accum + place.ucf_record_ids }
+  end
 
-private
+  def wildcard_to_regex(name_string)
+    return name_string unless name_string.match(WILDCARD)
 
-def selected_sort_fields
-  [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::BIRTH_PLACE, SearchOrder::TYPE ]
-end
+    trimmed = name_string.sub(/\**$/, '') # remove trailing * for performance
+    scrubbed = trimmed.gsub('?', 'QUESTION').gsub('*', 'STAR')
+    cleaned = ::Regexp.escape(scrubbed)
+    regex_string = cleaned.gsub('QUESTION', '\w').gsub('STAR', '.*') #replace glob-style wildcards with regex wildcards
+    begins_with_wildcard(name_string) ? /#{regex_string}/ : /^#{regex_string}/
+  end
 
-def safe_extract_ucf_records(ids)
-  Place.extract_ucf_records(ids)
-rescue => e
-  log_ucf(:error, "extract_ucf_records failed", error: e.message)
-  []
-end
+  def wildcard_is_appropriate
+    # allow promiscuous wildcards if place is defined
+    if query_contains_wildcard?
+      if fuzzy && ((first_name && first_name.match(WILDCARD)) || (last_name && last_name.match(WILDCARD)))
+        errors.add(:last_name, 'You cannot use both wildcards and soundex in a search')
+      end
+      if place_search? || (App.name_downcase == 'freecen' && freecen2_place_search?)
+        if last_name && last_name.match(WILDCARD) && last_name.index(WILDCARD) < 2
+          errors.add(:last_name, 'Two letters must precede any wildcard in a surname.')
+        end
+        if first_name && first_name.match(WILDCARD) && first_name.index(WILDCARD) < 2
+          errors.add(:last_name, 'Two letters must precede any wildcard in a forename.')
+        end
+        # place_id is an adequate index -- all is well; do nothing
+      else
+        errors.add(:last_name, 'Wildcard can only be used with a specific place.')
+        # if last_name.match(WILDCARD)
+        # if last_name.index(WILDCARD) < 3
+        # errors.add(:last_name, 'Three letters must precede any wildcard in a surname unless a specific place is also chosen.')
+        # end
+        # else
+        # wildcard is in first name only -- no worries
+        # end
+      end
+    end
+  end
 
-def safe_filter_ucf_records(records)
-  filter_ucf_records(records)
-rescue => e
-  log_ucf(:error, "filter_ucf_records failed", error: e.message)
-  []
-end
 
-def elapsed_ms(start_time)
-  ((Time.now.utc - start_time) * 1000.0).round(2)
-end
+  def county_is_valid
+    if MyopicVicar::Application.config.template_set == 'freereg'
+      if chapman_codes[0].nil? && !(record_type.present? && start_year.present? && end_year.present?)
+        errors.add(:chapman_codes, "A date range and record type must be part of your search if you do not select a county.")
+      end
+      if chapman_codes.length > 3
+        if !chapman_codes.eql?(["ALD", "GSY", "JSY", "SRK"])
+          errors.add(:chapman_codes, "You cannot select more than 3 counties.")
+        end
+      end
+    elsif MyopicVicar::Application.config.template_set == 'freecen'
+      # don't require date range for now. may need to add back in later.
+    end
+  end
 
-def safe_count(collection)
-  collection.respond_to?(:count) ? collection.count : 0
-end
+  def radius_is_valid
+    if Rails.application.config.freecen2_place_cache && search_nearby_places && freecen2_places.count == 0
+      errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
+    elsif !Rails.application.config.freecen2_place_cache && search_nearby_places && places.count == 0
+      errors.add(:search_nearby_places, 'A Place must have been selected as a starting point to use the nearby option.')
+    end
+  end
 
-def fail_ucf!(message)
-  log_ucf(:warn, "UCF aborted: #{message}")
-  false
-end
+  def wildcards_are_valid
+    if Rails.application.config.freecen2_place_cache && first_name && begins_with_wildcard(first_name) && freecen2_places.count == 0
+      errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
+    elsif first_name && begins_with_wildcard(first_name) && places.count == 0
+      errors.add(:first_name, 'A place must be selected if name queries begin with a wildcard')
+    end
+  end
 
-def log_ucf(level, message, payload = {})
-  Rails.logger.public_send(
-    level,
-    "[SEARCH_UCF] #{message} | #{payload.to_json}"
-  )
-end
+  private
+
+  def selected_sort_fields
+    [ SearchOrder::COUNTY, SearchOrder::BIRTH_COUNTY, SearchOrder::BIRTH_PLACE, SearchOrder::TYPE ]
+  end
+
+  def safe_extract_ucf_records(ids)
+    Place.extract_ucf_records(ids)
+  rescue => e
+    log_ucf(:error, "extract_ucf_records failed", error: e.message)
+    []
+  end
+
+  def safe_filter_ucf_records(records)
+    filter_ucf_records(records)
+  rescue => e
+    log_ucf(:error, "filter_ucf_records failed", error: e.message)
+    []
+  end
+
+  def elapsed_ms(start_time)
+    ((Time.now.utc - start_time) * 1000.0).round(2)
+  end
+
+  def safe_count(collection)
+    collection.respond_to?(:count) ? collection.count : 0
+  end
+
+  def fail_ucf!(message)
+    log_ucf(:warn, "UCF aborted: #{message}")
+    false
+  end
+
+  def log_ucf(level, message, payload = {})
+    Rails.logger.public_send(
+      level,
+      "[SEARCH_UCF] #{message} | #{payload.to_json}"
+    )
+  end
 end

@@ -151,7 +151,7 @@ module ApplicationHelper
       @userid = @user.id
       @manager = manager?(@user)
       role = session[:role].present? ? session[:role] : @user.person_role
-      @roles = UseridRole::OPTIONS.fetch(session[:role])
+      @roles = UseridRole::OPTIONS.fetch(role, [])
     end
   end
 
@@ -317,8 +317,9 @@ module ApplicationHelper
           first_place = Freecen2Place.find(search_query[:place_ids][0])
         end
       end
-      place = first_place.place_name
-      if search_query.all_radius_place_ids.length > 1
+      # the place may have been deleted since the search was run
+      place = first_place.present? ? first_place.place_name : 'Unknown place'
+      if first_place.present? && search_query.all_radius_place_ids.length > 1
         last_place = search_query.all_radius_place_ids[-2]
         last_place = Place.find(last_place) if appname.downcase == 'freereg'
         if appname.downcase == 'freecen'
@@ -328,10 +329,12 @@ module ApplicationHelper
           end
         end
         additional = search_query.all_radius_place_ids.length - 1
-        place <<
-        " (including #{additional} additional places within
-          #{geo_near_distance(first_place,last_place,Place::MeasurementSystem::ENGLISH).round(1)}
-          #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::ENGLISH)} )"
+        if last_place.present?
+          place <<
+          " (including #{additional} additional places within
+            #{geo_near_distance(first_place,last_place,Place::MeasurementSystem::ENGLISH).round(1)}
+            #{Place::MeasurementSystem::system_to_units(Place::MeasurementSystem::ENGLISH)} )"
+        end
       end
     end
     display_map = {}

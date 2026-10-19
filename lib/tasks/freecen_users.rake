@@ -3,7 +3,7 @@
 desc "Drop users in mongo and refinery and re-create from json,sql files"
 task :load_freecen_users, [:in_json,:in_sql] => :environment do |t, args|
   if !args[:in_json].nil? && !args[:in_sql].nil? && \
-      File.exists?(args[:in_json]) && File.exists?(args[:in_sql])
+      File.exist?(args[:in_json]) && File.exist?(args[:in_sql])
     dbname = Rails.configuration.database_configuration[Rails.env]["database"]
     dbuser = Rails.configuration.database_configuration[Rails.env]["username"]
     dbpw = Rails.configuration.database_configuration[Rails.env]["password"]
@@ -32,7 +32,7 @@ task :load_freecen_users, [:in_json,:in_sql] => :environment do |t, args|
     
     puts "done."
   else
-    if args[:in_json].nil? || !File.exists?(args[:in_json])
+    if args[:in_json].nil? || !File.exist?(args[:in_json])
       puts "ERROR! could not find file '#{args[:in_json]}"
       puts 'usage: rake load_freecen_users["/path/in.json","/path/in.sql"]'
     else
@@ -129,7 +129,7 @@ task :save_freecen_counties, [:out_json] => :environment do |t, args|
 end
 
 task :load_freecen_counties, [:in_json] => :environment do |t, args|
-  if !args[:in_json].nil? && File.exists?(args[:in_json])
+  if !args[:in_json].nil? && File.exist?(args[:in_json])
     Mongoid.load!("#{Rails.root}/config/mongoid.yml")
     db = Mongoid.clients[:default][:database]
     puts "emptying the counties collection"
@@ -146,7 +146,7 @@ task :load_freecen_counties, [:in_json] => :environment do |t, args|
     
     puts "done."
   else
-    if args[:in_json].nil? || !File.exists?(args[:in_json])
+    if args[:in_json].nil? || !File.exist?(args[:in_json])
       puts "ERROR! could not find file '#{args[:in_json]}"
       puts 'usage: rake load_freecen_users["/path/in.json","/path/in.sql"]'
     end

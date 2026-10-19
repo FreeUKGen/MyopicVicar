@@ -44,6 +44,10 @@ module SearchRecordsHelper
     record = record.present? ? record.titleize : record
   end
 
+  def marriage_date_for_citation(entry)
+    entry['marriage_date'].presence || entry['contract_date']
+  end
+
   def search_record_link(record)
     field = Rails.application.config.website + '/search_records/' + record
     field

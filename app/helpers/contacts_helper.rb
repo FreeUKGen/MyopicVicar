@@ -32,7 +32,7 @@ module ContactsHelper
   def show_contact_title_line_two(contact)
     show_title = "We assigned reference number #{contact.identifier} and it is "
     contact.archived? ? show_title = show_title + 'archived ' : show_title = show_title + 'active '
-    contact.screenshot_url.present? ?  show_title = show_title + 'and a screenshot was provided' : show_title = show_title + ' and no screenshot is available'
+    contact.attachments_present? ? show_title = show_title + 'and a screenshot was provided' : show_title = show_title + ' and no screenshot is available'
   end
 
   def show_contact_add_comment_link(message, action)

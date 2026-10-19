@@ -33,7 +33,7 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
-    refinery_user = User.where(username: @userid.userid_lower_case ).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(@userid.userid)}\z/i).first
     if refinery_user.blank?
       flash[:notice] = 'There was an issue with your request please consult your coordinator.' if session[:my_own]
       flash[:notice] = 'There was an issue with the userid please consult with system administration.' if !session[:my_own]
@@ -62,11 +62,15 @@ class UseridDetailsController < ApplicationController
     if spam_check
       @userid = UseridDetail.new(userid_details_params)
       @userid.add_fields(params[:commit], session[:syndicate])
-      @userid.save
       if @userid.save
-        refinery_user = User.where(username: @userid.userid_lower_case).first
-        refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        refinery_user = User.where(username: /\A#{::Regexp.escape(@userid.userid)}\z/i).first
+        if refinery_user.present?
+          refinery_user.send_reset_password_instructions
+          flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        else
+          logger.warn("FREEREG:USERID: The refinery entry for #{@userid.userid} does not exist after registration. Run the Fix Refinery User Table utility.")
+          flash[:notice] = 'The initial registration was successful, but there was a problem sending your confirmation email. Please contact your coordinator.'
+        end
         @userid.write_userid_file
         next_place_to_go_successful_create
       else
@@ -75,7 +79,7 @@ class UseridDetailsController < ApplicationController
         next_place_to_go_unsuccessful_create
       end
     else
-      render status: :not_found
+      head :not_found
     end
   end
 
@@ -517,8 +521,18 @@ class UseridDetailsController < ApplicationController
 
   def transcriber_statistics
     @current_user = get_user
-    @timeline = params[:timeline].present? ? params[:timeline].to_i : 3
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Sorry, You are not authorized for this action') && return unless stats_permitted_users?
+
+    @from_date = begin
+                   params[:from_date].present? ? Date.parse(params[:from_date]) : 3.months.ago.to_date
+                 rescue ArgumentError
+                   3.months.ago.to_date
+                 end
+    @to_date   = begin
+                   params[:to_date].present? ? Date.parse(params[:to_date]) : Date.today
+                 rescue ArgumentError
+                   Date.today
+                 end
 
     @total_users = UseridDetail.count
     @total_transcribers = UseridDetail.where(person_role: 'transcriber').count
@@ -546,9 +560,8 @@ class UseridDetailsController < ApplicationController
     @percentage_all_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_users_accepted_transcriber_agreement
     @percentage_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_users_accepted_transcriber_agreement
     @percentage_active_existing_users_who_accepted_transcription_agreement = UseridDetail.return_percentage_all_existing_active_users_accepted_transcriber_agreement
-    @new_users = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - @timeline.months }).count
-    #@new_users_last_90_days = UseridDetail.where(sign_up_date: { '$gt': DateTime.now - 90.days }).count
-    @number_of_transcribers_recently_uploaded_file = UseridDetail.number_of_transcribers_uploaded_file_recently(@timeline)
+    @new_users = UseridDetail.where(sign_up_date: { '$gte': @from_date.beginning_of_day, '$lte': @to_date.end_of_day }).count
+    @number_of_transcribers_recently_uploaded_file = UseridDetail.number_of_transcribers_uploaded_file_in_period(@from_date, @to_date)
     @images_groups_unallocated = ImageServerGroup.unallocated_groups_count
   end
 
@@ -636,7 +649,7 @@ class UseridDetailsController < ApplicationController
 
     if honeypot_error || diff <= 5
       error_file = 'log/spam_check_error_messages.log'
-      f = File.exists?(error_file) ? File.open(error_file, 'a+') : File.new(error_file, 'w')
+      f = File.exist?(error_file) ? File.open(error_file, 'a+') : File.new(error_file, 'w')
       error_text = " ===========SPAM caught at " + Time.now.to_s
       error_text = error_text + ' honeypot error detected'  if honeypot_error
       error_text = error_text + ' submission time is ' + diff.to_s + ' seconds'  if diff <= 5

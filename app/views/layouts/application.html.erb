@@ -102,6 +102,7 @@
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
     <%= javascript_include_tag "freecen_coverage_graph.js" %> 
+    <%= javascript_include_tag "multi_file_upload.js" %>
     <% if DonationCampaign.active? && %w[freereg freecen].include?(appname.downcase) %>
       <%= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
     <% end %>

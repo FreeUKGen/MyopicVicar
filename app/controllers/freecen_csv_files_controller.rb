@@ -322,7 +322,7 @@ class FreecenCsvFilesController < ApplicationController
     @freecen_csv_file.update_attributes(incorporating_lock: true)
     get_user_info_from_userid
     logger.warn("FREECEN:CSV_PROCESSING: Starting incorporation rake task for #{@freecen_csv_file.file_name}")
-    pid1 =  spawn("rake freecen_csv_file_incorporate[#{@freecen_csv_file.id}]")
+    pid1 = RakeSpawn.run("freecen_csv_file_incorporate[#{@freecen_csv_file.id}]")
     message = "The records for the csv file #{@freecen_csv_file.file_name} are being incorporated. You will receive an email when the task has been completed."
     logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
     redirect_to(freecen_csv_file_path(@freecen_csv_file), notice: message) && return
@@ -339,7 +339,7 @@ class FreecenCsvFilesController < ApplicationController
 
     get_user_info_from_userid
     logger.warn("FREECEN:CSV_PROCESSING: Starting unincorporation rake task for #{@freecen_csv_file.file_name}")
-    pid1 =  spawn("rake freecen_csv_file_unincorporate[#{@freecen_csv_file.id},#{@user.userid}]")
+    pid1 = RakeSpawn.run("freecen_csv_file_unincorporate[#{@freecen_csv_file.id},#{@user.userid}]")
 
     message = "The records for the csv file #{@freecen_csv_file.file_name} are being removed from the database. You will receive an email when the task has been completed."
     logger.warn("FREECEN:CSV_PROCESSING: rake task for #{pid1}")
@@ -643,7 +643,7 @@ class FreecenCsvFilesController < ApplicationController
         user = UseridDetail.id(@userid).first
         p "Starting rake task for #{user.userid} CSV File #{file.file_name} in #{file.chapman_code}"
         logger.warn("FREECEN:CSV_PREVALIDATE: Starting rake task for #{user.userid} CSV File #{file.file_name} in #{file.chapman_code}")
-        pid1 = spawn("bundle exec rake freecen:csv_prevalidate[#{file.file_name},#{user.userid}]")
+        pid1 = RakeSpawn.run("freecen:csv_prevalidate[#{file.file_name},#{user.userid}]")
         logger.warn("FREECEN:CSV_PREVALIDATE: rake task for #{pid1}")
 
         message = 'The background job that pre-validates the file has been started. You will receive an email when it has been completed. File will then be ready for validation. '

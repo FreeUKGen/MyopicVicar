@@ -47,16 +47,24 @@
             <td class="weight--semibold"> <%= link_to @contact.github_comment_url, @contact.github_comment_url  %></td>
           </tr>
         <% end %>
-      </table>
-      <% if @contact.screenshot_url.present? %>
-        <%= image_tag @contact.screenshot_url %>
-      <% end %>
-      <% if @contact.screenshots.present? %>
-        <% @contact.screenshots.each do |img| %>
-          <% next if img.blank? || img.url.blank? %>
-          <%= image_tag img.url %>
+        <% if @contact.attachments_present? %>
+          <tr>
+            <td>Attachment</td>
+            <td class="weight--semibold">
+              <% @contact.attachment_urls.each do |url| %>
+                <div class="push--bottom">
+                  <div class="push--top"><%= image_tag url, alt: 'Contact attachment' %></div>
+                </div>
+              <% end %>
+            </td>
+          </tr>
+        <% elsif @contact.screenshot_location.present? %>
+          <tr>
+            <td>Attachment</td>
+            <td class="weight--semibold">An attachment was recorded but the file is not available on this server. Put the file at <code>public/<%= @contact.screenshot_location %></code> or in <code>public/uploads/contact/screenshots/<%= @contact.id %>/</code> then reload this page.</td>
+          </tr>
         <% end %>
-      <% end %>
+      </table>
     </div>
   </section>
 </div>
