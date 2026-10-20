@@ -346,6 +346,28 @@
                             $( "#last_name" ).autocomplete({
                                 source: '/unique_surnames/?term='
                             });
+                            // jQuery UI autocomplete sets autocomplete="off", so browsers do not restore
+                            // the names when the user comes Back to this form; keep them for this tab instead (#905)
+                            (function () {
+                                var nameFields = ['first_name', 'last_name'];
+                                var storageKey = 'bmd_search_names';
+                                $('#new_search_query').on('submit', function () {
+                                    var names = {};
+                                    nameFields.forEach(function (id) { names[id] = $('#' + id).val(); });
+                                    try { sessionStorage.setItem(storageKey, JSON.stringify(names)); } catch (e) {}
+                                });
+                                window.addEventListener('pageshow', function (event) {
+                                    var nav = window.performance && performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+                                    if (!event.persisted && !(nav && nav.type === 'back_forward')) { return; }
+                                    var names = null;
+                                    try { names = JSON.parse(sessionStorage.getItem(storageKey)); } catch (e) {}
+                                    if (!names) { return; }
+                                    nameFields.forEach(function (id) {
+                                        var $field = $('#' + id);
+                                        if ($field.val() === '' && names[id]) { $field.val(names[id]); }
+                                    });
+                                });
+                            })();
                             function split( val ) {
                                 return val.split( /,\s*/ );
                             }
@@ -617,6 +639,7 @@
         $('#new_search_query').find('.validation-list').hide();
         $('#first_name').val('');
         $('#last_name').val('');
+        try { sessionStorage.removeItem('bmd_search_names'); } catch (e) {}
         $('#search_query_chapman_codes').val('');
         $('.checkboxtag, .checkAll').trigger('change');
     }
