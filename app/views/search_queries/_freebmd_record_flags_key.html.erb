@@ -1,6 +1,7 @@
 <p>Symbols next to a name (select one to see the details):</p>
 <ul>
-  <li><span class="bmd-flag bmd-flag--new">New</span> the entry is new or has changed since the previous database update.</li>
+  <li><i class="fas fa-user bmd-flag" aria-hidden="true"></i> unconfirmed: the entry has been transcribed once only and not yet confirmed by a second transcriber.</li>
+  <li><span class="bmd-flag bmd-flag--label">New</span> the entry is new or has changed since the previous database update.</li>
   <li><%= app_icons[:postem].html_safe %> a Postem (a note from a researcher) is attached to the entry.</li>
   <li><i class="fas fa-comment bmd-flag" aria-hidden="true"></i> the transcriber added a comment, for example where the index entry was unclear or amended.</li>
   <li><i class="fas fa-link bmd-flag" aria-hidden="true"></i> the entry is linked to another record, such as a late registration in a later quarter.</li>
@@ -10,5 +11,5 @@
   .bmd-flags { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 4px; padding: 3px 6px; border: 1px solid #ccc; border-radius: 3px; }
   .bmd-flags a { text-decoration: none; }
   .bmd-flag { color: #00857e; }
-  .bmd-flag--new { display: inline-block; padding: 0 4px; border: 1px solid #00857e; border-radius: 3px; font-size: 0.8em; font-weight: bold; }
+  .bmd-flag--label { display: inline-block; padding: 0 4px; border: 1px solid #00857e; border-radius: 3px; font-size: 0.8em; font-weight: bold; }
 </style>

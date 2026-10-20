@@ -4,11 +4,19 @@
 <% has_comment = @search_query.bmd_snapshot_flag?(search_record, BestGuess::ENTRY_COMMENT) %>
 <% has_reference = @search_query.bmd_snapshot_flag?(search_record, BestGuess::ENTRY_REFERENCE) %>
 <% is_system = @search_query.bmd_snapshot_flag?(search_record, BestGuess::ENTRY_SYSTEM) %>
-<% if is_new || has_postem || has_comment || has_reference || is_system %>
+<%# Most entries are double keyed, so only flag the ones that are not %>
+<% unconfirmed = !@search_query.bmd_snapshot_flag?(search_record, BestGuess::ENTRY_CONFIRMED) %>
+<% if unconfirmed || is_new || has_postem || has_comment || has_reference || is_system %>
   <% details_url = friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, record_hash: search_record.record_hash) %>
   <div class="bmd-flags">
+    <% if unconfirmed %>
+      <span title="Unconfirmed: transcribed once only, not yet confirmed by a second transcriber">
+        <span class="accessibility">Unconfirmed: transcribed once only, not yet confirmed by a second transcriber</span>
+        <i class="fas fa-user bmd-flag" aria-hidden="true"></i>
+      </span>
+    <% end %>
     <% if is_new %>
-      <span class="bmd-flag bmd-flag--new" title="New or changed since the previous database update">New</span>
+      <span class="bmd-flag bmd-flag--label" title="New or changed since the previous database update">New</span>
     <% end %>
     <% if has_postem %>
       <a href="<%= "#{details_url}#postems" %>" title="Postem available">
