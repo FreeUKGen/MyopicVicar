@@ -359,7 +359,7 @@
     </tr>
     <% if search == true %>
       <% unless (record.Confirmed & 512).zero? %>
-        <tr>
+        <tr id="linked-records">
           <th scope="row">
             Linked records
           </th>
@@ -370,7 +370,7 @@
       <% end %>
     <% end %>
     <% if record.get_comments.present? %>
-      <tr>
+      <tr id="comments">
         <th scope="row">
           Comment
         </th>

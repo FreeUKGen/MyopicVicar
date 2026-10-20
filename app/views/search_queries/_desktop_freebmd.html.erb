@@ -83,18 +83,11 @@
             <% record_type = RecordType::display_name(["#{search_record[:RecordTypeID]}"])%>
             <tr id="<%=search_record.record_hash%>" class="<%= record_type.downcase %>_hover" >
                 <td>
-                  <% has_postem = @search_query.bmd_snapshot_has_postem?(search_record) %>
                   <% has_scan = false %>
                   <center>
                     <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, record_hash: search_record.record_hash), :rel => "nofollow", :title => "")%>
                     <br>
-                    <% if has_postem %>
-                      <% postem_entry_url = friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, record_hash: search_record.record_hash) %>
-                      <a href="<%= "#{postem_entry_url}#postems" %>">
-                        <span class="accessibility">Postem Available</span>
-                        <%= app_icons[:postem].html_safe %>
-                      </a>
-                    <% end %>
+                    <%= render 'freebmd_record_flags', search_record: search_record %>
                     <% if has_scan %>
                       <span class="accessibility">Scans Available</span>
                       <i class="fas fa-file-image" style='color:#00857e'></i>
@@ -179,6 +172,7 @@
           <% end %>
         If no data is available for a specific record, these fields will display ‘No data.’ A dash (&ndash;) will appear in fields
         that are not relevant to a particular event type.</p>
+        <%= render 'freebmd_record_flags_key' %>
       </div>
     <!--/div-->
     <% unless print_friendly %>

@@ -1,0 +1,12 @@
+<p>Symbols next to a name (select one to see the details):</p>
+<ul>
+  <li><span class="bmd-flag bmd-flag--new">New</span> the entry is new or has changed since the previous database update.</li>
+  <li><%= app_icons[:postem].html_safe %> a Postem (a note from a researcher) is attached to the entry.</li>
+  <li><i class="fas fa-comment bmd-flag" aria-hidden="true"></i> the transcriber added a comment, for example where the index entry was unclear or amended.</li>
+  <li><i class="fas fa-link bmd-flag" aria-hidden="true"></i> the entry is linked to another record, such as a late registration in a later quarter.</li>
+  <li><i class="fas fa-bolt bmd-flag" aria-hidden="true"></i> a System Entry, added to the database to correct an apparent error in the GRO index.</li>
+</ul>
+<style>
+  .bmd-flag { color: #00857e; padding-right: 5px; }
+  .bmd-flag--new { display: inline-block; padding: 0 4px; border: 1px solid #00857e; border-radius: 3px; font-size: 0.8em; font-weight: bold; }
+</style>

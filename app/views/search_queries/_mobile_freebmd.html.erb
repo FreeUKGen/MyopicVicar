@@ -19,6 +19,8 @@
           <td>
               <%= link_to("#{search_record[:GivenName]} #{search_record[:Surname]}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, record_hash: search_record.record_hash), :rel => "nofollow", :title => "")%>
               <i><%= seen(@search_query,search_record) %></i>
+              <br>
+              <%= render 'freebmd_record_flags', search_record: search_record %>
           </td>
         </tr>
         <tr>
@@ -90,6 +92,7 @@
       <%= horz_advert('freebmd_hrec_1') %>
     <% end %>
   <% end%>
+  <%= render 'freebmd_record_flags_key' %>
 </div>
 
       <div class='text--center inline-block'>

@@ -1297,8 +1297,13 @@
   end
 
   def bmd_snapshot_has_postem?(search_result)
+    bmd_snapshot_flag?(search_result, BestGuess::ENTRY_POSTEM)
+  end
+
+  # Confirmed is a bit field (BestGuess::ENTRY_*) copied into the search snapshot
+  def bmd_snapshot_flag?(search_result, flag)
     confirmed = search_result.read_attribute(:Confirmed) || search_result[:Confirmed]
-    confirmed.to_i & BestGuess::ENTRY_POSTEM != 0
+    confirmed.to_i & flag != 0
   end
 
   def previous_record(current)

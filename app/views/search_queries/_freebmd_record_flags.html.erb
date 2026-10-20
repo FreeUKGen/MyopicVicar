@@ -1,0 +1,29 @@
+<%# Icons for the FreeBMD1 entry symbols, driven by the BestGuess Confirmed bits in the search snapshot %>
+<% details_url = friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, record_hash: search_record.record_hash) %>
+<% if @search_query.bmd_snapshot_flag?(search_record, BestGuess::ENTRY_NEW) %>
+  <span class="bmd-flag bmd-flag--new" title="New or changed since the previous database update">New</span>
+<% end %>
+<% if @search_query.bmd_snapshot_has_postem?(search_record) %>
+  <a href="<%= "#{details_url}#postems" %>" title="Postem available">
+    <span class="accessibility">Postem available</span>
+    <%= app_icons[:postem].html_safe %>
+  </a>
+<% end %>
+<% if @search_query.bmd_snapshot_flag?(search_record, BestGuess::ENTRY_COMMENT) %>
+  <a href="<%= "#{details_url}#comments" %>" title="Transcriber's comment">
+    <span class="accessibility">Transcriber's comment</span>
+    <i class="fas fa-comment bmd-flag" aria-hidden="true"></i>
+  </a>
+<% end %>
+<% if @search_query.bmd_snapshot_flag?(search_record, BestGuess::ENTRY_REFERENCE) %>
+  <a href="<%= "#{details_url}#linked-records" %>" title="Linked record, such as a late registration">
+    <span class="accessibility">Linked record, such as a late registration</span>
+    <i class="fas fa-link bmd-flag" aria-hidden="true"></i>
+  </a>
+<% end %>
+<% if @search_query.bmd_snapshot_flag?(search_record, BestGuess::ENTRY_SYSTEM) %>
+  <a href="<%= details_url %>" title="System entry: added to correct an apparent error in the GRO index">
+    <span class="accessibility">System entry: added to correct an apparent error in the GRO index</span>
+    <i class="fas fa-bolt bmd-flag" aria-hidden="true"></i>
+  </a>
+<% end %>
