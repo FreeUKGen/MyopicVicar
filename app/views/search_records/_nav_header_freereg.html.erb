@@ -25,7 +25,7 @@
       <%= link_to "Evidence Explained", friendly_search_record_path(@search_record[:_id], :citation_type => "evidenceexplained"), :class => "btn  btn--small ", id: 'evidenceexplained' %>
       <%= link_to "Wikipedia", friendly_search_record_path(@search_record[:_id], :citation_type => "wikipedia"), :class => "btn  btn--small ", id: 'wikipedia' %>
     </div>
-    <% if params[:citation_type].present? %>
+    <% if SearchRecordsController::CITATION_TYPES.include?(params[:citation_type]) %>
       <br>
       <span id = "citation_section">
         <%= render params[:citation_type] + '_' + appname.downcase + '_citation'%>
