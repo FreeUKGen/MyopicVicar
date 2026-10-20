@@ -86,13 +86,12 @@
                   <% has_scan = false %>
                   <center>
                     <%= link_to("#{titleize_string(search_record[:GivenName])} #{search_record[:Surname].upcase}".html_safe,friendly_bmd_record_details_path(@search_query.id, search_record.RecordNumber, search_record.friendly_url, record_hash: search_record.record_hash), :rel => "nofollow", :title => "")%>
-                    <br>
-                    <%= render 'freebmd_record_flags', search_record: search_record %>
                     <% if has_scan %>
                       <span class="accessibility">Scans Available</span>
                       <i class="fas fa-file-image" style='color:#00857e'></i>
                     <% end %>
                     <i><%= seen(@search_query,search_record) %></i>
+                    <%= render 'freebmd_record_flags', search_record: search_record %>
                   </center>
                 </td>
               <%# end %>
