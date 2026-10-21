@@ -126,7 +126,8 @@ class ImageServerGroupsController < ApplicationController
     session.delete(:upload_return)
     session[:source_id] = params[:id]
     if session[:role] == 'image_server_coord'
-      @image_server_group = ImageServerGroup.all
+      # load every group's source in one query; the list compares each group's dates with its source's
+      @image_server_group = ImageServerGroup.all.includes(:source)
     else
       display_info
       @image_server_group = ImageServerGroup.image_server_groups_by_user_role(session[:manage_user_origin], session[:source_id], session[:syndicate])
