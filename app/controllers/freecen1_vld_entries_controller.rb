@@ -1,8 +1,6 @@
 class Freecen1VldEntriesController < ApplicationController
   skip_before_action :require_login, only: [:show]
 
-  ActionController::Parameters.permit_all_parameters = true
-
   def edit_pob
     get_user_info_from_userid
     if params[:id].present?
@@ -145,7 +143,7 @@ class Freecen1VldEntriesController < ApplicationController
           was_OUC = @freecen1_vld_entry.birth_county == 'OUC' ? true : false
           # #######
           @freecen1_vld_entry.add_freecen1_vld_entry_edit(@user.userid, reason, @freecen1_vld_entry.verbatim_birth_county, @freecen1_vld_entry.verbatim_birth_place, @freecen1_vld_entry.birth_county, @freecen1_vld_entry.birth_place, @freecen1_vld_entry.notes)
-          @freecen1_vld_entry.update_attributes(params[:freecen1_vld_entry])
+          @freecen1_vld_entry.update_attributes(params.require(:freecen1_vld_entry).permit!)
           Freecen1VldEntry.update_linked_records_pob(@freecen1_vld_entry,  params[:freecen1_vld_entry][:birth_county], params[:freecen1_vld_entry][:birth_place],  params[:freecen1_vld_entry][:notes])
         end
         @freecen1_vld_entry.update_attributes(pob_valid: result, pob_warning: warning)
