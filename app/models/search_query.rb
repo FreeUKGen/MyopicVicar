@@ -2224,10 +2224,6 @@
     wildcard_option == Constant::ADDITIONAL
   end
 
-  def new_first_name_starts_with_wildcard_query
-    "BestGuess.GivenName like '#{self.first_name}%'"
-  end
-
   def new_first_name_ends_with_wildcard_query
      field, value = "BestGuess.GivenName like ?", "%#{first_name}"
     #{}"BestGuess.GivenName like '%#{self.first_name}'"
