@@ -39,6 +39,9 @@ module Freecen2CountyContentsHelper
 
   def county_locate_place_link(place_id, button_size)
     place = Freecen2Place.find_by(id: place_id)
+    # place_id comes from the URL and may be mangled (e.g. "<id>,1709652676") or the place deleted
+    return if place.blank? || place.latitude.blank? || place.longitude.blank?
+
     if button_size == 'exsmall'
       link_to 'Location', "https://www.google.com/maps/search/?api=1&query=#{place.latitude},#{place.longitude}", target: :_blank, class: 'btn   btn--exsmall', title: 'Shows the location on a Google map in a new tab'
     else

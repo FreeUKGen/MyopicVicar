@@ -217,7 +217,7 @@ class FreeregContentsController < ApplicationController
     @unique_surnames, @remainders = FreeregContent.letterize(@unique_surnames)
     @unique_forenames, @remainderf = FreeregContent.letterize(@unique_forenames)
     variables_for_church_show
-    @referer = params[:ref].presence || ' '
+    @referer = same_site_url(params[:ref]) || ' '
   end
 
   def unique_register_names
@@ -230,7 +230,7 @@ class FreeregContentsController < ApplicationController
     @unique_surnames, @remainders = FreeregContent.letterize(@unique_surnames)
     @unique_forenames, @remainderf = FreeregContent.letterize(@unique_forenames)
     variables_for_register_show
-    @referer = params[:ref].presence || ' '
+    @referer = same_site_url(params[:ref]) || ' '
   end
 
   def unique_place_names
@@ -243,7 +243,7 @@ class FreeregContentsController < ApplicationController
     @unique_forenames, @remainderf = FreeregContent.letterize(@unique_forenames)
 
     variables_for_place_show
-    @referer = params[:ref].presence || ' '
+    @referer = same_site_url(params[:ref]) || ' '
   end
 
   def variables_for_church_show

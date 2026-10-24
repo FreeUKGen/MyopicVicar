@@ -59,8 +59,10 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
+    head(:not_found) && return unless user_signed_in? || REGISTRATION_COMMITS.include?(params[:commit])
+
     if spam_check
-      @userid = UseridDetail.new(userid_details_params)
+      @userid = UseridDetail.new(create_params)
       @userid.add_fields(params[:commit], session[:syndicate])
       if @userid.save
         refinery_user = User.where(username: /\A#{::Regexp.escape(@userid.userid)}\z/i).first
@@ -334,7 +336,6 @@ class UseridDetailsController < ApplicationController
 
   def researcher_registration
     if Rails.application.config.member_open
-      cookies.signed[:Administrator] = Rails.application.config.github_issues_password
       session[:return_to] = request.fullpath
       session[:first_name] = 'New Registrant'
       session[:type] = 'researcher_registration'
@@ -494,7 +495,6 @@ class UseridDetailsController < ApplicationController
 
   def technical_registration
     redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
-    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = 'technical_registration'
@@ -505,7 +505,6 @@ class UseridDetailsController < ApplicationController
     redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
 
     #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
-    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = 'transcriber_registration'
@@ -600,7 +599,7 @@ class UseridDetailsController < ApplicationController
     end
     email_valid_change_message
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
-    @userid.update_attributes(userid_details_params.except(:userid))
+    @userid.update_attributes(update_params.except(:userid))
     @userid.write_userid_file
     @userid.save_to_refinery
     if @userid.errors.any?
@@ -633,6 +632,30 @@ class UseridDetailsController < ApplicationController
 
   def userid_details_params
     params.require(:userid_detail).permit!
+  end
+
+  REGISTRATION_FIELDS = %i[userid person_forename person_surname email_address address telephone_number syndicate skill_notes
+                           transcription_agreement new_transcription_agreement code_of_conduct volunteer_induction_handbook volunteer_policy].freeze
+  REGISTRATION_COMMITS = ['Register Researcher', 'Register as Transcriber', 'Technical Registration'].freeze
+  ROLE_ASSIGNERS = %w[system_administrator volunteer_coordinator].freeze
+
+  # create is open to the public for self-registration, so only accept the registration form's fields there;
+  # add_fields sets the role from the commit. Signed-in users other than role assigners can only add transcribers or trainees.
+  def create_params
+    return params.require(:userid_detail).permit(REGISTRATION_FIELDS) unless user_signed_in?
+    return userid_details_params if ROLE_ASSIGNERS.include?(session[:role])
+
+    permitted = userid_details_params.except(:secondary_role)
+    permitted.delete(:person_role) unless %w[transcriber trainee].include?(permitted[:person_role])
+    permitted
+  end
+
+  # Users editing their own profile cannot change their own roles
+  def update_params
+    permitted = userid_details_params
+    return permitted unless get_user&.id == @userid.id && session[:role] != 'system_administrator'
+
+    permitted.except(:person_role, :secondary_role)
   end
 
   def spam_check

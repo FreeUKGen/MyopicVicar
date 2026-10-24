@@ -20,7 +20,22 @@ class AssetsController < ApplicationController
   end
 
   def show
-    flash[:notice] = "There are no assets for #{params[:id]}"
-    redirect_to main_app.new_manage_resource_path
+    file = resource_file
+    if file
+      send_file file, disposition: 'inline'
+    else
+      flash[:notice] = "There are no assets for #{params[:id]}"
+      redirect_to main_app.new_manage_resource_path
+    end
+  end
+
+  private
+
+  # Handbooks and other documents in app/assets_<app>/resources are linked as /assets/<file name> without a
+  # fingerprint, but Sprockets 4 does not precompile them, so the request reaches here instead (#1909)
+  def resource_file
+    dir = Rails.root.join('app', "assets_#{appname_downcase}", 'resources')
+    path = dir.join(File.basename(Rack::Utils.unescape_path(request.path)))
+    path if path.dirname == dir && path.file?
   end
 end
