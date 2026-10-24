@@ -669,7 +669,59 @@ class UseridDetail
     #u.add_role('Refinery')
     #u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
     #u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
-    Rails.logger.warn("FREEREG:USERID: save_to_refinery failed for #{self.userid}: #{u.errors.full_messages.join(', ')}") unless u.save
+    if u.save
+      @login_user_errors = nil
+    else
+      # kept for save_with_login_user, which undoes the registration when the User could not be saved
+      @login_user_errors = u.errors.full_messages
+      Rails.logger.warn("FREEREG:USERID: save_to_refinery failed for #{self.userid}: #{@login_user_errors.join(', ')}")
+    end
+  end
+
+  # Saves a new userid and, through the save_to_refinery callback, the User it logs in with.
+  # Both are written in one transaction, so a User that cannot be saved also undoes the userid,
+  # rather than leaving a registration that can never log in. Without a replica set (e.g. a
+  # standalone local mongod) there are no transactions, so it is a plain save as before.
+  def save_with_login_user
+    @login_user_errors = nil
+    return save unless UseridDetail.transactions_supported?
+
+    UseridDetail.with_session do |session|
+      # reads inside a transaction must use the primary
+      session.start_transaction(read: { mode: :primary })
+      begin
+        saved = save && @login_user_errors.blank?
+      rescue StandardError
+        session.abort_transaction if session.in_transaction?
+        self.new_record = true
+        raise
+      end
+
+      unless saved
+        session.abort_transaction
+        if @login_user_errors.present?
+          # the insert was rolled back, so let the form be submitted again as a new record
+          self.new_record = true
+          errors.add(:base, "Your login could not be created: #{@login_user_errors.join(', ')}")
+        end
+        return false
+      end
+
+      begin
+        session.commit_transaction
+      rescue Mongo::Error
+        # not committed (or not known to be), so let the form be submitted again as a new record
+        self.new_record = true
+        raise
+      end
+      true
+    end
+  end
+
+  # multi-document transactions need a replica set or a sharded cluster
+  def self.transactions_supported?
+    topology = collection.client.cluster.topology
+    topology.replica_set? || topology.sharded?
   end
 
   def update_refinery
