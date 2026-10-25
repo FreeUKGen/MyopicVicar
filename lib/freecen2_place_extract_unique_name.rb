@@ -1,23 +1,24 @@
 class Freecen2PlaceExtractUniqueName
   class << self
-    def process(days)
+    def process(full_update)
       file_for_messages = 'log/freecen2_place_extract_unique_names_report.log'
       message_file = File.new(file_for_messages, 'w')
-      days = days.to_i
       p "Updating Freecen2 Place unique names"
       message_file.puts 'Updating Freecen2 Place unique names'
       num = 0
       time_start = Time.now
       p "time_start #{time_start}"
 
-      if days == 0
-        place_ids = Freecen2Place.data_present.map{|p| p.id.to_s }
+      if full_update.present?
+        # fc2_place_ids = Freecen2Place.data_present.map{|p| p.id.to_s }
+        fc2_piece_ids = Freecen2Piece.pluck(:id)
       else
-        previous_time = Time.utc(time_start.year, time_start.month, time_start.day) - days*24.hours
-        p "previous_time #{previous_time}"
-        #place_ids = SearchRecord.between(u_at: previous_time..time_start).no_timeout.map{|p| p.freecen2_place_id.to_s }.uniq
-
-        fc2_piece_ids = Freecen2Piece.between(status_date: previous_time..time_start).pluck(:id)
+        last_contents = Freecen2CountyContent.where(county: 'ALL').order_by(interval_end: :desc).first
+        last_contents_date = last_contents.present? ? last_contents.interval_end : time.start - 86400
+        p "last_contents_date #{last_contents_date}"
+        now_date = Time.utc(time_start.year, time_start.month, time_start.day)
+        days_diff = (now_date - last_contents_date).to_i / 86400
+        fc2_piece_ids = Freecen2Piece.between(status_date: last_contents_date..time_start).pluck(:id)
       end
 
       fc2_piece_ids.each do |piece_id|
