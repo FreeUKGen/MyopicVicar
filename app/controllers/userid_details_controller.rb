@@ -336,6 +336,7 @@ class UseridDetailsController < ApplicationController
 
   def researcher_registration
     if Rails.application.config.member_open
+      cookies.signed[:Administrator] = Rails.application.config.github_issues_password
       session[:return_to] = request.fullpath
       session[:first_name] = 'New Registrant'
       session[:type] = 'researcher_registration'
@@ -495,6 +496,7 @@ class UseridDetailsController < ApplicationController
 
   def technical_registration
     redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
+    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = 'technical_registration'
@@ -505,6 +507,7 @@ class UseridDetailsController < ApplicationController
     redirect_to(new_search_query_path, notice: 'The system is presently undergoing maintenance and is unavailable for registration') && return unless Rails.application.config.member_open
 
     #we set the mongo_config.yml member open flag. true is open. false is closed We do allow technical people in
+    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     session[:return_to] = request.fullpath
     session[:first_name] = 'New Registrant'
     session[:type] = 'transcriber_registration'

@@ -119,6 +119,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource_or_scope)
+    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     cookies.signed[:userid] = current_user.userid_detail_id
     session[:userid_detail_id] = current_user.userid_detail_id
     session[:devise] = current_user.id
@@ -127,6 +128,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for_old(resource_or_scope)
+    cookies.signed[:Administrator] = Rails.application.config.github_issues_password
     u = current_user
     cookies.signed[:userid] = u.userid_detail_id
     session[:userid_detail_id] = u.userid_detail_id
