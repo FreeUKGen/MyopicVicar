@@ -1,3 +1,5 @@
+require 'date'
+
 module FreeregValidations
 
   VALID_UCF = /[\}\{\?\*\_\]\[\,]/
@@ -89,25 +91,29 @@ module FreeregValidations
     'Divorcee' => "Divorcee",
   'Juvenis' => 'Minor'}
 
-
   def FreeregValidations.cleantext(field)
     #not convinced this code is effective or needed
     return true if field.nil? || field.empty?
     return true if field =~ VALID_TEXT
     return true
   end
+
   def FreeregValidations.cleancredit(field)
     return true if field.nil? || field.empty?
     return false if field =~ VALID_CREDIT
     return true
   end
+
   def FreeregValidations.cleanname(field)
 
     #not convinced this code is effective or needed
     return true if field.nil? || field.empty?
+    # return false unless field =~ VALID_NAME || field =~ VALID_UCF
     return false unless field =~ VALID_NAME || field =~ VALID_UCF
+    return false if field =~ VALID_UCF && !valid_ucf_expression?(field)
     return true
   end
+
   def FreeregValidations.cleannumeric(field)
     #not convinced this code is effective or needed
     return true if field.nil? || field.empty?
@@ -118,6 +124,7 @@ module FreeregValidations
 
     return false
   end
+
   #clean up the age field
   # check that the age is in one of several acceptable formats - infant
   # 1d (day), 2w (week), 3m (month), 2y5m (2 years, 5 months), or - for 'no age'
@@ -172,7 +179,6 @@ module FreeregValidations
     end
   end
 
-
   def  FreeregValidations.cleansex(field)
     case
     when field.nil?
@@ -215,6 +221,8 @@ module FreeregValidations
 
   def FreeregValidations.cleandate(field)
     return true if field.nil? || field.empty?
+    return false if field =~ /[()]/
+    return false if field =~ VALID_UCF && !valid_ucf_expression?(field)
 
     a = field.split(' ')
     case
@@ -253,7 +261,7 @@ module FreeregValidations
 
   def self.check_year(yyyy)
     return true if VALID_YEAR_PATTERNS.any? { |re| yyyy.match?(re) }
-    
+
     characters = yyyy.split('')
     if characters.length == 4
       # deal with the yyyy and permit the wild character
@@ -317,7 +325,6 @@ module FreeregValidations
     year
   end
 
-
   def FreeregValidations.modern_date_valid?(field)
     # determines if the modern date of creation or modification is valid
     return true if field.blank?
@@ -357,7 +364,7 @@ module FreeregValidations
   def FreeregValidations.valid_record_date?(date_string)
     # Blank dates are considered valid
     return true if date_string.blank?
-    
+
     match = date_string.strip.match(/\A(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\z/)
     return false unless match
 
@@ -378,5 +385,56 @@ module FreeregValidations
     end
   end
 
+  def FreeregValidations.valid_ucf_expression?(field)
+    return true if field.nil? || field.to_s.empty?
 
+    value = field.to_s.strip
+    return true if value.empty?
+    return false if value.match?(/[()]/)
+
+    bracket_stack = []
+    pairs = { '[' => ']', '{' => '}' }
+
+    value.each_char do |char|
+      if pairs.key?(char)
+        bracket_stack << char
+      elsif pairs.value?(char)
+        return false if bracket_stack.empty? || pairs[bracket_stack.pop] != char
+      elsif char =~ /[\[\]\{\}]/
+        return false
+      end
+    end
+
+    return false unless bracket_stack.empty?
+
+    value.scan(/\[[^\]]*\]|\{[^}]*\}/) do |segment|
+      content = segment[1..-2]
+
+      if segment.start_with?('{')
+        return false if content.to_s.empty?
+        return false unless content =~ /\A\d+(?:\s*,\s*\d+)?\s*\z/
+        segment_start = value.index(segment)
+        return false if segment_start.nil? || segment_start == 0
+        return false unless value[segment_start - 1] == '_'
+      else
+        return false if content.to_s.empty?
+        return false if content =~ /\d/
+        return false unless content =~ /\A[A-Za-z]+\z/
+      end
+    end
+
+    value.to_enum(:scan, /\{[^}]*\}/).each do
+      match = Regexp.last_match
+      index = match.begin(0)
+      next if index.positive? && value[index - 1] == '_'
+      return false
+    end
+
+    return false if value =~ /\[\s*\]/
+    return false if value =~ /\{\s*\}/
+    return false if value =~ /\{\s*[,}]|[,]\s*\}/
+    return false if value =~ /\[[^\]]*\]/ && value =~ /\[[^A-Za-z\]]*\]/
+
+    true
+  end
 end
