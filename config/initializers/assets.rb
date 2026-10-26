@@ -18,9 +18,10 @@ Rails.application.config.assets.version = '1.0'
 Rails.application.configure do
   config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
 
-  config.assets.precompile += %w[styles/scss/lap_and_up.scss]
-  config.assets.precompile += %w[styles/scss/palm.scss]
-  config.assets.precompile += %w[styles/scss/ladda.scss]
+  config.assets.precompile += %w[styles/scss/lap_and_up.css]
+  config.assets.precompile += %w[styles/scss/palm.css]
+  config.assets.precompile += %w[styles/scss/ladda.css]
+  config.assets.precompile += %w[styles/scss/freebmd_content.css]
   config.assets.precompile += %w[styles/css/donate_icon.css]
   config.assets.precompile += %w[styles/css/icons.data.svg.css]
   config.assets.precompile += %w[styles/css/freereg_content.css]

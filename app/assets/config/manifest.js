@@ -1,4 +1,11 @@
 //= link_tree ../images
 //= link_directory ../javascripts .js
 //= link_directory ../stylesheets .css
+//= link styles/scss/palm.css
+//= link styles/scss/lap_and_up.css
+//= link styles/scss/ladda.css
+//= link styles/css/donate_icon.css
+//= link styles/css/icons.data.svg.css
+//= link styles/css/freereg_content.css
+//= link styles/scss/freebmd_content.css
 //= link_tree ../wymeditor
