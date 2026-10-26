@@ -15,15 +15,6 @@
 <div class='text--left push-half--bottom'>
   <small><strong>Tip: Double-tab to move between fields</strong></small>
 </div>
-<style>
-  /* Desktop: the advert column is exactly as wide as its 300px box (for 300x600 / 300x250 ads); the form takes the rest */
-  @media only screen and (min-width: 1024px) {
-    .search-ad-layout { display: flex; }
-    .search-ad-layout > .search-ad-layout__form { flex: 1 1 0; min-width: 0; width: auto; }
-    .search-ad-layout > .search-ad-layout__ad { flex: 0 0 auto; width: auto; }
-    .search-ad-layout__ad > .search-ad-layout__box { min-width: 300px; }
-  }
-</style>
 <div class="grid search-ad-layout">
   <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole search-ad-layout__form">
     <div class="palm-flush--bottom">
@@ -242,15 +233,7 @@
           <% end %>
     </div>
   </div>
-  <% unless device_type == :mobile %>
-    <div class="grid__item desk-one-fifth lap-one-third palm-one-whole text--center push--bottom search-ad-layout__ad">
-      <span>Advertisement</span><br>
-      <div class="push--top search-ad-layout__box" style="position: sticky; top:0; align-self: start; width: 300px; max-width: 100%; margin-left: auto; margin-right: auto;">
-        <!-- GAM 71161633/FRBMD_freecenorguk/freecen_skyscraper_1 -->
-        <div data-fuse="freecen_skyscraper_1"></div>
-      </div>
-    </div>
-  <% end %>
+  <%= render 'search_form_advert', slot: 'freecen_skyscraper_1', gam_unit: '71161633/FRBMD_freecenorguk/freecen_skyscraper_1' %>
 </div>
     <!-- GAM 71161633/FRBMD_freecenorguk/freecen_hrec_3 -->
     <%= horz_advert('22946534648') %>
