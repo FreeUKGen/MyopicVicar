@@ -1,28 +1,39 @@
-# Copyright 2012 Trustees of FreeBMD
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Be sure to restart your server when you modify this file.
 
-# Your secret key for verifying the integrity of signed cookies.
-# If you change this key, all old signed cookies will become invalid!
-# Make sure the secret is at least 30 characters and all random,
-# no regular words or you'll be exposed to dictionary attacks.
-secret_token = "#{Rails.root}/config/secrets.yml"
-if File.exist?(secret_token)
-  YAML.load_file(secret_token)[Rails.env].each do |key, value|
-    MyopicVicar::Application.config.secret_token = value
+require 'securerandom'
+
+secret_file = Rails.root.join("config", "secrets.yml")
+mongo_config_file = Rails.root.join("config", "mongo_config.yml")
+
+secret =
+  ENV["SECRET_KEY_BASE"].presence ||
+  ENV["SECRET_TOKEN"].presence ||
+  begin
+    YAML.safe_load_file(secret_file, aliases: true).to_h.dig(Rails.env.to_s, "secret_key_base")
+  rescue Errno::ENOENT, Psych::SyntaxError, TypeError
+    nil
+  end&.to_s&.presence ||
+  begin
+    YAML.safe_load_file(secret_file, aliases: true).to_h.dig(Rails.env.to_s, "secret_token")
+  rescue Errno::ENOENT, Psych::SyntaxError, TypeError
+    nil
+  end&.to_s&.presence ||
+  begin
+    YAML.safe_load_file(mongo_config_file, aliases: true).to_h.dig(Rails.env.to_s, "secret_key_base")
+  rescue Errno::ENOENT, Psych::SyntaxError, TypeError
+    nil
+  end&.to_s&.presence
+
+if secret.blank?
+  if Rails.env.production?
+    raise "Missing SECRET_KEY_BASE for #{Rails.env}. Set it in your environment or credentials."
+  else
+    secret = SecureRandom.hex(64)
+    Rails.logger.warn <<~WARN
+      No secret_key_base found for #{Rails.env}; generated a temporary local secret.
+      Set SECRET_KEY_BASE or configure config/secrets.yml/config/mongo_config.yml for a stable value.
+    WARN
   end
-else
-  MyopicVicar::Application.config.secret_token = ('x' * 30)
 end
+
+Rails.application.config.secret_token = secret
+Rails.application.config.secret_key_base = secret
