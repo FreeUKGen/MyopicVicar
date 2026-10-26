@@ -699,10 +699,11 @@ class UseridDetail
   # Saves a new userid and, through the save_to_refinery callback, the User it logs in with.
   # Both are written in one transaction, so a User that cannot be saved also undoes the userid,
   # rather than leaving a registration that can never log in. Without a replica set (e.g. a
-  # standalone local mongod) there are no transactions, so it is a plain save as before.
+  # standalone mongod, as on beta) there are no transactions, so the userid is saved and then
+  # deleted again if its User could not be saved.
   def save_with_login_user
     @login_user_errors = nil
-    return save unless UseridDetail.transactions_supported?
+    return save_then_undo_without_login_user unless UseridDetail.transactions_supported?
 
     UseridDetail.with_session do |session|
       # reads inside a transaction must use the primary
@@ -734,6 +735,19 @@ class UseridDetail
       end
       true
     end
+  end
+
+  # Without a transaction: when the User could not be saved, remove the userid that was just
+  # inserted. A plain delete_all, as destroy would run the callback that removes the userid
+  # folder, and delete would freeze this record, which the form is shown again with.
+  def save_then_undo_without_login_user
+    return false unless save
+    return true if @login_user_errors.blank?
+
+    UseridDetail.where(_id: id).delete_all
+    self.new_record = true
+    errors.add(:base, "Your login could not be created: #{@login_user_errors.join(', ')}")
+    false
   end
 
   # multi-document transactions need a replica set or a sharded cluster
