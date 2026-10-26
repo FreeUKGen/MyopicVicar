@@ -1,0 +1,20 @@
+<%# Advert column beside the search form. The form's grid needs the search-ad-layout class and its form column
+    the search-ad-layout__form class. Locals: slot (data-fuse slot name), gam_unit (GAM ad unit path, for reference) %>
+<style>
+  /* Desktop: the advert column is exactly as wide as its 300px box (for 300x600 / 300x250 ads); the form takes the rest */
+  @media only screen and (min-width: 1024px) {
+    .search-ad-layout { display: flex; }
+    .search-ad-layout > .search-ad-layout__form { flex: 1 1 0; min-width: 0; width: auto; }
+    .search-ad-layout > .search-ad-layout__ad { flex: 0 0 auto; width: auto; }
+    .search-ad-layout__ad > .search-ad-layout__box { min-width: 300px; }
+  }
+</style>
+<% unless device_type == :mobile %>
+  <div class="grid__item desk-one-fifth lap-one-third palm-one-whole text--center push--bottom search-ad-layout__ad">
+    <span>Advertisement</span><br>
+    <div class="push--top search-ad-layout__box" style="position: sticky; top:0; align-self: start; width: 300px; max-width: 100%; margin-left: auto; margin-right: auto;">
+      <!-- GAM <%= gam_unit %> -->
+      <div data-fuse="<%= slot %>"></div>
+    </div>
+  </div>
+<% end %>
