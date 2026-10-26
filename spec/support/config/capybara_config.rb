@@ -2,15 +2,8 @@
 require 'capybara/rspec'
 
 RSpec.configure do |config|
-  # System specs use Capybara
-  config.before(:each, type: :system) do
-    driven_by :rack_test
-  end
-
-  config.before(:each, type: :system, js: true) do
-    driven_by :remote_chrome
-  end
-
-  # Include Capybara DSL so you can use `visit`, `fill_in`, etc.
+  # Regular feature specs should use the app default driver configured in
+  # spec/support/capybara.rb. This keeps the setup in one place and avoids
+  # conflicting driver configuration between support files.
   config.include Capybara::DSL, type: :feature
 end
