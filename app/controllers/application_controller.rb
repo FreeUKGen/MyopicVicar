@@ -193,6 +193,21 @@ class ApplicationController < ActionController::Base
     user
   end
 
+  # Returns url only if it points back to this site, so links and redirects built from params or the
+  # Referer header cannot send people to another site or run javascript: URLs
+  def same_site_url(url)
+    return if url.blank?
+
+    uri = URI.parse(url.to_s.strip)
+    return url if uri.scheme.nil? && uri.host.nil? && uri.path.to_s.start_with?('/')
+    return url if %w[http https].include?(uri.scheme) && uri.host == request.host
+
+    nil
+  rescue URI::InvalidURIError
+    nil
+  end
+  helper_method :same_site_url
+
   def get_user_roles
     user = get_user
     all_roles = user.secondary_role

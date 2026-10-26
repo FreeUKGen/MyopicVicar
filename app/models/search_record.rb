@@ -571,7 +571,7 @@ class SearchRecord
 
       record = existing || SearchRecord.new
       record.assign_attributes(search_record_parameters)
-      record[:freereg1_csv_entry_id] = entry.id
+      record.freereg1_csv_entry = entry
       if entry.embargo_records.present?
         record[:embargoed] = entry.currently_under_embargo?
         record[:release_year] = entry.effective_embargo_release_year
@@ -888,7 +888,7 @@ class SearchRecord
         end
       end
     elsif 'bu'== role
-      if freereg1_csv_entry.relationship
+      if freereg1_csv_entry&.relationship
         case
         when freereg1_csv_entry.relationship.downcase =~ /son/
           sex = 'm'

@@ -18,8 +18,6 @@ class Freereg1CsvEntriesController < ApplicationController
 
   skip_before_action :require_login, only: [:show]
 
-  ActionController::Parameters.permit_all_parameters = true
-
   def calculate_software_version
     @server = SoftwareVersion.extract_server(Socket.gethostname)
     @application = appname
@@ -218,12 +216,12 @@ class Freereg1CsvEntriesController < ApplicationController
     @error = true
     if @error_file.blank?
       flash[:notice] = 'The error entry was not found'
-      redirect_to(params[:referrer]) && return
+      redirect_to(same_site_url(params[:referrer]) || new_manage_resource_path) && return
     end
 
     unless Freereg1CsvFile.valid_freereg1_csv_file?(@error_file.freereg1_csv_file_id)
       flash[:notice] = 'The error entry was not correctly linked. Have your coordinator contact the web master'
-      redirect_to(params[:referrer]) && return
+      redirect_to(same_site_url(params[:referrer]) || new_manage_resource_path) && return
     end
 
     @freereg1_csv_file = @error_file.freereg1_csv_file

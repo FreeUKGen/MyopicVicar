@@ -18,6 +18,8 @@ class SearchRecordsController < ApplicationController
   require 'csv'
   rescue_from Mongo::Error::OperationFailure, with: :catch_error
 
+  CITATION_TYPES = %w[wikitree familytreemaker legacyfamilytree mla chicago evidenceexplained wikipedia].freeze
+
   def redirect_legacy_search_record_id
     return if params[:id].blank?
     return if SearchRecord.record_id(params[:id]).first.present?
@@ -25,7 +27,7 @@ class SearchRecordsController < ApplicationController
     return if mapping.blank?
     new_id = mapping.new_id
     if request.path.include?('show_citation')
-      redirect_to show_citation_record_path(new_id) and return
+      redirect_to show_citation_record_path(new_id, citation_type: params[:citation_type]) and return
     elsif request.path.include?('show_print_version')
       redirect_to show_print_version_search_record_path(new_id) and return
     else
@@ -358,6 +360,9 @@ class SearchRecordsController < ApplicationController
 
   # implementation of the citation generator
   def show_citation
+    # citation_type picks the partial to render, so only accept the known types
+    redirect_to(search_record_path(params[:id])) && return unless CITATION_TYPES.include?(params[:citation_type])
+
     proceed, @search_query, @search_record, message = SearchRecord.check_show_parameters(session[:query], params)
     redirect_back_or_new_search_query(notice: message) && return unless proceed
 

@@ -75,7 +75,7 @@ class ContactsController < ApplicationController
       if @contact.errors.any?
         flash[:notice] = 'There was a problem with your submission please review'
         if @contact.contact_type == 'Data Problem'
-          redirect_to(@contact.previous_page_url) && return
+          redirect_to(same_site_url(@contact.previous_page_url) || new_contact_path) && return
         else
           @options = FreeregOptionsConstants::ISSUES
           render :new

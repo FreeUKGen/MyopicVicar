@@ -253,16 +253,18 @@ module FreeregValidations
 
   def self.check_year(yyyy)
     return true if VALID_YEAR_PATTERNS.any? { |re| yyyy.match?(re) }
-    
+
     characters = yyyy.split('')
+
     if characters.length == 4
       # deal with the yyyy and permit the wild character
 
-      if yyyy.present?
-        return false if yyyy.to_i > YEAR_MAX || YEAR_MIN > yyyy.to_i
-      end
+      return false if yyyy.present? && (yyyy.to_i > YEAR_MAX || yyyy.to_i < YEAR_MIN)
+
       return true
     end
+
+    # Split year format (YYYY/XX)
     if (characters.length >= 6 && characters.length <= 9) && characters[4] == "/"
       #deal with the split year
       year = characters
@@ -274,9 +276,9 @@ module FreeregValidations
       ext = characters.drop(5).join
       return false unless year.to_s =~ VALID_YEAR
 
-      return false if year.to_i > YEAR_MAX || 1753 < year.to_i
+      return false if year.to_i > YEAR_MAX || year.to_i > 1753
 
-      return false if ext.to_i < 0 || ext.to_i > 1753
+      return false if ext.to_i.negative? || ext.to_i > 1753
 
       return true
     else
@@ -357,7 +359,7 @@ module FreeregValidations
   def FreeregValidations.valid_record_date?(date_string)
     # Blank dates are considered valid
     return true if date_string.blank?
-    
+
     match = date_string.strip.match(/\A(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\z/)
     return false unless match
 
