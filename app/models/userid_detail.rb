@@ -254,17 +254,35 @@ class UseridDetail
 
   # In app/models/userid_detail.rb, add these methods:
   def add_favorite_action(action)
-    return false if self.favorite_actions.length >= 5
-    return false if self.favorite_actions.include?(action)
-    
-    self.favorite_actions << action
-    self.save
+    result = UseridDetail.collection.update_one(
+      {
+        _id: self.id,
+        '$expr' =>  { '$lt' => [{'$size' => '$favorite_actions'}, 5]}
+      },
+      {
+        '$addToSet' =>  {favorite_actions: action }
+      }
+    )
+
+    return false if result.matched_count == 0
+    return false if result.matched_count == 1 && result. modified_count == 0
+    self.reload
     true
   end
 
   def remove_favorite_action(action)
-    self.favorite_actions.delete(action)
-    self.save
+    result = UseridDetail.collection.update_one(
+     {
+      _id: self.id
+     },
+     {
+      '$pull' => { favorite_actions: action}
+     }
+    )
+    return false if result.matched_count == 0
+    return false if result.matched_count == 1 && result. modified_count == 0
+    self.reload
+    true
   end
 
   def favorite_actions_sorted
