@@ -7,5 +7,4 @@
 //= link styles/css/donate_icon.css
 //= link styles/css/icons.data.svg.css
 //= link styles/css/freereg_content.css
-//= link styles/scss/freebmd_content.css
 //= link_tree ../wymeditor

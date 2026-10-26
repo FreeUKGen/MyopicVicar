@@ -18,13 +18,6 @@ Rails.application.config.assets.version = '1.0'
 Rails.application.configure do
   config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
 
-  config.assets.precompile += %w[styles/scss/lap_and_up.css]
-  config.assets.precompile += %w[styles/scss/palm.css]
-  config.assets.precompile += %w[styles/scss/ladda.css]
-  config.assets.precompile += %w[styles/scss/freebmd_content.css]
-  config.assets.precompile += %w[styles/css/donate_icon.css]
-  config.assets.precompile += %w[styles/css/icons.data.svg.css]
-  config.assets.precompile += %w[styles/css/freereg_content.css]
   config.assets.precompile += %w[prebid_ads.js]
   config.assets.precompile += %w( javascripts/freecen_gdpr.js )
   config.assets.precompile += %w[jquery.min.js]
@@ -37,7 +30,6 @@ Rails.application.configure do
   config.assets.precompile += %w[adsbygoogle.js]
   config.assets.precompile += %w[prebid_ads.js]
   config.assets.precompile += %w[freecen_coverage_graph.js]
-  config.assets.precompile += %w[styles/css/donate_icon.css]
   config.assets.precompile += %w[cookie_control.js]
   config.assets.precompile += %w[advert_control.js]
   config.assets.precompile += %w[freecen_fuse_tag.js]

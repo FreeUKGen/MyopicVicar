@@ -33,7 +33,7 @@
     <meta charset="utf-8"/>
     <title><%= title %></title>
     <% if MyopicVicar::Application.config.template_set == 'freereg' %>
-      
+
       <meta name="keywords" content="genealogy,registers,parish,records,church,transcriptions,indexes,baptism,marriage,burial,death,family,history">
       <meta name="description" content="Search your ancestry with FreeREG. FreeREG provides free online access to transcriptions of birth, marriage and burial records from Church of England and Church of Scotland registers. You can also use FreeREG to discover: non-Conformist records from England, Scotland and Wales, Municipal Cemetary records, Memorial records and documents relating to life events out of country, at sea and in the military.  ">
     <% elsif MyopicVicar::Application.config.template_set == 'freecen' %>
@@ -78,7 +78,6 @@
     <%= stylesheet_link_tag "styles/css/donate_icon", 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "styles/css/icons.data.svg.css", 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "styles/css/freereg_content", 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_link_tag "styles/scss/freebmd_content", 'data-turbolinks-track': 'reload' if appname.downcase == 'freebmd' %>
     <%= stylesheet_link_tag "styles/scss/palm", 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "styles/scss/lap_and_up", media: "(min-width:571px)", 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag "styles/scss/ladda", 'data-turbolinks-track': 'reload' %>
@@ -89,10 +88,8 @@
       <%#= stylesheet_link_tag "styles/css/ie.min" %>
     <![endif]-->
     <%#= raise Rails.root.inspect%>
-    <%= stylesheet_link_tag "styles/css/donate_icon" %>
-    <%= stylesheet_link_tag "styles/css/freereg_content" %>
     <!-- JavaScripts -->
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>   
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
     <%#= javascript_include_tag "application"%>
     <%= javascript_include_tag "jquery.min.js"%>
     <%#= javascript_include_tag "jquery.validate.min.js"%>
@@ -101,7 +98,7 @@
     <%= javascript_include_tag "jquery.cookiesDirective.js"%>
     <%= javascript_include_tag "spin.min.js"%>
     <%= javascript_include_tag "ladda.min.js"%>
-    <%= javascript_include_tag "freecen_coverage_graph.js" %> 
+    <%= javascript_include_tag "freecen_coverage_graph.js" %>
     <%= javascript_include_tag "multi_file_upload.js" %>
     <% if DonationCampaign.active? && %w[freereg freecen].include?(appname.downcase) %>
       <%= javascript_include_tag "javascripts/#{appname.downcase}_fuse_tag.js" %>
