@@ -79,7 +79,7 @@ class NewFreeregCsvUpdateProcessor
       self.activate_project(create_search_records, type, force, range)
       sleep(300)
     end
-    p "Removing lock on #{@rake_lock_file}" 
+    p "Removing lock on #{@rake_lock_file}"
     @locking_file.flock(File::LOCK_UN)
     p 'FREEREG:CSV_PROCESSING: removing rake lock file'
     if File.exist?(@rake_lock_file)
@@ -843,6 +843,18 @@ class CsvFile < CsvFiles
         datarecord[:place] = datarecord[:place_name] #entry uses place
         datarecord.delete(:place_name)
         records = records + 1
+
+        malformed_ucf = self.validate_ucf_fields_for_record(datarecord)
+        if malformed_ucf.present?
+          batch_error = BatchError.new(error_type: 'Data_Error', record_number: datarecord[:file_line_number], error_message: malformed_ucf, record_type: freereg1_csv_file.record_type, data_line: datarecord)
+          batch_error.freereg1_csv_file = freereg1_csv_file
+          batch_error.save
+          batch_errors = batch_errors + 1
+          message = "Data Error in line #{datarecord[:file_line_number]} problem was #{malformed_ucf}.<br>"
+          project.write_messages_to_all(message,true)
+          next
+        end
+
         success = self.check_and_create_db_record_for_entry(project,datarecord,freereg1_csv_file)
         #p "#{success} after check and create"
         if success.nil? || success == "change" || success == "new"
@@ -930,7 +942,26 @@ class CsvFile < CsvFiles
     freereg1_csv_file.update_attributes(:processed => true, :processed_date => Time.new) if project.create_search_records
     freereg1_csv_file.update_attributes(:error => batch_errors)
   end
+
+  def validate_ucf_fields_for_record(data_record)
+    return nil if data_record.blank?
+
+    candidate_fields = data_record.keys.select do |field|
+      field.to_s.end_with?('_forename', '_surname', '_date') || field.to_s.match?(/(forename|surname|date)$/)
+    end
+
+    candidate_fields.each do |field|
+      value = data_record[field]
+      next if value.blank?
+      next unless value.to_s.match?(FreeregValidations::VALID_UCF)
+
+      return "Invalid UCF expression in #{field}: #{value}" unless FreeregValidations.valid_ucf_expression?(value)
+    end
+
+    nil
+  end
 end
+
 
 
 class CsvRecords <  CsvFile
@@ -1664,7 +1695,7 @@ class CsvRecord < CsvRecords
       field_symbol = field.to_sym
       @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
     end
-    if csvfile.header[:def] 
+    if csvfile.header[:def]
       FreeregOptionsConstants::ADDITIONAL_MARRIAGE_FIELDS.each do |field|
         field_symbol = field.to_sym
         @data_record[field_symbol] = avoid_look_up_of_nil_field(@data_line,field,csvrecords)
@@ -1682,10 +1713,10 @@ class CsvRecord < CsvRecords
     end
     @data_record[:line_id] = csvfile.header[:userid] + "." + csvfile.header[:file_name] + "." + line.to_s
     @data_record[:file_line_number] = line
- 
+
     FreeregValidations.validate_record_date!(@data_record, :marriage_date)
     FreeregValidations.validate_record_date!(@data_record, :contract_date)
-    
+
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:marriage_date])
     @data_record[:year] = FreeregValidations.year_extract(@data_record[:contract_date]) if @data_record[:year].blank?
     #(@data_record[:marriage_by_licence].present? && FreeregOptionsConstants::MARRIAGE_BY_LICENCE_OPTIONS.include?(@data_record[:marriage_by_licence].downcase)) ? @data_record[:marriage_by_licence] = true : @data_record[:marriage_by_licence] = false
