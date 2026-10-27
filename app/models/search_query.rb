@@ -1033,7 +1033,9 @@
     if records.is_a?(Array)
       sort_bmd_hit_rows_by_record_number!(records)
     elsif records.respond_to?(:reorder)
-      records.reorder(:RecordNumber)
+      # "+ 0" keeps the RecordNumber order but stops MySQL walking the primary key to satisfy
+      # ORDER BY ... LIMIT: with few matches that scans the whole table and times out (#1441).
+      records.reorder(Arel.sql("#{records.klass.quoted_table_name}.RecordNumber + 0"))
     else
       records
     end
@@ -1180,7 +1182,8 @@
     # instead of firing one District query per result row.
     if freebmd_app?
       if results.is_a?(ActiveRecord::Relation)
-        results = results.includes(:district)
+        # Load once: the county lookup below would otherwise run the search query again
+        results = results.includes(:district).to_a
       elsif results.is_a?(Array)
         ar_rows = results.select { |r| r.is_a?(ActiveRecord::Base) }
         ActiveRecord::Associations::Preloader.new.preload(ar_rows, :district) if ar_rows.any?
