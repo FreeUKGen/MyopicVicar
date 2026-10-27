@@ -2,7 +2,7 @@ desc "Get a list of partial piece CSV files"
 task :list_partial_piece_csvfiles => :environment do
 
   file_for_warning_messages = "log/partial_piece_csvfiles.log"
-  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
   message_file = File.new(file_for_warning_messages, "w")
   p "Started Partial Piece CSV files List"
   message_file.puts  "Started Partial Piece CSV files List"

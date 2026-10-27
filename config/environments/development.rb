@@ -14,6 +14,16 @@
 #
 MyopicVicar::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
+  # Rails 6+ Host Authorization
+  # Allow the configured public website host (some deploys reuse production env for staging).
+  begin
+    website_host = URI.parse(MyopicVicar::MongoConfig['website'].to_s).host
+    website_url = URI.parse(MyopicVicar::MongoConfig['website_url'].to_s).host
+    config.hosts << website_host if website_host.present?
+    config.hosts << website_url if website_url.present?
+  rescue URI::InvalidURIError
+    # ignore invalid website config
+  end
 
   # In the development environment your application's code is reloaded on
   # every request.  This slows down response time but is perfect for development
@@ -95,6 +105,7 @@ MyopicVicar::Application.configure do
   config.sendgrid_api_key = MyopicVicar::MongoConfig['sendgrid_api_key']
   config.citation = MyopicVicar::MongoConfig['citation']
   config.eager_load = false
+  config.hosts << "dev.freebmd2.org.uk"
   config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
   config.register_embargo_list = MyopicVicar::MongoConfig['register_embargo_list']
   config.freecen2_place_cache = MyopicVicar::MongoConfig['freecen2_place_cache']

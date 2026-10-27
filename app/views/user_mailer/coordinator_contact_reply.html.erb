@@ -3,7 +3,7 @@
   <a href="<%=Rails.application.config.website%>/contacts/<%=@contact.id%>"><%= @contact.identifier %></a>
   at <%= @contact.contact_time.strftime("%H:%M on %F") unless @contact.contact_time.nil?%></p>
 <p>A team member has replied as follows:</p>
-<p><%= @message.body%></p>
+<%= simple_format(@message.body) %>
 <% if @message.attachment.present?%>
   There is an File attachment
 <% end%>

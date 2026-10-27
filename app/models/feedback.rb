@@ -61,6 +61,45 @@ class Feedback
     def github_enabled
       !Rails.application.config.github_issues_password.blank?
     end
+
+    # Feedback rows converted to GitHub issues that are not yet archived.
+    def with_github_issue_not_archived
+      where(:github_issue_url.ne => nil, :github_number.ne => nil, :archived.in => [false, nil])
+    end
+
+    # Poll GitHub and archive feedback (and its replies) when the linked issue is closed.
+    # Returns hash with :archived, :skipped, :errors counts.
+    def archive_with_closed_github_issues(dry_run: false)
+      stats = { archived: 0, skipped: 0, errors: 0, examined: 0 }
+      return stats unless github_enabled
+
+      configure_github_octokit!
+      scope = with_github_issue_not_archived
+      scope = scope.no_timeout if scope.respond_to?(:no_timeout)
+
+      scope.each do |feedback|
+        stats[:examined] += 1
+        if dry_run
+          issue = feedback.fetch_github_issue
+          if issue&.state == 'closed'
+            puts "  would archive Feedback #{feedback.id} (GitHub ##{feedback.github_number})"
+            stats[:archived] += 1
+          else
+            stats[:skipped] += 1
+          end
+        elsif feedback.archive_if_github_issue_closed!
+          puts "  archived Feedback #{feedback.id} (GitHub ##{feedback.github_number})"
+          stats[:archived] += 1
+        else
+          stats[:skipped] += 1
+        end
+      rescue Octokit::Error, StandardError => e
+        stats[:errors] += 1
+        Rails.logger.error("Feedback.archive_with_closed_github_issues #{feedback.id}: #{e.class}: #{e.message}")
+        puts "  error Feedback #{feedback.id}: #{e.message}"
+      end
+      stats
+    end
   end
 
   def a_reply?

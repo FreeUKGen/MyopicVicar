@@ -1,5 +1,7 @@
 class OpenController < ApplicationController
   skip_before_action :require_login
+  # the open place/surname pages are built from FreeREG/FreeCEN place data, which FreeBMD does not have
+  before_action -> { head :not_found }, if: -> { appname_downcase == 'freebmd' }
 
   FREEREG_RECORD_TYPE_DESCRIPTION = "baptisms, marriages and burials"
   FREECEN_RECORD_TYPE_DESCRIPTION = "census records"
@@ -33,6 +35,8 @@ class OpenController < ApplicationController
     place_name = params[:place]
 
     @place = Place.where(:place_name => place_name, :chapman_code => chapman_code).first
+    head(:not_found) && return if @place.blank?
+
     @record_types_display = record_type_description
     @open_surnames = @place.open_names_per_place.where(:count.gt => MIN_SURNAMES_PER_PLACE)
 

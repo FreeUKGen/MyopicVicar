@@ -3,7 +3,7 @@
 <p>A member of our team will review the feedback and should respond as soon as we can. If they determine that a system change may be appropriate then the feedback will be referred to the by-weekly project management for priorization along with other issues and feature requests. </p>
 <p>The following is the information you submitted.</p>
 <p>  <b><%= @communication.feedback_type %>:</b></p>
-<p>  <%= @communication.body %></p>
+<%= simple_format(@communication.body) %>
 <% if @communication.screenshot_url.present?%>
   <p>A copy of any attachment is provided.</p>
 <% end%>

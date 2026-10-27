@@ -14,6 +14,9 @@
 #
 class PagesController < ApplicationController
   skip_before_action :require_login
+  # show only serves public HTML pages or a 404; bots probing *.js paths (e.g. WordPress files)
+  # would otherwise trip the cross-origin JavaScript check and raise InvalidCrossOriginRequest
+  skip_after_action :verify_same_origin_request, only: :show
 
   # Browsers request these at the site root; when Apache forwards to Rails (file missing
   # or not served), avoid RoutingError noise in Errbit.

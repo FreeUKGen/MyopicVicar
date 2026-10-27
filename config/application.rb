@@ -14,9 +14,29 @@
 #
 require File.expand_path('../boot', __FILE__)
 
-require 'rails/all'
+require 'rails'
+# Load the same frameworks as rails/all, minus active_storage/engine.
+# This app doesn't use ActiveStorage (no has_one_attached/has_many_attached
+# anywhere), and its auto-mounted /rails/active_storage/* routes were
+# being probed in production, erroring because the tables were never migrated.
+%w(
+  active_record/railtie
+  action_controller/railtie
+  action_view/railtie
+  action_mailer/railtie
+  active_job/railtie
+  action_cable/engine
+  rails/test_unit/railtie
+  sprockets/railtie
+).each do |railtie|
+  begin
+    require railtie
+  rescue LoadError
+  end
+end
 require 'csv'
 require File.expand_path('../lib/gro_abbrev', __dir__)
+require File.expand_path('../lib/config_yaml', __dir__)
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -154,12 +174,12 @@ module MyopicVicar
     config.before_configuration do
       env_file = Rails.root.join('config', 'application.yml').to_s
       if File.exist?(env_file)
-        YAML.load_file(env_file)[Rails.env].each do |key, value|
+        ConfigYaml.load_file(env_file)[Rails.env].each do |key, value|
           ENV[key.to_s] = value
         end
       end
       mongo_config = Rails.root.join('config', 'mongo_config.yml')
-      MyopicVicar::MongoConfig = YAML.load_file(mongo_config)[Rails.env] if File.exist?(mongo_config)
+      MyopicVicar::MongoConfig = ConfigYaml.load_file(mongo_config)[Rails.env] if File.exist?(mongo_config)
     end
   end
 end

@@ -2201,7 +2201,7 @@ end
 
 #if params[:saved_record].present?
   crumb :same_page_entries do |record|
-    link "Entries of page #{record.Page}", same_page_entries_non_search_path(volume: record.Volume, page: record.Page, record: record.RecordTypeID, quarter: record.QuarterNumber, district: record.District, entry_id: record.RecordNumber)
+    link "Entries of page #{record.Page}", same_page_entries_non_search_path(hash_id: record.url_safe_record_hash)
     parent :entry_information, record
   end
 #end

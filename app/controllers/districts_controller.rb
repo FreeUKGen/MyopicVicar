@@ -15,9 +15,10 @@ class DistrictsController < ApplicationController
     end
     @search_query = get_search_query(params[:search_id])
     @search_record = get_entry(params[:entry_id])
-    @birth_count, @birth_uniq_surname_count, @birth_uniq_forename_count = fetch_unique_name_counts(@district.DistrictNumber, 1)
-    @marriage_count, @marriage_uniq_surname_count, @marriage_uniq_forename_count = fetch_unique_name_counts(@district.DistrictNumber, 3)
-    @death_count, @death_uniq_surname_count, @death_uniq_forename_count = fetch_unique_name_counts(@district.DistrictNumber, 2)
+    counts = fetch_unique_name_counts(@district.DistrictNumber)
+    @birth_count, @birth_uniq_surname_count, @birth_uniq_forename_count = counts[1]
+    @marriage_count, @marriage_uniq_surname_count, @marriage_uniq_forename_count = counts[3]
+    @death_count, @death_uniq_surname_count, @death_uniq_forename_count = counts[2]
   end
 
   def districts_overview
@@ -36,7 +37,7 @@ class DistrictsController < ApplicationController
     end
     if params[:filter].present?
       @filter = params[:filter].downcase
-      pattern = ::Regexp.new(/#{@filter}/)
+      pattern = ::Regexp.new(Regexp.escape(@filter))
       @unique_names_filtered = []
       @unique_names_0.each do |name|
         @unique_names_filtered << name if pattern.match(name.downcase)
@@ -71,13 +72,15 @@ class DistrictsController < ApplicationController
   end
 
   def districts_list
-    @character = params[:params].downcase
-    @all_districts = District.not_invented.all
-    @districts = []
-    @all_districts.each do |district|
-      @districts << district if district.DistrictName.downcase =~ ::Regexp.new(/#{@character}/)
+    raw = params[:params].to_s.downcase
+    unless raw.match?(/\A[a-z](-[a-z])?\z/)
+      redirect_to districts_overview_path, alert: 'Invalid selection.'
+      return
     end
-    @districts = @districts.sort_by { |district| [district.DistrictName] }
+    @character = raw
+    @all_districts = District.not_invented.all
+    @districts = @all_districts.select { |d| d.DistrictName.downcase =~ /#{@character}/ }
+    @districts.sort_by! { |d| d.DistrictName }
     render :index
   end
 
@@ -96,9 +99,13 @@ class DistrictsController < ApplicationController
   end
 
   def year_page_map
-    @year = params[:year]
-    @quarter = params[:quarter]
-    @event_type = params[:event_type]
+    @year = params[:year].to_s
+    @quarter = params[:quarter].to_s
+    @event_type = params[:event_type].to_s
+    # these build a file path in the view, so only accept the values the form can send
+    unless @year.match?(/\A\d{4}\z/) && @quarter.match?(/\A[1-4]\z/) && @event_type.match?(/\A[BMD]\z/)
+      redirect_to(districts_overview_path, notice: 'Please select a year, quarter and event type') && return
+    end
   end
 
   private
@@ -112,14 +119,32 @@ class DistrictsController < ApplicationController
   end
 
   def get_entry(entry_id=nil)
-    BestGuess.find(entry_id) if entry_id.present?
+    BestGuess.find_by(RecordNumber: entry_id) if entry_id.present?
   end
 
-  def fetch_unique_name_counts(district_number, record_type)
-    unique_name = DistrictUniqueName.find_by(district_number: district_number, record_type: record_type)
-    count = unique_name.present? ? unique_name.total_records : 0
-    uniq_surname_count = unique_name.present? ? unique_name.unique_surnames.count : "none"
-    uniq_forename_count = unique_name.present? ? unique_name.unique_forenames.count : "none"
-    [count, uniq_surname_count, uniq_forename_count]
+  # Fetches birth/marriage/death unique-name counts for a district in a single
+  # round trip instead of three, and asks Mongo to compute the array sizes
+  # server-side ($size) so the (potentially very large) unique_surnames /
+  # unique_forenames arrays are never transferred over the wire. Results are
+  # cached briefly since DistrictUniqueName rows only change via periodic
+  # background rebuilds.
+  def fetch_unique_name_counts(district_number)
+    Rails.cache.fetch("district_unique_name_counts_#{district_number}", expires_in: 1.hour) do
+      rows = DistrictUniqueName.collection.aggregate([
+        { '$match' => { district_number: district_number, record_type: { '$in' => [1, 2, 3] } } },
+        { '$project' => {
+            record_type: 1,
+            total_records: 1,
+            unique_surname_count: { '$size' => { '$ifNull' => ['$unique_surnames', []] } },
+            unique_forename_count: { '$size' => { '$ifNull' => ['$unique_forenames', []] } }
+          } }
+      ]).to_a
+
+      counts = Hash.new([0, 'none', 'none'])
+      rows.each do |row|
+        counts[row['record_type']] = [row['total_records'] || 0, row['unique_surname_count'], row['unique_forename_count']]
+      end
+      counts
+    end
   end
 end

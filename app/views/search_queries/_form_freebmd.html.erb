@@ -95,10 +95,6 @@
 </div>
 
 <div class="grid">
-    <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads" style="height: 650px;">
-      <p style="margin-bottom:5px;">Advertisement</p>
-      <div data-fuse="freebmd_skyscraper_1"></div>
-    </div>
     <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
     <%= horz_advert_whole('freebmd_hrec_1') %>
     <div id="top" class="grid__item desk-wide-five-sixths desk-one-whole lap-one-whole palm-one-whole hard--left" style="padding-right:5px;">
@@ -118,12 +114,12 @@
                             <label>
                                 <small>
                                     <%= check_box_tag 'search_query[first_name_exact_match]', set_value(@search_query.first_name_exact_match), set_value(@search_query.first_name_exact_match),tabindex: "0" %>
-                                Exact match on first names
+                                Exact match
                                 </small>
                             </label>
                         </li>
 
-                      <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
+                        <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole surnamegrid flush--bottom push--bottom">
                             <p id="hint_bmd_last_name" class="accessibility">As you type, matching surnames may appear below. Use arrow keys to pick a suggestion or continue typing.</p>
                             <div class='labels push-half--bottom'>
                                 <%= label_tag 'last_name', "Surname".html_safe, class: "ttip" do %>
@@ -134,10 +130,10 @@
                             <label>
                                 <small class="ttip__text">
                                     <%= check_box_tag 'search_query[fuzzy]', set_value(@search_query.fuzzy), set_value(@search_query.fuzzy), tabindex: "0" %>
-                                    Phonetic search surnames
+                                    Phonetic search
                                 </small>
                             </label>
-                      </li>
+                        </li>
 
                       <li class="grid__item desk-wide-one-fifth desk-one-quarter lap-one-half palm-one-whole daterangefromgrid">
                         <fieldset class="choices">
@@ -149,7 +145,7 @@
                                 </div>
                                 <div class="flex_item">
                                     <label class="accessibility" for="from_year">Start Year</label>
-                                    <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'from_year', tabindex: "0", placeholder: 'YYYY' %>
+                                    <%= number_field_tag 'search_query[start_year]', set_value_or_default(1837, @search_query.start_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'from_year', tabindex: "0", placeholder: 'YYYY', onfocus: 'this.select()' %>
                                 </div>
                             </div>
                         </fieldset>
@@ -165,7 +161,7 @@
                                     </div>
                                 <div class="flex_item">
                                     <label class="accessibility" for="to_year">To Year</label>
-                                    <%= number_field_tag 'search_query[end_year]', set_value_or_default(1999, @search_query.end_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'to_year', tabindex: "0", placeholder: 'YYYY'%>
+                                    <%= number_field_tag 'search_query[end_year]', set_value_or_default(1999, @search_query.end_year), min: 1837, max:1999, step:1, class: 'text-input', style: 'width:75%;',id: 'to_year', tabindex: "0", placeholder: 'YYYY', onfocus: 'this.select()'%>
                                     </div>
                             </div>
                         </fieldset>
@@ -475,6 +471,10 @@
 
           <% end %>
         </div>
+    </div>
+    <div class="grid__item one-sixth text--center push--bottom hard--left big_screen_ads" style="height: 650px;">
+      <p style="margin-bottom:5px;">Advertisement</p>
+      <div data-fuse="freebmd_skyscraper_1"></div>
     </div>
 </div>
 <!-- GAM 71161633/FRBMD_freebmd2orguk/freebmd_hrec_1 -->
@@ -974,6 +974,7 @@
 
         $('.clear_forms').click(function () {
             resetBmdSearchForm();
+            location.reload(); // Issue 1438: rbl 28.7.2026
         });
 
         <% if @fresh_search %>

@@ -344,7 +344,7 @@ module SearchQueriesHelper
     counties = search_query.chapman_codes.map{|code| ChapmanCode::name_from_code(code)}.join(" or ")
     display_map["Counties"] = counties if search_query.chapman_codes.size >= 1
     display_map["Districts"] = search_query.get_district_name if search_query.districts.to_a.compact.size >= 1
-    display_map["Age At Death"] = "#{search_query.age_at_death}#{search_query.dob_at_death}" if search_query.age_at_death.present? || search_query.dob_at_death.present?
+    display_map["Age At Death / Date of Birth"] = "#{search_query.age_at_death}#{search_query.dob_at_death}" if search_query.age_at_death.present? || search_query.dob_at_death.present?
     display_map["Age At Death Range"] = "#{search_query.min_age_at_death}-#{search_query.max_age_at_death}" if search_query.min_age_at_death.present?
     display_map["Date of Birth Range"] = "(#{search_query.min_dob_at_death}) - (#{search_query.max_dob_at_death})" if search_query.max_dob_at_death.present?
     display_map["Match Recorded Ages/Date of Birth"] = 'Yes' if  search_query.match_recorded_ages_or_dates

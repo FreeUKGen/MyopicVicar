@@ -55,7 +55,7 @@ begin
     end
 
     # Load Errbit configuration
-    ERRBIT = YAML.load_file("#{Rails.root.to_s}/config/errbit.yml")[Rails.env]
+    ERRBIT = ConfigYaml.load_file("#{Rails.root.to_s}/config/errbit.yml")[Rails.env]
 
     if ERRBIT && ERRBIT['api_key'].present? && ERRBIT['host'].present?
       Rails.logger.info "Configuring Airbrake for #{Rails.env}..."

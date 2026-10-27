@@ -27,7 +27,7 @@ end
 # to users and user roles from the sql file specified as an argument
 desc "Reload all refinery data (except users/roles) from sql file"
 task :load_freecen_refinery_pages, [:in_sql] => :environment do |t, args|
-  if !args[:in_sql].nil? && File.exists?(args[:in_sql])
+  if !args[:in_sql].nil? && File.exist?(args[:in_sql])
     dbname = Rails.configuration.database_configuration[Rails.env]["database"]
     dbuser = Rails.configuration.database_configuration[Rails.env]["username"]
     dbpw = Rails.configuration.database_configuration[Rails.env]["password"]

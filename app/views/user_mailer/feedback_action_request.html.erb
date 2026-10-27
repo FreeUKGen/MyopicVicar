@@ -10,7 +10,7 @@
 <% end%>
 <p>The following is the information submitted <a href="<%=Rails.application.config.website%>/feedbacks/<%=@contact.id%>">On line access</a></p>
 <p>  <b><%= @contact.feedback_type %>:</b></p>
-<p>  <%= @contact.body %></p>
+<%= simple_format(@contact.body) %>
 <% if @contact.screenshot_url.present?%>
   <p>An image/attachment is provided</p>
 <% end%>

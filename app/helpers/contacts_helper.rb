@@ -59,14 +59,21 @@ module ContactsHelper
   end
 
   def format_contact_body_for_display(contact)
-    body = contact&.body.to_s
-    return ''.html_safe if body.blank?
+    format_body_for_display(contact&.body)
+  end
+
+  # Renders free-text body content (Contact/Message/Feedback) with paragraph and line breaks
+  # preserved. Uses simple_format rather than CSS white-space, since several email clients
+  # (e.g. Gmail) strip that CSS property and would otherwise collapse the layout back down.
+  def format_body_for_display(text)
+    text = text.to_s
+    return ''.html_safe if text.blank?
 
     content_tag(
       :div,
-      body,
+      simple_format(text),
       class: 'contact-body-formatted read-length',
-      style: 'white-space: pre-wrap; word-wrap: break-word; max-width: 48rem;'
+      style: 'word-wrap: break-word; max-width: 48rem;'
     )
   end
 

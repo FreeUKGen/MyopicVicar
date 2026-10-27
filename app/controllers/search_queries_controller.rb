@@ -16,10 +16,14 @@ class SearchQueriesController < ApplicationController
   skip_before_action :require_login
   skip_before_action :verify_authenticity_token
   before_action :check_for_mobile, only: :show
-  before_action :require_login, only: :compare_search
+  before_action :require_login, only: [:compare_search, :report, :selection]
+  # the search report lists other people's searches, so only roles with the 'Search Performance' menu option may see it
+  before_action :require_search_performance_role, only: [:report, :selection]
+  before_action :sanitize_autocomplete_term, only: [:autocomplete_BestGuess_Surname, :autocomplete_BestGuess_GivenName]
   rescue_from Mongo::Error::OperationFailure, with: :search_taking_too_long
   rescue_from Mongoid::Errors::DocumentNotFound, with: :missing_document
   rescue_from Timeout::Error, with: :search_taking_too_long
+  rescue_from Mysql2::Error, with: :autocomplete_query_failed
   autocomplete :BestGuess, :Surname, full: false,  limit: 5
   autocomplete :BestGuess, :GivenName, full: false, limit: 10
   include DownloadAsCsv
@@ -80,7 +84,7 @@ class SearchQueriesController < ApplicationController
         redirect_to new_search_query_path(:search_id => @search_query, :result_count => @result_count) and return if success
         redirect_to new_search_query_path(:search_id => @search_query, :timeout => true) and return if error_type == 1
         redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
-        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'It takes too long to execute the query. Please consider adding more filter.') and return if error_type == 3        
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your query is too broad and timed out. Try making your search more specific.') and return if error_type == 3
       else
         #raise @search_query.search_records.to_a.inspect
         @search_results, @result_count, success, error_type = @search_query.search_records.to_a
@@ -90,7 +94,7 @@ class SearchQueriesController < ApplicationController
         redirect_to search_query_path(@search_query) and return if success
         redirect_to search_query_path(@search_query, timeout: true) and return if error == 1
         redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your search encountered a problem. Please try again') and return if error_type == 2
-        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'It takes too long to execute the query. Please consider adding more filter.') and return if error == 3  
+        redirect_back(fallback_location: new_search_query_path(:search_id => @search_query), notice: 'Your query is too broad and timed out. Try making your search more specific.') and return if error == 3
       end
     else
       render :new
@@ -232,6 +236,17 @@ class SearchQueriesController < ApplicationController
       flash[:notice] = 'Your search encountered a problem please contact us with this message '
     end
     redirect_to new_search_query_path(search_id: @search_query)
+  end
+
+  def sanitize_autocomplete_term
+    return if params[:term].blank?
+
+    params[:term] = params[:term].gsub(/[^a-zA-Z\s'-]/, '').strip[0, 50]
+  end
+
+  def autocomplete_query_failed(exception)
+    logger.warn("#{appname_upcase}:SEARCH: Autocomplete query failed #{exception.message}")
+    render json: [], root: false
   end
 
   def selection
@@ -438,6 +453,7 @@ class SearchQueriesController < ApplicationController
   def download_as_tsv
     search_id = params[:id]
     @search_query = SearchQuery.find_by(id: search_id)
+    redirect_to(new_search_query_path, notice: 'Please run a search before downloading results') && return if @search_query.blank?
     page_number = params[:page]
     results_per_page = params[:results_per_page]
     sorted_results = @search_query.sorted_and_paged_searched_records
@@ -449,6 +465,7 @@ class SearchQueriesController < ApplicationController
   def download_as_gedcom
     search_id = params[:id]
     @search_query = SearchQuery.find_by(id: search_id)
+    redirect_to(new_search_query_path, notice: 'Please run a search before downloading results') && return if @search_query.blank?
     page_number = params[:page]
     results_per_page = params[:results_per_page]
     sorted_results = @search_query.sorted_and_paged_searched_records
@@ -511,11 +528,12 @@ class SearchQueriesController < ApplicationController
   end
 
   def select_counties
-    prefix = params[:prefix].split(',').pop.strip.downcase
+    raw_prefix = params[:prefix].to_s
+    prefix = raw_prefix.split(',').last.to_s.strip.downcase
     @counties_group = ChapmanCode.add_parenthetical_codes(ChapmanCode.remove_codes(ChapmanCode::FREEBMD_CODES))
     county_keys = []
     counties_array = @counties_group.each{|ctry, county| county_keys << county.keys }
-    if (params[:prefix].strip.include?'All England') || (params[:prefix].strip.include?'All Wales')
+    if (raw_prefix.include?'All England') || (raw_prefix.include?'All Wales')
       county_keys = ['All England', 'All Wales']
     end
     @counties = county_keys.flatten.select { |s| s.downcase.include?(prefix) }
@@ -538,8 +556,14 @@ class SearchQueriesController < ApplicationController
 
   private
 
+  def require_search_performance_role
+    roles = member_roles_for(get_user)
+    allowed = roles.any? { |role| UseridRole::OPTIONS.fetch(role, []).include?('Search Performance') }
+    redirect_to(new_search_query_path, notice: 'You are not authorised to view that page') && return unless allowed
+  end
+
   def search_params
-    params.require(:search_query).permit!
+    permitted_model_params(SearchQuery)
   end
 
   def filter(results)

@@ -110,6 +110,14 @@
   FREEBMD_IN_MEMORY_INPUT_CAP = 10_000
   # Max rows persisted and shown; result_count may be higher (full MySQL match count).
   FREEBMD_DISPLAY_LIMIT = 1000
+  # Leading/embedded wildcard surname searches ("*son", "sm*th") resolve the pattern
+  # against the surname dictionary and query BestGuess with `Surname IN (...)` (uses the
+  # Surname index) instead of `Surname LIKE '%x%'` (scans the whole ~300M-row table).
+  # This limit is a query-size guard only - so a near-empty pattern does not build an
+  # enormous IN clause or pull the whole dictionary. It is NOT a "too broad" judgement:
+  # that belongs to the EXPLAIN cost check and the result display limit, the same way
+  # FreeBMD1 uses SearchMaxCost + MaxResults. Over the limit we keep LIKE.
+  WILDCARD_SURNAME_IN_LIST_LIMIT = 2000
   # Columns stored on SearchQuery#search_result for FreeBMD (not full BestGuess rows).
   BMD_SNAPSHOT_ATTRIBUTE_KEYS = %w[
     RecordNumber RecordTypeID GivenName Surname OtherNames AssociateName AgeAtDeath
@@ -190,6 +198,7 @@
   embeds_one :search_result
 
   validate :name_not_blank unless MyopicVicar::Application.config.template_set == 'freebmd'
+  validate :search_not_blank if MyopicVicar::Application.config.template_set == 'freebmd'
   #validate :date_range_is_valid
   validate :radius_is_valid
   validate :county_is_valid
@@ -367,6 +376,8 @@
   def clean_blanks
     chapman_codes.delete_if { |x| x.blank? }
     birth_chapman_codes.delete_if { |x| x.blank? }
+    self.first_name = first_name.tr("’", "'") if first_name.present?
+    self.last_name = last_name.tr("’", "'") if last_name.present?
   end
 
   def compare_location(x, y)
@@ -404,6 +415,9 @@
   # (e.g. 'Surname'). Plain h['Surname'] is nil on symbol-keyed hashes, so sorting appeared broken.
   def sort_field_lookup(obj, fieldname)
     return nil if obj.nil?
+    # plain values (e.g. strings in old cached results) have no named fields;
+    # String#[] with a symbol raises "no implicit conversion of Symbol into Integer"
+    return nil if obj.is_a?(String) || obj.is_a?(Numeric) || obj.is_a?(Array)
 
     key_str = fieldname.to_s
     key_sym = fieldname.to_sym
@@ -490,11 +504,16 @@
     end
   end
 
+  # must never return nil: sort! raises "comparison of X with Y failed" if the block returns nil
   def compare_single_values(x_val, y_val)
+    return 0 if x_val.nil? && y_val.nil?
+    return 1 if x_val.nil? # blanks sort last
+    return -1 if y_val.nil?
+
     if x_val.is_a?(String) && y_val.is_a?(String)
-      x_val.to_s.downcase <=> y_val.to_s.downcase
+      x_val.downcase <=> y_val.downcase
     else
-      x_val <=> y_val
+      (x_val <=> y_val) || (x_val.to_s <=> y_val.to_s)
     end
   end
 
@@ -831,7 +850,7 @@
   def locate(record_id)
     return nil unless search_result&.records.is_a?(Hash)
 
-    records = search_result.records.values.flatten
+    records = search_result.records.values.flatten.select { |r| r.is_a?(Hash) } # skip stray non-record entries in old cached results
     position = locate_index(records, record_id)
     record = position.present? ? records[position] : nil
     record
@@ -850,6 +869,11 @@
   def name_not_blank
     message = 'A forename, county and place must be part of your search if you have not entered a surname.'
     errors.add(:first_name, message) if last_name.blank? && !adequate_first_name_criteria?
+  end
+
+  def search_not_blank
+    message = 'You must specify at least one search criterion.'
+    errors.add(:last_name, message) if last_name.blank? && first_name.blank? && (bmd_record_type.blank? || bmd_record_type == ['0']) && chapman_codes.blank? && districts.blank? && volume.blank? && page.blank?
   end
 
   def name_search_params
@@ -897,7 +921,7 @@
 
   def bmd_next_and_previous_records current
     if search_result&.records.is_a?(Hash)
-      search_results = search_result.records.values.flatten
+      search_results = search_result.records.values.flatten.select { |r| r.is_a?(Hash) } # skip stray non-record entries in old cached results
       search_results = sort_results(search_results) unless search_results.nil?
       record_number = locate_index(search_results, current)
       next_record_id = nil
@@ -1064,9 +1088,9 @@
         end
       when SearchOrder::BMD_RECORD_TYPE
         if order_asc
-          (xa[:RecordTypeID] || '') <=> (ya[:RecordTypeID] || '')
+          compare_name_bmd(xa, ya, 'RecordTypeID', ['QuarterNumber', 'Surname', 'GivenName', 'District'])
         else
-          (ya[:RecordTypeID] || '') <=> (xa[:RecordTypeID] || '')
+          compare_name_bmd(ya, xa, 'RecordTypeID', ['QuarterNumber', 'Surname', 'GivenName', 'District'])
         end
       when SearchOrder::BMD_DATE
         if order_asc
@@ -1150,6 +1174,19 @@
 
   def persist_results(results)
     return unless results
+
+    # BestGuess#record_hash reads district.DistrictName per row (non-development envs).
+    # persist_results hashes up to FREEBMD_DISPLAY_LIMIT rows, so preload :district once
+    # instead of firing one District query per result row.
+    if freebmd_app?
+      if results.is_a?(ActiveRecord::Relation)
+        results = results.includes(:district)
+      elsif results.is_a?(Array)
+        ar_rows = results.select { |r| r.is_a?(ActiveRecord::Base) }
+        ActiveRecord::Associations::Preloader.new.preload(ar_rows, :district) if ar_rows.any?
+      end
+    end
+
     # finally extract the records IDs and persist them
     records = {}
     county_by_combo = SearchQuery.app_template == 'freebmd' ? bmd_county_lookup_for_records(results) : {}
@@ -1162,7 +1199,8 @@
         #Handle multiple records with same hash
         if records.has_key? rec_hash
           v1 = records[rec_hash]
-          existing = Array(v1).flatten
+          # Array(hash) splits a Hash into [key, value] pairs, which silently drops the first record.
+          existing = v1.is_a?(Array) ? v1 : [v1]
           records[rec_hash] = existing + [rec_attr]
         else
           records[rec_hash] = rec_attr
@@ -1479,19 +1517,14 @@
            # results.sort! { |x, y| (y[:GivenName] || '') <=> (x[:GivenName] || '') }
           #end
         when SearchOrder::BMD_RECORD_TYPE
-          #if self.order_asc
-           # results.sort! do |x, y|
-            #  compare_name_bmd(y, x, 'RecordTypeID')
-           # end
-          #else
-           # results.sort! do |x, y|
-            #   compare_name_bmd(x,y, 'RecordTypeID')
-            #end
-          #end
           if self.order_asc
-            results.sort! { |x, y| (x[:RecordTypeID] || '') <=> (y[:RecordTypeID] || '') }
+            results.sort! do |x, y|
+              compare_name_bmd(x, y, 'RecordTypeID', ['QuarterNumber', 'Surname', 'GivenName', 'District'])
+            end
           else
-            results.sort! { |x, y| (y[:RecordTypeID] || '') <=> (x[:RecordTypeID] || '') }
+            results.sort! do |x, y|
+              compare_name_bmd(y, x, 'RecordTypeID', ['QuarterNumber', 'Surname', 'GivenName', 'District'])
+            end
           end
       when SearchOrder::BMD_DATE
         if self.order_asc
@@ -1694,7 +1727,12 @@
 
   def start_year_quarter
     start_year = year_with_default(year:self.start_year, default: 1837)
-    st_quarter = quarter_number(year: start_year, quarter: start_quarter)
+    # From 1984 the GRO indexes are annual; year-only records are all stored at
+    # quarter position 1 (QuarterNumber >= EVENT_YEAR_ONLY). A start quarter of
+    # Jun/Sep/Dec in such a year would exclude every record for it, so ignore the
+    # start quarter there (matches FreeBMD1 behaviour).
+    effective_start_quarter = start_year.to_i >= QuarterDetails.quarter_year(EVENT_YEAR_ONLY) ? 1 : start_quarter
+    st_quarter = quarter_number(year: start_year, quarter: effective_start_quarter)
     [st_quarter,min_dob_range_quarter].map(&:to_i).max
   end
 
@@ -1768,14 +1806,52 @@
     [] << hash.select{|key, value| value.present?}
   end
 
+  # Index rows often use forename initials (e.g. "Arthur H") when the user searched "Arthur Harold".
+  # Use word boundaries: "Arthur H%" wrongly matches Arthur Henry / Harry / Hambleton.
+  def self.given_name_initials_arel_constraints(table, name)
+    parts = name.to_s.strip.split(/\s+/)
+    return [] unless parts.length >= 2
+    return [] if parts[1..].any?(&:blank?)
+
+    first = parts[0]
+    constraints = []
+
+    if parts.length == 2
+      initial = parts[1][0]
+      constraints << table[:GivenName].eq("#{first} #{initial}")
+      constraints << table[:GivenName].matches("#{first} #{initial} %")
+    else
+      initials = parts[1..].map { |part| part[0] }.join(' ')
+      constraints << table[:GivenName].matches("#{first} #{initials}%")
+    end
+
+    constraints
+  end
+
+  def given_name_initials_fallback?
+    first_name.present? &&
+      !first_name_exact_match &&
+      !skip_first_name? &&
+      !first_name.start_with?('+') &&
+      first_name.strip.split(/\s+/).length >= 2
+  end
+
   def search_conditions_arel
 	  table = BestGuess.arel_table
 	  conditions = []
 
 	  # First name with LIKE
 	  if first_name.present? && !first_name_exact_match && !skip_first_name?
-		pattern = first_name.start_with?('+') ? "%#{first_name.delete_prefix('+').strip}%" : "#{first_name.strip}%"
-		conditions << table[:GivenName].matches(pattern)
+      if first_name.start_with?('+')
+        conditions << table[:GivenName].matches("%#{first_name.delete_prefix('+').strip}%")
+      else
+        stripped = first_name.strip
+        given_name_matches = [table[:GivenName].matches("#{stripped}%")]
+        if given_name_initials_fallback?
+          given_name_matches.concat(SearchQuery.given_name_initials_arel_constraints(table, stripped))
+        end
+        conditions << given_name_matches.reduce(:or)
+      end
 	  end
 
 	  # Second name
@@ -1830,8 +1906,11 @@
     records = SearchQuery.get_search_table.where(bmd_params_hash)
     records = apply_bmd_chapman_code_filter(records)
 
-    if wildcard_search_conditions.present?
-      sql, *values = wildcard_search_conditions
+    # Build once: wildcard_search_conditions now runs a dictionary lookup for
+    # leading/embedded surname wildcards, so it must not be recomputed per reference.
+    wildcard_conditions = wildcard_search_conditions
+    if wildcard_conditions.present?
+      sql, *values = wildcard_conditions
       records = records.where(sql, *values)
     end
 
@@ -1844,6 +1923,8 @@
     records = marriage_surname_filteration(records) if spouses_mother_surname.present? && marriage_in_bmd_search?
     records = spouse_given_name_filter(records) if spouse_first_name.present? && marriage_in_bmd_search?
 
+    log_freebmd_wildcard_query_cost(records) if wildcard_conditions.present? && records.respond_to?(:to_sql)
+
     if freebmd_needs_array_pipeline?
       records = run_freebmd_array_pipeline(records)
       records = normalize_freebmd_combined_result_rows(records) if records.is_a?(Array)
@@ -1852,6 +1933,24 @@
     record_count = freebmd_record_count(records)
 
     [records, record_count]
+  end
+
+  # Observability only (see FreeBMD1 lib/SearchDB.pm ExcessCost, which this informs).
+  # Runs EXPLAIN on the wildcard search SQL and logs the optimiser's estimated row cost
+  # and the index it chose, so we can size a real pre-flight cost gate from production
+  # data. The FreeBMD/MySQL search issues no USE INDEX (the index_hint / @search_index
+  # machinery is FreeREG/FreeCEN Mongo residue on this shared path), so this reflects
+  # what the optimiser does unaided. Must never raise: logging cannot break a search.
+  def log_freebmd_wildcard_query_cost(relation)
+    sql = relation.to_sql
+    plan = SearchQuery.get_search_table.connection.exec_query("EXPLAIN #{sql}").to_a
+    est_rows = plan.map { |r| r['rows'].to_i }.reject(&:zero?).inject(1, :*)
+    chosen_keys = plan.map { |r| r['key'] || '(none)' }.join(',')
+    scan_types = plan.map { |r| r['type'] }.join(',')
+    logger.warn("#{App.name_upcase}:SEARCH_COST: est_rows=#{est_rows} optimiser_keys=#{chosen_keys} scan_types=#{scan_types} " \
+                "last_name=#{last_name.inspect} first_name=#{first_name.inspect}")
+  rescue StandardError => e
+    logger.warn("#{App.name_upcase}:SEARCH_COST: EXPLAIN failed: #{e.class}: #{e.message}")
   end
 
   def freebmd_needs_array_pipeline?
@@ -2123,10 +2222,6 @@
 
   def second_name_search?
     wildcard_option == Constant::ADDITIONAL
-  end
-
-  def new_first_name_starts_with_wildcard_query
-    "BestGuess.GivenName like '#{self.first_name}%'"
   end
 
   def new_first_name_ends_with_wildcard_query
@@ -3611,6 +3706,7 @@
   end
 
   def register_entry_details(result_hash, record)
+    result_hash['Volume'] = record[:Volume]
     result_hash['Register No.'] = record.event_registration_number
     result_hash['Entry No.'] = record.event_entry_number
   end
@@ -3631,8 +3727,23 @@
 	def build_surname_wildcard_condition
 	  return nil unless last_name.present? && do_wildcard_seach?(last_name.strip)
 
+	  resolved = resolve_wildcard_surnames(last_name) if surname_wildcard_leading_or_embedded?(last_name)
+	  return { sql: "BestGuess.Surname IN (?)", value: resolved } if resolved.present?
+
 	  { sql: "BestGuess.Surname LIKE ?", value: name_wildcard_search(last_name) }
 	end
+
+  # A trailing-only wildcard after literal characters ("smith*", "smit?") is already an
+  # indexable prefix range for MySQL - leave it as LIKE. Only a leading or embedded
+  # wildcard ("*son", "sm*th") cannot use a prefix range and is worth resolving via the
+  # dictionary into `Surname IN (...)`.
+  def surname_wildcard_leading_or_embedded?(name)
+    stripped = sanitize_search_input(name)
+    return false unless stripped.match?(WILDCARD)
+
+    literal_prefix = stripped[/\A[^*?]*/]
+    literal_prefix.empty? || stripped[literal_prefix.length..-1].to_s.match?(/[^*?]/)
+  end
 
 	def build_mother_surname_wildcard_condition
 	  return nil unless mother_last_name.present? && do_wildcard_seach?(mother_last_name)
@@ -3641,4 +3752,52 @@
 	  pattern = "#{name_wildcard_search(mother_last_name)}#{conditional_percentage_wildcard(mother_last_name)}"
 	  { sql: "(BestGuess.RecordTypeID != ? OR BestGuess.AssociateName LIKE ?)", values: [RecordType::BIRTHS, pattern] }
 	end
+
+  # Resolve a leading/embedded wildcard surname ("*son", "sm*th") against the surname
+  # dictionary and return the concrete list, so the caller can query BestGuess with
+  # `Surname IN (...)` (uses the Surname index) instead of `Surname LIKE '%x%'` (scans the
+  # whole ~300M-row table).
+  #
+  # Source is currently the UniqueSurname Mongo collection (distinct BestGuess.Surname +
+  # count, maintained for the search-form type-ahead by lib/tasks/unique_surnames.rake).
+  # The dormant MySQL migration db/migrate/20221209222347_create_unique_surname.rb is the
+  # intended long-term home - same datastore as BestGuess, one connection, a plain indexed
+  # LIKE - and this method should move to it once that table is built and populated.
+  #
+  # Returns nil - and the caller keeps LIKE - when the dictionary is empty/unavailable,
+  # nothing matches, or more than WILDCARD_SURNAME_IN_LIST_LIMIT surnames match.
+  def resolve_wildcard_surnames(name)
+    regex = wildcard_name_to_anchored_regex(name)
+    return nil if regex.nil?
+
+    matches = UniqueSurname.where(Name: regex).limit(WILDCARD_SURNAME_IN_LIST_LIMIT + 1).pluck(:Name)
+    if matches.size > WILDCARD_SURNAME_IN_LIST_LIMIT
+      logger.warn("#{App.name_upcase}:WILDCARD_SURNAME: #{name.inspect} matched > #{WILDCARD_SURNAME_IN_LIST_LIMIT} surnames - keeping LIKE")
+      return nil
+    end
+    return nil if matches.empty?
+
+    logger.warn("#{App.name_upcase}:WILDCARD_SURNAME: #{name.inspect} resolved to #{matches.size} surname(s)")
+    matches
+  rescue StandardError => e
+    logger.warn("#{App.name_upcase}:WILDCARD_SURNAME: dictionary lookup failed for #{name.inspect} (#{e.class}: #{e.message}) - keeping LIKE")
+    nil
+  end
+
+  # User wildcard string -> anchored, case-insensitive Regexp for the dictionary lookup.
+  # "*" = any run of characters, "?" = one character (matching the SQL LIKE mapping in
+  # #name_wildcard_search); literal segments are Regexp.escaped.
+  def wildcard_name_to_anchored_regex(name)
+    sanitized = sanitize_search_input(name)
+    return nil if sanitized.blank? || !sanitized.match?(WILDCARD)
+
+    body = sanitized.split(/([*?])/).map do |segment|
+      case segment
+      when '*' then '.*'
+      when '?' then '.'
+      else Regexp.escape(segment)
+      end
+    end.join
+    Regexp.new("\\A#{body}\\z", Regexp::IGNORECASE)
+  end
 end

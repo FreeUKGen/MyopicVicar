@@ -863,8 +863,13 @@ module ApplicationHelper
     }
   end
 
-  def footer_records_stats(stat,type)
-    stat.where(record_type: type).first.total_records if stat.where(record_type: type).first.present?
+  def footer_records_stats(stat, type)
+    stat.where(record_type: type).first&.total_records || 0
+  end
+
+  def freebmd_database_updated_on
+    epoch = FREEBMD_DB['database'].to_s[/\Abmd_(\d+)\z/, 1]
+    Time.zone.at(epoch.to_i).to_date if epoch
   end
 
   def contact_us_path
