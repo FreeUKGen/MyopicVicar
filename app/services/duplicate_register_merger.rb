@@ -3,7 +3,9 @@
 require 'csv'
 
 # Finds registers that duplicate another register at the same church (same register_type) and
-# reports how each group would be merged. Read only: it writes a CSV report and changes no data.
+# reports how each group would be merged. A dry run (the default) writes a CSV report and changes
+# no data; with apply: true each group marked 'merge' is merged with RegisterMergeService and the
+# outcome is added to the report.
 #
 # Which register would be kept:
 #   1. the register with an Image Server source (Image Server folders are not combined automatically)
@@ -19,9 +21,10 @@ class DuplicateRegisterMerger
   DEPENDENCY_MODELS = [Source, Freereg1CsvFile, EmbargoRule, Gap, RegisterUniqueName].freeze
 
   REPORT_HEADERS = %w[chapman_code place church register_type decision keep_register_id delete_register_ids
-                      files_to_move records_to_move reason].freeze
+                      files_to_move records_to_move reason result].freeze
 
-  def initialize(chapman_code: nil, limit: 0)
+  def initialize(apply: false, chapman_code: nil, limit: 0)
+    @apply = apply
     @chapman_code = chapman_code
     @limit = limit.to_i
   end
@@ -41,10 +44,15 @@ class DuplicateRegisterMerger
 
         plan = plan_for(registers)
         to_move = plan[:delete].map(&:id)
+        files_to_move = Freereg1CsvFile.where(:register_id.in => to_move).count
+        records_to_move = records_on(to_move)
+        result = @apply && plan[:decision] == 'merge' ? merge(plan[:keep]) : ''
         csv << [place.chapman_code, place.place_name, church.church_name, registers.first.register_type,
-                plan[:decision], plan[:keep]&.id, to_move.join(' '),
-                Freereg1CsvFile.where(:register_id.in => to_move).count, records_on(to_move), plan[:reason]]
+                plan[:decision], plan[:keep]&.id, to_move.join(' '), files_to_move, records_to_move,
+                plan[:reason], result]
+        csv.flush
         summary[plan[:decision]] += 1
+        summary["result: #{result.split(':').first}"] += 1 if result.present?
         summary["manual: #{plan[:reason]}"] += 1 if plan[:decision] == 'manual'
         processed += 1
         break if @limit.positive? && processed >= @limit
@@ -121,6 +129,17 @@ class DuplicateRegisterMerger
     return if conflicting.empty?
 
     "embargo rules with different periods for record type(s) #{conflicting.keys.map(&:last).uniq.join(', ')}"
+  end
+
+  def merge(keep)
+    proceed, message = RegisterMergeService.new(keep).call
+    return "failed: #{message}" unless proceed
+
+    keep.reload.calculate_register_numbers
+    sleep(Rails.application.config.sleep.to_f)
+    "merged: #{message}"
+  rescue StandardError => e
+    "failed: #{e.class} #{e.message}"
   end
 
   def manual(reason)
