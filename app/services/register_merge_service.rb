@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'extract_collection_unique_names'
+
 class RegisterMergeService
   DEPENDENCY_MODELS = [
     Source,
