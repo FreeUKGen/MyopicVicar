@@ -1,6 +1,7 @@
 require 'development_mail_interceptor'
 if Rails.env.development?
   ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor)
+
   case Rails.application.config.website
   when 'https://test2.freereg.org.uk'
     ActionMailer::Base.delivery_method = :sendmail
@@ -41,3 +42,11 @@ else
 end
 ActionMailer::Base.sendmail_settings = { location: '/usr/sbin/sendmail', arguments: ['-i'] }
 ActionMailer::Base.default_url_options[:host] = Rails.application.config.website
+
+if Rails.env.test?
+  ActionMailer::Base.register_interceptor(DevelopmentMailInterceptor)
+
+  ActionMailer::Base.delivery_method = :test
+  ActionMailer::Base.perform_deliveries = true
+  ActionMailer::Base.raise_delivery_errors = true
+end
