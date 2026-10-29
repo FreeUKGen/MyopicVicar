@@ -11,7 +11,7 @@ class FreebmdCorrectionPayload
     'district' => 'District:       ',
     'volume' => 'Volume:         ',
     'register_number' => 'Register:       ',
-    'entry_number' => 'Entry:          ',
+    'entry_number' => 'Entry number:   ', # not "Entry:", which is a field name in the FreeBMD1 corrections log
     'page' => 'Page:           ',
     'registered' => 'Registered:     ',
     'marriage_submission_entry_number' => 'Entry number:   ',
@@ -118,7 +118,7 @@ class FreebmdCorrectionPayload
           next if key == 'multiple_entries'
 
           label = CORRECTION_FIELD_LABELS[key] || "#{humanize_key(key)}: "
-          pairs << [label, val.to_s.strip]
+          pairs << [label, val.to_s.gsub(/\s*[\r\n]+\s*/, ' ').strip] # one line each in the corrections log
         end
         return pairs
       end
@@ -129,7 +129,7 @@ class FreebmdCorrectionPayload
         next if key == 'multiple_entries'
 
         label = SECTION3_FIELD_LABELS[key] || "#{ContactsHelper::FREEBMD_SECTION3_LABELS[key] || humanize_key(key)}: "
-        pairs << [label, val.to_s.strip]
+        pairs << [label, val.to_s.gsub(/\s*[\r\n]+\s*/, ' ').strip] # one line each in the corrections log
       end
       pairs
     end

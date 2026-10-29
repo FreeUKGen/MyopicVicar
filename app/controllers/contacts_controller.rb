@@ -19,6 +19,12 @@ class ContactsController < ApplicationController
 
   skip_before_action :require_login, only: [:new, :report_error, :create, :show, :question_answer_finder]
 
+  # Defense-in-depth against scripted abuse of the public contact form, on top of the contact_name
+  # honeypot (as on master). Matters more here: Data Problem reports are passed on to FreeBMD1.
+  MIN_CONTACT_FORM_SECONDS = 3
+  CONTACT_RATE_LIMIT_WINDOW = 10.minutes
+  CONTACT_RATE_LIMIT_MAX = 8
+
   def archive
     @contact = Contact.find(params[:id]) if params[:id].present?
     redirect_back(fallback_location: contacts_path, notice: 'The contact was not found') && return if @contact.blank?
@@ -55,6 +61,13 @@ class ContactsController < ApplicationController
   def create
     @contact = Contact.new(contact_params)
     if @contact.contact_name.blank? #spam trap
+      if likely_automated_submission?
+        # Pretend success so scripted abuse gets no signal that it was blocked.
+        logger.warn("#{appname_upcase}:CONTACT: likely automated submission from #{request.remote_ip} ignored")
+        flash[:notice] = 'Thank you for contacting us!'
+        redirect_to(new_search_query_path) && return
+      end
+
       # keep the pages passed through from the Contact Us button; the referer here is only the contact form itself
       @contact.previous_page_url = request.env['HTTP_REFERER'] if @contact.previous_page_url.blank?
       if @contact.selected_county == 'nil'
@@ -605,7 +618,37 @@ class ContactsController < ApplicationController
   end
 
   def contact_params
-    params.require(:contact).permit!
+    permitted = params.require(:contact).permit!
+    # A scripted POST can send text where the screenshot file goes; CarrierWave then raises (a 500)
+    permitted.delete(:screenshot) unless permitted[:screenshot].respond_to?(:original_filename)
+    permitted
+  end
+
+  def likely_automated_submission?
+    submitted_too_fast? || contact_rate_limited?
+  end
+
+  # Real visitors take at least a few seconds to fill in the form; the hidden contact_time field records
+  # when it was rendered (a full date and time). Missing, date-only, unparseable or too fast all count as
+  # suspicious, since a direct scripted POST won't reproduce it faithfully.
+  def submitted_too_fast?
+    rendered_at = params.dig(:contact, :contact_time).to_s
+    return true unless rendered_at.include?(':')
+
+    Time.now - Time.zone.parse(rendered_at) < MIN_CONTACT_FORM_SECONDS
+  rescue ArgumentError, TypeError, NoMethodError
+    true
+  end
+
+  def contact_rate_limited?
+    return false if request.remote_ip.blank?
+    # logged-in users (on FreeBMD2 only the team) may report many errors in a row, e.g. when testing
+    return false if session[:userid].present?
+
+    key = "contacts_create_rate_limit:#{request.remote_ip}"
+    count = Rails.cache.read(key).to_i + 1
+    Rails.cache.write(key, count, expires_in: CONTACT_RATE_LIMIT_WINDOW)
+    count > CONTACT_RATE_LIMIT_MAX
   end
 
   def delete_reply_messages(contact_id)
