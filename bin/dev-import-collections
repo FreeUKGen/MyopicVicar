@@ -8,6 +8,11 @@ cd "$ROOT"
 
 IMPORT_DIR="${1:-$ROOT/tmp}"
 DB_NAME="${MONGOID_DATABASE:-}"
+DB_HOST="${MONGODB_HOST:-}"
+
+if [[ -z "$DB_HOST" && -f .devcontainer/.env.development ]]; then
+  DB_HOST="$(sed -n 's/^[[:space:]]*MONGODB_HOST[[:space:]]*=[[:space:]]*//p' .devcontainer/.env.development | head -n 1 | tr -d '\r')"
+fi
 
 if [[ -z "$DB_NAME" ]]; then
   if [[ -f config/mongoid.yml ]]; then
@@ -18,6 +23,19 @@ if [[ -z "$DB_NAME" ]]; then
   else
     DB_NAME="myopic_vicar_development"
   fi
+fi
+
+if [[ -z "$DB_HOST" ]]; then
+  DB_HOST="localhost:27017"
+fi
+
+# Split DB_HOST into HOST and PORT
+HOST="${DB_HOST%%:*}"
+PORT="${DB_HOST##*:}"
+
+if [[ -z "$HOST" || ! "$DB_HOST" =~ ^[^:]+:[0-9]+$ ]]; then
+  printf "ERROR: MONGODB_HOST must be in HOST:PORT format; got '%s'\n" "$DB_HOST" >&2
+  exit 1
 fi
 
 COLLECTIONS=(
@@ -40,7 +58,8 @@ fi
 
 echo "Importing into database: $DB_NAME"
 echo "From directory: $IMPORT_DIR"
-echo
+echo "  Host: $HOST"
+echo "  Port: $PORT"
 
 for name in "${COLLECTIONS[@]}"; do
   file="$IMPORT_DIR/${name}.json"
@@ -48,8 +67,10 @@ for name in "${COLLECTIONS[@]}"; do
     echo "  SKIP $name (missing $file)"
     continue
   fi
-  echo "  IMPORT $name"
-  mongoimport --db "$DB_NAME" --collection "$name" --file "$file" --drop
+
+  echo && echo "  IMPORT $name"
+
+  mongoimport --host "$HOST" --port "$PORT" --db "$DB_NAME" --collection "$name" --file "$file" --drop
 done
 
 echo
