@@ -3133,9 +3133,8 @@
     return records unless spouses_mother_surname.present?
     return records unless records.is_a?(ActiveRecord::Relation)
     
-    # Security: Validate and sanitize spouse surname input
-    sanitized_surname = sanitize_search_input(spouses_mother_surname)
-    return records if sanitized_surname.blank?
+    operator, value = spouse_surname_operator_and_value
+    return records if operator.blank?
 
     best_guess_table = SearchQuery.get_search_table.table_name
     marriage_table = BestGuessMarriage.table_name
@@ -3155,17 +3154,7 @@
       "b.QuarterNumber = #{quoted_best_guess}.QuarterNumber AND " \
       "b.RecordNumber != #{quoted_best_guess}.RecordNumber"
     )
-    
-    # Generate pattern with sanitized input
-    if do_wildcard_seach?(sanitized_surname)
-      pattern = "#{name_wildcard_search(sanitized_surname)}#{conditional_percentage_wildcard(sanitized_surname)}"
-      operator = "LIKE"
-      value = pattern
-    else
-      operator = "="
-      value = sanitized_surname
-    end
-    
+
     # Parameterized WHERE (safe from SQL injection)
     records_with_join.where(
       "(#{quoted_best_guess}.RecordTypeID != ? OR (" \
@@ -3174,6 +3163,20 @@
       "))",
       RecordType::MARRIAGES, quarter_threshold, value, quarter_threshold, value
     ).distinct
+  end
+
+  # SQL operator and bound value for matching a surname column against the spouse surname
+  # (LIKE with the converted pattern for wildcard searches, = otherwise); nil when there is none.
+  def spouse_surname_operator_and_value
+    # Security: Validate and sanitize spouse surname input
+    sanitized_surname = sanitize_search_input(spouses_mother_surname)
+    return if sanitized_surname.blank?
+
+    if do_wildcard_seach?(sanitized_surname)
+      ['LIKE', "#{name_wildcard_search(sanitized_surname)}#{conditional_percentage_wildcard(sanitized_surname)}"]
+    else
+      ['=', sanitized_surname]
+    end
   end
 
   def marriage_surname_filteration_o(records)
@@ -3282,6 +3285,20 @@
     # LOWER() on column for case-insensitive comparison, %search_term% for substring match
     # Lowercase the pattern in Ruby before passing to SQL
     pattern = "%#{search_term.downcase}%"
+
+    # Before SPOUSE_SURNAME_START_QUARTER the spouse is only known as another entry on the same page, and
+    # marriage_surname_filteration matches the surname on a separate join of that page. Unless the surname
+    # is also checked here, "Thomas" and "Williams" can come from two different people on the page
+    # (FreeBMD2 #910), so the first name and surname must be on the same entry.
+    surname_operator, surname_value = spouse_surname_operator_and_value if spouses_mother_surname.present?
+    if surname_operator.present?
+      return records_with_join.where(
+        "(#{best_guess_table}.RecordTypeID != ? OR (LOWER(m.GivenName) LIKE ? AND " \
+        "(#{best_guess_table}.QuarterNumber >= ? OR m.Surname #{surname_operator} ?)))",
+        RecordType::MARRIAGES, pattern, SPOUSE_SURNAME_START_QUARTER, surname_value
+      ).distinct
+    end
+
     records_with_join.where("(#{best_guess_table}.RecordTypeID != ? OR LOWER(m.GivenName) LIKE ?)", RecordType::MARRIAGES, pattern).distinct
   end
   
