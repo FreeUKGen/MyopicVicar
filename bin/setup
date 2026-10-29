@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'yaml'
 require 'fileutils'
 require 'securerandom'
 
@@ -17,46 +18,117 @@ def copy_if_missing(source, dest, label)
   puts "  created #{label} from #{File.basename(source)}"
 end
 
-def patch_mongo_config_secrets(path)
+def patch_mongo_config_secrets(path:)
   return unless File.exist?(path)
 
-  lines = File.readlines(path)
-  dev_start = lines.index { |l| l.match?(/^development:\s*$/) }
-  return unless dev_start
+  config = YAML.safe_load_file(path, aliases: true) || {}
+  changes_made = false
 
-  rest = lines[(dev_start + 1)..] || []
-  offset = rest.find_index { |l| l.match?(/^\S/) }
-  dev_end = offset ? dev_start + 1 + offset : lines.length
+  # 1. Handle Development Section
+  if config['development'].is_a?(Hash)
+    dev = config['development']
 
-  # Only fill placeholder values (blank or "# comment") within the
-  # development: section - test:/production: are left untouched.
-  replacements = {
-    'secret_key_base' => -> { SecureRandom.hex(64) },
-    'our_secret_key' => -> { SecureRandom.hex(32) },
-    'website' => -> { "'localhost:3000'" },
-    'datafiles' => lambda {
-      datafiles = File.join(APP_ROOT, 'tmp', 'datafiles')
-      FileUtils.mkdir_p(datafiles)
-      "'#{datafiles}'"
-    },
-    'member_open' => -> { 'true' }
-  }
+    if dev['secret_key_base'].to_s.strip.empty?
+      dev['secret_key_base'] = SecureRandom.hex(64)
+      changes_made = true
+    end
 
-  changed = false
-  (dev_start...dev_end).each do |i|
-    line = lines[i]
-    key = line[/^\s*(\w+):/, 1]
-    next unless key && replacements.key?(key)
+    if dev['our_secret_key'].to_s.strip.empty?
+      dev['our_secret_key'] = SecureRandom.hex(32)
+      changes_made = true
+    end
 
-    value = line.split(':', 2)[1].to_s.strip
-    next unless value.empty? || value.start_with?('#')
+    if dev['max_search_time'].to_s.strip.empty?
+      dev['max_search_time'] = 100000
+      changes_made = true
+    end
 
-    indent = line[/^\s*/]
-    lines[i] = "#{indent}#{key}: #{replacements[key].call}\n"
-    changed = true
+    if dev['datafiles'].to_s.strip.empty?
+      dev['datafiles'] = 'tmp/datafiles'
+      changes_made = true
+    end
+
+    if dev['website'].to_s.strip.empty?
+      dev['website'] = 'localhost:3000'
+      changes_made = true
+    end
+
+    dev['member_open'] = true if dev['member_open'].nil?
   end
 
-  File.write(path, lines.join) if changed
+  # 2. Handle Test Section
+  if config['test'].is_a?(Hash)
+    test_sec = config['test']
+
+    if test_sec['secret_key_base'].to_s.strip.empty?
+      test_sec['secret_key_base'] = SecureRandom.hex(64)
+      changes_made = true
+    end
+
+    if test_sec['our_secret_key'].to_s.strip.empty?
+      test_sec['our_secret_key'] = SecureRandom.hex(32)
+      changes_made = true
+    end
+
+    if test_sec['max_search_time'].to_s.strip.empty?
+      test_sec['max_search_time'] = 50000
+      changes_made = true
+    end
+  end
+
+  if changes_made
+    # 1. Convert the hash to YAML normally
+    yaml_output = config.to_yaml
+
+    # 2. WORKAROUND: Force single quotes on string replacement
+    yaml_output.sub!("website: localhost:3000", "website: 'localhost:3000'")
+    yaml_output.sub!("datafiles: tmp/datafiles", "datafiles: 'tmp/datafiles'")
+
+    # 3. Write the modified text to the file
+    File.write(path, yaml_output)
+  end
+end
+
+
+def patch_freeukgen_application(path:)
+  return unless File.exist?(path)
+
+  config = YAML.safe_load_file(path, aliases: true) || {}
+  changes_made = false
+
+  # 1. Handle Development Section
+  if config['development'].is_a?(Hash)
+    dev = config['development']
+
+    if dev['template_set'] != 'freereg'
+      dev['template_set'] = 'freereg'
+      changes_made = true
+    end
+  end
+
+  # 2. Handle Test Section
+  if config['test'].is_a?(Hash)
+    test_sec = config['test']
+
+    if test_sec['template_set'] != 'freereg'
+      test_sec['template_set'] = 'freereg'
+      changes_made = true
+    end
+  end
+
+  if changes_made
+    # 1. Convert the hash to YAML normally
+    yaml_output = config.to_yaml
+
+    # 2. WORKAROUND: Force single quotes on string replacement
+    # Development Section
+    yaml_output.sub!("template_set: freereg", "template_set: 'freereg'")
+    # Test Section
+    yaml_output.sub!("template_set: freereg", "template_set: 'freereg'")
+
+    # 3. Write the modified text to the file
+    File.write(path, yaml_output)
+  end
 end
 
 FileUtils.chdir APP_ROOT do
@@ -88,7 +160,8 @@ FileUtils.chdir APP_ROOT do
   # is needed unless you actually use legacy Refinery features.
   copy_if_missing 'config/database.example.yml', 'config/database.yml', 'config/database.yml'
 
-  patch_mongo_config_secrets 'config/mongo_config.yml'
+  patch_mongo_config_secrets(path: 'config/mongo_config.yml')
+  patch_freeukgen_application(path: 'config/freeukgen_application.yml')
 
   unless File.exist?('config/freeukgen_application.yml')
     abort 'config/freeukgen_application.yml missing'
