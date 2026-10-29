@@ -26,7 +26,7 @@ Most developers can work in **Tier A** and verify on **https://test.freereg.org.
 | Component | Version / notes |
 |-----------|-----------------|
 | **Ruby** | **3.3.12** (see `.ruby-version`). Use [rbenv](https://github.com/rbenv/rbenv) or [rvm](https://rvm.io/). |
-| **Bundler** | Latest compatible bundler is 2.7 |
+| **Bundler** | Latest compatible with Ruby 3.3 |
 | **MongoDB** | 4.4+ (local install or Docker). Server must be running for `rails s`. Download link: https://www.mongodb.com/try/download/community|
 | **Git** | Clone [MyopicVicar](https://github.com/FreeUKGen/MyopicVicar) and [osgb](https://github.com/FreeUKGen/osgb) (osgb is a Gemfile dependency). |
 | **MySQL** | Not needed — `bin/setup` handles the one placeholder file the app requires. See [MySQL / Refinery](#mysql--refinery-you-can-ignore-this-section) below. |
