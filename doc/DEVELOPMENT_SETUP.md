@@ -1,7 +1,7 @@
 # MyopicVicar development setup
 
 This guide replaces the archived PDF *Installing FreeREG on your development facility*.
-It reflects the current stack: **Rails 6.1**, **Mongoid/MongoDB**, and **optional** legacy MySQL/Refinery.
+It reflects the current stack: **Rails 7.2**, **Mongoid/MongoDB**, and **optional** legacy MySQL/Refinery.
 
 ## Two tiers
 
@@ -10,7 +10,7 @@ It reflects the current stack: **Rails 6.1**, **Mongoid/MongoDB**, and **optiona
 | **A — Code & PRs** | Most bug fixes, controllers, services | ~1–2 hours | Ruby, MongoDB, gems, config files, test3 account |
 | **B — Full local FreeREG** | Search, CSV upload, coordinators | ~half day | Tier A + collection imports + sample datafiles from mentor |
 
-Most developers can work in **Tier A** and verify on **https://test.freereg.org.uk/** without loading entire production datasets.
+Most developers can work in **Tier A** and verify on **https://test.freereg.org.uk/** without loading datasets.
 
 ---
 
@@ -25,8 +25,8 @@ Most developers can work in **Tier A** and verify on **https://test.freereg.org.
 
 | Component | Version / notes |
 |-----------|-----------------|
-| **Ruby** | **2.7.8** (see `.ruby-version`). Use [rbenv](https://github.com/rbenv/rbenv) or [rvm](https://rvm.io/). |
-| **Bundler** | Latest compatible with Ruby 2.7 |
+| **Ruby** | **3.3.12** (see `.ruby-version`). Use [rbenv](https://github.com/rbenv/rbenv) or [rvm](https://rvm.io/). |
+| **Bundler** | Latest compatible bundler is 2.7 |
 | **MongoDB** | 4.4+ (local install or Docker). Server must be running for `rails s`. Download link: https://www.mongodb.com/try/download/community|
 | **Git** | Clone [MyopicVicar](https://github.com/FreeUKGen/MyopicVicar) and [osgb](https://github.com/FreeUKGen/osgb) (osgb is a Gemfile dependency). |
 | **MySQL** | Not needed — `bin/setup` handles the one placeholder file the app requires. See [MySQL / Refinery](#mysql--refinery-you-can-ignore-this-section) below. |
@@ -37,6 +37,15 @@ Most developers can work in **Tier A** and verify on **https://test.freereg.org.
 1. Register on **https://test.freereg.org.uk/** (use the **test3** syndicate).
 2. Ask your mentor to assign a **technical** role to your userid.
 
+### For developers using Docker
+- Set the environment variable MONGODB_HOST to the MongoDB container.
+
+Dockerfile example:
+```dockerfile
+env MONGODB_HOST=mongodb:27017
+```
+- Do not set the MONGODB_HOST environment variable if you are not using Docker.
+
 
 ---
 
@@ -46,9 +55,9 @@ Most developers can work in **Tier A** and verify on **https://test.freereg.org.
 git clone https://github.com/FreeUKGen/MyopicVicar.git
 cd MyopicVicar
 
-# Ruby 2.7.8 (rbenv example)
-rbenv install 2.7.8
-rbenv local 2.7.8
+# Ruby 3.3.12 (rbenv example)
+rbenv install 3.3.12
+rbenv local 3.3.12
 
 # Start MongoDB first (Ubuntu example) - bin/setup only seeds the
 # testuser4 test login below if MongoDB is already running
@@ -131,6 +140,12 @@ Verify:
 ```bash
 mongo
 use myopic_vicar_development   # or your name from config/mongoid.yml
+db.places.countDocuments({})
+
+or
+
+mongosh
+use myopic_vicar_development   # or your name from config/mongoid.yml
 db.places.countDocuments()
 ```
 
@@ -151,8 +166,9 @@ bin/dev-load-csv-data
 
 This runs (in order): `bin/dev-create-search-indexes` (see below), `freeuk:add_user` (creates a
 Devise `User` for each `UseridDetail`), `load_emendations`, `build:recommence_freereg_new_update[...]`
-to create `freereg1_csv_entries` and `search_records`, and `foo:refresh_places_cache`. Add
-`--with-content` to also rebuild `freereg_contents` via `freereg:calculate_freereg_content` —
+to create `freereg1_csv_entries` and `search_records`, and `foo:refresh_places_cache`.
+
+Add `--with-content` to also rebuild `freereg_contents` via `freereg:calculate_freereg_content` —
 skipped by default since it can take 30-60+ minutes. These steps are slow and hardware-dependent;
 ask a mentor for a minimal county range of real data if you need more than the fixtures.
 
@@ -176,6 +192,19 @@ bin/dev-create-search-indexes
 
 `bin/dev-load-csv-data` already calls this for you, but you can re-run it standalone at any time —
 it's idempotent (`createIndexes` is a no-op if the index already exists with the same spec).
+
+### Verify everything is working
+- Start the Ruby on Rails web server
+```bash
+bundle exec rails server
+```
+
+- You should be able to run a search
+  - Example search (one result found)
+     - Last Name: pratts
+     - Record Type: Baptisms
+     - County: Norfolk
+      - Place: Briston
 
 ---
 
@@ -211,7 +240,7 @@ Restart `rails s` after changing.
 | App crashes on boot (`rails s`/`rails runner`/`rails console`) with no clear Mongo error | `config/database.yml` missing — run `bin/setup` or copy `config/database.example.yml` |
 | Blank site / no places | Tier B imports not done |
 | Cannot log in locally | userid on test3 + `userid_details` imported; not the old Refinery `demo` user |
-| `filter_map` / Ruby errors | Use Ruby **2.7.8**, not 2.6 |
+| `filter_map` / Ruby errors | Use Ruby **3.3.12** |
 | Pages load with no CSS/JS at all | `bin/setup` runs `assets:precompile` for you, but this app has `config.assets.compile = false` in development (no on-the-fly fallback like a stock Rails app), so if it failed - often for missing Node.js - install Node.js and rerun `bundle exec rake assets:precompile` |
 | Search fails: "hint provided does not correspond to an existing index" | Run `bin/dev-create-search-indexes` |
 
@@ -235,9 +264,10 @@ Open a PR on GitHub.
 
 | Required for all devs | Optional |
 |-----------------------|----------|
-| Ruby 2.7.8, bundle, MongoDB, MySQL | Refinery |
+| Ruby 3.3.12, bundle, MongoDB, MySQL | Refinery |
 | Config files from examples (`bin/setup` handles this, including the placeholder `database.yml` the app needs just to boot) | Full `users.zip` rebuild |
 | test registration + technical role | Production-sized data |
 | `bin/setup` | |
 
-**Mongo + test is enough for most developers.** Full local search needs Tier B data from the team share.
+**Mongo + test** (Tier A) is enough for most developers.
+**Full local search** needs Tier B data from the team share.
