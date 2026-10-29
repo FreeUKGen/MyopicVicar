@@ -504,8 +504,12 @@ class UseridDetail
   def userid_and_email_address_does_not_exist
     errors.add(:userid, "Userid Already exists") if UseridDetail.where(userid: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
     errors.add(:userid, "Refinery User Already exists") if User.where(username: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
-    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    errors.add(:email_address, "Refinery email already exists") if User.where(:email => self[:email_address]).exists?
+    return if self[:email_address].blank?
+
+    # Ignore case, as User's own uniqueness check does; otherwise the UseridDetail saves and its User then fails
+    email = /\A#{::Regexp.escape(self[:email_address])}\z/i
+    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(email_address: email).exists?
+    errors.add(:email_address, "Refinery email already exists") if User.where(email: email).exists?
   end
 
   #def userid_and_email_address_does_not_exist
@@ -593,7 +597,7 @@ class UseridDetail
     new_email = self[:email_address].to_s
     return if new_email.blank?
 
-    if UseridDetail.where(email_address: new_email, :id.ne => id).exists?
+    if UseridDetail.where(email_address: /\A#{::Regexp.escape(new_email)}\z/i, :id.ne => id).exists?
       errors.add(:email_address, "Userid email already exists on change")
     end
 
