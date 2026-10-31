@@ -111,13 +111,13 @@
     <p><strong>Scotland</strong> adopted 01 Jan as New Year’s Day in 1600: any date recorded in a Scottish register from 1600 onwards will be a ‘new style’ date. So, we need to insert the ‘old style’ year for dates from 01 Jan to 24 Mar (incl.) in any year from 1600 to 1751 (incl.). For example: a date recorded as 15th February 1658, should be entered as 15 Feb 1657/8; and 6th January 1700 as 06 Jan 1699/00.</p>
     <p class="push-half--bottom"><strong>If part or all of the date is missing or illegible</strong>, we make use of parts of our Uncertain Character Format (UCF) as follows:</p>
     <ul>
-      <li>if the day is missing, just enter a month and year — Jun 1783<br />Note that the database will treat this date as 01 Jun 1783 </li>
-      <li>if the day is unclear, use a * (asterisk) for an unreadable day — * Jul 1746</li>
-      <li>if the month is missing or illegible, enter dd * yyyy — 09 * 1708 </li>
-      <li>if the day and month are missing, just enter the year — 1761 </li>
-      <li>if only the year is legible, put * * yyyy — * * 1761 </li>
-      <li>if the year is missing, then enter the most likely year from the position in the register, in the form yyyy or yyyy/(0)y, as appropriate, together with a note on the estimation in the Notes field, but <strong>do not</strong> append a ? to an estimated year</li>
-      <li>you may use the * (asterisk) in the 3rd or 4th digit of the year or the _ (underscore) in the 4th digit and the underscore in both the 3rd and 4th digits. Do <strong>not</strong> use any other UCF (<a href="/information-for-transcribers/dealing-with-uncertainty#ucf">Uncertain Character Format</a>) in the year. All these examples are valid for dates:
+      <li>If the day is missing, just enter a month and year — Jun 1783</li>
+      <li>If the day is unclear, use a * (asterisk) for an unreadable day — * Jul 1746</li>
+      <li>If the month is missing or illegible, enter dd * yyyy — 09 * 1708 </li>
+      <li>If the day and month are missing, just enter the year — 1761 </li>
+      <li>If only the year is legible, put * * yyyy — * * 1761 </li>
+      <li>If the year is missing, then enter the most likely year from the position in the register, in the form yyyy or yyyy/(0)y, as appropriate, together with a note on the estimation in the Notes field, but <strong>do not</strong> append a ? to an estimated year</li>
+      <li>You may use the * (asterisk) in the 3rd or 4th digit of the year or the _ (underscore) in the 4th digit and the underscore in both the 3rd and 4th digits. Do <strong>not</strong> use any other UCF (<a href="/information-for-transcribers/dealing-with-uncertainty#ucf">Uncertain Character Format</a>) in the year. All these examples are valid for dates:
         <ul>
           <li>09 Feb 185*</li>
           <li>20 Jun 178_</li>
@@ -125,6 +125,7 @@
           <li>15 * 19__</li>
         </ul>
       </li>
+      <li>Try very hard not to use _ or * characters in the year. The year is the most critical part of the date, because the search engine ignores the day and the month when searching the records, but wildcards like _ and * do not work as you might expect.  The search engine will replace each of these characters with a 5, so that a year entered as 187* will be treated as 1875 and will thus not match all years from 1870 to 1879.</li>
     </ul>
    <p class="islet islet--bordered">If you are transcribing a register where it is not possible to estimate a missing date — such as MIs (Memorial Inscriptions) — then you should be using a spreadsheet with flexible CSV. See <a href="/information-for-transcribers/flexible-csv-format#dates">Flexible CSV, General Guidance, Dates</a> for how to enter such missing dates.</p>
     <p><strong>If using a spreadsheet</strong>, we strongly recommend that you set the cell format for the whole sheet to text. This will avoid any issues with dates and with header fields that contain a + (plus sign).</p>
