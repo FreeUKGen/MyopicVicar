@@ -390,51 +390,117 @@ module FreeregValidations
 
     value = field.to_s.strip
     return true if value.empty?
-    return false if value.match?(/[()]/)
+    return false unless valid_parenthesis_expression?(value)
 
-    bracket_stack = []
-    pairs = { '[' => ']', '{' => '}' }
+    index = 0
 
-    value.each_char do |char|
-      if pairs.key?(char)
-        bracket_stack << char
-      elsif pairs.value?(char)
-        return false if bracket_stack.empty? || pairs[bracket_stack.pop] != char
-      elsif char =~ /[\[\]\{\}]/
+    while index < value.length
+      character = value[index]
+
+      case character
+      when '['
+        closing_index = ucf_bracket_end(value, index)
+        return false unless closing_index
+
+        index = closing_index
+      when ']'
         return false
+      when '{'
+        closing_index = ucf_brace_end(value, index)
+        return false unless closing_index
+
+        index = closing_index
+      when '}'
+        return false
+      when '*'
+        return false unless valid_ucf_star?(value, index)
+      when '_'
+        return false unless valid_ucf_underscore?(value, index)
+      when '?'
+        return false unless valid_ucf_question_mark?(value, index)
       end
+
+      index += 1
     end
-
-    return false unless bracket_stack.empty?
-
-    value.scan(/\[[^\]]*\]|\{[^}]*\}/) do |segment|
-      content = segment[1..-2]
-
-      if segment.start_with?('{')
-        return false if content.to_s.empty?
-        return false unless content =~ /\A\d+(?:\s*,\s*\d+)?\s*\z/
-        segment_start = value.index(segment)
-        return false if segment_start.nil? || segment_start == 0
-        return false unless value[segment_start - 1] == '_'
-      else
-        return false if content.to_s.empty?
-        return false if content =~ /\d/
-        return false unless content =~ /\A[A-Za-z]+\z/
-      end
-    end
-
-    value.to_enum(:scan, /\{[^}]*\}/).each do
-      match = Regexp.last_match
-      index = match.begin(0)
-      next if index.positive? && value[index - 1] == '_'
-      return false
-    end
-
-    return false if value =~ /\[\s*\]/
-    return false if value =~ /\{\s*\}/
-    return false if value =~ /\{\s*[,}]|[,]\s*\}/
-    return false if value =~ /\[[^\]]*\]/ && value =~ /\[[^A-Za-z\]]*\]/
 
     true
+  end
+
+  def FreeregValidations.ucf_bracket_end(value, index)
+    closing_index = value.index(']', index + 1)
+    return nil unless closing_index
+
+    content = value[(index + 1)...closing_index]
+    return nil unless content.length >= 2 &&
+                      content.match?(/\A[\p{L}\p{P}\p{S}_]+\z/) &&
+                      !content.match?(/[\[\]\{\}\(\)\*\?]/)
+
+    closing_index
+  end
+
+  def FreeregValidations.ucf_brace_end(value, index)
+    closing_index = value.index('}', index + 1)
+    return nil unless closing_index
+
+    content = value[(index + 1)...closing_index]
+    match = content.match(/\A(\d+),(\d*)\z/)
+    return nil unless match
+
+    previous_character = value[index - 1] if index.positive?
+    return nil unless previous_character&.match?(/\A[\p{L}_]\z/)
+
+    minimum = match[1].to_i
+    maximum = match[2].to_i unless match[2].empty?
+    return nil if maximum && minimum > maximum
+
+    closing_index
+  end
+
+  def FreeregValidations.valid_ucf_star?(value, index)
+    previous_character = value[index - 1] if index.positive?
+    next_character = value[index + 1]
+
+    !["_", "*"].include?(previous_character) && !["_", "*"].include?(next_character)
+  end
+
+  def FreeregValidations.valid_ucf_underscore?(value, index)
+    previous_character = value[index - 1] if index.positive?
+    next_character = value[index + 1]
+
+    previous_character != "*" && next_character != "*"
+  end
+
+  def FreeregValidations.valid_ucf_question_mark?(value, index)
+    return false if index.zero? || value[index - 1].match?(/\s/)
+
+    next_character = value[index + 1]
+    return false if next_character && !next_character.match?(/\s/)
+
+    word_start = value.rindex(/\s/, index - 1)
+    !value[(word_start ? word_start + 1 : 0)...index].include?('?')
+  end
+
+  def FreeregValidations.valid_parenthesis_expression?(field)
+    return true if field.nil? || field.to_s.empty?
+
+    value = field.to_s
+    opening_index = nil
+
+    value.each_char.with_index do |character, index|
+      if character == '('
+        return false unless opening_index.nil?
+
+        opening_index = index
+      elsif character == ')'
+        return false if opening_index.nil?
+
+        content = value[(opening_index + 1)...index]
+        return false unless content.match?(/[[:graph:]]/)
+
+        opening_index = nil
+      end
+    end
+
+    opening_index.nil?
   end
 end

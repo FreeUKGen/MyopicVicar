@@ -947,13 +947,16 @@ class CsvFile < CsvFiles
     return nil if data_record.blank?
 
     candidate_fields = data_record.keys.select do |field|
-      field.to_s.end_with?('_forename', '_surname', '_date') || field.to_s.match?(/(forename|surname|date)$/)
+      field.to_s.match?(/(?:forename|surname)\z/)
     end
 
     candidate_fields.each do |field|
       value = data_record[field]
       next if value.blank?
-      next unless value.to_s.match?(FreeregValidations::VALID_UCF)
+
+      unless FreeregValidations.valid_parenthesis_expression?(value)
+        return "Invalid parenthesis expression in #{field}: #{value}"
+      end
 
       return "Invalid UCF expression in #{field}: #{value}" unless FreeregValidations.valid_ucf_expression?(value)
     end
