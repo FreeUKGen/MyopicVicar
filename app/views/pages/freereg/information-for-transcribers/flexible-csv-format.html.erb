@@ -7,8 +7,7 @@
 
 <div class="grid">
   <div class="grid__item three-fifths lap-two-thirds palm-one-whole">
-    <p class="lead">We have recently <em>extended</em> the number of fields in the database and made the order of the fields <em>flexible</em>. This lets us include information from (for example) Nonconformist and Catholic registers as well as additional information found in more typical parish registers.</p>
-    <p>Please note that you need to use a spreadsheet in order to take advantage of this flexibility — the new fields and format are <em>not</em> available in WinREG.</p>
+    <p class="lead">If you are using a spreadsheet rather than WinREG, then you will be using what we call Flexible CSV format, which allows you to transcribe a much greater variety of information than you can with WinREG, such as Nonconformist and Catholic registers as well as additional information found in more typical parish registers.</p>
   </div>
 
   <div class="grid__item two-fifths lap-one-third palm-one-whole float--right">
@@ -58,22 +57,21 @@
 
     <h3>Summary of main features</h3>
     <ul>
-      <li>many more fields are now available — information that you had to put in the Notes field previously is likely to have its own field</li>
       <li>you can use as many (or as few) of the fields as you need</li>
       <li>you can have the fields in whatever order works best for your register</li>
       <li>you put the formal names of the fields you use in row 6 of your spreadsheet —  do <em>not</em> delete this row before uploading your CSV file</li>
-      <li>downloads of the three sets of fields as CSV files are available from the relevant Extended fields page — see the <a href="#fieldDetails">Fields in detail</a> menu</li>
+      <li>downloads of the three sets of fields as CSV files are available from the relevant Extended fields page — see the <a href="#fieldDetails">Fields in detail</a> menu at the right</li>
     </ul>
     
     <h3>The record layout</h3>
     <p class="island island--bordered">This description assumes that you are creating your whole file, including the Header rows, in your spreadsheet app.</p>
     <p>FreeREG will know that you are going to use the new flexible and extended format if you put # (the hash or pound symbol) in cell 5A and DEF in cell 5B.</p>
-    <p>This tells the system that the next record (row) is the names of the fields that you have used, <em>in the order</em> in which they appear. These are your column headers. There is really just one rule: you <em>must</em> use the column or field names that the system uses. Variations are currently not allowed. The <strong>flexibility</strong> comes from being able to include <em>only</em> the fields for which your register has data and also that you can put them in <em>any order</em>.</p>
+    <p>This tells the system that the next record (row) is the names of the fields that you have used, <em>in the order</em> in which they appear. These are your column headers. There is really just one rule: you <em>must</em> use the column or field names that the system uses. Variations are not allowed. The <strong>flexibility</strong> comes from being able to include <em>only</em> the fields for which your register has data and also that you can put them in <em>any order</em>.</p>
     
     <p>See the <a href="#fieldDetails">Fields in detail</a> menu for links to full descriptions of all the flexible baptism, marriage and burial fields.</p>
     <hr class="rule" />
 
-    <h2 id="generalGuidance" class="section">General guidance<br /><em class="delta">for the flexible CSV format</em> </h2>
+    <h2 id="generalGuidance" class="section">General guidance<br /></h2>
 
     <h3>Type what you see</h3>
     <p class="push-half--bottom">The first rule of transcribing is to type what you see (T.W.Y.S.). Even if it looks wrong or seems like an abbreviation. The only exceptions are for various practical reasons:</p>
@@ -151,7 +149,7 @@
       <li>if the date of death is missing, enter a * for the death date</li>
       <li>if the date of burial is missing, leave it blank</li>
     </ul>
-    <p><strong>As you are using a spreadsheet</strong>, be sure to set the cell format for any date fields (columns) to text rather than date: computers are not good with dates before 1900, and certainly do not understand the split-year convention.</p>
+    <p><strong>As you are using a spreadsheet</strong>, be sure to set the cell format for any date fields (columns) to <em>Text</em> rather than <em>Date</em>: computers are not good with dates before 1900, and certainly do not understand the split-year convention.</p>
 
     <h3 id="names">Names</h3>
     <p>Enter only the actual name: any prefix or suffix, such as Revd or Snr or Laird, belongs in one of the new Title fields — these are available for all the main players in an event.</p>
