@@ -53,6 +53,11 @@ def patch_mongo_config_secrets(path:)
       changes_made = true
     end
 
+    if dev['delete_list'].to_s.strip.empty?
+      dev['delete_list'] = 'log/delete_files'
+      changes_made = true
+    end
+
     dev['member_open'] = true if dev['member_open'].nil?
   end
 
@@ -80,9 +85,9 @@ def patch_mongo_config_secrets(path:)
     # 1. Convert the hash to YAML normally
     yaml_output = config.to_yaml
 
-    # 2. WORKAROUND: Force single quotes on string replacement
-    yaml_output.sub!("website: localhost:3000", "website: 'localhost:3000'")
-    yaml_output.sub!("datafiles: tmp/datafiles", "datafiles: 'tmp/datafiles'")
+    # 2. WORKAROUND: Force single quotes on string replacement - pending
+    # yaml_output.sub!("website: localhost:3000", "website: 'localhost:3000'")
+    # yaml_output.sub!("datafiles: tmp/datafiles", "datafiles: 'tmp/datafiles'")
 
     # 3. Write the modified text to the file
     File.write(path, yaml_output)
