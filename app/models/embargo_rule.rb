@@ -3,6 +3,12 @@ class EmbargoRule
   include Mongoid::Document
   include Mongoid::Timestamps
   require 'record_type'
+
+  # Single source of truth for which roles may view/set/edit embargoes,
+  # shared by EmbargoRulesController and Freereg1CsvEntriesController so
+  # the two stay in sync.
+  PERMITTED_ROLES = ['system_administrator', 'executive_director', 'county_coordinator', 'data_manager', 'country_coordinator'].freeze
+
   field :authority, type: String
   validates :authority, presence: true
   field :period, type: Integer
@@ -20,19 +26,46 @@ class EmbargoRule
   validate :only_one_rule_per_record_type, on: :create
   validate :valid_period
 
+  before_validation :assign_period_type_from_rule
 
   after_create  :add_to_rake_register_embargo_list
   after_update  :add_to_rake_register_embargo_list
   before_destroy :add_to_rake_register_embargo_list
 
   module EmbargoRuleOptions
+    UNTIL_BEGINNING_OF_PREFIX = 'Embargoed until the beginning of'
+    PERIOD_OF_PREFIX = 'Embargoed for the period of'
     ALL_OPTIONS = [
       'Embargoed until the beginning of ', 'Embargoed for the period of '
     ]
   end
 
+  def self.until_beginning_of_year_rule_text?(rule_text)
+    rule_text.to_s.strip.start_with?(EmbargoRuleOptions::UNTIL_BEGINNING_OF_PREFIX)
+  end
+
+  def self.period_length_rule_text?(rule_text)
+    rule_text.to_s.strip.start_with?(EmbargoRuleOptions::PERIOD_OF_PREFIX)
+  end
+
   def add_period_type
-    self.period_type = period <= 125 ? 'period' : 'end'
+    assign_period_type_from_rule
+  end
+
+  def assign_period_type_from_rule
+    return if rule.blank?
+    # Do not overwrite an explicit period_type-only update (e.g. console repair).
+    return unless new_record? || rule_changed? || period_type.blank?
+
+    self.period_type = until_beginning_of_year_rule? ? 'end' : 'period'
+  end
+
+  def until_beginning_of_year_rule?
+    self.class.until_beginning_of_year_rule_text?(rule)
+  end
+
+  def period_length_rule_text?
+    self.class.period_length_rule_text?(rule)
   end
 
   def only_one_rule_per_record_type
@@ -44,9 +77,9 @@ class EmbargoRule
 
   def valid_period
     errors.add(:period, 'Period must entered') if period.blank?
-    errors.add(:period, 'Period must be in the range of between 0 and 125') if period.present? && rule == 'Embargoed for the period of ' && period < 0
-    errors.add(:period, 'Period must be in the range of between 0 and 125') if period.present? && rule == 'Embargoed for the period of ' && period > 125
-    if period.present? && rule == 'Embargoed until the beginning of ' && (period < Date.current.year.to_i || period > Date.current.year.to_i + 25)
+    errors.add(:period, 'Period must be in the range of between 0 and 125') if period.present? && period_length_rule_text? && period < 0
+    errors.add(:period, 'Period must be in the range of between 0 and 125') if period.present? && period_length_rule_text? && period > 125
+    if period.present? && until_beginning_of_year_rule? && (period < Date.current.year.to_i || period > Date.current.year.to_i + 25)
       date_future = Date.current.year.to_i + 25
       errors.add(:period, "A year between #{Date.current.year.to_i} and #{date_future}")
     end
@@ -66,7 +99,7 @@ class EmbargoRule
       return OpenStruct.new(success?: false, error: "The embargo records are being processed")
     else
       logger.warn("FREEREG:EMBARGO_PROCESSING: Starting embargo processing rake task for #{self.register} for record type #{self.record_type}")
-      pid1 = spawn("rake foo:process_embargo_records[\"#{self.id}\",\"#{email}\"]")
+      pid1 = RakeSpawn.run("foo:process_embargo_records[#{self.id},#{email}]")
       return OpenStruct.new(success?: true, message: "The embargo records are being processed. You will recieve an email when completed ")
     end
   end

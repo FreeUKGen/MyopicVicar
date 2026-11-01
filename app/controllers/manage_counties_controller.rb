@@ -53,9 +53,8 @@ class ManageCountiesController < ApplicationController
     get_user_info_from_userid
     userid = @user.userid
     chapman_code = session[:chapman_code]
-    pid1 = Kernel.spawn("bundle exec rake reports:report_on_files_for_each_register_church_place[#{chapman_code},#{userid}] --trace")
+    pid1 = RakeSpawn.run("reports:report_on_files_for_each_register_church_place[#{chapman_code},#{userid}]", '--trace')
 
-    Process.detach pid1
     redirect_back(fallback_location: new_manage_resource_path, notice: 'Request submitted') && return
   end
 
@@ -222,7 +221,7 @@ class ManageCountiesController < ApplicationController
     session.delete(:from_source)
     session[:image_group_filter] = 'completion_submitted'
     @source, @group_ids, @group_id = ImageServerGroup.group_ids_sort_by_place(session[:chapman_code], 'completion_submitted')            # not sort by place, unallocated groups
-    redirect_back(fallback_location: new_manage_resource_path, notice: 'No Allocate Request Image Groups exists') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
+    redirect_to(manage_image_group_manage_county_path, notice: "No image groups found with status of 'Completion Submitted'") && return if @source.blank? || @group_ids.blank? || @group_id.blank?
 
     @county = session[:county]
     # for 'Accept All Groups As Completed'

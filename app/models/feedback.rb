@@ -19,6 +19,7 @@ class Feedback
   field :session_data, type: Hash
   field :screenshot_location, type: String
   field :screenshot, type: String
+  field :screenshots, type: Array, default: Array.new
   field :identifier, type: String
   field :contact_action_sent_to_userid, type: String, default: nil
   field :copies_of_contact_action_sent_to_userids, type: Array, default: Array.new
@@ -27,10 +28,13 @@ class Feedback
   attr_accessor :action
 
   mount_uploader :screenshot, ScreenshotUploader
+  mount_uploaders :screenshots, ScreenshotUploader
 
   validate :title_or_body_exist
 
-  before_create :url_check, :add_identifier, :add_email, :add_screenshot_location
+  before_create :url_check, :add_identifier, :add_email
+
+  after_save :sync_screenshot_location
 
   before_destroy :delete_replies
 
@@ -128,21 +132,59 @@ class Feedback
     self.name = reporter.person_forename unless reporter.nil?
   end
 
+  def attachments_present?
+    attachment_urls.present?
+  end
+
+  def attachment_urls
+    urls = []
+    append_uploader_url(urls, screenshot)
+    if screenshots.present?
+      screenshots.each { |img| append_uploader_url(urls, img) }
+    end
+    urls.compact.uniq
+  end
+
   def attachment_file_paths
-    return [] unless screenshot.present? && screenshot.path.present? && File.file?(screenshot.path)
-    [screenshot.path]
+    paths = []
+    append_uploader_path(paths, screenshot)
+    if screenshots.present?
+      screenshots.each { |img| append_uploader_path(paths, img) }
+    end
+    paths.compact.uniq
   end
 
   def add_link_to_attachment
-    return if self.screenshot_location.blank?
+    return unless attachments_present?
     website = Rails.application.config.website
-    go_to = "#{website}/#{self.screenshot_location}"
-    body = self.body + "\n" + go_to
+    attachment_urls.each do |url|
+      go_to = "#{website}#{url}"
+      self.body = self.body + "\n" + go_to
+    end
     self.update_attribute(:body, body)
   end
 
-  def add_screenshot_location
-    self.screenshot_location = "uploads/feedback/screenshot/#{self.screenshot.model._id.to_s}/#{self.screenshot.filename}" if self.screenshot.filename.present?
+  def sync_screenshot_location
+    return unless previous_changes.key?('screenshot') || previous_changes.key?('screenshots')
+
+    location = computed_screenshot_location
+    return if location.blank? || screenshot_location == location
+
+    set(screenshot_location: location)
+  end
+
+  # Legacy single-path field, kept for backward compatibility; only ever holds
+  # the first attachment. Use attachment_urls/attachments_present? for anything
+  # that needs to account for every uploaded file.
+  def computed_screenshot_location
+    if screenshot&.filename.present?
+      "uploads/feedback/screenshot/#{id}/#{screenshot.filename}"
+    elsif screenshots.present?
+      first = screenshots.first
+      return if first.blank? || first.filename.blank?
+
+      "uploads/feedback/screenshots/#{id}/#{first.filename}"
+    end
   end
 
   def add_sender_to_copies_of_contact_action_sent_to_userids(sender_userid)
@@ -447,6 +489,24 @@ class Feedback
 
 
   private
+
+  def append_uploader_url(urls, uploader)
+    return if uploader.blank?
+
+    path = uploader.path
+    url = uploader.url
+    return if url.blank?
+    return unless path.blank? || File.file?(path)
+
+    urls << url unless urls.include?(url)
+  end
+
+  def append_uploader_path(paths, uploader)
+    return if uploader.blank? || uploader.path.blank?
+    return unless File.file?(uploader.path)
+
+    paths << uploader.path unless paths.include?(uploader.path)
+  end
 
   def permitted_person_role
     ReplyUseridRole::FEEDBACK_REPLY_ROLE.include?(session[:role])

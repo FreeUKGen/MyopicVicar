@@ -17,7 +17,7 @@ task list_transcribers_potentially_misassigned: :environment do
   UseridDetail.where(active: true, person_role: 'transcriber').all.order_by(syndicate: 1, person_surname: 1, person_forename: 1).each do |user|
     if problem_syndicates.include?(user.syndicate) || valid_syndicates.exclude?(user.syndicate)
 
-      csv_file_chapman_codes = SortedSet.new
+      csv_file_chapman_codes = Set.new
       FreecenCsvFile.where(userid_lower_case: user.userid_lower_case).all.order_by(chapman_code: 1).each do |file|
         csv_file_chapman_codes << file.chapman_code
       end
@@ -30,7 +30,7 @@ task list_transcribers_potentially_misassigned: :environment do
         end
       end
 
-      vld_file_chapman_codes = SortedSet.new
+      vld_file_chapman_codes = Set.new
       Freecen1VldFile.where(userid: user.userid).all.order_by(dir_name: 1).each do |file|
         vld_file_chapman_codes << file.dir_name
       end

@@ -207,15 +207,17 @@ class FreeregContentsController < ApplicationController
   end
 
   def unique_church_names
+    # This derived summary can outlive its Church, so check that both still exist.
     @church = ChurchUniqueName.find_by(church_id: params[:id])
-    redirect_back(fallback_location: { action: 'new' }, notice: 'That place does not exist') && return if @church.blank?
+    actual_church = Church.find_by(_id: params[:id])
+    redirect_back(fallback_location: { action: 'new' }, notice: 'That place does not exist') && return if @church.blank? || actual_church.blank?
 
     @unique_forenames = @church.unique_forenames
     @unique_surnames = @church.unique_surnames
     @unique_surnames, @remainders = FreeregContent.letterize(@unique_surnames)
     @unique_forenames, @remainderf = FreeregContent.letterize(@unique_forenames)
     variables_for_church_show
-    @referer = params[:ref].presence || ' '
+    @referer = same_site_url(params[:ref]) || ' '
   end
 
   def unique_register_names
@@ -228,7 +230,7 @@ class FreeregContentsController < ApplicationController
     @unique_surnames, @remainders = FreeregContent.letterize(@unique_surnames)
     @unique_forenames, @remainderf = FreeregContent.letterize(@unique_forenames)
     variables_for_register_show
-    @referer = params[:ref].presence || ' '
+    @referer = same_site_url(params[:ref]) || ' '
   end
 
   def unique_place_names
@@ -241,7 +243,7 @@ class FreeregContentsController < ApplicationController
     @unique_forenames, @remainderf = FreeregContent.letterize(@unique_forenames)
 
     variables_for_place_show
-    @referer = params[:ref].presence || ' '
+    @referer = same_site_url(params[:ref]) || ' '
   end
 
   def variables_for_church_show

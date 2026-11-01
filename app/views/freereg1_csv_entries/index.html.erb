@@ -19,15 +19,18 @@
 <%= render 'flash_notice' %>
 <div class="grid">
   <section class="island  ">
-    <% case %>
-    <% when @freereg1_csv_entries.blank? %>
-    <%= render 'freereg1_csv_entries/blank_index' %>
-    <% when @freereg1_csv_file.record_type == "ba" %>
+    <% case @freereg1_csv_file.record_type %>
+    <% when "ba" %>
     <%= render 'freereg1_csv_entries/baptism_index' %>
-    <% when @freereg1_csv_file.record_type == "bu" %>
+    <% when "bu" %>
     <%= render 'freereg1_csv_entries/burial_index' %>
-    <% when @freereg1_csv_file.record_type == "ma" %>
+    <% when "ma" %>
     <%= render 'freereg1_csv_entries/marriage_index' %>
+    <% else %>
+    <%= render 'freereg1_csv_entries/blank_index' %>
+  <% end %>
+  <% if @freereg1_csv_entries.blank? %>
+    <p style="text-align: center">There are no entries to display.</p>
   <% end %>
 </section>
 </div>

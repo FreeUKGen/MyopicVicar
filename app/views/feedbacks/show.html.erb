@@ -47,15 +47,19 @@
         </tr>
         <tr>
           <td>Problem page url:</td>
-          <td class="weight--semibold">  <%= link_to @feedback.problem_page_url, @feedback.problem_page_url %></td>
+          <td class="weight--semibold">  <%= link_to_if same_site_url(@feedback.problem_page_url), @feedback.problem_page_url, @feedback.problem_page_url %></td>
         </tr>
         <tr>
           <td>Previous page url:</td>
-          <td class="weight--semibold"> <%= link_to @feedback.previous_page_url, @feedback.previous_page_url %></td>
+          <td class="weight--semibold"> <%= link_to_if same_site_url(@feedback.previous_page_url), @feedback.previous_page_url, @feedback.previous_page_url %></td>
         </tr>
       </table>
-      <% if @feedback.screenshot_url %>
-        <%= image_tag @feedback.screenshot_url %>
+      <% if @feedback.attachments_present? %>
+        <% @feedback.attachment_urls.each do |url| %>
+          <div class="push--bottom">
+            <div class="push--top"><%= image_tag url, alt: 'Feedback attachment' %></div>
+          </div>
+        <% end %>
       <% end %>
     </div>
   </section>

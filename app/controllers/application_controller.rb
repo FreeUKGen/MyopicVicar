@@ -84,6 +84,17 @@ class ApplicationController < ActionController::Base
    #removeing this code since we are not using Refinery anymore
   end
 
+  def permitted_model_params(model, key = model.model_name.param_key)
+    allowed = model.fields.keys - %w[_id _type]
+    params.require(key).permit!.to_h.slice(*allowed)
+  end
+
+  def unknown_request_parameter(exception)
+    logger.warn("#{appname_upcase}:We received an unexpected parameter #{exception.message} #{params}")
+    flash[:notice] = 'Your request contained an unexpected value and could not be processed. Please try again.'
+    redirect_to new_search_query_path
+  end
+
   private
 
   def strip_string_params
@@ -182,6 +193,21 @@ class ApplicationController < ActionController::Base
     user
   end
 
+  # Returns url only if it points back to this site, so links and redirects built from params or the
+  # Referer header cannot send people to another site or run javascript: URLs
+  def same_site_url(url)
+    return if url.blank?
+
+    uri = URI.parse(url.to_s.strip)
+    return url if uri.scheme.nil? && uri.host.nil? && uri.path.to_s.start_with?('/')
+    return url if %w[http https].include?(uri.scheme) && uri.host == request.host
+
+    nil
+  rescue URI::InvalidURIError
+    nil
+  end
+  helper_method :same_site_url
+
   def get_user_roles
     user = get_user
     all_roles = user.secondary_role
@@ -200,7 +226,9 @@ class ApplicationController < ActionController::Base
       @user_userid = @user.userid
       @first_name = @user.person_forename
       @manager = manager?(@user)
-      @roles = UseridRole::OPTIONS.fetch(session[:role])
+      # role is normally set on the manage resources page; fall back to the user's own role if the session lost it
+      session[:role] = @user.person_role if session[:role].blank?
+      @roles = UseridRole::OPTIONS.fetch(session[:role], [])
       @favorite_actions = @user.favorite_actions_sorted
     end
   end
@@ -210,7 +238,8 @@ class ApplicationController < ActionController::Base
     @user = get_user
     @first_name = @user.person_forename if @user.present?
     @userid = @user.id
-    @roles = UseridRole::OPTIONS.fetch(session[:role])
+    session[:role] = @user.person_role if session[:role].blank?
+    @roles = UseridRole::OPTIONS.fetch(session[:role], [])
   end
 
   def get_userids_and_transcribers

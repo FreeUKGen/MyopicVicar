@@ -50,12 +50,12 @@
           <tr>
             <td class="t10"><%= group.group_name %></td>
             <td class="t8"><%= group.number_of_images %>&nbsp;</td>
-            <% if !group[:start_date].nil? && !group.source.start_date.nil? && group[:start_date] < group.source.start_date %>
+            <% if !group[:start_date].nil? && group.source.present? && !group.source.start_date.nil? && group[:start_date] < group.source.start_date %>
               <td class="t8" style="color:red"><%= group[:start_date] %>&nbsp;</td>
             <% else %>
               <td class="t8"><%= group[:start_date] %>&nbsp;</td>
             <% end %>
-            <% if !group[:end_date].nil? && !group.source.end_date.nil? && group[:end_date] > group.source.end_date %>
+            <% if !group[:end_date].nil? && group.source.present? && !group.source.end_date.nil? && group[:end_date] > group.source.end_date %>
               <td class="t8" style="color:red"><%= group[:end_date] %>&nbsp;</td>
             <% else %>
               <td class="t8"><%= group[:end_date] %>&nbsp;</td>

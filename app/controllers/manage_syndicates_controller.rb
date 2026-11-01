@@ -171,7 +171,7 @@ class ManageSyndicatesController < ApplicationController
     @source, @group_ids, @group_id = ImageServerGroup.group_ids_by_syndicate(session[:syndicate], 'r')
     @completed_groups = []
     @group_ids.each { |x| @completed_groups << x[0] } if @group_ids.present?
-    redirect_back(fallback_location: manage_image_group_manage_syndicate_path(session[:syndicate]), notice: 'No Fully Reviewed Image Groups Under This Syndicate') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
+    redirect_to(manage_image_group_manage_syndicate_path, notice: 'No Fully Reviewed Image Groups Under This Syndicate') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
 
     # added for 'email CC of all image groups' button under 'List Fully Reviewed Groups'
     session.delete(:from_source)
@@ -187,7 +187,7 @@ class ManageSyndicatesController < ApplicationController
     # added for 'email CC of all image groups' button under 'List Fully Transcribed Groups'
     @completed_groups = []
     @group_ids.each { |x| @completed_groups << x[0] } if @group_ids.present?
-    redirect_back(fallback_location: manage_image_group_manage_syndicate_path(session[:syndicate]), notice: 'No Fully Transcribed Image Groups Under This Syndicate') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
+    redirect_to(manage_image_group_manage_syndicate_path, notice: 'No Fully Transcribed Image Groups Under This Syndicate') && return if @source.blank? || @group_ids.blank? || @group_id.blank?
 
     session.delete(:from_source)
     session[:image_group_filter] = 'fully_transcribed'

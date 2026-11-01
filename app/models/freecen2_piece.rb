@@ -370,7 +370,7 @@ class Freecen2Piece
     def write_csv_listing_file(file_location, pieces, chapman_code)
       column_headers = %w(piece_number piece_name status online_vld_files incorporated_csv_fles unincorporated_csv_files)
 
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
         csv << column_headers
         pieces.each do |rec|
           line = []
@@ -467,7 +467,7 @@ class Freecen2Piece
     def write_csv_file(file_location, chapman_code, year, pieces)
       header = year == 'all' ? Freecen2Piece.all_year_header(chapman_code) : Freecen2Piece.year_header(chapman_code, year)
 
-      CSV.open(file_location, 'wb', { row_sep: "\r\n" }) do |csv|
+      CSV.open(file_location, "wb", row_sep: "\r\n") do |csv|
         csv << header
         record_number = 0
         pieces.each do |rec|

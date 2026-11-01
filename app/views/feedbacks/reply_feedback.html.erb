@@ -32,10 +32,10 @@
                 <%= @respond_to_feedback.identifier %>
               </td>
               <td>
-                <%= link_to(@respond_to_feedback.problem_page_url, @respond_to_feedback.problem_page_url,target: "_blank", style:'color:black') %>
+                <%= link_to_if(same_site_url(@respond_to_feedback.problem_page_url), @respond_to_feedback.problem_page_url, @respond_to_feedback.problem_page_url,target: "_blank", style:'color:black') %>
               </td>
               <td>
-                <%= link_to(@respond_to_feedback.previous_page_url,@respond_to_feedback.previous_page_url,target: "_blank", style:'color:black') %>
+                <%= link_to_if(same_site_url(@respond_to_feedback.previous_page_url), @respond_to_feedback.previous_page_url, @respond_to_feedback.previous_page_url,target: "_blank", style:'color:black') %>
               </td>
             </tr>
           </table>

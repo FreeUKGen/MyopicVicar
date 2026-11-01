@@ -33,7 +33,7 @@ class UseridDetailsController < ApplicationController
     load(params[:id])
     redirect_back(fallback_location: userid_details_path, notice: 'The userid was not found') && return if @userid.blank?
 
-    refinery_user = User.where(username: @userid.userid_lower_case ).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(@userid.userid)}\z/i).first
     if refinery_user.blank?
       flash[:notice] = 'There was an issue with your request please consult your coordinator.' if session[:my_own]
       flash[:notice] = 'There was an issue with the userid please consult with system administration.' if !session[:my_own]
@@ -59,14 +59,29 @@ class UseridDetailsController < ApplicationController
   end
 
   def create
+    head(:not_found) && return unless user_signed_in? || REGISTRATION_COMMITS.include?(params[:commit])
+
     if spam_check
-      @userid = UseridDetail.new(userid_details_params)
+      @userid = UseridDetail.new(create_params)
       @userid.add_fields(params[:commit], session[:syndicate])
-      @userid.save
-      if @userid.save
-        refinery_user = User.where(username: @userid.userid_lower_case).first
-        refinery_user.send_reset_password_instructions
-        flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+      saved = begin
+        @userid.save_with_login_user
+      rescue Mongo::Error => e
+        # e.g. a primary election or dropped connection during the registration transaction:
+        # nothing was saved, so show the form again rather than an error page
+        logger.warn("FREEREG:USERID: registration transaction failed for #{@userid.userid}: #{e.class}: #{e.message}")
+        @userid.errors.add(:base, 'Your registration could not be completed, please try again')
+        false
+      end
+      if saved
+        refinery_user = User.where(username: /\A#{::Regexp.escape(@userid.userid)}\z/i).first
+        if refinery_user.present?
+          refinery_user.send_reset_password_instructions
+          flash[:notice] = 'The initial registration was successful; an email has been sent to you to complete the process.'
+        else
+          logger.warn("FREEREG:USERID: The refinery entry for #{@userid.userid} does not exist after registration. Run the Fix Refinery User Table utility.")
+          flash[:notice] = 'The initial registration was successful, but there was a problem sending your confirmation email. Please contact your coordinator.'
+        end
         @userid.write_userid_file
         next_place_to_go_successful_create
       else
@@ -75,7 +90,7 @@ class UseridDetailsController < ApplicationController
         next_place_to_go_unsuccessful_create
       end
     else
-      render status: :not_found
+      head :not_found
     end
   end
 
@@ -596,7 +611,7 @@ class UseridDetailsController < ApplicationController
     end
     email_valid_change_message
     params[:userid_detail][:email_address_last_confirmned] = ['1', 'true'].include?(params[:userid_detail][:email_address_valid]) ? Time.now : ''
-    @userid.update_attributes(userid_details_params.except(:userid))
+    @userid.update_attributes(update_params.except(:userid))
     @userid.write_userid_file
     @userid.save_to_refinery
     if @userid.errors.any?
@@ -631,6 +646,30 @@ class UseridDetailsController < ApplicationController
     params.require(:userid_detail).permit!
   end
 
+  REGISTRATION_FIELDS = %i[userid person_forename person_surname email_address address telephone_number syndicate skill_notes
+                           transcription_agreement new_transcription_agreement code_of_conduct volunteer_induction_handbook volunteer_policy].freeze
+  REGISTRATION_COMMITS = ['Register Researcher', 'Register as Transcriber', 'Technical Registration'].freeze
+  ROLE_ASSIGNERS = %w[system_administrator volunteer_coordinator].freeze
+
+  # create is open to the public for self-registration, so only accept the registration form's fields there;
+  # add_fields sets the role from the commit. Signed-in users other than role assigners can only add transcribers or trainees.
+  def create_params
+    return params.require(:userid_detail).permit(REGISTRATION_FIELDS) unless user_signed_in?
+    return userid_details_params if ROLE_ASSIGNERS.include?(session[:role])
+
+    permitted = userid_details_params.except(:secondary_role)
+    permitted.delete(:person_role) unless %w[transcriber trainee].include?(permitted[:person_role])
+    permitted
+  end
+
+  # Users editing their own profile cannot change their own roles
+  def update_params
+    permitted = userid_details_params
+    return permitted unless get_user&.id == @userid.id && session[:role] != 'system_administrator'
+
+    permitted.except(:person_role, :secondary_role)
+  end
+
   def spam_check
     user = get_user
     return true if user.present?
@@ -645,7 +684,7 @@ class UseridDetailsController < ApplicationController
 
     if honeypot_error || diff <= 5
       error_file = 'log/spam_check_error_messages.log'
-      f = File.exists?(error_file) ? File.open(error_file, 'a+') : File.new(error_file, 'w')
+      f = File.exist?(error_file) ? File.open(error_file, 'a+') : File.new(error_file, 'w')
       error_text = " ===========SPAM caught at " + Time.now.to_s
       error_text = error_text + ' honeypot error detected'  if honeypot_error
       error_text = error_text + ' submission time is ' + diff.to_s + ' seconds'  if diff <= 5

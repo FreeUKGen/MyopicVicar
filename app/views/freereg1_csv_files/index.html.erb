@@ -6,21 +6,21 @@
   <div class="grid__item ">
     <section class="island ">
       <div class="scrollable " >
-        <table class=' table--bordered my-width table--data table--striped just--left'>
+        <table class='table--bordered my-width table--data table--striped just--left js-sortable-table'>
           <thead >
             <tr>
-              <th class='sticky-header'>File</th>
-              <th class='sticky-header'>Cty</th>
-              <th class='sticky-header'>Place</th>
-              <th class='sticky-header'>Church</th>
-              <th class='sticky-header'>Reg</th>
-              <th class='sticky-header'>Entries</th>
-              <th class='sticky-header'>Start year</th>
-              <th class='sticky-header'>End year</th>
+              <th class='sticky-header' data-sort-type='text'>File</th>
+              <th class='sticky-header' data-sort-type='text'>Cty</th>
+              <th class='sticky-header' data-sort-type='text'>Place</th>
+              <th class='sticky-header' data-sort-type='text'>Church</th>
+              <th class='sticky-header' data-sort-type='text'>Reg</th>
+              <th class='sticky-header' data-sort-type='number'>Entries</th>
+              <th class='sticky-header' data-sort-type='number'>Start year</th>
+              <th class='sticky-header' data-sort-type='number'>End year</th>
               <% unless session[:my_own]%>
-                <th class='sticky-header'>User ID</th>
+                <th class='sticky-header' data-sort-type='text'>User ID</th>
               <% end%>
-              <th class='sticky-header' >Last Modified</th>
+              <th class='sticky-header' data-sort-type='date'>Last Modified</th>
               <th colspan = "2" class='sticky-header'>Locked<br>
                 TR SC</th>
               <th colspan="7" class='sticky-header'>Action <a href="#" class="left_tooltip" onclick="return false;"><%= image_tag 'png/info.png', alt: 'Information', height: '16' %><span>SH: Show header; ED: Edit header; DL: Download batch; ER: Errors in batch; L: Lock batch; U: Unlock batch; DE: Delete batch;RL:Replace batch </span></a></th>

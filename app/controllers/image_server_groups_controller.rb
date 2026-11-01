@@ -126,7 +126,8 @@ class ImageServerGroupsController < ApplicationController
     session.delete(:upload_return)
     session[:source_id] = params[:id]
     if session[:role] == 'image_server_coord'
-      @image_server_group = ImageServerGroup.all
+      # load every group's source in one query; the list compares each group's dates with its source's
+      @image_server_group = ImageServerGroup.all.includes(:source)
     else
       display_info
       @image_server_group = ImageServerGroup.image_server_groups_by_user_role(session[:manage_user_origin], session[:source_id], session[:syndicate])
@@ -241,6 +242,7 @@ class ImageServerGroupsController < ApplicationController
 
         ImageServerGroup.email_cc_completion(x, @place.chapman_code, @user)
       end
+      redirect_to(manage_image_group_manage_syndicate_path, :notice => 'Email sent to County Coordinator') && return
     end
 
     redirect_back(fallback_location: new_manage_resource_path, :notice => 'Email sent to County Coordinator')
@@ -270,7 +272,9 @@ class ImageServerGroupsController < ApplicationController
       user = get_user
       flash[:notice] = ImageServerGroup.update_put_request(params, user)
 
-      if params[:type] == 'complete'
+      if params[:type] == 'complete' && params[:completed_groups].present?
+        redirect_to manage_image_group_manage_county_path
+      elsif params[:type] == 'complete'
         redirect_to manage_completion_submitted_image_group_manage_county_path(session[:chapman_code])
       else
         redirect_to index_image_server_group_path(image_server_group.source)

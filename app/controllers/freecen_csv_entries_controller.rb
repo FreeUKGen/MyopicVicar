@@ -18,8 +18,6 @@ class FreecenCsvEntriesController < ApplicationController
 
   skip_before_action :require_login, only: [:show]
 
-  ActionController::Parameters.permit_all_parameters = true
-
   def calculate_software_version
     @server = SoftwareVersion.extract_server(Socket.gethostname)
     @application = appname
@@ -308,7 +306,7 @@ class FreecenCsvEntriesController < ApplicationController
       redirect_back(fallback_location: edit_freecen_csv_entry_path(@freecen_csv_entry), notice: "The update of the entry failed #{@freecen_csv_entry.errors.full_messages}.") && return
     else
       params[:freecen_csv_entry][:warning_messages] = '' if params[:freecen_csv_entry][:record_valid] == 'true'
-      @freecen_csv_entry.update_attributes(params[:freecen_csv_entry])
+      @freecen_csv_entry.update_attributes(params.require(:freecen_csv_entry).permit!)
       if params[:commit] == 'Override warnings'
         @freecen_csv_entry.update_attributes(warning_messages: '', record_valid: 'true')
         @freecen_csv_entry.remove_flags if @freecen_csv_entry.flag

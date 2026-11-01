@@ -170,6 +170,20 @@ class UseridDetail
     end
 
 
+
+    def internal_contact_recipient_options
+      roles = FreeregOptionsConstants::COMMUNICATION_ROLES
+      users = UseridDetail.active(true).email_address_valid.where(:email_address.nin => [nil, '']).any_of(
+        { :person_role.in => roles },
+        { :secondary_role.in => roles }
+      ).order_by(person_surname: 1, person_forename: 1, userid_lower_case: 1)
+
+      users.map do |user|
+        role_label = ([user.person_role] + Array(user.secondary_role)).compact.uniq.select { |role| roles.include?(role) }.join(', ')
+        ["#{user.person_forename} #{user.person_surname} (#{user.userid}) — #{role_label}", user.userid]
+      end
+    end
+
     def uploaded_freecen_file(users, transcribers)
       uploaded = []
       FreecenCsvFile.where(:userid.exists => true).each do |file|
@@ -240,17 +254,35 @@ class UseridDetail
 
   # In app/models/userid_detail.rb, add these methods:
   def add_favorite_action(action)
-    return false if self.favorite_actions.length >= 5
-    return false if self.favorite_actions.include?(action)
-    
-    self.favorite_actions << action
-    self.save
+    result = UseridDetail.collection.update_one(
+      {
+        _id: self.id,
+        '$expr' =>  { '$lt' => [{'$size' => '$favorite_actions'}, 5]}
+      },
+      {
+        '$addToSet' =>  {favorite_actions: action }
+      }
+    )
+
+    return false if result.matched_count == 0
+    return false if result.matched_count == 1 && result. modified_count == 0
+    self.reload
     true
   end
 
   def remove_favorite_action(action)
-    self.favorite_actions.delete(action)
-    self.save
+    result = UseridDetail.collection.update_one(
+     {
+      _id: self.id
+     },
+     {
+      '$pull' => { favorite_actions: action}
+     }
+    )
+    return false if result.matched_count == 0
+    return false if result.matched_count == 1 && result. modified_count == 0
+    self.reload
+    true
   end
 
   def favorite_actions_sorted
@@ -463,17 +495,21 @@ class UseridDetail
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
     details_file = File.join(details_dir,".uDetails")
     newdir = File.join(details_dir,'.attic')
-    Dir.mkdir(newdir) unless Dir.exists?(newdir)
+    Dir.mkdir(newdir) unless Dir.exist?(newdir)
     renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
     File.rename(details_file,renamed_file)
     FileUtils.mv(renamed_file,newdir)
   end
 
   def userid_and_email_address_does_not_exist
-    errors.add(:userid, "Userid Already exists") if UseridDetail.where(:userid => self[:userid]).exists?
-    errors.add(:userid, "Refinery User Already exists") if User.where(:username => self[:userid]).exists?
-    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(:email_address => self[:email_address]).exists?
-    errors.add(:email_address, "Refinery email already exists") if User.where(:email => self[:email_address]).exists?
+    errors.add(:userid, "Userid Already exists") if UseridDetail.where(userid: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
+    errors.add(:userid, "Refinery User Already exists") if User.where(username: /\A#{::Regexp.escape(self[:userid])}\z/i).exists?
+    return if self[:email_address].blank?
+
+    # Ignore case, as User's own uniqueness check does; otherwise the UseridDetail saves and its User then fails
+    email = /\A#{::Regexp.escape(self[:email_address])}\z/i
+    errors.add(:email_address, "Userid email already exists") if UseridDetail.where(email_address: email).exists?
+    errors.add(:email_address, "Refinery email already exists") if User.where(email: email).exists?
   end
 
   #def userid_and_email_address_does_not_exist
@@ -531,7 +567,7 @@ class UseridDetail
   end
 
   def check_exists_in_refinery
-    refinery_user = User.where(:username => self.userid).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     if refinery_user.nil?
       return[false,"There is no refinery entry"]
     else
@@ -548,7 +584,7 @@ class UseridDetail
   end
 
   def delete_refinery_user_and_userid_folder
-    refinery_user = User.where(:username => self.userid).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     refinery_user.destroy unless refinery_user.nil?
     details_dir = File.join(Rails.application.config.datafiles,self.userid)
     return if MyopicVicar::Application.config.template_set == 'freecen'
@@ -561,11 +597,11 @@ class UseridDetail
     new_email = self[:email_address].to_s
     return if new_email.blank?
 
-    if UseridDetail.where(email_address: new_email, :id.ne => id).exists?
+    if UseridDetail.where(email_address: /\A#{::Regexp.escape(new_email)}\z/i, :id.ne => id).exists?
       errors.add(:email_address, "Userid email already exists on change")
     end
 
-    refinery_user = User.where(username: self.userid_lower_case).first
+    refinery_user = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     other = User.where(email: /\A#{::Regexp.escape(new_email)}\z/i).first
     if other.present? && (refinery_user.nil? || other.id != refinery_user.id)
       errors.add(:email_address, "Refinery email already exists on change")
@@ -631,7 +667,7 @@ class UseridDetail
     details_dir = File.join(Rails.application.config.datafiles,user.userid)
     details_file = File.join(details_dir,".uDetails")
     newdir = File.join(details_dir,'.attic')
-    Dir.mkdir(newdir) unless Dir.exists?(newdir)
+    Dir.mkdir(newdir) unless Dir.exist?(newdir)
     renamed_file = (details_file + "." + (Time.now.to_i).to_s).to_s
     File.rename(details_file,renamed_file)
     FileUtils.mv(renamed_file,newdir)
@@ -639,7 +675,7 @@ class UseridDetail
 
   def save_to_refinery
     #avoid looping on password changes
-    u = User.where(:username => self.userid).first
+    u = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     if u.nil?
       u = User.new
     end
@@ -655,11 +691,77 @@ class UseridDetail
     #u.add_role('Refinery')
     #u.add_role('Superuser') if (self.active && self.person_role == 'technical') || self.person_role =='system_administrator'
     #u.add_role('CountyPages') if (self.active &&  self.person_role =='county_coordinator')
-    u.save
+    if u.save
+      @login_user_errors = nil
+    else
+      # kept for save_with_login_user, which undoes the registration when the User could not be saved
+      @login_user_errors = u.errors.full_messages
+      Rails.logger.warn("FREEREG:USERID: save_to_refinery failed for #{self.userid}: #{@login_user_errors.join(', ')}")
+    end
+  end
+
+  # Saves a new userid and, through the save_to_refinery callback, the User it logs in with.
+  # Both are written in one transaction, so a User that cannot be saved also undoes the userid,
+  # rather than leaving a registration that can never log in. Without a replica set (e.g. a
+  # standalone mongod, as on beta) there are no transactions, so the userid is saved and then
+  # deleted again if its User could not be saved.
+  def save_with_login_user
+    @login_user_errors = nil
+    return save_then_undo_without_login_user unless UseridDetail.transactions_supported?
+
+    UseridDetail.with_session do |session|
+      # reads inside a transaction must use the primary
+      session.start_transaction(read: { mode: :primary })
+      begin
+        saved = save && @login_user_errors.blank?
+      rescue StandardError
+        session.abort_transaction if session.in_transaction?
+        self.new_record = true
+        raise
+      end
+
+      unless saved
+        session.abort_transaction
+        if @login_user_errors.present?
+          # the insert was rolled back, so let the form be submitted again as a new record
+          self.new_record = true
+          errors.add(:base, "Your login could not be created: #{@login_user_errors.join(', ')}")
+        end
+        return false
+      end
+
+      begin
+        session.commit_transaction
+      rescue Mongo::Error
+        # not committed (or not known to be), so let the form be submitted again as a new record
+        self.new_record = true
+        raise
+      end
+      true
+    end
+  end
+
+  # Without a transaction: when the User could not be saved, remove the userid that was just
+  # inserted. A plain delete_all, as destroy would run the callback that removes the userid
+  # folder, and delete would freeze this record, which the form is shown again with.
+  def save_then_undo_without_login_user
+    return false unless save
+    return true if @login_user_errors.blank?
+
+    UseridDetail.where(_id: id).delete_all
+    self.new_record = true
+    errors.add(:base, "Your login could not be created: #{@login_user_errors.join(', ')}")
+    false
+  end
+
+  # multi-document transactions need a replica set or a sharded cluster
+  def self.transactions_supported?
+    topology = collection.client.cluster.topology
+    topology.replica_set? || topology.sharded?
   end
 
   def update_refinery
-    u = User.where(:username => self.userid).first
+    u = User.where(username: /\A#{::Regexp.escape(self.userid)}\z/i).first
     unless u.nil?
       u.email = self.email_address
       u.userid_detail_id = self.id.to_s
