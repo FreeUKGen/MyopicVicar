@@ -2,42 +2,42 @@ require 'date'
 
 module FreeregValidations
 
-  VALID_UCF = /[\}\{\?\*\_\]\[\,]/
-  VALID_NAME =/[\p{L}\'\"\ \.\;\:]/
+  VALID_UCF = /[}{?*_\]\[,]/
+  VALID_NAME =/[\p{L}'"\ .;:]/
   VALID_NUMERIC  = /[\p{N}]/
   VALID_TEXT = /[\p{C}\p{P}p{N}\p{S}]/
   VALID_CREDIT = /@+/
-  VALID_AGE_WORDS = ["infant", "child", "minor", "of age","full age","of full age","above", "over", "+"]
+  VALID_AGE_WORDS = ['infant', 'child', 'minor', 'of age','full age','of full age','above', 'over', '+']
   VALID_AGE_MAXIMUM = {'d' => 100, 'w' => 100 , 'm' => 100 , 'y' => 120 , 'h' => 100, '?' => 100, 'years' => 120, 'months' => 100, 'weeks' => 100, 'days' => 100, 'hours' => 100}
   VALID_AGE_TYPE1 = /\A\d{1,3}\z/
-  VALID_AGE_TYPE2 = /^(\d{1,3})([hdwmy\*\[\]\-\_\?])/
+  VALID_AGE_TYPE2 = /^(\d{1,3})([hdwmy*\[\]\-_?])/
   VALID_AGE_TYPE2A = /^(\d{1,3})(years)/
   VALID_AGE_TYPE2B = /^(\d{1,3})(months)/
   VALID_AGE_TYPE2C = /^(\d{1,3})(days)/
   VALID_AGE_TYPE2D = /^(\d{1,3})(weeks)/
   VALID_AGE_TYPE2E = /^(\d{1,3})(hours)/
-  VALID_AGE_TYPE3 =  /^(\d{1,3})([hdwmy\*\[\]\-\_\?])(\d{1,2})([hdwmy\*\[\]\-\_\?])/
+  VALID_AGE_TYPE3 =  /^(\d{1,3})([hdwmy*\[\]\-_?])(\d{1,2})([hdwmy*\[\]\-_?])/
   VALID_AGE_TYPE4 = /\A [[:xdigit:]] \z/
   #\A\d{1,2}[\s+\/][A-Za-z\d]{0,3}[\s+\/]\d{2,4}\/?\d{0,2}?\z checks 01 mmm 1567/8
   #\A[\d{1,2}\*\-\?][\s+\/][A-Za-z\d\*\-\?]{0,3}[\s+\/][\d\*\-\?]{0,4}\/?[\d\*\-\?]{0,2}?\z
-  VALID_DATE = /\A\d{1,2}[\s+\/\-][A-Za-z\d]{0,3}[\s+\/\-]\d{2,4}\z/ #modern date no UCF or wildcard
+  VALID_DATE = /\A\d{1,2}[\s+\/-][A-Za-z\d]{0,3}[\s+\/-]\d{2,4}\z/ #modern date no UCF or wildcard
   VALID_DAY = /\A[\d_]{1,2}\z/
   VALID_MONTH = %w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec *].freeze
   VALID_NUMERIC_MONTH = /\A\d{1,2}\z/
   VALID_YEAR = /\A\d{4}\z/
-  VALID_YEAR_PATTERNS = [/\A\d{3}[\*\_]\z/, /\A\d{4}\?\z/, /\A\d{2}__\z/, /\A\d{2}\*\z/]
+  VALID_YEAR_PATTERNS = [/\A\d{3}[*_]\z/, /\A\d{4}\?\z/, /\A\d{2}__\z/, /\A\d{2}\*\z/]
   DATE_SPLITS = {
-    " " => /\s/,
-    "-" => /\-/,
-  "/" => /\\/}
-  WILD_CHARACTER = /[\*\[\]\-\_\?]/
+    ' ' => /\s/,
+    '-' => /-/,
+  '/' => /\\/}
+  WILD_CHARACTER = /[*\[\]\-_?]/
   YEAR_MAX = Date.today.year
   YEAR_MIN = 1300
-  VALID_MALE_SEX = ["M","M." ,"SON","MALE","MM","SON OF"]
-  UNCERTAIN_MALE_SEX = ["M?","SON?","[M]" ,"MF"]
-  UNCERTAIN_FEMALE_SEX = ["F?", "DAU?"]
-  UNCERTAIN_SEX = ["?", "-", "*","_","??",""," "]
-  VALID_FEMALE_SEX = ["F","FF","FFF","FM","F.","FEMALE","DAUGHTER","WIFE","DAUGHTER OF","DAU", "DAU OF"]
+  VALID_MALE_SEX = ['M','M.' ,'SON','MALE','MM','SON OF']
+  UNCERTAIN_MALE_SEX = ['M?','SON?','[M]' ,'MF']
+  UNCERTAIN_FEMALE_SEX = ['F?', 'DAU?']
+  UNCERTAIN_SEX = ['?', '-', '*','_','??','',' ']
+  VALID_FEMALE_SEX = ['F','FF','FFF','FM','F.','FEMALE','DAUGHTER','WIFE','DAUGHTER OF','DAU', 'DAU OF']
   VALID_MARRIAGE_CONDITIONS = {
     'Singleman' => 'Single Man',
     'Singlaman' => 'Single Man',
@@ -88,7 +88,7 @@ module FreeregValidations
     'A Minor' => 'Minor',
     '*' => '*',
     '?' => '*',
-    'Divorcee' => "Divorcee",
+    'Divorcee' => 'Divorcee',
   'Juvenis' => 'Minor'}
 
   def FreeregValidations.cleantext(field)
@@ -143,7 +143,7 @@ module FreeregValidations
     case
 
     when field =~ VALID_AGE_TYPE1
-      return true unless field.to_i > VALID_AGE_MAXIMUM["y"]
+      return true unless field.to_i > VALID_AGE_MAXIMUM['y']
       return false
 
       #permit the n(hdwmy)
@@ -271,7 +271,7 @@ module FreeregValidations
       end
       return true
     end
-    if (characters.length >= 6 && characters.length <= 9) && characters[4] == "/"
+    if (characters.length >= 6 && characters.length <= 9) && characters[4] == '/'
       #deal with the split year
       year = characters
       last = 2
@@ -308,7 +308,7 @@ module FreeregValidations
       year = nil
       return
     else
-      a = field.split(" ")
+      a = field.split(' ')
       case
       when a.length == 3
         year = a[2]
@@ -345,7 +345,7 @@ module FreeregValidations
   end
 
   def FreeregValidations.valid_place?(field,chapman)
-    field = field.gsub(/-/, " ").gsub(/\./, "").gsub(/\'/, "").downcase unless field.blank?
+    field = field.gsub(/-/, ' ').gsub(/\./, '').gsub(/'/, '').downcase unless field.blank?
     place = Place.chapman_code(chapman).modified_place_name(field).not_disabled.first
     return false unless place.present?
     return true
@@ -433,7 +433,7 @@ module FreeregValidations
     content = value[(index + 1)...closing_index]
     return nil unless content.length >= 2 &&
                       content.match?(/\A[\p{L}\p{P}\p{S}_]+\z/) &&
-                      !content.match?(/[\[\]\{\}\(\)\*\?]/)
+                      !content.match?(/[\[\]{}()*?]/)
 
     closing_index
   end
@@ -460,14 +460,14 @@ module FreeregValidations
     previous_character = value[index - 1] if index.positive?
     next_character = value[index + 1]
 
-    !["_", "*"].include?(previous_character) && !["_", "*"].include?(next_character)
+    !['_', '*'].include?(previous_character) && !['_', '*'].include?(next_character)
   end
 
   def FreeregValidations.valid_ucf_underscore?(value, index)
     previous_character = value[index - 1] if index.positive?
     next_character = value[index + 1]
 
-    previous_character != "*" && next_character != "*"
+    previous_character != '*' && next_character != '*'
   end
 
   def FreeregValidations.valid_ucf_question_mark?(value, index)
