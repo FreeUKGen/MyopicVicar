@@ -17,10 +17,10 @@ google.com, pub-5884294479391638, RESELLER, f08c47fec0942fa0
 
 # Pubmatic
 
-pubmatic.com, 156230, RESELLER, 5d62403b186f2ace
+pubmatic.com, 156230, DIRECT, 5d62403b186f2ace
 pubmatic.com, 156762, DIRECT, 5d62403b186f2ace
-pubmatic.com, 156974, RESELLER, 5d62403b186f2ace
-pubmatic.com, 157586, RESELLER, 5d62403b186f2ace
+pubmatic.com, 156974, DIRECT, 5d62403b186f2ace
+pubmatic.com, 157586, DIRECT, 5d62403b186f2ace
 
 
 # AppNexus
@@ -32,12 +32,12 @@ appnexus.com, 9623, DIRECT, f5ab79cb980f11d1
 
 rubiconproject.com, 11504, DIRECT, 0bfd66d529a55807
 rubiconproject.com, 20884, DIRECT, 0bfd66d529a55807
-rubiconproject.com, 17348, RESELLER, 0bfd66d529a55807
+rubiconproject.com, 17348, DIRECT, 0bfd66d529a55807
 
 
 # OpenX
 
-openx.com, 540717835, RESELLER, 6a698e2ec38604c6
+openx.com, 540717835, DIRECT, 6a698e2ec38604c6
 openx.com, 540938618, DIRECT, 6a698e2ec38604c6
 openx.com, 557939709, DIRECT, 6a698e2ec38604c6
 openx.com, 564288260, DIRECT, 6a698e2ec38604c6
@@ -55,7 +55,7 @@ teads.tv, 19340, DIRECT, 15a9c44f6d26cbe1
 
 # Index Exchange
 
-indexexchange.com, 186270, RESELLER, 50b1c356f2c5c8fc
+indexexchange.com, 186270, DIRECT, 50b1c356f2c5c8fc
 
 
 # Sovrn
@@ -186,7 +186,7 @@ rubiconproject.com, 21642, RESELLER, 0bfd66d529a55807 #33Across #hb #tag #viewab
 
 # 33Across - PubMatic
 pubmatic.com, 156423, RESELLER, 5d62403b186f2ace #33Across #hb #tag #video
-pubmatic.com, 158569, RESELLER, 5d62403b186f2ace #33Across #tag #ebda
+pubmatic.com, 158569, DIRECT, 5d62403b186f2ace #33Across #tag #ebda
 
 # 33Across - AppNexus
 appnexus.com, 10239, RESELLER, f5ab79cb980f11d1 #33Across #hb #tag #viewable
@@ -195,7 +195,7 @@ appnexus.com, 3135, RESELLER, f5ab79cb980f11d1 #33Across #tag
 
 # 33Across - OpenX
 openx.com, 537120563, RESELLER, 6a698e2ec38604c6 #33Across #hb #tag #video
-openx.com, 539392223, RESELLER, 6a698e2ec38604c6 #33Across #tag #ebda
+openx.com, 539392223, DIRECT, 6a698e2ec38604c6 #33Across #tag #ebda
 
 # 33Across - Conversant Media
 conversantmedia.com, 100141, RESELLER, 03113cd04947736d #hb #tag #video
@@ -208,7 +208,7 @@ e-planning.net,1bf7b5d803f178c4,RESELLER,c1ba615865ed87b2
 video.unrulymedia.com, 645663965, RESELLER
 
 # 33Across - Sonobi
-sonobi.com, a416546bb7, RESELLER, d1a215d9eb5aee9e  #33Across #tag #ebda
+sonobi.com, a416546bb7, DIRECT, d1a215d9eb5aee9e  #33Across #tag #ebda
 
 # 33Across - Amazon
 aps.amazon.com, 2840f06c-5d89-4853-a03e-3bfa567dd33c, DIRECT #33Across #tag
@@ -307,7 +307,7 @@ thebrave.io, 1234568, RESELLER, c25b2154543746ac
 zmaticoo.com, 113149, RESELLER
 thunder-monetize.com, 3905806597, RESELLER
 outbrain.com, 0073fa86cff719c752763d2c3ee52c8f00, RESELLER
-inmobi.com, ec790f681b624e07a6d5397d33c7f1b8, RESELLER, 83e75a7ae333ca9d
+inmobi.com, ec790f681b624e07a6d5397d33c7f1b8, DIRECT, 83e75a7ae333ca9d
 
 
 # Nobid
@@ -385,8 +385,8 @@ vidazoo.com, 69c57fe5a4f8fe1962093b68, DIRECT, b6ada874b4d7d0b2
 
 # Equative
 
-smartadserver.com, 4191, RESELLER, 060d053dcf45cbf3
-smartadserver.com, 4191-OB, RESELLER, 060d053dcf45cbf3
+smartadserver.com, 4191, DIRECT, 060d053dcf45cbf3
+smartadserver.com, 4191-OB, DIRECT, 060d053dcf45cbf3
 pubmatic.com, 156439, RESELLER, 5d62403b186f2ace
 pubmatic.com, 154037, RESELLER, 5d62403b186f2ace
 openx.com, 537149888, RESELLER, 6a698e2ec38604c6
@@ -402,7 +402,7 @@ contextweb.com, 560288, RESELLER, 89ff185a4c4e857c
 rhebus.works, 5252004478, RESELLER
 contextweb.com, 563115, RESELLER, 89ff185a4c4e857c
 ogury.com, ede8d6ba-5a3f-4dfa-85aa-8cfb3c42f970, RESELLER
-sharethrough.com, 4191, RESELLER, d53b998a7bd4ecd2
+sharethrough.com, 4191, DIRECT, d53b998a7bd4ecd2
 pubmatic.com, 156557, RESELLER, 5d62403b186f2ace
 openx.com, 540274407, RESELLER, 6a698e2ec38604c6
 33across.com, 0013300001kQj2HAAS, RESELLER, bbea06d9c4d2853c
@@ -412,7 +412,7 @@ video.unrulymedia.com, 266978658, RESELLER
 
 # Adagio
 
-adagio.io, 1140, RESELLER
+adagio.io, 1140, DIRECT
 
 # Adagio - Magnite
 rubiconproject.com, 19116, RESELLER, 0bfd66d529a55807
@@ -454,10 +454,13 @@ connectad.io, 456, RESELLER, 85ac85a30c93b3e5
 # Adagio - Adform
 adform.com, 3354, RESELLER, 9f5210a2f0999e32
 
+# Adagio - RTB House
+rtbhouse.com, XPSLDtnX92XNGGFB6ith, RESELLER, 4f3b94578e85950c
+
 
 # Sharethrough
 
-sharethrough.com, EU8CIOkx, RESELLER, d53b998a7bd4ecd2
+sharethrough.com, EU8CIOkx, DIRECT, d53b998a7bd4ecd2
 
 
 # Onetag
@@ -809,7 +812,7 @@ kueez.com, f3b3789cda3d7eb0e9fa1c41057da524, RESELLER
 
 adelement.com, 36003, RESELLER
 adelement.com, 36004, RESELLER
-video.unrulymedia.com, 831893017, RESELLER
+video.unrulymedia.com, 831893017, DIRECT
 appnexus.com, 6849, RESELLER, f5ab79cb980f11d1
 pubmatic.com, 163963, RESELLER, 5d62403b186f2ace
 loopme.com, 9718, RESELLER, 6c8d5f95897a5a3b
@@ -819,7 +822,7 @@ contextweb.com, 560138, RESELLER, 89ff185a4c4e857c
 # Risecodes
 
 risecodes.com, 64d20ccc534fd00001631b3b, DIRECT
-risecodes.com, 66fac9081efdb80001a3dc64, RESELLER
+risecodes.com, 66fac9081efdb80001a3dc64, DIRECT
 sharethrough.com, 5926d422, RESELLER, d53b998a7bd4ecd2
 pubmatic.com, 160295, RESELLER, 5d62403b186f2ace
 rubiconproject.com, 23876, RESELLER, 0bfd66d529a55807

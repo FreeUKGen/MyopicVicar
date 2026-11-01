@@ -15,8 +15,8 @@
 <div class='text--left push-half--bottom'>
   <small><strong>Tip: Double-tab to move between fields</strong></small>
 </div>
-<div class="grid">
-  <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole">
+<div class="grid search-ad-layout">
+  <div class="grid__item desk-four-fifths lap-two-thirds palm-one-whole search-ad-layout__form">
     <div class="palm-flush--bottom">
       <%= semantic_form_for(@search_query) do |f| %>
         <fieldset class="inputs">
@@ -162,7 +162,7 @@
           <p class="text--left">Filters are applied to the results of a search. (Spreadsheets users will be familiar with the process). We suggest running a search without any filters to get a large set of results (e.g. 3-400); Select the Revise Search button, select your filters and then Search again.  Please read the <a href="../help#filters/">Help</a> carefully BEFORE using the Marital Status, Occupation and Disabled filters.
             <p>
               <ol class="grid">
-                <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_marital_status_input">
+                <li class="grid__item one-quarter lap-one-quarter palm-one-whole" id="search_query_marital_status_input">
                   <label class="label ttip" for="search_query_marital_status" tabindex="0">
                     Marital Status
                     <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
@@ -180,7 +180,7 @@
                     <% end %>
                   </select>
                 </li>
-                <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_sex_input">
+                <li class="grid__item one-quarter lap-one-quarter palm-one-whole" id="search_query_sex_input">
                   <label class="label ttip" for="search_query_sex" tabindex="0">
                     Sex
                     <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
@@ -198,7 +198,7 @@
                     <% end %>
                   </select>
                 </li>
-                <li class="grid__item one-fifth lap-one-quarter palm-one-whole" id="search_query_sex_input">
+                <li class="grid__item one-quarter lap-one-quarter palm-one-whole" id="search_query_sex_input">
                   <label class="ttip" for="occupation" tabindex="0">
                     Occupation
                     <%= image_tag 'png/info.png', alt: 'Info', height: '16' %>
@@ -210,7 +210,7 @@
                     <input id="occupation" name="search_query[occupation]" type="text" class="text-input" value="<%=@search_query.occupation%>">
                   <%end%>
                 </li>
-                <li class="grid__item one-fifth lap-one-quarter palm-one-whole">
+                <li class="grid__item one-quarter lap-one-quarter palm-one-whole">
                   <%= f.label :disabled, { :class => "ttip", :tabindex => "0" } do %>
                     <%= f.check_box :disabled, {}, "true", "false" %>
                     Disabled
@@ -233,15 +233,7 @@
           <% end %>
     </div>
   </div>
-  <% unless device_type == :mobile %>
-    <div class="grid__item desk-one-fifth lap-one-third palm-one-whole text--center push--bottom">
-      <span>Advertisement</span><br>
-      <div class="grid__item one-whole push--top" style="position: sticky; top:0; align-self: start;">
-        <!-- GAM 71161633/FRBMD_freecenorguk/freecen_skyscraper_1 -->
-        <div data-fuse="freecen_skyscraper_1"></div>
-      </div>
-    </div>
-  <% end %>
+  <%= render 'search_form_advert', slot: 'freecen_skyscraper_1', gam_unit: '71161633/FRBMD_freecenorguk/freecen_skyscraper_1' %>
 </div>
     <!-- GAM 71161633/FRBMD_freecenorguk/freecen_hrec_3 -->
     <%= horz_advert('22946534648') %>
