@@ -47,6 +47,8 @@ class Freecen2CivilParishesController < ApplicationController
       freecen2_civil_parishes = Freecen2CivilParish.chapman_code(params[:chapman_code]).year(params[:year]).order_by(year: 1, name: 1).all
     end
 
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Invalid county or year') && return unless safe_name_part?(params[:chapman_code]) && safe_name_part?(params[:year])
+
     success, message, file_location, file_name = Freecen2CivilParish.create_csv_file(params[:chapman_code], params[:year], freecen2_civil_parishes)
     if success
       if File.file?(file_location)

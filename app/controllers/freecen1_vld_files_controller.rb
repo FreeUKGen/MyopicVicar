@@ -254,6 +254,8 @@ class Freecen1VldFilesController < ApplicationController
     @app = appname_downcase
     @action = 'Upload'
     session[:replace] = params[:replace]
+    # replace names a file that gets moved to the attic, so it must be a plain VLD file in a real county
+    session.delete(:replace) if session[:replace].present? && !(ChapmanCode.value?(session[:chapman_code]) && Freecen1VldFile.plain_vld_file_name?(session[:replace]))
     if session[:replace].present?
       dir_name = session[:chapman_code]
       file_name = session[:replace]

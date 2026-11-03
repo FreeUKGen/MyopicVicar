@@ -27,7 +27,7 @@ class TransregBatchesController < ApplicationController
       else
         @freereg1_csv_file.backup_file
         my_file =  File.join(Rails.application.config.datafiles, @freereg1_csv_file.userid,@freereg1_csv_file.file_name)
-        if File.file?(my_file)
+        if File.file?(my_file) && path_inside?(my_file, Rails.application.config.datafiles)
           @freereg1_csv_file.update_attributes(:digest => Digest::MD5.file(my_file).hexdigest)
           @freereg1_csv_file.force_unlock
           send_file( my_file, :filename => @freereg1_csv_file.file_name,:x_sendfile=>true )
