@@ -2,7 +2,8 @@ source 'https://rubygems.org'
 
 gem 'rails', '~> 6.1.7'
 gem 'tzinfo-data' #needed by windows
-gem 'mysql2'
+gem 'mysql2', platforms: :ruby # not installed on Windows; MySQL is never queried
+gem 'sqlite3', '~> 1.4', platforms: :windows # lets Rails boot on Windows without MySQL
 gem 'mongoid'
 gem 'mongo'
 gem 'execjs'
