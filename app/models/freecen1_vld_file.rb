@@ -660,9 +660,12 @@ class Freecen1VldFile
   end
 
   def check_extension
-    file_name_parts = uploaded_file_name.split('.')
-    result = file_name_parts[1].present? && file_name_parts[1].casecmp('vld').zero? ? true : false
-    result
+    self.class.plain_vld_file_name?(uploaded_file_name)
+  end
+
+  # A bare name ending in .vld only: no paths, no '..', and nothing after .vld (x.vld.pl)
+  def self.plain_vld_file_name?(name)
+    name.to_s.match?(/\A(?!.*\.\.)[A-Za-z0-9_\-][A-Za-z0-9_\-.]*\.vld\z/i)
   end
 
   def check_exists_on_upload

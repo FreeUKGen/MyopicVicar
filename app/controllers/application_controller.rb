@@ -193,6 +193,11 @@ class ApplicationController < ActionController::Base
     user
   end
 
+  # Download paths are built from record fields; refuse anything that resolves outside root
+  def path_inside?(path, root)
+    File.expand_path(path.to_s).start_with?("#{File.expand_path(root.to_s)}/")
+  end
+
   # Returns url only if it points back to this site, so links and redirects built from params or the
   # Referer header cannot send people to another site or run javascript: URLs
   def same_site_url(url)
