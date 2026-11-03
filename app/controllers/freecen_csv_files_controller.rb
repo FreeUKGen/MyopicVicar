@@ -190,7 +190,7 @@ class FreecenCsvFilesController < ApplicationController
       success = @freecen_csv_file.backup_file
       if success
         my_file = File.join(Rails.application.config.datafiles, @freecen_csv_file.userid, @freecen_csv_file.file_name)
-        if File.file?(my_file)
+        if File.file?(my_file) && path_inside?(my_file, Rails.application.config.datafiles)
           @freecen_csv_file.update_attributes(digest: Digest::MD5.file(my_file).hexdigest)
           @freecen_csv_file.force_unlock
           send_file(my_file, filename: @freecen_csv_file.file_name, x_sendfile: true) and return
@@ -215,7 +215,7 @@ class FreecenCsvFilesController < ApplicationController
     if proceed
       text_file = "#{@freecen_csv_file.file_name}.txt"
       my_file = File.join(Rails.application.config.datafiles, @freecen_csv_file.userid, text_file)
-      if File.file?(my_file)
+      if File.file?(my_file) && path_inside?(my_file, Rails.application.config.datafiles)
         flash[:notice] = 'The file has been downloaded to your computer'
         send_file(my_file, filename: text_file, x_sendfile: true) and return
       else

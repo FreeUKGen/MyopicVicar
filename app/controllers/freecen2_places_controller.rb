@@ -112,6 +112,8 @@ class Freecen2PlacesController < ApplicationController
 
     chapman_code = params[:csvdownload][:county][0...3]
 
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Invalid county') && return unless safe_name_part?(chapman_code)
+
     success, message, file_location, file_name = Freecen2Place.create_csv_file(chapman_code)
     if success
       if File.file?(file_location)

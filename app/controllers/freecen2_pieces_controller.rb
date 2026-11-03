@@ -48,6 +48,8 @@ class Freecen2PiecesController < ApplicationController
       freecen2_pieces = Freecen2Piece.chapman_code(params[:chapman_code]).year(params[:year]).order_by(year: 1, name: 1).all
     end
 
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Invalid county or year') && return unless safe_name_part?(params[:chapman_code]) && safe_name_part?(params[:year])
+
     success, message, file_location, file_name = Freecen2Piece.create_csv_file(params[:chapman_code], params[:year], freecen2_pieces)
     if success
       if File.file?(file_location)
@@ -126,6 +128,8 @@ class Freecen2PiecesController < ApplicationController
   def export_csv
     @chapman_code = session[:chapman_code]
     @year = params[:csvdownload][:year]
+    redirect_back(fallback_location: new_manage_resource_path, notice: 'Invalid county or year') && return unless safe_name_part?(@chapman_code) && safe_name_part?(@year)
+
     success, message, file_location, file_name = Freecen2Piece.create_csv_export_listing(@chapman_code, @year)
 
     if success

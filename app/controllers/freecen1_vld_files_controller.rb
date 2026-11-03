@@ -25,14 +25,19 @@ class Freecen1VldFilesController < ApplicationController
     # Initial guards
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'You must select a file') && return if params[:freecen1_vld_file].blank? || params[:freecen1_vld_file][:uploaded_file].blank?
 
+    # dir_name becomes part of the storage path, so it must be a real county code
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'You must select a county first') && return unless ChapmanCode.value?(session[:chapman_code])
+
+    redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That is not a VLD file') && return unless Freecen1VldFile.plain_vld_file_name?(params[:freecen1_vld_file][:uploaded_file].original_filename)
+
     params[:freecen1_vld_file][:dir_name] = session[:chapman_code]
 
     @vldfile = Freecen1VldFile.find_by(dir_name: session[:chapman_code], file_name: params[:freecen1_vld_file][:uploaded_file].original_filename)
     if @vldfile.present?
-      @vldfile.update_attributes(freecen1_vld_file_params)
+      @vldfile.update_attributes(freecen1_vld_file_upload_params)
       @vldfile.set(num_invalid_pobs: nil)
     else
-      @vldfile = Freecen1VldFile.new(freecen1_vld_file_params)
+      @vldfile = Freecen1VldFile.new(freecen1_vld_file_upload_params)
     end
     @vldfile.uploaded_file_name = @vldfile.uploaded_file.identifier
     redirect_back(fallback_location: new_freecen1_vld_file_path, notice: 'That file exists please use the replace action') && return if @vldfile.check_exists_on_upload && session[:replace].blank?
@@ -89,7 +94,11 @@ class Freecen1VldFilesController < ApplicationController
     file = Freecen1VldFile.find(params[:file])
     redirect_back(fallback_location: select_userid_attic_files_path, notice: 'The file does not exist!') && return if file.blank?
 
-    vld_file = File.join(Rails.application.config.vld_file_locations, file.dir_name, file.file_name)
+    vld_root = File.expand_path(Rails.application.config.vld_file_locations)
+    vld_file = File.expand_path(File.join(vld_root, file.dir_name.to_s, file.file_name.to_s))
+    unless ChapmanCode.value?(file.dir_name) && Freecen1VldFile.plain_vld_file_name?(file.file_name) && vld_file.start_with?("#{vld_root}/")
+      redirect_back(fallback_location: new_manage_resource_path, notice: 'The file does not exist!') && return
+    end
 
     send_file(vld_file, filename: file.file_name) && return if File.exist?(vld_file)
 
@@ -245,6 +254,8 @@ class Freecen1VldFilesController < ApplicationController
     @app = appname_downcase
     @action = 'Upload'
     session[:replace] = params[:replace]
+    # replace names a file that gets moved to the attic, so it must be a plain VLD file in a real county
+    session.delete(:replace) if session[:replace].present? && !(ChapmanCode.value?(session[:chapman_code]) && Freecen1VldFile.plain_vld_file_name?(session[:replace]))
     if session[:replace].present?
       dir_name = session[:chapman_code]
       file_name = session[:replace]
@@ -295,7 +306,13 @@ class Freecen1VldFilesController < ApplicationController
 
   private
 
+  # dir_name and file_name are never editable: together they make a file path
   def freecen1_vld_file_params
-    params.require(:freecen1_vld_file).permit!
+    params.require(:freecen1_vld_file).permit!.except(:dir_name, :file_name, :uploaded_file, :uploaded_file_name, :uploaded_file_location)
+  end
+
+  # Upload sets only these; file_name etc. come from processing the file, not the request
+  def freecen1_vld_file_upload_params
+    params.require(:freecen1_vld_file).permit(:uploaded_file, :dir_name, :action)
   end
 end

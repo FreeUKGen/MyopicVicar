@@ -10,6 +10,9 @@ class VldfileUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
+    # dir_name is a folder name only; refuse anything that could leave the VLD folder
+    raise ArgumentError, "Invalid VLD dir_name #{model.dir_name.inspect}" unless model.dir_name.to_s.match?(/\A[A-Za-z0-9_\-]+\z/)
+
     # "#{Rails.application.config.datafiles}/#{mounted_as}/#{model.userid}/"
     if Rails.application.config.datafiles == '/raid/freecen2/users'
       "#{Rails.application.config.vld_file_locations}/#{model.dir_name}/"
