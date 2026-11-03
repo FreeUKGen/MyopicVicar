@@ -2,7 +2,7 @@ desc "List VLD files with missing Piece"
 task :list_vld_files_with_missing_piece => :environment do
 
   file_for_warning_messages = "log/list_vld_files_with_missing_piece.log"
-  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+  FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
   message_file = File.new(file_for_warning_messages, "w")
   p "Started VLD Files with Missing Piece List"
   message_file.puts  "VLD Files with Missing Piece List"

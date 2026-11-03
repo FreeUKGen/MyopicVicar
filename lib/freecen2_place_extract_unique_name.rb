@@ -63,8 +63,8 @@ class Freecen2PlaceExtractUniqueName
     end
 
     def unique_names_place(place_id, year)
-      first_names = SortedSet.new
-      last_names = SortedSet.new
+      first_names = Set.new
+      last_names = Set.new
       rec_cnt = SearchRecord.where(freecen2_place_id: place_id, record_type: year).count
       if rec_cnt > 0
         search_records = SearchRecord.where(freecen2_place_id: place_id, record_type: year)
@@ -77,7 +77,7 @@ class Freecen2PlaceExtractUniqueName
           end
         end
       end
-      return first_names, last_names
+      return first_names.to_a.sort, last_names.to_a.sort
     end
   end
 end

@@ -83,7 +83,7 @@ class Register
     end
 
     def create_folder_url(chapman_code,folder_name,register)
-      URI.escape(Rails.application.config.image_server + 'manage_freereg_images/create_folder?chapman_code=' + chapman_code + '&folder_name=' + folder_name +  '&register=' + register + '&image_server_access=' + Rails.application.config.image_server_access)
+      URI::RFC2396_Parser.new.escape(Rails.application.config.image_server + 'manage_freereg_images/create_folder?chapman_code=' + chapman_code + '&folder_name=' + folder_name +  '&register=' + register + '&image_server_access=' + Rails.application.config.image_server_access)
     end
 
     def find_by_church_ids(id)

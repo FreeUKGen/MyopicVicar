@@ -21,6 +21,7 @@ Rails.application.configure do
   config.assets.precompile += %w[styles/scss/lap_and_up.scss]
   config.assets.precompile += %w[styles/scss/palm.scss]
   config.assets.precompile += %w[styles/scss/ladda.scss]
+  config.assets.precompile += %w[styles/scss/freepro_content.scss]
   config.assets.precompile += %w[styles/css/donate_icon.css]
   config.assets.precompile += %w[styles/css/icons.data.svg.css]
   config.assets.precompile += %w[styles/css/freereg_content.css]

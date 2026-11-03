@@ -585,7 +585,7 @@ class CsvFile < CsvFiles
   def extract_the_array_of_lines(csvtxt)
     #now get all the data
     self.slurp_fail_message = "the CSV parser failed. The CSV file might not be formatted correctly. <br>"
-    @array_of_data_lines = CSV.parse(csvtxt, { row_sep: "\r\n", skip_blanks: true })
+    @array_of_data_lines = CSV.parse(csvtxt, row_sep: "\r\n", skip_blanks: true)
     #remove zzz fields and white space
     @array_of_data_lines.each do |line|
       line.each_index    {|x| line[x] = line[x].gsub(/zzz/, ' ').gsub(/\s+/, ' ').strip unless line[x].nil? }

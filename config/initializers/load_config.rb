@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
-APP_CONFIG = YAML.load_file("#{Rails.root}/config/site_settings.yml")[Rails.env]
+APP_CONFIG = ConfigYaml.load_file("#{Rails.root}/config/site_settings.yml")[Rails.env]
 

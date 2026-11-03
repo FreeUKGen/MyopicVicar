@@ -14,6 +14,8 @@
 #
 MyopicVicar::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
+  # Rails 6 Host Authorization stays off in production (config.hosts empty = every host allowed,
+  # as on Rails 5.2): adding any host blocks all others with an empty 403, e.g. beta.freebmd2.org.uk.
 
   # Code is not reloaded between requests
   config.cache_classes = true

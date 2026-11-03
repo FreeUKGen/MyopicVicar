@@ -1,7 +1,7 @@
 # Development Setup — FreePRO (freeprobate)
 
 This page covers the **`freeprobate_development`** branch, which runs the same MyopicVicar codebase in `freepro` mode
-(probate records).
+(probate records). The branch runs **Rails 6.1 on Ruby 3.3** 
 
 
 ## Two tiers
@@ -17,11 +17,12 @@ This page covers the **`freeprobate_development`** branch, which runs the same M
 
 | Component | Version / notes |
 |-----------|------------------|
-| **Ruby** | **2.6.7** (see `.ruby-version`). Use [rbenv](https://github.com/rbenv/rbenv): `rbenv install 2.6.7`. |
-| **Bundler** | Compatible with Ruby 2.6.7 (`Gemfile.lock` was built with Bundler 2.4.22) |
+| **Ruby** | **3.3** (tested on 3.3.0). There is no `.ruby-version` in the repo, so set it yourself. Use [rbenv](https://github.com/rbenv/rbenv): `rbenv install 3.3.0`. Works the same on macOS (`brew install rbenv ruby-build`). |
+| **Bundler** | The one bundled with Ruby 3.3 is fine (`Gemfile.lock` says `BUNDLED WITH 2.4.22`; newer Bundler reads it without changes) |
 | **MongoDB** | 4.4+, running locally for `rails s`. |
 | **Node.js** | Needed to precompile assets (`assets.compile` is off in development, same as FreeREG). |
-| **MySQL** | Not needed. `config/database.yml` only exists so Rails can boot (`rails/all` pulls in ActiveRecord); nothing on this branch actually queries MySQL since Refinery is disabled. Placeholder values from `database.example.yml` are fine. |
+| **MySQL server** | Not needed. `config/database.yml` only exists so Rails can boot (`rails/all` pulls in ActiveRecord); nothing on this branch actually queries MySQL since Refinery is disabled. Placeholder values from `database.example.yml` are fine. |
+| **MySQL client library** | Needed, because the `mysql2` gem is still in the `Gemfile` and compiles against it during `bundle install`. Ubuntu: `sudo apt install libmysqlclient-dev`. macOS: see the macOS step under Quick start. |
 | **osgb gem** | Not needed here — the `osgb` git dependency is commented out in this branch's `Gemfile`, so you don't need to clone it separately. |
 
 ---
@@ -33,9 +34,13 @@ git clone https://github.com/FreeUKGen/MyopicVicar.git
 cd MyopicVicar
 git checkout freeprobate_development
 
-# Ruby 2.6.7 (rbenv example)
-rbenv install 2.6.7
-rbenv local 2.6.7
+# Ruby 3.3 (rbenv example)
+rbenv install 3.3.0
+rbenv local 3.3.0
+
+# macOS only: point mysql2 at Homebrew's MySQL client before bundling
+#   brew install mysql-client zstd
+#   bundle config set --local build.mysql2 "--with-mysql-config=$(brew --prefix mysql-client)/bin/mysql_config --with-ldflags=-L$(brew --prefix zstd)/lib"
 
 bundle install
 
@@ -49,7 +54,7 @@ Copy each example to its real name, then edit as noted:
 
 | Copy from | To | Edit needed for FreePRO |
 |-----------|-----|--------------------------|
-| `config/freeukgen_application_example.yml` | `config/freeukgen_application.yml` | Set `template_set: 'freepro'` in every environment block |
+| `config/freeukgen_application_example.yml` | `config/freeukgen_application.yml` | Set `template_set: 'freepro'` in every environment block (the example ships with `'freecen'`). It must be `freepro`, **not** `freeprobate` |
 | `config/mongoid_example.yml` | `config/mongoid.yml` | Set the `default` client's `database:` to `freepro_development` (and the `test` client to `freepro_test` if you'll run specs) |
 | `config/mongo_config.example.yml` | `config/mongo_config.yml` | Fill in `mongodb_bin_location`, `datafiles`, `website: 'localhost:3000'`, `our_secret_key`, `secret_key_base` — the rest can stay blank/default for Tier A |
 | `config/database.example.yml` | `config/database.yml` | No edits needed — placeholder values, MySQL is never actually used |
@@ -58,7 +63,7 @@ Copy each example to its real name, then edit as noted:
 | `config/errbit.config.yml` | `config/errbit.yml` | Only needed for error reporting; leave as-is to skip |
 
 ```bash
-# Run app
+# Run app — there is no bin/ directory on this branch, so always go through bundle exec
 bundle exec rails s
 # → http://localhost:3000
 ```
@@ -158,7 +163,11 @@ You need this to exercise free-text search locally; name/date field search works
 | App crashes on boot with no clear Mongo error | `config/database.yml` missing — copy `config/database.example.yml` |
 | Wrong skin / assets (FreeREG images/styles showing) | `template_set` in `config/freeukgen_application.yml` isn't `'freepro'`; restart `rails s` after editing |
 | Blank probate search results | Tier B import not done, or wrong `database:` name in `config/mongoid.yml` |
-| `filter_map` / Ruby version errors | Use Ruby **2.6.7**, not 2.7+ (this branch predates the FreeREG guide's 2.7.8 branch) |
+| `mysql2` fails to build (`mysql_config not found` / `mysqlclient` missing) | Install the MySQL client library (see Prerequisites); on macOS also run the `bundle config set --local build.mysql2 ...` line from Quick start |
+| `nokogiri` fails to build (e.g. `'gumbo.h' file not found`) | Bundler is compiling nokogiri from source instead of using a ready-built gem. `Gemfile.lock` lists `arm64-darwin`, `x86_64-darwin` and `x86_64-linux`; if your platform isn't there, run `bundle lock --add-platform <your platform>` (see `ruby -e 'puts Gem::Platform.local'`) and mention it in your PR |
+| Ruby version errors / `bundle install` fails on old gems | Use Ruby **3.3** — this branch no longer runs on 2.6. Check `ruby -v` inside the repo; `rbenv local 3.3.0` if it shows something else |
+| `bin/rails: No such file or directory` | There is no `bin/` on this branch — use `bundle exec rails …` |
+| Wrong skin even though you set the template | Value is `freeprobate` instead of `freepro` — only `freepro` is recognised |
 | Pages load with no CSS/JS | `config.assets.compile = false` in development — run `bundle exec rake assets:precompile` (needs Node.js) |
 
 ---

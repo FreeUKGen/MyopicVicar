@@ -2,7 +2,7 @@ class UpdateSearchRecords
   require 'app'
   def self.process(limit,record_type,search_version,force,order)
     file_for_warning_messages = "log/search_record_digest.log"
-    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exists?(file_for_warning_messages)
+    FileUtils.mkdir_p(File.dirname(file_for_warning_messages) )  unless File.exist?(file_for_warning_messages)
     message_file = File.new(file_for_warning_messages, "a")
 
     unless RecordType.all_types.include?(record_type)

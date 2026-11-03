@@ -20,7 +20,7 @@
 # no regular words or you'll be exposed to dictionary attacks.
 secret_token = "#{Rails.root}/config/secrets.yml"
 if File.exist?(secret_token)
-  YAML.load_file(secret_token)[Rails.env].each do |key, value|
+  ConfigYaml.load_file(secret_token)[Rails.env].each do |key, value|
     MyopicVicar::Application.config.secret_token = value
   end
 else
