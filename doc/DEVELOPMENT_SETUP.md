@@ -22,8 +22,19 @@ This page covers the **`freeprobate_development`** branch, which runs the same M
 | **MongoDB** | 4.4+, running locally for `rails s`. |
 | **Node.js** | Needed to precompile assets (`assets.compile` is off in development, same as FreeREG). |
 | **MySQL server** | Not needed. `config/database.yml` only exists so Rails can boot (`rails/all` pulls in ActiveRecord); nothing on this branch actually queries MySQL since Refinery is disabled. Placeholder values from `database.example.yml` are fine. |
-| **MySQL client library** | Needed, because the `mysql2` gem is still in the `Gemfile` and compiles against it during `bundle install`. Ubuntu: `sudo apt install libmysqlclient-dev`. macOS: see the macOS step under Quick start. |
+| **MySQL client library** | Needed on Linux and macOS, because the `mysql2` gem is still in the `Gemfile` and compiles against it during `bundle install`. Ubuntu: `sudo apt install libmysqlclient-dev`. macOS: see the macOS step under Quick start. **Windows: not needed** — see Windows below. |
 | **osgb gem** | Not needed here — the `osgb` git dependency is commented out in this branch's `Gemfile`, so you don't need to clone it separately. |
+
+---
+
+### Windows
+
+You can run FreePRO on Windows without installing MySQL or WSL:
+
+- Install Ruby 3.3 from [RubyInstaller](https://rubyinstaller.org/) (the **with Devkit** version).
+- On Windows the `Gemfile` skips `mysql2` and installs `sqlite3` instead (it comes ready-built, nothing to compile). `config/database.example.yml` picks SQLite automatically on Windows, so copy it to `config/database.yml` unchanged.
+- Install [MongoDB Community Server](https://www.mongodb.com/try/download/community) and make sure the **MongoDB** service is running (Services app → MongoDB → Start). If it won't start, the reason is in `C:\Program Files\MongoDB\Server\<version>\log\mongod.log`.
+- Then follow Quick start below, skipping the rbenv, `apt` and `systemctl` lines.
 
 ---
 
