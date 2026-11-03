@@ -1,0 +1,22 @@
+<div class="freepro-no-results text--left">
+  <h2 class="text--negative"><strong>We couldn’t find any matching records</strong></h2>
+  <p>There are several reasons why your search might not have found a match.</p>
+
+  <h3><strong>Try changing your search terms</strong></h3>
+  <p>Check the spelling of names, broaden the date range, or include fewer details in your search.</p>
+  <%# Add the search help link once a working FreePRO destination is confirmed. %>
+
+  <h3><strong>We might not have the records you are searching for</strong></h3>
+  <p>The relevant records may not yet have been processed into the FreePRO database.</p>
+  <%# Add the database information link once a FreePRO destination is confirmed. %>
+  <p>Other organisations also hold probate records. You could try the <%= link_to "UK government’s probate search service", 'https://probatesearch.service.gov.uk/' %> for records from England and Wales.</p>
+  <p>Records are being added regularly, so please try searching again in the future.</p>
+
+  <h3><strong>You could also try looking on our sister sites:</strong></h3>
+  <ul class="freepro-no-results__sister-sites">
+    <li><%= link_to 'FreeCEN', helpful_links[:freecen] %> — search census data.</li>
+    <li><%= link_to 'FreeREG', helpful_links[:freereg] %> — search records from parish registers.</li>
+    <li><%= link_to 'New FreeBMD', 'https://www.freebmd2.org.uk/' %> — search birth, marriage and death records.</li>
+    <li><%= link_to 'Original FreeBMD', helpful_links[:freebmd] %> — search birth, marriage and death records.</li>
+  </ul>
+</div>
