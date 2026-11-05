@@ -44,12 +44,22 @@ class PagesController < ApplicationController
     # Check if the view file exists in site-specific directory first
     site_view_file = Rails.root.join('app', 'views', 'pages', current_site, "#{view_name}.html.erb")
     
+    shared_view_file = Rails.root.join('app', 'views', 'pages', "#{view_name}.html.erb")
+
+    # The catch-all must not expose these FreePRO templates as another site's pages.
+    freepro_placeholders = %w[search_help database_information].map do |page|
+      Rails.root.join('app', 'views', 'pages', 'freepro', "#{page}.html.erb")
+    end
+    if current_site != 'freepro' &&
+       ([site_view_file.cleanpath, shared_view_file.cleanpath] & freepro_placeholders).any?
+      raise ActionController::RoutingError, "Page not found: #{page_path}"
+    end
+
     if File.exist?(site_view_file)
       # Render from site-specific directory
       render template: "pages/#{current_site}/#{view_name}", layout: 'application'
     else
       # Fallback to shared pages directory (for backward compatibility)
-      shared_view_file = Rails.root.join('app', 'views', 'pages', "#{view_name}.html.erb")
       if File.exist?(shared_view_file)
         render template: "pages/#{view_name}", layout: 'application'
       else

@@ -25,6 +25,8 @@ RSpec.describe 'Search results empty state' do
     stub_const('FreeregOptionsConstants', Module.new)
     stub_const('FreeregOptionsConstants::MAXIMUM_NUMBER_OF_RESULTS', 2000)
     allow(view).to receive(:contact_us_path).and_return('/contacts/new')
+    allow(view).to receive(:freepro_search_help_path).and_return('/freepro/search-help')
+    allow(view).to receive(:freepro_database_information_path).and_return('/freepro/database-information')
     allow(view).to receive(:title)
     allow(view).to receive(:show_contents_link)
     allow(view).to receive(:device_type).and_return(:desktop)
@@ -58,6 +60,8 @@ RSpec.describe 'Search results empty state' do
     end
     document = Nokogiri::HTML.fragment(html)
     {
+      'Search Help' => '/freepro/search-help',
+      'Database Information' => '/freepro/database-information',
       'FreeCEN' => 'https://www.freecen.org.uk/',
       'FreeREG' => 'https://www.freereg.org.uk/',
       'New FreeBMD' => 'https://www.freebmd2.org.uk/',
@@ -91,7 +95,8 @@ RSpec.describe 'Search results empty state' do
       it 'retains the existing empty-state content' do
         html = results
         expect(html).to include('No results found', 'Maybe you need to change your search?', content)
-        expect(html).not_to include('We couldn’t find any matching records', 'freepro-no-results')
+        expect(html).not_to include('We couldn’t find any matching records', 'freepro-no-results',
+                                    '/freepro/search-help', '/freepro/database-information')
       end
     end
   end

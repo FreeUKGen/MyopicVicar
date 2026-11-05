@@ -4,11 +4,11 @@
 
   <h3><strong>Try changing your search terms</strong></h3>
   <p>Check the spelling of names, broaden the date range, or include fewer details in your search.</p>
-  <%# Add the search help link once a working FreePRO destination is confirmed. %>
+  <p>For more advice, see <%= link_to 'Search Help', freepro_search_help_path %>.</p>
 
   <h3><strong>We might not have the records you are searching for</strong></h3>
   <p>The relevant records may not yet have been processed into the FreePRO database.</p>
-  <%# Add the database information link once a FreePRO destination is confirmed. %>
+  <p>See our <%= link_to 'Database Information', freepro_database_information_path %> page for more information.</p>
   <p>Other organisations also hold probate records. You could try the <%= link_to "UK government’s probate search service", 'https://probatesearch.service.gov.uk/' %> for records from England and Wales.</p>
   <p>Records are being added regularly, so please try searching again in the future.</p>
 
