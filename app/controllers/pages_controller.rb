@@ -23,10 +23,10 @@ class PagesController < ApplicationController
     
   end
 
-  def opportunities-to-volunteer-with-freereg
+  def opportunities_to_volunteer_with_freereg
   end
 
-  def opportunities-to-volunteer-with-freecen
+  def opportunities_to_volunteer_with_freecen
   end
   
   # Browsers request these at the site root; they are not CMS pages under app/views/pages.
