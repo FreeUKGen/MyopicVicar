@@ -25,6 +25,7 @@ class ApplicationController < ActionController::Base
   before_action :require_login
   before_action :load_last_stat
   before_action :load_message_flag
+  include SiteModeGate
   require 'record_type'
   require 'name_role'
   require 'chapman_code'
