@@ -440,7 +440,7 @@ class Contact
   end
 
   def issue_body
-    issue_body = ApplicationController.new.render_to_string(:partial => 'contacts/github_issue_body.txt', :locals => {:feedback => self})
+    issue_body = ApplicationController.new.render_to_string(partial: 'contacts/github_issue_body', formats: [:text], locals: { feedback: self })
     issue_body
   end
 
