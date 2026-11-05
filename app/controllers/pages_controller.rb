@@ -22,6 +22,12 @@ class PagesController < ApplicationController
   def volunteer
     
   end
+
+  def opportunities-to-volunteer-with-freereg
+  end
+
+  def opportunities-to-volunteer-with-freecen
+  end
   
   # Browsers request these at the site root; they are not CMS pages under app/views/pages.
   # Without a file in public/, Rails hits this catch-all and would raise RoutingError.
