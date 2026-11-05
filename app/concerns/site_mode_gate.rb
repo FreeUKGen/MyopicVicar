@@ -26,7 +26,7 @@ module SiteModeGate
     'coverage' => %w[index],
     'open' => :all,
     'search_statistics' => %w[index],
-    'pages' => %w[show donate volunteer]
+    'pages' => %w[show donate]
   }.freeze
 
   included do
