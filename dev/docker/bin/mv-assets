@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd /app
+exec bash dev/docker/compose_public_assets.sh "$@"
