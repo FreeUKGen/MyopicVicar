@@ -1,25 +1,72 @@
-require: rubocop-rails
-Rails:
-  Enabled: true
+plugins:
+  - rubocop-rails
 
+AllCops:
+  # Prevents modern cops added to newer RuboCop gems from running
+  NewCops: disable
+
+  TargetRubyVersion: 3.3
+  TargetRailsVersion: 7.2
+  Exclude:
+    - "db/migrate/**/*"
+    - "db/schema.rb"
+    - "Gemfile.lock"
+    - "Rakefile"
+    - "bin/**/*"
+    - "tmp/**/*"
+    - "vendor/**/*"
+    - "node_modules/**/*"
+
+# Layout/LineLength moved from the Metrics department in v0.78
 # Commonly used screens these days easily fit more than 80 characters.
-Metrics/LineLength:
-  Max: 150
+Layout/LineLength:
+  Max: 120
+
+Layout/IndentationConsistency:
+  EnforcedStyle: indented_internal_methods   # Rails conventions for indentation.
+
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: space   # `{ key: value }` instead of `{key: value}`.
+
+Rails/PluralizationGrammar:
+  Enabled: true          # Helps with naming consistency.
+
+# Mongoid does not require ActiveRecord cops.
+Rails/ActiveRecordAliases:
+  Enabled: false
+
+Rails/FindEach:
+  Enabled: false         # Mongoid does not support find_each.
+
+Rails/EnumHash:
+  Enabled: false         # Mongoid enums behave differently.
 
 # Too short methods lead to extraction of single-use methods, which can make
 # the code easier to read (by naming things), but can also clutter the class
 Metrics/MethodLength:
   Max: 50
+
 Metrics/ModuleLength:
   Max: 1500
 
-# The guiding principle of classes is SRP, SRP can't be accurately measured by LoC
+# The guiding principle of classes is SRP; SRP can't be accurately measured by LoC
 Metrics/ClassLength:
   Max: 1500
 
-# Mixing the styles looks just silly.
-Style/HashSyntax:
-  EnforcedStyle: ruby19_no_mixed_keys
-
 Metrics/AbcSize:
   Max: 120
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false         # Ruby 3.3 freezes strings by default.
+
+# Style/StringLiterals:
+#   EnforcedStyle: double_quotes
+
+Style/HashSyntax:
+  EnforcedStyle: ruby19 # Enforce standard {:key => value} or {key: value}
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact # `Foo::Bar` instead of nested modules.

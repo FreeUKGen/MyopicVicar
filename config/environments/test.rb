@@ -36,7 +36,7 @@ MyopicVicar::Application.configure do
   config.action_dispatch.show_exceptions = false
 
   # Disable request forgery protection in test environment
-  config.action_controller.allow_forgery_protection    = false
+  config.action_controller.allow_forgery_protection = false
 
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
@@ -52,7 +52,7 @@ MyopicVicar::Application.configure do
 
   config.mongodb_bin_location = MyopicVicar::MongoConfig['mongodb_bin_location']
   config.datafiles = MyopicVicar::MongoConfig['datafiles']
-  config.dataset_date =  MyopicVicar::MongoConfig['dataset_date'] unless MyopicVicar::MongoConfig['dataset_date'].blank?
+  config.dataset_date = MyopicVicar::MongoConfig['dataset_date'] unless MyopicVicar::MongoConfig['dataset_date'].blank?
   config.datafiles_changeset = MyopicVicar::MongoConfig['datafiles_changeset'] unless MyopicVicar::MongoConfig['datafiles_changeset'].blank?
   config.datafiles_delta = MyopicVicar::MongoConfig['datafiles_delta'] unless MyopicVicar::MongoConfig['datafiles_delta'].blank?
   config.website = MyopicVicar::MongoConfig['website']
@@ -87,4 +87,7 @@ MyopicVicar::Application.configure do
   config.assets.digest = false
   config.dragonfly_secret_code = MyopicVicar::MongoConfig['dragonfly_secret_code']
 
+  config.freecen2_place_cache = MyopicVicar::MongoConfig['freecen2_place_cache']
+  config.action_mailer.delivery_method = :test
+  config.action_mailer.perform_deliveries = true
 end

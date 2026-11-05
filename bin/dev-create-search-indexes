@@ -11,6 +11,11 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 DB_NAME="${MONGOID_DATABASE:-}"
+DB_HOST="${MONGODB_HOST:-}"
+
+if [[ -z "$DB_HOST" && -f .devcontainer/.env.development ]]; then
+  DB_HOST="$(sed -n 's/^[[:space:]]*MONGODB_HOST[[:space:]]*=[[:space:]]*//p' .devcontainer/.env.development | head -n 1 | tr -d '\r')"
+fi
 
 if [[ -z "$DB_NAME" ]]; then
   if [[ -f config/mongoid.yml ]]; then
@@ -21,6 +26,25 @@ if [[ -z "$DB_NAME" ]]; then
   else
     DB_NAME="myopic_vicar_development"
   fi
+fi
+
+if [[ -z "$DB_HOST" ]]; then
+  DB_HOST="localhost:27017"
+fi
+
+# Split DB_HOST into HOST and PORT
+HOST="${DB_HOST%%:*}"
+PORT="${DB_HOST##*:}"
+
+# # Validate PORT is numeric
+# if ! [[ "$PORT" =~ ^[0-9]+$ ]]; then
+#   echo "WARNING: PORT '$PORT' is not numeric. Falling back to 27017."
+#   PORT="27017"
+# fi
+
+if [[ -z "$HOST" || ! "$DB_HOST" =~ ^[^:]+:[0-9]+$ ]]; then
+  printf "ERROR: MONGODB_HOST must be in HOST:PORT format; got '%s'\n" "$DB_HOST" >&2
+  exit 1
 fi
 
 if command -v mongosh >/dev/null 2>&1; then
@@ -40,8 +64,13 @@ for spec in doc/design/indexes/search_records.reg doc/design/indexes/search_reco
     echo "  SKIP $spec (not found)"
     continue
   fi
+
+  echo "  Host: $HOST"
+  echo "  Port: $PORT"
   echo "  Creating indexes from $spec"
-  "$SHELL_BIN" "$DB_NAME" "$spec"
+  echo
+
+  "$SHELL_BIN" --host "$HOST" --port "$PORT"  "$DB_NAME" "$spec"
 done
 
 echo
