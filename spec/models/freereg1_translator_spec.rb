@@ -32,7 +32,7 @@ describe Freereg1Translator do
 
 
   before(:each) do
-    FreeregCsvProcessor::delete_all
+    NewFreeregCsvUpdateProcessor::delete_all
     Place.delete_all
     Church.delete_all
     Register.delete_all

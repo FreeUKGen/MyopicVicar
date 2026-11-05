@@ -70,7 +70,7 @@ def create_stub_church(file)
   place = Place.where(:place_name => file[:placename], :chapman_code => file[:chapman_code]).first
   church = Church.where(:place_id => place.id,:church_name => file[:churchname]).first
   if !church
-    church = Church.create!(:church_name => file[:churchname])
+    church = Church.create!(:church_name => file[:churchname], :place => place)
     place.churches << church
     place.save!
   end
@@ -94,7 +94,7 @@ def create_stub_userid(file)
   username = file[:user]
   userid = UseridDetail.userid(username).first
   unless userid
-    u = Refinery::Authentication::Devise::User.where(:username => username).first
+    u = User.where(:username => username).first
     u.delete unless u.nil?
     userid = UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com", :person_surname => username, :person_forename => username, :syndicate => 'test')
   end
@@ -104,7 +104,7 @@ end
 def create_new_user(username)
   userid = UseridDetail.userid(username).first
   unless userid
-    u = Refinery::Authentication::Devise::User.where(:username => username).first
+    u = User.where(:username => username).first
     u.delete unless u.nil?
     userid = UseridDetail.create!(:userid=>username, :password=>username, :email_address=>"#{username}@example.com", :person_surname => username, :person_forename => username, :syndicate => 'test')
   end
