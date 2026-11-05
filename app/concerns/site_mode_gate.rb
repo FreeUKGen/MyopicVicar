@@ -27,7 +27,7 @@ module SiteModeGate
     'freecen_coverage' => %w[index new create show graph grand_totals],
     'freecen2_search_statistics' => %w[index show graphic],
     'search_statistics' => %w[index],
-    'pages' => %w[show donate volunteer]
+    'pages' => %w[show]
   }.freeze
 
   included do
