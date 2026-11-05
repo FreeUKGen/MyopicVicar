@@ -114,6 +114,8 @@ MyopicVicar::Application.configure do
   config.processing_delta = MyopicVicar::MongoConfig['files_for_processing'] unless MyopicVicar::MongoConfig['files_for_processing'].blank?
   config.delete_list = MyopicVicar::MongoConfig['delete_list']
   config.member_open = MyopicVicar::MongoConfig['member_open']
+  config.site_mode = MyopicVicar::MongoConfig['site_mode']
+  config.preview_password = MyopicVicar::MongoConfig['preview_password']
   config.vld_file_locations = MyopicVicar::MongoConfig['vld_file_locations']
   config.fc1_coverage_stats = MyopicVicar::MongoConfig['fc1_coverage_stats'] unless MyopicVicar::MongoConfig['fc1_coverage_stats'].blank?
   config.fc_parms_upload_dir = MyopicVicar::MongoConfig['fc_parms_upload_dir'] unless MyopicVicar::MongoConfig['fc_parms_upload_dir'].blank?

@@ -47,6 +47,12 @@ class PagesController < ApplicationController
       head :not_found
       return
     end
+
+    # Page names never contain '..' or dot-segments (.git, .env); stops paths escaping app/views/pages
+    if page_path.to_s.split('/').any? { |segment| segment == '..' || segment.start_with?('.') }
+      head :not_found
+      return
+    end
     
     # Convert path to view file name
     # Handle both "about" and "help/getting-started" style paths
