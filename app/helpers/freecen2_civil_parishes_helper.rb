@@ -22,29 +22,50 @@ module Freecen2CivilParishesHelper
 
   def civil_district_link(civil_parish)
     piece = civil_parish.freecen2_piece
-    district = piece.freecen2_district
-    link_to "#{district.name}", freecen2_district_path(district), class: 'btn   btn--small', title:' Displays all of the information about the District to which this Sub District (Piece) is linked'
+    if piece.present?
+      district = piece.freecen2_district
+      link_to "#{district.name}", freecen2_district_path(district), class: 'btn   btn--small', title:' Displays all of the information about the District to which this Sub District (Piece) is linked'
+    else
+      'There is no district as piece missing'
+    end
   end
 
   def civil_piece_link(civil_parish)
     piece = civil_parish.freecen2_piece
-    link_to "#{piece.name}", freecen2_piece_path(piece), class: 'btn   btn--small', title:' Displays all of the information about the Sub District (Piece) to which this Civil Parish is linked'
+    if piece.present?
+      link_to "#{piece.name}", freecen2_piece_path(piece), class: 'btn   btn--small', title:' Displays all of the information about the Sub District (Piece) to which this Civil Parish is linked'
+    else
+      'There is no piece'
+    end
   end
 
   def civil_district_name(civil_parish)
     piece = civil_parish.freecen2_piece
-    district = piece.freecen2_district
-    "#{district.name}"
+    if piece.present?
+      district = piece.freecen2_district
+      "#{district.name}"
+    else
+      "There is no district as piece missing"
+    end
   end
 
   def civil_piece_name(civil_parish)
     piece = civil_parish.freecen2_piece
-    "#{piece.name}"
+    if piece.present?
+      "#{piece.name}"
+    else
+      "There is no piece"
+    end
   end
 
   def civil_piece_number(civil_parish)
     piece = civil_parish.freecen2_piece
-    "#{piece.number}"
+    if piece.present?
+      "#{piece.number}"
+    else
+      "There is no piece"
+    end
+
   end
 
   def vld_files_parish_link(civil_parish)

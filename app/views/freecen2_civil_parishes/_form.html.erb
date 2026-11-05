@@ -8,9 +8,8 @@
   <% if @records %>
     Search records exist therefore place name cannot be changed with simple edit. Please ask system administrator to make the change <br>
     <br>
-  <% else %>
-    <%= f.input :freecen2_place_id,  required: true, label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
   <% end %>
+  <%= f.input :freecen2_place_id,  required: true, label: 'Freecen2 Place name:', selected:  @freecen2_place, include_blank: false, collection: @places, input_html: {class: ' simple_form_bgcolour large_selection_field_width', size:5 }%>
   <% unless @scotland %>
     <%= f.input :note, label: 'TNA Notes',  as: :text, input_html: {class: ' simple_form_bgcolour  ',   placeholder: @freecen2_civil_parish.note,  size: '50x5' }%>
     <h4 style='text-align: center'>Hamlets within the Civil Parish</h4>
