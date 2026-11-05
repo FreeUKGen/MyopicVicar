@@ -77,7 +77,7 @@ module ChapmanCode
             place_cache = Freecen2PlaceCache.find_by(chapman_code: vv.to_s)
             #check if the place cache is present
             has_no_places = place_cache.present? &&
-                           JSON.parse(place_cache.places_json).with_indifferent_access.blank?
+              JSON.parse(place_cache.places_json).with_indifferent_access.blank?
             ctryhash[kk] = vv unless %w[ALD GSY JSY SRK].include?(vv.to_s) || CODES['Ireland'].values.include?(vv.to_s) ||
               (has_no_places && !%w[ENG IRL SCT WLS].include?(vv.to_s))
           else
@@ -291,7 +291,7 @@ module ChapmanCode
       'County Leitrim' => 'LET',
       'County Laois' => 'LEX',
       'County Limerick' => 'LIM',
-      'County Londonderry ' => 'LDY',
+      'County Londonderry' => 'LDY',
       'County Longford' => 'LOG',
       'County Louth' => 'LOU',
       'County Mayo' => 'MAY',
