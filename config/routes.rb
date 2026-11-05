@@ -691,6 +691,11 @@ MyopicVicar::Application.routes.draw do
 
   # See how all your routes lay out with "rake routes"
 
+  if MyopicVicar::Application.config.template_set == 'freepro'
+    get 'freepro/search-help', to: 'pages#show', defaults: { path: 'search_help' }, as: :freepro_search_help
+    get 'freepro/database-information', to: 'pages#show', defaults: { path: 'database_information' }, as: :freepro_database_information
+  end
+
   # Catch-all route for static pages copied from Refinery CMS
   get '*path', to: 'pages#show', as: :page, format: false
 end
