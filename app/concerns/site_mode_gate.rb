@@ -30,8 +30,16 @@ module SiteModeGate
     'pages' => %w[show]
   }.freeze
 
+  # Static pages hidden while restricted (served by the pages#show catch-all)
+  HIDDEN_PAGES = %w[opportunities_to_volunteer_with_freereg opportunities_to_volunteer_with_freecen].freeze
+
   included do
     prepend_before_action :enforce_site_mode
+    helper_method :site_restricted?
+  end
+
+  def site_restricted?
+    site_mode != 'normal'
   end
 
   private
@@ -62,6 +70,8 @@ module SiteModeGate
   end
 
   def site_mode_public_action?
+    return false if controller_path == 'pages' && HIDDEN_PAGES.include?(params[:path].to_s)
+
     actions = PUBLIC_ACTIONS[controller_path]
     actions == :all || Array(actions).include?(action_name)
   end
