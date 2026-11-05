@@ -12,12 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 module Emendor
 
   @@emendations = nil
 
   def self.emend(name_array)
     load_emendations unless @@emendations
+
+    if App.name.downcase == 'freecen'
+      normalized_names = []
+      name_array.each do |name|
+        normalized_first_name = normalize_name(name[:first_name])
+        normalized_last_name = normalize_name(name[:last_name])
+        next if normalized_first_name == name[:first_name] && normalized_last_name == name[:last_name]
+
+        emended_name = SearchName.new(name.attributes)
+        emended_name[:first_name] = normalized_first_name
+        emended_name[:last_name] = normalized_last_name
+        emended_name.origin = 'e'
+        normalized_names << emended_name
+      end
+      name_array = name_array + normalized_names
+    end
 
     emended_names = []
     name_array.each do |name|
@@ -26,7 +43,7 @@ module Emendor
       if rules
         rules.each do |rule|
           if rule[:gender].present? #ignore gender-based rule unless same gender
-            case 
+            case
             when (name[:gender].nil? && name[:role] == "bu")
               #p "no sex on burial"
             when (name[:gender].nil? && name[:role] == "wt")
@@ -55,6 +72,12 @@ module Emendor
       @@emendations[rule.original] = [] unless @@emendations[rule.original]
       @@emendations[rule.original] << rule
     end
+  end
+
+  def self.normalize_name(name)
+    return '' if name.blank?
+
+    I18n.transliterate(name).downcase
   end
 
 
@@ -107,6 +130,6 @@ module Emendor
         end
       end
     end
-
   end
+
 end
