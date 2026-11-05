@@ -337,6 +337,10 @@ class SearchRecordsController < ApplicationController
       @dwelling_offset = session[:dwel].present? ?  @dwel - session[:dwel] : @dwel
       @individuals = FreecenCsvEntry.where(freecen_csv_file_id: @freecen_csv_file_id, dwelling_number: @dwel).order_by(sequence_in_household: 1) unless @dwel.zero?
       @freecen_csv_entry = @individuals.first unless @dwel.zero?
+      # e.g. a crawler following next-dwelling links past the last dwelling in the piece
+      if @freecen_csv_entry.blank?
+        redirect_to(new_search_query_path, notice: 'Sorry, that dwelling is not in this piece.') && return
+      end
     else
       @dwelling_offset = 0
       @dwel = @freecen_csv_entry.dwelling_number
