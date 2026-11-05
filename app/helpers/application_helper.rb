@@ -81,7 +81,7 @@ module ApplicationHelper
   end
 
   def nav_volunteer_page_link
-    return if session[:userid_detail_id].present? || site_restricted?
+    return if session[:userid_detail_id].present?
 
     link_to 'Volunteer', "/opportunities_to_volunteer_with_#{appname_downcase}"
   end
