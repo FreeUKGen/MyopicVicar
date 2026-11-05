@@ -105,9 +105,11 @@ class PagesController < ApplicationController
     page_path.to_s.start_with?('.well-known/') || page_path.to_s == '.well-known'
   end
 
+  # Only files inside public/.well-known: '..' would otherwise reach any file on the server
   def serve_well_known(page_path)
-    public_file = Rails.root.join('public', page_path.to_s)
-    if File.exist?(public_file)
+    well_known_dir = Rails.root.join('public', '.well-known').to_s
+    public_file = File.expand_path(page_path.to_s.sub(%r{\A\.well-known/?}, ''), well_known_dir)
+    if public_file.start_with?("#{well_known_dir}/") && File.file?(public_file)
       send_file public_file, disposition: 'inline'
     else
       head :not_found
